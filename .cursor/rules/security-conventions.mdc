@@ -1,0 +1,357 @@
+---
+description: 'Standard web development security conventions'
+alwaysApply: true
+---
+
+# Security Conventions
+
+## Input Validation & XSS Prevention
+
+### Data Validation & Sanitization
+
+- Validate all inputs on client and server side
+- Sanitize HTML content to prevent XSS attacks
+- Use Content Security Policy headers
+
+```typescript
+// ✅ Input validation & XSS prevention
+import DOMPurify from 'dompurify';
+
+// Basic validation functions
+export const createTrail = async (data: CreateTrailData) => {
+  const { name, description, difficulty, distance, elevationGain } = data;
+
+  if (
+    !name ||
+    !description ||
+    !difficulty ||
+    !distance ||
+    elevationGain === undefined
+  ) {
+    throw { message: 'Faltan campos requeridos', statusCode: 400 };
+  }
+
+  if (
+    typeof name !== 'string' ||
+    typeof description !== 'string' ||
+    typeof difficulty !== 'string' ||
+    typeof distance !== 'number' ||
+    typeof elevationGain !== 'number'
+  ) {
+    throw { message: 'Formato de campos inválido', statusCode: 400 };
+  }
+
+  if (name.length < 3 || name.length > 100) {
+    throw {
+      message: 'El nombre debe tener entre 3 y 100 caracteres',
+      statusCode: 400,
+    };
+  }
+
+  if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(name)) {
+    throw {
+      message: 'El nombre solo puede contener letras y espacios',
+      statusCode: 400,
+    };
+  }
+
+  if (description.length < 10 || description.length > 1000) {
+    throw {
+      message: 'La descripción debe tener entre 10 y 1000 caracteres',
+      statusCode: 400,
+    };
+  }
+
+  const validDifficulties = ['fácil', 'moderado', 'difícil', 'experto'];
+  if (!validDifficulties.includes(difficulty)) {
+    throw {
+      message: 'La dificultad debe ser: fácil, moderado, difícil o experto',
+      statusCode: 400,
+    };
+  }
+
+  if (distance <= 0 || distance > 100) {
+    throw {
+      message:
+        'La distancia debe ser un número positivo y no puede exceder 100 km',
+      statusCode: 400,
+    };
+  }
+
+  if (elevationGain < 0 || elevationGain > 5000) {
+    throw {
+      message:
+        'El desnivel no puede ser negativo y no puede exceder 5000 metros',
+      statusCode: 400,
+    };
+  }
+};
+
+// Validation middleware
+const validateTrailInputMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    createTrail(req.body);
+    next();
+  } catch (error: any) {
+    return res.status(error.statusCode || 400).json({ error: error.message });
+  }
+};
+
+// XSS prevention
+const sanitizeHtml = (html: string): string => {
+  return DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'p', 'br'],
+    ALLOWED_ATTR: [],
+  });
+};
+
+// Security headers
+const setSecurityHeaders = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  res.setHeader(
+    'Content-Security-Policy',
+    "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self'",
+  );
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  next();
+};
+```
+
+## API Security
+
+### Rate Limiting & CORS
+
+- Implement rate limiting with different limits for different endpoints
+- Configure CORS with specific origins (no wildcards in production)
+- Log suspicious activity
+
+```typescript
+// ✅ Rate limiting & CORS
+import rateLimit from 'express-rate-limit';
+import cors from 'cors';
+
+// Rate limiting
+const createRateLimit = (windowMs: number, max: number, message: string) => {
+  return rateLimit({
+    windowMs,
+    max,
+    message: { error: message },
+    standardHeaders: true,
+    legacyHeaders: false,
+    handler: (req, res) =>
+      res
+        .status(429)
+        .json({ error: message, retryAfter: Math.round(windowMs / 1000) }),
+  });
+};
+
+const authRateLimit = createRateLimit(
+  15 * 60 * 1000,
+  5,
+  'Demasiados intentos de autenticación. Inténtalo de nuevo en 15 minutos.',
+);
+const apiRateLimit = createRateLimit(
+  15 * 60 * 1000,
+  100,
+  'Demasiadas solicitudes. Inténtalo de nuevo más tarde.',
+);
+
+// CORS configuration
+const corsOptions = {
+  origin: (
+    origin: string | undefined,
+    callback: (err: Error | null, allow?: boolean) => void,
+  ) => {
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'https://trailrunningcal.com',
+      'https://www.trailrunningcal.com',
+    ];
+    if (!origin || allowedOrigins.includes(origin)) callback(null, true);
+    else callback(new Error('No permitido por CORS'));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+};
+```
+
+## Environment Variables & Secrets
+
+### Secret Management & Configuration
+
+- Never commit secrets to version control
+- Use environment variables for sensitive data
+- Validate required environment variables on startup
+- Use different secrets for different environments
+
+```typescript
+// ✅ Environment variables & configuration
+const requiredEnvVars = [
+  'DATABASE_URL',
+  'REDIS_URL',
+  'EMAIL_SERVICE_API_KEY',
+  'GOOGLE_MAPS_API_KEY',
+];
+
+const validateEnvironment = () => {
+  const missingVars = requiredEnvVars.filter(
+    (varName) => !process.env[varName],
+  );
+  if (missingVars.length > 0)
+    throw new Error(
+      `Missing required environment variables: ${missingVars.join(', ')}`,
+    );
+};
+
+const config = {
+  database: { url: process.env.DATABASE_URL! },
+  redis: { url: process.env.REDIS_URL! },
+  email: { apiKey: process.env.EMAIL_SERVICE_API_KEY! },
+  maps: { apiKey: process.env.GOOGLE_MAPS_API_KEY! },
+};
+```
+
+## Error Handling & Security Monitoring
+
+### Secure Error Handling & Logging
+
+- Don't expose sensitive information in error messages
+- Log security events for monitoring and alerting
+- Implement error boundaries for React components
+
+```typescript
+// ✅ Secure error handling & monitoring
+interface SecurityEvent {
+  type:
+    | 'api_error'
+    | 'validation_error'
+    | 'file_upload_error'
+    | 'suspicious_activity';
+  ip: string;
+  userAgent: string;
+  timestamp: Date;
+  details: Record<string, any>;
+}
+
+const handleApiError = (error: Error, req: Request, res: Response) => {
+  console.error('API error:', {
+    timestamp: new Date().toISOString(),
+    ip: req.ip,
+    userAgent: req.get('User-Agent'),
+    error: error.message,
+  });
+  res.status(500).json({ error: 'Error interno del servidor' });
+};
+
+const logSecurityEvent = async (event: SecurityEvent) => {
+  try {
+    await SecurityLog.create({ ...event, timestamp: new Date() });
+    if (event.type === 'suspicious_activity') await sendSecurityAlert(event);
+  } catch (error) {
+    console.error('Failed to log security event:', error);
+  }
+};
+
+// React error boundary
+class SecurityErrorBoundary extends React.Component {
+  constructor(props: any) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError(error: Error) {
+    console.error('Security error boundary caught:', error);
+    return { hasError: true };
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="error-boundary">
+          <h2>Error de Seguridad</h2>
+          <p>
+            Se ha detectado un problema de seguridad. Por favor, recarga la
+            página.
+          </p>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+```
+
+## File Upload Security
+
+### Secure File Handling
+
+- Validate file types and sizes (5MB limit)
+- Store files outside web root with secure filenames
+- Scan uploaded files for malware
+
+```typescript
+// ✅ File upload security
+import multer from 'multer';
+import path from 'path';
+
+const allowedMimeTypes = [
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'application/pdf',
+];
+
+const fileFilter = (
+  req: Request,
+  file: Express.Multer.File,
+  cb: multer.FileFilterCallback,
+) => {
+  if (allowedMimeTypes.includes(file.mimetype)) cb(null, true);
+  else cb(new Error('Tipo de archivo no permitido'));
+};
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) =>
+    cb(null, path.join(process.cwd(), 'uploads', 'secure')),
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname);
+    cb(null, `file-${uniqueSuffix}${ext}`);
+  },
+});
+
+const upload = multer({
+  storage,
+  fileFilter,
+  limits: { fileSize: 5 * 1024 * 1024 },
+});
+```
+
+## Security Best Practices
+
+### Essential Do's
+
+- Always validate and sanitize user inputs
+- Use HTTPS in production with proper security headers
+- Implement rate limiting and CORS with specific origins
+- Log security events and monitor for suspicious activity
+- Store files outside web root with secure filenames
+- Use environment variables for all secrets
+- Keep dependencies updated and scan for vulnerabilities
+
+### Critical Don'ts
+
+- Don't expose sensitive information in error messages
+- Don't use wildcard CORS in production
+- Don't trust client-side validation alone
+- Don't commit secrets to version control
+- Don't store files in web-accessible directories
+- Don't skip input validation or ignore security warnings

@@ -1,0 +1,223 @@
+---
+description: 'TypeScript patterns, type definitions, and best practices'
+globs: ['**/*.{ts,tsx,mts,cts}']
+autoAttached: true
+priority: 2
+tags: ['typescript', 'types', 'interfaces', 'generics']
+---
+
+# TypeScript Conventions
+
+## Type Definitions
+
+- Use strict typing, avoid `any`, prefer explicit return types
+- Create domain-specific types for trail running concepts
+- Use union types for controlled values
+
+Examples:
+
+```typescript
+// Domain-specific types
+type TrailDifficulty = 'fácil' | 'moderado' | 'difícil' | 'experto';
+type RaceStatus = 'próximo' | 'en_curso' | 'completado' | 'cancelado';
+
+// Interface definitions
+interface Trail {
+  id: string;
+  name: string;
+  distance: number; // in kilometers
+  difficulty: TrailDifficulty;
+  location: {
+    latitude: number;
+    longitude: number;
+  };
+}
+
+// Utility types
+type TrailWithoutId = Omit<Trail, 'id'>;
+type TrailSummary = Pick<Trail, 'id' | 'name' | 'distance'>;
+```
+
+## Function Signatures
+
+- Always specify return types for functions
+- Use explicit parameter types
+- Prefer async/await over Promise chains
+
+Examples:
+
+```typescript
+// Service functions
+export const fetchTrailById = async (
+  trailId: string,
+): Promise<Trail | null> => {
+  const response = await fetch(`/api/trails/${trailId}`);
+  return response.ok ? await response.json() : null;
+};
+
+// Utility functions
+export const calculateTrailDuration = (
+  distance: number,
+  difficulty: TrailDifficulty,
+): number => {
+  const multiplier = { fácil: 1.0, moderado: 1.3, difícil: 1.6, experto: 2.0 };
+  return distance * multiplier[difficulty];
+};
+
+// Event handlers
+export const handleTrailSelect = (trailId: string): void => {
+  // Implementation
+};
+```
+
+## Utility Types
+
+- Use simple generics for reusable utilities
+- Keep generic constraints minimal
+
+Examples:
+
+```typescript
+// API response wrapper
+interface ApiResponse<T> {
+  data: T;
+  success: boolean;
+}
+
+// Utility function
+const updateObject = <T>(obj: T, updates: Partial<T>): T => {
+  return { ...obj, ...updates };
+};
+```
+
+## Error Handling
+
+- Use basic error types for common scenarios
+- Keep error handling straightforward
+
+Examples:
+
+```typescript
+// Custom error function
+const createTrailError = (message: string, statusCode: number = 500) => ({
+  message,
+  statusCode,
+  name: 'TrailError',
+});
+
+// Validation function
+export const validateTrailData = (data: unknown): TrailWithoutId => {
+  if (!data || typeof data !== 'object') {
+    throw createTrailError('Invalid trail data', 400);
+  }
+  return data as TrailWithoutId;
+};
+```
+
+## Module and Import Patterns
+
+- Use explicit imports and exports
+- Organize imports by type (external, internal, relative)
+
+Examples:
+
+```typescript
+// types/trail.types.ts
+export interface Trail {
+  id: string;
+  name: string;
+  distance: number;
+  difficulty: TrailDifficulty;
+}
+
+export type TrailDifficulty = 'fácil' | 'moderado' | 'difícil' | 'experto';
+
+// services/trail.service.ts
+import { Trail } from '../types/trail.types';
+```
+
+## React Component Types
+
+- Use proper typing for props, state, and refs
+- Avoid `React.FC` - use direct function declarations with typed props
+- Leverage React's built-in types
+
+Examples:
+
+```typescript
+import React, { useState } from 'react';
+import type { Trail } from '../types/trail.types';
+
+interface TrailCardProps {
+  trail: Trail;
+  onTrailSelect: (trailId: string) => void;
+  className?: string;
+}
+
+export const TrailCard = ({
+  trail,
+  onTrailSelect,
+  className = '',
+}: TrailCardProps) => {
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+
+  const handleCardClick = (): void => {
+    onTrailSelect(trail.id);
+  };
+
+  return (
+    <div className={`trail-card ${className}`} onClick={handleCardClick}>
+      {/* Component content */}
+    </div>
+  );
+};
+```
+
+## Configuration Types
+
+- Type essential environment variables
+- Keep configuration simple
+
+Examples:
+
+```typescript
+// config/app.config.ts
+interface AppConfig {
+  apiBaseUrl: string;
+  environment: 'development' | 'production';
+}
+
+const appConfig: AppConfig = {
+  apiBaseUrl: process.env.REACT_APP_API_URL || 'http://localhost:3001',
+  environment:
+    process.env.NODE_ENV === 'production' ? 'production' : 'development',
+};
+
+export default appConfig;
+```
+
+## Type Safety
+
+- Create simple type guards for runtime checking
+- Use readonly for immutable data when needed
+- Keep type safety simple
+
+Examples:
+
+```typescript
+// Type guards
+export const isTrail = (obj: unknown): obj is Trail => {
+  return (
+    typeof obj === 'object' &&
+    obj !== null &&
+    typeof (obj as Trail).id === 'string'
+  );
+};
+
+export const isTrailDifficulty = (value: string): value is TrailDifficulty => {
+  return ['fácil', 'moderado', 'difícil', 'experto'].includes(value);
+};
+
+// Readonly types
+type ReadonlyTrail = Readonly<Trail>;
+```

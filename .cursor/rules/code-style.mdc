@@ -1,0 +1,200 @@
+---
+description: 'Core coding standards and naming conventions'
+alwaysApply: true
+priority: 1
+tags: ['core', 'naming', 'style']
+---
+
+# Language Requirements
+
+## Spanish User Interface
+
+- **All user-facing strings must be in Spanish** (error messages, labels, placeholders, button text, etc.)
+- **All user-facing enum values must be in Spanish** (difficulty levels, status values, etc.)
+- **Code structure remains in English** (variable names, function names, technical terms)
+- **Technical/developer errors remain in English** (console logs, API errors, validation errors)
+
+Examples:
+
+```typescript
+// ✅ User-facing strings in Spanish
+setErrorMessage('No se pudo cargar la información del sendero. Por favor, inténtalo de nuevo.');
+<label>Nombre del Sendero</label>
+<button>Guardar Sendero</button>
+
+// ✅ User-facing enums in Spanish
+type TrailDifficulty = 'fácil' | 'moderado' | 'difícil' | 'experto';
+type RaceStatus = 'próximo' | 'en_curso' | 'completado' | 'cancelado';
+
+// ✅ Code structure in English
+const handleTrailSelect = (trailId: string) => { ... };
+const fetchTrailData = async (id: string) => { ... };
+
+// ✅ Technical errors in English
+console.error('Error fetching trail:', error);
+throw new Error('Failed to fetch trail: ${response.statusText}');
+```
+
+# Naming Conventions
+
+## Variables and Functions
+
+- Use camelCase with descriptive, domain-specific names
+
+Examples:
+
+- `trailDistance` (not `dist`)
+- `calculateElevationGain` (not `calcElev`)
+- `userRunningHistory` (not `userHist`)
+
+## React Components
+
+- Use PascalCase for component names
+
+Examples:
+
+- `TrailCard` (not `trailCard`)
+- `EventCalendar` (not `eventCalendar`)
+- `RunningStatsWidget` (not `runningStats`)
+
+## Props Interfaces
+
+- Use PascalCase with "Props" suffix, match component name
+
+Examples:
+
+```typescript
+interface TrailCardProps {
+  onTrailSelect: (trailId: string) => void;
+  onDateChange: (date: Date) => void;
+  onFormSubmit: (event: FormEvent) => void;
+}
+```
+
+## Event Handlers
+
+- Use camelCase with "on" prefix, descriptive action names
+
+Examples:
+
+```typescript
+const handleTrailSelect = (trailId: string) => onTrailSelect(trailId);
+const onDateChange = (date: Date) => { ... };
+const handleFormSubmit = (event: FormEvent) => { ... };
+const onUserLogin = (user: User) => { ... };
+const handleTrailFilter = (filters: TrailFilters) => { ... };
+const onEventDelete = (eventId: string) => { ... };
+```
+
+## Error Handling Patterns
+
+- Use descriptive error variable names with context
+
+Examples:
+
+```typescript
+try {
+  const trailData = await fetchTrailData(trailId);
+} catch (trailFetchError) {
+  setTrailError(trailFetchError);
+  setErrorMessage('No se pudo cargar la información del sendero. Por favor, inténtalo de nuevo.');
+}
+
+try {
+  const userAuth = await authenticateUser(credentials);
+} catch (authError) {
+  handleAuthError(authError);
+}
+
+const handleTrailError = (error: TrailError) => { ... };
+const handleValidationError = (error: ValidationError) => { ... };
+const [trailError, setTrailError] = useState<TrailError | null>(null);
+const [errorMessage, setErrorMessage] = useState<string>('');
+```
+
+## Files and Directories
+
+- Use kebab-case with file type/purpose in name
+
+Examples:
+
+- `components/trail-card.tsx`
+- `pages/trail-details.tsx`
+- `services/trail-api.service.ts`
+- `hooks/use-trail-data.ts`
+- `types/trail.types.ts`
+
+## Constants
+
+- Use UPPER_SNAKE_CASE with descriptive names
+
+Examples:
+
+- `MAX_TRAIL_DISTANCE`
+- `API_BASE_URL`
+
+# Import/Export Conventions
+
+- External libraries first, internal modules second, relative imports last
+- Use named exports for utilities/types, default exports for components
+- Group related imports together
+
+Examples:
+
+```typescript
+import React from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { TrailService } from '../services/trail-service';
+import { EventTypes } from '../types/event.types';
+import { TrailCard } from './trail-card';
+import { formatDistance } from './utils';
+
+export const calculateElevationGain = () => { ... };
+export type TrailDifficulty = 'fácil' | 'moderado' | 'difícil';
+export const TrailService = { ... };
+export default function TrailCard({ trail }: TrailCardProps) { ... }
+```
+
+# Asset Organization
+
+## File Structure
+
+- Organize by type/purpose, use kebab-case naming
+
+Examples:
+
+```
+public/
+  images/trails/mountain-trail-1.jpg
+  icons/trail-marker.svg
+  logos/app-logo.png
+
+src/assets/
+  images/trail-placeholders/default-trail.jpg
+  icons/ui-icons/chevron-down.svg
+  fonts/custom-font.woff2
+```
+
+## Naming and Import Patterns
+
+- Use descriptive names, consistent import paths, group imports
+
+Examples:
+
+```
+trail-mountain-sunset.jpg
+icon-trail-marker.svg
+font-primary-regular.woff2
+```
+
+```typescript
+import trailPlaceholder from '../assets/images/trail-placeholders/default-trail.jpg';
+import { ReactComponent as TrailMarker } from '../assets/icons/trail-marker.svg';
+
+<img src={trailPlaceholder} alt="Imagen de ejemplo de sendero" />
+<TrailMarker className="trail-marker-icon" />
+```
+
+<TrailMarker className="trail-marker-icon" />
+```
