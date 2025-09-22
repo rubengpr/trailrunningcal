@@ -8,4 +8,5 @@ export interface TrailRace {
   city: string;
   province: string;
   websiteUrl: string;
+  difficulty: 'fácil' | 'moderado' | 'difícil' | 'experto';
 }

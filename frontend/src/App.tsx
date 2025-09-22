@@ -48,6 +48,7 @@ function App() {
                 city={race.city}
                 province={race.province}
                 websiteUrl={race.websiteUrl}
+                difficulty={race.difficulty}
               />
             ))}
           </div>
