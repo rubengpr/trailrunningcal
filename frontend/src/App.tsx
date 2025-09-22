@@ -1,4 +1,6 @@
 import TrailRaceCard from './components/trail-race-card';
+import { races } from './data/races';
+
 function App() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 text-gray-900 flex flex-col">
@@ -32,20 +34,22 @@ function App() {
           </div>
         </section>
 
-        <section id="ejemplo" className="py-10">
-          <h2 className="text-xl font-bold mb-4">Próximas carreras</h2>
-          <div className="max-w-3xl">
-            {/* Example card; replace with real data later */}
-            <TrailRaceCard
-              date="15 Mar 2024"
-              name="Trail de la Montaña Sagrada"
-              distanceKm={32}
-              elevationGainM={1800}
-              priceEur={35}
-              city="Collbató"
-              province="Barcelona"
-              websiteUrl="https://example.org/trail"
-            />
+        <section id="carreras" className="py-10">
+          <h2 className="text-xl font-bold mb-6">Próximas carreras</h2>
+          <div className="grid gap-4 max-w-4xl">
+            {races.map((race) => (
+              <TrailRaceCard
+                key={race.id}
+                date={race.date}
+                name={race.name}
+                distanceKm={race.distanceKm}
+                elevationGainM={race.elevationGainM}
+                priceEur={race.priceEur}
+                city={race.city}
+                province={race.province}
+                websiteUrl={race.websiteUrl}
+              />
+            ))}
           </div>
         </section>
       </main>
