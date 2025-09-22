@@ -72,9 +72,7 @@ function App() {
         </section>
 
         <section id="carreras" className="py-10">
-          <h2 className="text-xl font-bold mb-6">Próximas carreras</h2>
-
-          <div className="mb-8">
+          <div className="flex justify-start mb-8">
             <MonthFilter
               selectedMonth={selectedMonth}
               onMonthSelect={handleMonthSelect}
