@@ -1,10 +1,12 @@
 import { useState, useMemo } from 'react';
 import TrailRaceCard from './components/trail-race-card';
 import MonthFilter from './components/month-filter';
+import SearchBar from './components/search-bar';
 import { races } from './data/races';
 
 function App() {
   const [selectedMonth, setSelectedMonth] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
   const getMonthNumber = (monthKey: string): number => {
     const monthMap: { [key: string]: number } = {
@@ -25,19 +27,34 @@ function App() {
   };
 
   const filteredRaces = useMemo(() => {
-    if (!selectedMonth) {
-      return races;
+    let filtered = races;
+
+    // Filter by month if selected
+    if (selectedMonth) {
+      const monthNumber = getMonthNumber(selectedMonth);
+      filtered = filtered.filter((race) => {
+        const raceDate = new Date(race.date);
+        return raceDate.getMonth() === monthNumber;
+      });
     }
 
-    const monthNumber = getMonthNumber(selectedMonth);
-    return races.filter((race) => {
-      const raceDate = new Date(race.date);
-      return raceDate.getMonth() === monthNumber;
-    });
-  }, [selectedMonth]);
+    // Filter by search term if provided
+    if (searchTerm.trim()) {
+      const searchLower = searchTerm.toLowerCase().trim();
+      filtered = filtered.filter((race) =>
+        race.name.toLowerCase().includes(searchLower),
+      );
+    }
+
+    return filtered;
+  }, [selectedMonth, searchTerm]);
 
   const handleMonthSelect = (month: string) => {
     setSelectedMonth(month);
+  };
+
+  const handleSearchChange = (term: string) => {
+    setSearchTerm(term);
   };
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 text-gray-900 flex flex-col">
@@ -72,11 +89,20 @@ function App() {
         </section>
 
         <section id="carreras" className="py-10">
-          <div className="flex justify-start mb-8">
-            <MonthFilter
-              selectedMonth={selectedMonth}
-              onMonthSelect={handleMonthSelect}
-            />
+          <div className="mb-8 space-y-6">
+            <div className="flex justify-center">
+              <SearchBar
+                searchTerm={searchTerm}
+                onSearchChange={handleSearchChange}
+                placeholder="Buscar carreras por nombre..."
+              />
+            </div>
+            <div className="flex justify-center">
+              <MonthFilter
+                selectedMonth={selectedMonth}
+                onMonthSelect={handleMonthSelect}
+              />
+            </div>
           </div>
 
           <div className="grid gap-4 max-w-4xl">
