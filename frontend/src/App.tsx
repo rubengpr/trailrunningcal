@@ -1,7 +1,7 @@
 import TrailRaceCard from './components/trail-race-card';
 function App() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 text-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 text-gray-900 flex flex-col">
       <header className="w-full border-b border-indigo-100/60 bg-white/70 backdrop-blur">
         <div className="mx-auto max-w-7xl px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -20,7 +20,7 @@ function App() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl px-4">
+      <main className="flex-1 mx-auto max-w-7xl px-4">
         <section className="py-14 sm:py-20">
           <div className="flex flex-col items-center text-center">
             <h1 className="text-3xl sm:text-5xl font-extrabold leading-tight">
@@ -50,7 +50,7 @@ function App() {
         </section>
       </main>
 
-      <footer className="mt-12 border-t border-indigo-100/60 bg-white/70 backdrop-blur">
+      <footer className="border-t border-indigo-100/60 bg-white/70 backdrop-blur">
         <div className="mx-auto max-w-7xl px-4 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-gray-600">
           <p>
             © {new Date().getFullYear()} Trail Running Calendar. Todos los
