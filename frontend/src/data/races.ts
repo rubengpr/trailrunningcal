@@ -3,7 +3,7 @@ import type { TrailRace } from '../types/race.types';
 export const races: TrailRace[] = [
   {
     id: 'montserrat-trail-2025-21k',
-    date: '2025-10-05',
+    date: '2025-10-04',
     name: 'Montserrat Trail 21K',
     distanceKm: 21,
     elevationGainM: 1200,
@@ -15,7 +15,7 @@ export const races: TrailRace[] = [
   },
   {
     id: 'cavalls-del-vent-2025-42k',
-    date: '2025-10-12',
+    date: '2025-10-04',
     name: 'Cavalls del Vent 42K',
     distanceKm: 42,
     elevationGainM: 2800,
@@ -27,7 +27,7 @@ export const races: TrailRace[] = [
   },
   {
     id: 'costa-brava-trail-2025-30k',
-    date: '2025-10-19',
+    date: '2025-10-05',
     name: 'Costa Brava Trail 30K',
     distanceKm: 30,
     elevationGainM: 1800,
@@ -39,7 +39,7 @@ export const races: TrailRace[] = [
   },
   {
     id: 'puigmal-trail-2025-15k',
-    date: '2025-10-26',
+    date: '2025-10-11',
     name: 'Puigmal Trail 15K',
     distanceKm: 15,
     elevationGainM: 950,
@@ -51,7 +51,7 @@ export const races: TrailRace[] = [
   },
   {
     id: 'garrotxa-trail-2025-25k',
-    date: '2025-11-02',
+    date: '2025-10-11',
     name: 'Garrotxa Trail 25K',
     distanceKm: 25,
     elevationGainM: 1400,
@@ -63,7 +63,7 @@ export const races: TrailRace[] = [
   },
   {
     id: 'montseny-trail-2025-35k',
-    date: '2025-11-09',
+    date: '2025-10-12',
     name: 'Montseny Trail 35K',
     distanceKm: 35,
     elevationGainM: 2100,
@@ -75,7 +75,7 @@ export const races: TrailRace[] = [
   },
   {
     id: 'cadi-trail-2025-50k',
-    date: '2025-11-16',
+    date: '2025-11-15',
     name: 'Cadi Trail 50K',
     distanceKm: 50,
     elevationGainM: 3200,
@@ -87,7 +87,7 @@ export const races: TrailRace[] = [
   },
   {
     id: 'pallars-trail-2025-20k',
-    date: '2025-11-23',
+    date: '2025-11-15',
     name: 'Pallars Trail 20K',
     distanceKm: 20,
     elevationGainM: 1100,
@@ -99,7 +99,7 @@ export const races: TrailRace[] = [
   },
   {
     id: 'priorat-trail-2025-18k',
-    date: '2025-11-30',
+    date: '2025-11-16',
     name: 'Priorat Trail 18K',
     distanceKm: 18,
     elevationGainM: 850,
@@ -111,7 +111,7 @@ export const races: TrailRace[] = [
   },
   {
     id: 'ebre-trail-2025-22k',
-    date: '2025-12-07',
+    date: '2025-11-22',
     name: 'Ebre Trail 22K',
     distanceKm: 22,
     elevationGainM: 650,
@@ -123,7 +123,7 @@ export const races: TrailRace[] = [
   },
   {
     id: 'montserrat-vertical-2025-8k',
-    date: '2025-12-14',
+    date: '2025-11-22',
     name: 'Montserrat Vertical 8K',
     distanceKm: 8,
     elevationGainM: 750,
@@ -135,7 +135,7 @@ export const races: TrailRace[] = [
   },
   {
     id: 'collserola-trail-2025-12k',
-    date: '2025-12-21',
+    date: '2025-11-23',
     name: 'Collserola Trail 12K',
     distanceKm: 12,
     elevationGainM: 400,
@@ -147,7 +147,7 @@ export const races: TrailRace[] = [
   },
   {
     id: 'costa-dorada-trail-2025-28k',
-    date: '2025-12-28',
+    date: '2025-11-29',
     name: 'Costa Daurada Trail 28K',
     distanceKm: 28,
     elevationGainM: 1200,
@@ -159,7 +159,7 @@ export const races: TrailRace[] = [
   },
   {
     id: 'alt-emporda-trail-2025-24k',
-    date: '2025-10-13',
+    date: '2025-11-30',
     name: 'Alt Empordà Trail 24K',
     distanceKm: 24,
     elevationGainM: 900,
@@ -171,7 +171,7 @@ export const races: TrailRace[] = [
   },
   {
     id: 'terres-de-lebre-trail-2025-16k',
-    date: '2025-10-20',
+    date: '2025-11-30',
     name: "Terres de l'Ebre Trail 16K",
     distanceKm: 16,
     elevationGainM: 500,
@@ -183,7 +183,7 @@ export const races: TrailRace[] = [
   },
   {
     id: 'vall-d-aran-trail-2025-40k',
-    date: '2025-10-27',
+    date: '2025-12-06',
     name: "Vall d'Aran Trail 40K",
     distanceKm: 40,
     elevationGainM: 2500,
@@ -195,7 +195,7 @@ export const races: TrailRace[] = [
   },
   {
     id: 'muntanya-de-montserrat-2025-14k',
-    date: '2025-11-03',
+    date: '2025-12-06',
     name: 'Muntanya de Montserrat 14K',
     distanceKm: 14,
     elevationGainM: 800,
@@ -207,7 +207,7 @@ export const races: TrailRace[] = [
   },
   {
     id: 'costa-brava-vertical-2025-6k',
-    date: '2025-11-10',
+    date: '2025-12-07',
     name: 'Costa Brava Vertical 6K',
     distanceKm: 6,
     elevationGainM: 600,
@@ -219,7 +219,7 @@ export const races: TrailRace[] = [
   },
   {
     id: 'garraf-trail-2025-19k',
-    date: '2025-11-17',
+    date: '2025-12-13',
     name: 'Garraf Trail 19K',
     distanceKm: 19,
     elevationGainM: 700,
@@ -231,7 +231,7 @@ export const races: TrailRace[] = [
   },
   {
     id: 'penedes-trail-2025-26k',
-    date: '2025-11-24',
+    date: '2025-12-13',
     name: 'Penedès Trail 26K',
     distanceKm: 26,
     elevationGainM: 1000,
