@@ -33,7 +33,7 @@ export default function TrailRaceCard({
   return (
     <article className="w-full bg-white rounded-lg shadow hover:shadow-md transition-shadow">
       <div className="p-4">
-        <div className="flex items-start justify-between">
+        <div className="flex items-start justify-between mb-3">
           <div className="flex gap-4">
             <div className="flex flex-col items-center justify-center min-w-[60px] px-3 py-2 bg-indigo-100 text-indigo-700 rounded-sm">
               <span className="text-[10px] font-medium uppercase tracking-wide">
@@ -44,8 +44,6 @@ export default function TrailRaceCard({
             </div>
             <div className="flex-1">
               <h3 className="text-lg font-bold text-gray-900 mb-1">{name}</h3>
-
-              <div></div>
               <div className="flex gap-3 text-sm text-gray-600 my-2">
                 <span>{distanceKm}km</span>
                 <span>{elevationGainM}m+</span>
@@ -70,15 +68,15 @@ export default function TrailRaceCard({
               </div>
             </div>
           </div>
-          <div className="text-right">
-            <div className="font-semibold text-gray-900 mb-1">
+          <div className="flex flex-col items-end gap-2">
+            <div className="font-semibold text-gray-900 text-lg">
               {priceEur ? `${priceEur}€` : '—'}
             </div>
             <a
               href={websiteUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-indigo-600 hover:text-indigo-800"
+              className="inline-block bg-indigo-600 text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-indigo-700 transition-colors"
             >
               Web →
             </a>
