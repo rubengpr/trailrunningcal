@@ -1,10 +1,13 @@
 import { useState, useMemo } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import TrailRaceCard from './components/trail-race-card';
 import MonthFilter from './components/month-filter';
 import SearchBar from './components/search-bar';
+import ContactPage from './components/contact-page';
+import Navbar from './components/navbar';
 import { races } from './data/races';
 
-function App() {
+function HomePage() {
   const [selectedMonth, setSelectedMonth] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState<string>('');
 
@@ -59,25 +62,10 @@ function App() {
   const handleSearchChange = (term: string) => {
     setSearchTerm(term);
   };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 text-gray-900 flex flex-col">
-      <header className="w-full border-b border-indigo-100/60 bg-white/70 backdrop-blur">
-        <div className="mx-auto max-w-7xl px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img
-              className="w-10 h-10"
-              src="/trc-logo.svg"
-              alt="Trail Running Calendar"
-            />
-            <span className="font-semibold text-lg">Trail Running Cal</span>
-          </div>
-          <nav className="hidden sm:flex items-center gap-6 text-sm">
-            <a href="#contacto" className="hover:text-indigo-700">
-              Contacto
-            </a>
-          </nav>
-        </div>
-      </header>
+      <Navbar />
 
       <main className="flex-1 mx-auto max-w-7xl px-4">
         <section className="py-14 sm:py-20">
@@ -135,6 +123,17 @@ function App() {
         </div>
       </footer>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/contacto" element={<ContactPage />} />
+      </Routes>
+    </Router>
   );
 }
 
