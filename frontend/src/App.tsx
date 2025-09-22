@@ -41,8 +41,11 @@ function App() {
     // Filter by search term if provided
     if (searchTerm.trim()) {
       const searchLower = searchTerm.toLowerCase().trim();
-      filtered = filtered.filter((race) =>
-        race.name.toLowerCase().includes(searchLower),
+      filtered = filtered.filter(
+        (race) =>
+          race.name.toLowerCase().includes(searchLower) ||
+          race.city.toLowerCase().includes(searchLower) ||
+          race.province.toLowerCase().includes(searchLower),
       );
     }
 
@@ -94,7 +97,7 @@ function App() {
               <SearchBar
                 searchTerm={searchTerm}
                 onSearchChange={handleSearchChange}
-                placeholder="Buscar carreras por nombre..."
+                placeholder="Buscar por nombre, ciudad o provincia..."
               />
             </div>
             <div className="flex justify-center">
