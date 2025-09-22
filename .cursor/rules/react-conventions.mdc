@@ -347,3 +347,45 @@ const TrailForm = () => (
   </form>
 );
 ```
+
+## Mobile-first and Responsive Design
+
+- Design components mobile-first: write base styles for small screens, then enhance with breakpoints (`sm`, `md`, `lg`, `xl`, `2xl`).
+- Ensure excellent experiences on both mobile and desktop: test layouts, spacing, and interactions across common breakpoints.
+- Prefer flexible layouts (grid/flex) and fluid widths; avoid fixed widths except at large containers.
+- Maintain accessible touch targets on mobile (≥44x44px)
+- Avoid hover-only interactions; provide focus/active alternatives.
+- Optimize images for small screens by default; progressively enhance on larger screens.
+
+Examples:
+
+```typescript
+// Mobile-first card that scales up responsively
+const ResponsiveCard = () => (
+  <div className="w-full max-w-full sm:max-w-md md:max-w-lg lg:max-w-xl bg-white rounded-xl shadow md:shadow-lg">
+    <div className="h-40 sm:h-48 md:h-56 bg-gradient-to-br from-green-400 to-blue-500" />
+    <div className="p-4 sm:p-6">
+      <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2">
+        Nombre del Sendero
+      </h3>
+      <p className="text-sm sm:text-base text-gray-600 mb-4 line-clamp-3">
+        Descripción breve del sendero para pantallas pequeñas. Se expande en
+        escritorios.
+      </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <span className="text-sm text-gray-500">12 km</span>
+        <span className="self-start sm:self-auto px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+          moderado
+        </span>
+      </div>
+    </div>
+  </div>
+);
+
+// Mobile-first grid that adds columns at larger breakpoints
+const ResponsiveGrid = ({ children }: { children: React.ReactNode }) => (
+  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    {children}
+  </div>
+);
+```
