@@ -63,7 +63,9 @@ export default function TrailRaceCard({
                           : 'bg-red-100 text-red-800'
                   }`}
                 >
-                  {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
+                  {difficulty
+                    ? difficulty.charAt(0).toUpperCase() + difficulty.slice(1)
+                    : 'N/A'}
                 </span>
               </div>
             </div>
