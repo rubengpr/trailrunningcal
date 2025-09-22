@@ -105,21 +105,23 @@ function App() {
             </div>
           </div>
 
-          <div className="grid gap-4 max-w-4xl">
-            {filteredRaces.map((race) => (
-              <TrailRaceCard
-                key={race.id}
-                date={race.date}
-                name={race.name}
-                distanceKm={race.distanceKm}
-                elevationGainM={race.elevationGainM}
-                priceEur={race.priceEur}
-                city={race.city}
-                province={race.province}
-                websiteUrl={race.websiteUrl}
-                difficulty={race.difficulty}
-              />
-            ))}
+          <div className="flex justify-center">
+            <div className="grid gap-4 max-w-4xl w-full">
+              {filteredRaces.map((race) => (
+                <TrailRaceCard
+                  key={race.id}
+                  date={race.date}
+                  name={race.name}
+                  distanceKm={race.distanceKm}
+                  elevationGainM={race.elevationGainM}
+                  priceEur={race.priceEur}
+                  city={race.city}
+                  province={race.province}
+                  websiteUrl={race.websiteUrl}
+                  difficulty={race.difficulty}
+                />
+              ))}
+            </div>
           </div>
         </section>
       </main>
