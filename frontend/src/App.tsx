@@ -1,7 +1,44 @@
+import { useState, useMemo } from 'react';
 import TrailRaceCard from './components/trail-race-card';
+import MonthFilter from './components/month-filter';
 import { races } from './data/races';
 
 function App() {
+  const [selectedMonth, setSelectedMonth] = useState<string>('');
+
+  const getMonthNumber = (monthKey: string): number => {
+    const monthMap: { [key: string]: number } = {
+      ene: 0,
+      feb: 1,
+      mar: 2,
+      abr: 3,
+      may: 4,
+      jun: 5,
+      jul: 6,
+      ago: 7,
+      sep: 8,
+      oct: 9,
+      nov: 10,
+      dic: 11,
+    };
+    return monthMap[monthKey] ?? -1;
+  };
+
+  const filteredRaces = useMemo(() => {
+    if (!selectedMonth) {
+      return races;
+    }
+
+    const monthNumber = getMonthNumber(selectedMonth);
+    return races.filter((race) => {
+      const raceDate = new Date(race.date);
+      return raceDate.getMonth() === monthNumber;
+    });
+  }, [selectedMonth]);
+
+  const handleMonthSelect = (month: string) => {
+    setSelectedMonth(month);
+  };
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 text-gray-900 flex flex-col">
       <header className="w-full border-b border-indigo-100/60 bg-white/70 backdrop-blur">
@@ -36,8 +73,16 @@ function App() {
 
         <section id="carreras" className="py-10">
           <h2 className="text-xl font-bold mb-6">Próximas carreras</h2>
+
+          <div className="mb-8">
+            <MonthFilter
+              selectedMonth={selectedMonth}
+              onMonthSelect={handleMonthSelect}
+            />
+          </div>
+
           <div className="grid gap-4 max-w-4xl">
-            {races.map((race) => (
+            {filteredRaces.map((race) => (
               <TrailRaceCard
                 key={race.id}
                 date={race.date}
