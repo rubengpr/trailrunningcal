@@ -34,6 +34,7 @@ export default function HomePage() {
     if (selectedMonth) {
       const monthNumber = getMonthNumber(selectedMonth);
       filtered = filtered.filter((race) => {
+        if (!race.date) return false; // Exclude races with null dates from month filtering
         const raceDate = new Date(race.date);
         return raceDate.getMonth() === monthNumber;
       });

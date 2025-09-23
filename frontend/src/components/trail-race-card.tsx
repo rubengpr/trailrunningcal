@@ -1,16 +1,19 @@
 interface TrailRaceCardProps {
-  date: string;
+  date: string | null;
   name: string;
   distanceKm: number;
-  elevationGainM: number;
+  elevationGainM: number | null;
   priceEur: number | null;
   city: string;
   province: string;
-  websiteUrl: string;
-  difficulty: 'fácil' | 'moderado' | 'difícil' | 'experto';
+  websiteUrl: string | null;
+  difficulty: 'fácil' | 'moderado' | 'difícil' | 'experto' | null;
 }
 
-const formatDate = (dateString: string) => {
+const formatDate = (dateString: string | null) => {
+  if (!dateString) {
+    return { day: '-', month: '-', dayOfWeek: '-' };
+  }
   const date = new Date(dateString);
   const day = date.getDate();
   const month = date.toLocaleDateString('es-ES', { month: 'short' });
@@ -46,7 +49,7 @@ export default function TrailRaceCard({
               <h3 className="text-lg font-bold text-gray-900 mb-1">{name}</h3>
               <div className="flex gap-3 text-sm text-gray-600 my-2">
                 <span>{distanceKm}km</span>
-                <span>{elevationGainM}m+</span>
+                <span>{elevationGainM ? `${elevationGainM}m+` : '-'}</span>
                 <span className="truncate">
                   {city}, {province}
                 </span>
@@ -74,14 +77,16 @@ export default function TrailRaceCard({
             <div className="font-semibold text-gray-900 text-lg">
               {priceEur ? `${priceEur}€` : '—'}
             </div>
-            <a
-              href={websiteUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block bg-indigo-600 text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-indigo-700 transition-colors"
-            >
-              Web →
-            </a>
+            {websiteUrl && (
+              <a
+                href={websiteUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block bg-indigo-600 text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-indigo-700 transition-colors"
+              >
+                Web →
+              </a>
+            )}
           </div>
         </div>
       </div>

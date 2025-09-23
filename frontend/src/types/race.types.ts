@@ -1,12 +1,12 @@
 export interface TrailRace {
   id: string;
-  date: string; // 'YYYY-MM-DD'
+  date: string | null; // 'YYYY-MM-DD' or null if date TBD
   name: string;
   distanceKm: number;
-  elevationGainM: number;
+  elevationGainM: number | null;
   priceEur: number | null;
   city: string;
   province: string;
-  websiteUrl: string;
-  difficulty: 'fácil' | 'moderado' | 'difícil' | 'experto';
+  websiteUrl: string | null;
+  difficulty: 'fácil' | 'moderado' | 'difícil' | 'experto' | null;
 }
