@@ -1,9 +1,7 @@
 ---
 description: 'Backend API development, REST patterns, and data handling for PERN-TS stack'
-globs: ['backend/**/*.{ts,js}']
-autoAttached: true
-priority: 2
-tags: ['api', 'backend', 'express', 'rest', 'database']
+globs: backend/src/**/*.ts
+alwaysApply: false
 ---
 
 # API Conventions
