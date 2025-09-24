@@ -195,15 +195,3 @@ import { ReactComponent as TrailMarker } from '../assets/icons/trail-marker.svg'
 <img src={trailPlaceholder} alt="Imagen de ejemplo de sendero" />
 <TrailMarker className="trail-marker-icon" />
 ```
-
-<TrailMarker className="trail-marker-icon" />
-```
-
-# Mobile-first and Responsive
-
-- Always build UI mobile-first: base styles target small screens; progressively enhance with breakpoints (`sm`, `md`, `lg`, `xl`, `2xl`).
-- The webapp must deliver an excellent experience on both mobile and desktop: verify layout, spacing, readability, and interactions at each breakpoint.
-- Prefer responsive utilities (e.g., `grid`, `flex`, `w-full`, `max-w-*`) and avoid fixed pixel widths except for large containers.
-- Ensure accessible touch targets (mín. 44x44px) and keyboard/focus states across devices.
-- Avoid hover-only interactions; provide click/active/focus alternatives.
-- Optimize images and assets for small screens by default; upscale responsibly on larger screens.
