@@ -30,6 +30,17 @@ export default function HomePage() {
   const filteredRaces = useMemo(() => {
     let filtered = races;
 
+    // Filter by date - only show races with dates higher than today or races without dates
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time to start of day for accurate comparison
+
+    filtered = filtered.filter((race) => {
+      if (!race.date) return true; // Include races with null dates (TBD races)
+      const raceDate = new Date(race.date);
+      raceDate.setHours(0, 0, 0, 0); // Reset time to start of day for accurate comparison
+      return raceDate > today;
+    });
+
     // Filter by month if selected
     if (selectedMonth) {
       const monthNumber = getMonthNumber(selectedMonth);
@@ -63,10 +74,10 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 text-gray-900 flex flex-col">
+    <div className="min-h-screen w-full text-gray-900 flex flex-col">
       <Navbar />
 
-      <main className="flex-1 mx-auto max-w-7xl px-4">
+      <main className="flex-1 bg-transparent mx-auto max-w-7xl px-4">
         <section className="py-14 sm:py-20">
           <div className="flex flex-col items-center text-center">
             <h1 className="text-3xl sm:text-5xl font-extrabold leading-tight">
