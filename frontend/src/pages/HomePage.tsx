@@ -3,29 +3,13 @@ import TrailRaceCard from '../components/trail-race-card';
 import MonthFilter from '../components/month-filter';
 import SearchBar from '../components/search-bar';
 import Navbar from '../components/navbar';
+import Footer from '../components/footer';
 import { races } from '../data/races';
+import { getMonthNumber } from '../utils/date-utils';
 
 export default function HomePage() {
   const [selectedMonth, setSelectedMonth] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState<string>('');
-
-  const getMonthNumber = (monthKey: string): number => {
-    const monthMap: { [key: string]: number } = {
-      ene: 0,
-      feb: 1,
-      mar: 2,
-      abr: 3,
-      may: 4,
-      jun: 5,
-      jul: 6,
-      ago: 7,
-      sep: 8,
-      oct: 9,
-      nov: 10,
-      dic: 11,
-    };
-    return monthMap[monthKey] ?? -1;
-  };
 
   const filteredRaces = useMemo(() => {
     let filtered = races;
@@ -186,11 +170,7 @@ export default function HomePage() {
         </section>
       </main>
 
-      <footer className="border-t border-indigo-100/60 bg-white/70 backdrop-blur">
-        <div className="mx-auto max-w-7xl px-4 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-gray-600">
-          <p>© {new Date().getFullYear()} Trail Running Cal</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
