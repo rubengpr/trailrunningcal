@@ -4,7 +4,6 @@ import MonthFilter from '../components/month-filter';
 import SearchBar from '../components/search-bar';
 import Navbar from '../components/navbar';
 import { races } from '../data/races';
-import mountainglass from '../assets/mountainiconglassshadow.svg';
 
 export default function HomePage() {
   const [selectedMonth, setSelectedMonth] = useState<string>('');
