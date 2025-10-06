@@ -4,6 +4,7 @@ import MonthFilter from '../components/month-filter';
 import SearchBar from '../components/search-bar';
 import Navbar from '../components/navbar';
 import { races } from '../data/races';
+import mountainglass from '../assets/mountainiconglassshadow.svg';
 
 export default function HomePage() {
   const [selectedMonth, setSelectedMonth] = useState<string>('');
@@ -77,37 +78,42 @@ export default function HomePage() {
     <div className="min-h-screen w-full text-gray-900 flex flex-col">
       <Navbar />
 
-      <main className="flex-1 bg-transparent mx-auto max-w-7xl px-4">
-        <section className="py-14 sm:py-20">
-          <div className="flex flex-col items-center text-center">
-            <h1 className="text-3xl sm:text-5xl font-extrabold leading-tight">
+      <section className="px-6 py-10">
+        <div className="flex  justify-center items-center text-center sm:gap-0">
+          <div className="flex flex-col items-center justify-center w-2/3">
+            <h1 className="text-2xl sm:text-4xl font-extrabold leading-tight">
               Calendario carreras Trail Running Cataluña
             </h1>
-            <p className="mt-4 text-base sm:text-lg text-gray-700 max-w-xl">
-              Encuentra las mejores carreras de trail running en Cataluña.
+            <p className="mt-2 text-sm sm:text-lg text-gray-700 max-w-xl">
+              Encuentra las mejores carreras de montaña de Cataluña
             </p>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section id="carreras" className="py-10">
-          <div className="mb-8 space-y-6">
-            <div className="flex justify-center">
-              <SearchBar
-                searchTerm={searchTerm}
-                onSearchChange={handleSearchChange}
-                placeholder="Buscar por nombre, ciudad o provincia..."
-              />
-            </div>
-            <div className="flex justify-center">
-              <MonthFilter
-                selectedMonth={selectedMonth}
-                onMonthSelect={handleMonthSelect}
-              />
-            </div>
+      {/* Full-width search section */}
+      <section className="w-full py-8">
+        <div className="w-full px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-center mb-6">
+            <SearchBar
+              searchTerm={searchTerm}
+              onSearchChange={handleSearchChange}
+              placeholder="Buscar por nombre, ciudad o provincia..."
+            />
           </div>
-
           <div className="flex justify-center">
-            <div className="grid gap-4 max-w-4xl w-full">
+            <MonthFilter
+              selectedMonth={selectedMonth}
+              onMonthSelect={handleMonthSelect}
+            />
+          </div>
+        </div>
+      </section>
+
+      <main>
+        <section id="carreras" className="py-4">
+          <div className="flex justify-center px-8">
+            <div className="grid w-full max-w-4xl gap-4">
               {filteredRaces.map((race) => (
                 <TrailRaceCard
                   key={race.id}
