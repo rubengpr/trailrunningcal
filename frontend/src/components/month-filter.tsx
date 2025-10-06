@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 interface MonthFilterProps {
   selectedMonth?: string;
   onMonthSelect?: (month: string) => void;

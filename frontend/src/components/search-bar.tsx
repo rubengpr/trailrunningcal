@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 interface SearchBarProps {
   searchTerm: string;
   onSearchChange: (term: string) => void;
@@ -11,16 +9,11 @@ export default function SearchBar({
   onSearchChange,
   placeholder = 'Buscar carreras...',
 }: SearchBarProps) {
-  const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm);
-
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    setLocalSearchTerm(value);
-    onSearchChange(value);
+    onSearchChange(event.target.value);
   };
 
   const handleClear = () => {
-    setLocalSearchTerm('');
     onSearchChange('');
   };
 
@@ -45,12 +38,12 @@ export default function SearchBar({
         </div>
         <input
           type="text"
-          value={localSearchTerm}
+          value={searchTerm}
           onChange={handleInputChange}
           placeholder={placeholder}
           className="block w-full pl-10 sm:pl-12 pr-10 sm:pr-12 py-2.5 sm:py-2 bg-white border-2 border-indigo-300 rounded-xl text-sm sm:text-base placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
         />
-        {localSearchTerm && (
+        {searchTerm && (
           <button
             onClick={handleClear}
             className="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
