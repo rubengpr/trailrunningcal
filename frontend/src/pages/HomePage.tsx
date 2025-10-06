@@ -4,6 +4,8 @@ import MonthFilter from '../components/month-filter';
 import SearchBar from '../components/search-bar';
 import Navbar from '../components/navbar';
 import Footer from '../components/footer';
+import ErrorBoundary from '../components/error-boundary';
+import { SearchError } from '../components/error-message';
 import { races } from '../data/races';
 import { getMonthNumber } from '../utils/date-utils';
 
@@ -57,6 +59,13 @@ export default function HomePage() {
     setSearchTerm(term);
   };
 
+  const handleRetry = () => {
+    // Reset filters to trigger a fresh data load
+    setSelectedMonth('');
+    setSearchTerm('');
+    window.location.reload();
+  };
+
   return (
     <div className="min-h-screen w-full text-gray-900 flex flex-col">
       <Navbar />
@@ -94,80 +103,117 @@ export default function HomePage() {
       </section>
 
       <main>
-        <section id="carreras" className="py-4">
-          <div className="flex justify-center px-8">
-            <div className="grid w-full max-w-4xl gap-4">
-              {filteredRaces.length === 0 ? (
-                <div className="text-center py-16 px-4">
-                  <div className="max-w-md mx-auto">
-                    <div className="mb-6">
-                      <svg
-                        className="mx-auto h-16 w-16 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
+        <ErrorBoundary
+          fallback={<SearchError onRetry={handleRetry} />}
+          onError={(error, errorInfo) => {
+            console.error('Error in main content area:', error, errorInfo);
+          }}
+        >
+          <section id="carreras" className="py-4">
+            <div className="flex justify-center px-8">
+              <div className="grid w-full max-w-4xl gap-4">
+                {filteredRaces.length === 0 ? (
+                  <div className="text-center py-16 px-4">
+                    <div className="max-w-md mx-auto">
+                      <div className="mb-6">
+                        <svg
+                          className="mx-auto h-16 w-16 text-gray-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={1.5}
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                          />
+                        </svg>
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                        No se encontraron carreras
+                      </h3>
+                      <p className="text-gray-600 mb-6">
+                        No hay carreras que coincidan con los filtros
+                        seleccionados. Prueba a ajustar tu búsqueda o selección
+                        de mes.
+                      </p>
+                      <button
+                        onClick={() => {
+                          setSelectedMonth('');
+                          setSearchTerm('');
+                        }}
+                        className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={1.5}
-                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                        />
-                      </svg>
+                        <svg
+                          className="w-4 h-4 mr-2"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                          />
+                        </svg>
+                        Limpiar filtros
+                      </button>
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                      No se encontraron carreras
-                    </h3>
-                    <p className="text-gray-600 mb-6">
-                      No hay carreras que coincidan con los filtros
-                      seleccionados. Prueba a ajustar tu búsqueda o selección de
-                      mes.
-                    </p>
-                    <button
-                      onClick={() => {
-                        setSelectedMonth('');
-                        setSearchTerm('');
-                      }}
-                      className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
-                    >
-                      <svg
-                        className="w-4 h-4 mr-2"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                        />
-                      </svg>
-                      Limpiar filtros
-                    </button>
                   </div>
-                </div>
-              ) : (
-                filteredRaces.map((race, index) => (
-                  <TrailRaceCard
-                    key={index}
-                    date={race.date}
-                    name={race.name}
-                    distanceKm={race.distanceKm}
-                    elevationGainM={race.elevationGainM}
-                    priceEur={race.priceEur}
-                    city={race.city}
-                    province={race.province}
-                    websiteUrl={race.websiteUrl}
-                    difficulty={race.difficulty}
-                  />
-                ))
-              )}
+                ) : (
+                  filteredRaces.map((race, index) => (
+                    <ErrorBoundary
+                      key={index}
+                      fallback={
+                        <div className="bg-white rounded-lg shadow-sm border border-red-200 p-6">
+                          <div className="text-center">
+                            <div className="mb-2">
+                              <svg
+                                className="mx-auto h-8 w-8 text-red-500"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+                                />
+                              </svg>
+                            </div>
+                            <h4 className="text-sm font-semibold text-gray-900 mb-1">
+                              Error al cargar carrera
+                            </h4>
+                            <p className="text-xs text-gray-600">
+                              No se pudo mostrar esta carrera
+                            </p>
+                          </div>
+                        </div>
+                      }
+                    >
+                      <TrailRaceCard
+                        date={race.date}
+                        name={race.name}
+                        distanceKm={race.distanceKm}
+                        elevationGainM={race.elevationGainM}
+                        priceEur={race.priceEur}
+                        city={race.city}
+                        province={race.province}
+                        websiteUrl={race.websiteUrl}
+                        difficulty={race.difficulty}
+                      />
+                    </ErrorBoundary>
+                  ))
+                )}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </ErrorBoundary>
       </main>
 
       <Footer />
