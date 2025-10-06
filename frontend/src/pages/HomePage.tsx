@@ -84,7 +84,11 @@ export default function HomePage() {
       </section>
 
       {/* Full-width search section */}
-      <section className="w-full py-8">
+      <section
+        id="search-section"
+        className="w-full py-8"
+        aria-label="Búsqueda y filtros"
+      >
         <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="flex justify-center mb-6">
             <SearchBar
@@ -102,16 +106,36 @@ export default function HomePage() {
         </div>
       </section>
 
-      <main>
+      <main id="main-content">
         <ErrorBoundary
           fallback={<SearchError onRetry={handleRetry} />}
           onError={(error, errorInfo) => {
             console.error('Error in main content area:', error, errorInfo);
           }}
         >
-          <section id="carreras" className="py-4">
+          <section
+            id="carreras"
+            className="py-4"
+            aria-label="Lista de carreras"
+          >
+            {/* ARIA live region for search results updates */}
+            <div
+              aria-live="polite"
+              aria-atomic="true"
+              className="sr-only"
+              id="search-results-announcement"
+            >
+              {filteredRaces.length === 0
+                ? 'No se encontraron carreras con los filtros seleccionados'
+                : `Se encontraron ${filteredRaces.length} carreras`}
+            </div>
+
             <div className="flex justify-center px-8">
-              <div className="grid w-full max-w-4xl gap-4">
+              <div
+                className="grid w-full max-w-4xl gap-4"
+                role="list"
+                aria-label="Carreras de trail running"
+              >
                 {filteredRaces.length === 0 ? (
                   <div className="text-center py-16 px-4">
                     <div className="max-w-md mx-auto">
@@ -144,6 +168,7 @@ export default function HomePage() {
                           setSelectedMonth('');
                           setSearchTerm('');
                         }}
+                        aria-label="Limpiar todos los filtros de búsqueda"
                         className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
                       >
                         <svg
@@ -166,48 +191,49 @@ export default function HomePage() {
                   </div>
                 ) : (
                   filteredRaces.map((race, index) => (
-                    <ErrorBoundary
-                      key={index}
-                      fallback={
-                        <div className="bg-white rounded-lg shadow-sm border border-red-200 p-6">
-                          <div className="text-center">
-                            <div className="mb-2">
-                              <svg
-                                className="mx-auto h-8 w-8 text-red-500"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
-                                />
-                              </svg>
+                    <div key={index} role="listitem">
+                      <ErrorBoundary
+                        fallback={
+                          <div className="bg-white rounded-lg shadow-sm border border-red-200 p-6">
+                            <div className="text-center">
+                              <div className="mb-2">
+                                <svg
+                                  className="mx-auto h-8 w-8 text-red-500"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+                                  />
+                                </svg>
+                              </div>
+                              <h4 className="text-sm font-semibold text-gray-900 mb-1">
+                                Error al cargar carrera
+                              </h4>
+                              <p className="text-xs text-gray-600">
+                                No se pudo mostrar esta carrera
+                              </p>
                             </div>
-                            <h4 className="text-sm font-semibold text-gray-900 mb-1">
-                              Error al cargar carrera
-                            </h4>
-                            <p className="text-xs text-gray-600">
-                              No se pudo mostrar esta carrera
-                            </p>
                           </div>
-                        </div>
-                      }
-                    >
-                      <TrailRaceCard
-                        date={race.date}
-                        name={race.name}
-                        distanceKm={race.distanceKm}
-                        elevationGainM={race.elevationGainM}
-                        priceEur={race.priceEur}
-                        city={race.city}
-                        province={race.province}
-                        websiteUrl={race.websiteUrl}
-                        difficulty={race.difficulty}
-                      />
-                    </ErrorBoundary>
+                        }
+                      >
+                        <TrailRaceCard
+                          date={race.date}
+                          name={race.name}
+                          distanceKm={race.distanceKm}
+                          elevationGainM={race.elevationGainM}
+                          priceEur={race.priceEur}
+                          city={race.city}
+                          province={race.province}
+                          websiteUrl={race.websiteUrl}
+                          difficulty={race.difficulty}
+                        />
+                      </ErrorBoundary>
+                    </div>
                   ))
                 )}
               </div>

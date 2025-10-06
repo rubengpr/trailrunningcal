@@ -6,7 +6,7 @@ export default function ContactPage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 text-gray-900 flex flex-col">
       <Navbar />
 
-      <main className="flex-1 mx-auto max-w-4xl px-4 py-20">
+      <main id="main-content" className="flex-1 mx-auto max-w-4xl px-4 py-20">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Contacto</h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -39,7 +39,8 @@ export default function ContactPage() {
               <p className="text-gray-600 mb-2">Para consultas generales:</p>
               <a
                 href="mailto:info@trailrunningcal.com"
-                className="text-indigo-600 hover:text-indigo-800 font-medium"
+                className="text-indigo-600 hover:text-indigo-800 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded-md px-1"
+                aria-label="Enviar email a info@trailrunningcal.com"
               >
                 info@trailrunningcal.com
               </a>
