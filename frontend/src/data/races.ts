@@ -17,7 +17,6 @@ const getRandomDifficulty = ():
 
 export const races: TrailRace[] = [
   {
-    id: 'ultra-pirineu-2025-5k',
     date: '2025-10-03',
     name: 'La Molina Nit Pirineu KV® 2025',
     distanceKm: 3.8,
@@ -29,7 +28,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'ultra-pirineu-2025-100k',
     date: '2025-10-04',
     name: 'Salomon Ultra Pirineu 100K® 2025',
     distanceKm: 102,
@@ -41,7 +39,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'ultra-pirineu-2025-42k',
     date: '2025-10-04',
     name: 'Salomon Marató Pirineu 42K® 2025',
     distanceKm: 43,
@@ -53,7 +50,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'ultra-pirineu-2025-21k',
     date: '2025-10-05',
     name: 'Salomon Mitja Pirineu 21K® 2025',
     distanceKm: 21,
@@ -65,7 +61,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'marxa-dels-termes-2025-22k',
     date: '2025-10-05',
     name: 'Marxa dels Termes 22K - La llarga',
     distanceKm: 22,
@@ -77,7 +72,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'marxa-dels-termes-2025-13k',
     date: '2025-10-05',
     name: 'Marxa dels Termes 13K - La curta',
     distanceKm: 13,
@@ -89,7 +83,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'montpedro-trail-2025-21k',
     date: '2025-10-05',
     name: 'Montpedró Trail 24K - La Montpedró',
     distanceKm: 24,
@@ -101,7 +94,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'montpedro-trail-2025-8k',
     date: '2025-10-05',
     name: 'Montpedró Trail 24K - La Roia',
     distanceKm: 15,
@@ -113,7 +105,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'la-foranca-2025-20k',
     date: '2025-10-05',
     name: 'La Foranca 20K',
     distanceKm: 20,
@@ -125,7 +116,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'la-foranca-2025-13k',
     date: '2025-10-05',
     name: 'La Foranca 13K',
     distanceKm: 13,
@@ -137,7 +127,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'cursa-alta-segarra-2025-22k',
     date: '2025-10-05',
     name: "Cursa de l'Alta Segarra 22K",
     distanceKm: 22,
@@ -149,7 +138,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'cursa-alta-segarra-2025-10-2k',
     date: '2025-10-05',
     name: "Cursa de l'Alta Segarra 10.2K",
     distanceKm: 10.2,
@@ -161,7 +149,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'cronoescalada-santa-fe-2025-0-8k',
     date: '2025-10-11',
     name: 'Cronoescalada Santa Fe 0.8K',
     distanceKm: 0.83,
@@ -173,7 +160,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'ultra-serra-de-montsant-2025-64k',
     date: '2025-10-11',
     name: 'Ultra Serra de Montsant 64K',
     distanceKm: 64.3,
@@ -185,7 +171,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'ultra-serra-de-montsant-2025-45,1k',
     date: '2025-10-11',
     name: 'Ultra Serra de Montsant 45,1K',
     distanceKm: 45.1,
@@ -197,7 +182,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'ultra-serra-de-montsant-2025-24,7k',
     date: '2025-10-11',
     name: 'Ultra Serra de Montsant 24,7K',
     distanceKm: 24.7,
@@ -209,7 +193,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'ultra-serra-de-montsant-2025-11k',
     date: '2025-10-11',
     name: 'Ultra Serra de Montsant 11K',
     distanceKm: 11,
@@ -221,7 +204,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'cursa-les-batalles-del-bruc-2025-10k',
     date: '2025-10-12',
     name: 'Cursa de les Batalles del Bruc 10K',
     distanceKm: 10,
@@ -233,7 +215,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'cursa-les-batalles-del-bruc-2025-5k',
     date: '2025-10-12',
     name: 'Cursa de les Batalles del Bruc 5K',
     distanceKm: 5,
@@ -245,7 +226,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'cursa-serra-de-les-fites-2025-25k',
     date: '2025-10-12',
     name: 'Cursa Serra de les Fites 25K',
     distanceKm: 25,
@@ -257,7 +237,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'cursa-serra-de-les-fites-2025-18k',
     date: '2025-10-12',
     name: 'Cursa Serra de les Fites 18K',
     distanceKm: 18,
@@ -269,7 +248,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'cursa-serra-de-les-fites-2025-13k',
     date: '2025-10-12',
     name: 'Cursa Serra de les Fites 13K',
     distanceKm: 13,
@@ -281,7 +259,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'rural-trail-2025-23.7k',
     date: '2025-10-12',
     name: 'Rural Trail 23.7K',
     distanceKm: 23.7,
@@ -293,7 +270,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'rural-trail-2025-9,1k',
     date: '2025-10-12',
     name: 'Rural Trail 9.1K',
     distanceKm: 9.1,
@@ -305,7 +281,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'campionat-maqui-castelltallat-2025-14,5k',
     date: '2025-10-12',
     name: 'Campionat Maqui Castelltallat 14,5K',
     distanceKm: 14.5,
@@ -317,7 +292,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'campionat-maqui-castelltallat-2025-5k',
     date: '2025-10-12',
     name: 'Campionat Maqui Castelltallat 5K',
     distanceKm: 5,
@@ -329,7 +303,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'historic-trail-calafell-2025-18k',
     date: '2025-10-12',
     name: 'Historic Trail Calafell 18K',
     distanceKm: 18,
@@ -341,7 +314,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'historic-trail-calafell-2025-12k',
     date: '2025-10-12',
     name: 'Historic Trail Calafell 12K',
     distanceKm: 12,
@@ -353,7 +325,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'trail-fem-sui-2025-27k',
     date: '2025-10-26',
     name: 'Trail Fem Sui 27K',
     distanceKm: 27,
@@ -365,7 +336,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'trail-fem-sui-2025-15k',
     date: '2025-10-26',
     name: 'Trail Fem Sui 15K',
     distanceKm: 15,
@@ -377,7 +347,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'marato-i-mitja-marato-collserola-2025-42k',
     date: '2025-11-02',
     name: 'Marató Collserola 42K',
     distanceKm: 42,
@@ -389,7 +358,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'marato-i-mitja-marato-collserola-2025-21k',
     date: '2025-11-02',
     name: 'Mitja Marató Collserola 21K',
     distanceKm: 21,
@@ -401,7 +369,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'cursa-serralats-lavern-2025-17-5k',
     date: '2025-11-02',
     name: 'Cursa Serralats-Lavern 17.5K',
     distanceKm: 17.5,
@@ -413,7 +380,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'cursa-serralats-lavern-2025-17-5k',
     date: '2025-11-02',
     name: 'Cursa Serralats-Lavern 10K',
     distanceKm: 10,
@@ -425,7 +391,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'vallalta-trail-2025-15k',
     date: '2025-11-02',
     name: 'Vallalta Trail 15K',
     distanceKm: 23,
@@ -437,7 +402,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'vallalta-trail-2025-10k',
     date: '2025-11-02',
     name: 'Vallalta Trail 10K',
     distanceKm: 10,
@@ -449,7 +413,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'rajadell-trail-race-2025-18k',
     date: '2025-11-02',
     name: 'Cursa Carenes del Cogulló 18K',
     distanceKm: 18,
@@ -461,7 +424,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'rajadell-trail-race-2025-18k',
     date: '2025-11-02',
     name: 'Cursa Carenes del Cogulló 11K',
     distanceKm: 11,
@@ -473,7 +435,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'panna-el-bandoler-2025-20k',
     date: '2025-11-02',
     name: 'Panna El Bandoler 20K',
     distanceKm: 20,
@@ -485,7 +446,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'panna-el-bandoler-2025-11k',
     date: '2025-11-02',
     name: 'Panna El Bandoler 18K',
     distanceKm: 17.5,
@@ -497,7 +457,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'panna-el-bandoler-2025-11k',
     date: '2025-11-02',
     name: 'Panna El Bandoler 11K',
     distanceKm: 11.5,
@@ -509,7 +468,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'montescatano-2025-10-7k',
     date: '2025-11-09',
     name: 'MonteScatano 21K - Llarga',
     distanceKm: 21.5,
@@ -521,7 +479,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'montescatano-2025-10-7k',
     date: '2025-11-09',
     name: 'MonteScatano 15K',
     distanceKm: 15,
@@ -533,7 +490,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'montescatano-2025-10-7k',
     date: '2025-11-09',
     name: 'MonteScatano 11K',
     distanceKm: 11,
@@ -545,7 +501,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'trail-toca-sons-2025-21k',
     date: '2025-11-09',
     name: 'Trail Toca-sons 21K',
     distanceKm: 21,
@@ -557,7 +512,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'trail-toca-sons-2025-12k',
     date: '2025-11-09',
     name: 'Trail Toca-sons 21K',
     distanceKm: 21,
@@ -569,7 +523,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'trail-toca-sons-2025-12k',
     date: '2025-11-09',
     name: 'Trail Toca-sons 12K',
     distanceKm: 12,
@@ -581,7 +534,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'trenca-3-pics-2025-28k',
     date: '2025-11-09',
     name: 'Trenca 3 Pics 21K',
     distanceKm: 21,
@@ -593,7 +545,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'trenca-3-pics-2025-13k',
     date: '2025-11-09',
     name: 'Trenca 1 Pic 13K',
     distanceKm: 13,
@@ -605,7 +556,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'trenca-3-pics-2025-5k',
     date: '2025-11-09',
     name: 'Trenca 3 Pics 5,3K',
     distanceKm: 5.3,
@@ -617,7 +567,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'cursarroca-2025-11-6k',
     date: '2025-11-09',
     name: 'Cursarroca 11.7K',
     distanceKm: 11.7,
@@ -629,7 +578,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'marato-del-montseny-2025-45-5k',
     date: '2025-11-09',
     name: 'Marató del Montseny 45K',
     distanceKm: 45,
@@ -641,7 +589,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'marato-del-montseny-2025-45-5k',
     date: '2025-11-09',
     name: 'Sitja del Llop 6K',
     distanceKm: 6,
@@ -653,7 +600,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'cursa-cami-de-sirga-2025-28k',
     date: '2025-11-09',
     name: 'Cursa Camí de Sirga 27,5K',
     distanceKm: 27.5,
@@ -665,7 +611,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'cursa-cami-de-sirga-2025-16k',
     date: '2025-11-09',
     name: 'Cursa Camí de Sirga 16K',
     distanceKm: 16,
@@ -677,7 +622,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'cursa-cami-de-sirga-2025-11k',
     date: '2025-11-09',
     name: 'Cursa Camí de Sirga 11K',
     distanceKm: 11,
@@ -689,7 +633,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'saligarda-trail-2025-21k',
     date: '2025-11-09',
     name: 'Saligarda Trail 21K',
     distanceKm: 21,
@@ -701,7 +644,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'saligarda-trail-2025-12k',
     date: '2025-11-09',
     name: 'Saligarda Trail 12K',
     distanceKm: 12,
@@ -713,7 +655,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'cursa-de-la-ratafia-2025-25k',
     date: '2025-11-09',
     name: 'Cursa de la Ratafia 25K',
     distanceKm: 25,
@@ -725,7 +666,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'cursa-de-la-ratafia-2025-13k',
     date: '2025-11-09',
     name: 'Cursa de la Ratafia 13K',
     distanceKm: 13,
@@ -737,7 +677,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'cursa-montanyans-2025-21k',
     date: '2025-11-09',
     name: 'Cursa Montanyans 21K',
     distanceKm: 21,
@@ -749,7 +688,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'cursa-montanyans-2025-14k',
     date: '2025-11-09',
     name: 'Cursa Montanyans 14K',
     distanceKm: 14,
@@ -762,7 +700,6 @@ export const races: TrailRace[] = [
   },
 
   {
-    id: 'trail-antena-solidaria-2025-22-5k',
     date: '2025-11-15',
     name: 'Trail Antena Solidària 22.5K',
     distanceKm: 22.5,
@@ -774,7 +711,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'trail-antena-solidaria-2025-11k',
     date: '2025-11-15',
     name: 'Trail Antena Solidària 11K',
     distanceKm: 11,
@@ -786,7 +722,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'trail-montroig-2025-41-2k',
     date: '2025-11-15',
     name: 'Trail Montroig 41.2K',
     distanceKm: 41.2,
@@ -798,7 +733,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'trail-montroig-2025-21-4k',
     date: '2025-11-15',
     name: 'Trail Montroig 21.4K',
     distanceKm: 21.4,
@@ -810,7 +744,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'trail-montroig-2025-14k',
     date: '2025-11-15',
     name: 'Trail Montroig 14K',
     distanceKm: 14,
@@ -822,7 +755,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'trail-torres-del-foc-2025-42k',
     date: '2025-11-15',
     name: 'Trail Torres del Foc 42K',
     distanceKm: 42,
@@ -834,7 +766,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'trail-torres-del-foc-2025-21k',
     date: '2025-11-15',
     name: 'Trail Torres del Foc 21K',
     distanceKm: 21,
@@ -846,7 +777,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'trail-torres-del-foc-2025-12k',
     date: '2025-11-15',
     name: 'Trail Torres del Foc 12K',
     distanceKm: 12,
@@ -858,7 +788,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'up-xic-trail-2025-4-5k',
     date: '2025-11-15',
     name: 'Up Xic Trail Cronoescalada 4.5K',
     distanceKm: 4.5,
@@ -871,7 +800,6 @@ export const races: TrailRace[] = [
   },
 
   {
-    id: 'up-xic-trail-2025-25k',
     date: '2025-11-16',
     name: 'Up Xic Trail 25K',
     distanceKm: 25,
@@ -883,7 +811,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'up-xic-trail-2025-11k',
     date: '2025-11-16',
     name: 'Up Xic Trail 11K',
     distanceKm: 11,
@@ -895,7 +822,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'vandekames-2025-24k',
     date: '2025-11-16',
     name: 'Vandekames 24K',
     distanceKm: 24,
@@ -907,7 +833,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'vandekames-2025-16k',
     date: '2025-11-16',
     name: 'Vandekames 16K',
     distanceKm: 16,
@@ -919,7 +844,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'vandekames-2025-7k',
     date: '2025-11-16',
     name: 'Vandekames 7K',
     distanceKm: 7,
@@ -931,7 +855,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'burriac-xtrem-2025-29k',
     date: '2025-11-16',
     name: 'Burriac Xtrem 29K',
     distanceKm: 29,
@@ -943,7 +866,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'burriac-xtrem-2025-21-5k',
     date: '2025-11-16',
     name: 'Burriac Xtrem 21.5K',
     distanceKm: 21.5,
@@ -955,7 +877,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'burriac-xtrem-2025-15-5k',
     date: '2025-11-16',
     name: 'Burriac Xtrem 15.5K',
     distanceKm: 15.5,
@@ -967,7 +888,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'querroig-trail-2025-23k',
     date: '2025-11-16',
     name: 'Querroig Trail 23K',
     distanceKm: 23,
@@ -979,7 +899,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'querroig-trail-2025-15k',
     date: '2025-11-16',
     name: 'Querroig Trail 15K',
     distanceKm: 15,
@@ -991,7 +910,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'querroig-trail-2025-9k',
     date: '2025-11-16',
     name: 'Querroig Trail 9K',
     distanceKm: 9,
@@ -1004,7 +922,6 @@ export const races: TrailRace[] = [
   },
 
   {
-    id: 'transgavarres-2025-51-7k',
     date: '2025-11-16',
     name: 'Transgavarres 51.7K',
     distanceKm: 51.7,
@@ -1016,7 +933,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'cursa-de-muntanya-de-girona-2025-21-5k',
     date: '2025-11-16',
     name: 'Cursa de Muntanya de Girona 21.5K',
     distanceKm: 21.5,
@@ -1028,7 +944,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'cursa-de-muntanya-de-girona-2025-12-7k',
     date: '2025-11-16',
     name: 'Cursa de Muntanya de Girona 12.7K',
     distanceKm: 12.7,
@@ -1041,7 +956,6 @@ export const races: TrailRace[] = [
   },
 
   {
-    id: 'roc-de-la-clusa-trail-2025-18k',
     date: '2025-11-22',
     name: 'Roc de la Clusa Trail 18K',
     distanceKm: 18,
@@ -1053,7 +967,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'cursa-fosca-2025-20k',
     date: '2025-11-22',
     name: 'Cursa Fosca 20K',
     distanceKm: 20,
@@ -1065,7 +978,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'cursa-fosca-2025-13k',
     date: '2025-11-22',
     name: 'Cursa Fosca 13K',
     distanceKm: 13,
@@ -1078,7 +990,6 @@ export const races: TrailRace[] = [
   },
 
   {
-    id: 'pujada-i-baixada-a-guanta-2025-12k',
     date: '2025-11-23',
     name: 'Pujada i Baixada a Guanta 12K',
     distanceKm: 12,
@@ -1090,7 +1001,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'pujada-i-baixada-a-guanta-2025-6k',
     date: '2025-11-23',
     name: 'Pujada i Baixada a Guanta 6K',
     distanceKm: 6,
@@ -1102,7 +1012,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'gualba-trail-2025-21k',
     date: '2025-11-23',
     name: 'Gualba Trail 21K',
     distanceKm: 21,
@@ -1114,7 +1023,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'gualba-trail-2025-13k',
     date: '2025-11-23',
     name: 'Gualba Trail 13K',
     distanceKm: 13,
@@ -1126,7 +1034,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'cursa-solidaria-4-camins-2025-14k',
     date: '2025-11-23',
     name: 'Cursa Solidària 4 Camins 14K',
     distanceKm: 14,
@@ -1138,7 +1045,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'cursa-solidaria-4-camins-2025-6k',
     date: '2025-11-23',
     name: 'Cursa Solidària 4 Camins 6K',
     distanceKm: 6,
@@ -1151,7 +1057,6 @@ export const races: TrailRace[] = [
   },
 
   {
-    id: 'camins-de-collserola-2025-24k',
     date: '2025-11-30',
     name: 'Camins de Collserola 24K',
     distanceKm: 24,
@@ -1163,7 +1068,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'camins-de-collserola-2025-14k',
     date: '2025-11-30',
     name: 'Camins de Collserola 14K',
     distanceKm: 14,
@@ -1175,7 +1079,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'campionat-maqui-bell-race-2025-15k',
     date: '2025-11-30',
     name: 'Campionat Maqui Bell Race 15K',
     distanceKm: 15,
@@ -1187,7 +1090,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'campionat-maqui-bell-race-2025-10k',
     date: '2025-11-30',
     name: 'Campionat Maqui Bell Race 10K',
     distanceKm: 10,
@@ -1199,7 +1101,6 @@ export const races: TrailRace[] = [
     difficulty: getRandomDifficulty(),
   },
   {
-    id: 'trail-la-vall-2025-22k',
     date: null,
     name: 'Trail La Vall 22K',
     distanceKm: 22,
@@ -1211,7 +1112,6 @@ export const races: TrailRace[] = [
     difficulty: null,
   },
   {
-    id: 'trail-la-vall-2025-13k',
     date: null,
     name: 'Trail La Vall 13K',
     distanceKm: 13,
@@ -1223,7 +1123,6 @@ export const races: TrailRace[] = [
     difficulty: null,
   },
   {
-    id: 'trail-la-vall-2025-6k',
     date: null,
     name: 'Trail La Vall 6K',
     distanceKm: 6,
@@ -1236,7 +1135,6 @@ export const races: TrailRace[] = [
   },
 
   {
-    id: 'imperial-tarraco-trail-2025-25k',
     date: null,
     name: 'Imperial Tarraco Trail 25K',
     distanceKm: 25,
@@ -1248,7 +1146,6 @@ export const races: TrailRace[] = [
     difficulty: null,
   },
   {
-    id: 'imperial-tarraco-trail-2025-14k',
     date: null,
     name: 'Imperial Tarraco Trail 14K',
     distanceKm: 14,
@@ -1261,7 +1158,6 @@ export const races: TrailRace[] = [
   },
 
   {
-    id: 'cross-dels-esquiadors-2025-8k',
     date: null,
     name: 'Cross dels Esquiadors 8K',
     distanceKm: 8,
@@ -1273,7 +1169,6 @@ export const races: TrailRace[] = [
     difficulty: null,
   },
   {
-    id: 'cross-dels-esquiadors-2025-4k',
     date: null,
     name: 'Cross dels Esquiadors 4K',
     distanceKm: 4,
@@ -1286,7 +1181,6 @@ export const races: TrailRace[] = [
   },
 
   {
-    id: 'pujada-a-sant-pau-2025-10-7k',
     date: null,
     name: 'Pujada a Sant Pau 10.7K',
     distanceKm: 10.7,
@@ -1299,7 +1193,6 @@ export const races: TrailRace[] = [
   },
 
   {
-    id: 'la-neorural-2025-24k',
     date: null,
     name: 'La Neorural 24K',
     distanceKm: 24,
@@ -1312,7 +1205,6 @@ export const races: TrailRace[] = [
   },
 
   {
-    id: 'cursa-popular-de-porqueres-2025-7k',
     date: null,
     name: 'Cursa Popular de Porqueres 7K',
     distanceKm: 7,
@@ -1325,7 +1217,6 @@ export const races: TrailRace[] = [
   },
 
   {
-    id: 'cursa-trail-la-riera-de-gaia-2025-20-4k',
     date: null,
     name: 'Cursa Trail La Riera de Gaià 20.4K',
     distanceKm: 20.4,
@@ -1337,7 +1228,6 @@ export const races: TrailRace[] = [
     difficulty: null,
   },
   {
-    id: 'cursa-trail-la-riera-de-gaia-2025-8-6k',
     date: null,
     name: 'Cursa Trail La Riera de Gaià 8.6K',
     distanceKm: 8.6,
@@ -1350,7 +1240,6 @@ export const races: TrailRace[] = [
   },
 
   {
-    id: 'cursa-cec-collserola-2025-22k',
     date: '2025-12-14',
     name: 'Cursa CEC Collserola 22K',
     distanceKm: 22,
@@ -1363,7 +1252,6 @@ export const races: TrailRace[] = [
   },
 
   {
-    id: 'trail-ardenya-2025-43k',
     date: null,
     name: 'Trail Ardenya 43K',
     distanceKm: 43,
@@ -1375,7 +1263,6 @@ export const races: TrailRace[] = [
     difficulty: null,
   },
   {
-    id: 'trail-ardenya-2025-23-1k',
     date: null,
     name: 'Trail Ardenya 23.1K',
     distanceKm: 23.1,
@@ -1387,7 +1274,6 @@ export const races: TrailRace[] = [
     difficulty: null,
   },
   {
-    id: 'trail-ardenya-2025-10-3k',
     date: null,
     name: 'Trail Ardenya 10.3K',
     distanceKm: 10.3,
@@ -1400,7 +1286,6 @@ export const races: TrailRace[] = [
   },
 
   {
-    id: 'cursa-de-nadal-a-colldejou-2025-9-4k',
     date: null,
     name: 'Cursa de Nadal a Colldejou 9.4K',
     distanceKm: 9.4,
@@ -1412,7 +1297,6 @@ export const races: TrailRace[] = [
     difficulty: null,
   },
   {
-    id: 'cursa-de-nadal-a-colldejou-2025-4-3k',
     date: null,
     name: 'Cursa de Nadal a Colldejou 4.3K',
     distanceKm: 4.3,
@@ -1425,7 +1309,6 @@ export const races: TrailRace[] = [
   },
 
   {
-    id: 'cursa-de-na-dalt-a-bellmunt-2025-3-8k',
     date: null,
     name: "Cursa de Na'dalt a Bellmunt 3.8K",
     distanceKm: 3.8,
@@ -1438,7 +1321,6 @@ export const races: TrailRace[] = [
   },
 
   {
-    id: 'trail-per-la-vall-d-olzinelles-2025-19k',
     date: null,
     name: "Trail per la vall d'Olzinelles 19K",
     distanceKm: 19,
@@ -1451,7 +1333,6 @@ export const races: TrailRace[] = [
   },
 
   {
-    id: 'cursa-entre-cabanes-2025-22-76k',
     date: null,
     name: 'Cursa Entre Cabanes 22.76K',
     distanceKm: 22.76,
@@ -1463,7 +1344,6 @@ export const races: TrailRace[] = [
     difficulty: null,
   },
   {
-    id: 'cursa-entre-cabanes-2025-13k',
     date: null,
     name: 'Cursa Entre Cabanes 13K',
     distanceKm: 13,

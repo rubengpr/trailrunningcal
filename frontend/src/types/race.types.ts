@@ -1,5 +1,4 @@
 export interface TrailRace {
-  id: string;
   date: string | null; // 'YYYY-MM-DD' or null if date TBD
   name: string;
   distanceKm: number;

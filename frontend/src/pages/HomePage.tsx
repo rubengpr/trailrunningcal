@@ -113,9 +113,9 @@ export default function HomePage() {
         <section id="carreras" className="py-4">
           <div className="flex justify-center px-8">
             <div className="grid w-full max-w-4xl gap-4">
-              {filteredRaces.map((race) => (
+              {filteredRaces.map((race, index) => (
                 <TrailRaceCard
-                  key={race.id}
+                  key={index}
                   date={race.date}
                   name={race.name}
                   distanceKm={race.distanceKm}
