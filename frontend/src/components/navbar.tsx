@@ -27,11 +27,15 @@ export default function Navbar() {
       <div className="flex justify-between items-center">
         <Link
           to="/"
-          className="flex items-center gap-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded-md"
+          className="flex items-center gap-3"
           aria-label={t('navigation.goToHome')}
         >
-          <img className="w-10 h-10" src={logo} alt="Trail Running Calendar" />
-          <span className="font-semibold text-lg">
+          <img
+            className="w-6 h-6 sm:w-10 sm:h-10"
+            src={logo}
+            alt="Trail Running Calendar"
+          />
+          <span className="font-semibold text-xs sm:text-lg">
             {t('navigation.appName')}
           </span>
         </Link>
@@ -41,10 +45,7 @@ export default function Navbar() {
           aria-label={t('navigation.mainNav')}
         >
           <div className="flex flex-row items-center">
-            <Link
-              to="/contacto"
-              className="focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded-md px-2 py-1"
-            >
+            <Link to="/contacto" className="hidden sm:flex px-2 py-1">
               {t('navigation.contact')}
             </Link>
             <LanguagePicker />

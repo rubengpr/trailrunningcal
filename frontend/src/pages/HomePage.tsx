@@ -74,8 +74,8 @@ export default function HomePage() {
       <Navbar />
 
       <section className="px-6 py-10">
-        <div className="flex  justify-center items-center text-center sm:gap-0">
-          <div className="flex flex-col items-center justify-center w-2/3">
+        <div className="flex justify-center items-center text-center">
+          <div className="flex flex-col items-center justify-center max-w-4xl mx-auto">
             <h1 className="text-2xl sm:text-4xl font-extrabold leading-tight">
               {t('title')}
             </h1>
@@ -86,13 +86,13 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Full-width search section */}
+      {/* Search section */}
       <section
         id="search-section"
         className="w-full py-8"
         aria-label={t('search.section')}
       >
-        <div className="w-full px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-center mb-6">
             <SearchBar
               searchTerm={searchTerm}
@@ -133,9 +133,9 @@ export default function HomePage() {
                 : t('results.racesFound', { count: filteredRaces.length })}
             </div>
 
-            <div className="flex justify-center px-8">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
               <div
-                className="grid w-full max-w-4xl gap-4"
+                className="grid gap-4"
                 role="list"
                 aria-label={t('results.racesList')}
               >

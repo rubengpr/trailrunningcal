@@ -12,13 +12,13 @@ export default function LanguagePicker() {
 
   return (
     <div
-      className="flex items-center ml-4 gap-1"
+      className="flex items-center gap-2"
       role="group"
       aria-label={t('navigation.languageSelector')}
     >
       <button
         onClick={() => handleLanguageChange('es')}
-        className={`px-2 py-1 rounded-md ${
+        className={`px-2 py-1 rounded-sm sm:rounded-md ${
           currentLanguage === 'es'
             ? 'bg-neutral-100 text-white'
             : 'text-gray-700 hover:bg-gray-50'
@@ -26,14 +26,11 @@ export default function LanguagePicker() {
         aria-label={t('navigation.changeToSpanish')}
         aria-pressed={currentLanguage === 'es'}
       >
-        <p className="text-3xl">🇪🇸</p>
+        <p className="text-2xl">🇪🇸</p>
       </button>
-      <span className="text-gray-300" aria-hidden="true">
-        |
-      </span>
       <button
         onClick={() => handleLanguageChange('ca')}
-        className={`px-2 py-1 rounded-md ${
+        className={`px-2 py-1 rounded-sm sm:rounded-md ${
           currentLanguage === 'ca'
             ? 'bg-neutral-100 text-white'
             : 'text-gray-700 hover:bg-gray-50'
@@ -41,7 +38,11 @@ export default function LanguagePicker() {
         aria-label={t('navigation.changeToCatalan')}
         aria-pressed={currentLanguage === 'ca'}
       >
-        <img src={catalanFlag} alt="Catalan flag" className="w-8 h-8" />
+        <img
+          src={catalanFlag}
+          alt="Catalan flag"
+          className="w-6 h-6 sm:w-8 sm:h-8"
+        />
       </button>
     </div>
   );
