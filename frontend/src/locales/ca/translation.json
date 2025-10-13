@@ -40,9 +40,12 @@
     "distance": "Distància: {{km}} quilòmetres",
     "elevation": "Desnivell: {{meters}} metres",
     "elevationNotSpecified": "Desnivell: No especificat",
+    "elevationRatio": "Desnivell/km: {{ratio}} metres per quilòmetre",
+    "elevationRatioNotSpecified": "Desnivell/km: No especificat",
     "location": "Ubicació: {{city}}, {{province}}",
     "difficulty": "Dificultat: {{level}}",
     "difficultyNotSpecified": "Dificultat: No especificada",
+    "category": "Categoria: {{category}}",
     "price": "Preu: {{price}} euros",
     "priceNotSpecified": "Preu: No especificat",
     "visitWebsite": "Visitar pàgina web de {{name}} (s'obre en nova pestanya)",
@@ -54,6 +57,13 @@
     "moderado": "Moderat",
     "difícil": "Difícil",
     "experto": "Expert"
+  },
+  "category": {
+    "ultra": "Ultra",
+    "maraton": "Marató",
+    "media": "Mitja",
+    "trail": "Trail",
+    "sprint": "Sprint"
   },
   "navigation": {
     "skipToMain": "Saltar al contingut principal",

@@ -231,7 +231,6 @@ export default function HomePage() {
                           city={race.city}
                           province={race.province}
                           websiteUrl={race.websiteUrl}
-                          difficulty={race.difficulty}
                         />
                       </ErrorBoundary>
                     </div>

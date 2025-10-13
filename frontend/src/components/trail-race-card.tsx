@@ -9,7 +9,6 @@ interface TrailRaceCardProps {
   city: string;
   province: string;
   websiteUrl: string | null;
-  difficulty: 'fácil' | 'moderado' | 'difícil' | 'experto' | null;
 }
 
 const formatDate = (dateString: string | null, locale: string) => {
@@ -23,6 +22,30 @@ const formatDate = (dateString: string | null, locale: string) => {
   return { day, month, dayOfWeek };
 };
 
+const calculateElevationRatio = (
+  elevationGainM: number | null,
+  distanceKm: number,
+): number | null => {
+  if (elevationGainM === null) return null;
+  return Math.round(elevationGainM / distanceKm);
+};
+
+const getRaceCategory = (distanceKm: number): string => {
+  if (distanceKm > 42) return 'ultra';
+  if (distanceKm >= 42) return 'maraton';
+  if (distanceKm >= 20) return 'media';
+  if (distanceKm >= 10) return 'trail';
+  return 'sprint';
+};
+
+const getElevationRatioColor = (ratio: number | null): string => {
+  if (ratio === null) return 'bg-gray-100 text-gray-800';
+  if (ratio < 40) return 'bg-green-100 text-green-800';
+  if (ratio < 80) return 'bg-yellow-100 text-yellow-800';
+  if (ratio < 120) return 'bg-orange-100 text-orange-800';
+  return 'bg-red-100 text-red-800';
+};
+
 export default function TrailRaceCard({
   date,
   name,
@@ -32,10 +55,12 @@ export default function TrailRaceCard({
   city,
   province,
   websiteUrl,
-  difficulty,
 }: TrailRaceCardProps) {
   const { t, i18n } = useTranslation();
   const { day, month, dayOfWeek } = formatDate(date, i18n.language);
+  const elevationRatio = calculateElevationRatio(elevationGainM, distanceKm);
+  const raceCategory = getRaceCategory(distanceKm);
+  const elevationRatioColor = getElevationRatioColor(elevationRatio);
 
   return (
     <article
@@ -88,27 +113,24 @@ export default function TrailRaceCard({
               </div>
               <div className="flex justify-start items-center gap-2">
                 <span
-                  className={`hidden sm:block px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-sm ${
-                    difficulty === 'fácil'
-                      ? 'bg-green-100 text-green-800'
-                      : difficulty === 'moderado'
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : difficulty === 'difícil'
-                          ? 'bg-orange-100 text-orange-800'
-                          : 'bg-red-100 text-red-800'
-                  }`}
+                  className="hidden sm:block px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-sm bg-indigo-100 text-indigo-800"
+                  aria-label={t('race.category', {
+                    category: t(`category.${raceCategory}`),
+                  })}
+                >
+                  {t(`category.${raceCategory}`)}
+                </span>
+                <span
+                  className={`hidden sm:block px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-sm ${elevationRatioColor}`}
                   aria-label={
-                    difficulty
-                      ? t('race.difficulty', {
-                          level: t(`difficulty.${difficulty}`),
-                        })
-                      : t('race.difficultyNotSpecified')
+                    elevationRatio !== null
+                      ? t('race.elevationRatio', { ratio: elevationRatio })
+                      : t('race.elevationRatioNotSpecified')
                   }
                 >
-                  {difficulty
-                    ? t(`difficulty.${difficulty}`)
-                    : t('race.notAvailable')}
+                  {elevationRatio !== null ? `${elevationRatio} m/km` : '—'}
                 </span>
+
                 {websiteUrl && (
                   <a
                     href={websiteUrl}

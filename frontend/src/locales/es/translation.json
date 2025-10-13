@@ -40,9 +40,12 @@
     "distance": "Distancia: {{km}} kilómetros",
     "elevation": "Desnivel: {{meters}} metros",
     "elevationNotSpecified": "Desnivel: No especificado",
+    "elevationRatio": "Desnivel/km: {{ratio}} metros por kilómetro",
+    "elevationRatioNotSpecified": "Desnivel/km: No especificado",
     "location": "Ubicación: {{city}}, {{province}}",
     "difficulty": "Dificultad: {{level}}",
     "difficultyNotSpecified": "Dificultad: No especificada",
+    "category": "Categoría: {{category}}",
     "price": "Precio: {{price}} euros",
     "priceNotSpecified": "Precio: No especificado",
     "visitWebsite": "Visitar página web de {{name}} (se abre en nueva pestaña)",
@@ -54,6 +57,13 @@
     "moderado": "Moderado",
     "difícil": "Difícil",
     "experto": "Experto"
+  },
+  "category": {
+    "ultra": "Ultra",
+    "maraton": "Maratón",
+    "media": "Media",
+    "trail": "Trail",
+    "sprint": "Sprint"
   },
   "navigation": {
     "skipToMain": "Saltar al contenido principal",
