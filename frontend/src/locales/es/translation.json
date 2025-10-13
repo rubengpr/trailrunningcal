@@ -1,0 +1,97 @@
+{
+  "title": "Calendario carreras Trail Running Cataluña",
+  "subtitle": "Encuentra las mejores carreras de montaña de Cataluña",
+  "search": {
+    "placeholder": "Buscar por nombre, ciudad o provincia...",
+    "ariaLabel": "Buscar carreras por nombre, ciudad o provincia",
+    "clear": "Limpiar búsqueda",
+    "section": "Búsqueda y filtros"
+  },
+  "filters": {
+    "monthLabel": "Filtrar por mes",
+    "filterBy": "Filtrar por",
+    "clearFilters": "Limpiar filtros",
+    "clearFiltersAria": "Limpiar todos los filtros de búsqueda"
+  },
+  "months": {
+    "ene": "Ene",
+    "feb": "Feb",
+    "mar": "Mar",
+    "abr": "Abr",
+    "may": "May",
+    "jun": "Jun",
+    "jul": "Jul",
+    "ago": "Ago",
+    "sep": "Sep",
+    "oct": "Oct",
+    "nov": "Nov",
+    "dic": "Dic"
+  },
+  "results": {
+    "noRacesFound": "No se encontraron carreras",
+    "noRacesMessage": "No hay carreras que coincidan con los filtros seleccionados. Prueba a ajustar tu búsqueda o selección de mes.",
+    "racesFound": "Se encontraron {{count}} carreras",
+    "noRacesFiltered": "No se encontraron carreras con los filtros seleccionados",
+    "racesList": "Carreras de trail running",
+    "racesListAria": "Lista de carreras"
+  },
+  "race": {
+    "details": "Detalles de la carrera",
+    "distance": "Distancia: {{km}} kilómetros",
+    "elevation": "Desnivel: {{meters}} metros",
+    "elevationNotSpecified": "Desnivel: No especificado",
+    "location": "Ubicación: {{city}}, {{province}}",
+    "difficulty": "Dificultad: {{level}}",
+    "difficultyNotSpecified": "Dificultad: No especificada",
+    "price": "Precio: {{price}} euros",
+    "priceNotSpecified": "Precio: No especificado",
+    "visitWebsite": "Visitar página web de {{name}} (se abre en nueva pestaña)",
+    "webLink": "Web →",
+    "notAvailable": "N/A"
+  },
+  "difficulty": {
+    "fácil": "Fácil",
+    "moderado": "Moderado",
+    "difícil": "Difícil",
+    "experto": "Experto"
+  },
+  "navigation": {
+    "skipToMain": "Saltar al contenido principal",
+    "skipToSearch": "Saltar a búsqueda",
+    "mainNav": "Navegación principal",
+    "goToHome": "Ir a la página principal - Trail Running Calendar",
+    "appName": "Trail Running Cal",
+    "contact": "Contacto",
+    "languageSelector": "Selector de idioma",
+    "changeToSpanish": "Cambiar a Español",
+    "changeToCatalan": "Canviar a Català"
+  },
+  "contact": {
+    "title": "Contacto",
+    "description": "¿Tienes alguna pregunta sobre las carreras o necesitas más información? No dudes en contactarnos.",
+    "email": "Email",
+    "emailDescription": "Para consultas generales:",
+    "emailAria": "Enviar email a info@trailrunningcal.com",
+    "location": "Ubicación",
+    "locationDescription": "Basado en:",
+    "locationValue": "Cataluña, España",
+    "information": "Información",
+    "infoDescription1": "Trail Running Cal es tu plataforma de referencia para descubrir las mejores carreras de trail running en Cataluña.",
+    "infoDescription2": "Mantenemos un calendario actualizado con carreras de todas las provincias catalanas, desde carreras populares hasta ultra trails.",
+    "infoDescription3": "Si eres organizador de carreras y quieres que tu evento aparezca en nuestro calendario, contáctanos."
+  },
+  "errors": {
+    "general": "Algo salió mal",
+    "generalMessage": "Ha ocurrido un error inesperado. Por favor, intenta de nuevo.",
+    "retry": "Reintentar",
+    "raceLoadError": "Error al cargar carrera",
+    "raceLoadErrorMessage": "No se pudo mostrar esta carrera",
+    "raceLoadErrorMessageFull": "No se pudo mostrar la información de esta carrera. Intenta recargar la página.",
+    "searchError": "Error en la búsqueda",
+    "searchErrorMessage": "No se pudieron cargar las carreras. Verifica tu conexión e intenta de nuevo.",
+    "errorDetails": "Detalles del error (desarrollo)"
+  },
+  "footer": {
+    "copyright": "© {{year}} Trail Running Cal"
+  }
+}

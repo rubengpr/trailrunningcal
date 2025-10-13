@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 interface TrailRaceCardProps {
   date: string | null;
   name: string;
@@ -10,14 +12,14 @@ interface TrailRaceCardProps {
   difficulty: 'fácil' | 'moderado' | 'difícil' | 'experto' | null;
 }
 
-const formatDate = (dateString: string | null) => {
+const formatDate = (dateString: string | null, locale: string) => {
   if (!dateString) {
     return { day: '-', month: '-', dayOfWeek: '-' };
   }
   const date = new Date(dateString);
   const day = date.getDate();
-  const month = date.toLocaleDateString('es-ES', { month: 'short' });
-  const dayOfWeek = date.toLocaleDateString('es-ES', { weekday: 'short' });
+  const month = date.toLocaleDateString(locale, { month: 'short' });
+  const dayOfWeek = date.toLocaleDateString(locale, { weekday: 'short' });
   return { day, month, dayOfWeek };
 };
 
@@ -32,7 +34,9 @@ export default function TrailRaceCard({
   websiteUrl,
   difficulty,
 }: TrailRaceCardProps) {
-  const { day, month, dayOfWeek } = formatDate(date);
+  const { t, i18n } = useTranslation();
+  const { day, month, dayOfWeek } = formatDate(date, i18n.language);
+
   return (
     <article
       className="w-full bg-white rounded-lg shadow hover:shadow-md transition-shadow"
@@ -61,19 +65,23 @@ export default function TrailRaceCard({
               <div
                 className="flex gap-3 text-[10px] sm:text-sm text-gray-600 mb-2"
                 role="group"
-                aria-label="Detalles de la carrera"
+                aria-label={t('race.details')}
               >
-                <span aria-label={`Distancia: ${distanceKm} kilómetros`}>
+                <span aria-label={t('race.distance', { km: distanceKm })}>
                   {distanceKm}km
                 </span>
                 <span
-                  aria-label={`Desnivel: ${elevationGainM ? elevationGainM + ' metros' : 'No especificado'}`}
+                  aria-label={
+                    elevationGainM
+                      ? t('race.elevation', { meters: elevationGainM })
+                      : t('race.elevationNotSpecified')
+                  }
                 >
                   {elevationGainM ? `${elevationGainM}m+` : '-'}
                 </span>
                 <span
                   className="truncate"
-                  aria-label={`Ubicación: ${city}, ${province}`}
+                  aria-label={t('race.location', { city, province })}
                 >
                   {city}, {province}
                 </span>
@@ -89,26 +97,36 @@ export default function TrailRaceCard({
                           ? 'bg-orange-100 text-orange-800'
                           : 'bg-red-100 text-red-800'
                   }`}
-                  aria-label={`Dificultad: ${difficulty || 'No especificada'}`}
+                  aria-label={
+                    difficulty
+                      ? t('race.difficulty', {
+                          level: t(`difficulty.${difficulty}`),
+                        })
+                      : t('race.difficultyNotSpecified')
+                  }
                 >
                   {difficulty
-                    ? difficulty.charAt(0).toUpperCase() + difficulty.slice(1)
-                    : 'N/A'}
+                    ? t(`difficulty.${difficulty}`)
+                    : t('race.notAvailable')}
                 </span>
                 {websiteUrl && (
                   <a
                     href={websiteUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label={`Visitar página web de ${name} (se abre en nueva pestaña)`}
+                    aria-label={t('race.visitWebsite', { name })}
                     className="sm:hidden inline-block bg-indigo-600 text-white px-2 py-0.5 rounded-sm text-[10px] font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
                   >
-                    Web →
+                    {t('race.webLink')}
                   </a>
                 )}
                 <div
                   className="block sm:hidden font-semibold text-gray-900 text-xs sm:text-lg"
-                  aria-label={`Precio: ${priceEur ? priceEur + ' euros' : 'No especificado'}`}
+                  aria-label={
+                    priceEur
+                      ? t('race.price', { price: priceEur })
+                      : t('race.priceNotSpecified')
+                  }
                 >
                   {priceEur ? `${priceEur}€` : '—'}
                 </div>
@@ -118,7 +136,11 @@ export default function TrailRaceCard({
           <div className="hidden sm:flex flex-col items-end gap-2">
             <div
               className="font-semibold text-gray-900 text-xs sm:text-lg"
-              aria-label={`Precio: ${priceEur ? priceEur + ' euros' : 'No especificado'}`}
+              aria-label={
+                priceEur
+                  ? t('race.price', { price: priceEur })
+                  : t('race.priceNotSpecified')
+              }
             >
               {priceEur ? `${priceEur}€` : '—'}
             </div>
@@ -127,10 +149,10 @@ export default function TrailRaceCard({
                 href={websiteUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label={`Visitar página web de ${name} (se abre en nueva pestaña)`}
+                aria-label={t('race.visitWebsite', { name })}
                 className="hidden sm:inline-block bg-indigo-600 text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
               >
-                Web →
+                {t('race.webLink')}
               </a>
             )}
           </div>

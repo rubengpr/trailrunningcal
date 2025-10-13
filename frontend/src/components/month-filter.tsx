@@ -1,27 +1,35 @@
+import { useTranslation } from 'react-i18next';
+
 interface MonthFilterProps {
   selectedMonth?: string;
   onMonthSelect?: (month: string) => void;
 }
 
-const months = [
-  { key: 'ene', label: 'Ene' },
-  { key: 'feb', label: 'Feb' },
-  { key: 'mar', label: 'Mar' },
-  { key: 'abr', label: 'Abr' },
-  { key: 'may', label: 'May' },
-  { key: 'jun', label: 'Jun' },
-  { key: 'jul', label: 'Jul' },
-  { key: 'ago', label: 'Ago' },
-  { key: 'sep', label: 'Sep' },
-  { key: 'oct', label: 'Oct' },
-  { key: 'nov', label: 'Nov' },
-  { key: 'dic', label: 'Dic' },
+const MONTH_KEYS = [
+  'ene',
+  'feb',
+  'mar',
+  'abr',
+  'may',
+  'jun',
+  'jul',
+  'ago',
+  'sep',
+  'oct',
+  'nov',
+  'dic',
 ];
 
 export default function MonthFilter({
   selectedMonth = '',
   onMonthSelect,
 }: MonthFilterProps) {
+  const { t } = useTranslation();
+
+  const months = MONTH_KEYS.map((key) => ({
+    key,
+    label: t(`months.${key}`),
+  }));
   const handleMonthClick = (monthKey: string) => {
     const newSelectedMonth = selectedMonth === monthKey ? '' : monthKey;
     onMonthSelect?.(newSelectedMonth);
@@ -31,14 +39,14 @@ export default function MonthFilter({
     <div
       className="flex flex-wrap gap-1.5 sm:gap-2 justify-center"
       role="group"
-      aria-label="Filtrar por mes"
+      aria-label={t('filters.monthLabel')}
     >
       {months.map((month) => (
         <button
           key={month.key}
           onClick={() => handleMonthClick(month.key)}
           aria-pressed={selectedMonth === month.key}
-          aria-label={`Filtrar por ${month.label}`}
+          aria-label={`${t('filters.filterBy')} ${month.label}`}
           className={`
             px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all duration-200
             border-2 border-gray-200 hover:border-indigo-300 hover:cursor-pointer

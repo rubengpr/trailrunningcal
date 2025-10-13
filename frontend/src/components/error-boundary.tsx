@@ -1,4 +1,5 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
+import i18n from '../i18n/config';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -46,6 +47,8 @@ interface DefaultErrorFallbackProps {
 }
 
 function DefaultErrorFallback({ error }: DefaultErrorFallbackProps) {
+  const t = i18n.t.bind(i18n);
+
   return (
     <div className="min-h-[200px] flex items-center justify-center p-6">
       <div className="text-center max-w-md mx-auto">
@@ -66,12 +69,9 @@ function DefaultErrorFallback({ error }: DefaultErrorFallbackProps) {
           </svg>
         </div>
         <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          Algo salió mal
+          {t('errors.general')}
         </h3>
-        <p className="text-gray-600 mb-4">
-          Ha ocurrido un error inesperado. Por favor, recarga la página o
-          intenta más tarde.
-        </p>
+        <p className="text-gray-600 mb-4">{t('errors.generalMessage')}</p>
         <button
           onClick={() => window.location.reload()}
           className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
@@ -90,12 +90,12 @@ function DefaultErrorFallback({ error }: DefaultErrorFallbackProps) {
               d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
             />
           </svg>
-          Recargar página
+          {t('errors.retry')}
         </button>
         {process.env.NODE_ENV === 'development' && error && (
           <details className="mt-4 text-left">
             <summary className="cursor-pointer text-sm text-gray-500 hover:text-gray-700">
-              Detalles del error (desarrollo)
+              {t('errors.errorDetails')}
             </summary>
             <pre className="mt-2 text-xs text-red-600 bg-red-50 p-2 rounded overflow-auto">
               {error.message}

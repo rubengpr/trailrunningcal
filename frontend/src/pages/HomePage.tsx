@@ -8,8 +8,11 @@ import ErrorBoundary from '../components/error-boundary';
 import { SearchError } from '../components/error-message';
 import { races } from '../data/races';
 import { getMonthNumber } from '../utils/date-utils';
+import { useTranslation } from 'react-i18next';
 
 export default function HomePage() {
+  const { t } = useTranslation();
+
   const [selectedMonth, setSelectedMonth] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState<string>('');
 
@@ -74,10 +77,10 @@ export default function HomePage() {
         <div className="flex  justify-center items-center text-center sm:gap-0">
           <div className="flex flex-col items-center justify-center w-2/3">
             <h1 className="text-2xl sm:text-4xl font-extrabold leading-tight">
-              Calendario carreras Trail Running Cataluña
+              {t('title')}
             </h1>
             <p className="mt-2 text-sm sm:text-lg text-gray-700 max-w-xl">
-              Encuentra las mejores carreras de montaña de Cataluña
+              {t('subtitle')}
             </p>
           </div>
         </div>
@@ -87,14 +90,14 @@ export default function HomePage() {
       <section
         id="search-section"
         className="w-full py-8"
-        aria-label="Búsqueda y filtros"
+        aria-label={t('search.section')}
       >
         <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="flex justify-center mb-6">
             <SearchBar
               searchTerm={searchTerm}
               onSearchChange={handleSearchChange}
-              placeholder="Buscar por nombre, ciudad o provincia..."
+              placeholder={t('search.placeholder')}
             />
           </div>
           <div className="flex justify-center">
@@ -116,7 +119,7 @@ export default function HomePage() {
           <section
             id="carreras"
             className="py-4"
-            aria-label="Lista de carreras"
+            aria-label={t('results.racesListAria')}
           >
             {/* ARIA live region for search results updates */}
             <div
@@ -126,15 +129,15 @@ export default function HomePage() {
               id="search-results-announcement"
             >
               {filteredRaces.length === 0
-                ? 'No se encontraron carreras con los filtros seleccionados'
-                : `Se encontraron ${filteredRaces.length} carreras`}
+                ? t('results.noRacesFiltered')
+                : t('results.racesFound', { count: filteredRaces.length })}
             </div>
 
             <div className="flex justify-center px-8">
               <div
                 className="grid w-full max-w-4xl gap-4"
                 role="list"
-                aria-label="Carreras de trail running"
+                aria-label={t('results.racesList')}
               >
                 {filteredRaces.length === 0 ? (
                   <div className="text-center py-16 px-4">
@@ -156,19 +159,17 @@ export default function HomePage() {
                         </svg>
                       </div>
                       <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                        No se encontraron carreras
+                        {t('results.noRacesFound')}
                       </h3>
                       <p className="text-gray-600 mb-6">
-                        No hay carreras que coincidan con los filtros
-                        seleccionados. Prueba a ajustar tu búsqueda o selección
-                        de mes.
+                        {t('results.noRacesMessage')}
                       </p>
                       <button
                         onClick={() => {
                           setSelectedMonth('');
                           setSearchTerm('');
                         }}
-                        aria-label="Limpiar todos los filtros de búsqueda"
+                        aria-label={t('filters.clearFiltersAria')}
                         className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
                       >
                         <svg
@@ -185,7 +186,7 @@ export default function HomePage() {
                             d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                           />
                         </svg>
-                        Limpiar filtros
+                        {t('filters.clearFilters')}
                       </button>
                     </div>
                   </div>
@@ -212,10 +213,10 @@ export default function HomePage() {
                                 </svg>
                               </div>
                               <h4 className="text-sm font-semibold text-gray-900 mb-1">
-                                Error al cargar carrera
+                                {t('errors.raceLoadError')}
                               </h4>
                               <p className="text-xs text-gray-600">
-                                No se pudo mostrar esta carrera
+                                {t('errors.raceLoadErrorMessage')}
                               </p>
                             </div>
                           </div>

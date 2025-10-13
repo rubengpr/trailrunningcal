@@ -1,17 +1,21 @@
+import { useTranslation } from 'react-i18next';
 import Navbar from '../components/navbar';
 import Footer from '../components/footer';
 
 export default function ContactPage() {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 text-gray-900 flex flex-col">
       <Navbar />
 
       <main id="main-content" className="flex-1 mx-auto max-w-4xl px-4 py-20">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Contacto</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            {t('contact.title')}
+          </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            ¿Tienes alguna pregunta sobre las carreras o necesitas más
-            información? No dudes en contactarnos.
+            {t('contact.description')}
           </p>
         </div>
 
@@ -34,13 +38,17 @@ export default function ContactPage() {
                     />
                   </svg>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900">Email</h3>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {t('contact.email')}
+                </h3>
               </div>
-              <p className="text-gray-600 mb-2">Para consultas generales:</p>
+              <p className="text-gray-600 mb-2">
+                {t('contact.emailDescription')}
+              </p>
               <a
                 href="mailto:info@trailrunningcal.com"
                 className="text-indigo-600 hover:text-indigo-800 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded-md px-1"
-                aria-label="Enviar email a info@trailrunningcal.com"
+                aria-label={t('contact.emailAria')}
               >
                 info@trailrunningcal.com
               </a>
@@ -70,32 +78,26 @@ export default function ContactPage() {
                   </svg>
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900">
-                  Ubicación
+                  {t('contact.location')}
                 </h3>
               </div>
-              <p className="text-gray-600 mb-2">Basado en:</p>
-              <p className="text-gray-900 font-medium">Cataluña, España</p>
+              <p className="text-gray-600 mb-2">
+                {t('contact.locationDescription')}
+              </p>
+              <p className="text-gray-900 font-medium">
+                {t('contact.locationValue')}
+              </p>
             </div>
           </div>
 
           <div className="bg-white rounded-lg p-6 shadow-sm">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Información
+              {t('contact.information')}
             </h3>
             <div className="space-y-4 text-gray-600">
-              <p>
-                Trail Running Cal es tu plataforma de referencia para descubrir
-                las mejores carreras de trail running en Cataluña.
-              </p>
-              <p>
-                Mantenemos un calendario actualizado con carreras de todas las
-                provincias catalanas, desde carreras populares hasta ultra
-                trails.
-              </p>
-              <p>
-                Si eres organizador de carreras y quieres que tu evento aparezca
-                en nuestro calendario, contáctanos.
-              </p>
+              <p>{t('contact.infoDescription1')}</p>
+              <p>{t('contact.infoDescription2')}</p>
+              <p>{t('contact.infoDescription3')}</p>
             </div>
           </div>
         </div>

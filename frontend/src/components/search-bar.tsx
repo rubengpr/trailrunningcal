@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 interface SearchBarProps {
   searchTerm: string;
   onSearchChange: (term: string) => void;
@@ -7,8 +9,9 @@ interface SearchBarProps {
 export default function SearchBar({
   searchTerm,
   onSearchChange,
-  placeholder = 'Buscar carreras...',
+  placeholder,
 }: SearchBarProps) {
+  const { t } = useTranslation();
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onSearchChange(event.target.value);
   };
@@ -40,14 +43,14 @@ export default function SearchBar({
           type="text"
           value={searchTerm}
           onChange={handleInputChange}
-          placeholder={placeholder}
-          aria-label="Buscar carreras por nombre, ciudad o provincia"
+          placeholder={placeholder || t('search.placeholder')}
+          aria-label={t('search.ariaLabel')}
           className="block w-full pl-10 sm:pl-12 pr-10 sm:pr-12 py-2.5 sm:py-2 bg-white border-2 border-indigo-300 rounded-xl text-sm sm:text-base placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
         />
         {searchTerm && (
           <button
             onClick={handleClear}
-            aria-label="Limpiar búsqueda"
+            aria-label={t('search.clear')}
             className="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded-md transition-colors"
           >
             <svg

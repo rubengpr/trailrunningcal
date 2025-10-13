@@ -1,7 +1,11 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import logo from '../assets/trc-logo.svg';
+import LanguagePicker from './language-picker';
 
 export default function Navbar() {
+  const { t } = useTranslation();
+
   return (
     <header className="w-full bg-white border-b border-indigo-100/60 px-4 py-4 sm:px-6 lg:px-8">
       {/* Skip navigation links */}
@@ -10,13 +14,13 @@ export default function Navbar() {
           href="#main-content"
           className="absolute top-4 left-4 z-50 bg-indigo-600 text-white px-4 py-2 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
         >
-          Saltar al contenido principal
+          {t('navigation.skipToMain')}
         </a>
         <a
           href="#search-section"
           className="absolute top-4 left-48 z-50 bg-indigo-600 text-white px-4 py-2 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
         >
-          Saltar a búsqueda
+          {t('navigation.skipToSearch')}
         </a>
       </div>
 
@@ -24,22 +28,27 @@ export default function Navbar() {
         <Link
           to="/"
           className="flex items-center gap-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded-md"
-          aria-label="Ir a la página principal - Trail Running Calendar"
+          aria-label={t('navigation.goToHome')}
         >
           <img className="w-10 h-10" src={logo} alt="Trail Running Calendar" />
-          <span className="font-semibold text-lg">Trail Running Cal</span>
+          <span className="font-semibold text-lg">
+            {t('navigation.appName')}
+          </span>
         </Link>
         <nav
           className="text-sm"
           role="navigation"
-          aria-label="Navegación principal"
+          aria-label={t('navigation.mainNav')}
         >
-          <Link
-            to="/contacto"
-            className="focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded-md px-2 py-1"
-          >
-            Contacto
-          </Link>
+          <div className="flex flex-row items-center">
+            <Link
+              to="/contacto"
+              className="focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded-md px-2 py-1"
+            >
+              {t('navigation.contact')}
+            </Link>
+            <LanguagePicker />
+          </div>
         </nav>
       </div>
     </header>
