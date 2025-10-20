@@ -4,7 +4,7 @@ import logo from '../assets/trc-logo.svg';
 import LanguagePicker from './language-picker';
 
 export default function Navbar() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   return (
     <header className="w-full bg-white border-b border-indigo-100/60 px-4 py-4 sm:px-6 lg:px-8">
@@ -26,7 +26,7 @@ export default function Navbar() {
 
       <div className="flex justify-between items-center">
         <Link
-          to="/"
+          to={`/${i18n.language}`}
           className="flex items-center gap-3"
           aria-label={t('navigation.goToHome')}
         >
@@ -45,7 +45,10 @@ export default function Navbar() {
           aria-label={t('navigation.mainNav')}
         >
           <div className="flex flex-row items-center">
-            <Link to="/contacto" className="hidden sm:flex px-2 py-1">
+            <Link
+              to={`/${i18n.language}/${i18n.language === 'ca' ? 'contacte' : 'contacto'}`}
+              className="hidden sm:flex px-2 py-1"
+            >
               {t('navigation.contact')}
             </Link>
             <LanguagePicker />

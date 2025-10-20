@@ -2,6 +2,7 @@ import './i18n/config';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 import { StrictMode } from 'react';
+import { preferredLang } from './utils/language-helper';
 import ErrorBoundary from './components/error-boundary';
 import router from './routes.tsx';
 import './globals.css';

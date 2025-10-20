@@ -1,11 +1,14 @@
 import { useTranslation } from 'react-i18next';
 import catalanFlag from '../assets/catalan-flag.png';
+import { useNavigate } from 'react-router-dom';
 
 export default function LanguagePicker() {
   const { i18n, t } = useTranslation();
+  const navigate = useNavigate();
 
   const handleLanguageChange = (language: string) => {
     i18n.changeLanguage(language);
+    navigate(`/${language}`);
   };
 
   const currentLanguage = i18n.language;
@@ -18,7 +21,7 @@ export default function LanguagePicker() {
     >
       <button
         onClick={() => handleLanguageChange('es')}
-        className={`px-2 py-1 rounded-sm sm:rounded-md ${
+        className={`px-2 py-1 rounded-sm sm:rounded-md cursor-pointer ${
           currentLanguage === 'es'
             ? 'bg-neutral-100 text-white'
             : 'text-gray-700 hover:bg-gray-50'
@@ -30,7 +33,7 @@ export default function LanguagePicker() {
       </button>
       <button
         onClick={() => handleLanguageChange('ca')}
-        className={`px-2 py-1 rounded-sm sm:rounded-md ${
+        className={`px-2 py-1 rounded-sm sm:rounded-md cursor-pointer ${
           currentLanguage === 'ca'
             ? 'bg-neutral-100 text-white'
             : 'text-gray-700 hover:bg-gray-50'
