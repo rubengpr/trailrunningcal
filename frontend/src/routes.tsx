@@ -26,14 +26,6 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: '/contacto',
-    element: (
-      <LanguageSyncWrapper>
-        <ContactPage />
-      </LanguageSyncWrapper>
-    ),
-  },
-  {
     path: '/es/contacto',
     element: (
       <LanguageSyncWrapper>
