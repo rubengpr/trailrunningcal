@@ -14,6 +14,10 @@
     />
     <meta name="author" content="Trail Running Calendar" />
     <meta name="robots" content="index, follow" />
+    <meta name="googlebot" content="index, follow" />
+    <meta name="language" content="Spanish" />
+    <meta name="geo.region" content="ES" />
+    <meta name="geo.country" content="Spain" />
     <meta
       property="og:title"
       content="Trail Running Calendar | Calendario de carreras Trail Running"
@@ -24,6 +28,8 @@
     />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://trailrunningcal.com" />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:locale:alternate" content="ca_ES" />
     <meta property="og:site_name" content="Trail Running Calendar" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta
@@ -36,11 +42,32 @@
     />
     <title>Trail Running Calendar | Calendario de carreras Trail Running</title>
 
+    <link rel="alternate" href="https://trailrunningcal.com" hreflang="x-default" />
     <link rel="alternate" href="https://trailrunningcal.com/es" hreflang="es" />
     <link rel="alternate" href="https://trailrunningcal.com/ca" hreflang="ca" />
+    <link rel="canonical" href="https://trailrunningcal.com" />
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Trail Running Calendar",
+      "alternateName": "Calendario de Carreras Trail Running",
+      "url": "https://trailrunningcal.com",
+      "description": "Descubre el calendario más completo de carreras de trail running en España. Encuentra tu próxima carrera por montaña, ultra trail, maratón de montaña y más.",
+      "inLanguage": ["es", "ca"],
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://trailrunningcal.com/es?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script src="/language-redirect.js"></script>
   </body>
 </html>

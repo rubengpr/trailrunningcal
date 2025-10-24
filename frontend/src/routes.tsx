@@ -1,13 +1,13 @@
 import { createBrowserRouter } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import ContactPage from './pages/ContactPage';
-import { Navigate } from 'react-router-dom';
 import LanguageSyncWrapper from './components/language-sync-wrapper';
+import RootPage from './pages/RootPage';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Navigate to="/es" replace />,
+    element: <RootPage />,
   },
   {
     path: '/es',

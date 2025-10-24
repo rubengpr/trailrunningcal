@@ -1,57 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset
-  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-  xmlns:xhtml="http://www.w3.org/1999/xhtml"
->
-
-  <!-- Root Homepage -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <!-- Root domain - serves as x-default -->
   <url>
-    <loc>https://trailrunningcal.com</loc>
+    <loc>https://trailrunningcal.com/</loc>
+    <lastmod>2024-01-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="es" href="https://trailrunningcal.com/es" />
     <xhtml:link rel="alternate" hreflang="ca" href="https://trailrunningcal.com/ca" />
-    <lastmod>2025-10-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://trailrunningcal.com/" />
   </url>
-
-  <!-- Spanish Homepage -->
+  
+  <!-- Spanish version -->
   <url>
     <loc>https://trailrunningcal.com/es</loc>
+    <lastmod>2024-01-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="es" href="https://trailrunningcal.com/es" />
     <xhtml:link rel="alternate" hreflang="ca" href="https://trailrunningcal.com/ca" />
-    <lastmod>2025-10-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://trailrunningcal.com/" />
   </url>
-
-  <!-- Catalan Homepage -->
-  <url>
-    <loc>https://trailrunningcal.com/ca</loc>
-    <xhtml:link rel="alternate" hreflang="es" href="https://trailrunningcal.com/es" />
-    <xhtml:link rel="alternate" hreflang="ca" href="https://trailrunningcal.com/ca" />
-    <lastmod>2025-10-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
-
-  <!-- Spanish Contact Page -->
+  
+  <!-- Spanish contact page -->
   <url>
     <loc>https://trailrunningcal.com/es/contacto</loc>
+    <lastmod>2024-01-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
     <xhtml:link rel="alternate" hreflang="es" href="https://trailrunningcal.com/es/contacto" />
     <xhtml:link rel="alternate" hreflang="ca" href="https://trailrunningcal.com/ca/contacte" />
-    <lastmod>2025-10-23</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://trailrunningcal.com/" />
   </url>
-
-  <!-- Catalan Contact Page -->
+  
+  <!-- Catalan version -->
+  <url>
+    <loc>https://trailrunningcal.com/ca</loc>
+    <lastmod>2024-01-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://trailrunningcal.com/es" />
+    <xhtml:link rel="alternate" hreflang="ca" href="https://trailrunningcal.com/ca" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://trailrunningcal.com/" />
+  </url>
+  
+  <!-- Catalan contact page -->
   <url>
     <loc>https://trailrunningcal.com/ca/contacte</loc>
+    <lastmod>2024-01-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
     <xhtml:link rel="alternate" hreflang="es" href="https://trailrunningcal.com/es/contacto" />
     <xhtml:link rel="alternate" hreflang="ca" href="https://trailrunningcal.com/ca/contacte" />
-    <lastmod>2025-10-23</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://trailrunningcal.com/" />
   </url>
-
 </urlset>
