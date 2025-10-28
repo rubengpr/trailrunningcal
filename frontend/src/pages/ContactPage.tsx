@@ -26,12 +26,15 @@ export default function ContactPage() {
         <meta property="og:locale" content={seoMeta.locale} />
         <meta property="og:site_name" content={seoMeta.siteName} />
         <meta property="og:image" content={seoMeta.ogImageUrl} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content={seoMeta.twitterCard} />
         <meta
           name="twitter:title"
           content={`${t('contact.title')} | ${seoMeta.siteName}`}
         />
         <meta name="twitter:description" content={t(seoMeta.descriptionKey)} />
+        <meta name="twitter:image" content={seoMeta.ogImageUrl} />
         <link rel="canonical" href={seoMeta.canonicalUrl} />
         {seoMeta.alternateLinks.map((link) => (
           <link

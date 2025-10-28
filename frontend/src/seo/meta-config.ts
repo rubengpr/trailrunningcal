@@ -24,7 +24,7 @@ export interface SeoMetaPayload {
 
 const BASE_URL = 'https://trailrunningcal.com';
 const SITE_NAME = 'Trail Running Calendar';
-const DEFAULT_OG_IMAGE = `${BASE_URL}/favicon.png`;
+const DEFAULT_OG_IMAGE = `${BASE_URL}/og-image.png`;
 
 const SEO_ROUTES: Record<SeoPageId, SeoRouteConfig> = {
   home: {
