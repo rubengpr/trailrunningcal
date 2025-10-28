@@ -14,17 +14,20 @@ i18n.use(initReactI18next).init({
       translation: caTranslation,
     },
   },
+  lng: 'es', // Set initial language explicitly
   fallbackLng: 'es',
   interpolation: {
     escapeValue: false,
   },
 });
 
+// Update HTML lang attribute when language changes
 i18n.on('languageChanged', (lng) => {
   document.documentElement.lang = lng;
 });
 
-document.documentElement.lang = i18n.language;
+// Set initial lang attribute
+document.documentElement.lang = i18n.language || 'es';
 
 export { AVAILABLE_LANGUAGES };
 export default i18n;

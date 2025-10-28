@@ -19,6 +19,9 @@ export function useRouteLanguageSync(): void {
       routeLanguage = pathSegments[0];
     }
 
+    // Update HTML lang attribute based on route
+    document.documentElement.lang = routeLanguage;
+
     // Sync i18n language with route language if they differ
     if (i18n.language !== routeLanguage) {
       i18n.changeLanguage(routeLanguage);
