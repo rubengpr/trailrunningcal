@@ -1,12 +1,47 @@
+import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import Navbar from '../components/navbar';
 import Footer from '../components/footer';
+import { getSeoMetaConfig, resolveSupportedLanguage } from '../seo/meta-config';
 
 export default function ContactPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const language = resolveSupportedLanguage(i18n.language);
+  const seoMeta = getSeoMetaConfig('contact', language);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 text-gray-900 flex flex-col">
+      <Helmet>
+        <html lang={seoMeta.htmlLang} />
+        <title>{`${t('contact.title')} | ${seoMeta.siteName}`}</title>
+        <meta name="description" content={t(seoMeta.descriptionKey)} />
+        <meta name="robots" content="index, follow" />
+        <meta property="og:type" content={seoMeta.ogType} />
+        <meta
+          property="og:title"
+          content={`${t('contact.title')} | ${seoMeta.siteName}`}
+        />
+        <meta property="og:description" content={t(seoMeta.descriptionKey)} />
+        <meta property="og:url" content={seoMeta.canonicalUrl} />
+        <meta property="og:locale" content={seoMeta.locale} />
+        <meta property="og:site_name" content={seoMeta.siteName} />
+        <meta property="og:image" content={seoMeta.ogImageUrl} />
+        <meta name="twitter:card" content={seoMeta.twitterCard} />
+        <meta
+          name="twitter:title"
+          content={`${t('contact.title')} | ${seoMeta.siteName}`}
+        />
+        <meta name="twitter:description" content={t(seoMeta.descriptionKey)} />
+        <link rel="canonical" href={seoMeta.canonicalUrl} />
+        {seoMeta.alternateLinks.map((link) => (
+          <link
+            key={`${link.hrefLang}-${link.href}`}
+            rel="alternate"
+            hrefLang={link.hrefLang}
+            href={link.href}
+          />
+        ))}
+      </Helmet>
       <Navbar />
 
       <main id="main-content" className="flex-1 mx-auto max-w-4xl px-4 py-20">

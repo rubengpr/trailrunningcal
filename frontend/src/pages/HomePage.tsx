@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { Helmet } from 'react-helmet-async';
 import TrailRaceCard from '../components/trail-race-card';
 import MonthFilter from '../components/month-filter';
 import SearchBar from '../components/search-bar';
@@ -9,9 +10,12 @@ import { SearchError } from '../components/error-message';
 import { races } from '../data/races';
 import { getMonthNumber } from '../utils/date-utils';
 import { useTranslation } from 'react-i18next';
+import { getSeoMetaConfig, resolveSupportedLanguage } from '../seo/meta-config';
 
 export default function HomePage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const language = resolveSupportedLanguage(i18n.language);
+  const seoMeta = getSeoMetaConfig('home', language);
 
   const [selectedMonth, setSelectedMonth] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -71,6 +75,31 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen w-full text-gray-900 flex flex-col">
+      <Helmet>
+        <html lang={seoMeta.htmlLang} />
+        <title>{t(seoMeta.titleKey)}</title>
+        <meta name="description" content={t(seoMeta.descriptionKey)} />
+        <meta name="robots" content="index, follow" />
+        <meta property="og:type" content={seoMeta.ogType} />
+        <meta property="og:title" content={t(seoMeta.titleKey)} />
+        <meta property="og:description" content={t(seoMeta.descriptionKey)} />
+        <meta property="og:url" content={seoMeta.canonicalUrl} />
+        <meta property="og:locale" content={seoMeta.locale} />
+        <meta property="og:site_name" content={seoMeta.siteName} />
+        <meta property="og:image" content={seoMeta.ogImageUrl} />
+        <meta name="twitter:card" content={seoMeta.twitterCard} />
+        <meta name="twitter:title" content={t(seoMeta.titleKey)} />
+        <meta name="twitter:description" content={t(seoMeta.descriptionKey)} />
+        <link rel="canonical" href={seoMeta.canonicalUrl} />
+        {seoMeta.alternateLinks.map((link) => (
+          <link
+            key={`${link.hrefLang}-${link.href}`}
+            rel="alternate"
+            hrefLang={link.hrefLang}
+            href={link.href}
+          />
+        ))}
+      </Helmet>
       <Navbar />
 
       <section className="px-6 py-10">
