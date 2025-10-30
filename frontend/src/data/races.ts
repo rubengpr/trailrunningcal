@@ -1218,7 +1218,6 @@ export const races: TrailRace[] = [
     websiteUrl: 'https://www.naturetime.es/ca/cursa-de-nadal/',
     difficulty: null,
   },
-
   {
     date: null,
     name: 'Cursa de Nadalt a Bellmunt 3.8K',
@@ -1228,18 +1227,6 @@ export const races: TrailRace[] = [
     city: 'Sant Pere de Torelló',
     province: 'Barcelona',
     websiteUrl: 'https://cursadenadalt.com',
-    difficulty: null,
-  },
-
-  {
-    date: null,
-    name: "Trail per la vall d'Olzinelles 19K",
-    distanceKm: 19,
-    elevationGainM: null,
-    priceEur: 12,
-    city: 'Sant Celoni',
-    province: 'Barcelona',
-    websiteUrl: 'https://www.inscripcions.cat',
     difficulty: null,
   },
 ];
