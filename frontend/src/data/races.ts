@@ -1,20 +1,5 @@
 import type { TrailRace } from '../types/race.types';
 
-// Function to generate random difficulty
-const getRandomDifficulty = ():
-  | 'fácil'
-  | 'moderado'
-  | 'difícil'
-  | 'experto' => {
-  const difficulties: ('fácil' | 'moderado' | 'difícil' | 'experto')[] = [
-    'fácil',
-    'moderado',
-    'difícil',
-    'experto',
-  ];
-  return difficulties[Math.floor(Math.random() * difficulties.length)];
-};
-
 export const races: TrailRace[] = [
   {
     date: '2025-10-03',
@@ -25,7 +10,6 @@ export const races: TrailRace[] = [
     city: 'Bagà',
     province: 'Barcelona',
     websiteUrl: 'https://ultrapirineu.com/es/carreras/nit',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-10-04',
@@ -36,7 +20,6 @@ export const races: TrailRace[] = [
     city: 'Bagà',
     province: 'Barcelona',
     websiteUrl: 'https://ultrapirineu.com/es/carreras/ultra',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-10-04',
@@ -47,7 +30,6 @@ export const races: TrailRace[] = [
     city: 'Bagà',
     province: 'Barcelona',
     websiteUrl: 'https://ultrapirineu.com/es/carreras/marato',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-10-05',
@@ -58,7 +40,6 @@ export const races: TrailRace[] = [
     city: 'Bagà',
     province: 'Barcelona',
     websiteUrl: 'https://ultrapirineu.com/es/carreras/mitja',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-10-05',
@@ -69,7 +50,6 @@ export const races: TrailRace[] = [
     city: 'Arenys de Munt',
     province: 'Barcelona',
     websiteUrl: 'https://www.marxadelstermes.com/mitja.php',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-10-05',
@@ -80,7 +60,6 @@ export const races: TrailRace[] = [
     city: 'Arenys de Munt',
     province: 'Barcelona',
     websiteUrl: 'https://www.marxadelstermes.com/curta.php',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-10-05',
@@ -91,7 +70,6 @@ export const races: TrailRace[] = [
     city: 'Ivars de Noguera',
     province: 'Lleida',
     websiteUrl: 'https://lamontpedro.home.blog',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-10-05',
@@ -102,7 +80,6 @@ export const races: TrailRace[] = [
     city: 'Ivars de Noguera',
     province: 'Lleida',
     websiteUrl: 'https://lamontpedro.home.blog',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-10-05',
@@ -113,7 +90,6 @@ export const races: TrailRace[] = [
     city: 'Alàs',
     province: 'Lleida',
     websiteUrl: 'https://laforanca.cat',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-10-05',
@@ -124,7 +100,6 @@ export const races: TrailRace[] = [
     city: 'Alàs',
     province: 'Lleida',
     websiteUrl: 'https://laforanca.cat',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-10-05',
@@ -135,7 +110,6 @@ export const races: TrailRace[] = [
     city: 'Sanaüja',
     province: 'Lleida',
     websiteUrl: 'https://altasegarra.ces.cat',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-10-05',
@@ -146,7 +120,6 @@ export const races: TrailRace[] = [
     city: 'Sanaüja',
     province: 'Lleida',
     websiteUrl: 'https://altasegarra.ces.cat',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-10-11',
@@ -157,7 +130,6 @@ export const races: TrailRace[] = [
     city: 'La Granada del Penedès',
     province: 'Barcelona',
     websiteUrl: 'https://lagranada.com/web/cronoescalada',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-10-11',
@@ -168,7 +140,6 @@ export const races: TrailRace[] = [
     city: 'Ulldemolins',
     province: 'Tarragona',
     websiteUrl: 'https://www.naturetime.es/en/ultra-trail-serra-montsant-4',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-10-11',
@@ -179,7 +150,6 @@ export const races: TrailRace[] = [
     city: 'Ulldemolins',
     province: 'Tarragona',
     websiteUrl: 'https://www.naturetime.es/en/ultra-trail-serra-montsant-4',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-10-11',
@@ -190,7 +160,6 @@ export const races: TrailRace[] = [
     city: 'Ulldemolins',
     province: 'Tarragona',
     websiteUrl: 'https://www.naturetime.es/en/ultra-trail-serra-montsant-4',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-10-11',
@@ -201,7 +170,6 @@ export const races: TrailRace[] = [
     city: 'Ulldemolins',
     province: 'Tarragona',
     websiteUrl: 'https://www.naturetime.es/en/ultra-trail-serra-montsant-4',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-10-12',
@@ -212,7 +180,6 @@ export const races: TrailRace[] = [
     city: 'El Bruc',
     province: 'Barcelona',
     websiteUrl: 'https://vegantrail.club/cursa-de-les-batalles-del-bruc',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-10-12',
@@ -223,7 +190,6 @@ export const races: TrailRace[] = [
     city: 'El Bruc',
     province: 'Barcelona',
     websiteUrl: 'https://vegantrail.club/cursa-de-les-batalles-del-bruc',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-10-12',
@@ -234,7 +200,6 @@ export const races: TrailRace[] = [
     city: 'La Pobla de Massaluca',
     province: 'Tarragona',
     websiteUrl: 'https://serradelesfites.org/cursa-llarga/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-10-12',
@@ -245,7 +210,6 @@ export const races: TrailRace[] = [
     city: 'La Pobla de Massaluca',
     province: 'Tarragona',
     websiteUrl: 'https://serradelesfites.org/cursa-expres/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-10-12',
@@ -256,7 +220,6 @@ export const races: TrailRace[] = [
     city: 'La Pobla de Massaluca',
     province: 'Tarragona',
     websiteUrl: 'https://serradelesfites.org/cursa-marxa-curta/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-10-12',
@@ -267,7 +230,6 @@ export const races: TrailRace[] = [
     city: 'Bigues i Riells del Fai',
     province: 'Barcelona',
     websiteUrl: 'https://ruraltrail.com',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-10-12',
@@ -278,7 +240,6 @@ export const races: TrailRace[] = [
     city: 'Bigues i Riells del Fai',
     province: 'Barcelona',
     websiteUrl: 'https://ruraltrail.com',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-10-12',
@@ -289,7 +250,6 @@ export const races: TrailRace[] = [
     city: 'Castelltallat',
     province: 'Barcelona',
     websiteUrl: 'https://www.campionatmaqui.cat/cursa-castelltallat-14km-5km/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-10-12',
@@ -300,7 +260,6 @@ export const races: TrailRace[] = [
     city: 'Castelltallat',
     province: 'Barcelona',
     websiteUrl: 'https://www.campionatmaqui.cat/cursa-castelltallat-14km-5km/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-10-12',
@@ -311,7 +270,6 @@ export const races: TrailRace[] = [
     city: 'Calafell',
     province: 'Barcelona',
     websiteUrl: 'https://webtretzesports.wixsite.com/historictrail',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-10-12',
@@ -322,7 +280,6 @@ export const races: TrailRace[] = [
     city: 'Calafell',
     province: 'Barcelona',
     websiteUrl: 'https://webtretzesports.wixsite.com/historictrail',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-10-26',
@@ -333,7 +290,6 @@ export const races: TrailRace[] = [
     city: 'Sant Antoni de Vilamajor',
     province: 'Barcelona',
     websiteUrl: 'https://www.femsui.cat',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-10-26',
@@ -344,7 +300,6 @@ export const races: TrailRace[] = [
     city: 'Sant Antoni de Vilamajor',
     province: 'Barcelona',
     websiteUrl: 'https://www.femsui.cat',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-02',
@@ -355,7 +310,6 @@ export const races: TrailRace[] = [
     city: 'Barcelona',
     province: 'Barcelona',
     websiteUrl: 'https://uechorta.net/marato/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-02',
@@ -366,7 +320,6 @@ export const races: TrailRace[] = [
     city: 'Barcelona',
     province: 'Barcelona',
     websiteUrl: 'https://uechorta.net/marato/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-02',
@@ -377,7 +330,6 @@ export const races: TrailRace[] = [
     city: 'Lavern Subirats',
     province: 'Barcelona',
     websiteUrl: 'https://serralats.wordpress.com',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-02',
@@ -388,7 +340,6 @@ export const races: TrailRace[] = [
     city: 'Lavern Subirats',
     province: 'Barcelona',
     websiteUrl: 'https://serralats.wordpress.com',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-02',
@@ -399,7 +350,6 @@ export const races: TrailRace[] = [
     city: 'Sant Iscle de Vallalta',
     province: 'Barcelona',
     websiteUrl: 'https://vallaltatrail.com',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-02',
@@ -410,7 +360,6 @@ export const races: TrailRace[] = [
     city: 'Sant Iscle de Vallalta',
     province: 'Barcelona',
     websiteUrl: 'https://vallaltatrail.com',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-02',
@@ -421,7 +370,6 @@ export const races: TrailRace[] = [
     city: 'Rajadell',
     province: 'Barcelona',
     websiteUrl: 'https://carenesdelcogullo.com/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-02',
@@ -432,7 +380,6 @@ export const races: TrailRace[] = [
     city: 'Rajadell',
     province: 'Barcelona',
     websiteUrl: 'https://carenesdelcogullo.com/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-02',
@@ -443,7 +390,6 @@ export const races: TrailRace[] = [
     city: 'Sant Martí de Tous',
     province: 'Barcelona',
     websiteUrl: 'https://www.inscripcions.cat',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-02',
@@ -454,7 +400,6 @@ export const races: TrailRace[] = [
     city: 'Sant Martí de Tous',
     province: 'Barcelona',
     websiteUrl: 'https://www.panna.cat/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-02',
@@ -465,7 +410,6 @@ export const races: TrailRace[] = [
     city: 'Sant Martí de Tous',
     province: 'Barcelona',
     websiteUrl: 'https://www.panna.cat/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-08',
@@ -476,7 +420,6 @@ export const races: TrailRace[] = [
     city: 'Collbató',
     province: 'Barcelona',
     websiteUrl: 'https://cursalba.cat/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-08',
@@ -487,7 +430,6 @@ export const races: TrailRace[] = [
     city: 'Collbató',
     province: 'Barcelona',
     websiteUrl: 'https://cursalba.cat/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-08',
@@ -498,7 +440,6 @@ export const races: TrailRace[] = [
     city: 'Collbató',
     province: 'Barcelona',
     websiteUrl: 'https://cursalba.cat/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-09',
@@ -509,7 +450,6 @@ export const races: TrailRace[] = [
     city: 'Montcada i Reixac',
     province: 'Barcelona',
     websiteUrl: 'https://www.montescatano.cat',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-09',
@@ -520,7 +460,6 @@ export const races: TrailRace[] = [
     city: 'Montcada i Reixac',
     province: 'Barcelona',
     websiteUrl: 'https://www.montescatano.cat',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-09',
@@ -531,7 +470,6 @@ export const races: TrailRace[] = [
     city: 'Montcada i Reixac',
     province: 'Barcelona',
     websiteUrl: 'https://www.montescatano.cat',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-09',
@@ -542,7 +480,6 @@ export const races: TrailRace[] = [
     city: 'Taradell',
     province: 'Barcelona',
     websiteUrl: 'https://www.innovitsport.com',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-09',
@@ -553,7 +490,6 @@ export const races: TrailRace[] = [
     city: 'Taradell',
     province: 'Barcelona',
     websiteUrl: 'https://www.innovitsport.com/esdeveniments/trail-tocasons/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-09',
@@ -564,7 +500,6 @@ export const races: TrailRace[] = [
     city: 'Taradell',
     province: 'Barcelona',
     websiteUrl: 'https://www.innovitsport.com/esdeveniments/trail-tocasons/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-09',
@@ -575,7 +510,6 @@ export const races: TrailRace[] = [
     city: 'Navàs',
     province: 'Barcelona',
     websiteUrl: 'https://trenca3pics.weebly.com',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-09',
@@ -586,7 +520,6 @@ export const races: TrailRace[] = [
     city: 'Navàs',
     province: 'Barcelona',
     websiteUrl: 'https://trenca3pics.weebly.com',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-09',
@@ -597,7 +530,6 @@ export const races: TrailRace[] = [
     city: 'Navàs',
     province: 'Barcelona',
     websiteUrl: 'https://trenca3pics.weebly.com',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-09',
@@ -608,7 +540,6 @@ export const races: TrailRace[] = [
     city: 'Sant Martí Sarroca',
     province: 'Barcelona',
     websiteUrl: 'https://webtretzesports.wixsite.com/cursarroca',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-09',
@@ -619,7 +550,6 @@ export const races: TrailRace[] = [
     city: 'Sant Esteve de Palautordera',
     province: 'Barcelona',
     websiteUrl: 'https://maratomontseny.com',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-09',
@@ -630,7 +560,6 @@ export const races: TrailRace[] = [
     city: 'Sant Esteve de Palautordera',
     province: 'Barcelona',
     websiteUrl: 'https://maratomontseny.com/sitja-del-llop-22/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-09',
@@ -641,7 +570,6 @@ export const races: TrailRace[] = [
     city: "Móra d'Ebre",
     province: 'Tarragona',
     websiteUrl: 'https://cursacamidesirga.picossatrail.cat',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-09',
@@ -652,7 +580,6 @@ export const races: TrailRace[] = [
     city: "Móra d'Ebre",
     province: 'Tarragona',
     websiteUrl: 'https://cursacamidesirga.picossatrail.cat',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-09',
@@ -663,7 +590,6 @@ export const races: TrailRace[] = [
     city: "Móra d'Ebre",
     province: 'Tarragona',
     websiteUrl: 'https://cursacamidesirga.picossatrail.cat',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-09',
@@ -674,7 +600,6 @@ export const races: TrailRace[] = [
     city: 'La Garriga',
     province: 'Barcelona',
     websiteUrl: 'https://www.lestortugues.cat/saligarda-trail/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-09',
@@ -685,7 +610,6 @@ export const races: TrailRace[] = [
     city: 'La Garriga',
     province: 'Barcelona',
     websiteUrl: 'https://www.lestortugues.cat/saligarda-trail/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-09',
@@ -696,7 +620,6 @@ export const races: TrailRace[] = [
     city: 'Santa Coloma de Farners',
     province: 'Girona',
     websiteUrl: 'https://cursadelaratafia.cat',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-09',
@@ -707,7 +630,6 @@ export const races: TrailRace[] = [
     city: 'Santa Coloma de Farners',
     province: 'Girona',
     websiteUrl: 'https://cursadelaratafia.cat',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-09',
@@ -718,7 +640,6 @@ export const races: TrailRace[] = [
     city: 'Castellet i la Gornal',
     province: 'Barcelona',
     websiteUrl: 'https://cursamontanyans.wordpress.com',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-09',
@@ -729,7 +650,6 @@ export const races: TrailRace[] = [
     city: 'Castellet i la Gornal',
     province: 'Barcelona',
     websiteUrl: 'https://cursamontanyans.wordpress.com',
-    difficulty: getRandomDifficulty(),
   },
 
   {
@@ -741,7 +661,6 @@ export const races: TrailRace[] = [
     city: 'Barcelona',
     province: 'Barcelona',
     websiteUrl: 'https://antenasolidaria.cat',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-15',
@@ -752,7 +671,6 @@ export const races: TrailRace[] = [
     city: 'Barcelona',
     province: 'Barcelona',
     websiteUrl: 'https://antenasolidaria.cat',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-15',
@@ -763,7 +681,6 @@ export const races: TrailRace[] = [
     city: 'Sant Llorenç de Montgai',
     province: 'Lleida',
     websiteUrl: 'https://www.trailmontroig.cat',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-15',
@@ -774,7 +691,6 @@ export const races: TrailRace[] = [
     city: 'Sant Llorenç de Montgai',
     province: 'Lleida',
     websiteUrl: 'https://www.trailmontroig.cat',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-15',
@@ -785,7 +701,6 @@ export const races: TrailRace[] = [
     city: 'Sant Llorenç de Montgai',
     province: 'Lleida',
     websiteUrl: 'https://www.trailmontroig.cat',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-15',
@@ -796,7 +711,6 @@ export const races: TrailRace[] = [
     city: 'Calella',
     province: 'Girona',
     websiteUrl: 'https://www.mmoutdoorculture.com',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-15',
@@ -807,7 +721,6 @@ export const races: TrailRace[] = [
     city: 'Calella',
     province: 'Girona',
     websiteUrl: 'https://www.mmoutdoorculture.com',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-15',
@@ -818,7 +731,6 @@ export const races: TrailRace[] = [
     city: 'Calella',
     province: 'Girona',
     websiteUrl: 'https://www.mmoutdoorculture.com',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-15',
@@ -829,7 +741,6 @@ export const races: TrailRace[] = [
     city: 'Calella',
     province: 'Girona',
     websiteUrl: 'https://www.mmoutdoorculture.com',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-15',
@@ -840,7 +751,6 @@ export const races: TrailRace[] = [
     city: 'Sant Hipòlit de Voltregà',
     province: 'Barcelona',
     websiteUrl: 'https://www.upxictrail.com/',
-    difficulty: getRandomDifficulty(),
   },
 
   {
@@ -852,7 +762,6 @@ export const races: TrailRace[] = [
     city: 'Sant Hipòlit de Voltregà',
     province: 'Barcelona',
     websiteUrl: 'https://www.upxictrail.com/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-16',
@@ -863,7 +772,6 @@ export const races: TrailRace[] = [
     city: 'Sant Hipòlit de Voltregà',
     province: 'Barcelona',
     websiteUrl: 'https://www.upxictrail.com/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-16',
@@ -874,7 +782,6 @@ export const races: TrailRace[] = [
     city: 'Vandellòs',
     province: 'Tarragona',
     websiteUrl: 'https://www.vandekames.cat/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-16',
@@ -885,7 +792,6 @@ export const races: TrailRace[] = [
     city: 'Vandellòs',
     province: 'Tarragona',
     websiteUrl: 'https://www.vandekames.cat/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-16',
@@ -896,7 +802,6 @@ export const races: TrailRace[] = [
     city: 'Vandellòs',
     province: 'Tarragona',
     websiteUrl: 'https://www.vandekames.cat/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-16',
@@ -907,7 +812,6 @@ export const races: TrailRace[] = [
     city: 'Argentona',
     province: 'Barcelona',
     websiteUrl: 'https://www.gmargentona.com/xtrem/burriac-xtrem-2025/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-16',
@@ -918,7 +822,6 @@ export const races: TrailRace[] = [
     city: 'Argentona',
     province: 'Barcelona',
     websiteUrl: 'https://www.gmargentona.com/xtrem/burriac-xtrem-2025/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-16',
@@ -929,7 +832,6 @@ export const races: TrailRace[] = [
     city: 'Argentona',
     province: 'Barcelona',
     websiteUrl: 'https://www.gmargentona.com/xtrem/burriac-xtrem-2025/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-16',
@@ -940,7 +842,6 @@ export const races: TrailRace[] = [
     city: 'Argentona',
     province: 'Barcelona',
     websiteUrl: 'https://www.gmargentona.com/xtrem/burriac-xtrem-2025/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-16',
@@ -951,7 +852,6 @@ export const races: TrailRace[] = [
     city: 'Portbou',
     province: 'Girona',
     websiteUrl: 'https://querroigtrail.com/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-16',
@@ -962,7 +862,6 @@ export const races: TrailRace[] = [
     city: 'Portbou',
     province: 'Girona',
     websiteUrl: 'https://querroigtrail.com/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-16',
@@ -973,7 +872,6 @@ export const races: TrailRace[] = [
     city: 'Portbou',
     province: 'Girona',
     websiteUrl: 'https://querroigtrail.com/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-16',
@@ -984,7 +882,6 @@ export const races: TrailRace[] = [
     city: 'Girona',
     province: 'Girona',
     websiteUrl: 'https://www.klassmark.com/es/cmg-girona/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-16',
@@ -995,7 +892,6 @@ export const races: TrailRace[] = [
     city: 'Girona',
     province: 'Girona',
     websiteUrl: 'https://www.klassmark.com/es/cmg-girona/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-16',
@@ -1006,7 +902,6 @@ export const races: TrailRace[] = [
     city: 'Girona',
     province: 'Girona',
     websiteUrl: 'https://www.klassmark.com/es/cmg-girona/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-16',
@@ -1017,7 +912,6 @@ export const races: TrailRace[] = [
     city: 'Girona',
     province: 'Girona',
     websiteUrl: 'https://www.klassmark.com/es/cmg-girona/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-22',
@@ -1028,7 +922,6 @@ export const races: TrailRace[] = [
     city: "Castell de l'Areny",
     province: 'Barcelona',
     websiteUrl: 'https://misports.cat/curses/roc-de-la-clusa/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-22',
@@ -1039,7 +932,6 @@ export const races: TrailRace[] = [
     city: 'Torrelles de Foix',
     province: 'Barcelona',
     websiteUrl: 'https://www.cursafosca.cat',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-22',
@@ -1050,7 +942,6 @@ export const races: TrailRace[] = [
     city: 'Torrelles de Foix',
     province: 'Barcelona',
     websiteUrl: 'https://www.cursafosca.cat',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-23',
@@ -1061,7 +952,6 @@ export const races: TrailRace[] = [
     city: 'Sentmenat',
     province: 'Barcelona',
     websiteUrl: 'https://www.lasansi.com/ca/pujada-guanta',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-23',
@@ -1072,7 +962,6 @@ export const races: TrailRace[] = [
     city: 'Sentmenat',
     province: 'Barcelona',
     websiteUrl: 'https://www.lasansi.com/ca/pujada-guanta',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-23',
@@ -1083,7 +972,6 @@ export const races: TrailRace[] = [
     city: 'Gualba',
     province: 'Barcelona',
     websiteUrl: 'https://gualbatrail.softr.app/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-23',
@@ -1094,7 +982,6 @@ export const races: TrailRace[] = [
     city: 'Gualba',
     province: 'Barcelona',
     websiteUrl: 'https://gualbatrail.softr.app/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-23',
@@ -1105,7 +992,6 @@ export const races: TrailRace[] = [
     city: 'Granollers',
     province: 'Barcelona',
     websiteUrl: 'https://cngranollers.org/4camins/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-23',
@@ -1116,7 +1002,6 @@ export const races: TrailRace[] = [
     city: 'Granollers',
     province: 'Barcelona',
     websiteUrl: 'https://cngranollers.org/4camins/',
-    difficulty: getRandomDifficulty(),
   },
 
   {
@@ -1128,7 +1013,6 @@ export const races: TrailRace[] = [
     city: 'Molins de Rei',
     province: 'Barcelona',
     websiteUrl: 'https://caminsdecollserola.cat',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-30',
@@ -1139,7 +1023,6 @@ export const races: TrailRace[] = [
     city: 'Molins de Rei',
     province: 'Barcelona',
     websiteUrl: 'https://caminsdecollserola.cat',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-30',
@@ -1150,7 +1033,6 @@ export const races: TrailRace[] = [
     city: 'Cabrianes',
     province: 'Barcelona',
     websiteUrl: 'https://www.campionatmaqui.cat/cursa-bell-race/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-30',
@@ -1161,7 +1043,6 @@ export const races: TrailRace[] = [
     city: 'Cabrianes',
     province: 'Barcelona',
     websiteUrl: 'https://www.campionatmaqui.cat/cursa-bell-race/',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-30',
@@ -1172,7 +1053,6 @@ export const races: TrailRace[] = [
     city: "Bellcaire d'Empordà",
     province: 'Girona',
     websiteUrl: 'https://www.traillavall.cat',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-30',
@@ -1183,7 +1063,6 @@ export const races: TrailRace[] = [
     city: "Bellcaire d'Empordà",
     province: 'Girona',
     websiteUrl: 'https://www.traillavall.cat',
-    difficulty: getRandomDifficulty(),
   },
   {
     date: '2025-11-30',
