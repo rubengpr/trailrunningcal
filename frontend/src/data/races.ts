@@ -1217,7 +1217,7 @@ export const races: TrailRace[] = [
     websiteUrl: 'https://www.lanavarclina.cat',
   },
   {
-    date: '2024-01-07',
+    date: '2026-01-04',
     name: 'Cursa de Reis Sant Julià 5km',
     distanceKm: 5,
     elevationGainM: 150,
