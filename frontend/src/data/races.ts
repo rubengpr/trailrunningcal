@@ -1336,6 +1336,37 @@ export const races: TrailRace[] = [
     province: 'Girona',
     websiteUrl: 'https://www.klassmark.com/trailcapdecreus/',
   },
+  {
+    date: '2026-01-18',
+    name: 'Trail de Creixell 11K',
+    distanceKm: 11,
+    elevationGainM: 200,
+    priceEur: 20,
+    city: 'Creixell',
+    province: 'Tarragona',
+    websiteUrl: 'https://www.creixelltrail.es/',
+  },
+  {
+    date: '2026-01-25',
+    name: 'Cursa atlètica Run-Run La Vall del Terri 10K',
+    distanceKm: 10,
+    elevationGainM: 190,
+    priceEur: 10,
+    city: 'Cornellà de Terri',
+    province: 'Girona',
+    websiteUrl:
+      'https://cursesplaestany.cat/cursa-atletica-run-run-la-vall-terri/',
+  },
+  {
+    date: '2026-01-25',
+    name: 'Trail Alforja 14K',
+    distanceKm: 14,
+    elevationGainM: 586,
+    priceEur: 12,
+    city: 'Alforja',
+    province: 'Tarragona',
+    websiteUrl: 'https://webtretzesports.wixsite.com/trailalforja',
+  },
 
   {
     date: null,
