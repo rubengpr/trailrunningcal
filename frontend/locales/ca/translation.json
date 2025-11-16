@@ -1,0 +1,108 @@
+{
+  "title": "Calendari curses Trail Running Catalunya",
+  "subtitle": "Troba les millors curses de muntanya de Catalunya",
+  "search": {
+    "placeholder": "Cercar per nom, ciutat o província...",
+    "ariaLabel": "Cercar curses per nom, ciutat o província",
+    "clear": "Netejar cerca",
+    "section": "Cerca i filtres"
+  },
+  "filters": {
+    "monthLabel": "Filtrar per mes",
+    "filterBy": "Filtrar per",
+    "clearFilters": "Netejar filtres",
+    "clearFiltersAria": "Netejar tots els filtres de cerca"
+  },
+  "months": {
+    "ene": "Gen",
+    "feb": "Feb",
+    "mar": "Mar",
+    "abr": "Abr",
+    "may": "Mai",
+    "jun": "Jun",
+    "jul": "Jul",
+    "ago": "Ago",
+    "sep": "Set",
+    "oct": "Oct",
+    "nov": "Nov",
+    "dic": "Des"
+  },
+  "results": {
+    "noRacesFound": "No s'han trobat curses",
+    "noRacesMessage": "No hi ha curses que coincideixin amb els filtres seleccionats. Prova d'ajustar la teva cerca o selecció de mes.",
+    "racesFound": "S'han trobat {{count}} curses",
+    "noRacesFiltered": "No s'han trobat curses amb els filtres seleccionats",
+    "racesList": "Curses de trail running",
+    "racesListAria": "Llista de curses"
+  },
+  "race": {
+    "details": "Detalls de la cursa",
+    "distance": "Distància: {{km}} quilòmetres",
+    "elevation": "Desnivell: {{meters}} metres",
+    "elevationNotSpecified": "Desnivell: No especificat",
+    "elevationRatio": "Desnivell/km: {{ratio}} metres per quilòmetre",
+    "elevationRatioNotSpecified": "Desnivell/km: No especificat",
+    "location": "Ubicació: {{city}}, {{province}}",
+    "difficulty": "Dificultat: {{level}}",
+    "difficultyNotSpecified": "Dificultat: No especificada",
+    "category": "Categoria: {{category}}",
+    "price": "Preu: {{price}} euros",
+    "priceNotSpecified": "Preu: No especificat",
+    "visitWebsite": "Visitar pàgina web de {{name}} (s'obre en nova pestanya)",
+    "webLink": "Web →",
+    "notAvailable": "N/D"
+  },
+  "difficulty": {
+    "fácil": "Fàcil",
+    "moderado": "Moderat",
+    "difícil": "Difícil",
+    "experto": "Expert"
+  },
+  "category": {
+    "ultra": "Ultra",
+    "maraton": "Marató",
+    "media": "Mitja",
+    "trail": "Trail",
+    "sprint": "Sprint"
+  },
+  "navigation": {
+    "skipToMain": "Saltar al contingut principal",
+    "skipToSearch": "Saltar a cerca",
+    "mainNav": "Navegació principal",
+    "goToHome": "Anar a la pàgina principal - Trail Running Calendar",
+    "appName": "Trail Running Cal",
+    "contact": "Contacte",
+    "languageSelector": "Selector d'idioma",
+    "changeToSpanish": "Cambiar a Español",
+    "changeToCatalan": "Canviar a Català"
+  },
+  "contact": {
+    "title": "Contacte",
+    "description": "Tens alguna pregunta sobre les curses o necessites més informació? No dubtis en contactar-nos.",
+    "email": "Correu electrònic",
+    "emailDescription": "Per a consultes generals:",
+    "emailAria": "Enviar correu electrònic a info@trailrunningcal.com",
+    "location": "Ubicació",
+    "locationDescription": "Basat a:",
+    "locationValue": "Catalunya, Espanya",
+    "information": "Informació",
+    "infoDescription1": "Trail Running Cal és la teva plataforma de referència per descobrir les millors curses de trail running a Catalunya.",
+    "infoDescription2": "Mantenim un calendari actualitzat amb curses de totes les províncies catalanes, des de curses populars fins a ultra trails.",
+    "infoDescription3": "Si ets organitzador de curses i vols que el teu esdeveniment aparegui al nostre calendari, contacta'ns."
+  },
+  "errors": {
+    "general": "Alguna cosa ha anat malament",
+    "generalMessage": "Ha ocorregut un error inesperat. Si us plau, torna-ho a intentar.",
+    "retry": "Tornar a intentar",
+    "raceLoadError": "Error en carregar cursa",
+    "raceLoadErrorMessage": "No s'ha pogut mostrar aquesta cursa",
+    "raceLoadErrorMessageFull": "No s'ha pogut mostrar la informació d'aquesta cursa. Intenta recarregar la pàgina.",
+    "searchError": "Error en la cerca",
+    "searchErrorMessage": "No s'han pogut carregar les curses. Verifica la teva connexió i torna-ho a intentar.",
+    "errorDetails": "Detalls de l'error (desenvolupament)"
+  },
+  "footer": {
+    "copyright": "© {{year}} Trail Running Cal"
+  }
+}
+
