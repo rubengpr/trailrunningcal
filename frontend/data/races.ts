@@ -1073,7 +1073,6 @@ export const races: TrailRace[] = [
     city: "Bellcaire d'Empordà",
     province: 'Girona',
     websiteUrl: 'https://www.traillavall.cat',
-    difficulty: null,
   },
   {
     date: '2025-11-30',
@@ -1084,7 +1083,6 @@ export const races: TrailRace[] = [
     city: "Bellcaire d'Empordà",
     province: 'Girona',
     websiteUrl: 'https://www.traillavall.cat',
-    difficulty: null,
   },
   {
     date: '2025-11-30',
@@ -1095,7 +1093,6 @@ export const races: TrailRace[] = [
     city: 'Pacs del Penedès',
     province: 'Barcelona',
     websiteUrl: 'https://corremperlaterra.wordpress.com/',
-    difficulty: null,
   },
   {
     date: '2025-12-07',
@@ -1106,7 +1103,6 @@ export const races: TrailRace[] = [
     city: 'Tarragona',
     province: 'Tarragona',
     websiteUrl: 'https://alliberadrenalina.com/imperial-tarraco/',
-    difficulty: null,
   },
   {
     date: '2025-12-07',
@@ -1117,7 +1113,6 @@ export const races: TrailRace[] = [
     city: 'Tarragona',
     province: 'Tarragona',
     websiteUrl: 'https://alliberadrenalina.com/imperial-tarraco/',
-    difficulty: null,
   },
   {
     date: '2025-12-08',
@@ -1128,7 +1123,6 @@ export const races: TrailRace[] = [
     city: 'Porqueres',
     province: 'Girona',
     websiteUrl: 'https://cursesplaestany.cat/cursa-popular-porqueres/',
-    difficulty: null,
   },
   {
     date: '2025-12-13',
@@ -1139,7 +1133,6 @@ export const races: TrailRace[] = [
     city: "Santa Cristina d'Aro",
     province: 'Girona',
     websiteUrl: 'https://www.matxacuca.com',
-    difficulty: null,
   },
   {
     date: '2025-12-13',
@@ -1150,7 +1143,6 @@ export const races: TrailRace[] = [
     city: "Santa Cristina d'Aro",
     province: 'Girona',
     websiteUrl: 'https://www.matxacuca.com',
-    difficulty: null,
   },
   {
     date: '2025-12-14',
@@ -1161,7 +1153,6 @@ export const races: TrailRace[] = [
     city: 'Santa Maria de Martorelles',
     province: 'Barcelona',
     websiteUrl: 'https://laneorural.com',
-    difficulty: null,
   },
   {
     date: '2025-12-14',
@@ -1172,7 +1163,6 @@ export const races: TrailRace[] = [
     city: 'La Riera de Gaià',
     province: 'Tarragona',
     websiteUrl: 'https://cursalarieragaia.cat/',
-    difficulty: null,
   },
   {
     date: '2025-12-14',
@@ -1183,7 +1173,6 @@ export const races: TrailRace[] = [
     city: 'La Riera de Gaià',
     province: 'Tarragona',
     websiteUrl: 'https://cursalarieragaia.cat',
-    difficulty: null,
   },
   {
     date: '2025-12-14',
@@ -1194,7 +1183,6 @@ export const races: TrailRace[] = [
     city: 'Barcelona',
     province: 'Barcelona',
     websiteUrl: 'https://collserola.cec.cat',
-    difficulty: null,
   },
   {
     date: '2026-01-04',
@@ -1377,7 +1365,6 @@ export const races: TrailRace[] = [
     city: 'Colldejou',
     province: 'Tarragona',
     websiteUrl: 'https://www.naturetime.es/ca/cursa-de-nadal/',
-    difficulty: null,
   },
   {
     date: null,
@@ -1388,7 +1375,6 @@ export const races: TrailRace[] = [
     city: 'Colldejou',
     province: 'Tarragona',
     websiteUrl: 'https://www.naturetime.es/ca/cursa-de-nadal/',
-    difficulty: null,
   },
   {
     date: null,
@@ -1399,6 +1385,5 @@ export const races: TrailRace[] = [
     city: 'Sant Pere de Torelló',
     province: 'Barcelona',
     websiteUrl: 'https://cursadenadalt.com',
-    difficulty: null,
   },
 ];
