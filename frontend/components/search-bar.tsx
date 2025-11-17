@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 
 interface SearchBarProps {
   initialSearchTerm?: string;
@@ -14,7 +14,7 @@ export default function SearchBar({
   onSearchChange,
   placeholder,
 }: SearchBarProps) {
-  const { t } = useTranslation();
+  const t = useTranslations('search');
   const [searchTerm, setSearchTerm] = useState<string>(initialSearchTerm);
 
   // Sync internal state with prop changes (if parent needs to reset it)
@@ -56,14 +56,12 @@ export default function SearchBar({
           type="text"
           value={searchTerm}
           onChange={handleInputChange}
-          placeholder={placeholder || t('search.placeholder')}
-          aria-label={t('search.ariaLabel')}
+          placeholder={placeholder || t('placeholder')}
           className="block w-full pl-10 sm:pl-12 pr-10 sm:pr-12 py-2.5 sm:py-2 bg-white border-2 border-indigo-300 rounded-xl text-sm sm:text-base placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
         />
         {searchTerm && (
           <button
             onClick={handleClear}
-            aria-label={t('search.clear')}
             className="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded-md transition-colors"
           >
             <svg

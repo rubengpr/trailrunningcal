@@ -3,15 +3,11 @@
   "subtitle": "Troba les millors curses de muntanya de Catalunya",
   "search": {
     "placeholder": "Cercar per nom, ciutat o província...",
-    "ariaLabel": "Cercar curses per nom, ciutat o província",
     "clear": "Netejar cerca",
     "section": "Cerca i filtres"
   },
   "filters": {
-    "monthLabel": "Filtrar per mes",
-    "filterBy": "Filtrar per",
-    "clearFilters": "Netejar filtres",
-    "clearFiltersAria": "Netejar tots els filtres de cerca"
+    "clearFilters": "Netejar filtres"
   },
   "months": {
     "ene": "Gen",
@@ -32,23 +28,11 @@
     "noRacesMessage": "No hi ha curses que coincideixin amb els filtres seleccionats. Prova d'ajustar la teva cerca o selecció de mes.",
     "racesFound": "S'han trobat {{count}} curses",
     "noRacesFiltered": "No s'han trobat curses amb els filtres seleccionats",
-    "racesList": "Curses de trail running",
-    "racesListAria": "Llista de curses"
+    "racesList": "Curses de trail running"
   },
   "race": {
-    "details": "Detalls de la cursa",
-    "distance": "Distància: {{km}} quilòmetres",
-    "elevation": "Desnivell: {{meters}} metres",
-    "elevationNotSpecified": "Desnivell: No especificat",
-    "elevationRatio": "Desnivell/km: {{ratio}} metres per quilòmetre",
-    "elevationRatioNotSpecified": "Desnivell/km: No especificat",
-    "location": "Ubicació: {{city}}, {{province}}",
     "difficulty": "Dificultat: {{level}}",
     "difficultyNotSpecified": "Dificultat: No especificada",
-    "category": "Categoria: {{category}}",
-    "price": "Preu: {{price}} euros",
-    "priceNotSpecified": "Preu: No especificat",
-    "visitWebsite": "Visitar pàgina web de {{name}} (s'obre en nova pestanya)",
     "webLink": "Web →",
     "notAvailable": "N/D"
   },
@@ -66,22 +50,14 @@
     "sprint": "Sprint"
   },
   "navigation": {
-    "skipToMain": "Saltar al contingut principal",
-    "skipToSearch": "Saltar a cerca",
-    "mainNav": "Navegació principal",
-    "goToHome": "Anar a la pàgina principal - Trail Running Calendar",
     "appName": "Trail Running Cal",
-    "contact": "Contacte",
-    "languageSelector": "Selector d'idioma",
-    "changeToSpanish": "Cambiar a Español",
-    "changeToCatalan": "Canviar a Català"
+    "contact": "Contacte"
   },
   "contact": {
     "title": "Contacte",
     "description": "Tens alguna pregunta sobre les curses o necessites més informació? No dubtis en contactar-nos.",
     "email": "Correu electrònic",
     "emailDescription": "Per a consultes generals:",
-    "emailAria": "Enviar correu electrònic a info@trailrunningcal.com",
     "location": "Ubicació",
     "locationDescription": "Basat a:",
     "locationValue": "Catalunya, Espanya",
@@ -102,7 +78,7 @@
     "errorDetails": "Detalls de l'error (desenvolupament)"
   },
   "footer": {
-    "copyright": "© {{year}} Trail Running Cal"
+    "copyright": "© {year} Trail Running Cal"
   }
 }
 

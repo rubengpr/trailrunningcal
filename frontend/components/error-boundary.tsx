@@ -1,7 +1,7 @@
 'use client';
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -49,7 +49,7 @@ interface DefaultErrorFallbackProps {
 }
 
 function DefaultErrorFallback({ error }: DefaultErrorFallbackProps) {
-  const { t } = useTranslation();
+  const t = useTranslations('errors');
 
   return (
     <div className="min-h-[200px] flex items-center justify-center p-6">
@@ -71,9 +71,9 @@ function DefaultErrorFallback({ error }: DefaultErrorFallbackProps) {
           </svg>
         </div>
         <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          {t('errors.general')}
+          {t('general')}
         </h3>
-        <p className="text-gray-600 mb-4">{t('errors.generalMessage')}</p>
+        <p className="text-gray-600 mb-4">{t('generalMessage')}</p>
         <button
           onClick={() => window.location.reload()}
           className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
@@ -92,12 +92,12 @@ function DefaultErrorFallback({ error }: DefaultErrorFallbackProps) {
               d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
             />
           </svg>
-          {t('errors.retry')}
+          {t('retry')}
         </button>
         {process.env.NODE_ENV === 'development' && error && (
           <details className="mt-4 text-left">
             <summary className="cursor-pointer text-sm text-gray-500 hover:text-gray-700">
-              {t('errors.errorDetails')}
+              {t('errorDetails')}
             </summary>
             <pre className="mt-2 text-xs text-red-600 bg-red-50 p-2 rounded overflow-auto">
               {error.message}
@@ -111,4 +111,3 @@ function DefaultErrorFallback({ error }: DefaultErrorFallbackProps) {
 }
 
 export default ErrorBoundary;
-

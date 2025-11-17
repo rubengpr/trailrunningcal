@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 
 interface ErrorMessageProps {
   title?: string;
@@ -20,7 +20,7 @@ export function ErrorMessage({
   variant = 'default',
   className = '',
 }: ErrorMessageProps) {
-  const { t } = useTranslation();
+  const t = useTranslations('errors');
   const baseClasses = 'text-center';
   const variantClasses = {
     default: 'min-h-[200px] flex items-center justify-center p-6',
@@ -68,10 +68,10 @@ export function ErrorMessage({
         <h3
           className={`${titleSize[variant]} font-semibold text-gray-900 mb-2`}
         >
-          {title || t('errors.general')}
+          {title || t('general')}
         </h3>
         <p className={`${messageSize[variant]} text-gray-600 mb-4`}>
-          {message || t('errors.generalMessage')}
+          {message || t('generalMessage')}
         </p>
         {showRetry && onRetry && (
           <button
@@ -92,7 +92,7 @@ export function ErrorMessage({
                 d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
               />
             </svg>
-            {t('errors.retry')}
+            {t('retry')}
           </button>
         )}
       </div>
@@ -105,13 +105,13 @@ interface RaceCardErrorProps {
 }
 
 export function RaceCardError({ onRetry }: RaceCardErrorProps) {
-  const { t } = useTranslation();
+  const t = useTranslations('errors');
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-red-200 p-6">
       <ErrorMessage
-        title={t('errors.raceLoadError')}
-        message={t('errors.raceLoadErrorMessageFull')}
+        title={t('raceLoadError')}
+        message={t('raceLoadErrorMessageFull')}
         onRetry={onRetry}
         variant="compact"
         className="min-h-[120px]"
@@ -125,14 +125,14 @@ interface SearchErrorProps {
 }
 
 export function SearchError({ onRetry }: SearchErrorProps) {
-  const { t } = useTranslation();
+  const t = useTranslations('errors');
 
   return (
     <div className="w-full py-8">
       <div className="w-full px-4 sm:px-6 lg:px-8">
         <ErrorMessage
-          title={t('errors.searchError')}
-          message={t('errors.searchErrorMessage')}
+          title={t('searchError')}
+          message={t('searchErrorMessage')}
           onRetry={onRetry}
           variant="default"
         />
@@ -140,4 +140,3 @@ export function SearchError({ onRetry }: SearchErrorProps) {
     </div>
   );
 }
-

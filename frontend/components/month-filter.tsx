@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 
 interface MonthFilterProps {
   initialSelectedMonth?: string;
@@ -27,7 +27,8 @@ export default function MonthFilter({
   initialSelectedMonth = '',
   onMonthSelect,
 }: MonthFilterProps) {
-  const { t } = useTranslation();
+  const tMonths = useTranslations('months');
+  const tFilters = useTranslations('filters');
   const [selectedMonth, setSelectedMonth] = useState<string>(initialSelectedMonth);
 
   // Sync internal state with prop changes (if parent needs to reset it)
@@ -37,7 +38,7 @@ export default function MonthFilter({
 
   const months = MONTH_KEYS.map((key) => ({
     key,
-    label: t(`months.${key}`),
+    label: tMonths(key),
   }));
 
   const handleMonthClick = (monthKey: string) => {
@@ -49,15 +50,11 @@ export default function MonthFilter({
   return (
     <div
       className="flex flex-wrap gap-1.5 sm:gap-2 justify-center"
-      role="group"
-      aria-label={t('filters.monthLabel')}
     >
       {months.map((month) => (
         <button
           key={month.key}
           onClick={() => handleMonthClick(month.key)}
-          aria-pressed={selectedMonth === month.key}
-          aria-label={`${t('filters.filterBy')} ${month.label}`}
           className={`
             px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all duration-200
             border-2 border-gray-200 hover:border-indigo-300 hover:cursor-pointer

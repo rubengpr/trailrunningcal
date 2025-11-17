@@ -1,4 +1,6 @@
-import { useTranslation } from 'react-i18next';
+'use client';
+
+import { useTranslations, useLocale } from 'next-intl';
 
 interface TrailRaceCardProps {
   date: string | null;
@@ -56,8 +58,9 @@ export default function TrailRaceCard({
   province,
   websiteUrl,
 }: TrailRaceCardProps) {
-  const { t, i18n } = useTranslation();
-  const { day, month, dayOfWeek } = formatDate(date, i18n.language);
+  const t = useTranslations();
+  const locale = useLocale();
+  const { day, month, dayOfWeek } = formatDate(date, locale);
   const elevationRatio = calculateElevationRatio(elevationGainM, distanceKm);
   const raceCategory = getRaceCategory(distanceKm);
   const elevationRatioColor = getElevationRatioColor(elevationRatio);
@@ -65,8 +68,6 @@ export default function TrailRaceCard({
   return (
     <article
       className="w-full bg-white rounded-lg shadow hover:shadow-md transition-shadow"
-      role="article"
-      aria-labelledby={`race-title-${name.replace(/\s+/g, '-').toLowerCase()}`}
     >
       <div className="w-full p-2 sm:p-4">
         <div className="flex items-start sm:justify-between mb-1">
@@ -82,31 +83,21 @@ export default function TrailRaceCard({
             </div>
             <div className="flex-1">
               <h3
-                id={`race-title-${name.replace(/\s+/g, '-').toLowerCase()}`}
                 className="text-xs sm:text-lg font-bold text-gray-900 mb-1"
               >
                 {name}
               </h3>
               <div
                 className="flex gap-3 text-[10px] sm:text-sm text-gray-600 mb-2"
-                role="group"
-                aria-label={t('race.details')}
               >
-                <span aria-label={t('race.distance', { km: distanceKm })}>
+                <span>
                   {distanceKm}km
                 </span>
-                <span
-                  aria-label={
-                    elevationGainM
-                      ? t('race.elevation', { meters: elevationGainM })
-                      : t('race.elevationNotSpecified')
-                  }
-                >
+                <span>
                   {elevationGainM ? `${elevationGainM}m+` : '-'}
                 </span>
                 <span
                   className="truncate"
-                  aria-label={t('race.location', { city, province })}
                 >
                   {city}, {province}
                 </span>
@@ -114,19 +105,11 @@ export default function TrailRaceCard({
               <div className="flex justify-start items-center gap-2">
                 <span
                   className="hidden sm:block px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-sm bg-indigo-100 text-indigo-800"
-                  aria-label={t('race.category', {
-                    category: t(`category.${raceCategory}`),
-                  })}
                 >
-                  {t(`category.${raceCategory}`)}
+                  {t('category.' + raceCategory)}
                 </span>
                 <span
                   className={`hidden sm:block px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-sm ${elevationRatioColor}`}
-                  aria-label={
-                    elevationRatio !== null
-                      ? t('race.elevationRatio', { ratio: elevationRatio })
-                      : t('race.elevationRatioNotSpecified')
-                  }
                 >
                   {elevationRatio !== null ? `${elevationRatio} m/km` : '—'}
                 </span>
@@ -136,7 +119,6 @@ export default function TrailRaceCard({
                     href={websiteUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label={t('race.visitWebsite', { name })}
                     className="sm:hidden inline-block bg-indigo-600 text-white px-2 py-0.5 rounded-sm text-[10px] font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
                   >
                     {t('race.webLink')}
@@ -144,11 +126,6 @@ export default function TrailRaceCard({
                 )}
                 <div
                   className="block sm:hidden font-semibold text-gray-900 text-xs sm:text-lg"
-                  aria-label={
-                    priceEur
-                      ? t('race.price', { price: priceEur })
-                      : t('race.priceNotSpecified')
-                  }
                 >
                   {priceEur ? `${priceEur}€` : '—'}
                 </div>
@@ -158,11 +135,6 @@ export default function TrailRaceCard({
           <div className="hidden sm:flex flex-col items-end gap-2">
             <div
               className="font-semibold text-gray-900 text-xs sm:text-lg"
-              aria-label={
-                priceEur
-                  ? t('race.price', { price: priceEur })
-                  : t('race.priceNotSpecified')
-              }
             >
               {priceEur ? `${priceEur}€` : '—'}
             </div>
@@ -171,7 +143,6 @@ export default function TrailRaceCard({
                 href={websiteUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label={t('race.visitWebsite', { name })}
                 className="hidden sm:inline-block bg-indigo-600 text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
               >
                 {t('race.webLink')}

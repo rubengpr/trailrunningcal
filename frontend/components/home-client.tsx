@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 import type { TrailRace } from '../types/race.types';
 import SearchBar from './search-bar';
 import MonthFilter from './month-filter';
@@ -15,7 +15,10 @@ interface HomeClientProps {
 }
 
 export default function HomeClient({ races }: HomeClientProps) {
-  const { t } = useTranslation();
+  const tSearch = useTranslations('search');
+  const tResults = useTranslations('results');
+  const tFilters = useTranslations('filters');
+  const tErrors = useTranslations('errors');
 
   const [selectedMonth, setSelectedMonth] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -81,13 +84,13 @@ export default function HomeClient({ races }: HomeClientProps) {
   return (
     <>
       {/* Search section */}
-      <section id="search-section" className="w-full py-8">
+      <section className="w-full py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-center mb-6">
             <SearchBar
               initialSearchTerm={searchTerm}
               onSearchChange={handleSearchChange}
-              placeholder={t('search.placeholder')}
+              placeholder={tSearch('placeholder')}
             />
           </div>
           <div className="flex justify-center">
@@ -99,7 +102,7 @@ export default function HomeClient({ races }: HomeClientProps) {
         </div>
       </section>
 
-      <main id="main-content">
+      <main>
         <ErrorBoundary
           fallback={<SearchError onRetry={handleRetry} />}
           onError={(error, errorInfo) => {
@@ -129,10 +132,10 @@ export default function HomeClient({ races }: HomeClientProps) {
                         </svg>
                       </div>
                       <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                        {t('results.noRacesFound')}
+                        {tResults('noRacesFound')}
                       </h3>
                       <p className="text-gray-600 mb-6">
-                        {t('results.noRacesMessage')}
+                        {tResults('noRacesMessage')}
                       </p>
                       <button
                         onClick={handleClearFilters}
@@ -152,7 +155,7 @@ export default function HomeClient({ races }: HomeClientProps) {
                             d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                           />
                         </svg>
-                        {t('filters.clearFilters')}
+                        {tFilters('clearFilters')}
                       </button>
                     </div>
                   </div>
@@ -179,10 +182,10 @@ export default function HomeClient({ races }: HomeClientProps) {
                                 </svg>
                               </div>
                               <h4 className="text-sm font-semibold text-gray-900 mb-1">
-                                {t('errors.raceLoadError')}
+                                {tErrors('raceLoadError')}
                               </h4>
                               <p className="text-xs text-gray-600">
-                                {t('errors.raceLoadErrorMessage')}
+                                {tErrors('raceLoadErrorMessage')}
                               </p>
                             </div>
                           </div>

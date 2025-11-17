@@ -3,15 +3,11 @@
   "subtitle": "Encuentra las mejores carreras de montaña de Cataluña",
   "search": {
     "placeholder": "Buscar por nombre, ciudad o provincia...",
-    "ariaLabel": "Buscar carreras por nombre, ciudad o provincia",
     "clear": "Limpiar búsqueda",
     "section": "Búsqueda y filtros"
   },
   "filters": {
-    "monthLabel": "Filtrar por mes",
-    "filterBy": "Filtrar por",
-    "clearFilters": "Limpiar filtros",
-    "clearFiltersAria": "Limpiar todos los filtros de búsqueda"
+    "clearFilters": "Limpiar filtros"
   },
   "months": {
     "ene": "Ene",
@@ -32,23 +28,11 @@
     "noRacesMessage": "No hay carreras que coincidan con los filtros seleccionados. Prueba a ajustar tu búsqueda o selección de mes.",
     "racesFound": "Se encontraron {{count}} carreras",
     "noRacesFiltered": "No se encontraron carreras con los filtros seleccionados",
-    "racesList": "Carreras de trail running",
-    "racesListAria": "Lista de carreras"
+    "racesList": "Carreras de trail running"
   },
   "race": {
-    "details": "Detalles de la carrera",
-    "distance": "Distancia: {{km}} kilómetros",
-    "elevation": "Desnivel: {{meters}} metros",
-    "elevationNotSpecified": "Desnivel: No especificado",
-    "elevationRatio": "Desnivel/km: {{ratio}} metros por kilómetro",
-    "elevationRatioNotSpecified": "Desnivel/km: No especificado",
-    "location": "Ubicación: {{city}}, {{province}}",
     "difficulty": "Dificultad: {{level}}",
     "difficultyNotSpecified": "Dificultad: No especificada",
-    "category": "Categoría: {{category}}",
-    "price": "Precio: {{price}} euros",
-    "priceNotSpecified": "Precio: No especificado",
-    "visitWebsite": "Visitar página web de {{name}} (se abre en nueva pestaña)",
     "webLink": "Web →",
     "notAvailable": "N/A"
   },
@@ -66,22 +50,14 @@
     "sprint": "Sprint"
   },
   "navigation": {
-    "skipToMain": "Saltar al contenido principal",
-    "skipToSearch": "Saltar a búsqueda",
-    "mainNav": "Navegación principal",
-    "goToHome": "Ir a la página principal - Trail Running Calendar",
     "appName": "Trail Running Cal",
-    "contact": "Contacto",
-    "languageSelector": "Selector de idioma",
-    "changeToSpanish": "Cambiar a Español",
-    "changeToCatalan": "Canviar a Català"
+    "contact": "Contacto"
   },
   "contact": {
     "title": "Contacto",
     "description": "¿Tienes alguna pregunta sobre las carreras o necesitas más información? No dudes en contactarnos.",
     "email": "Email",
     "emailDescription": "Para consultas generales:",
-    "emailAria": "Enviar email a info@trailrunningcal.com",
     "location": "Ubicación",
     "locationDescription": "Basado en:",
     "locationValue": "Cataluña, España",
@@ -102,7 +78,7 @@
     "errorDetails": "Detalles del error (desarrollo)"
   },
   "footer": {
-    "copyright": "© {{year}} Trail Running Cal"
+    "copyright": "© {year} Trail Running Cal"
   }
 }
 
