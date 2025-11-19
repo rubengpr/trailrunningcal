@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import Navbar from '../../../components/navbar';
-import Footer from '../../../components/footer';
-import { getSeoMetaConfig } from '../../../seo/meta-config';
-import type { Locale } from '../../../i18n';
+import Navbar from '@/components/navbar';
+import Footer from '@/components/footer';
+import { getSeoMetaConfig } from '@/seo/meta-config';
+import type { Locale } from '@/i18n';
 
 export async function generateMetadata({
   params,
