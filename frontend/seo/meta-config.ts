@@ -1,4 +1,5 @@
 import type { Locale } from '../i18n';
+import { BASE_URL } from '@/lib/config';
 
 export type SeoPageId = 'home' | 'contact';
 
@@ -22,8 +23,6 @@ export interface SeoMetaPayload {
   alternateLinks: Array<{ hrefLang: string; href: string }>;
 }
 
-const BASE_URL = 'https://trailrunningcal.com';
-const SITE_NAME = 'Trail Running Calendar';
 const DEFAULT_OG_IMAGE = `${BASE_URL}/og-image.png`;
 
 const SEO_ROUTES: Record<SeoPageId, SeoRouteConfig> = {
@@ -96,7 +95,7 @@ export function getSeoMetaConfig(
     titleKey: pageConfig.titleKey,
     descriptionKey: pageConfig.descriptionKey,
     //defined name site
-    siteName: SITE_NAME,
+    siteName: 'Trail Running Calendar',
     //??
     twitterCard: 'summary_large_image',
     //tells social media what kind of content the url is (website, article, profile, product)

@@ -4,7 +4,9 @@ import Navbar from '@/components/navbar';
 import Footer from '@/components/footer';
 import { getSeoMetaConfig } from '@/seo/meta-config';
 import type { Locale } from '@/i18n';
+import { CONTACT_EMAIL } from '@/lib/config';
 
+//returns a Metadata object that creates html seo metadata tags in <head>
 export async function generateMetadata({
   params,
 }: {
@@ -104,10 +106,10 @@ export default async function ContactPage({
                 {t('contact.emailDescription')}
               </p>
               <a
-                href="mailto:info@trailrunningcal.com"
+                href={`mailto:${CONTACT_EMAIL}`}
                 className="text-indigo-600 hover:text-indigo-800 font-medium rounded-md px-1"
               >
-                info@trailrunningcal.com
+                {CONTACT_EMAIL}
               </a>
             </div>
 

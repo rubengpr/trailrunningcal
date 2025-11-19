@@ -1,5 +1,5 @@
 {
-  "title": "Calendari curses Trail Running Catalunya",
+  "title": "Calendari curses Trail Running Catalunya - Trail Running Calendar",
   "subtitle": "Troba les millors curses de muntanya de Catalunya",
   "search": {
     "placeholder": "Cercar per nom, ciutat o província...",
@@ -81,4 +81,3 @@
     "copyright": "© {year} Trail Running Cal"
   }
 }
-

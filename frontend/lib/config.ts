@@ -1,3 +1,3 @@
 export const BASE_URL = 'https://trailrunningcal.com';
 
-export const SITE_NAME = 'Trail Running Calendar';
+export const CONTACT_EMAIL = 'info@trailrunningcal.com';
