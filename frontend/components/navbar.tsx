@@ -32,6 +32,12 @@ export default function Navbar() {
             >
               {t('contact')}
             </Link>
+            <Link
+              href={`/${locale}/blog`}
+              className="hidden sm:flex px-2 py-1 hover:text-indigo-600 transition-colors"
+            >
+              {t('blog')}
+            </Link>
             <LanguagePicker />
           </div>
         </nav>
