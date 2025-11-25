@@ -15,6 +15,8 @@ export default function Navbar() {
         <Link href={`/${locale}`} className="flex items-center gap-3">
           <Image
             src="/assets/trc-logo.svg"
+            width={40}
+            height={40}
             className="w-6 h-6 sm:w-10 sm:h-10"
             alt="Trail Running Calendar logo"
           />
