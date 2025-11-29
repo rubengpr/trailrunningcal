@@ -1,5 +1,4 @@
-import Navbar from '@/components/navbar';
-import Footer from '@/components/footer';
+import Link from 'next/link';
 
 const BLOG_POSTS = [
   {
@@ -11,6 +10,7 @@ const BLOG_POSTS = [
     readTime: '5 min',
     category: 'Calendario',
     color: 'bg-emerald-900',
+    slug: 'carreras-trailrunning-2025',
   },
   {
     id: 2,
@@ -21,6 +21,7 @@ const BLOG_POSTS = [
     readTime: '8 min',
     category: 'Nutrición',
     color: 'bg-slate-800',
+    slug: 'nutricion-ultra-distancia',
   },
   {
     id: 3,
@@ -31,29 +32,34 @@ const BLOG_POSTS = [
     readTime: '6 min',
     category: 'Equipamiento',
     color: 'bg-indigo-900',
+    slug: 'material-obligatorio-mochila',
   },
 ];
 
-export default function BlogPage() {
+export default async function BlogPage({
+  params,
+}: {
+  params: Promise<{ locale: Locale }>;
+}) {
+  const { locale } = await params;
+
   return (
-    <div className="min-h-screen flex flex-col bg-white">
-      <Navbar />
+    <>
+      {/* Header Section */}
+      <div className="py-16 sm:py-24 text-center px-4">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 tracking-tight">
+          El blog de Trail Running Calendar
+        </h1>
+        <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
+          Información de carreras, consejos de entrenamiento, nutrición y más.
+        </p>
+      </div>
 
-      <main className="grow">
-        {/* Header Section */}
-        <div className="py-16 sm:py-24 text-center px-4">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 tracking-tight">
-            El blog de Trail Running Calendar
-          </h1>
-          <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
-            Información de carreras, consejos de entrenamiento, nutrición y más.
-          </p>
-        </div>
-
-        {/* Blog Grid */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-16">
-            {BLOG_POSTS.map((post) => (
+      {/* Blog Grid */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-16">
+          {BLOG_POSTS.map((post) => (
+            <Link key={post.id} href={`/${locale}/blog/${post.slug}`}>
               <article
                 key={post.id}
                 className="flex flex-col group cursor-pointer p-4 -m-4 rounded-2xl transition-all duration-200 hover:bg-white hover:ring-1 hover:ring-gray-200 hover:shadow-lg"
@@ -86,12 +92,10 @@ export default function BlogPage() {
                   </p>
                 </div>
               </article>
-            ))}
-          </div>
+            </Link>
+          ))}
         </div>
-      </main>
-
-      <Footer />
-    </div>
+      </div>
+    </>
   );
 }

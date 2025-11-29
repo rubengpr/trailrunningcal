@@ -1,4 +1,6 @@
 import type { MDXComponents } from 'mdx/types';
+import Image from 'next/image';
+import RaceInfoCard from '@/components/race-info-card';
 
 const components: MDXComponents = {
   h1: ({ children }) => (
@@ -20,6 +22,23 @@ const components: MDXComponents = {
   li: ({ children }) => <li className="ml-4">{children}</li>,
   strong: ({ children }) => <strong className="font-bold">{children}</strong>,
   em: ({ children }) => <em className="italic">{children}</em>,
+  img: (props) => {
+    const { src, alt } = props;
+    return (
+      <figure className="my-8 w-full">
+        <div className="relative w-full aspect-video rounded-lg overflow-hidden shadow-lg">
+          <Image
+            src={src as string}
+            alt={alt || ''}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, (max-width: 1600px) 80vw, 1200px"
+          />
+        </div>
+      </figure>
+    );
+  },
+  RaceInfoCard,
 };
 
 export function useMDXComponents(): MDXComponents {
