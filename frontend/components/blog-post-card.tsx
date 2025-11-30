@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import type { Locale } from '../i18n';
+import { formatDateToSpanish } from '../lib/date-utils';
 
 interface BlogPostCardProps {
   id: number;
@@ -45,7 +46,7 @@ export default function BlogPostCard({
         {/* Content */}
         <div className="flex flex-col grow">
           <div className="flex items-center gap-3 text-sm text-gray-500 mb-3">
-            <time dateTime="2025-10-15">{date}</time>
+            <time dateTime={date}>{formatDateToSpanish(date)}</time>
             <span>•</span>
             <span>{readTime}</span>
           </div>

@@ -97,7 +97,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Add blog post pages (Spanish-only for now)
   const blogPosts = getAllBlogPosts();
   for (const post of blogPosts) {
-    const postDate = post.date ? new Date(post.date) : currentDate;
+    // ISO dates parse reliably, fallback to currentDate if missing/invalid
+    const postDate = post.date
+      ? isNaN(new Date(post.date).getTime())
+        ? currentDate
+        : new Date(post.date)
+      : currentDate;
     urls.push({
       url: `${BASE_URL}/es/blog/${post.slug}`,
       lastModified: postDate,

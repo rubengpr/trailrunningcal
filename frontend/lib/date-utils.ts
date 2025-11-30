@@ -29,3 +29,22 @@ export const formatDate = (dateString: string | null) => {
   const dayOfWeek = date.toLocaleDateString('es-ES', { weekday: 'short' });
   return { day, month, dayOfWeek };
 };
+
+/**
+ * Formats a date to Spanish human-readable format
+ * @param date - Date object or ISO date string
+ * @returns Formatted date string (e.g., "30 de noviembre de 2025")
+ */
+export const formatDateToSpanish = (date: Date | string): string => {
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
+
+  if (isNaN(dateObj.getTime())) {
+    return '';
+  }
+
+  return new Intl.DateTimeFormat('es-ES', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(dateObj);
+};

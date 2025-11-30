@@ -1,7 +1,20 @@
-export default function DateAuthorString() {
+import { formatDateToSpanish } from '../lib/date-utils';
+
+interface DateAuthorStringProps {
+  date?: string;
+  author?: string;
+}
+
+export default function DateAuthorString({
+  date,
+  author = 'Ruben Godoy',
+}: DateAuthorStringProps) {
+  const formattedDate = date ? formatDateToSpanish(date) : '';
+  const dateText = formattedDate ? `${formattedDate}, por ${author}` : `por ${author}`;
+
   return (
     <p className="text-xs text-neutral-400 uppercase">
-      30 de Noviembre 2025, por Ruben Godoy
+      {dateText}
     </p>
   );
 }

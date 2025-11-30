@@ -59,10 +59,14 @@ export function getAllBlogPosts(): BlogPost[] {
     })
     .filter((post): post is BlogPost => post !== null)
     // Sort by date, newest first
+    // ISO dates parse reliably, but handle missing/invalid dates
     .sort((a, b) => {
-      const dateA = new Date(a.date).getTime();
-      const dateB = new Date(b.date).getTime();
-      return dateB - dateA;
+      const dateA = a.date ? new Date(a.date).getTime() : 0;
+      const dateB = b.date ? new Date(b.date).getTime() : 0;
+      // Invalid dates become NaN, treat as 0 (oldest)
+      const timeA = isNaN(dateA) ? 0 : dateA;
+      const timeB = isNaN(dateB) ? 0 : dateB;
+      return timeB - timeA;
     });
 
   return allPosts;
