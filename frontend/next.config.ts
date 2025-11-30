@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
 };
 
 const withMDX = createMDX({
-  // Add markdown plugins here, as desired
+  // No plugins - removed to fix Turbopack serialization error
 });
 
 // Apply MDX and next-intl plugins to Next.js config
