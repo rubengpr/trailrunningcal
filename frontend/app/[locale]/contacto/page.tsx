@@ -2,11 +2,13 @@ import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import Navbar from '@/components/navbar';
 import Footer from '@/components/footer';
-import { getSeoMetaConfig } from '@/seo/meta-config';
+import {
+  getSeoMetaConfig,
+  generateMetadataFromOptions,
+} from '@/seo/meta-config';
 import type { Locale } from '@/i18n';
 import { CONTACT_EMAIL } from '@/lib/config';
 
-//returns a Metadata object that creates html seo metadata tags in <head>
 export async function generateMetadata({
   params,
 }: {
@@ -19,42 +21,17 @@ export async function generateMetadata({
   const title = t(seoMeta.titleKey);
   const description = t(seoMeta.descriptionKey);
 
-  return {
+  return generateMetadataFromOptions({
     title,
     description,
-    robots: {
-      index: true,
-      follow: true,
-    },
-    alternates: {
-      canonical: seoMeta.canonicalUrl,
-      languages: Object.fromEntries(
-        seoMeta.alternateLinks.map((link) => [link.hrefLang, link.href]),
-      ),
-    },
-    openGraph: {
-      type: seoMeta.ogType,
-      title,
-      description,
-      url: seoMeta.canonicalUrl,
-      locale: seoMeta.locale,
-      siteName: seoMeta.siteName,
-      images: [
-        {
-          url: seoMeta.ogImageUrl,
-          width: 1200,
-          height: 630,
-          alt: title,
-        },
-      ],
-    },
-    twitter: {
-      card: seoMeta.twitterCard,
-      title,
-      description,
-      images: [seoMeta.ogImageUrl],
-    },
-  };
+    canonicalUrl: seoMeta.canonicalUrl,
+    locale,
+    ogImageUrl: seoMeta.ogImageUrl,
+    ogType: seoMeta.ogType,
+    alternateLinks: Object.fromEntries(
+      seoMeta.alternateLinks.map((link) => [link.hrefLang, link.href]),
+    ),
+  });
 }
 
 export default async function ContactPage({

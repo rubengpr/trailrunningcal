@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import type { Locale } from '../i18n';
 import { BASE_URL } from '@/lib/config';
 
@@ -46,10 +47,12 @@ const SEO_ROUTES: Record<SeoPageId, SeoRouteConfig> = {
   },
 };
 
-const LOCALE_BY_LANGUAGE: Record<Locale, string> = {
+export const LOCALE_BY_LANGUAGE: Record<Locale, string> = {
   es: 'es_ES',
   ca: 'ca_ES',
 };
+
+export const SITE_NAME = 'Trail Running Calendar';
 
 function buildCanonical(path: string): string {
   return `${BASE_URL}${path}`;
@@ -95,7 +98,7 @@ export function getSeoMetaConfig(
     titleKey: pageConfig.titleKey,
     descriptionKey: pageConfig.descriptionKey,
     //defined name site
-    siteName: 'Trail Running Calendar',
+    siteName: SITE_NAME,
     //??
     twitterCard: 'summary_large_image',
     //tells social media what kind of content the url is (website, article, profile, product)
@@ -108,4 +111,76 @@ export function getSeoMetaConfig(
       <link rel="alternate" hreflang="x-default" href="https://yoursite.com/es/contacto" /> */
     alternateLinks: buildAlternateLinks(pageId),
   };
+}
+
+export interface GenerateMetadataOptions {
+  title: string;
+  description: string;
+  canonicalUrl: string;
+  locale: Locale;
+  ogImageUrl: string;
+  ogImageAlt?: string;
+  ogType?: 'website' | 'article';
+  alternateLinks?: Record<string, string>;
+  publishedTime?: string;
+}
+
+export function generateMetadataFromOptions(
+  options: GenerateMetadataOptions,
+): Metadata {
+  const {
+    title,
+    description,
+    canonicalUrl,
+    locale,
+    ogImageUrl,
+    ogImageAlt = title,
+    ogType = 'website',
+    alternateLinks,
+    publishedTime,
+  } = options;
+
+  const ogImageFullUrl = ogImageUrl.startsWith('http')
+    ? ogImageUrl
+    : `${BASE_URL}${ogImageUrl}`;
+
+  const metadata: Metadata = {
+    title,
+    description,
+    robots: {
+      index: true,
+      follow: true,
+    },
+    alternates: {
+      canonical: canonicalUrl,
+      ...(alternateLinks && {
+        languages: alternateLinks,
+      }),
+    },
+    openGraph: {
+      type: ogType,
+      title,
+      description,
+      url: canonicalUrl,
+      locale: LOCALE_BY_LANGUAGE[locale],
+      siteName: SITE_NAME,
+      images: [
+        {
+          url: ogImageFullUrl,
+          width: 1200,
+          height: 630,
+          alt: ogImageAlt,
+        },
+      ],
+      ...(publishedTime && { publishedTime }),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [ogImageFullUrl],
+    },
+  };
+
+  return metadata;
 }

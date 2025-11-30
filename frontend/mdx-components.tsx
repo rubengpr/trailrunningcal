@@ -7,7 +7,9 @@ import BlogHeaderImage from './components/blog-header-image';
 import BlogDivider from './components/blog-divider';
 
 const components: MDXComponents = {
-  h1: ({ children }) => <h1 className="text-5xl font-bold my-2">{children}</h1>,
+  h1: ({ children }) => (
+    <h1 className="text-3xl sm:text-5xl font-bold my-2">{children}</h1>
+  ),
   h2: ({ children }) => (
     <h2 className="text-3xl font-bold mb-3 mt-14">{children}</h2>
   ),
