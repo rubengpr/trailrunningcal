@@ -28,8 +28,8 @@ export default function MonthFilter({
   onMonthSelect,
 }: MonthFilterProps) {
   const tMonths = useTranslations('months');
-  const tFilters = useTranslations('filters');
-  const [selectedMonth, setSelectedMonth] = useState<string>(initialSelectedMonth);
+  const [selectedMonth, setSelectedMonth] =
+    useState<string>(initialSelectedMonth);
 
   // Sync internal state with prop changes (if parent needs to reset it)
   useEffect(() => {
@@ -48,9 +48,7 @@ export default function MonthFilter({
   };
 
   return (
-    <div
-      className="flex flex-wrap gap-1.5 sm:gap-2 justify-center"
-    >
+    <div className="flex flex-wrap gap-1.5 sm:gap-2 justify-center">
       {months.map((month) => (
         <button
           key={month.key}
@@ -72,4 +70,3 @@ export default function MonthFilter({
     </div>
   );
 }
-

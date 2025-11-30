@@ -79,3 +79,6 @@ const components: MDXComponents = {
 export function useMDXComponents(): MDXComponents {
   return components;
 }
+
+// Export components directly for use in non-React contexts
+export { components };

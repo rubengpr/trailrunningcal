@@ -1,12 +1,11 @@
 'use client';
 
-import { useLocale, useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import type { Locale } from '../i18n';
 
 export default function LanguagePicker() {
-  const t = useTranslations('navigation');
   const locale = useLocale() as Locale;
   const router = useRouter();
   const pathname = usePathname();
@@ -19,15 +18,15 @@ export default function LanguagePicker() {
       segments.shift();
     }
     // Build the new path with the new locale
-    const newPath = `/${newLocale}${segments.length > 0 ? '/' + segments.join('/') : ''}`;
+    const newPath = `/${newLocale}${
+      segments.length > 0 ? '/' + segments.join('/') : ''
+    }`;
     router.push(newPath);
     router.refresh();
   };
 
   return (
-    <div
-      className="flex items-center gap-2"
-    >
+    <div className="flex items-center gap-2">
       <button
         onClick={() => handleLanguageChange('es')}
         className={`px-2 py-1 rounded-sm sm:rounded-md cursor-pointer transition-colors ${
@@ -57,4 +56,3 @@ export default function LanguagePicker() {
     </div>
   );
 }
-

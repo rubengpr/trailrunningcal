@@ -1,7 +1,7 @@
 import fs from 'fs';
 import matter from 'gray-matter';
 import { evaluate } from '@mdx-js/mdx';
-import { useMDXComponents } from '@/mdx-components';
+import { components } from '@/mdx-components';
 import type { MDXComponents } from 'mdx/types';
 import * as runtime from 'react/jsx-runtime';
 
@@ -17,9 +17,6 @@ export async function renderMDXFile(filePath: string) {
   // Strip frontmatter using gray-matter
   const { content } = matter(fileContents);
 
-  // Get MDX components
-  const components = useMDXComponents();
-
   // Compile MDX to React component
   const { default: MDXContent } = await evaluate(content, {
     ...runtime,
@@ -29,4 +26,3 @@ export async function renderMDXFile(filePath: string) {
 
   return MDXContent;
 }
-
