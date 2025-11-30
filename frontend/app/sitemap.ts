@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next';
 import { BASE_URL } from '@/lib/config';
 import { locales, type Locale } from '@/i18n';
+import { getAllBlogPosts } from '@/lib/blog-utils';
 
 const CONTACT_PATHS: Record<Locale, string> = {
   es: 'contacto',
@@ -9,7 +10,8 @@ const CONTACT_PATHS: Record<Locale, string> = {
 
 function buildAlternateLanguages(
   currentLocale: Locale | null,
-  pageType: 'home' | 'contact',
+  pageType: 'home' | 'contact' | 'blog' | 'blogPost',
+  slug?: string,
 ): Record<string, string> {
   const alternates: Record<string, string> = {};
 
@@ -17,11 +19,19 @@ function buildAlternateLanguages(
     for (const locale of locales) {
       alternates[locale] = `${BASE_URL}/${locale}`;
     }
-  } else {
+  } else if (pageType === 'contact') {
     // Contact page
     for (const locale of locales) {
       alternates[locale] = `${BASE_URL}/${locale}/${CONTACT_PATHS[locale]}`;
     }
+  } else if (pageType === 'blog') {
+    // Blog listing page
+    for (const locale of locales) {
+      alternates[locale] = `${BASE_URL}/${locale}/blog`;
+    }
+  } else if (pageType === 'blogPost' && slug) {
+    // Blog post page (Spanish-only for now)
+    alternates['es'] = `${BASE_URL}/es/blog/${slug}`;
   }
 
   alternates['x-default'] = `${BASE_URL}/es`;
@@ -67,6 +77,34 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
       alternates: {
         languages: buildAlternateLanguages(locale, 'contact'),
+      },
+    });
+  }
+
+  // Add blog listing pages
+  for (const locale of locales) {
+    urls.push({
+      url: `${BASE_URL}/${locale}/blog`,
+      lastModified: currentDate,
+      changeFrequency: 'weekly',
+      priority: 0.9,
+      alternates: {
+        languages: buildAlternateLanguages(locale, 'blog'),
+      },
+    });
+  }
+
+  // Add blog post pages (Spanish-only for now)
+  const blogPosts = getAllBlogPosts();
+  for (const post of blogPosts) {
+    const postDate = post.date ? new Date(post.date) : currentDate;
+    urls.push({
+      url: `${BASE_URL}/es/blog/${post.slug}`,
+      lastModified: postDate,
+      changeFrequency: 'monthly',
+      priority: 0.9,
+      alternates: {
+        languages: buildAlternateLanguages('es', 'blogPost', post.slug),
       },
     });
   }
