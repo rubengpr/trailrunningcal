@@ -6,7 +6,7 @@ const BLOG_POSTS = [
     title: 'Calendario de Carreras 2025: Las imprescindibles',
     excerpt:
       'Una selección curada de las carreras de trail running más espectaculares para la próxima temporada. Desde los Pirineos hasta los Picos de Europa.',
-    date: 'Octubre 15, 2025',
+    date: '30 de Noviembre 2025',
     readTime: '5 min',
     category: 'Calendario',
     color: 'bg-emerald-900',
