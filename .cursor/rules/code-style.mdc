@@ -2,7 +2,6 @@
 alwaysApply: true
 ---
 
-- Implement all user-facing strings in Spanish
 - Use camelCase with descriptive names for functions and variables
 - Use descriptive error variable names with context
 - Use kebab-case with file type/purpose in name

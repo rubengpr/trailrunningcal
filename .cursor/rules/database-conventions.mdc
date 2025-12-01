@@ -63,7 +63,6 @@ model Race {
 
 ## Enum Definitions
 
-- Use Spanish values for user-facing enums
 - Keep enum names in English for code consistency
 - Use `@@map()` for snake_case database names
 

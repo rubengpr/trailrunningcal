@@ -182,7 +182,6 @@ export const create = async (trailData: TrailWithoutId): Promise<Trail> => {
 
 - Create custom error classes for different scenarios
 - Use centralized error handling for consistency
-- Spanish for user-facing validation, English for technical errors
 
 ```typescript
 // utils/error.util.ts
