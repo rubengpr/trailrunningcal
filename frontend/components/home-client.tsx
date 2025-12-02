@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
+import posthog from 'posthog-js';
 import type { TrailRace } from '../types/race.types';
 import SearchBar from './search-bar';
 import MonthFilter from './month-filter';
@@ -62,6 +63,7 @@ export default function HomeClient({ races }: HomeClientProps) {
   }, [races, selectedMonth, searchTerm]);
 
   const handleMonthSelect = (month: string) => {
+    posthog.capture('race_month_filter_applied', { month: month });
     setSelectedMonth(month);
   };
 
@@ -77,6 +79,7 @@ export default function HomeClient({ races }: HomeClientProps) {
   };
 
   const handleClearFilters = () => {
+    posthog.capture('race_filters_cleared');
     setSelectedMonth('');
     setSearchTerm('');
   };

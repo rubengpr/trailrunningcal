@@ -1,5 +1,6 @@
 'use client';
 
+import posthog from 'posthog-js';
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 
@@ -26,6 +27,12 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
+
+    posthog.capture('error_boundary_caught_error', {
+      error_message: error.message,
+      error_stack: error.stack,
+      component_stack: errorInfo.componentStack,
+    });
 
     // Call custom error handler if provided
     if (this.props.onError) {
@@ -75,7 +82,12 @@ function DefaultErrorFallback({ error }: DefaultErrorFallbackProps) {
         </h3>
         <p className="text-gray-600 mb-4">{t('generalMessage')}</p>
         <button
-          onClick={() => window.location.reload()}
+          onClick={() => {
+            posthog.capture('error_fallback_retry_clicked', {
+              error_message: error?.message,
+            });
+            window.location.reload();
+          }}
           className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
         >
           <svg

@@ -4,6 +4,7 @@ import { useLocale } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import type { Locale } from '../i18n';
+import posthog from 'posthog-js';
 
 export default function LanguagePicker() {
   const locale = useLocale() as Locale;
@@ -11,6 +12,11 @@ export default function LanguagePicker() {
   const pathname = usePathname();
 
   const handleLanguageChange = (newLocale: Locale) => {
+    posthog.capture('language_changed', {
+      new_locale: newLocale,
+      previous_locale: locale,
+      pathname: pathname,
+    });
     // Get the pathname without the current locale prefix
     const segments = pathname.split('/').filter(Boolean);
     // Remove the locale segment if it exists
@@ -18,9 +24,7 @@ export default function LanguagePicker() {
       segments.shift();
     }
     // Build the new path with the new locale
-    const newPath = `/${newLocale}${
-      segments.length > 0 ? '/' + segments.join('/') : ''
-    }`;
+    const newPath = `/${newLocale}${segments.length > 0 ? '/' + segments.join('/') : ''}`;
     router.push(newPath);
     router.refresh();
   };

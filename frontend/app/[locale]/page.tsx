@@ -11,7 +11,7 @@ import {
 } from '../../seo/meta-config';
 import type { Locale } from '../../i18n';
 
-export async function generateMetadata({
+export async function generateMetadata({ 
   params,
 }: {
   params: Promise<{ locale: Locale }>;
@@ -36,7 +36,7 @@ export async function generateMetadata({
   });
 }
 
-export default async function HomePage({
+export default async function HomePage({ 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   params: _params,
 }: {

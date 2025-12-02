@@ -1,5 +1,6 @@
 'use client';
 
+import posthog from 'posthog-js';
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 
@@ -26,9 +27,11 @@ export default function SearchBar({
     const newValue = event.target.value;
     setSearchTerm(newValue);
     onSearchChange(newValue);
+    posthog.capture('search-input-changed', { search_term_length: newValue.length });
   };
 
   const handleClear = () => {
+    posthog.capture('search-cleared', { cleared_term_length: searchTerm.length });
     setSearchTerm('');
     onSearchChange('');
   };
@@ -84,4 +87,3 @@ export default function SearchBar({
     </div>
   );
 }
-
