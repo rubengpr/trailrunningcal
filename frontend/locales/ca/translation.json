@@ -67,6 +67,10 @@
     "infoDescription2": "Mantenim un calendari actualitzat amb curses de totes les províncies catalanes, des de curses populars fins a ultra trails.",
     "infoDescription3": "Si ets organitzador de curses i vols que el teu esdeveniment aparegui al nostre calendari, contacta'ns."
   },
+  "blog": {
+    "title": "El blog de Trail Running Calendar",
+    "description": "Informació de curses, consells d'entrenament, nutrició i més."
+  },
   "errors": {
     "general": "Alguna cosa ha anat malament",
     "generalMessage": "Ha ocorregut un error inesperat. Si us plau, torna-ho a intentar.",

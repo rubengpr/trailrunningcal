@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Trail Running Cal',
+  title: 'Trail Running Calendar',
   description: 'Calendario de carreras de trail running',
   icons: {
     icon: '/favicon.ico',

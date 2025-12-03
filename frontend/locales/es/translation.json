@@ -67,6 +67,10 @@
     "infoDescription2": "Mantenemos un calendario actualizado con carreras de todas las provincias catalanas, desde carreras populares hasta ultra trails.",
     "infoDescription3": "Si eres organizador de carreras y quieres que tu evento aparezca en nuestro calendario, contáctanos."
   },
+  "blog": {
+    "title": "El blog de Trail Running Calendar",
+    "description": "Información de carreras, consejos de entrenamiento, nutrición y más."
+  },
   "errors": {
     "general": "Algo salió mal",
     "generalMessage": "Ha ocurrido un error inesperado. Por favor, intenta de nuevo.",

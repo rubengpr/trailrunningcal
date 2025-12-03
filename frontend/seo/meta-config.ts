@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import type { Locale } from '../i18n';
 import { BASE_URL } from '@/lib/config';
 
-export type SeoPageId = 'home' | 'contact';
+export type SeoPageId = 'home' | 'contact' | 'blog';
 
 interface SeoRouteConfig {
   pathByLanguage: Record<Locale, string>;
@@ -43,6 +43,15 @@ const SEO_ROUTES: Record<SeoPageId, SeoRouteConfig> = {
     },
     titleKey: 'contact.title',
     descriptionKey: 'contact.description',
+    ogType: 'website',
+  },
+  blog: {
+    pathByLanguage: {
+      es: '/es/blog',
+      ca: '/ca/blog',
+    },
+    titleKey: 'blog.title',
+    descriptionKey: 'blog.description',
     ogType: 'website',
   },
 };

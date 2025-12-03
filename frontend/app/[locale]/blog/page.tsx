@@ -1,6 +1,37 @@
+import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 import BlogPostCard from '@/components/blog-post-card';
 import type { Locale } from '@/i18n';
 import { getAllBlogPosts } from '@/lib/blog-utils';
+import {
+  getSeoMetaConfig,
+  generateMetadataFromOptions,
+} from '@/seo/meta-config';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: Locale }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale });
+  const seoMeta = getSeoMetaConfig('blog', locale);
+
+  const title = t(seoMeta.titleKey);
+  const description = t(seoMeta.descriptionKey);
+
+  return generateMetadataFromOptions({
+    title,
+    description,
+    canonicalUrl: seoMeta.canonicalUrl,
+    locale,
+    ogImageUrl: seoMeta.ogImageUrl,
+    ogType: seoMeta.ogType,
+    alternateLinks: Object.fromEntries(
+      seoMeta.alternateLinks.map((link) => [link.hrefLang, link.href]),
+    ),
+  });
+}
 
 export default async function BlogPage({
   params,
