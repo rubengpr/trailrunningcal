@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 
 export default function HeroSection() {
-  const t = useTranslations();
+  const t = useTranslations('landing');
 
   return (
     <section className="px-6 py-10">

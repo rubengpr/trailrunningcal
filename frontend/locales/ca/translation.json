@@ -54,6 +54,10 @@
     "contact": "Contacte",
     "blog": "Blog"
   },
+  "landing": {
+    "title": "Calendari curses Trail Running Catalunya",
+    "subtitle": "Troba les millors curses de muntanya de Catalunya"
+  },
   "contact": {
     "title": "Contacte",
     "description": "Tens alguna pregunta sobre les curses o necessites més informació? No dubtis en contactar-nos.",

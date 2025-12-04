@@ -54,6 +54,10 @@
     "contact": "Contacto",
     "blog": "Blog"
   },
+  "landing": {
+    "title": "Calendario carreras Trail Running Cataluña",
+    "subtitle": "Encuentra las mejores carreras de montaña de Cataluña"
+  },
   "contact": {
     "title": "Contacto",
     "description": "¿Tienes alguna pregunta sobre las carreras o necesitas más información? No dudes en contactarnos.",
