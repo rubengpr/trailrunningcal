@@ -1706,7 +1706,7 @@ export const races: TrailRace[] = [
     websiteUrl: 'https://www.cursadelairosa.cat/',
   },
   {
-    date: '2026-04-11-12',
+    date: '2026-04-12',
     name: 'Trail Montgrí 35K',
     distanceKm: 35,
     elevationGainM: 600,
@@ -1716,7 +1716,7 @@ export const races: TrailRace[] = [
     websiteUrl: 'https://www.trailmontgri.com/',
   },
   {
-    date: '2026-04-11-12',
+    date: '2026-04-12',
     name: 'Trail Montgrí 22K',
     distanceKm: 22,
     elevationGainM: 750,
@@ -1726,7 +1726,7 @@ export const races: TrailRace[] = [
     websiteUrl: 'https://www.trailmontgri.com/',
   },
   {
-    date: '2026-04-11-12',
+    date: '2026-04-12',
     name: 'Trail Montgrí 13K',
     distanceKm: 13,
     elevationGainM: 450,
