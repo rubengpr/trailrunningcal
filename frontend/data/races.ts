@@ -1186,7 +1186,7 @@ export const races: TrailRace[] = [
   },
   {
     date: '2026-01-04',
-    name: 'La Navarclina 10km',
+    name: 'La Navarclina 10K',
     distanceKm: 10,
     elevationGainM: 160,
     priceEur: 13,
@@ -1196,7 +1196,7 @@ export const races: TrailRace[] = [
   },
   {
     date: '2026-01-04',
-    name: 'La Navarclina 5km',
+    name: 'La Navarclina 5K',
     distanceKm: 5,
     elevationGainM: 130,
     priceEur: 13,
@@ -1206,7 +1206,7 @@ export const races: TrailRace[] = [
   },
   {
     date: '2026-01-04',
-    name: 'Cursa de Reis Sant Julià 5km',
+    name: 'Cursa de Reis Sant Julià 5K',
     distanceKm: 5,
     elevationGainM: 150,
     priceEur: 12,
@@ -1216,7 +1216,7 @@ export const races: TrailRace[] = [
   },
   {
     date: '2026-01-11',
-    name: 'St Mateu Xtrail 25km',
+    name: 'St Mateu Xtrail 25K',
     distanceKm: 25,
     elevationGainM: 1200,
     priceEur: 35,
@@ -1226,7 +1226,7 @@ export const races: TrailRace[] = [
   },
   {
     date: '2026-01-11',
-    name: 'St Mateu Xtrail 15km',
+    name: 'St Mateu Xtrail 15K',
     distanceKm: 15,
     elevationGainM: 850,
     priceEur: 30,
@@ -1236,7 +1236,7 @@ export const races: TrailRace[] = [
   },
   {
     date: '2026-01-11',
-    name: 'St Mateu Xtrail 10km',
+    name: 'St Mateu Xtrail 10K',
     distanceKm: 10,
     elevationGainM: 600,
     priceEur: 25,
@@ -1246,7 +1246,7 @@ export const races: TrailRace[] = [
   },
   {
     date: '2026-01-11',
-    name: 'Cursa clàssica Mar i Murtra 20km',
+    name: 'Cursa clàssica Mar i Murtra 20K',
     distanceKm: 20,
     elevationGainM: 280,
     priceEur: 25,
@@ -1256,7 +1256,7 @@ export const races: TrailRace[] = [
   },
   {
     date: '2026-01-11',
-    name: 'Cursa trail Mar i Murtra 17km',
+    name: 'Cursa trail Mar i Murtra 17K',
     distanceKm: 17,
     elevationGainM: 550,
     priceEur: 25,
@@ -1266,7 +1266,7 @@ export const races: TrailRace[] = [
   },
   {
     date: '2026-01-11',
-    name: 'Ganxo Trail 18km',
+    name: 'Ganxo Trail 18K',
     distanceKm: 18,
     elevationGainM: 680,
     priceEur: 22,
@@ -1276,7 +1276,7 @@ export const races: TrailRace[] = [
   },
   {
     date: '2026-01-11',
-    name: 'Cims Cims 27km',
+    name: 'Cims Cims 27K',
     distanceKm: 27,
     elevationGainM: 1325,
     priceEur: 29,
@@ -1286,7 +1286,7 @@ export const races: TrailRace[] = [
   },
   {
     date: '2026-01-11',
-    name: 'Cusa Cim (Cinc cims)',
+    name: 'Cursa Cim - Cinc Cims 10K',
     distanceKm: 10,
     elevationGainM: 340,
     priceEur: 22,
@@ -2260,27 +2260,27 @@ export const races: TrailRace[] = [
     websiteUrl: null,
   },
   {
-    date: '2026-04-26',
-    name: 'Cursa de la Nòria 5K',
-    distanceKm: 5,
-    elevationGainM: 25,
-    priceEur: null,
-    city: 'Torrelameu',
-    province: 'Lleida',
-    websiteUrl: null,
-  },
-  {
-    date: '2026-04-26',
+    date: '2026-04-19',
     name: 'Cursa de la Nòria 10K',
     distanceKm: 10,
     elevationGainM: 25,
     priceEur: null,
     city: 'Torrelameu',
     province: 'Lleida',
-    websiteUrl: null,
+    websiteUrl: 'https://cursadelanoria.weebly.com/',
   },
   {
-    date: '2026-04-26',
+    date: '2026-04-19',
+    name: 'Cursa de la Nòria 5K',
+    distanceKm: 5,
+    elevationGainM: 25,
+    priceEur: null,
+    city: 'Torrelameu',
+    province: 'Lleida',
+    websiteUrl: 'https://cursadelanoria.weebly.com/',
+  },
+  {
+    date: null,
     name: 'Rebentaesparedenyes 21.5K',
     distanceKm: 21.5,
     elevationGainM: null,
@@ -2290,7 +2290,7 @@ export const races: TrailRace[] = [
     websiteUrl: null,
   },
   {
-    date: '2026-04-26',
+    date: null,
     name: 'Rebentaesparedenyes 10.5K',
     distanceKm: 10.5,
     elevationGainM: null,
@@ -2300,7 +2300,7 @@ export const races: TrailRace[] = [
     websiteUrl: null,
   },
   {
-    date: '2026-04-26',
+    date: null,
     name: 'Cursa Cassoles del Tros 10K',
     distanceKm: 10,
     elevationGainM: 31,
@@ -2310,7 +2310,7 @@ export const races: TrailRace[] = [
     websiteUrl: null,
   },
   {
-    date: '2026-04-26',
+    date: null,
     name: 'Cursa Cassoles del Tros 5.5K',
     distanceKm: 5.5,
     elevationGainM: 17,
