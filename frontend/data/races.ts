@@ -1597,7 +1597,7 @@ export const races: TrailRace[] = [
   },
   {
     date: '2026-03-29',
-    name: 'Bacanard Trail 39K',
+    name: 'Bacanard Trail 38K',
     distanceKm: 38,
     elevationGainM: 1900,
     priceEur: null,
