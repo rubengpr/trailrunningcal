@@ -35,15 +35,17 @@ export default function Navbar() {
             {t('appName')}
           </span>
         </Link>
-        <nav className="text-sm">
-          <div className="flex flex-row items-center gap-4">
+        <nav className="text-sm flex justify-center items-center gap-6">
+          <div className="hidden sm:flex px-2 py-1 flex-row items-center gap-4">
             <Link
               href={`/${locale}/${locale === 'ca' ? 'contacte' : 'contacto'}`}
-              className="hidden sm:flex px-2 py-1 hover:text-indigo-600 transition-colors"
+              className="hover:text-indigo-600 transition-colors"
               onClick={() =>
                 posthog.capture('navbar_link_clicked', {
                   link_text: 'contact',
-                  link_href: `/${locale}/${locale === 'ca' ? 'contacte' : 'contacto'}`,
+                  link_href: `/${locale}/${
+                    locale === 'ca' ? 'contacte' : 'contacto'
+                  }`,
                   locale: locale,
                 })
               }
@@ -52,7 +54,7 @@ export default function Navbar() {
             </Link>
             <Link
               href={`/${locale}/blog`}
-              className="hidden sm:flex px-2 py-1 hover:text-indigo-600 transition-colors"
+              className="hover:text-indigo-600 transition-colors"
               onClick={() =>
                 posthog.capture('navbar_link_clicked', {
                   link_text: 'blog',
@@ -63,8 +65,22 @@ export default function Navbar() {
             >
               {t('blog')}
             </Link>
-            <LanguagePicker />
           </div>
+          <LanguagePicker />
+          <svg
+            className="flex sm:hidden mx-auto h-5 w-5 text-gray-400 cursor-pointer"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M4 6h16M4 12h16M4 18h16"
+            />
+          </svg>
         </nav>
       </div>
     </header>
