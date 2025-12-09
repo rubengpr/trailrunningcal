@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
+import { useState } from 'react';
 import Image from 'next/image';
 import LanguagePicker from './language-picker';
 import posthog from 'posthog-js';
@@ -9,6 +10,12 @@ import posthog from 'posthog-js';
 export default function Navbar() {
   const t = useTranslations('navigation');
   const locale = useLocale();
+
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const handleMenuClick = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
 
   return (
     <header className="w-full bg-white border-b border-indigo-100/60 px-4 py-4 sm:px-6 lg:px-8">
@@ -69,6 +76,7 @@ export default function Navbar() {
           <LanguagePicker />
           <svg
             className="flex sm:hidden mx-auto h-5 w-5 text-gray-400 cursor-pointer"
+            onClick={handleMenuClick}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -81,6 +89,51 @@ export default function Navbar() {
               d="M4 6h16M4 12h16M4 18h16"
             />
           </svg>
+          {isMenuOpen && (
+            <div className="fixed text-black inset-0 top-20 bg-white z-40 flex flex-col items-center justify-start pt-8 gap-6 font-semibold text-lg">
+              <Link
+                href={`/${locale}`}
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  posthog.capture('navbar_link_clicked', {
+                    link_text: 'home',
+                    link_href: `/${locale}`,
+                    locale: locale,
+                  });
+                }}
+              >
+                {t('calendar')}
+              </Link>
+              <Link
+                href={`/${locale}/${locale === 'ca' ? 'contacte' : 'contacto'}`}
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  posthog.capture('navbar_link_clicked', {
+                    link_text: 'contact',
+                    link_href: `/${locale}/${
+                      locale === 'ca' ? 'contacte' : 'contacto'
+                    }`,
+                    locale: locale,
+                  });
+                }}
+              >
+                {t('contact')}
+              </Link>
+              <Link
+                href={`/${locale}/blog`}
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  posthog.capture('navbar_link_clicked', {
+                    link_text: 'blog',
+                    link_href: `/${locale}/blog`,
+                    locale: locale,
+                  });
+                }}
+              >
+                {t('blog')}
+              </Link>
+            </div>
+          )}
         </nav>
       </div>
     </header>
