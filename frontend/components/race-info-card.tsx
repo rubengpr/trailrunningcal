@@ -104,29 +104,29 @@ export default function RaceInfoCard({
           <div className="flex items-center gap-3 text-slate-700">
             <IconDistance />
             <div className="flex items-center gap-2 flex-wrap text-slate-700">
-              <p className="text-base">{distance}</p>
+              <p>{distance}</p>
               <span>-</span>
-              <p className="text-base">{elevation}</p>
+              <p>{elevation}</p>
             </div>
           </div>
           <div className="flex items-center gap-3 text-slate-700">
             <IconCalendar />
             <div className="flex items-center gap-2 flex-wrap">
-              <p className="text-base">{when}</p>
+              <p>{when}</p>
               <span>-</span>
-              <p className="text-base">{region}</p>
+              <p>{region}</p>
             </div>
           </div>
           <div className="flex items-center gap-3 text-slate-700">
             <IconLevel />
             <div>
-              <span className="text-base">{level}</span>
+              <span>{level}</span>
             </div>
           </div>
           <div className="flex items-center gap-3 text-slate-700">
             <IconTerrain />
             <div>
-              <span className="text-base">{terrain}</span>
+              <span>{terrain}</span>
             </div>
           </div>
         </div>
