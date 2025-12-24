@@ -1,10 +1,10 @@
 import type { MDXComponents } from 'mdx/types';
 import Image from 'next/image';
 import Link from 'next/link';
-import RaceInfoCard from '@/components/race-info-card';
 import DateAuthorString from './components/blog-date-author-string';
 import BlogHeaderImage from './components/blog-header-image';
 import BlogDivider from './components/blog-divider';
+import RaceCard from '@/components/race-card';
 
 const components: MDXComponents = {
   h1: ({ children }) => (
@@ -70,10 +70,10 @@ const components: MDXComponents = {
       </figure>
     );
   },
-  RaceInfoCard,
   DateAuthorString,
   BlogHeaderImage,
   BlogDivider,
+  RaceCard,
 };
 
 export function useMDXComponents(): MDXComponents {
