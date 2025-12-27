@@ -53,7 +53,7 @@ export default function RaceCard({
           {/* Race Name, Distance and Elevation - Bottom Left */}
           <div className="text-white">
             <h3
-              className={`${montserratExtrabold.className} text-xl sm:text-4xl lg:text-5xl xl:text-6xl text-white mb-1 sm:mb-2`}
+              className={`${montserratExtrabold.className} text-xl sm:text-4xl lg:text-5xl xl:text-6xl text-white sm:mb-2`}
             >
               {raceName}
             </h3>
@@ -67,13 +67,13 @@ export default function RaceCard({
           {/* Location and Date - Bottom Right */}
           <div className="flex flex-row sm:flex-col text-white text-right">
             <p
-              className={`${montserratMedium.className} text-xs sm:text-lg lg:text-xl`}
+              className={`${montserratMedium.className} text-[10px] sm:text-lg lg:text-xl`}
             >
               {location}
             </p>
             <span className="text-xs">&nbsp;-&nbsp;</span>
             <p
-              className={`${montserratMedium.className} text-xs sm:text-lg lg:text-xl`}
+              className={`${montserratMedium.className} text-[10px] sm:text-lg lg:text-xl`}
             >
               {date}
             </p>
