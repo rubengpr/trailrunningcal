@@ -71,7 +71,7 @@ export default function RaceCard({
             >
               {location}
             </p>
-            <span className="text-xs">&nbsp;-&nbsp;</span>
+            <span className="text-xs flex sm:hidden">&nbsp;-&nbsp;</span>
             <p
               className={`${montserratMedium.className} text-[10px] sm:text-lg lg:text-xl`}
             >
