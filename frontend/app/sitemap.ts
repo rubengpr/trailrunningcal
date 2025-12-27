@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 import { BASE_URL } from '@/lib/config';
 import { locales, type Locale } from '@/i18n';
-import { getAllBlogPosts } from '@/lib/blog-utils';
+import { getAllBlogPosts, getPostTranslations } from '@/lib/blog-utils';
 
 const CONTACT_PATHS: Record<Locale, string> = {
   es: 'contacto',
@@ -11,7 +11,7 @@ const CONTACT_PATHS: Record<Locale, string> = {
 function buildAlternateLanguages(
   currentLocale: Locale | null,
   pageType: 'home' | 'contact' | 'blog' | 'blogPost',
-  slug?: string,
+  translationKey?: string,
 ): Record<string, string> {
   const alternates: Record<string, string> = {};
 
@@ -29,11 +29,23 @@ function buildAlternateLanguages(
     for (const locale of locales) {
       alternates[locale] = `${BASE_URL}/${locale}/blog`;
     }
-  } else if (pageType === 'blogPost' && slug) {
-    // Blog post page (Spanish-only for now)
-    alternates['es'] = `${BASE_URL}/es/blog/${slug}`;
+  } else if (pageType === 'blogPost' && translationKey) {
+    // Blog post page - get all translations
+    const translations = getPostTranslations(translationKey);
+    for (const translation of translations) {
+      alternates[translation.locale] = `${BASE_URL}/${translation.locale}/blog/${translation.slug}`;
+    }
+    // For blog posts, prefer Spanish, otherwise use first available translation
+    const defaultTranslation = translations.find((t) => t.locale === 'es') || translations[0];
+    if (defaultTranslation) {
+      alternates['x-default'] = `${BASE_URL}/${defaultTranslation.locale}/blog/${defaultTranslation.slug}`;
+    } else {
+      alternates['x-default'] = `${BASE_URL}/es`;
+    }
+    return alternates;
   }
 
+  // Set x-default for non-blogPost pages
   alternates['x-default'] = `${BASE_URL}/es`;
 
   return alternates;
@@ -94,7 +106,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     });
   }
 
-  // Add blog post pages (Spanish-only for now)
+  // Add blog post pages (all locales)
   const blogPosts = getAllBlogPosts();
   for (const post of blogPosts) {
     // ISO dates parse reliably, fallback to currentDate if missing/invalid
@@ -104,12 +116,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
         : new Date(post.date)
       : currentDate;
     urls.push({
-      url: `${BASE_URL}/es/blog/${post.slug}`,
+      url: `${BASE_URL}/${post.locale}/blog/${post.slug}`,
       lastModified: postDate,
       changeFrequency: 'monthly',
       priority: 0.9,
       alternates: {
-        languages: buildAlternateLanguages('es', 'blogPost', post.slug),
+        languages: buildAlternateLanguages(post.locale, 'blogPost', post.translationKey),
       },
     });
   }

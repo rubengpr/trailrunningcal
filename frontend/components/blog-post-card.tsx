@@ -1,10 +1,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import type { Locale } from '../i18n';
-import { formatDateToSpanish } from '../lib/date-utils';
+import { formatDateToSpanish, formatDateToCatalan } from '../lib/date-utils';
 
 interface BlogPostCardProps {
-  id: number;
   title: string;
   excerpt: string;
   date: string;
@@ -16,7 +15,6 @@ interface BlogPostCardProps {
 }
 
 export default function BlogPostCard({
-  id,
   title,
   excerpt,
   date,
@@ -28,10 +26,7 @@ export default function BlogPostCard({
 }: BlogPostCardProps) {
   return (
     <Link href={`/${locale}/blog/${slug}`}>
-      <article
-        key={id}
-        className="flex flex-col group cursor-pointer p-4 -m-4 rounded-2xl transition-all duration-200 hover:bg-white hover:ring-1 hover:ring-gray-200 hover:shadow-lg"
-      >
+      <article className="flex flex-col group cursor-pointer p-4 -m-4 rounded-2xl transition-all duration-200 hover:bg-white hover:ring-1 hover:ring-gray-200 hover:shadow-lg">
         {/* Image */}
         <div className="aspect-16/10 w-full rounded-xl overflow-hidden mb-6 relative shadow-sm">
           <Image
@@ -46,7 +41,11 @@ export default function BlogPostCard({
         {/* Content */}
         <div className="flex flex-col grow">
           <div className="flex items-center gap-3 text-sm text-gray-500 mb-3">
-            <time dateTime={date}>{formatDateToSpanish(date)}</time>
+            <time dateTime={date}>
+              {locale === 'ca'
+                ? formatDateToCatalan(date)
+                : formatDateToSpanish(date)}
+            </time>
             <span>•</span>
             <span>{readTime}</span>
           </div>

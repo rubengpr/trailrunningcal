@@ -48,3 +48,22 @@ export const formatDateToSpanish = (date: Date | string): string => {
     year: 'numeric',
   }).format(dateObj);
 };
+
+/**
+ * Formats a date to Catalan human-readable format
+ * @param date - Date object or ISO date string
+ * @returns Formatted date string (e.g., "30 de novembre de 2025")
+ */
+export const formatDateToCatalan = (date: Date | string): string => {
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
+
+  if (isNaN(dateObj.getTime())) {
+    return '';
+  }
+
+  return new Intl.DateTimeFormat('ca-ES', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(dateObj);
+};

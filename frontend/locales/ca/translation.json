@@ -74,7 +74,15 @@
   },
   "blog": {
     "title": "El blog de Trail Running Calendar",
-    "description": "Informació de curses, consells d'entrenament, nutrició i més."
+    "description": "Informació de curses, consells d'entrenament, nutrició i més",
+    "raceInfo": {
+      "distance": "Distància",
+      "elevation": "Desnivell",
+      "when": "Quan",
+      "level": "Nivell",
+      "region": "Regió",
+      "terrain": "Terreny"
+    }
   },
   "errors": {
     "general": "Alguna cosa ha anat malament",

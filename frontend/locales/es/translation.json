@@ -74,7 +74,15 @@
   },
   "blog": {
     "title": "El blog de Trail Running Calendar",
-    "description": "Información de carreras, consejos de entrenamiento, nutrición y más."
+    "description": "Información de carreras, consejos de entrenamiento, nutrición y más",
+    "raceInfo": {
+      "distance": "Distancia",
+      "elevation": "Desnivel",
+      "when": "Cuándo",
+      "level": "Nivel",
+      "region": "Región",
+      "terrain": "Terreno"
+    }
   },
   "errors": {
     "general": "Algo salió mal",

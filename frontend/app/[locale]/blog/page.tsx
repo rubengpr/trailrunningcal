@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import BlogPostCard from '@/components/blog-post-card';
 import type { Locale } from '@/i18n';
-import { getAllBlogPosts } from '@/lib/blog-utils';
+import { getPostsForLocale } from '@/lib/blog-utils';
 import {
   getSeoMetaConfig,
   generateMetadataFromOptions,
@@ -39,17 +39,18 @@ export default async function BlogPage({
   params: Promise<{ locale: Locale }>;
 }) {
   const { locale } = await params;
-  const blogPosts = getAllBlogPosts();
+  const blogPosts = getPostsForLocale(locale);
+  const t = await getTranslations({ locale });
 
   return (
     <>
       {/* Header Section */}
       <div className="py-16 sm:py-24 text-center px-4">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 tracking-tight">
-          El blog de Trail Running Calendar
+          {t('blog.title')}
         </h1>
         <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
-          Información de carreras, consejos de entrenamiento, nutrición y más.
+          {t('blog.description')}
         </p>
       </div>
 
@@ -57,7 +58,11 @@ export default async function BlogPage({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-16">
           {blogPosts.map((post) => (
-            <BlogPostCard key={post.id} {...post} locale={locale} />
+            <BlogPostCard
+              key={`${post.locale}-${post.slug}`}
+              {...post}
+              locale={locale}
+            />
           ))}
         </div>
       </div>
