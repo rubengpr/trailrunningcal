@@ -10,6 +10,7 @@ import TrailRaceCard from './trail-race-card';
 import ErrorBoundary from './error-boundary';
 import { SearchError } from './error-message';
 import { getMonthNumber } from '../lib/date-utils';
+import ProvinceFilter from './province-filter';
 
 interface HomeClientProps {
   races: TrailRace[];
@@ -22,6 +23,7 @@ export default function HomeClient({ races }: HomeClientProps) {
   const tErrors = useTranslations('errors');
 
   const [selectedMonth, setSelectedMonth] = useState<string>('');
+  const [selectedProvince, setSelectedProvince] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState<string>('');
 
   const filteredRaces = useMemo(() => {
@@ -48,6 +50,15 @@ export default function HomeClient({ races }: HomeClientProps) {
       });
     }
 
+    //Filter by province if selected
+    if (selectedProvince) {
+      //Filtrar por provincia del objeto
+      filtered = filtered.filter((race) => {
+        const raceProvince = race.province;
+        return raceProvince === selectedProvince;
+      });
+    }
+
     // Filter by search term if provided
     if (searchTerm.trim()) {
       const searchLower = searchTerm.toLowerCase().trim();
@@ -60,11 +71,16 @@ export default function HomeClient({ races }: HomeClientProps) {
     }
 
     return filtered;
-  }, [races, selectedMonth, searchTerm]);
+  }, [races, selectedMonth, selectedProvince, searchTerm]);
 
   const handleMonthSelect = (month: string) => {
     posthog.capture('race_month_filter_applied', { month: month });
     setSelectedMonth(month);
+  };
+
+  const handleProvinceSelect = (province: string) => {
+    posthog.capture('race_province_filter_applied', { province: province });
+    setSelectedProvince(province);
   };
 
   const handleSearchChange = (term: string) => {
@@ -74,6 +90,7 @@ export default function HomeClient({ races }: HomeClientProps) {
   const handleRetry = () => {
     // Reset filters to trigger a fresh data load
     setSelectedMonth('');
+    setSelectedProvince('');
     setSearchTerm('');
     window.location.reload();
   };
@@ -81,6 +98,7 @@ export default function HomeClient({ races }: HomeClientProps) {
   const handleClearFilters = () => {
     posthog.capture('race_filters_cleared');
     setSelectedMonth('');
+    setSelectedProvince('');
     setSearchTerm('');
   };
 
@@ -96,11 +114,14 @@ export default function HomeClient({ races }: HomeClientProps) {
               placeholder={tSearch('placeholder')}
             />
           </div>
-          <div className="flex justify-center">
+          <div className="flex justify-center mb-3">
             <MonthFilter
               initialSelectedMonth={selectedMonth}
               onMonthSelect={handleMonthSelect}
             />
+          </div>
+          <div className="flex justify-center gap-2">
+            <ProvinceFilter onProvinceSelect={handleProvinceSelect} />
           </div>
         </div>
       </section>
@@ -216,4 +237,3 @@ export default function HomeClient({ races }: HomeClientProps) {
     </>
   );
 }
-

@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 
 interface MonthFilterProps {
   initialSelectedMonth?: string;
-  onMonthSelect?: (month: string) => void;
+  onMonthSelect: (month: string) => void;
 }
 
 const MONTH_KEYS = [
@@ -44,7 +44,7 @@ export default function MonthFilter({
   const handleMonthClick = (monthKey: string) => {
     const newSelectedMonth = selectedMonth === monthKey ? '' : monthKey;
     setSelectedMonth(newSelectedMonth);
-    onMonthSelect?.(newSelectedMonth);
+    onMonthSelect(newSelectedMonth);
   };
 
   return (
