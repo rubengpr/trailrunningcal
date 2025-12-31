@@ -5,6 +5,7 @@ Allow: /
 Disallow: /admin/
 Disallow: /api/
 Disallow: /private/
+Disallow: /cdn-cgi/
 
 # Allow access to main pages
 Allow: /
