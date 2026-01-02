@@ -7,4 +7,4 @@ alwaysApply: true
 - Use kebab-case with file type/purpose in name
 - Use UPPER_SNAKE_CASE for constants
 - Organize assets by type/purpose, use kebab-case naming
-- Always output at the start of the output what AI model you're using with an emoji so it's easy to see '👋 {model}'
+- All internal URLs, paths, and links must be generated without trailing slashes
