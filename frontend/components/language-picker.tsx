@@ -24,7 +24,9 @@ export default function LanguagePicker() {
       segments.shift();
     }
     // Build the new path with the new locale
-    const newPath = `/${newLocale}${segments.length > 0 ? '/' + segments.join('/') : ''}`;
+    const newPath = `/${newLocale}${
+      segments.length > 0 ? '/' + segments.join('/') : ''
+    }`;
     router.push(newPath);
     router.refresh();
   };
@@ -51,7 +53,7 @@ export default function LanguagePicker() {
       >
         <Image
           src="/assets/catalan-flag.png"
-          alt=""
+          alt="An emoji of the catalan flag"
           width={32}
           height={32}
           className="w-6 h-6 sm:w-8 sm:h-8"
