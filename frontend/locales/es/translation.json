@@ -1,6 +1,6 @@
 {
-  "title": "Calendario carreras Trail Running Cataluña - Trail Running Calendar",
-  "subtitle": "Encuentra las mejores carreras de montaña de Cataluña",
+  "title": "Calendario carreras trail running Cataluña",
+  "subtitle": "Descubre el calendario más completo de carreras de trail running en Cataluña. Encuentra tu próxima carrera de montaña con filtros por mes, provincia y dificultad.",
   "search": {
     "placeholder": "Buscar por nombre, ciudad o provincia...",
     "clear": "Limpiar búsqueda",
@@ -60,8 +60,8 @@
     "subtitle": "Encuentra las mejores carreras de montaña de Cataluña"
   },
   "contact": {
-    "title": "Contacto",
-    "description": "¿Tienes alguna pregunta sobre las carreras o necesitas más información? No dudes en contactarnos.",
+    "title": "Contacta con Trail Running Calendar",
+    "description": "Contáctanos para consultas sobre carreras de trail running en Cataluña, para añadir tu evento al calendario o para colaboraciones.",
     "email": "Email",
     "emailDescription": "Para consultas generales:",
     "location": "Ubicación",
@@ -74,7 +74,7 @@
   },
   "blog": {
     "title": "El blog de Trail Running Calendar",
-    "description": "Información de carreras, consejos de entrenamiento, nutrición y más",
+    "description": "Descubre información sobre carreras de trail running en Cataluña, consejos de entrenamiento, nutrición deportiva y guías para mejorar tu rendimiento en montaña.",
     "raceInfo": {
       "distance": "Distancia",
       "elevation": "Desnivel",

@@ -1,6 +1,6 @@
 {
-  "title": "Calendari curses Trail Running Catalunya - Trail Running Calendar",
-  "subtitle": "Troba les millors curses de muntanya de Catalunya",
+  "title": "Calendari curses trail running Catalunya",
+  "subtitle": "Descobreix el calendari més complet de curses de trail running a Catalunya. Troba la teva pròxima cursa de muntanya amb filtres per mes, província i dificultat.",
   "search": {
     "placeholder": "Cercar per nom, ciutat o província...",
     "clear": "Netejar cerca",
@@ -60,8 +60,8 @@
     "subtitle": "Troba les millors curses de muntanya de Catalunya"
   },
   "contact": {
-    "title": "Contacte",
-    "description": "Tens alguna pregunta sobre les curses o necessites més informació? No dubtis en contactar-nos.",
+    "title": "Contacta amb Trail Running Calendar",
+    "description": "Contacteu-nos per consultes sobre curses de trail running a Catalunya, afegir el vostre esdeveniment al calendari o per a col·laboracions.",
     "email": "Correu electrònic",
     "emailDescription": "Per a consultes generals:",
     "location": "Ubicació",
@@ -74,7 +74,7 @@
   },
   "blog": {
     "title": "El blog de Trail Running Calendar",
-    "description": "Informació de curses, consells d'entrenament, nutrició i més",
+    "description": "Descobreix informació sobre curses de trail running a Catalunya, consells d'entrenament, nutrició esportiva i guies per millorar el teu rendiment a la muntanya.",
     "raceInfo": {
       "distance": "Distància",
       "elevation": "Desnivell",
