@@ -33,12 +33,17 @@ function buildAlternateLanguages(
     // Blog post page - get all translations
     const translations = getPostTranslations(translationKey);
     for (const translation of translations) {
-      alternates[translation.locale] = `${BASE_URL}/${translation.locale}/blog/${translation.slug}`;
+      alternates[
+        translation.locale
+      ] = `${BASE_URL}/${translation.locale}/blog/${translation.slug}`;
     }
     // For blog posts, prefer Spanish, otherwise use first available translation
-    const defaultTranslation = translations.find((t) => t.locale === 'es') || translations[0];
+    const defaultTranslation =
+      translations.find((t) => t.locale === 'es') || translations[0];
     if (defaultTranslation) {
-      alternates['x-default'] = `${BASE_URL}/${defaultTranslation.locale}/blog/${defaultTranslation.slug}`;
+      alternates[
+        'x-default'
+      ] = `${BASE_URL}/${defaultTranslation.locale}/blog/${defaultTranslation.slug}`;
     } else {
       alternates['x-default'] = `${BASE_URL}/es`;
     }
@@ -54,18 +59,7 @@ function buildAlternateLanguages(
 export default function sitemap(): MetadataRoute.Sitemap {
   const currentDate = new Date();
 
-  const urls: MetadataRoute.Sitemap = [
-    // Root homepage
-    {
-      url: BASE_URL,
-      lastModified: currentDate,
-      changeFrequency: 'weekly',
-      priority: 1.0,
-      alternates: {
-        languages: buildAlternateLanguages(null, 'home'),
-      },
-    },
-  ];
+  const urls: MetadataRoute.Sitemap = [];
 
   // Add localized homepages
   for (const locale of locales) {
@@ -121,7 +115,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly',
       priority: 0.9,
       alternates: {
-        languages: buildAlternateLanguages(post.locale, 'blogPost', post.translationKey),
+        languages: buildAlternateLanguages(
+          post.locale,
+          'blogPost',
+          post.translationKey,
+        ),
       },
     });
   }
