@@ -4,7 +4,7 @@ import { buildBlogPostLinkMap } from '../lib/blog-link-map';
 
 /**
  * Generates a TypeScript file mapping blog post URLs to their Link headers
- * This is run at build time and the result is used in middleware (Edge Runtime compatible)
+ * This is run at build time and the result is used in proxy (Node.js Runtime compatible)
  */
 function generateBlogLinkMap() {
   const linkMap = buildBlogPostLinkMap();

@@ -3,7 +3,7 @@ import { locales, defaultLocale } from './i18n';
 import { NextRequest } from 'next/server';
 
 // Import blog link map (generated at build time)
-// Use dynamic import with fallback for Edge Runtime compatibility
+// Use dynamic import with fallback for Node.js Runtime compatibility
 let BLOG_POST_LINK_MAP: Record<string, string> = {};
 
 // Try to import the generated map (will be available after build)
@@ -21,7 +21,7 @@ const intlMiddleware = createMiddleware({
   localePrefix: 'always',
 });
 
-export default function middleware(request: NextRequest) {
+export default function proxy(request: NextRequest) {
   // Process request with intl middleware
   const response = intlMiddleware(request);
 
@@ -54,7 +54,7 @@ export default function middleware(request: NextRequest) {
   return response;
 }
 
-//Middleware executes for page routes: /es/blog/..., /ca/contacto, etc.
+//Proxy executes for page routes: /es/blog/..., /ca/contacto, etc.
 //Dynamic routes: /[locale]/blog/[slug]
 //Does not execute for API routes: /api/*
 //Static assets: /favicon.ico, /_next/static/..., /assets/...
@@ -62,3 +62,4 @@ export default function middleware(request: NextRequest) {
 export const config = {
   matcher: ['/((?!api|_next|_vercel|.*\\..*).*)'],
 };
+

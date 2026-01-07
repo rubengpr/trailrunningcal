@@ -3,7 +3,7 @@ import { getAllBlogPosts, getPostTranslations } from './blog-utils';
 
 /**
  * Builds a mapping of blog post URLs to their alternate language Link headers
- * This is generated at build time since middleware runs in Edge Runtime
+ * This is generated at build time since proxy runs in Node.js Runtime
  */
 export function buildBlogPostLinkMap(): Record<string, string> {
   const posts = getAllBlogPosts();
