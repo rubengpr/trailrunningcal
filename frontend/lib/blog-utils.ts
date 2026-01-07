@@ -117,12 +117,12 @@ export function getAllBlogPosts(): BlogPost[] {
  * @param locale - The locale of the post
  * @returns The blog post or null if not found
  */
-export function getPostBySlug(
-  slug: string,
-  locale: Locale,
-): BlogPost | null {
+export function getPostBySlug(slug: string, locale: Locale): BlogPost | null {
   const allPosts = getAllBlogPosts();
-  return allPosts.find((post) => post.slug === slug && post.locale === locale) || null;
+  return (
+    allPosts.find((post) => post.slug === slug && post.locale === locale) ||
+    null
+  );
 }
 
 /**

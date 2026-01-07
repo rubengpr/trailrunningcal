@@ -153,6 +153,13 @@ export function generateMetadataFromOptions(
     ? ogImageUrl
     : `${BASE_URL}${ogImageUrl}`;
 
+  const alternatesConfig = {
+    canonical: canonicalUrl,
+    ...(alternateLinks && {
+      languages: alternateLinks,
+    }),
+  };
+
   const metadata: Metadata = {
     title,
     description,
@@ -160,12 +167,7 @@ export function generateMetadataFromOptions(
       index: true,
       follow: true,
     },
-    alternates: {
-      canonical: canonicalUrl,
-      ...(alternateLinks && {
-        languages: alternateLinks,
-      }),
-    },
+    alternates: alternatesConfig,
     openGraph: {
       type: ogType,
       title,

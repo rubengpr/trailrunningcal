@@ -1,0 +1,9 @@
+// Auto-generated at build time - do not edit manually
+// Run: npm run generate:blog-link-map
+
+export const BLOG_POST_LINK_MAP: Record<string, string> = {
+  "/es/blog/mejores-medias-maraton-trail-running-cataluna-2026": "<https://www.trailrunningcal.com/es/blog/mejores-medias-maraton-trail-running-cataluna-2026>; rel=\"alternate\"; hreflang=\"es\", <https://www.trailrunningcal.com/ca/blog/millors-mitges-marato-trail-running-catalunya-2026>; rel=\"alternate\"; hreflang=\"ca\", <https://www.trailrunningcal.com/es/blog/mejores-medias-maraton-trail-running-cataluna-2026>; rel=\"alternate\"; hreflang=\"x-default\"",
+  "/ca/blog/millors-mitges-marato-trail-running-catalunya-2026": "<https://www.trailrunningcal.com/es/blog/mejores-medias-maraton-trail-running-cataluna-2026>; rel=\"alternate\"; hreflang=\"es\", <https://www.trailrunningcal.com/ca/blog/millors-mitges-marato-trail-running-catalunya-2026>; rel=\"alternate\"; hreflang=\"ca\", <https://www.trailrunningcal.com/es/blog/mejores-medias-maraton-trail-running-cataluna-2026>; rel=\"alternate\"; hreflang=\"x-default\"",
+  "/es/blog/mejores-carreras-trail-running-espana-2026": "<https://www.trailrunningcal.com/es/blog/mejores-carreras-trail-running-espana-2026>; rel=\"alternate\"; hreflang=\"es\", <https://www.trailrunningcal.com/ca/blog/millors-curses-trail-running-espanya-2026>; rel=\"alternate\"; hreflang=\"ca\", <https://www.trailrunningcal.com/es/blog/mejores-carreras-trail-running-espana-2026>; rel=\"alternate\"; hreflang=\"x-default\"",
+  "/ca/blog/millors-curses-trail-running-espanya-2026": "<https://www.trailrunningcal.com/es/blog/mejores-carreras-trail-running-espana-2026>; rel=\"alternate\"; hreflang=\"es\", <https://www.trailrunningcal.com/ca/blog/millors-curses-trail-running-espanya-2026>; rel=\"alternate\"; hreflang=\"ca\", <https://www.trailrunningcal.com/es/blog/mejores-carreras-trail-running-espana-2026>; rel=\"alternate\"; hreflang=\"x-default\""
+};
