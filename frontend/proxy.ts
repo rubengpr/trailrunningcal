@@ -46,6 +46,18 @@ function buildContactLinkHeader(): string {
   return linkParts.join(', ');
 }
 
+/**
+ * Builds Link header for home page
+ */
+function buildHomeLinkHeader(): string {
+  const linkParts = [
+    `<${BASE_URL}/es>; rel="alternate"; hreflang="es"`,
+    `<${BASE_URL}/ca>; rel="alternate"; hreflang="ca"`,
+    `<${BASE_URL}/es>; rel="alternate"; hreflang="x-default"`,
+  ];
+  return linkParts.join(', ');
+}
+
 export default function proxy(request: NextRequest) {
   // Process request with intl middleware first (handles locale routing)
   const intlResponse = intlMiddleware(request);
@@ -58,9 +70,12 @@ export default function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   let linkHeader: string | null = null;
 
+  // Check if this is a home page route: /es or /ca
+  if (pathname.match(/^\/(es|ca)$/)) {
+    linkHeader = buildHomeLinkHeader();
+  }
   // Check if this is a blog post route: /[locale]/blog/[slug]
-  const blogPostMatch = pathname.match(/^\/(es|ca)\/blog\/(.+)$/);
-  if (blogPostMatch) {
+  else if (pathname.match(/^\/(es|ca)\/blog\/(.+)$/)) {
     linkHeader = BLOG_POST_LINK_MAP[pathname] || null;
   }
   // Check if this is a blog listing page: /[locale]/blog
@@ -76,13 +91,13 @@ export default function proxy(request: NextRequest) {
   if (linkHeader) {
     // Clone the response to modify headers
     const newResponse = intlResponse.clone();
-    
+
     // Remove all existing Link headers
     newResponse.headers.delete('Link');
-    
+
     // Set our correct Link header
     newResponse.headers.set('Link', linkHeader);
-    
+
     return newResponse;
   }
 
@@ -97,4 +112,3 @@ export default function proxy(request: NextRequest) {
 export const config = {
   matcher: ['/((?!api|_next|_vercel|.*\\..*).*)'],
 };
-

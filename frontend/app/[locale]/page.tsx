@@ -23,6 +23,8 @@ export async function generateMetadata({
   const title = t(seoMeta.titleKey);
   const description = t(seoMeta.descriptionKey);
 
+  // Don't pass alternateLinks - proxy.ts will set correct Link headers
+  // This prevents Next.js from generating incorrect Link headers from metadata
   return generateMetadataFromOptions({
     title,
     description,
@@ -30,9 +32,7 @@ export async function generateMetadata({
     locale,
     ogImageUrl: seoMeta.ogImageUrl,
     ogType: seoMeta.ogType,
-    alternateLinks: Object.fromEntries(
-      seoMeta.alternateLinks.map((link) => [link.hrefLang, link.href]),
-    ),
+    // alternateLinks removed - proxy.ts will set correct Link headers
   });
 }
 
