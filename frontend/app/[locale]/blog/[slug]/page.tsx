@@ -4,7 +4,6 @@ import type { Locale } from '@/i18n';
 import {
   getAllBlogPosts,
   getPostBySlug,
-  getPostTranslations,
 } from '@/lib/blog-utils';
 import { renderMDXFile } from '@/lib/mdx-renderer';
 import { BASE_URL } from '@/lib/config';
@@ -38,33 +37,11 @@ export async function generateMetadata({
     };
   }
 
-  // Get all translations for hreflang links
-  const translations = getPostTranslations(post.translationKey);
-
-  // Build alternate links object
-  const alternateLinks: Record<string, string> = {};
-  for (const translation of translations) {
-    const translationUrl = `${BASE_URL}/${translation.locale}/blog/${translation.slug}`;
-    alternateLinks[translation.locale] = translationUrl;
-  }
-
-  // Add x-default pointing to default locale (Spanish)
-  const defaultTranslation = translations.find((t) => t.locale === 'es');
-  if (defaultTranslation) {
-    alternateLinks[
-      'x-default'
-    ] = `${BASE_URL}/es/blog/${defaultTranslation.slug}`;
-  } else if (translations.length > 0) {
-    // Fallback to first translation if Spanish not available
-    const firstTranslation = translations[0];
-    alternateLinks[
-      'x-default'
-    ] = `${BASE_URL}/${firstTranslation.locale}/blog/${firstTranslation.slug}`;
-  }
-
   // Build canonical URL
   const canonicalUrl = `${BASE_URL}/${locale}/blog/${slug}`;
 
+  // Don't pass alternateLinks - proxy.ts will set correct Link headers
+  // This prevents Next.js from generating incorrect Link headers from metadata
   return generateMetadataFromOptions({
     title: post.title,
     description: post.excerpt,
@@ -74,7 +51,7 @@ export async function generateMetadata({
     ogImageAlt: post.imageAlt || post.title,
     ogType: 'article',
     publishedTime: post.date,
-    alternateLinks,
+    // alternateLinks removed - proxy.ts will set correct Link headers
   });
 }
 
