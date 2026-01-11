@@ -224,8 +224,8 @@ export default function HomeClient({ races }: HomeClientProps) {
                           priceEur={race.priceEur}
                           city={race.city}
                           province={race.province}
-                          websiteUrl={race.websiteUrl}
                           raceSlug={generateRaceSlug(race.name)}
+                          isVerifiedOrganizer={race.isVerifiedOrganizer}
                         />
                       </ErrorBoundary>
                     </div>

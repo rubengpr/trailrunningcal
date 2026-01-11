@@ -1333,6 +1333,7 @@ export const races: TrailRace[] = [
     city: 'Roses',
     province: 'Girona',
     websiteUrl: 'https://www.klassmark.com/trailcapdecreus/',
+    isVerifiedOrganizer: true,
   },
   {
     date: '2026-01-18',

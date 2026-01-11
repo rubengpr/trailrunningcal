@@ -2,6 +2,7 @@
 
 import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
+import VerifiedBadgeWithTooltip from './verified-badge-with-tooltip';
 
 interface TrailRaceCardProps {
   date: string | null;
@@ -11,8 +12,8 @@ interface TrailRaceCardProps {
   priceEur: number | null;
   city: string;
   province: string;
-  websiteUrl: string | null;
   raceSlug: string;
+  isVerifiedOrganizer?: boolean;
 }
 
 const formatDate = (dateString: string | null, locale: string) => {
@@ -58,8 +59,8 @@ export default function TrailRaceCard({
   priceEur,
   city,
   province,
-  websiteUrl,
   raceSlug,
+  isVerifiedOrganizer,
 }: TrailRaceCardProps) {
   const t = useTranslations();
   const locale = useLocale();
@@ -69,8 +70,13 @@ export default function TrailRaceCard({
   const elevationRatioColor = getElevationRatioColor(elevationRatio);
 
   return (
-    <Link href={`/${locale}/carrera/${raceSlug}`}>
-      <article className="w-full bg-white rounded-lg shadow hover:shadow-md transition-shadow cursor-pointer">
+    <Link
+      href={`/${locale}/carrera/${raceSlug}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="pointer-events-none sm:pointer-events-auto"
+    >
+      <article className="w-full bg-white rounded-lg shadow sm:hover:shadow-md transition-shadow sm:cursor-pointer">
         <div className="w-full p-2 sm:p-4">
           <div className="flex items-start sm:justify-between mb-1">
             <div className="flex gap-4">
@@ -84,9 +90,14 @@ export default function TrailRaceCard({
                 </span>
               </div>
               <div className="flex-1">
-                <h3 className="text-xs sm:text-lg font-bold text-gray-900 mb-1">
-                  {name}
-                </h3>
+                <div className="flex flex-row items-center gap-1.5 mb-1">
+                  <h3 className="text-xs sm:text-lg font-bold text-gray-900">
+                    {name}
+                  </h3>
+                  {isVerifiedOrganizer && (
+                    <VerifiedBadgeWithTooltip size="sm" className="shrink-0" />
+                  )}
+                </div>
                 <div className="flex gap-3 text-[10px] sm:text-sm text-gray-600 mb-2">
                   <span>{distanceKm}km</span>
                   <span>{elevationGainM ? `${elevationGainM}m+` : '-'}</span>

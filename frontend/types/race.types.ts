@@ -7,4 +7,5 @@ export interface TrailRace {
   city: string;
   province: string;
   websiteUrl: string | null;
+  isVerifiedOrganizer?: boolean; // Optional: true if organizer is verified
 }

@@ -6,6 +6,10 @@ import { getTranslations } from 'next-intl/server';
 import type { Locale } from '@/i18n';
 import { generateRaceSlug, getRaceBySlug } from '@/lib/race-utils';
 import { races } from '@/data/races';
+import type { Metadata } from 'next';
+import { generateMetadataFromOptions } from '@/seo/meta-config';
+import { BASE_URL } from '@/lib/config';
+import VerifiedBadgeWithTooltip from '@/components/verified-badge-with-tooltip';
 
 export async function generateStaticParams() {
   const params = locales.flatMap((locale) =>
@@ -15,6 +19,85 @@ export async function generateStaticParams() {
     })),
   );
   return params;
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; race: string }>;
+}): Promise<Metadata> {
+  const { locale, race } = await params;
+
+  const raceData = getRaceBySlug(race);
+
+  // If race doesn't exist, return minimal metadata (Next.js will handle 404)
+  if (!raceData) {
+    return {
+      title: 'Race Not Found',
+    };
+  }
+
+  if (!locales.includes(locale as Locale)) {
+    return {
+      title: 'Race Not Found',
+    };
+  }
+
+  const localeTyped = locale as Locale;
+
+  // Extract year from date (YYYY-MM-DD format) or use current year if date is null
+  const year = raceData.date
+    ? new Date(raceData.date).getFullYear()
+    : new Date().getFullYear();
+
+  // Generate title: "{Race Name} - Trail Running en/a {City} ({Year})"
+  const preposition = localeTyped === 'ca' ? 'a' : 'en';
+  const title = `${raceData.name} - Trail Running ${preposition} ${raceData.city} (${year})`;
+
+  // Format date for description
+  const formattedDate = raceData.date
+    ? localeTyped === 'ca'
+      ? formatDateToCatalan(raceData.date)
+      : formatDateToSpanish(raceData.date)
+    : localeTyped === 'ca'
+    ? 'Data per confirmar'
+    : 'Fecha por confirmar';
+
+  // Generate description with race details
+  const elevationText =
+    raceData.elevationGainM !== null
+      ? localeTyped === 'ca'
+        ? `amb ${raceData.elevationGainM}m de desnivell positiu`
+        : `con ${raceData.elevationGainM}m de desnivel positivo`
+      : '';
+
+  const description =
+    localeTyped === 'ca'
+      ? `Cursa de trail running de ${raceData.distanceKm}km${
+          elevationText ? ` ${elevationText}` : ''
+        } a ${raceData.city}, ${raceData.province}. Data: ${formattedDate}`
+      : `Carrera de trail running de ${raceData.distanceKm}km${
+          elevationText ? ` ${elevationText}` : ''
+        } en ${raceData.city}, ${raceData.province}. Fecha: ${formattedDate}`;
+
+  // Build canonical URL
+  const canonicalUrl = `${BASE_URL}/${localeTyped}/carrera/${race}`;
+
+  // Use default OG image
+  const ogImageUrl = `${BASE_URL}/og-image.png`;
+
+  // Don't pass alternateLinks - proxy.ts will set correct Link headers
+  // This prevents Next.js from generating incorrect Link headers from metadata
+  return generateMetadataFromOptions({
+    title,
+    description,
+    canonicalUrl,
+    locale: localeTyped,
+    ogImageUrl,
+    ogImageAlt: raceData.name,
+    ogType: 'website',
+    // alternateLinks removed - proxy.ts will set correct Link headers
+  });
 }
 
 export default async function RacePage({
@@ -49,13 +132,17 @@ export default async function RacePage({
       <div className="flex flex-col mx-20 my-10">
         <div className="flex flex-row justify-between items-center">
           <div className="flex flex-col">
-            <h1 className="text-4xl font-bold mb-1">{raceData.name}</h1>
+            <div className="flex flex-row items-center gap-2 mb-1">
+              <h1 className="text-4xl font-bold">{raceData.name}</h1>
+              {raceData.isVerifiedOrganizer && (
+                <VerifiedBadgeWithTooltip size="lg" className="mt-1" />
+              )}
+            </div>
             <div className="flex flex-row text-gray-600 gap-3">
               <h3 className="text-xl font-bold text-black">{formattedDate}</h3>
               <div className="flex flex-row gap-2">
                 <div className="flex flex-row gap-1">
-                  <h3 className="text-xl">{raceData.city}</h3>
-                  <h3 className="text-xl">·</h3>
+                  <h3 className="text-xl">{raceData.city},</h3>
                   <h3 className="text-xl">{raceData.province}</h3>
                 </div>
                 <div>
@@ -63,7 +150,9 @@ export default async function RacePage({
                 </div>
                 <div className="flex flex-row gap-1">
                   <h3 className="text-xl">{raceData.distanceKm}km</h3>
-                  <h3 className="text-xl">+{raceData.elevationGainM}m</h3>
+                  {raceData.elevationGainM !== null && (
+                    <h3 className="text-xl">+{raceData.elevationGainM}m</h3>
+                  )}
                 </div>
               </div>
             </div>
