@@ -1,39 +1,82 @@
 import Navbar from '@/components/navbar';
+import { locales } from '@/i18n';
+import { notFound } from 'next/navigation';
+import { formatDateToSpanish, formatDateToCatalan } from '@/lib/date-utils';
+import { getTranslations } from 'next-intl/server';
+import type { Locale } from '@/i18n';
+import { generateRaceSlug, getRaceBySlug } from '@/lib/race-utils';
+import { races } from '@/data/races';
 
-export default function RacePage() {
+export async function generateStaticParams() {
+  const params = locales.flatMap((locale) =>
+    races.map((race) => ({
+      locale,
+      race: generateRaceSlug(race.name),
+    })),
+  );
+  return params;
+}
+
+export default async function RacePage({
+  params,
+}: {
+  params: Promise<{ locale: string; race: string }>;
+}) {
+  const { locale, race } = await params;
+
+  const raceData = getRaceBySlug(race);
+
+  if (!raceData) {
+    notFound();
+  }
+
+  if (!locales.includes(locale as Locale)) {
+    notFound();
+  }
+
+  // Get translations for the race page
+  const tRace = await getTranslations({ locale, namespace: 'race' });
+
+  const formattedDate = raceData.date
+    ? locale === 'ca'
+      ? formatDateToCatalan(raceData.date)
+      : formatDateToSpanish(raceData.date)
+    : '-';
+
   return (
     <div className="min-h-screen w-full text-gray-900 flex flex-col bg-white">
       <Navbar />
       <div className="flex flex-col mx-20 my-10">
         <div className="flex flex-row justify-between items-center">
           <div className="flex flex-col">
-            <h1 className="text-4xl font-bold mb-1">
-              Salomon Ultra Pirineu 100K® 2025
-            </h1>
+            <h1 className="text-4xl font-bold mb-1">{raceData.name}</h1>
             <div className="flex flex-row text-gray-600 gap-3">
-              <h3 className="text-xl font-bold text-black">
-                Domingo 23 Octubre 2025
-              </h3>
+              <h3 className="text-xl font-bold text-black">{formattedDate}</h3>
               <div className="flex flex-row gap-2">
                 <div className="flex flex-row gap-1">
-                  <h3 className="text-xl">Bagà</h3>
+                  <h3 className="text-xl">{raceData.city}</h3>
                   <h3 className="text-xl">·</h3>
-                  <h3 className="text-xl">Barcelona</h3>
+                  <h3 className="text-xl">{raceData.province}</h3>
                 </div>
                 <div>
                   <h3 className="text-xl">|</h3>
                 </div>
                 <div className="flex flex-row gap-1">
-                  <h3 className="text-xl">102km</h3>
-                  <h3 className="text-xl">+6.700m</h3>
+                  <h3 className="text-xl">{raceData.distanceKm}km</h3>
+                  <h3 className="text-xl">+{raceData.elevationGainM}m</h3>
                 </div>
               </div>
             </div>
           </div>
           <div>
-            <button className="bg-gray-900 text-white px-4 py-2 rounded-md font-medium hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors cursor-pointer">
+            <a
+              href={raceData.websiteUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-gray-900 text-white px-4 py-2 rounded-md font-medium hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors cursor-pointer inline-block"
+            >
               Web oficial
-            </button>
+            </a>
           </div>
         </div>
 
@@ -61,20 +104,18 @@ export default function RacePage() {
             </div>
             <div className="flex flex-col justify-start">
               <h3 className="text-lg font-semibold mb-1">
-                ¿Eres el organizador de esta carrera?
+                {tRace('organizerCard.title')}
               </h3>
               <p className="text-sm/5">
-                Reclama la propiedad del evento y conviértete en un organizador
-                verificado.
+                {tRace('organizerCard.description')}
                 <br />
-                Los organizadores verificados pueden añadir datos adicionales
-                como fotos, mapa y precios completos del evento.
+                {tRace('organizerCard.benefits')}
               </p>
             </div>
           </div>
           <div className="flex flex-row justify-end items-center">
-            <button className=" bg-gray-900 text-white px-4 py-2 rounded-md font-medium hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors cursor-pointer">
-              Reclamar
+            <button className="bg-gray-900 text-white px-4 py-2 rounded-md font-medium hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors cursor-pointer">
+              {tRace('organizerCard.claimButton')}
             </button>
           </div>
         </div>

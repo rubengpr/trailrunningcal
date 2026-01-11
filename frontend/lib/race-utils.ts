@@ -17,7 +17,7 @@ export function generateRaceSlug(name: string): string {
 }
 
 /**
- * Finds a race by its slug (geenrated from name)
+ * Finds a race by its slug (generated from name)
  * @param slug - The slug of the race
  * @returns The race or null if not found
  */

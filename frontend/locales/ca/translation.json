@@ -34,7 +34,14 @@
     "difficulty": "Dificultat: {{level}}",
     "difficultyNotSpecified": "Dificultat: No especificada",
     "webLink": "Web →",
-    "notAvailable": "N/D"
+    "notAvailable": "N/D",
+    "officialWebsite": "Web oficial",
+    "organizerCard": {
+      "title": "Ets l'organitzador d'aquesta cursa?",
+      "description": "Reclama la propietat de l'esdeveniment i converteix-te en un organitzador verificat.",
+      "benefits": "Els organitzadors verificats poden afegir dades addicionals com fotos, mapa i preus complets de l'esdeveniment.",
+      "claimButton": "Reclamar"
+    }
   },
   "difficulty": {
     "fácil": "Fàcil",
