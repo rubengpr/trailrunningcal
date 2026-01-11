@@ -11,6 +11,7 @@ import ErrorBoundary from './error-boundary';
 import { SearchError } from './error-message';
 import { getMonthNumber } from '../lib/date-utils';
 import ProvinceFilter from './province-filter';
+import { generateRaceSlug } from '../lib/race-utils';
 
 interface HomeClientProps {
   races: TrailRace[];
@@ -224,6 +225,7 @@ export default function HomeClient({ races }: HomeClientProps) {
                           city={race.city}
                           province={race.province}
                           websiteUrl={race.websiteUrl}
+                          raceSlug={generateRaceSlug(race.name)}
                         />
                       </ErrorBoundary>
                     </div>

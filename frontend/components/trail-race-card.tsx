@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations, useLocale } from 'next-intl';
+import Link from 'next/link';
 
 interface TrailRaceCardProps {
   date: string | null;
@@ -11,6 +12,7 @@ interface TrailRaceCardProps {
   city: string;
   province: string;
   websiteUrl: string | null;
+  raceSlug: string;
 }
 
 const formatDate = (dateString: string | null, locale: string) => {
@@ -57,6 +59,7 @@ export default function TrailRaceCard({
   city,
   province,
   websiteUrl,
+  raceSlug,
 }: TrailRaceCardProps) {
   const t = useTranslations();
   const locale = useLocale();
@@ -66,92 +69,89 @@ export default function TrailRaceCard({
   const elevationRatioColor = getElevationRatioColor(elevationRatio);
 
   return (
-    <article
-      className="w-full bg-white rounded-lg shadow hover:shadow-md transition-shadow"
-    >
-      <div className="w-full p-2 sm:p-4">
-        <div className="flex items-start sm:justify-between mb-1">
-          <div className="flex gap-4">
-            <div className="flex flex-col items-center justify-center min-w-[50px] px-3 py-2 bg-indigo-100 text-indigo-700 rounded-sm">
-              <span className="text-[8px] sm:text-[10px] font-medium uppercase tracking-wide">
-                {dayOfWeek}
-              </span>
-              <span className="text-base sm:text-lg font-bold">{day}</span>
-              <span className="text-[10px] sm:text-xs font-medium capitalize">
-                {month}
-              </span>
-            </div>
-            <div className="flex-1">
-              <h3
-                className="text-xs sm:text-lg font-bold text-gray-900 mb-1"
-              >
-                {name}
-              </h3>
-              <div
-                className="flex gap-3 text-[10px] sm:text-sm text-gray-600 mb-2"
-              >
-                <span>
-                  {distanceKm}km
+    <Link href={`/${locale}/carrera/${raceSlug}`}>
+      <article className="w-full bg-white rounded-lg shadow hover:shadow-md transition-shadow cursor-pointer">
+        <div className="w-full p-2 sm:p-4">
+          <div className="flex items-start sm:justify-between mb-1">
+            <div className="flex gap-4">
+              <div className="flex flex-col items-center justify-center min-w-[50px] px-3 py-2 bg-indigo-100 text-indigo-700 rounded-sm">
+                <span className="text-[8px] sm:text-[10px] font-medium uppercase tracking-wide">
+                  {dayOfWeek}
                 </span>
-                <span>
-                  {elevationGainM ? `${elevationGainM}m+` : '-'}
-                </span>
-                <span
-                  className="truncate"
-                >
-                  {city}, {province}
+                <span className="text-base sm:text-lg font-bold">{day}</span>
+                <span className="text-[10px] sm:text-xs font-medium capitalize">
+                  {month}
                 </span>
               </div>
-              <div className="flex justify-start items-center gap-2">
-                <span
-                  className="hidden sm:block px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-sm bg-indigo-100 text-indigo-800"
-                >
-                  {t('category.' + raceCategory)}
-                </span>
-                <span
-                  className={`hidden sm:block px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-sm ${elevationRatioColor}`}
-                >
-                  {elevationRatio !== null ? `${elevationRatio} m/km` : '—'}
-                </span>
-
-                {websiteUrl && (
-                  <a
-                    href={websiteUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="sm:hidden inline-block bg-indigo-600 text-white px-2 py-0.5 rounded-sm text-[10px] font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
+              <div className="flex-1">
+                <h3 className="text-xs sm:text-lg font-bold text-gray-900 mb-1">
+                  {name}
+                </h3>
+                <div className="flex gap-3 text-[10px] sm:text-sm text-gray-600 mb-2">
+                  <span>{distanceKm}km</span>
+                  <span>{elevationGainM ? `${elevationGainM}m+` : '-'}</span>
+                  <span className="truncate">
+                    {city}, {province}
+                  </span>
+                </div>
+                <div className="flex justify-start items-center gap-2">
+                  <span className="hidden sm:block px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-sm bg-indigo-100 text-indigo-800">
+                    {t('category.' + raceCategory)}
+                  </span>
+                  <span
+                    className={`hidden sm:block px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-sm ${elevationRatioColor}`}
                   >
-                    {t('race.webLink')}
-                  </a>
-                )}
-                <div
-                  className="block sm:hidden font-semibold text-gray-900 text-xs sm:text-lg"
-                >
-                  {priceEur ? `${priceEur}€` : '—'}
+                    {elevationRatio !== null ? `${elevationRatio} m/km` : '—'}
+                  </span>
+
+                  {raceSlug && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        window.open(
+                          `/${locale}/carrera/${raceSlug}`,
+                          '_blank',
+                          'noopener,noreferrer',
+                        );
+                      }}
+                      className="sm:hidden inline-block bg-indigo-600 text-white px-2 py-0.5 rounded-sm text-[10px] font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
+                    >
+                      {t('race.webLink')}
+                    </button>
+                  )}
+                  <div className="block sm:hidden font-semibold text-gray-900 text-xs sm:text-lg">
+                    {priceEur ? `${priceEur}€` : '—'}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div className="hidden sm:flex flex-col items-end gap-2">
-            <div
-              className="font-semibold text-gray-900 text-xs sm:text-lg"
-            >
-              {priceEur ? `${priceEur}€` : '—'}
+            <div className="hidden sm:flex flex-col items-end gap-2">
+              <div className="font-semibold text-gray-900 text-xs sm:text-lg">
+                {priceEur ? `${priceEur}€` : '—'}
+              </div>
+              {raceSlug && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    window.open(
+                      `/${locale}/carrera/${raceSlug}`,
+                      '_blank',
+                      'noopener,noreferrer',
+                    );
+                  }}
+                  className="hidden sm:inline-block bg-indigo-600 text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
+                >
+                  {t('race.webLink')}
+                </button>
+              )}
             </div>
-            {websiteUrl && (
-              <a
-                href={websiteUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hidden sm:inline-block bg-indigo-600 text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
-              >
-                {t('race.webLink')}
-              </a>
-            )}
           </div>
         </div>
-      </div>
-    </article>
+      </article>
+    </Link>
   );
 }
-
