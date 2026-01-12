@@ -1633,7 +1633,10 @@ export const races: TrailRace[] = [
     name: 'Oli Trail 24K',
     distanceKm: 24,
     elevationGainM: 1200,
-    priceEur: 29,
+    priceEur: [
+      { until: '2026-01-19', price: 25 },
+      { until: '2026-03-06', price: 29 },
+    ],
     city: 'Olesa de Montserrat',
     province: 'Barcelona',
     websiteUrl: 'https://www.olitrail.com/',
@@ -1650,7 +1653,10 @@ export const races: TrailRace[] = [
     name: 'Oli Trail 13K',
     distanceKm: 13,
     elevationGainM: 600,
-    priceEur: 17,
+    priceEur: [
+      { until: '2026-01-19', price: 14 },
+      { until: '2026-03-06', price: 17 },
+    ],
     city: 'Olesa de Montserrat',
     province: 'Barcelona',
     websiteUrl: 'https://www.olitrail.com/',
