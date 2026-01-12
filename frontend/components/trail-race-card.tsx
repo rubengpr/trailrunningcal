@@ -3,13 +3,15 @@
 import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
 import VerifiedBadgeWithTooltip from './verified-badge-with-tooltip';
+import type { PriceValue } from '@/types/race.types';
+import { getDisplayPrice } from '@/lib/race-utils';
 
 interface TrailRaceCardProps {
   date: string | null;
   name: string;
   distanceKm: number;
   elevationGainM: number | null;
-  priceEur: number | null;
+  priceEur: PriceValue;
   city: string;
   province: string;
   raceSlug: string;
@@ -68,6 +70,7 @@ export default function TrailRaceCard({
   const elevationRatio = calculateElevationRatio(elevationGainM, distanceKm);
   const raceCategory = getRaceCategory(distanceKm);
   const elevationRatioColor = getElevationRatioColor(elevationRatio);
+  const displayPrice = getDisplayPrice(priceEur);
 
   const handleCardClick = () => {
     if (raceSlug) {
@@ -136,14 +139,14 @@ export default function TrailRaceCard({
                   </Link>
                 )}
                 <div className="block sm:hidden font-semibold text-gray-900 text-xs sm:text-lg">
-                  {priceEur ? `${priceEur}€` : '—'}
+                  {displayPrice ? `${displayPrice}€` : '—'}
                 </div>
               </div>
             </div>
           </div>
           <div className="hidden sm:flex flex-col items-end gap-2">
             <div className="font-semibold text-gray-900 text-xs sm:text-lg">
-              {priceEur ? `${priceEur}€` : '—'}
+              {displayPrice ? `${displayPrice}€` : '—'}
             </div>
             {raceSlug && (
               <Link
