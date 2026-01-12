@@ -10,6 +10,7 @@ import type { Metadata } from 'next';
 import { generateMetadataFromOptions } from '@/seo/meta-config';
 import { BASE_URL } from '@/lib/config';
 import VerifiedBadgeWithTooltip from '@/components/verified-badge-with-tooltip';
+import PriceTiersTable from '@/components/price-tiers-table';
 
 export async function generateStaticParams() {
   const params = locales.flatMap((locale) =>
@@ -166,6 +167,15 @@ export default async function RacePage({
                     </h3>
                   )}
                 </div>
+                <div className="hidden sm:block">
+                  <h3 className="text-base sm:text-lg lg:text-xl">|</h3>
+                </div>
+                <div className="hidden sm:block">
+                  <h3 className="text-base sm:text-lg lg:text-xl">
+                    {typeof raceData.priceEur === 'number' &&
+                      `${raceData.priceEur}€`}
+                  </h3>
+                </div>
               </div>
             </div>
           </div>
@@ -201,6 +211,13 @@ export default async function RacePage({
             frameBorder="0"
             scrolling="no"
           ></iframe>
+        )}
+
+        {Array.isArray(raceData.priceEur) && (
+          <PriceTiersTable
+            tiers={raceData.priceEur}
+            locale={locale as Locale}
+          />
         )}
 
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center px-4 sm:px-6 py-4 border-2 border-gray-300 rounded-xl bg-gray-100 gap-4 sm:gap-0">
