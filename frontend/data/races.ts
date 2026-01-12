@@ -1344,6 +1344,7 @@ export const races: TrailRace[] = [
     city: 'Roses',
     province: 'Girona',
     websiteUrl: 'https://www.klassmark.com/trailcapdecreus/',
+    isVerifiedOrganizer: true,
   },
   {
     date: '2026-01-18',
@@ -1354,6 +1355,7 @@ export const races: TrailRace[] = [
     city: 'Roses',
     province: 'Girona',
     websiteUrl: 'https://www.klassmark.com/trailcapdecreus/',
+    isVerifiedOrganizer: true,
   },
   {
     date: '2026-01-18',
@@ -1605,6 +1607,7 @@ export const races: TrailRace[] = [
     city: 'Hostalets de Balenyà',
     province: 'Barcelona',
     websiteUrl: 'https://www.cursadelrocgros.com/',
+    isVerifiedOrganizer: true,
   },
   {
     date: '2026-03-22',
@@ -1615,6 +1618,7 @@ export const races: TrailRace[] = [
     city: 'Hostalets de Balenyà',
     province: 'Barcelona',
     websiteUrl: 'https://www.cursadelrocgros.com/',
+    isVerifiedOrganizer: true,
   },
   {
     date: '2026-03-22',
@@ -1865,6 +1869,7 @@ export const races: TrailRace[] = [
     city: 'Sant Boi de Llobregat',
     province: 'Barcelona',
     websiteUrl: 'https://rocanegra.cat/',
+    isVerifiedOrganizer: true,
   },
   {
     date: '2026-04-18',
@@ -1875,6 +1880,7 @@ export const races: TrailRace[] = [
     city: 'Sant Boi de Llobregat',
     province: 'Barcelona',
     websiteUrl: 'https://rocanegra.cat/',
+    isVerifiedOrganizer: true,
   },
   {
     date: '2026-04-18',
@@ -1885,6 +1891,7 @@ export const races: TrailRace[] = [
     city: 'Torelló',
     province: 'Barcelona',
     websiteUrl: 'https://www.matxos.cat/',
+    isVerifiedOrganizer: true,
   },
   {
     date: '2026-04-18',
@@ -1989,6 +1996,7 @@ export const races: TrailRace[] = [
     city: 'Girona',
     province: 'Girona',
     websiteUrl: 'https://maratonviasverdes.com/es/girona',
+    isVerifiedOrganizer: true,
   },
   {
     date: '2026-04-26',
@@ -1999,6 +2007,7 @@ export const races: TrailRace[] = [
     city: 'Cassà de la Selva',
     province: 'Girona',
     websiteUrl: 'https://maratonviasverdes.com/es/girona',
+    isVerifiedOrganizer: true,
   },
   {
     date: '2026-04-26',
@@ -2009,6 +2018,7 @@ export const races: TrailRace[] = [
     city: 'Llagostera',
     province: 'Girona',
     websiteUrl: 'https://maratonviasverdes.com/es/girona',
+    isVerifiedOrganizer: true,
   },
   {
     date: '2026-04-26',
@@ -2019,6 +2029,7 @@ export const races: TrailRace[] = [
     city: "Santa Cristina d'Aro",
     province: 'Girona',
     websiteUrl: 'https://maratonviasverdes.com/es/girona',
+    isVerifiedOrganizer: true,
   },
   {
     date: '2026-04-26',

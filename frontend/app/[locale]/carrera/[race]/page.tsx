@@ -135,7 +135,7 @@ export default async function RacePage({
             <div className="flex flex-row items-center gap-2 mb-1">
               <h1 className="text-4xl font-bold">{raceData.name}</h1>
               {raceData.isVerifiedOrganizer && (
-                <VerifiedBadgeWithTooltip size="lg" className="mt-1" />
+                <VerifiedBadgeWithTooltip size="md" />
               )}
             </div>
             <div className="flex flex-row text-gray-600 gap-3">
