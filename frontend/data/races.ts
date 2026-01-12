@@ -1338,6 +1338,8 @@ export const races: TrailRace[] = [
       'La Trail Cap de Creus 40K es una de las carreras de trail running más emblemáticas de la Costa Brava. Con salida y llegada en Roses, propone un recorrido de 40 km y +1.800 m de desnivel positivo a través del Parc Natural del Cap de Creus, combinando senderos técnicos, tramos de montaña y espectaculares vistas al Mediterráneo. El trazado pasa por enclaves icónicos como Sant Pere de Rodes, Cadaqués o Cala Jóncols, ofreciendo una experiencia exigente y muy variada en pleno entorno natural.',
     raceDescriptionEnd:
       'Pensada para corredores con experiencia en montaña, la prueba cuenta con 2 puntos ITRA, un tiempo máximo de 7 horas y una organización cuidada al detalle, con avituallamientos completos, señalización clara y servicios al corredor en meta. La Trail Cap de Creus 40K es una cita imprescindible para quienes buscan un desafío auténtico de trail mediterráneo, donde el esfuerzo se ve recompensado con paisajes únicos entre mar y montaña.',
+    mapUrl:
+      'https://www.komoot.com/es-es/tour/2724447286/embed?share_token=a88O24AArfyfI9zqHdi47YLmOp4duN89vSzv01pNy5ETjRTs1b&profile=1',
   },
   {
     date: '2026-01-18',
@@ -1349,6 +1351,12 @@ export const races: TrailRace[] = [
     province: 'Girona',
     websiteUrl: 'https://www.klassmark.com/trailcapdecreus/',
     isVerifiedOrganizer: true,
+    raceDescriptionStart:
+      'La Trail Cap de Creus Express es una carrera de trail running corta e intensa que forma parte del evento Trail Cap de Creus en la Costa Brava. Con salida y llegada en Roses, propone un recorrido de aproximadamente 11,5 km y unos +600 m de desnivel positivo a través del Parc Natural del Cap de Creus, combinando senderos técnicos, subidas exigentes y descensos rápidos con vistas constantes al Mediterráneo. A pesar de su distancia reducida, el trazado mantiene el carácter salvaje y variado del entorno, ofreciendo una experiencia concentrada de trail mediterráneo.',
+    raceDescriptionEnd:
+      'Pensada tanto para corredores que se inician en el trail como para quienes buscan una prueba explosiva y rápida, la Express conserva el nivel organizativo del evento, con señalización clara, avituallamientos, cronometraje con chip y servicios al corredor en meta. La Trail Cap de Creus Express es una opción ideal para disfrutar de la esencia del Cap de Creus en un formato accesible, intenso y muy paisajístico.',
+    mapUrl:
+      'https://www.komoot.com/es-es/tour/2724448367/embed?share_token=alHZapBW4JhKFvQ4KP5TZjFnobB5k699KfXYC5Os5aCKkbdbql&profile=1',
   },
   {
     date: '2026-01-18',
@@ -1360,6 +1368,12 @@ export const races: TrailRace[] = [
     province: 'Girona',
     websiteUrl: 'https://www.klassmark.com/trailcapdecreus/',
     isVerifiedOrganizer: true,
+    raceDescriptionStart:
+      'La Trail Cap de Creus Trail es una carrera de trail running de aproximadamente 22 km con unos +1.200 m de desnivel positivo en el corazón del Parc Natural del Cap de Creus, con salida y llegada en Roses. El recorrido combina senderos técnicos, subidas exigentes como el ascenso al Puig de l’Àliga y el Puig Alt, tramos corribles y panorámicas sobre el Mediterráneo, permitiendo descubrir los paisajes más característicos del cabo mediterráneo entre bosque, crestas y vistas al mar.',
+    raceDescriptionEnd:
+      'Pensada para corredores que buscan un punto intermedio entre las distancias corta y larga del evento, la Trail ofrece un desafío equilibrado y muy paisajístico, ideal para quienes quieren experimentar la dureza técnica del terreno con un ritmo más dinámico. La prueba cuenta con señalización clara, avituallamientos, cronometraje con chip y servicios al corredor en meta, consolidándose como una de las opciones más atractivas del Trail Cap de Creus para disfrutar de la esencia del trail mediterráneo.',
+    mapUrl:
+      'https://www.komoot.com/es-es/tour/2724449784/embed?share_token=a5ACUArEDdOYR3CrYuVy239768JZdLkXomkvWzwQQCkvaAP2LH&profile=1',
   },
   {
     date: '2026-01-18',
@@ -1451,6 +1465,13 @@ export const races: TrailRace[] = [
     city: 'Mataró',
     province: 'Barcelona',
     websiteUrl: 'https://www.xtrailseriesrun.com/mataro',
+    isVerifiedOrganizer: true,
+    raceDescriptionStart:
+      'La Xtrail Series Run Mataró 21.5K es la distancia más exigente de esta carrera de alta frecuencia en la zona del Maresme. Con salida y llegada en Mataró, propone un recorrido de 21,5 km y +870 m de desnivel positivo a través de los mejores rincones de la comarca, combinando corriols que se enlazan entre sí y que llevarán a los corredores a las máximas pulsaciones. El trazado XTREM explora los senderos más técnicos y variados de la zona, ofreciendo una experiencia intensa y muy completa.',
+    raceDescriptionEnd:
+      'Pensada para corredores con experiencia en trail running que buscan un desafío exigente, esta prueba forma parte de un evento con cuatro recorridos diferentes pensados para todos los públicos. La organización cuenta con avituallamientos completos, señalización clara y servicios al corredor en meta. La Xtrail Series Run Mataró 21.5K es una cita perfecta para quienes quieren dar lo máximo de sí mismos en una carrera de alta frecuencia, donde el esfuerzo se ve recompensado con la exploración de los mejores rincones del Maresme.',
+    mapUrl:
+      'https://es.wikiloc.com/wikiloc/embedv2.do?id=200387293&elevation=on&images=off&maptype=H',
   },
   {
     date: '2026-02-08',
@@ -1461,6 +1482,13 @@ export const races: TrailRace[] = [
     city: 'Mataró',
     province: 'Barcelona',
     websiteUrl: 'https://www.xtrailseriesrun.com/mataro',
+    isVerifiedOrganizer: true,
+    raceDescriptionStart:
+      'La Xtrail Series Run Mataró 15.5K es una distancia intermedia perfecta para corredores que buscan un desafío equilibrado en esta carrera de alta frecuencia del Maresme. Con salida y llegada en Mataró, propone un recorrido de 15,5 km y +600 m de desnivel positivo a través de los mejores rincones de la zona, combinando corriols que se enlazan entre sí y que llevarán a los participantes a las máximas pulsaciones. El trazado TRAIL ofrece una experiencia exigente pero accesible, explorando senderos variados y técnicos.',
+    raceDescriptionEnd:
+      'Ideal para corredores con experiencia en trail running que buscan un desafío intermedio, esta prueba forma parte de un evento con cuatro recorridos diferentes pensados para todos los públicos. La organización cuenta con avituallamientos completos, señalización clara y servicios al corredor en meta. La Xtrail Series Run Mataró 15.5K es una excelente opción para quienes quieren explorar los mejores rincones del Maresme en una distancia que requiere dar lo máximo de uno mismo, combinando esfuerzo y disfrute del entorno natural.',
+    mapUrl:
+      'https://es.wikiloc.com/wikiloc/embedv2.do?id=200387491&elevation=on&images=off&maptype=H',
   },
   {
     date: '2026-02-08',
@@ -1471,6 +1499,13 @@ export const races: TrailRace[] = [
     city: 'Mataró',
     province: 'Barcelona',
     websiteUrl: 'https://www.xtrailseriesrun.com/mataro',
+    isVerifiedOrganizer: true,
+    raceDescriptionStart:
+      'La Xtrail Series Run Mataró 9.5K es una distancia perfecta para iniciarse en el trail running o disfrutar de una carrera de alta frecuencia en el Maresme. Con salida y llegada en Mataró, propone un recorrido de 9,5 km y +380 m de desnivel positivo a través de los mejores rincones de la zona, combinando corriols que se enlazan entre sí y que llevarán a los corredores a las máximas pulsaciones. El trazado SHORT ofrece una experiencia accesible pero exigente, ideal para descubrir el trail running.',
+    raceDescriptionEnd:
+      'Pensada para corredores que se inician en el trail running o buscan una distancia más corta pero igualmente desafiante, esta prueba forma parte de un evento con cuatro recorridos diferentes pensados para todos los públicos. La organización cuenta con avituallamientos completos, señalización clara y servicios al corredor en meta. La Xtrail Series Run Mataró 9.5K es una excelente oportunidad para explorar los mejores rincones del Maresme y dar lo máximo de uno mismo en una distancia accesible pero que requiere esfuerzo y dedicación.',
+    mapUrl:
+      'https://es.wikiloc.com/wikiloc/embedv2.do?id=159641971&elevation=on&images=off&maptype=H',
   },
   {
     date: '2026-02-08',
@@ -1481,6 +1516,11 @@ export const races: TrailRace[] = [
     city: 'Mataró',
     province: 'Barcelona',
     websiteUrl: 'https://www.xtrailseriesrun.com/mataro',
+    isVerifiedOrganizer: true,
+    raceDescriptionStart:
+      'La Xtrail Series Run Mataró 5.5K es la distancia más accesible de esta carrera de alta frecuencia en la zona del Maresme, perfecta para iniciarse en el trail running. Con salida y llegada en Mataró, propone un recorrido de 5,5 km y +150 m de desnivel positivo a través de los mejores rincones de la zona, combinando corriols que se enlazan entre sí y que llevarán a los corredores a las máximas pulsaciones. El trazado EXPRESS ofrece una experiencia intensa y concentrada, ideal para descubrir el trail running en una distancia corta pero exigente.',
+    raceDescriptionEnd:
+      'Ideal para corredores que se inician en el trail running o buscan una experiencia intensa en una distancia corta, esta prueba forma parte de un evento con cuatro recorridos diferentes pensados para todos los públicos. La organización cuenta con avituallamientos completos, señalización clara y servicios al corredor en meta. La Xtrail Series Run Mataró 5.5K es una excelente opción para explorar los mejores rincones del Maresme y dar lo máximo de uno mismo en una distancia accesible pero que requiere esfuerzo y dedicación, perfecta para quienes buscan una primera experiencia en trail running.',
   },
   {
     date: '2026-02-28',
@@ -1611,7 +1651,6 @@ export const races: TrailRace[] = [
     city: 'Hostalets de Balenyà',
     province: 'Barcelona',
     websiteUrl: 'https://www.cursadelrocgros.com/',
-    isVerifiedOrganizer: true,
   },
   {
     date: '2026-03-22',
@@ -1622,7 +1661,6 @@ export const races: TrailRace[] = [
     city: 'Hostalets de Balenyà',
     province: 'Barcelona',
     websiteUrl: 'https://www.cursadelrocgros.com/',
-    isVerifiedOrganizer: true,
   },
   {
     date: '2026-03-22',

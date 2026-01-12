@@ -180,8 +180,7 @@ export default async function RacePage({
             </a>
           </div>
         </div>
-
-        <div className="w-full my-4 sm:my-6">
+        <div className="w-full my-6 sm:my-8">
           {raceData.isVerifiedOrganizer && (
             <>
               <p className="text-sm sm:text-base lg:text-lg mb-4">
@@ -193,6 +192,17 @@ export default async function RacePage({
             </>
           )}
         </div>
+        {raceData.mapUrl && (
+          <iframe
+            className="mb-4"
+            src={raceData.mapUrl}
+            width="100%"
+            height="700"
+            frameBorder="0"
+            scrolling="no"
+          ></iframe>
+        )}
+
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center px-4 sm:px-6 py-4 border-2 border-gray-300 rounded-xl bg-gray-100 gap-4 sm:gap-0">
           <div className="flex flex-row justify-start items-center gap-4">
             <div className="flex flex-row w-16 h-16 sm:w-20 sm:h-20 justify-center items-center border-3 border-gray-300 rounded-full bg-gray-50 shrink-0">

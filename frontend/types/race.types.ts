@@ -10,4 +10,5 @@ export interface TrailRace {
   isVerifiedOrganizer?: boolean; // Optional: true if organizer is verified
   raceDescriptionStart?: string | null;
   raceDescriptionEnd?: string | null;
+  raceUrl: string | null;
 }
