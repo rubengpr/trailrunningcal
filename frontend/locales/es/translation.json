@@ -38,7 +38,9 @@
     "officialWebsite": "Web oficial",
     "organizerCard": {
       "title": "¿Eres el organizador de esta carrera?",
+      "titleMobile": "¿Eres organizador?",
       "description": "Reclama la propiedad del evento y conviértete en un organizador verificado.",
+      "descriptionMobile": "Reclama el evento y conviértete en organizador verificado. Añade fotos, mapa y precios.",
       "benefits": "Los organizadores verificados pueden añadir datos adicionales como fotos, mapa y precios completos del evento.",
       "claimButton": "Reclamar"
     }

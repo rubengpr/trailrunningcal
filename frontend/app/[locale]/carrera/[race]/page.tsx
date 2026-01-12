@@ -129,48 +129,60 @@ export default async function RacePage({
   return (
     <div className="min-h-screen w-full text-gray-900 flex flex-col bg-white">
       <Navbar />
-      <div className="flex flex-col mx-20 my-10">
-        <div className="flex flex-row justify-between items-center">
+      <div className="flex flex-col max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-20 py-6 sm:py-10">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-0">
           <div className="flex flex-col">
             <div className="flex flex-row items-center gap-2 mb-1">
-              <h1 className="text-4xl font-bold">{raceData.name}</h1>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
+                {raceData.name}
+              </h1>
               {raceData.isVerifiedOrganizer && (
                 <VerifiedBadgeWithTooltip size="md" />
               )}
             </div>
-            <div className="flex flex-row text-gray-600 gap-3">
-              <h3 className="text-xl font-bold text-black">{formattedDate}</h3>
-              <div className="flex flex-row gap-2">
+            <div className="flex flex-col sm:flex-row text-gray-600 gap-2 sm:gap-3">
+              <h3 className="text-base sm:text-lg lg:text-xl font-bold text-black">
+                {formattedDate}
+              </h3>
+              <div className="flex flex-row gap-2 sm:gap-3">
                 <div className="flex flex-row gap-1">
-                  <h3 className="text-xl">{raceData.city},</h3>
-                  <h3 className="text-xl">{raceData.province}</h3>
+                  <h3 className="text-base sm:text-lg lg:text-xl">
+                    {raceData.city},
+                  </h3>
+                  <h3 className="text-base sm:text-lg lg:text-xl">
+                    {raceData.province}
+                  </h3>
                 </div>
-                <div>
-                  <h3 className="text-xl">|</h3>
+                <div className="hidden sm:block">
+                  <h3 className="text-base sm:text-lg lg:text-xl">|</h3>
                 </div>
                 <div className="flex flex-row gap-1">
-                  <h3 className="text-xl">{raceData.distanceKm}km</h3>
+                  <h3 className="text-base sm:text-lg lg:text-xl">
+                    {raceData.distanceKm}km
+                  </h3>
                   {raceData.elevationGainM !== null && (
-                    <h3 className="text-xl">+{raceData.elevationGainM}m</h3>
+                    <h3 className="text-base sm:text-lg lg:text-xl">
+                      +{raceData.elevationGainM}m
+                    </h3>
                   )}
                 </div>
               </div>
             </div>
           </div>
-          <div>
+          <div className="w-full sm:w-auto">
             <a
               href={raceData.websiteUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-gray-900 text-white px-4 py-2 rounded-md font-medium hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors cursor-pointer inline-block"
+              className="bg-gray-900 text-white px-4 py-2 rounded-md font-medium hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors cursor-pointer inline-block w-full sm:w-auto text-center"
             >
               Web oficial
             </a>
           </div>
         </div>
 
-        <div className="w-full my-6">
-          <p>
+        <div className="w-full my-4 sm:my-6">
+          <p className="text-sm sm:text-base lg:text-lg">
             La Salomon Ultra Pirineu 100K® 2025 es una de las ultras de montaña
             más emblemáticas del sur de Europa. Con salida y llegada en Bagà, en
             el Parc Natural del Cadí-Moixeró, ofrece un recorrido de 100
@@ -186,24 +198,34 @@ export default async function RacePage({
             alcanzar la meta.
           </p>
         </div>
-        <div className="flex flex-row justify-between items-center px-6 py-4 border-2 border-gray-300 rounded-xl bg-gray-100">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center px-4 sm:px-6 py-4 border-2 border-gray-300 rounded-xl bg-gray-100 gap-4 sm:gap-0">
           <div className="flex flex-row justify-start items-center gap-4">
-            <div className="flex flex-row w-20 h-20 justify-center items-center border-3 border-gray-300 rounded-full bg-gray-50">
-              <p className="text-3xl">🏁</p>
+            <div className="flex flex-row w-16 h-16 sm:w-20 sm:h-20 justify-center items-center border-3 border-gray-300 rounded-full bg-gray-50 shrink-0">
+              <p className="text-2xl sm:text-3xl">🏁</p>
             </div>
             <div className="flex flex-col justify-start">
-              <h3 className="text-lg font-semibold mb-1">
-                {tRace('organizerCard.title')}
+              <h3 className="text-sm lg:text-lg font-semibold mb-1">
+                <span className="block sm:hidden">
+                  {tRace('organizerCard.titleMobile')}
+                </span>
+                <span className="hidden sm:block">
+                  {tRace('organizerCard.title')}
+                </span>
               </h3>
-              <p className="text-sm/5">
-                {tRace('organizerCard.description')}
-                <br />
-                {tRace('organizerCard.benefits')}
+              <p className="text-xs sm:text-sm">
+                <span className="block sm:hidden">
+                  {tRace('organizerCard.descriptionMobile')}
+                </span>
+                <span className="hidden sm:block">
+                  {tRace('organizerCard.description')}
+                  <br />
+                  {tRace('organizerCard.benefits')}
+                </span>
               </p>
             </div>
           </div>
-          <div className="flex flex-row justify-end items-center">
-            <button className="bg-gray-900 text-white px-4 py-2 rounded-md font-medium hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors cursor-pointer">
+          <div className="flex flex-row justify-end items-center w-full sm:w-auto">
+            <button className="bg-gray-900 text-white px-4 py-2 rounded-md font-medium hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors cursor-pointer w-full sm:w-auto">
               {tRace('organizerCard.claimButton')}
             </button>
           </div>

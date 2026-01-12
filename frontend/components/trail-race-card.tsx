@@ -69,100 +69,98 @@ export default function TrailRaceCard({
   const raceCategory = getRaceCategory(distanceKm);
   const elevationRatioColor = getElevationRatioColor(elevationRatio);
 
-  return (
-    <Link
-      href={`/${locale}/carrera/${raceSlug}`}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="pointer-events-none sm:pointer-events-auto"
-    >
-      <article className="w-full bg-white rounded-lg shadow sm:hover:shadow-md transition-shadow sm:cursor-pointer">
-        <div className="w-full p-2 sm:p-4">
-          <div className="flex items-start sm:justify-between mb-1">
-            <div className="flex gap-4">
-              <div className="flex flex-col items-center justify-center min-w-[50px] px-3 py-2 bg-indigo-100 text-indigo-700 rounded-sm">
-                <span className="text-[8px] sm:text-[10px] font-medium uppercase tracking-wide">
-                  {dayOfWeek}
-                </span>
-                <span className="text-base sm:text-lg font-bold">{day}</span>
-                <span className="text-[10px] sm:text-xs font-medium capitalize">
-                  {month}
-                </span>
-              </div>
-              <div className="flex-1">
-                <div className="flex flex-row items-center gap-1.5 mb-1">
-                  <h3 className="text-xs sm:text-lg font-bold text-gray-900">
-                    {name}
-                  </h3>
-                  {isVerifiedOrganizer && (
-                    <VerifiedBadgeWithTooltip size="sm" className="shrink-0" />
-                  )}
-                </div>
-                <div className="flex gap-3 text-[10px] sm:text-sm text-gray-600 mb-2">
-                  <span>{distanceKm}km</span>
-                  <span>{elevationGainM ? `${elevationGainM}m+` : '-'}</span>
-                  <span className="truncate">
-                    {city}, {province}
-                  </span>
-                </div>
-                <div className="flex justify-start items-center gap-2">
-                  <span className="hidden sm:block px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-sm bg-indigo-100 text-indigo-800">
-                    {t('category.' + raceCategory)}
-                  </span>
-                  <span
-                    className={`hidden sm:block px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-sm ${elevationRatioColor}`}
-                  >
-                    {elevationRatio !== null ? `${elevationRatio} m/km` : '—'}
-                  </span>
+  const handleCardClick = () => {
+    if (raceSlug) {
+      window.open(
+        `/${locale}/carrera/${raceSlug}`,
+        '_blank',
+        'noopener,noreferrer',
+      );
+    }
+  };
 
-                  {raceSlug && (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        window.open(
-                          `/${locale}/carrera/${raceSlug}`,
-                          '_blank',
-                          'noopener,noreferrer',
-                        );
-                      }}
-                      className="sm:hidden inline-block bg-indigo-600 text-white px-2 py-0.5 rounded-sm text-[10px] font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
-                    >
-                      {t('race.webLink')}
-                    </button>
-                  )}
-                  <div className="block sm:hidden font-semibold text-gray-900 text-xs sm:text-lg">
-                    {priceEur ? `${priceEur}€` : '—'}
-                  </div>
+  return (
+    <article
+      onClick={handleCardClick}
+      className="w-full bg-white rounded-lg shadow sm:hover:shadow-md transition-shadow sm:cursor-pointer pointer-events-none sm:pointer-events-auto"
+    >
+      <div className="w-full p-2 sm:p-4">
+        <div className="flex items-start sm:justify-between mb-1">
+          <div className="flex gap-4">
+            <div className="flex flex-col items-center justify-center min-w-[50px] px-3 py-2 bg-indigo-100 text-indigo-700 rounded-sm">
+              <span className="text-[8px] sm:text-[10px] font-medium uppercase tracking-wide">
+                {dayOfWeek}
+              </span>
+              <span className="text-base sm:text-lg font-bold">{day}</span>
+              <span className="text-[10px] sm:text-xs font-medium capitalize">
+                {month}
+              </span>
+            </div>
+            <div className="flex-1">
+              <div className="flex flex-row items-center gap-1.5 mb-1">
+                <h3 className="text-xs sm:text-lg font-bold text-gray-900">
+                  {name}
+                </h3>
+                {isVerifiedOrganizer && (
+                  <VerifiedBadgeWithTooltip size="sm" className="shrink-0" />
+                )}
+              </div>
+              <div className="flex gap-3 text-[10px] sm:text-sm text-gray-600 mb-2">
+                <span>{distanceKm}km</span>
+                <span>{elevationGainM ? `${elevationGainM}m+` : '-'}</span>
+                <span className="truncate">
+                  {city}, {province}
+                </span>
+              </div>
+              <div className="flex justify-start items-center gap-2">
+                <span className="hidden sm:block px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-sm bg-indigo-100 text-indigo-800">
+                  {t('category.' + raceCategory)}
+                </span>
+                <span
+                  className={`hidden sm:block px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-sm ${elevationRatioColor}`}
+                >
+                  {elevationRatio !== null ? `${elevationRatio} m/km` : '—'}
+                </span>
+
+                {raceSlug && (
+                  <Link
+                    href={`/${locale}/carrera/${raceSlug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="sm:hidden inline-block pointer-events-auto bg-indigo-600 text-white px-2 py-0.5 rounded-sm text-[10px] font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                  >
+                    {t('race.webLink')}
+                  </Link>
+                )}
+                <div className="block sm:hidden font-semibold text-gray-900 text-xs sm:text-lg">
+                  {priceEur ? `${priceEur}€` : '—'}
                 </div>
               </div>
-            </div>
-            <div className="hidden sm:flex flex-col items-end gap-2">
-              <div className="font-semibold text-gray-900 text-xs sm:text-lg">
-                {priceEur ? `${priceEur}€` : '—'}
-              </div>
-              {raceSlug && (
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    window.open(
-                      `/${locale}/carrera/${raceSlug}`,
-                      '_blank',
-                      'noopener,noreferrer',
-                    );
-                  }}
-                  className="hidden sm:inline-block bg-indigo-600 text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
-                >
-                  {t('race.webLink')}
-                </button>
-              )}
             </div>
           </div>
+          <div className="hidden sm:flex flex-col items-end gap-2">
+            <div className="font-semibold text-gray-900 text-xs sm:text-lg">
+              {priceEur ? `${priceEur}€` : '—'}
+            </div>
+            {raceSlug && (
+              <Link
+                href={`/${locale}/carrera/${raceSlug}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hidden sm:inline-block bg-indigo-600 text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+              >
+                {t('race.webLink')}
+              </Link>
+            )}
+          </div>
         </div>
-      </article>
-    </Link>
+      </div>
+    </article>
   );
 }
