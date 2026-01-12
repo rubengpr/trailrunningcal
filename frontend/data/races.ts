@@ -1334,6 +1334,10 @@ export const races: TrailRace[] = [
     province: 'Girona',
     websiteUrl: 'https://www.klassmark.com/trailcapdecreus/',
     isVerifiedOrganizer: true,
+    raceDescriptionStart:
+      'La Trail Cap de Creus 40K es una de las carreras de trail running más emblemáticas de la Costa Brava. Con salida y llegada en Roses, propone un recorrido de 40 km y +1.800 m de desnivel positivo a través del Parc Natural del Cap de Creus, combinando senderos técnicos, tramos de montaña y espectaculares vistas al Mediterráneo. El trazado pasa por enclaves icónicos como Sant Pere de Rodes, Cadaqués o Cala Jóncols, ofreciendo una experiencia exigente y muy variada en pleno entorno natural.',
+    raceDescriptionEnd:
+      'Pensada para corredores con experiencia en montaña, la prueba cuenta con 2 puntos ITRA, un tiempo máximo de 7 horas y una organización cuidada al detalle, con avituallamientos completos, señalización clara y servicios al corredor en meta. La Trail Cap de Creus 40K es una cita imprescindible para quienes buscan un desafío auténtico de trail mediterráneo, donde el esfuerzo se ve recompensado con paisajes únicos entre mar y montaña.',
   },
   {
     date: '2026-01-18',

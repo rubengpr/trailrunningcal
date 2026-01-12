@@ -182,21 +182,16 @@ export default async function RacePage({
         </div>
 
         <div className="w-full my-4 sm:my-6">
-          <p className="text-sm sm:text-base lg:text-lg">
-            La Salomon Ultra Pirineu 100K® 2025 es una de las ultras de montaña
-            más emblemáticas del sur de Europa. Con salida y llegada en Bagà, en
-            el Parc Natural del Cadí-Moixeró, ofrece un recorrido de 100
-            kilómetros y más de 6.000 metros de desnivel positivo, atravesando
-            crestas, bosques y senderos técnicos del Pirineo catalán. Es una
-            prueba exigente, diseñada para corredores con experiencia en larga
-            distancia y terrenos de alta montaña. La carrera destaca también por
-            su ambiente y su carácter épico, con tramos nocturnos,
-            avituallamientos en lugares remotos y un fuerte apoyo del público
-            local. Cada año reúne a atletas de élite y a corredores populares de
-            todo el mundo, convirtiéndose en una experiencia intensa donde
-            resistencia, estrategia y conexión con la montaña son clave para
-            alcanzar la meta.
-          </p>
+          {raceData.isVerifiedOrganizer && (
+            <>
+              <p className="text-sm sm:text-base lg:text-lg mb-4">
+                {raceData.raceDescriptionStart}
+              </p>
+              <p className="text-sm sm:text-base lg:text-lg">
+                {raceData.raceDescriptionEnd}
+              </p>
+            </>
+          )}
         </div>
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center px-4 sm:px-6 py-4 border-2 border-gray-300 rounded-xl bg-gray-100 gap-4 sm:gap-0">
           <div className="flex flex-row justify-start items-center gap-4">
