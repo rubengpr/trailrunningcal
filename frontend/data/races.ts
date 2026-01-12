@@ -476,6 +476,16 @@ export const races: TrailRace[] = [
     name: 'Trail Toca-sons 21K',
     distanceKm: 21,
     elevationGainM: 800,
+    priceEur: null,
+    city: 'Taradell',
+    province: 'Barcelona',
+    websiteUrl: 'https://www.innovitsport.com',
+  },
+  {
+    date: '2025-11-09',
+    name: 'Trail Toca-sons 21K',
+    distanceKm: 21,
+    elevationGainM: 800,
     priceEur: 36,
     city: 'Taradell',
     province: 'Barcelona',
@@ -1607,20 +1617,34 @@ export const races: TrailRace[] = [
     name: 'Oli Trail 24K',
     distanceKm: 24,
     elevationGainM: 1200,
-    priceEur: null,
+    priceEur: 29,
     city: 'Olesa de Montserrat',
     province: 'Barcelona',
     websiteUrl: 'https://www.olitrail.com/',
+    isVerifiedOrganizer: true,
+    raceDescriptionStart:
+      'El Oli Trail 24K es una carrera de trail running que se celebra en Olesa de Montserrat, en las inmediaciones del macizo de Montserrat. Con salida y llegada en Olesa de Montserrat, propone un recorrido de 24 km y +1.200 m de desnivel positivo a través de senderos de montaña, caminos forestales y tramos técnicos que permiten descubrir los paisajes característicos de la zona. El trazado combina subidas exigentes, descensos técnicos y tramos más corribles, ofreciendo una experiencia variada y desafiante en un entorno natural privilegiado.',
+    raceDescriptionEnd:
+      'Pensada para corredores con experiencia en trail running que buscan un desafío intermedio, la prueba ofrece una distancia y desnivel equilibrados que permiten disfrutar del esfuerzo y del entorno. La organización cuenta con señalización clara, avituallamientos, cronometraje con chip y servicios al corredor en meta. El Oli Trail 24K es una opción ideal para quienes quieren experimentar el trail running en la zona de Montserrat con un formato accesible y bien organizado.',
+    mapUrl:
+      'https://es.wikiloc.com/wikiloc/embedv2.do?id=192340144&elevation=on&images=off&maptype=H',
   },
   {
     date: '2026-03-08',
     name: 'Oli Trail 13K',
     distanceKm: 13,
     elevationGainM: 600,
-    priceEur: null,
+    priceEur: 17,
     city: 'Olesa de Montserrat',
     province: 'Barcelona',
     websiteUrl: 'https://www.olitrail.com/',
+    isVerifiedOrganizer: true,
+    raceDescriptionStart:
+      'El Oli Trail 13K es una carrera de trail running corta e intensa que forma parte del evento Oli Trail en Olesa de Montserrat. Con salida y llegada en Olesa de Montserrat, propone un recorrido de 13 km y +600 m de desnivel positivo a través de senderos de montaña y caminos forestales en las inmediaciones del macizo de Montserrat. El trazado combina subidas moderadas, descensos técnicos y tramos corribles, ofreciendo una experiencia concentrada de trail running en un entorno natural accesible.',
+    raceDescriptionEnd:
+      'Pensada tanto para corredores que se inician en el trail running como para quienes buscan una prueba rápida e intensa, la distancia de 13K permite disfrutar de la esencia del trail sin la exigencia de distancias mayores. La prueba cuenta con señalización clara, avituallamientos, cronometraje con chip y servicios al corredor en meta, manteniendo el nivel organizativo del evento. El Oli Trail 13K es una opción ideal para descubrir el trail running en la zona de Montserrat con un formato accesible y dinámico.',
+    mapUrl:
+      'https://es.wikiloc.com/wikiloc/embedv2.do?id=185886499&elevation=on&images=off&maptype=H',
   },
   {
     date: '2026-03-22',
@@ -1911,7 +1935,6 @@ export const races: TrailRace[] = [
     city: 'Sant Boi de Llobregat',
     province: 'Barcelona',
     websiteUrl: 'https://rocanegra.cat/',
-    isVerifiedOrganizer: true,
   },
   {
     date: '2026-04-18',
@@ -1922,7 +1945,6 @@ export const races: TrailRace[] = [
     city: 'Sant Boi de Llobregat',
     province: 'Barcelona',
     websiteUrl: 'https://rocanegra.cat/',
-    isVerifiedOrganizer: true,
   },
   {
     date: '2026-04-18',
@@ -1933,7 +1955,6 @@ export const races: TrailRace[] = [
     city: 'Torelló',
     province: 'Barcelona',
     websiteUrl: 'https://www.matxos.cat/',
-    isVerifiedOrganizer: true,
   },
   {
     date: '2026-04-18',
@@ -2038,7 +2059,6 @@ export const races: TrailRace[] = [
     city: 'Girona',
     province: 'Girona',
     websiteUrl: 'https://maratonviasverdes.com/es/girona',
-    isVerifiedOrganizer: true,
   },
   {
     date: '2026-04-26',
@@ -2049,7 +2069,6 @@ export const races: TrailRace[] = [
     city: 'Cassà de la Selva',
     province: 'Girona',
     websiteUrl: 'https://maratonviasverdes.com/es/girona',
-    isVerifiedOrganizer: true,
   },
   {
     date: '2026-04-26',
@@ -2060,7 +2079,6 @@ export const races: TrailRace[] = [
     city: 'Llagostera',
     province: 'Girona',
     websiteUrl: 'https://maratonviasverdes.com/es/girona',
-    isVerifiedOrganizer: true,
   },
   {
     date: '2026-04-26',
@@ -2071,7 +2089,6 @@ export const races: TrailRace[] = [
     city: "Santa Cristina d'Aro",
     province: 'Girona',
     websiteUrl: 'https://maratonviasverdes.com/es/girona',
-    isVerifiedOrganizer: true,
   },
   {
     date: '2026-04-26',
