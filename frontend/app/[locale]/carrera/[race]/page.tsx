@@ -167,15 +167,18 @@ export default async function RacePage({
                     </h3>
                   )}
                 </div>
-                <div className="hidden sm:block">
-                  <h3 className="text-base sm:text-lg lg:text-xl">|</h3>
-                </div>
-                <div className="hidden sm:block">
-                  <h3 className="text-base sm:text-lg lg:text-xl">
-                    {typeof raceData.priceEur === 'number' &&
-                      `${raceData.priceEur}€`}
-                  </h3>
-                </div>
+                {typeof raceData.priceEur === 'number' && (
+                  <>
+                    <div className="hidden sm:block">
+                      <h3 className="text-base sm:text-lg lg:text-xl">|</h3>
+                    </div>
+                    <div className="hidden sm:block">
+                      <h3 className="text-base sm:text-lg lg:text-xl">
+                        {raceData.priceEur}€
+                      </h3>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
