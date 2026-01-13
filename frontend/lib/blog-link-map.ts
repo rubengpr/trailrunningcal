@@ -36,13 +36,3 @@ export function buildBlogPostLinkMap(): Record<string, string> {
 
   return linkMap;
 }
-
-/**
- * Gets the Link header for a blog post URL
- * This uses a pre-built map that should be generated at build time
- */
-export function getBlogPostLinkHeader(url: string): string | null {
-  // This will be replaced with the actual map at build time
-  // For now, return null - the map will be injected
-  return null;
-}

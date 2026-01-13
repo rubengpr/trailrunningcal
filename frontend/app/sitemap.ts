@@ -2,6 +2,8 @@ import { MetadataRoute } from 'next';
 import { BASE_URL } from '@/lib/config';
 import { locales, type Locale } from '@/i18n';
 import { getAllBlogPosts, getPostTranslations } from '@/lib/blog-utils';
+import { races } from '@/data/races';
+import { generateRaceSlug } from '@/lib/race-utils';
 
 const CONTACT_PATHS: Record<Locale, string> = {
   es: 'contacto',
@@ -10,8 +12,9 @@ const CONTACT_PATHS: Record<Locale, string> = {
 
 function buildAlternateLanguages(
   currentLocale: Locale | null,
-  pageType: 'home' | 'contact' | 'blog' | 'blogPost',
+  pageType: 'home' | 'contact' | 'blog' | 'blogPost' | 'race',
   translationKey?: string,
+  raceSlug?: string,
 ): Record<string, string> {
   const alternates: Record<string, string> = {};
 
@@ -48,6 +51,11 @@ function buildAlternateLanguages(
       alternates['x-default'] = `${BASE_URL}/es`;
     }
     return alternates;
+  } else if (pageType === 'race' && raceSlug) {
+    // Race page - all locales link to the same race
+    for (const locale of locales) {
+      alternates[locale] = `${BASE_URL}/${locale}/carrera/${raceSlug}`;
+    }
   }
 
   // Set x-default for non-blogPost pages
@@ -122,6 +130,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
         ),
       },
     });
+  }
+
+  // Add race pages (all locales)
+  for (const race of races) {
+    const raceSlug = generateRaceSlug(race.name);
+    for (const locale of locales) {
+      urls.push({
+        url: `${BASE_URL}/${locale}/carrera/${raceSlug}`,
+        lastModified: currentDate,
+        changeFrequency: 'monthly',
+        priority: 0.8,
+        alternates: {
+          languages: buildAlternateLanguages(locale, 'race', undefined, raceSlug),
+        },
+      });
+    }
   }
 
   return urls;

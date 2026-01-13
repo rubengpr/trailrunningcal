@@ -1,16 +1,21 @@
 'use client';
 
 import { useTranslations, useLocale } from 'next-intl';
+import Link from 'next/link';
+import VerifiedBadgeWithTooltip from './verified-badge-with-tooltip';
+import type { PriceValue } from '@/types/race.types';
+import { getDisplayPrice } from '@/lib/race-utils';
 
 interface TrailRaceCardProps {
   date: string | null;
   name: string;
   distanceKm: number;
   elevationGainM: number | null;
-  priceEur: number | null;
+  priceEur: PriceValue;
   city: string;
   province: string;
-  websiteUrl: string | null;
+  raceSlug: string;
+  isVerifiedOrganizer?: boolean;
 }
 
 const formatDate = (dateString: string | null, locale: string) => {
@@ -56,7 +61,8 @@ export default function TrailRaceCard({
   priceEur,
   city,
   province,
-  websiteUrl,
+  raceSlug,
+  isVerifiedOrganizer,
 }: TrailRaceCardProps) {
   const t = useTranslations();
   const locale = useLocale();
@@ -64,10 +70,22 @@ export default function TrailRaceCard({
   const elevationRatio = calculateElevationRatio(elevationGainM, distanceKm);
   const raceCategory = getRaceCategory(distanceKm);
   const elevationRatioColor = getElevationRatioColor(elevationRatio);
+  const displayPrice = getDisplayPrice(priceEur);
+
+  const handleCardClick = () => {
+    if (raceSlug) {
+      window.open(
+        `/${locale}/carrera/${raceSlug}`,
+        '_blank',
+        'noopener,noreferrer',
+      );
+    }
+  };
 
   return (
     <article
-      className="w-full bg-white rounded-lg shadow hover:shadow-md transition-shadow"
+      onClick={handleCardClick}
+      className="w-full bg-white rounded-lg shadow sm:hover:shadow-md transition-shadow sm:cursor-pointer pointer-events-none sm:pointer-events-auto"
     >
       <div className="w-full p-2 sm:p-4">
         <div className="flex items-start sm:justify-between mb-1">
@@ -82,30 +100,23 @@ export default function TrailRaceCard({
               </span>
             </div>
             <div className="flex-1">
-              <h3
-                className="text-xs sm:text-lg font-bold text-gray-900 mb-1"
-              >
-                {name}
-              </h3>
-              <div
-                className="flex gap-3 text-[10px] sm:text-sm text-gray-600 mb-2"
-              >
-                <span>
-                  {distanceKm}km
-                </span>
-                <span>
-                  {elevationGainM ? `${elevationGainM}m+` : '-'}
-                </span>
-                <span
-                  className="truncate"
-                >
+              <div className="flex flex-row items-center gap-1.5 mb-1">
+                <h3 className="text-xs sm:text-lg font-bold text-gray-900">
+                  {name}
+                </h3>
+                {isVerifiedOrganizer && (
+                  <VerifiedBadgeWithTooltip size="sm" className="shrink-0" />
+                )}
+              </div>
+              <div className="flex gap-3 text-[10px] sm:text-sm text-gray-600 mb-2">
+                <span>{distanceKm}km</span>
+                <span>{elevationGainM ? `${elevationGainM}m+` : '-'}</span>
+                <span className="truncate">
                   {city}, {province}
                 </span>
               </div>
               <div className="flex justify-start items-center gap-2">
-                <span
-                  className="hidden sm:block px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-sm bg-indigo-100 text-indigo-800"
-                >
+                <span className="hidden sm:block px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-sm bg-indigo-100 text-indigo-800">
                   {t('category.' + raceCategory)}
                 </span>
                 <span
@@ -114,39 +125,41 @@ export default function TrailRaceCard({
                   {elevationRatio !== null ? `${elevationRatio} m/km` : '—'}
                 </span>
 
-                {websiteUrl && (
-                  <a
-                    href={websiteUrl}
+                {raceSlug && (
+                  <Link
+                    href={`/${locale}/carrera/${raceSlug}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="sm:hidden inline-block bg-indigo-600 text-white px-2 py-0.5 rounded-sm text-[10px] font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
+                    className="sm:hidden inline-block pointer-events-auto bg-indigo-600 text-white px-2 py-0.5 rounded-sm text-[10px] font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
                   >
                     {t('race.webLink')}
-                  </a>
+                  </Link>
                 )}
-                <div
-                  className="block sm:hidden font-semibold text-gray-900 text-xs sm:text-lg"
-                >
-                  {priceEur ? `${priceEur}€` : '—'}
+                <div className="block sm:hidden font-semibold text-gray-900 text-xs sm:text-lg">
+                  {displayPrice ? `${displayPrice}€` : '—'}
                 </div>
               </div>
             </div>
           </div>
           <div className="hidden sm:flex flex-col items-end gap-2">
-            <div
-              className="font-semibold text-gray-900 text-xs sm:text-lg"
-            >
-              {priceEur ? `${priceEur}€` : '—'}
+            <div className="font-semibold text-gray-900 text-xs sm:text-lg">
+              {displayPrice ? `${displayPrice}€` : '—'}
             </div>
-            {websiteUrl && (
-              <a
-                href={websiteUrl}
+            {raceSlug && (
+              <Link
+                href={`/${locale}/carrera/${raceSlug}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hidden sm:inline-block bg-indigo-600 text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
               >
                 {t('race.webLink')}
-              </a>
+              </Link>
             )}
           </div>
         </div>
@@ -154,4 +167,3 @@ export default function TrailRaceCard({
     </article>
   );
 }
-
