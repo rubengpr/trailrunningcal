@@ -18,4 +18,5 @@ export interface TrailRace {
   raceDescriptionStart?: string | null;
   raceDescriptionEnd?: string | null;
   raceUrl: string | null;
+  imagePath: string | null;
 }

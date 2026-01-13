@@ -11,6 +11,7 @@ import { generateMetadataFromOptions } from '@/seo/meta-config';
 import { BASE_URL } from '@/lib/config';
 import VerifiedBadgeWithTooltip from '@/components/verified-badge-with-tooltip';
 import PriceTiersTable from '@/components/price-tiers-table';
+import Image from 'next/image';
 
 export async function generateStaticParams() {
   const params = locales.flatMap((locale) =>
@@ -193,6 +194,17 @@ export default async function RacePage({
             </a>
           </div>
         </div>
+        {raceData.isVerifiedOrganizer && raceData.imagePath && (
+          <div className="mt-6 sm:mt-8 w-full relative aspect-video sm:aspect-21/9 lg:aspect-16/7 rounded-lg overflow-hidden">
+            <Image
+              src={raceData.imagePath}
+              alt={raceData.name}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, (max-width: 1600px) 80vw, 1200px"
+            />
+          </div>
+        )}
         <div className="w-full my-6 sm:my-8">
           {raceData.isVerifiedOrganizer && (
             <>

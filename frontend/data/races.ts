@@ -1350,6 +1350,7 @@ export const races: TrailRace[] = [
       'Pensada para corredores con experiencia en montaña, la prueba cuenta con 2 puntos ITRA, un tiempo máximo de 7 horas y una organización cuidada al detalle, con avituallamientos completos, señalización clara y servicios al corredor en meta. La Trail Cap de Creus 40K es una cita imprescindible para quienes buscan un desafío auténtico de trail mediterráneo, donde el esfuerzo se ve recompensado con paisajes únicos entre mar y montaña.',
     mapUrl:
       'https://www.komoot.com/es-es/tour/2724447286/embed?share_token=a88O24AArfyfI9zqHdi47YLmOp4duN89vSzv01pNy5ETjRTs1b&profile=1',
+    imagePath: '/assets/races/trail-cap-de-creus.jpg',
   },
   {
     date: '2026-01-18',
@@ -1367,6 +1368,7 @@ export const races: TrailRace[] = [
       'Pensada tanto para corredores que se inician en el trail como para quienes buscan una prueba explosiva y rápida, la Express conserva el nivel organizativo del evento, con señalización clara, avituallamientos, cronometraje con chip y servicios al corredor en meta. La Trail Cap de Creus Express es una opción ideal para disfrutar de la esencia del Cap de Creus en un formato accesible, intenso y muy paisajístico.',
     mapUrl:
       'https://www.komoot.com/es-es/tour/2724448367/embed?share_token=alHZapBW4JhKFvQ4KP5TZjFnobB5k699KfXYC5Os5aCKkbdbql&profile=1',
+    imagePath: '/assets/races/trail-cap-de-creus.jpg',
   },
   {
     date: '2026-01-18',
@@ -1384,6 +1386,7 @@ export const races: TrailRace[] = [
       'Pensada para corredores que buscan un punto intermedio entre las distancias corta y larga del evento, la Trail ofrece un desafío equilibrado y muy paisajístico, ideal para quienes quieren experimentar la dureza técnica del terreno con un ritmo más dinámico. La prueba cuenta con señalización clara, avituallamientos, cronometraje con chip y servicios al corredor en meta, consolidándose como una de las opciones más atractivas del Trail Cap de Creus para disfrutar de la esencia del trail mediterráneo.',
     mapUrl:
       'https://www.komoot.com/es-es/tour/2724449784/embed?share_token=a5ACUArEDdOYR3CrYuVy239768JZdLkXomkvWzwQQCkvaAP2LH&profile=1',
+    imagePath: '/assets/races/trail-cap-de-creus.jpg',
   },
   {
     date: '2026-01-18',
@@ -1486,6 +1489,7 @@ export const races: TrailRace[] = [
       'Pensada para corredores con experiencia en trail running que buscan un desafío exigente, esta prueba forma parte de un evento con cuatro recorridos diferentes pensados para todos los públicos. La organización cuenta con avituallamientos completos, señalización clara y servicios al corredor en meta. La Xtrail Series Run Mataró 21.5K es una cita perfecta para quienes quieren dar lo máximo de sí mismos en una carrera de alta frecuencia, donde el esfuerzo se ve recompensado con la exploración de los mejores rincones del Maresme.',
     mapUrl:
       'https://es.wikiloc.com/wikiloc/embedv2.do?id=200387293&elevation=on&images=off&maptype=H',
+    imagePath: '/assets/races/xtrail-series-run-mataro.jpg',
   },
   {
     date: '2026-02-08',
@@ -1507,6 +1511,7 @@ export const races: TrailRace[] = [
       'Ideal para corredores con experiencia en trail running que buscan un desafío intermedio, esta prueba forma parte de un evento con cuatro recorridos diferentes pensados para todos los públicos. La organización cuenta con avituallamientos completos, señalización clara y servicios al corredor en meta. La Xtrail Series Run Mataró 15.5K es una excelente opción para quienes quieren explorar los mejores rincones del Maresme en una distancia que requiere dar lo máximo de uno mismo, combinando esfuerzo y disfrute del entorno natural.',
     mapUrl:
       'https://es.wikiloc.com/wikiloc/embedv2.do?id=200387491&elevation=on&images=off&maptype=H',
+    imagePath: '/assets/races/xtrail-series-run-mataro.jpg',
   },
   {
     date: '2026-02-08',
@@ -1528,6 +1533,7 @@ export const races: TrailRace[] = [
       'Pensada para corredores que se inician en el trail running o buscan una distancia más corta pero igualmente desafiante, esta prueba forma parte de un evento con cuatro recorridos diferentes pensados para todos los públicos. La organización cuenta con avituallamientos completos, señalización clara y servicios al corredor en meta. La Xtrail Series Run Mataró 9.5K es una excelente oportunidad para explorar los mejores rincones del Maresme y dar lo máximo de uno mismo en una distancia accesible pero que requiere esfuerzo y dedicación.',
     mapUrl:
       'https://es.wikiloc.com/wikiloc/embedv2.do?id=159641971&elevation=on&images=off&maptype=H',
+    imagePath: '/assets/races/xtrail-series-run-mataro.jpg',
   },
   {
     date: '2026-02-08',
@@ -1547,6 +1553,7 @@ export const races: TrailRace[] = [
       'La Xtrail Series Run Mataró 5.5K es la distancia más accesible de esta carrera de alta frecuencia en la zona del Maresme, perfecta para iniciarse en el trail running. Con salida y llegada en Mataró, propone un recorrido de 5,5 km y +150 m de desnivel positivo a través de los mejores rincones de la zona, combinando corriols que se enlazan entre sí y que llevarán a los corredores a las máximas pulsaciones. El trazado EXPRESS ofrece una experiencia intensa y concentrada, ideal para descubrir el trail running en una distancia corta pero exigente.',
     raceDescriptionEnd:
       'Ideal para corredores que se inician en el trail running o buscan una experiencia intensa en una distancia corta, esta prueba forma parte de un evento con cuatro recorridos diferentes pensados para todos los públicos. La organización cuenta con avituallamientos completos, señalización clara y servicios al corredor en meta. La Xtrail Series Run Mataró 5.5K es una excelente opción para explorar los mejores rincones del Maresme y dar lo máximo de uno mismo en una distancia accesible pero que requiere esfuerzo y dedicación, perfecta para quienes buscan una primera experiencia en trail running.',
+    imagePath: '/assets/races/xtrail-series-run-mataro.jpg',
   },
   {
     date: '2026-02-28',
@@ -1647,6 +1654,7 @@ export const races: TrailRace[] = [
       'Pensada para corredores con experiencia en trail running que buscan un desafío intermedio, la prueba ofrece una distancia y desnivel equilibrados que permiten disfrutar del esfuerzo y del entorno. La organización cuenta con señalización clara, avituallamientos, cronometraje con chip y servicios al corredor en meta. El Oli Trail 24K es una opción ideal para quienes quieren experimentar el trail running en la zona de Montserrat con un formato accesible y bien organizado.',
     mapUrl:
       'https://es.wikiloc.com/wikiloc/embedv2.do?id=192340144&elevation=on&images=off&maptype=H',
+    imagePath: '/assets/races/olitrail.jpg',
   },
   {
     date: '2026-03-08',
@@ -1667,6 +1675,7 @@ export const races: TrailRace[] = [
       'Pensada tanto para corredores que se inician en el trail running como para quienes buscan una prueba rápida e intensa, la distancia de 13K permite disfrutar de la esencia del trail sin la exigencia de distancias mayores. La prueba cuenta con señalización clara, avituallamientos, cronometraje con chip y servicios al corredor en meta, manteniendo el nivel organizativo del evento. El Oli Trail 13K es una opción ideal para descubrir el trail running en la zona de Montserrat con un formato accesible y dinámico.',
     mapUrl:
       'https://es.wikiloc.com/wikiloc/embedv2.do?id=185886499&elevation=on&images=off&maptype=H',
+    imagePath: '/assets/races/olitrail.jpg',
   },
   {
     date: '2026-03-22',
