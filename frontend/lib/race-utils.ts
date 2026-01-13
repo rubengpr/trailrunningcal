@@ -1,5 +1,5 @@
 import { races } from '@/data/races';
-import type { TrailRace, PriceValue, PriceTier } from '@/types/race.types';
+import type { TrailRace, PriceValue } from '@/types/race.types';
 
 /**
  * Generates a URL-friendly slug from a race name

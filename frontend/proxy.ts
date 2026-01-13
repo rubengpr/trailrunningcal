@@ -1,6 +1,6 @@
 import createMiddleware from 'next-intl/middleware';
 import { locales, defaultLocale } from './i18n';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { BASE_URL } from './lib/config';
 
 // Import blog link map (generated at build time)

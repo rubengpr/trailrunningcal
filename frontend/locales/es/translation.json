@@ -36,6 +36,12 @@
     "webLink": "Web →",
     "notAvailable": "N/A",
     "officialWebsite": "Web oficial",
+    "services": {
+      "title": "Servicios incluidos"
+    },
+    "results": {
+      "title": "Clasificación ediciones anteriores"
+    },
     "organizerCard": {
       "title": "¿Eres el organizador de esta carrera?",
       "titleMobile": "¿Eres organizador?",

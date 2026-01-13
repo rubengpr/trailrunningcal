@@ -11,6 +11,8 @@ import { generateMetadataFromOptions } from '@/seo/meta-config';
 import { BASE_URL } from '@/lib/config';
 import VerifiedBadgeWithTooltip from '@/components/verified-badge-with-tooltip';
 import PriceTiersTable from '@/components/price-tiers-table';
+import RaceServicesList from '@/components/race-services-list';
+import RaceResultsUrls from '@/components/race-results-urls';
 import Image from 'next/image';
 
 export async function generateStaticParams() {
@@ -183,16 +185,18 @@ export default async function RacePage({
               </div>
             </div>
           </div>
-          <div className="w-full sm:w-auto">
-            <a
-              href={raceData.websiteUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-gray-900 text-white px-4 py-2 rounded-md font-medium hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors cursor-pointer inline-block w-full sm:w-auto text-center"
-            >
-              Web oficial
-            </a>
-          </div>
+          {raceData.websiteUrl && (
+            <div className="w-full sm:w-auto">
+              <a
+                href={raceData.websiteUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-gray-900 text-white px-4 py-2 rounded-md font-medium hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors cursor-pointer inline-block w-full sm:w-auto text-center"
+              >
+                Web oficial
+              </a>
+            </div>
+          )}
         </div>
         {raceData.isVerifiedOrganizer && raceData.imagePath && (
           <div className="mt-6 sm:mt-8 w-full relative aspect-video sm:aspect-21/9 lg:aspect-16/7 rounded-lg overflow-hidden">
@@ -209,10 +213,10 @@ export default async function RacePage({
           {raceData.isVerifiedOrganizer && (
             <>
               <p className="text-sm sm:text-base lg:text-lg mb-4">
-                {raceData.raceDescriptionStart}
+                {raceData.raceDescriptionStart?.[locale as Locale]}
               </p>
               <p className="text-sm sm:text-base lg:text-lg">
-                {raceData.raceDescriptionEnd}
+                {raceData.raceDescriptionEnd?.[locale as Locale]}
               </p>
             </>
           )}
@@ -234,6 +238,24 @@ export default async function RacePage({
             locale={locale as Locale}
           />
         )}
+
+        {raceData.isVerifiedOrganizer &&
+          raceData.services &&
+          raceData.services.length > 0 && (
+            <RaceServicesList
+              services={raceData.services}
+              locale={locale as Locale}
+            />
+          )}
+
+        {raceData.isVerifiedOrganizer &&
+          raceData.resultsUrls &&
+          raceData.resultsUrls.length > 0 && (
+            <RaceResultsUrls
+              resultsUrls={raceData.resultsUrls}
+              locale={locale as Locale}
+            />
+          )}
 
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center px-4 sm:px-6 py-4 border-2 border-gray-300 rounded-xl bg-gray-100 gap-4 sm:gap-0">
           <div className="flex flex-row justify-start items-center gap-4">
