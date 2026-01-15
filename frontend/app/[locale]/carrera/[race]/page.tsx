@@ -14,6 +14,7 @@ import PriceTiersTable from '@/components/price-tiers-table';
 import RaceServicesList from '@/components/race-services-list';
 import RaceResultsUrls from '@/components/race-results-urls';
 import Image from 'next/image';
+import Sponsors from '@/components/sponsors';
 
 export async function generateStaticParams() {
   const params = locales.flatMap((locale) =>
@@ -221,6 +222,9 @@ export default async function RacePage({
             </>
           )}
         </div>
+        {raceData.isVerifiedOrganizer && raceData.sponsors && (
+          <Sponsors sponsors={raceData.sponsors} />
+        )}
         {raceData.mapUrl && (
           <iframe
             className="mb-4"

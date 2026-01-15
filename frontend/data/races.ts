@@ -1383,6 +1383,13 @@ export const races: TrailRace[] = [
         url: 'https://sportmaniacs.com/es/races/trail-cap-de-creus-2023/646a0cc7-7c68-4c2d-b630-0814ac1f1dfb/results#rankings',
       },
     ],
+    sponsors: [
+      '/assets/races/sponsors/merrell.png',
+      '/assets/races/sponsors/226ers.png',
+      '/assets/races/sponsors/vera.png',
+      '/assets/races/sponsors/costa-brava.png',
+      '/assets/races/sponsors/btm-sound.png',
+    ],
   },
   {
     date: '2026-01-18',
@@ -1418,6 +1425,13 @@ export const races: TrailRace[] = [
       'Duchas y aseos',
       'Parking turismos',
       'Parking autocaravanas y furgonetas',
+    ],
+    sponsors: [
+      '/assets/races/sponsors/merrell.png',
+      '/assets/races/sponsors/226ers.png',
+      '/assets/races/sponsors/vera.png',
+      '/assets/races/sponsors/costa-brava.png',
+      '/assets/races/sponsors/btm-sound.png',
     ],
   },
   {
@@ -1468,6 +1482,13 @@ export const races: TrailRace[] = [
         year: 2023,
         url: 'https://sportmaniacs.com/es/races/trail-cap-de-creus-2023/646a0cb0-8ef4-4723-908a-0a9aac1f1dfb/results#rankings',
       },
+    ],
+    sponsors: [
+      '/assets/races/sponsors/merrell.png',
+      '/assets/races/sponsors/226ers.png',
+      '/assets/races/sponsors/vera.png',
+      '/assets/races/sponsors/costa-brava.png',
+      '/assets/races/sponsors/btm-sound.png',
     ],
   },
   {
@@ -1596,6 +1617,13 @@ export const races: TrailRace[] = [
         url: 'https://www.xtrailseriesrun.com/_files/ugd/4c4b8a_e0e70457b08d415bb5294e02bf6492ae.pdf',
       },
     ],
+    sponsors: [
+      '/assets/races/sponsors/ajuntament-mataro.avif',
+      '/assets/races/sponsors/dland.avif',
+      '/assets/races/sponsors/nutrisport.avif',
+      '/assets/races/sponsors/universitat-blanquerna.avif',
+      '/assets/races/sponsors/rios-running.avif',
+    ],
   },
   {
     date: '2026-02-08',
@@ -1642,6 +1670,13 @@ export const races: TrailRace[] = [
         url: 'https://www.xtrailseriesrun.com/_files/ugd/4c4b8a_3a88a2f2f4584e7d8bc42898b8f7df1e.pdf',
       },
     ],
+    sponsors: [
+      '/assets/races/sponsors/ajuntament-mataro.avif',
+      '/assets/races/sponsors/dland.avif',
+      '/assets/races/sponsors/nutrisport.avif',
+      '/assets/races/sponsors/universitat-blanquerna.avif',
+      '/assets/races/sponsors/rios-running.avif',
+    ],
   },
   {
     date: '2026-02-08',
@@ -1687,6 +1722,13 @@ export const races: TrailRace[] = [
         year: 2025,
         url: 'https://www.xtrailseriesrun.com/_files/ugd/4c4b8a_9349c674b1ac4c93b5f6b70e43152856.pdf',
       },
+    ],
+    sponsors: [
+      '/assets/races/sponsors/ajuntament-mataro.avif',
+      '/assets/races/sponsors/dland.avif',
+      '/assets/races/sponsors/nutrisport.avif',
+      '/assets/races/sponsors/universitat-blanquerna.avif',
+      '/assets/races/sponsors/rios-running.avif',
     ],
   },
   {
@@ -1739,6 +1781,13 @@ export const races: TrailRace[] = [
         year: 2022,
         url: 'https://www.xtrailseriesrun.com/mataro/results/2022/5.5k',
       },
+    ],
+    sponsors: [
+      '/assets/races/sponsors/ajuntament-mataro.avif',
+      '/assets/races/sponsors/dland.avif',
+      '/assets/races/sponsors/nutrisport.avif',
+      '/assets/races/sponsors/universitat-blanquerna.avif',
+      '/assets/races/sponsors/rios-running.avif',
     ],
   },
   {
@@ -1862,6 +1911,13 @@ export const races: TrailRace[] = [
         year: 2024,
         url: 'https://xipgroc.cat/ca/curses/OlesaOTM_2024/19k/resultats',
       },
+    ],
+    sponsors: [
+      '/assets/races/sponsors/fca.png',
+      '/assets/races/sponsors/acrofix.jpg',
+      '/assets/races/sponsors/runcaf.png',
+      '/assets/races/sponsors/bonarea.png',
+      '/assets/races/sponsors/joma.png',
     ],
   },
   {
