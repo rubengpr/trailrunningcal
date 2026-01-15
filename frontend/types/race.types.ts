@@ -22,4 +22,5 @@ export interface TrailRace {
   mapUrl?: string | null;
   services?: string[];
   resultsUrls?: Array<{ year: number; url: string }>;
+  sponsors?: string[];
 }
