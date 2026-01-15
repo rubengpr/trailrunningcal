@@ -6,15 +6,17 @@ interface SponsorsProps {
 
 export default function Sponsors({ sponsors }: SponsorsProps) {
   return (
-    <div className="flex flex-row justify-center items-center py-8 gap-4">
+    <div className="flex flex-row flex-wrap justify-center items-center py-4 md:py-8 gap-2 md:gap-4 lg:gap-6">
       {sponsors.map((sponsor, index) => (
-        <Image
-          key={index}
-          src={sponsor}
-          width={200}
-          height={200}
-          alt={`Sponsor logo ${index + 1}`}
-        />
+        <div key={index} className="shrink-0">
+          <Image
+            src={sponsor}
+            width={200}
+            height={200}
+            alt={`Sponsor logo ${index + 1}`}
+            className="w-20 h-20 md:w-32 md:h-32 lg:w-48 lg:h-48 object-contain"
+          />
+        </div>
       ))}
     </div>
   );
