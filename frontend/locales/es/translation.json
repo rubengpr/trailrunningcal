@@ -116,7 +116,7 @@
   "signUp": {
     "title": "Crear cuenta",
     "description": "Regístrate para gestionar tus carreras y convertirte en un organizador verificado.",
-    "email": "Correo electrónico",
+    "email": "Email",
     "password": "Contraseña",
     "repeatPassword": "Repetir contraseña",
     "creatingAccount": "Creando cuenta...",
@@ -124,12 +124,30 @@
     "alreadyHaveAccount": "¿Ya tienes una cuenta?",
     "login": "Inicia sesión",
     "errors": {
-      "passwordStrength": "La contraseña debe tener al menos 8 caracteres, incluir mayúsculas, minúsculas, números y caracteres especiales.",
-      "passwordsDoNotMatch": "Las contraseñas no coinciden."
+      "passwordStrength": "La contraseña debe tener al menos 8 caracteres, incluir mayúsculas, minúsculas, números y caracteres especiales",
+      "passwordsDoNotMatch": "Las contraseñas no coinciden",
+      "emailAlreadyExists": "Email ya registrado"
     }
   },
   "signUpSuccess": {
     "title": "Registro completado",
     "instructions": "Revisa tu correo electrónico para verificar la cuenta y completar el registro."
+  },
+  "login": {
+    "title": "Iniciar sesión",
+    "description": "Accede a tu cuenta para gestionar tus carreras.",
+    "email": "Email",
+    "password": "Contraseña",
+    "loggingIn": "Iniciando sesión...",
+    "submit": "Iniciar sesión",
+    "dontHaveAccount": "¿No tienes una cuenta?",
+    "signUp": "Regístrate",
+    "errors": {
+      "emailRequired": "El email es obligatorio",
+      "emailInvalid": "El email no es válido",
+      "passwordRequired": "La contraseña es obligatoria",
+      "invalidCredentials": "Email o contraseña incorrectos",
+      "general": "Algo salió mal"
+    }
   }
 }

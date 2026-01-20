@@ -116,7 +116,7 @@
   "signUp": {
     "title": "Crear compte",
     "description": "Registra't per gestionar les teves curses i convertir-te en un organitzador verificat.",
-    "email": "Correu electrònic",
+    "email": "Email",
     "password": "Contrasenya",
     "repeatPassword": "Repetir contrasenya",
     "creatingAccount": "Creant compte...",
@@ -124,12 +124,30 @@
     "alreadyHaveAccount": "Ja tens un compte?",
     "login": "Inicia sessió",
     "errors": {
-      "passwordStrength": "La contrasenya ha de tenir almenys 8 caràcters, incloure majúscules, minúscules, números i caràcters especials.",
-      "passwordsDoNotMatch": "Les contrasenyes no coincideixen."
+      "passwordStrength": "La contrasenya ha de tenir almenys 8 caràcters, incloure majúscules, minúscules, números i caràcters especials",
+      "passwordsDoNotMatch": "Les contrasenyes no coincideixen",
+      "emailAlreadyExists": "Email ja registrat"
     }
   },
   "signUpSuccess": {
     "title": "Registre completat",
     "instructions": "Revisa el teu correu electrònic per verificar el compte i completar el registre."
+  },
+  "login": {
+    "title": "Iniciar sessió",
+    "description": "Accedeix al teu compte per gestionar les teves curses.",
+    "email": "Email",
+    "password": "Contrasenya",
+    "loggingIn": "Iniciant sessió...",
+    "submit": "Iniciar sessió",
+    "dontHaveAccount": "No tens un compte?",
+    "signUp": "Registra't",
+    "errors": {
+      "emailRequired": "L'email és obligatori",
+      "emailInvalid": "L'email no és vàlid",
+      "passwordRequired": "La contrasenya és obligatòria",
+      "invalidCredentials": "Email o contrasenya incorrectes",
+      "general": "Alguna cosa ha anat malament"
+    }
   }
 }
