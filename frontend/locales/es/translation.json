@@ -112,5 +112,24 @@
   },
   "footer": {
     "copyright": "© {year} Trail Running Cal"
+  },
+  "signUp": {
+    "title": "Crear cuenta",
+    "description": "Regístrate para gestionar tus carreras y convertirte en un organizador verificado.",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "repeatPassword": "Repetir contraseña",
+    "creatingAccount": "Creando cuenta...",
+    "submit": "Registrarse",
+    "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+    "login": "Inicia sesión",
+    "errors": {
+      "passwordStrength": "La contraseña debe tener al menos 8 caracteres, incluir mayúsculas, minúsculas, números y caracteres especiales.",
+      "passwordsDoNotMatch": "Las contraseñas no coinciden."
+    }
+  },
+  "signUpSuccess": {
+    "title": "Registro completado",
+    "instructions": "Revisa tu correo electrónico para verificar la cuenta y completar el registro."
   }
 }

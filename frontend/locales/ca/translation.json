@@ -112,5 +112,24 @@
   },
   "footer": {
     "copyright": "© {year} Trail Running Cal"
+  },
+  "signUp": {
+    "title": "Crear compte",
+    "description": "Registra't per gestionar les teves curses i convertir-te en un organitzador verificat.",
+    "email": "Correu electrònic",
+    "password": "Contrasenya",
+    "repeatPassword": "Repetir contrasenya",
+    "creatingAccount": "Creant compte...",
+    "submit": "Registrar-se",
+    "alreadyHaveAccount": "Ja tens un compte?",
+    "login": "Inicia sessió",
+    "errors": {
+      "passwordStrength": "La contrasenya ha de tenir almenys 8 caràcters, incloure majúscules, minúscules, números i caràcters especials.",
+      "passwordsDoNotMatch": "Les contrasenyes no coincideixen."
+    }
+  },
+  "signUpSuccess": {
+    "title": "Registre completat",
+    "instructions": "Revisa el teu correu electrònic per verificar el compte i completar el registre."
   }
 }
