@@ -22,12 +22,70 @@ export function SignUpForm({
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
+  const validateEmail = (emailValue: string): boolean => {
+    const trimmedEmail = emailValue.trim();
+    
+    if (!trimmedEmail) {
+      setEmailError(t('errors.emailRequired'));
+      return false;
+    }
+
+    // Check maximum length (RFC 5321: 254 characters)
+    if (trimmedEmail.length > 254) {
+      setEmailError(t('errors.emailTooLong'));
+      return false;
+    }
+
+    // Basic email format check (TLD must be at least 2 characters)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      setEmailError(t('errors.emailInvalid'));
+      return false;
+    }
+
+    // Split email into local and domain parts
+    const [localPart, domainPart] = trimmedEmail.split('@');
+
+    // Local part validations
+    if (localPart.startsWith('.') || localPart.endsWith('.') || localPart.includes('..')) {
+      setEmailError(t('errors.emailInvalid'));
+      return false;
+    }
+
+    // Domain part validations
+    // 1. Edge cases (no leading/trailing dots or hyphens)
+    if (domainPart.startsWith('.') || domainPart.endsWith('.') || 
+        domainPart.startsWith('-') || domainPart.endsWith('-')) {
+      setEmailError(t('errors.emailInvalid'));
+      return false;
+    }
+
+    // 2. Consecutive dots
+    if (domainPart.includes('..')) {
+      setEmailError(t('errors.emailInvalid'));
+      return false;
+    }
+
+    // 3. Hyphens adjacent to dots (invalid label boundaries)
+    if (domainPart.includes('.-') || domainPart.includes('-.')) {
+      setEmailError(t('errors.emailInvalid'));
+      return false;
+    }
+
+    setEmailError('');
+    return true;
+  };
+
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    const supabase = createClient();
-    setIsLoading(true);
     setError(null);
     setEmailError('');
+
+    const isEmailValid = validateEmail(email);
+    if (!isEmailValid) {
+      setIsLoading(false);
+      return;
+    }
 
     if (!validatePasswordStrength(password)) {
       setError(t('errors.passwordStrength'));
@@ -40,6 +98,9 @@ export function SignUpForm({
       setIsLoading(false);
       return;
     }
+
+    const supabase = createClient();
+    setIsLoading(true);
 
     try {
       const { data, error } = await supabase.auth.signUp({
@@ -75,7 +136,7 @@ export function SignUpForm({
           <p className="text-sm text-gray-500">{t('description')}</p>
         </div>
         <div className="p-6 pt-0">
-          <form onSubmit={handleSignUp}>
+          <form onSubmit={handleSignUp} noValidate>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
                 <label
@@ -88,7 +149,6 @@ export function SignUpForm({
                   id="email"
                   type="email"
                   placeholder="kilian@zegama.com"
-                  required
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value);
@@ -116,7 +176,7 @@ export function SignUpForm({
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 pr-10 text-sm placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 pr-10 text-sm placeholder:text-gray-500 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                   />
                   <button
                     type="button"
@@ -133,7 +193,7 @@ export function SignUpForm({
                         viewBox="0 0 24 24"
                         strokeWidth="1.5"
                         stroke="currentColor"
-                        className="size-6"
+                        className="size-4"
                       >
                         <path
                           strokeLinecap="round"
@@ -153,7 +213,7 @@ export function SignUpForm({
                         viewBox="0 0 24 24"
                         strokeWidth="1.5"
                         stroke="currentColor"
-                        className="size-6"
+                        className="size-4"
                       >
                         <path
                           strokeLinecap="round"
@@ -181,7 +241,7 @@ export function SignUpForm({
                     required
                     value={repeatPassword}
                     onChange={(e) => setRepeatPassword(e.target.value)}
-                    className="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 pr-10 text-sm placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 pr-10 text-sm placeholder:text-gray-500 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                   />
                   <button
                     type="button"
@@ -198,7 +258,7 @@ export function SignUpForm({
                         viewBox="0 0 24 24"
                         strokeWidth="1.5"
                         stroke="currentColor"
-                        className="size-6"
+                        className="size-4"
                       >
                         <path
                           strokeLinecap="round"
@@ -218,7 +278,7 @@ export function SignUpForm({
                         viewBox="0 0 24 24"
                         strokeWidth="1.5"
                         stroke="currentColor"
-                        className="size-6"
+                        className="size-4"
                       >
                         <path
                           strokeLinecap="round"
@@ -233,7 +293,7 @@ export function SignUpForm({
               {error && <p className="text-sm text-red-500">{error}</p>}
               <button
                 type="submit"
-                className="w-full inline-flex items-center justify-center rounded-md bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-950 disabled:pointer-events-none disabled:opacity-50"
+                className="w-full inline-flex items-center justify-center rounded-md bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:pointer-events-none disabled:opacity-50"
                 disabled={isLoading}
               >
                 {isLoading ? t('creatingAccount') : t('submit')}

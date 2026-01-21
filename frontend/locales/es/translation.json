@@ -124,6 +124,9 @@
     "alreadyHaveAccount": "¿Ya tienes una cuenta?",
     "login": "Inicia sesión",
     "errors": {
+      "emailRequired": "El email es obligatorio",
+      "emailInvalid": "El email no es válido",
+      "emailTooLong": "El email no puede tener más de 254 caracteres",
       "passwordStrength": "La contraseña debe tener al menos 8 caracteres, incluir mayúsculas, minúsculas, números y caracteres especiales",
       "passwordsDoNotMatch": "Las contraseñas no coinciden",
       "emailAlreadyExists": "Email ya registrado"
@@ -145,6 +148,7 @@
     "errors": {
       "emailRequired": "El email es obligatorio",
       "emailInvalid": "El email no es válido",
+      "emailTooLong": "El email no puede tener más de 254 caracteres",
       "passwordRequired": "La contraseña es obligatoria",
       "invalidCredentials": "Email o contraseña incorrectos",
       "general": "Algo salió mal"

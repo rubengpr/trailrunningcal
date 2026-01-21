@@ -124,6 +124,9 @@
     "alreadyHaveAccount": "Ja tens un compte?",
     "login": "Inicia sessió",
     "errors": {
+      "emailRequired": "L'email és obligatori",
+      "emailInvalid": "L'email no és vàlid",
+      "emailTooLong": "L'email no pot tenir més de 254 caràcters",
       "passwordStrength": "La contrasenya ha de tenir almenys 8 caràcters, incloure majúscules, minúscules, números i caràcters especials",
       "passwordsDoNotMatch": "Les contrasenyes no coincideixen",
       "emailAlreadyExists": "Email ja registrat"
@@ -145,6 +148,7 @@
     "errors": {
       "emailRequired": "L'email és obligatori",
       "emailInvalid": "L'email no és vàlid",
+      "emailTooLong": "L'email no pot tenir més de 254 caràcters",
       "passwordRequired": "La contrasenya és obligatòria",
       "invalidCredentials": "Email o contrasenya incorrectes",
       "general": "Alguna cosa ha anat malament"

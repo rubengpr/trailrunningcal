@@ -22,15 +22,55 @@ export function LoginForm({
   const router = useRouter();
 
   const validateEmail = (emailValue: string): boolean => {
-    if (!emailValue.trim()) {
+    const trimmedEmail = emailValue.trim();
+    
+    if (!trimmedEmail) {
       setEmailError(t('errors.emailRequired'));
       return false;
     }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(emailValue)) {
+
+    // Check maximum length (RFC 5321: 254 characters)
+    if (trimmedEmail.length > 254) {
+      setEmailError(t('errors.emailTooLong'));
+      return false;
+    }
+
+    // Basic email format check (TLD must be at least 2 characters)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    if (!emailRegex.test(trimmedEmail)) {
       setEmailError(t('errors.emailInvalid'));
       return false;
     }
+
+    // Split email into local and domain parts
+    const [localPart, domainPart] = trimmedEmail.split('@');
+
+    // Local part validations
+    if (localPart.startsWith('.') || localPart.endsWith('.') || localPart.includes('..')) {
+      setEmailError(t('errors.emailInvalid'));
+      return false;
+    }
+
+    // Domain part validations
+    // 1. Edge cases (no leading/trailing dots or hyphens)
+    if (domainPart.startsWith('.') || domainPart.endsWith('.') || 
+        domainPart.startsWith('-') || domainPart.endsWith('-')) {
+      setEmailError(t('errors.emailInvalid'));
+      return false;
+    }
+
+    // 2. Consecutive dots
+    if (domainPart.includes('..')) {
+      setEmailError(t('errors.emailInvalid'));
+      return false;
+    }
+
+    // 3. Hyphens adjacent to dots (invalid label boundaries)
+    if (domainPart.includes('.-') || domainPart.includes('-.')) {
+      setEmailError(t('errors.emailInvalid'));
+      return false;
+    }
+
     setEmailError('');
     return true;
   };
@@ -106,14 +146,13 @@ export function LoginForm({
                 <input
                   id="email"
                   type="email"
-                  placeholder="kilian@zegama.com"
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value);
                     setEmailError('');
                     setError(null);
                   }}
-                  className="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-500 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                 />
                 {emailError && <p className="text-sm text-red-500 ml-1">{emailError}</p>}
               </div>
@@ -136,7 +175,7 @@ export function LoginForm({
                       setPasswordError('');
                       setError(null);
                     }}
-                    className="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 pr-10 text-sm placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 pr-10 text-sm placeholder:text-gray-500 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                   />
                   <button
                     type="button"
@@ -153,7 +192,7 @@ export function LoginForm({
                         viewBox="0 0 24 24"
                         strokeWidth="1.5"
                         stroke="currentColor"
-                        className="size-6"
+                        className="size-4"
                       >
                         <path
                           strokeLinecap="round"
@@ -173,7 +212,7 @@ export function LoginForm({
                         viewBox="0 0 24 24"
                         strokeWidth="1.5"
                         stroke="currentColor"
-                        className="size-6"
+                        className="size-4"
                       >
                         <path
                           strokeLinecap="round"
@@ -189,7 +228,7 @@ export function LoginForm({
               {error && <p className="text-sm text-red-500">{error}</p>}
               <button
                 type="submit"
-                className="w-full inline-flex items-center justify-center rounded-md bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-950 disabled:pointer-events-none disabled:opacity-50"
+                className="w-full inline-flex items-center justify-center rounded-md bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none disabled:pointer-events-none disabled:opacity-50"
                 disabled={isLoading}
               >
                 {isLoading ? t('loggingIn') : t('submit')}
