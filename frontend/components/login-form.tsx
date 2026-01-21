@@ -11,6 +11,7 @@ export function LoginForm({
   ...props
 }: React.ComponentPropsWithoutRef<'div'>) {
   const t = useTranslations('login');
+  const authT = useTranslations('auth');
   const locale = useLocale();
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -25,20 +26,20 @@ export function LoginForm({
     const trimmedEmail = emailValue.trim();
     
     if (!trimmedEmail) {
-      setEmailError(t('errors.emailRequired'));
+      setEmailError(authT('errors.emailRequired'));
       return false;
     }
 
     // Check maximum length (RFC 5321: 254 characters)
     if (trimmedEmail.length > 254) {
-      setEmailError(t('errors.emailTooLong'));
+      setEmailError(authT('errors.emailTooLong'));
       return false;
     }
 
     // Basic email format check (TLD must be at least 2 characters)
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
     if (!emailRegex.test(trimmedEmail)) {
-      setEmailError(t('errors.emailInvalid'));
+      setEmailError(authT('errors.emailInvalid'));
       return false;
     }
 
@@ -47,7 +48,7 @@ export function LoginForm({
 
     // Local part validations
     if (localPart.startsWith('.') || localPart.endsWith('.') || localPart.includes('..')) {
-      setEmailError(t('errors.emailInvalid'));
+      setEmailError(authT('errors.emailInvalid'));
       return false;
     }
 
@@ -55,19 +56,19 @@ export function LoginForm({
     // 1. Edge cases (no leading/trailing dots or hyphens)
     if (domainPart.startsWith('.') || domainPart.endsWith('.') || 
         domainPart.startsWith('-') || domainPart.endsWith('-')) {
-      setEmailError(t('errors.emailInvalid'));
+      setEmailError(authT('errors.emailInvalid'));
       return false;
     }
 
     // 2. Consecutive dots
     if (domainPart.includes('..')) {
-      setEmailError(t('errors.emailInvalid'));
+      setEmailError(authT('errors.emailInvalid'));
       return false;
     }
 
     // 3. Hyphens adjacent to dots (invalid label boundaries)
     if (domainPart.includes('.-') || domainPart.includes('-.')) {
-      setEmailError(t('errors.emailInvalid'));
+      setEmailError(authT('errors.emailInvalid'));
       return false;
     }
 
@@ -77,7 +78,7 @@ export function LoginForm({
 
   const validatePassword = (passwordValue: string): boolean => {
     if (!passwordValue.trim()) {
-      setPasswordError(t('errors.passwordRequired'));
+      setPasswordError(authT('errors.passwordRequired'));
       return false;
     }
     setPasswordError('');
@@ -110,12 +111,12 @@ export function LoginForm({
         // Check for invalid credentials error
         if (error.message.includes('Invalid login credentials') || error.message.includes('Email not confirmed')) {
           setError(t('errors.invalidCredentials'));
-        } else {
-          setError(error.message);
-        }
       } else {
-        setError(t('errors.general'));
+        setError(error.message);
       }
+    } else {
+      setError(authT('errors.general'));
+    }
     } finally {
       setIsLoading(false);
     }
@@ -157,13 +158,19 @@ export function LoginForm({
                 {emailError && <p className="text-sm text-red-500 ml-1">{emailError}</p>}
               </div>
               <div className="grid gap-2">
-                <div className="flex items-center">
+                <div className="flex items-center justify-between">
                   <label
                     htmlFor="password"
                     className="text-sm font-medium leading-none"
                   >
                     {t('password')}
                   </label>
+                  <Link
+                    href={`/${locale}/password-recovery`}
+                    className="text-sm text-gray-600 hover:text-gray-900 underline underline-offset-4"
+                  >
+                    {t('forgotPassword')}
+                  </Link>
                 </div>
                 <div className="relative">
                   <input

@@ -3,100 +3,91 @@
 import { createClient } from '@/lib/supabase/client';
 import { validatePasswordStrength } from '@/lib/password-utils';
 import { useTranslations, useLocale } from 'next-intl';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-export function SignUpForm({
+export function UpdatePasswordForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'div'>) {
-  const t = useTranslations('signUp');
+  const t = useTranslations('updatePassword');
   const authT = useTranslations('auth');
   const locale = useLocale();
-  const [email, setEmail] = useState('');
-  const [emailError, setEmailError] = useState('');
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [repeatPasswordError, setRepeatPasswordError] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const router = useRouter();
+  const [isTokenValid, setIsTokenValid] = useState<boolean | null>(null);
 
-  const validateEmail = (emailValue: string): boolean => {
-    const trimmedEmail = emailValue.trim();
-    
-    if (!trimmedEmail) {
-      setEmailError(authT('errors.emailRequired'));
+  useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createClient();
+      
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error || !session) {
+          setIsTokenValid(false);
+        } else {
+          setIsTokenValid(true);
+        }
+      } catch {
+        setIsTokenValid(false);
+      }
+    };
+  
+    checkAuth();
+  }, []);
+
+  
+
+  const validatePassword = (passwordValue: string): boolean => {
+    if (!passwordValue.trim()) {
+      setPasswordError(authT('errors.passwordRequired'));
       return false;
     }
 
-    // Check maximum length (RFC 5321: 254 characters)
-    if (trimmedEmail.length > 254) {
-      setEmailError(authT('errors.emailTooLong'));
+    if (!validatePasswordStrength(passwordValue)) {
+      setPasswordError(authT('errors.passwordStrength'));
       return false;
     }
 
-    // Basic email format check (TLD must be at least 2 characters)
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-    if (!emailRegex.test(trimmedEmail)) {
-      setEmailError(authT('errors.emailInvalid'));
-      return false;
-    }
-
-    // Split email into local and domain parts
-    const [localPart, domainPart] = trimmedEmail.split('@');
-
-    // Local part validations
-    if (localPart.startsWith('.') || localPart.endsWith('.') || localPart.includes('..')) {
-      setEmailError(authT('errors.emailInvalid'));
-      return false;
-    }
-
-    // Domain part validations
-    // 1. Edge cases (no leading/trailing dots or hyphens)
-    if (domainPart.startsWith('.') || domainPart.endsWith('.') || 
-        domainPart.startsWith('-') || domainPart.endsWith('-')) {
-      setEmailError(authT('errors.emailInvalid'));
-      return false;
-    }
-
-    // 2. Consecutive dots
-    if (domainPart.includes('..')) {
-      setEmailError(authT('errors.emailInvalid'));
-      return false;
-    }
-
-    // 3. Hyphens adjacent to dots (invalid label boundaries)
-    if (domainPart.includes('.-') || domainPart.includes('-.')) {
-      setEmailError(authT('errors.emailInvalid'));
-      return false;
-    }
-
-    setEmailError('');
+    setPasswordError('');
     return true;
   };
 
-  const handleSignUp = async (e: React.FormEvent) => {
+  const validateRepeatPassword = (repeatPasswordValue: string): boolean => {
+    if (!repeatPasswordValue.trim()) {
+      setRepeatPasswordError(authT('errors.passwordRequired'));
+      return false;
+    }
+
+    if (repeatPasswordValue !== password) {
+      setRepeatPasswordError(authT('errors.passwordsDoNotMatch'));
+      return false;
+    }
+
+    setRepeatPasswordError('');
+    return true;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setEmailError('');
+    setPasswordError('');
+    setRepeatPasswordError('');
 
-    const isEmailValid = validateEmail(email);
-    if (!isEmailValid) {
-      setIsLoading(false);
-      return;
-    }
+    const isPasswordValid = validatePassword(password);
+    const isRepeatPasswordValid = validateRepeatPassword(repeatPassword);
 
-    if (!validatePasswordStrength(password)) {
-      setError(authT('errors.passwordStrength'));
-      setIsLoading(false);
-      return;
-    }
-
-    if (password !== repeatPassword) {
-      setError(authT('errors.passwordsDoNotMatch'));
-      setIsLoading(false);
+    if (!isPasswordValid || !isRepeatPasswordValid) {
       return;
     }
 
@@ -104,25 +95,72 @@ export function SignUpForm({
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/${locale}/organizador`,
-        },
+      const { error } = await supabase.auth.updateUser({
+        password: password.trim(),
       });
-      if (error) throw error;
-      if (data.user && (!data.user.identities || data.user.identities.length === 0)) {
-        setEmailError(t('errors.emailAlreadyExists'));
-        return;
+
+      if (error) {
+        if (error.code === 'same_password') {
+          setError(authT('errors.samePassword'))
+          return
+        } else {
+          throw error
+        }
       }
-      router.push(`/${locale}/sign-up-success`);
+
+      router.push(`/${locale}/organizador`);
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : authT('errors.general'));
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError(authT('errors.general'));
+      }
     } finally {
       setIsLoading(false);
     }
   };
+
+  if (isTokenValid === null) {
+    return (
+      <div
+        className={`flex flex-col gap-6${className ? ` ${className}` : ''}`}
+        {...props}
+      >
+        <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
+          <div className="flex flex-col space-y-1.5 p-6">
+            <h3 className="text-2xl font-semibold leading-none tracking-tight">
+              {t('title')}
+            </h3>
+            <p className="text-sm text-gray-500">{t('verifying')}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isTokenValid === false) {
+    return (
+      <div
+        className={`flex flex-col gap-6${className ? ` ${className}` : ''}`}
+        {...props}
+      >
+        <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
+          <div className="flex flex-col space-y-1.5 p-6">
+            <h3 className="text-2xl font-semibold leading-none tracking-tight">
+              {t('title')}
+            </h3>
+            <p className="text-sm text-red-500">{authT('errors.invalidToken') || 'Invalid or expired token'}</p>
+            <Link
+              href={`/${locale}/password-recovery`}
+              className="mt-4 text-sm text-blue-600 underline"
+            >
+              {t('requestNewLink') || 'Request a new password reset link'}
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -137,30 +175,8 @@ export function SignUpForm({
           <p className="text-sm text-gray-500">{t('description')}</p>
         </div>
         <div className="p-6 pt-0">
-          <form onSubmit={handleSignUp} noValidate>
+          <form onSubmit={handleSubmit} noValidate>
             <div className="flex flex-col gap-6">
-              <div className="grid gap-2">
-                <label
-                  htmlFor="email"
-                  className="text-sm font-medium leading-none"
-                >
-                  {t('email')}
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  placeholder="kilian@zegama.com"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    setEmailError('');
-                  }}
-                  className="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-500 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                />
-                
-                  <p className="text-sm text-red-500 ml-1">{emailError}</p>
-                
-              </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
                   <label
@@ -174,9 +190,12 @@ export function SignUpForm({
                   <input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
-                    required
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      setPasswordError('');
+                      setError(null);
+                    }}
                     className="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 pr-10 text-sm placeholder:text-gray-500 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                   />
                   <button
@@ -225,6 +244,7 @@ export function SignUpForm({
                     )}
                   </button>
                 </div>
+                {passwordError && <p className="text-sm text-red-500 ml-1">{passwordError}</p>}
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
@@ -239,9 +259,12 @@ export function SignUpForm({
                   <input
                     id="repeat-password"
                     type={showPassword ? 'text' : 'password'}
-                    required
                     value={repeatPassword}
-                    onChange={(e) => setRepeatPassword(e.target.value)}
+                    onChange={(e) => {
+                      setRepeatPassword(e.target.value);
+                      setRepeatPasswordError('');
+                      setError(null);
+                    }}
                     className="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 pr-10 text-sm placeholder:text-gray-500 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                   />
                   <button
@@ -290,21 +313,16 @@ export function SignUpForm({
                     )}
                   </button>
                 </div>
+                {repeatPasswordError && <p className="text-sm text-red-500 ml-1">{repeatPasswordError}</p>}
               </div>
               {error && <p className="text-sm text-red-500">{error}</p>}
               <button
                 type="submit"
-                className="w-full inline-flex items-center justify-center rounded-md bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:pointer-events-none disabled:opacity-50"
+                className="w-full inline-flex items-center justify-center rounded-md bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none disabled:pointer-events-none disabled:opacity-50"
                 disabled={isLoading}
               >
-                {isLoading ? t('creatingAccount') : t('submit')}
+                {isLoading ? t('updating') : t('submit')}
               </button>
-            </div>
-            <div className="mt-4 text-center text-sm">
-              {t('alreadyHaveAccount')}{' '}
-              <Link href={`/${locale}/login`} className="underline underline-offset-4">
-                {t('login')}
-              </Link>
             </div>
           </form>
         </div>

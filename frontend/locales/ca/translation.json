@@ -110,6 +110,18 @@
     "searchErrorMessage": "No s'han pogut carregar les curses. Verifica la teva connexió i torna-ho a intentar.",
     "errorDetails": "Detalls de l'error (desenvolupament)"
   },
+  "auth": {
+    "errors": {
+      "emailRequired": "L'email és obligatori",
+      "emailInvalid": "L'email no és vàlid",
+      "emailTooLong": "L'email no pot tenir més de 254 caràcters",
+      "passwordRequired": "La contrasenya és obligatòria",
+      "passwordStrength": "La contrasenya ha de tenir almenys 8 caràcters, incloure majúscules, minúscules, números i caràcters especials",
+      "passwordsDoNotMatch": "Les contrasenyes no coincideixen",
+      "samePassword": "La nova contrasenya ha de ser diferent a l'actual",
+      "general": "Alguna cosa ha anat malament"
+    }
+  },
   "footer": {
     "copyright": "© {year} Trail Running Cal"
   },
@@ -124,9 +136,6 @@
     "alreadyHaveAccount": "Ja tens un compte?",
     "login": "Inicia sessió",
     "errors": {
-      "emailRequired": "L'email és obligatori",
-      "emailInvalid": "L'email no és vàlid",
-      "emailTooLong": "L'email no pot tenir més de 254 caràcters",
       "passwordStrength": "La contrasenya ha de tenir almenys 8 caràcters, incloure majúscules, minúscules, números i caràcters especials",
       "passwordsDoNotMatch": "Les contrasenyes no coincideixen",
       "emailAlreadyExists": "Email ja registrat"
@@ -145,13 +154,33 @@
     "submit": "Iniciar sessió",
     "dontHaveAccount": "No tens un compte?",
     "signUp": "Registra't",
+    "forgotPassword": "Has oblidat la contrasenya?",
     "errors": {
-      "emailRequired": "L'email és obligatori",
-      "emailInvalid": "L'email no és vàlid",
-      "emailTooLong": "L'email no pot tenir més de 254 caràcters",
       "passwordRequired": "La contrasenya és obligatòria",
-      "invalidCredentials": "Email o contrasenya incorrectes",
-      "general": "Alguna cosa ha anat malament"
+      "invalidCredentials": "Email o contrasenya incorrectes"
     }
+  },
+  "passwordRecovery": {
+    "title": "Recuperar contrasenya",
+    "description": "Introdueix el teu email i t'enviarem un enllaç per restablir la teva contrasenya.",
+    "email": "Email",
+    "submit": "Enviar enllaç de recuperació",
+    "sending": "Enviant...",
+    "backToLogin": "Tornar a login",
+    "successTitle": "Email enviat",
+    "successDescription": "Hem enviat un enllaç de recuperació al teu correu electrònic.",
+    "successInstructions": "Revisa la teva safata d'entrada i fes clic a l'enllaç per restablir la teva contrasenya. Si no el trobes, revisa la teva carpeta de correu brossa."
+  },
+  "updatePassword": {
+    "title": "Actualitzar contrasenya",
+    "description": "Introdueix la teva nova contrasenya.",
+    "password": "Nova contrasenya",
+    "repeatPassword": "Repetir nova contrasenya",
+    "submit": "Actualitzar contrasenya",
+    "updating": "Actualitzant...",
+    "verifying": "Verificant enllaç...",
+    "errorTitle": "Enllaç invàlid",
+    "errorDescription": "L'enllaç de recuperació no és vàlid o ha expirat.",
+    "errorMessage": "Si us plau, sol·licita un nou enllaç de recuperació de contrasenya."
   }
 }

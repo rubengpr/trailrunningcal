@@ -110,6 +110,18 @@
     "searchErrorMessage": "No se pudieron cargar las carreras. Verifica tu conexión e intenta de nuevo.",
     "errorDetails": "Detalles del error (desarrollo)"
   },
+  "auth": {
+    "errors": {
+      "emailRequired": "El email es obligatorio",
+      "emailInvalid": "El email no es válido",
+      "emailTooLong": "El email no puede tener más de 254 caracteres",
+      "passwordRequired": "La contraseña es obligatoria",
+      "passwordStrength": "La contraseña debe tener al menos 8 caracteres, incluir mayúsculas, minúsculas, números y caracteres especiales",
+      "passwordsDoNotMatch": "Las contraseñas no coinciden",
+      "samePassword": "La nueva contraseña debe ser diferente a la actual",
+      "general": "Algo salió mal"
+    }
+  },
   "footer": {
     "copyright": "© {year} Trail Running Cal"
   },
@@ -124,11 +136,6 @@
     "alreadyHaveAccount": "¿Ya tienes una cuenta?",
     "login": "Inicia sesión",
     "errors": {
-      "emailRequired": "El email es obligatorio",
-      "emailInvalid": "El email no es válido",
-      "emailTooLong": "El email no puede tener más de 254 caracteres",
-      "passwordStrength": "La contraseña debe tener al menos 8 caracteres, incluir mayúsculas, minúsculas, números y caracteres especiales",
-      "passwordsDoNotMatch": "Las contraseñas no coinciden",
       "emailAlreadyExists": "Email ya registrado"
     }
   },
@@ -145,13 +152,32 @@
     "submit": "Iniciar sesión",
     "dontHaveAccount": "¿No tienes una cuenta?",
     "signUp": "Regístrate",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
     "errors": {
-      "emailRequired": "El email es obligatorio",
-      "emailInvalid": "El email no es válido",
-      "emailTooLong": "El email no puede tener más de 254 caracteres",
-      "passwordRequired": "La contraseña es obligatoria",
-      "invalidCredentials": "Email o contraseña incorrectos",
-      "general": "Algo salió mal"
+      "invalidCredentials": "Email o contraseña incorrectos"
     }
+  },
+  "passwordRecovery": {
+    "title": "Recuperar contraseña",
+    "description": "Ingresa tu email y te enviaremos un enlace para restablecer tu contraseña.",
+    "email": "Email",
+    "submit": "Enviar enlace de recuperación",
+    "sending": "Enviando...",
+    "backToLogin": "Volver a login",
+    "successTitle": "Email enviado",
+    "successDescription": "Hemos enviado un enlace de recuperación a tu correo electrónico.",
+    "successInstructions": "Revisa tu bandeja de entrada y haz clic en el enlace para restablecer tu contraseña. Si no lo encuentras, revisa tu carpeta de spam."
+  },
+  "updatePassword": {
+    "title": "Actualizar contraseña",
+    "description": "Ingresa tu nueva contraseña.",
+    "password": "Nueva contraseña",
+    "repeatPassword": "Repetir nueva contraseña",
+    "submit": "Actualizar contraseña",
+    "updating": "Actualizando...",
+    "verifying": "Verificando enlace...",
+    "errorTitle": "Enlace inválido",
+    "errorDescription": "El enlace de recuperación no es válido o ha expirado.",
+    "errorMessage": "Por favor, solicita un nuevo enlace de recuperación de contraseña."
   }
 }
