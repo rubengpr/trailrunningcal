@@ -110,5 +110,5 @@ export default function proxy(request: NextRequest) {
 //Static assets: /favicon.ico, /_next/static/..., /assets/...
 //Next.js internals: /_next/*, /_vercel/*
 export const config = {
-  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)'],
+  matcher: ['/((?!api|auth|_next|_vercel|.*\\..*).*)'],
 };
