@@ -5,12 +5,17 @@ import { validatePasswordStrength } from '@/lib/password-utils';
 import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export function SignUpForm({
+  initialError,
+  clearErrorCookie,
   className,
   ...props
-}: React.ComponentPropsWithoutRef<'div'>) {
+}: React.ComponentPropsWithoutRef<'div'> & { 
+  initialError?: string | null;
+  clearErrorCookie?: () => Promise<void>;
+}) {
   const t = useTranslations('signUp');
   const authT = useTranslations('auth');
   const locale = useLocale();
@@ -18,11 +23,21 @@ export function SignUpForm({
   const [emailError, setEmailError] = useState('');
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(initialError === 'invalid-token' ? (authT('errors.invalidToken') || 'Invalid or expired token') : null);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
+  useEffect(() => {
+    if (initialError === 'invalid-token') {
+      setError(authT('errors.invalidToken'));
+    }
+    // Clear the cookie after reading the error
+    if (clearErrorCookie) {
+      clearErrorCookie();
+    }
+  }, [initialError, authT, clearErrorCookie]);
+  
   const validateEmail = (emailValue: string): boolean => {
     const trimmedEmail = emailValue.trim();
     

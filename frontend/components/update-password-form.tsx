@@ -3,7 +3,7 @@
 import { createClient } from '@/lib/supabase/client';
 import { validatePasswordStrength } from '@/lib/password-utils';
 import { useTranslations, useLocale } from 'next-intl';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 
@@ -15,7 +15,6 @@ export function UpdatePasswordForm({
   const authT = useTranslations('auth');
   const locale = useLocale();
   const router = useRouter();
-  const searchParams = useSearchParams();
   
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');

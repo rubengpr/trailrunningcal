@@ -119,7 +119,7 @@
       "passwordStrength": "La contrasenya ha de tenir almenys 8 caràcters, incloure majúscules, minúscules, números i caràcters especials",
       "passwordsDoNotMatch": "Les contrasenyes no coincideixen",
       "samePassword": "La nova contrasenya ha de ser diferent a l'actual",
-      "invalidToken": "L'enllaç de recuperació no és vàlid o ha expirat",
+      "invalidToken": "L'enllaç no és vàlid o ha expirat",
       "general": "Alguna cosa ha anat malament"
     }
   },
