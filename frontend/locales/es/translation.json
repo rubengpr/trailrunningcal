@@ -119,6 +119,7 @@
       "passwordStrength": "La contraseña debe tener al menos 8 caracteres, incluir mayúsculas, minúsculas, números y caracteres especiales",
       "passwordsDoNotMatch": "Las contraseñas no coinciden",
       "samePassword": "La nueva contraseña debe ser diferente a la actual",
+      "invalidToken": "El enlace de recuperación no es válido o ha expirado",
       "general": "Algo salió mal"
     }
   },

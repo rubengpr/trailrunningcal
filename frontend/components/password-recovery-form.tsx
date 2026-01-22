@@ -3,20 +3,35 @@
 import { createClient } from '@/lib/supabase/client';
 import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export function PasswordRecoveryForm({
+  initialError,
+  clearErrorCookie,
   className,
   ...props
-}: React.ComponentPropsWithoutRef<'div'>) {
+}: React.ComponentPropsWithoutRef<'div'> & { 
+  initialError?: string | null;
+  clearErrorCookie?: () => Promise<void>;
+}) {
   const t = useTranslations('passwordRecovery');
   const authT = useTranslations('auth');
   const locale = useLocale();
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(initialError === 'invalid-token' ? (authT('errors.invalidToken') || 'Invalid or expired token') : null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+
+  useEffect(() => {
+    if (initialError === 'invalid-token') {
+      setError(authT('errors.invalidToken'));
+    }
+    // Clear the cookie after reading the error
+    if (clearErrorCookie) {
+      clearErrorCookie();
+    }
+  }, [initialError, authT, clearErrorCookie]);
 
   const validateEmail = (emailValue: string): boolean => {
     const trimmedEmail = emailValue.trim();
