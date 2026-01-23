@@ -16,3 +16,4 @@ alwaysApply: false
 - Don't expose sensitive information in error messages
 - Log security events for monitoring and alerting
 - Implement error boundaries for React components
+- Always protect routes that require a logged user

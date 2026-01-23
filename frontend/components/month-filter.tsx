@@ -54,13 +54,13 @@ export default function MonthFilter({
           key={month.key}
           onClick={() => handleMonthClick(month.key)}
           className={`
-            px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all duration-200
-            border-2 border-gray-200 hover:border-indigo-300 hover:cursor-pointer
-            focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2
+            px-2 py-1.5 rounded-md text-xs sm:text-sm font-medium transition-all duration-200
+            border border-gray-300 hover:border-gray-400 hover:cursor-pointer
+            focus:outline-none
             ${
               selectedMonth === month.key
-                ? 'bg-indigo-600 text-white border-indigo-600 shadow-md'
-                : 'bg-white text-gray-700 hover:bg-indigo-50 hover:text-indigo-700'
+                ? 'bg-black text-white border-black shadow-md'
+                : 'bg-white text-gray-700 hover:bg-gray-100 hover:text-gray-900'
             }
           `}
         >

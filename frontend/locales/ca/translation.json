@@ -68,7 +68,8 @@
     "appName": "Trail Running Cal",
     "calendar": "Calendari",
     "contact": "Contacte",
-    "blog": "Blog"
+    "blog": "Blog",
+    "proposeRace": "Vols afegir una cursa?"
   },
   "landing": {
     "title": "Calendari curses Trail Running Catalunya",
@@ -110,7 +111,100 @@
     "searchErrorMessage": "No s'han pogut carregar les curses. Verifica la teva connexió i torna-ho a intentar.",
     "errorDetails": "Detalls de l'error (desenvolupament)"
   },
+  "auth": {
+    "errors": {
+      "emailRequired": "L'email és obligatori",
+      "emailInvalid": "L'email no és vàlid",
+      "emailTooLong": "L'email no pot tenir més de 254 caràcters",
+      "passwordRequired": "La contrasenya és obligatòria",
+      "passwordStrength": "La contrasenya ha de tenir almenys 8 caràcters, incloure majúscules, minúscules, números i caràcters especials",
+      "passwordsDoNotMatch": "Les contrasenyes no coincideixen",
+      "samePassword": "La nova contrasenya ha de ser diferent a l'actual",
+      "invalidToken": "L'enllaç no és vàlid o ha expirat",
+      "general": "Alguna cosa ha anat malament"
+    }
+  },
   "footer": {
     "copyright": "© {year} Trail Running Cal"
+  },
+  "signUp": {
+    "title": "Crear compte",
+    "description": "Registra't per gestionar les teves curses i convertir-te en un organitzador verificat.",
+    "email": "Email",
+    "password": "Contrasenya",
+    "repeatPassword": "Repetir contrasenya",
+    "creatingAccount": "Creant compte...",
+    "submit": "Registrar-se",
+    "alreadyHaveAccount": "Ja tens un compte?",
+    "login": "Inicia sessió",
+    "errors": {
+      "passwordStrength": "La contrasenya ha de tenir almenys 8 caràcters, incloure majúscules, minúscules, números i caràcters especials",
+      "passwordsDoNotMatch": "Les contrasenyes no coincideixen",
+      "emailAlreadyExists": "Email ja registrat"
+    }
+  },
+  "signUpSuccess": {
+    "title": "Registre completat",
+    "instructions": "Revisa el teu correu electrònic per verificar el compte i completar el registre."
+  },
+  "login": {
+    "title": "Iniciar sessió",
+    "description": "Accedeix al teu compte per gestionar les teves curses.",
+    "email": "Email",
+    "password": "Contrasenya",
+    "loggingIn": "Iniciant sessió...",
+    "submit": "Iniciar sessió",
+    "dontHaveAccount": "No tens un compte?",
+    "signUp": "Registra't",
+    "forgotPassword": "Has oblidat la contrasenya?",
+    "errors": {
+      "passwordRequired": "La contrasenya és obligatòria",
+      "invalidCredentials": "Email o contrasenya incorrectes"
+    }
+  },
+  "passwordRecovery": {
+    "title": "Recuperar contrasenya",
+    "description": "Introdueix el teu email i t'enviarem un enllaç per restablir la teva contrasenya.",
+    "email": "Email",
+    "submit": "Enviar enllaç de recuperació",
+    "sending": "Enviant...",
+    "backToLogin": "Tornar a login",
+    "successTitle": "Email enviat",
+    "successDescription": "Hem enviat un enllaç de recuperació al teu correu electrònic.",
+    "successInstructions": "Revisa la teva safata d'entrada i fes clic a l'enllaç per restablir la teva contrasenya. Si no el trobes, revisa la teva carpeta de correu brossa."
+  },
+  "updatePassword": {
+    "title": "Actualitzar contrasenya",
+    "description": "Introdueix la teva nova contrasenya.",
+    "password": "Nova contrasenya",
+    "repeatPassword": "Repetir nova contrasenya",
+    "submit": "Actualitzar contrasenya",
+    "updating": "Actualitzant...",
+    "verifying": "Verificant enllaç...",
+    "errorTitle": "Enllaç invàlid",
+    "errorDescription": "L'enllaç de recuperació no és vàlid o ha expirat.",
+    "errorMessage": "Si us plau, sol·licita un nou enllaç de recuperació de contrasenya.",
+    "requestNewLink": "Sol·licitar un nou enllaç de recuperació"
+  },
+  "proposeRace": {
+    "title": "Proposar una cursa",
+    "description": "Coneixes una cursa que no està al nostre calendari? Comparteix-la amb nosaltres.",
+    "raceName": "Nom",
+    "raceWebsite": "Web oficial",
+    "submit": "Enviar cursa",
+    "submitting": "Enviant...",
+    "cancel": "Cancel·lar",
+    "close": "Tancar",
+    "successTitle": "Gràcies!",
+    "successDescription": "La teva proposta ha estat enviada correctament.",
+    "successMessage": "Hem rebut la teva proposta. La revisarem i l'afegirem al calendari si és apropiat.",
+    "errors": {
+      "raceNameRequired": "El nom de la cursa és obligatori",
+      "raceNameTooLong": "El nom de la cursa no pot tenir més de 200 caràcters",
+      "raceWebsiteTooLong": "L'enllaç de la cursa no pot tenir més de 200 caràcters.",
+      "raceWebsiteRequired": "La web de la cursa és obligatòria",
+      "raceWebsiteInvalid": "La URL no és vàlida",
+      "general": "Alguna cosa ha anat malament. Si us plau, torna-ho a intentar."
+    }
   }
 }

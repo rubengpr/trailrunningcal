@@ -68,7 +68,8 @@
     "appName": "Trail Running Cal",
     "calendar": "Calendario",
     "contact": "Contacto",
-    "blog": "Blog"
+    "blog": "Blog",
+    "proposeRace": "¿Quieres añadir una carrera?"
   },
   "landing": {
     "title": "Calendario carreras Trail Running Cataluña",
@@ -110,7 +111,97 @@
     "searchErrorMessage": "No se pudieron cargar las carreras. Verifica tu conexión e intenta de nuevo.",
     "errorDetails": "Detalles del error (desarrollo)"
   },
+  "auth": {
+    "errors": {
+      "emailRequired": "El email es obligatorio",
+      "emailInvalid": "El email no es válido",
+      "emailTooLong": "El email no puede tener más de 254 caracteres",
+      "passwordRequired": "La contraseña es obligatoria",
+      "passwordStrength": "La contraseña debe tener al menos 8 caracteres, incluir mayúsculas, minúsculas, números y caracteres especiales",
+      "passwordsDoNotMatch": "Las contraseñas no coinciden",
+      "samePassword": "La nueva contraseña debe ser diferente a la actual",
+      "invalidToken": "El enlace no es válido o ha expirado",
+      "general": "Algo salió mal"
+    }
+  },
   "footer": {
     "copyright": "© {year} Trail Running Cal"
+  },
+  "signUp": {
+    "title": "Crear cuenta",
+    "description": "Regístrate para gestionar tus carreras y convertirte en un organizador verificado.",
+    "email": "Email",
+    "password": "Contraseña",
+    "repeatPassword": "Repetir contraseña",
+    "creatingAccount": "Creando cuenta...",
+    "submit": "Registrarse",
+    "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+    "login": "Inicia sesión",
+    "errors": {
+      "emailAlreadyExists": "Email ya registrado"
+    }
+  },
+  "signUpSuccess": {
+    "title": "Registro completado",
+    "instructions": "Revisa tu correo electrónico para verificar la cuenta y completar el registro."
+  },
+  "login": {
+    "title": "Iniciar sesión",
+    "description": "Accede a tu cuenta para gestionar tus carreras.",
+    "email": "Email",
+    "password": "Contraseña",
+    "loggingIn": "Iniciando sesión...",
+    "submit": "Iniciar sesión",
+    "dontHaveAccount": "¿No tienes una cuenta?",
+    "signUp": "Regístrate",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "errors": {
+      "invalidCredentials": "Email o contraseña incorrectos"
+    }
+  },
+  "passwordRecovery": {
+    "title": "Recuperar contraseña",
+    "description": "Ingresa tu email y te enviaremos un enlace para restablecer tu contraseña.",
+    "email": "Email",
+    "submit": "Enviar enlace de recuperación",
+    "sending": "Enviando...",
+    "backToLogin": "Volver a login",
+    "successTitle": "Email enviado",
+    "successDescription": "Hemos enviado un enlace de recuperación a tu correo electrónico.",
+    "successInstructions": "Revisa tu bandeja de entrada y haz clic en el enlace para restablecer tu contraseña. Si no lo encuentras, revisa tu carpeta de spam."
+  },
+  "updatePassword": {
+    "title": "Actualizar contraseña",
+    "description": "Ingresa tu nueva contraseña.",
+    "password": "Nueva contraseña",
+    "repeatPassword": "Repetir nueva contraseña",
+    "submit": "Actualizar contraseña",
+    "updating": "Actualizando...",
+    "verifying": "Verificando enlace...",
+    "errorTitle": "Enlace inválido",
+    "errorDescription": "El enlace de recuperación no es válido o ha expirado.",
+    "errorMessage": "Por favor, solicita un nuevo enlace de recuperación de contraseña.",
+    "requestNewLink": "Solicitar un nuevo enlace de recuperación"
+  },
+  "proposeRace": {
+    "title": "Proponer una carrera",
+    "description": "¿Conoces una carrera que no está en nuestro calendario? Compártela con nosotros.",
+    "raceName": "Nombre",
+    "raceWebsite": "Web oficial",
+    "submit": "Enviar carrera",
+    "submitting": "Enviando...",
+    "cancel": "Cancelar",
+    "close": "Cerrar",
+    "successTitle": "¡Gracias!",
+    "successDescription": "Tu propuesta ha sido enviada correctamente.",
+    "successMessage": "Hemos recibido tu propuesta. La revisaremos y la añadiremos al calendario si es apropiada.",
+    "errors": {
+      "raceNameRequired": "El nombre de la carrera es obligatorio",
+      "raceNameTooLong": "El nombre de la carrera no puede tener más de 200 caracteres",
+      "raceWebsiteTooLong": "El enlace de la carrera no puede tener más de 200 caracteres",
+      "raceWebsiteRequired": "La web de la carrera es obligatoria",
+      "raceWebsiteInvalid": "La URL no es válida",
+      "general": "Algo salió mal. Por favor, intenta de nuevo."
+    }
   }
 }

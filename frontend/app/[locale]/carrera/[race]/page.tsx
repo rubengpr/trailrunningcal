@@ -192,7 +192,7 @@ export default async function RacePage({
                 href={raceData.websiteUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-gray-900 text-white px-4 py-2 rounded-md font-medium hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors cursor-pointer inline-block w-full sm:w-auto text-center"
+                className="bg-gray-900 text-white px-4 py-2 rounded-md font-medium hover:bg-gray-600 focus:outline-none transition-colors cursor-pointer inline-block w-full sm:w-auto text-center"
               >
                 Web oficial
               </a>

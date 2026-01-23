@@ -2,21 +2,15 @@
 
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
-import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import Image from 'next/image';
-import LanguagePicker from './language-picker';
 import posthog from 'posthog-js';
 
 export default function Navbar() {
   const t = useTranslations('navigation');
   const locale = useLocale();
-  const pathname = usePathname();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  // Check if we're on a blog post page (path like /es/blog/slug or /ca/blog/slug)
-  const isBlogPostPage = /^\/(es|ca)\/blog\/[^/]+$/.test(pathname);
 
   const handleMenuClick = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -37,7 +31,7 @@ export default function Navbar() {
           }
         >
           <Image
-            src="/assets/trc-logo.svg"
+            src="https://ppmdbmyxgtqvmvtbptmg.supabase.co/storage/v1/object/public/brand/logos/trc-logo.svg"
             width={40}
             height={40}
             className="w-6 h-6 sm:w-10 sm:h-10"
@@ -49,6 +43,19 @@ export default function Navbar() {
         </Link>
         <nav className="text-sm flex justify-center items-center gap-6">
           <div className="hidden sm:flex px-2 py-1 flex-row items-center gap-4">
+          <Link
+              href={`/${locale}/blog`}
+              className="hover:text-indigo-600 transition-colors"
+              onClick={() =>
+                posthog.capture('navbar_link_clicked', {
+                  link_text: 'blog',
+                  link_href: `/${locale}/blog`,
+                  locale: locale,
+                })
+              }
+            >
+              {t('blog')}
+            </Link>
             <Link
               href={`/${locale}/${locale === 'ca' ? 'contacte' : 'contacto'}`}
               className="hover:text-indigo-600 transition-colors"
@@ -64,21 +71,7 @@ export default function Navbar() {
             >
               {t('contact')}
             </Link>
-            <Link
-              href={`/${locale}/blog`}
-              className="hover:text-indigo-600 transition-colors"
-              onClick={() =>
-                posthog.capture('navbar_link_clicked', {
-                  link_text: 'blog',
-                  link_href: `/${locale}/blog`,
-                  locale: locale,
-                })
-              }
-            >
-              {t('blog')}
-            </Link>
           </div>
-          {!isBlogPostPage && <LanguagePicker />}
           <svg
             className="flex sm:hidden mx-auto h-5 w-5 text-gray-400 cursor-pointer"
             onClick={handleMenuClick}
