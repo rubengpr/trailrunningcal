@@ -57,7 +57,6 @@ export async function GET(request: NextRequest) {
     }
 
   } catch (error) {
-    console.log(error)
     // Only set error cookie for authentication errors, not system errors
     const isAuthError = error && typeof error === 'object' && 'message' in error;
     

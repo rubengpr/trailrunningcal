@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/client';
 import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { FormInput } from './form-input';
 
 export function PasswordRecoveryForm({
   initialError,
@@ -163,27 +164,19 @@ export function PasswordRecoveryForm({
         <div className="p-6 pt-0">
           <form onSubmit={handleSubmit} noValidate>
             <div className="flex flex-col gap-6">
-              <div className="grid gap-2">
-                <label
-                  htmlFor="email"
-                  className="text-sm font-medium leading-none"
-                >
-                  {t('email')}
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    setEmailError('');
-                    setError(null);
-                  }}
-                  className="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-500 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                  placeholder="kilian@zegama.com"
-                />
-                {emailError && <p className="text-sm text-red-500 ml-1">{emailError}</p>}
-              </div>
+              <FormInput
+                id="email"
+                label={t('email')}
+                type="email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setEmailError('');
+                  setError(null);
+                }}
+                error={emailError}
+                placeholder="kilian@zegama.com"
+              />
               {error && <p className="text-sm text-red-500">{error}</p>}
               <button
                 type="submit"
