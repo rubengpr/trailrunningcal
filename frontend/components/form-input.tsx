@@ -8,6 +8,7 @@ interface FormInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement
   error?: string;
   showPasswordToggle?: boolean;
   labelRightContent?: React.ReactNode;
+  type?: React.InputHTMLAttributes<HTMLInputElement>['type'];
 }
 
 export function FormInput({

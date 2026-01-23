@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
-import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import Image from 'next/image';
 import posthog from 'posthog-js';
@@ -10,12 +9,8 @@ import posthog from 'posthog-js';
 export default function Navbar() {
   const t = useTranslations('navigation');
   const locale = useLocale();
-  const pathname = usePathname();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  // Check if we're on a blog post page (path like /es/blog/slug or /ca/blog/slug)
-  const isBlogPostPage = /^\/(es|ca)\/blog\/[^/]+$/.test(pathname);
 
   const handleMenuClick = () => {
     setIsMenuOpen(!isMenuOpen);

@@ -15,16 +15,17 @@ const requestCounts = new Map<string, RateLimitRecord>();
  * Extracts the client IP address from a Next.js request
  */
 function getRateLimitKey(request: NextRequest): string {
-  // Try request.ip first (available in some Next.js contexts)
-  if (request.ip) {
-    return request.ip;
-  }
-
-  // Fall back to x-forwarded-for header (Vercel provides this)
+  // Try x-forwarded-for header (Vercel provides this)
   const forwardedFor = request.headers.get('x-forwarded-for');
   if (forwardedFor) {
     // x-forwarded-for can contain multiple IPs, take the first one
     return forwardedFor.split(',')[0].trim();
+  }
+
+  // Try x-real-ip header as fallback
+  const realIp = request.headers.get('x-real-ip');
+  if (realIp) {
+    return realIp.trim();
   }
 
   // Fallback if IP cannot be determined
