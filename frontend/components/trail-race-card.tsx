@@ -90,7 +90,7 @@ export default function TrailRaceCard({
       <div className="w-full p-2 sm:p-4">
         <div className="flex items-start sm:justify-between mb-1">
           <div className="flex gap-4">
-            <div className="flex flex-col items-center justify-center min-w-[50px] px-3 py-2 bg-indigo-100 text-indigo-700 rounded-sm">
+            <div className="flex flex-col items-center justify-center min-w-[50px] px-3 py-2 bg-amber-50 text-gray-800 rounded-sm">
               <span className="text-[8px] sm:text-[10px] font-medium uppercase tracking-wide">
                 {dayOfWeek}
               </span>
@@ -116,7 +116,7 @@ export default function TrailRaceCard({
                 </span>
               </div>
               <div className="flex justify-start items-center gap-2">
-                <span className="hidden sm:block px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-sm bg-indigo-100 text-indigo-800">
+                <span className="hidden sm:block px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-sm bg-gray-100 text-gray-800">
                   {t('category.' + raceCategory)}
                 </span>
                 <span
@@ -130,7 +130,7 @@ export default function TrailRaceCard({
                     href={`/${locale}/carrera/${raceSlug}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="sm:hidden inline-block pointer-events-auto bg-indigo-600 text-white px-2 py-0.5 rounded-sm text-[10px] font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
+                    className="sm:hidden inline-block pointer-events-auto bg-black text-white px-2 py-0.5 rounded-sm text-[10px] font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
                     onClick={(e) => {
                       e.stopPropagation();
                     }}
@@ -153,7 +153,7 @@ export default function TrailRaceCard({
                 href={`/${locale}/carrera/${raceSlug}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hidden sm:inline-block bg-indigo-600 text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
+                className="hidden sm:inline-block bg-black text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
                 onClick={(e) => {
                   e.stopPropagation();
                 }}

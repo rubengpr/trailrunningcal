@@ -5,7 +5,6 @@ import { useLocale, useTranslations } from 'next-intl';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import Image from 'next/image';
-import LanguagePicker from './language-picker';
 import posthog from 'posthog-js';
 
 export default function Navbar() {
@@ -49,6 +48,19 @@ export default function Navbar() {
         </Link>
         <nav className="text-sm flex justify-center items-center gap-6">
           <div className="hidden sm:flex px-2 py-1 flex-row items-center gap-4">
+          <Link
+              href={`/${locale}/blog`}
+              className="hover:text-indigo-600 transition-colors"
+              onClick={() =>
+                posthog.capture('navbar_link_clicked', {
+                  link_text: 'blog',
+                  link_href: `/${locale}/blog`,
+                  locale: locale,
+                })
+              }
+            >
+              {t('blog')}
+            </Link>
             <Link
               href={`/${locale}/${locale === 'ca' ? 'contacte' : 'contacto'}`}
               className="hover:text-indigo-600 transition-colors"
@@ -64,21 +76,7 @@ export default function Navbar() {
             >
               {t('contact')}
             </Link>
-            <Link
-              href={`/${locale}/blog`}
-              className="hover:text-indigo-600 transition-colors"
-              onClick={() =>
-                posthog.capture('navbar_link_clicked', {
-                  link_text: 'blog',
-                  link_href: `/${locale}/blog`,
-                  locale: locale,
-                })
-              }
-            >
-              {t('blog')}
-            </Link>
           </div>
-          {!isBlogPostPage && <LanguagePicker />}
           <svg
             className="flex sm:hidden mx-auto h-5 w-5 text-gray-400 cursor-pointer"
             onClick={handleMenuClick}

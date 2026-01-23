@@ -22,7 +22,8 @@
     "posthog-js": "^1.299.0",
     "posthog-node": "^5.15.0",
     "react": "19.2.1",
-    "react-dom": "19.2.1"
+    "react-dom": "19.2.1",
+    "resend": "^4.0.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

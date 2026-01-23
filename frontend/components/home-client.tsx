@@ -1,10 +1,9 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import posthog from 'posthog-js';
 import type { TrailRace } from '../types/race.types';
-import SearchBar from './search-bar';
 import MonthFilter from './month-filter';
 import TrailRaceCard from './trail-race-card';
 import ErrorBoundary from './error-boundary';
@@ -12,20 +11,22 @@ import { SearchError } from './error-message';
 import { getMonthNumber } from '../lib/date-utils';
 import ProvinceFilter from './province-filter';
 import { generateRaceSlug } from '../lib/race-utils';
+import { ProposeRaceModal } from './propose-race-modal';
 
 interface HomeClientProps {
   races: TrailRace[];
 }
 
 export default function HomeClient({ races }: HomeClientProps) {
-  const tSearch = useTranslations('search');
   const tResults = useTranslations('results');
   const tFilters = useTranslations('filters');
   const tErrors = useTranslations('errors');
+  const tNavigation = useTranslations('navigation');
+  const locale = useLocale();
 
   const [selectedMonth, setSelectedMonth] = useState<string>('');
   const [selectedProvince, setSelectedProvince] = useState<string>('');
-  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [isProposeRaceModalOpen, setIsProposeRaceModalOpen] = useState(false);
 
   const filteredRaces = useMemo(() => {
     let filtered = races;
@@ -60,19 +61,8 @@ export default function HomeClient({ races }: HomeClientProps) {
       });
     }
 
-    // Filter by search term if provided
-    if (searchTerm.trim()) {
-      const searchLower = searchTerm.toLowerCase().trim();
-      filtered = filtered.filter(
-        (race) =>
-          race.name.toLowerCase().includes(searchLower) ||
-          race.city.toLowerCase().includes(searchLower) ||
-          race.province.toLowerCase().includes(searchLower),
-      );
-    }
-
     return filtered;
-  }, [races, selectedMonth, selectedProvince, searchTerm]);
+  }, [races, selectedMonth, selectedProvince]);
 
   const handleMonthSelect = (month: string) => {
     posthog.capture('race_month_filter_applied', { month: month });
@@ -84,15 +74,10 @@ export default function HomeClient({ races }: HomeClientProps) {
     setSelectedProvince(province);
   };
 
-  const handleSearchChange = (term: string) => {
-    setSearchTerm(term);
-  };
-
   const handleRetry = () => {
     // Reset filters to trigger a fresh data load
     setSelectedMonth('');
     setSelectedProvince('');
-    setSearchTerm('');
     window.location.reload();
   };
 
@@ -100,20 +85,29 @@ export default function HomeClient({ races }: HomeClientProps) {
     posthog.capture('race_filters_cleared');
     setSelectedMonth('');
     setSelectedProvince('');
-    setSearchTerm('');
+  };
+
+  const handleProposeRaceClick = () => {
+    setIsProposeRaceModalOpen(true);
+    posthog.capture('propose_race_clicked', {
+      locale: locale,
+    });
   };
 
   return (
     <>
-      {/* Search section */}
-      <section className="w-full py-8">
+      {/* Filters section */}
+      <section className="w-full pt-4 pb-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-center mb-6">
-            <SearchBar
-              initialSearchTerm={searchTerm}
-              onSearchChange={handleSearchChange}
-              placeholder={tSearch('placeholder')}
-            />
+          {/* Prominent "Añadir carrera" button */}
+          <div className="flex justify-center mb-8">
+            <button
+              onClick={handleProposeRaceClick}
+              className="inline-flex items-center gap-2 px-4 py-0.5 sm:py-1 sm:px-5 border-2 border-gray-300 bg-gray-100 text-gray-800 text-xs sm:text-sm font-medium rounded-full focus:outline-non transition-all duration-200 transform cursor-pointer"
+            >
+              <span className="text-lg sm:text-xl">🏁</span>
+              {tNavigation('proposeRace')}
+            </button>
           </div>
           <div className="flex justify-center mb-3">
             <MonthFilter
@@ -164,7 +158,7 @@ export default function HomeClient({ races }: HomeClientProps) {
                       </p>
                       <button
                         onClick={handleClearFilters}
-                        className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
+                        className="inline-flex items-center px-4 py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
                       >
                         <svg
                           className="w-4 h-4 mr-2"
@@ -236,6 +230,10 @@ export default function HomeClient({ races }: HomeClientProps) {
           </section>
         </ErrorBoundary>
       </main>
+      <ProposeRaceModal
+        isOpen={isProposeRaceModalOpen}
+        onClose={() => setIsProposeRaceModalOpen(false)}
+      />
     </>
   );
 }

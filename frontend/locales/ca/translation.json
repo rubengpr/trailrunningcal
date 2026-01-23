@@ -68,7 +68,8 @@
     "appName": "Trail Running Cal",
     "calendar": "Calendari",
     "contact": "Contacte",
-    "blog": "Blog"
+    "blog": "Blog",
+    "proposeRace": "Vols afegir una cursa?"
   },
   "landing": {
     "title": "Calendari curses Trail Running Catalunya",
@@ -182,6 +183,28 @@
     "verifying": "Verificant enllaç...",
     "errorTitle": "Enllaç invàlid",
     "errorDescription": "L'enllaç de recuperació no és vàlid o ha expirat.",
-    "errorMessage": "Si us plau, sol·licita un nou enllaç de recuperació de contrasenya."
+    "errorMessage": "Si us plau, sol·licita un nou enllaç de recuperació de contrasenya.",
+    "requestNewLink": "Sol·licitar un nou enllaç de recuperació"
+  },
+  "proposeRace": {
+    "title": "Proposar una cursa",
+    "description": "Coneixes una cursa que no està al nostre calendari? Comparteix-la amb nosaltres.",
+    "raceName": "Nom",
+    "raceWebsite": "Web oficial",
+    "submit": "Enviar cursa",
+    "submitting": "Enviant...",
+    "cancel": "Cancel·lar",
+    "close": "Tancar",
+    "successTitle": "Gràcies!",
+    "successDescription": "La teva proposta ha estat enviada correctament.",
+    "successMessage": "Hem rebut la teva proposta. La revisarem i l'afegirem al calendari si és apropiat.",
+    "errors": {
+      "raceNameRequired": "El nom de la cursa és obligatori",
+      "raceNameTooLong": "El nom de la cursa no pot tenir més de 200 caràcters",
+      "raceWebsiteTooLong": "L'enllaç de la cursa no pot tenir més de 200 caràcters.",
+      "raceWebsiteRequired": "La web de la cursa és obligatòria",
+      "raceWebsiteInvalid": "La URL no és vàlida",
+      "general": "Alguna cosa ha anat malament. Si us plau, torna-ho a intentar."
+    }
   }
 }
