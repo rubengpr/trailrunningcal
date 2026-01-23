@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
 
     // Send email using Resend
     const { data, error } = await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL,
+      from: process.env.RESEND_FROM_EMAIL!,
       to: 'ruben@trailrunningcal.com',
       subject: `Nueva propuesta de carrera: ${escapedRaceName}`,
       html: `
