@@ -203,5 +203,11 @@
       "raceWebsiteInvalid": "La URL no es válida",
       "general": "Algo salió mal. Por favor, intenta de nuevo."
     }
+  },
+  "notFound": {
+    "title": "404",
+    "heading": "Página no encontrada",
+    "message": "Lo sentimos, la página que buscas no existe o ha sido movida.",
+    "backHome": "Volver al inicio"
   }
 }

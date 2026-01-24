@@ -206,5 +206,11 @@
       "raceWebsiteInvalid": "La URL no és vàlida",
       "general": "Alguna cosa ha anat malament. Si us plau, torna-ho a intentar."
     }
+  },
+  "notFound": {
+    "title": "404",
+    "heading": "Pàgina no trobada",
+    "message": "Ho sentim, la pàgina que busques no existeix o ha estat moguda.",
+    "backHome": "Tornar a l'inici"
   }
 }
