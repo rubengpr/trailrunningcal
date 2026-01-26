@@ -1,6 +1,6 @@
 import createMiddleware from 'next-intl/middleware';
 import { locales, defaultLocale } from './i18n';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 const intlMiddleware = createMiddleware({
   locales,
@@ -10,7 +10,14 @@ const intlMiddleware = createMiddleware({
 
 export default function proxy(request: NextRequest) {
   // Process request with intl middleware (handles locale routing)
-  return intlMiddleware(request);
+  const response = intlMiddleware(request);
+  
+  // Remove Link headers (HTTP headers) while keeping HTML <link> tags
+  if (response instanceof NextResponse) {
+    response.headers.delete('link');
+  }
+  
+  return response;
 }
 
 //Proxy executes for page routes: /es/blog/..., /ca/contacto, etc.
