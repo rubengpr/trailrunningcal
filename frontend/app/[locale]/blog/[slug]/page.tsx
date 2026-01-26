@@ -8,6 +8,7 @@ import {
 import { renderMDXFile } from '@/lib/mdx-renderer';
 import { BASE_URL } from '@/lib/config';
 import { generateMetadataFromOptions } from '@/seo/meta-config';
+import { buildBlogPostAlternateLinks } from '@/lib/alternate-links';
 
 interface PageProps {
   params: Promise<{
@@ -40,8 +41,6 @@ export async function generateMetadata({
   // Build canonical URL
   const canonicalUrl = `${BASE_URL}/${locale}/blog/${slug}`;
 
-  // Don't pass alternateLinks - proxy.ts will set correct Link headers
-  // This prevents Next.js from generating incorrect Link headers from metadata
   return generateMetadataFromOptions({
     title: post.title,
     description: post.excerpt,
@@ -51,7 +50,7 @@ export async function generateMetadata({
     ogImageAlt: post.imageAlt || post.title,
     ogType: 'article',
     publishedTime: post.date,
-    // alternateLinks removed - proxy.ts will set correct Link headers
+    alternateLinks: buildBlogPostAlternateLinks(locale, slug),
   });
 }
 

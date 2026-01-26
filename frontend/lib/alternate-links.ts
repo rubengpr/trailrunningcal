@@ -1,0 +1,89 @@
+import { BASE_URL } from './config';
+import { locales, type Locale } from '@/i18n';
+import { getPostBySlug, getPostTranslations } from './blog-utils';
+
+/**
+ * Builds alternate language links for the home page
+ * @returns Record with es, ca, and x-default URLs
+ */
+export function buildHomeAlternateLinks(): Record<string, string> {
+  return {
+    es: `${BASE_URL}/es`,
+    ca: `${BASE_URL}/ca`,
+    'x-default': `${BASE_URL}/es`,
+  };
+}
+
+/**
+ * Builds alternate language links for the blog listing page
+ * @returns Record with es, ca, and x-default URLs
+ */
+export function buildBlogListingAlternateLinks(): Record<string, string> {
+  return {
+    es: `${BASE_URL}/es/blog`,
+    ca: `${BASE_URL}/ca/blog`,
+    'x-default': `${BASE_URL}/es/blog`,
+  };
+}
+
+/**
+ * Builds alternate language links for a blog post
+ * Uses translationKey to find all translations of the post
+ * @param locale - Current locale
+ * @param slug - Current slug
+ * @returns Record with alternate URLs or undefined if post not found
+ */
+export function buildBlogPostAlternateLinks(
+  locale: Locale,
+  slug: string,
+): Record<string, string> | undefined {
+  const post = getPostBySlug(slug, locale);
+  if (!post) {
+    return undefined;
+  }
+
+  const translations = getPostTranslations(post.translationKey);
+  const alternates: Record<string, string> = {};
+
+  // Add alternate language links
+  for (const translation of translations) {
+    alternates[translation.locale] = `${BASE_URL}/${translation.locale}/blog/${translation.slug}`;
+  }
+
+  // Add x-default pointing to Spanish blog post (always Spanish)
+  const spanishTranslation = translations.find(
+    (translation) => translation.locale === 'es',
+  )!;
+  alternates['x-default'] = `${BASE_URL}/${spanishTranslation.locale}/blog/${spanishTranslation.slug}`;
+
+  return alternates;
+}
+
+/**
+ * Builds alternate language links for the contact page
+ * @returns Record with es, ca, and x-default URLs
+ */
+export function buildContactAlternateLinks(): Record<string, string> {
+  return {
+    es: `${BASE_URL}/es/contacto`,
+    ca: `${BASE_URL}/ca/contacte`,
+    'x-default': `${BASE_URL}/es/contacto`,
+  };
+}
+
+/**
+ * Builds alternate language links for a race page
+ * Race slugs are the same across locales (generated from race name)
+ * @param raceSlug - The race slug
+ * @returns Record with es, ca, and x-default URLs
+ */
+export function buildRaceAlternateLinks(
+  raceSlug: string,
+): Record<string, string> {
+  const alternates: Record<string, string> = {};
+  for (const locale of locales) {
+    alternates[locale] = `${BASE_URL}/${locale}/carrera/${raceSlug}`;
+  }
+  alternates['x-default'] = `${BASE_URL}/es/carrera/${raceSlug}`;
+  return alternates;
+}

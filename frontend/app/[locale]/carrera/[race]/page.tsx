@@ -9,6 +9,7 @@ import { races } from '@/data/races';
 import type { Metadata } from 'next';
 import { generateMetadataFromOptions } from '@/seo/meta-config';
 import { BASE_URL } from '@/lib/config';
+import { buildRaceAlternateLinks } from '@/lib/alternate-links';
 import VerifiedBadgeWithTooltip from '@/components/verified-badge-with-tooltip';
 import PriceTiersTable from '@/components/price-tiers-table';
 import RaceServicesList from '@/components/race-services-list';
@@ -65,8 +66,8 @@ export async function generateMetadata({
       ? formatDateToCatalan(raceData.date)
       : formatDateToSpanish(raceData.date)
     : localeTyped === 'ca'
-    ? 'Data per confirmar'
-    : 'Fecha por confirmar';
+      ? 'Data per confirmar'
+      : 'Fecha por confirmar';
 
   // Generate description with race details
   const elevationText =
@@ -78,12 +79,10 @@ export async function generateMetadata({
 
   const description =
     localeTyped === 'ca'
-      ? `Cursa de trail running de ${raceData.distanceKm}km${
-          elevationText ? ` ${elevationText}` : ''
-        } a ${raceData.city}, ${raceData.province}. Data: ${formattedDate}`
-      : `Carrera de trail running de ${raceData.distanceKm}km${
-          elevationText ? ` ${elevationText}` : ''
-        } en ${raceData.city}, ${raceData.province}. Fecha: ${formattedDate}`;
+      ? `Cursa de trail running de ${raceData.distanceKm}km${elevationText ? ` ${elevationText}` : ''
+      } a ${raceData.city}, ${raceData.province}. Data: ${formattedDate}`
+      : `Carrera de trail running de ${raceData.distanceKm}km${elevationText ? ` ${elevationText}` : ''
+      } en ${raceData.city}, ${raceData.province}. Fecha: ${formattedDate}`;
 
   // Build canonical URL
   const canonicalUrl = `${BASE_URL}/${localeTyped}/carrera/${race}`;
@@ -91,8 +90,6 @@ export async function generateMetadata({
   // Use default OG image
   const ogImageUrl = `${BASE_URL}/og-image.png`;
 
-  // Don't pass alternateLinks - proxy.ts will set correct Link headers
-  // This prevents Next.js from generating incorrect Link headers from metadata
   return generateMetadataFromOptions({
     title,
     description,
@@ -101,7 +98,7 @@ export async function generateMetadata({
     ogImageUrl,
     ogImageAlt: raceData.name,
     ogType: 'website',
-    // alternateLinks removed - proxy.ts will set correct Link headers
+    alternateLinks: buildRaceAlternateLinks(race),
   });
 }
 

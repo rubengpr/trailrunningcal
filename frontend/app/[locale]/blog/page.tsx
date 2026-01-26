@@ -7,6 +7,7 @@ import {
   getSeoMetaConfig,
   generateMetadataFromOptions,
 } from '@/seo/meta-config';
+import { buildBlogListingAlternateLinks } from '@/lib/alternate-links';
 
 export async function generateMetadata({
   params,
@@ -20,8 +21,6 @@ export async function generateMetadata({
   const title = t(seoMeta.titleKey);
   const description = t(seoMeta.descriptionKey);
 
-  // Don't pass alternateLinks - proxy.ts will set correct Link headers
-  // This prevents Next.js from generating incorrect Link headers from metadata
   return generateMetadataFromOptions({
     title,
     description,
@@ -29,7 +28,7 @@ export async function generateMetadata({
     locale,
     ogImageUrl: seoMeta.ogImageUrl,
     ogType: seoMeta.ogType,
-    // alternateLinks removed - proxy.ts will set correct Link headers
+    alternateLinks: buildBlogListingAlternateLinks(),
   });
 }
 

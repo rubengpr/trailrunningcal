@@ -4,10 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npm run generate:blog-link-map && next build",
+    "build": "next build",
     "start": "next start",
-    "lint": "eslint",
-    "generate:blog-link-map": "tsx scripts/generate-blog-link-map.ts"
+    "lint": "eslint"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.1",
