@@ -1791,6 +1791,16 @@ export const races: TrailRace[] = [
     ],
   },
   {
+    date: '2026-02-22',
+    name: 'Sísmica Race 24K',
+    distanceKm: 24.0,
+    elevationGainM: 839,
+    priceEur: null,
+    city: 'Sant Andreu de la Barca',
+    province: 'Barcelona',
+    websiteUrl: 'https://www.sismicarace.es/',
+  },
+  {
     date: '2026-02-28',
     name: 'Sitges Rock Trail 25K',
     distanceKm: 25.0,
