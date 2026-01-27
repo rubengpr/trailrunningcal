@@ -1792,9 +1792,9 @@ export const races: TrailRace[] = [
   },
   {
     date: '2026-02-22',
-    name: 'Sísmica Race 24K',
-    distanceKm: 24.0,
-    elevationGainM: 839,
+    name: 'Sísmica Race 10K',
+    distanceKm: 10.0,
+    elevationGainM: 461,
     priceEur: null,
     city: 'Sant Andreu de la Barca',
     province: 'Barcelona',
