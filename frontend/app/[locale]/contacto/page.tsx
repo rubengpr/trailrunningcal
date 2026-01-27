@@ -42,7 +42,7 @@ export default async function ContactPage({
   const t = await getTranslations({ locale });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 text-gray-900 flex flex-col">
+    <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 text-gray-900 flex flex-col">
       <Navbar />
 
       <main className="flex-1 mx-auto max-w-4xl px-4 py-20">
