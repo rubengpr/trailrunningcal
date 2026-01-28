@@ -25,7 +25,7 @@ export function FormInput({
   const inputType = showPasswordToggle ? (showPassword ? 'text' : 'password') : type;
 
   return (
-    <div className="grid gap-2">
+    <div className="grid gap-2 w-full">
       {labelRightContent ? (
         <div className="flex items-center justify-between">
           <label

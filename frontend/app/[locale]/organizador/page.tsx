@@ -1,7 +1,7 @@
 import Image from 'next/image';
-import { FormInput } from '@/components/form-input';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
+import { OrganizerProfileForm } from '@/components/organizer-profile-form';
 
 export default async function OrganizerPage({
   params,
@@ -9,11 +9,11 @@ export default async function OrganizerPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  
+
   // Server-side authentication check
   const supabase = await createClient();
   const { data: { user }, error } = await supabase.auth.getUser();
-  
+
   // Redirect to login if not authenticated
   if (error || !user) {
     redirect(`/${locale}/login`);
@@ -52,18 +52,7 @@ export default async function OrganizerPage({
         <div className='flex flex-row mb-10'>
           <h1 className='text-xl font-bold'>Perfil</h1>
         </div>
-        <div className='flex flex-row flex-wrap gap-4'>
-          <div className='w-1/2'>
-            <FormInput
-              id='email'
-              label='Email'
-              type='email'
-              value='kilian@zegama.com'
-              disabled
-            />
-          </div>
-          {/* Future second input will go here */}
-        </div>
+        <OrganizerProfileForm userEmail={user.email || ''} />
       </div>
     </div>
   );
