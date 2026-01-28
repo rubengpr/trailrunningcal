@@ -12,8 +12,9 @@ export async function GET(request: NextRequest) {
   const next = searchParams.get('next')
 
   let locale = 'es';
+  let redirectUrl: URL | null = null;
   if (next) {
-    const redirectUrl = new URL(next, request.url);
+    redirectUrl = new URL(next, request.url);
     const localeMatch = redirectUrl.pathname.match(/^\/(es|ca)/);
     if (localeMatch) {
       locale = localeMatch[1];
@@ -35,12 +36,6 @@ export async function GET(request: NextRequest) {
 
   // Handle missing parameters early - redirect without error cookie
   if (!token_hash || !type || !next) {
-    redirect(errorRedirectPath);
-  }
-
-  // Validate redirect URL is on same origin (security: prevent open redirects)
-  const redirectUrl = new URL(next, request.url);
-  if (redirectUrl.origin !== new URL(request.url).origin) {
     redirect(errorRedirectPath);
   }
 
@@ -77,7 +72,12 @@ export async function GET(request: NextRequest) {
       // If setting cookie fails, just continue to redirect
       // Don't let cookie errors break the flow
     }
-    
+    redirect(errorRedirectPath);
+  }
+
+  // At this point, next is guaranteed to exist (validated above)
+  // so redirectUrl should also exist
+  if (!redirectUrl) {
     redirect(errorRedirectPath);
   }
 
