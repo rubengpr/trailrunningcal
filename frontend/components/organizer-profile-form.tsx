@@ -8,12 +8,14 @@ import { updateProfile } from '@/lib/api/profiles';
 
 interface OrganizerProfileFormProps {
     userEmail: string;
+    fullName: string | null;
+    jobTitle: string | null;
 }
 
-export function OrganizerProfileForm({ userEmail }: OrganizerProfileFormProps) {
+export function OrganizerProfileForm({ userEmail, fullName, jobTitle }: OrganizerProfileFormProps) {
     const t = useTranslations('organizer.profile');
-    const [userName, setUserName] = useState('');
-    const [userRole, setuserRole] = useState('');
+    const [userName, setUserName] = useState(fullName || '');
+    const [userRole, setuserRole] = useState(jobTitle || '');
     const [organizationName, setOrganizationName] = useState('');
     const [organizationWebsite, setOrganizationWebsite] = useState('');
     const [facebookUrl, setFacebookUrl] = useState('');

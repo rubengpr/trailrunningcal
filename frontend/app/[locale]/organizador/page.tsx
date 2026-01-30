@@ -21,6 +21,16 @@ export default async function OrganizerPage({
     redirect(`/${locale}/login`);
   }
 
+  const { data: profile, error: profileError } = await supabase
+    .from('profiles')
+    .select('full_name, job_title')
+    .eq('id', user.id)
+    .single();
+
+  if (profileError) {
+    console.error('Failed to fetch profile:', profileError)
+  }
+
   return (
     <div className='flex flex-row'>
       <OrganizerSidebar />
@@ -28,7 +38,10 @@ export default async function OrganizerPage({
         <div className='flex flex-row mb-10'>
           <h1 className='text-xl font-bold'>{t('title')}</h1>
         </div>
-        <OrganizerProfileForm userEmail={user.email || ''} />
+        <OrganizerProfileForm
+          userEmail={user.email || ''}
+          fullName={profile?.full_name}
+          jobTitle={profile?.job_title} />
       </div>
     </div>
   );
