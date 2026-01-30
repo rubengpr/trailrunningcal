@@ -23,7 +23,7 @@ export default async function OrganizerPage({
 
   return (
     <div className='flex flex-row'>
-      <OrganizerSidebar userEmail={user.email || ''} />
+      <OrganizerSidebar />
       <div className='flex flex-col w-full p-6'>
         <div className='flex flex-row mb-10'>
           <h1 className='text-xl font-bold'>{t('title')}</h1>
