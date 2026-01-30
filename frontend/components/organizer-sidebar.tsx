@@ -1,11 +1,6 @@
 import Image from 'next/image';
 
-interface OrganizerSidebarProps {
-    userEmail: string;
-    userName?: string;
-}
-
-export function OrganizerSidebar({ userEmail, userName }: OrganizerSidebarProps) {
+export function OrganizerSidebar() {
     return (
         <div className="flex flex-col items-center w-1/8 h-screen pr-2 rounded-r-lg bg-gray-200 shadow-md/30">
             <Image

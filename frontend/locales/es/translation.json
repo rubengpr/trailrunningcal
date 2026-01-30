@@ -209,5 +209,32 @@
     "heading": "Página no encontrada",
     "message": "Lo sentimos, la página que buscas no existe o ha sido movida.",
     "backHome": "Volver al inicio"
+  },
+  "organizer": {
+    "profile": {
+      "title": "Perfil",
+      "user": {
+        "sectionTitle": "Usuario",
+        "fullName": "Nombre completo",
+        "email": "Email",
+        "role": "Cargo"
+      },
+      "organization": {
+        "sectionTitle": "Organización",
+        "name": "Nombre",
+        "website": "Sitio web",
+        "websitePlaceholder": "https://sitioweb.com/",
+        "facebook": "Facebook",
+        "instagram": "Instagram",
+        "youtube": "YouTube",
+        "tiktok": "TikTok"
+      },
+      "saveChanges": "Guardar cambios",
+      "saving": "Guardando...",
+      "success": "Perfil actualizado correctamente",
+      "errors": {
+        "general": "Algo salió mal al guardar los cambios. Por favor, intenta de nuevo."
+      }
+    }
   }
 }

@@ -212,5 +212,32 @@
     "heading": "Pàgina no trobada",
     "message": "Ho sentim, la pàgina que busques no existeix o ha estat moguda.",
     "backHome": "Tornar a l'inici"
+  },
+  "organizer": {
+    "profile": {
+      "title": "Perfil",
+      "user": {
+        "sectionTitle": "Usuari",
+        "fullName": "Nom complet",
+        "email": "Email",
+        "role": "Càrrec"
+      },
+      "organization": {
+        "sectionTitle": "Organització",
+        "name": "Nom",
+        "website": "Lloc web",
+        "websitePlaceholder": "https://llocweb.com/",
+        "facebook": "Facebook",
+        "instagram": "Instagram",
+        "youtube": "YouTube",
+        "tiktok": "TikTok"
+      },
+      "saveChanges": "Desar canvis",
+      "saving": "Desant...",
+      "success": "Perfil actualitzat correctament",
+      "errors": {
+        "general": "Alguna cosa ha anat malament en desar els canvis. Si us plau, torna-ho a intentar."
+      }
+    }
   }
 }
