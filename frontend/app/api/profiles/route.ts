@@ -40,6 +40,46 @@ export async function GET() {
     }
 }
 
+export async function POST() {
+    try {
+        const supabase = await createClient();
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+        if (authError || !user) {
+            return NextResponse.json(
+                { error: 'Unauthorized' },
+                { status: 401 }
+            );
+        }
+
+        const { data, error } = await supabase
+        .from('profiles')
+        .insert({ id: user.id })
+        .select()
+        .single();
+
+        if (error) {
+            console.error('Database error:', error);
+            return NextResponse.json(
+                { error: 'Failed to create profile' },
+                { status: 500 }
+            );
+        }
+
+        return NextResponse.json(
+            data,
+            { status: 201 }
+        );
+
+    } catch (error) {
+        console.error('API error:', error);
+        return NextResponse.json(
+            { error: 'Internal server error' },
+            { status: 500 }
+        );
+    }
+}
+
 export async function PATCH(request: NextRequest) {
     try {
         const supabase = await createClient();

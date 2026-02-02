@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient()
     
-    const { error: verifyError } = await supabase.auth.verifyOtp({
+    const { data: { user }, error: verifyError } = await supabase.auth.verifyOtp({
       type,
       token_hash,
     })
@@ -50,6 +50,21 @@ export async function GET(request: NextRequest) {
     if (verifyError) {
       throw verifyError;
     }
+
+    if (!user) {
+      throw new Error('User not found in verification response');
+    }
+
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .insert({ id: user.id })
+      .select()
+      .single();
+
+      if (profileError && profileError.code !== '23505') { // 23505 is unique_violation
+        console.error('Failed to create profile:', profileError);
+        throw profileError;
+      }
 
   } catch (error) {
     // Only set error cookie for authentication errors, not system errors
