@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(request: NextRequest) {
     try {
@@ -13,23 +13,27 @@ export async function PATCH(request: NextRequest) {
             );
         }
 
-        const { userName, userRole } = await request.json();
+        const { organizationName, organizationWebsite, facebookUrl, instagramUrl, youtubeUrl, tiktokUrl } = await request.json();
 
         const { data, error } = await supabase
-            .from('profiles')
+            .from('organizers')
             .update({
-                full_name: userName,
-                job_title: userRole,
+                name: organizationName,
+                website: organizationWebsite,
+                facebook_url: facebookUrl,
+                instagram_url: instagramUrl,
+                youtube_url: youtubeUrl,
+                tiktok_url: tiktokUrl,
                 updated_at: new Date().toISOString()
             })
-            .eq('id', user.id)
+            .eq('owner_id', user.id)
             .select()
             .single()
 
             if (error) {
                 console.error('Database error:', error);
                 return NextResponse.json(
-                    { error: 'Failed to update profile' },
+                    { error: 'Failed to update organizer' },
                     { status: 500 }
                 );
             }

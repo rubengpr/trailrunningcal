@@ -31,6 +31,16 @@ export default async function OrganizerPage({
     console.error('Failed to fetch profile:', profileError)
   }
 
+  const { data: organizer, error: organizerError } = await supabase
+    .from('organizers')
+    .select('name, website, facebook_url, instagram_url, youtube_url, tiktok_url')
+    .eq('owner_id', user.id)
+    .single()
+
+  if (organizerError) {
+    console.error('Failed to fetch organizer:', organizerError)
+  }
+
   return (
     <div className='flex flex-row'>
       <OrganizerSidebar />
@@ -41,7 +51,14 @@ export default async function OrganizerPage({
         <OrganizerProfileForm
           userEmail={user.email || ''}
           fullName={profile?.full_name}
-          jobTitle={profile?.job_title} />
+          jobTitle={profile?.job_title}
+          name={organizer?.name || ''}
+          website={organizer?.website || ''}
+          facebook={organizer?.facebook_url || ''}
+          instagram={organizer?.instagram_url || ''}
+          youtube={organizer?.youtube_url || ''}
+          tiktok={organizer?.tiktok_url || ''}
+        />
       </div>
     </div>
   );

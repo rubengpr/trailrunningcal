@@ -5,23 +5,40 @@ import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
 import { FormInput } from './form-input';
 import { updateProfile } from '@/lib/api/profiles';
+import { updateOrganizer } from '@/lib/api/organizers';
 
 interface OrganizerProfileFormProps {
     userEmail: string;
     fullName: string | null;
     jobTitle: string | null;
+    name?: string;
+    website?: string;
+    facebook?: string;
+    instagram?: string;
+    youtube?: string;
+    tiktok?: string;
 }
 
-export function OrganizerProfileForm({ userEmail, fullName, jobTitle }: OrganizerProfileFormProps) {
+export function OrganizerProfileForm({
+    userEmail,
+    fullName,
+    jobTitle,
+    name,
+    website,
+    facebook,
+    instagram,
+    youtube,
+    tiktok
+}: OrganizerProfileFormProps) {
     const t = useTranslations('organizer.profile');
     const [userName, setUserName] = useState(fullName || '');
     const [userRole, setuserRole] = useState(jobTitle || '');
-    const [organizationName, setOrganizationName] = useState('');
-    const [organizationWebsite, setOrganizationWebsite] = useState('');
-    const [facebookUrl, setFacebookUrl] = useState('');
-    const [instagramUrl, setInstagramUrl] = useState('');
-    const [youtubeUrl, setYoutubeUrl] = useState('');
-    const [tiktokUrl, setTiktokUrl] = useState('');
+    const [organizationName, setOrganizationName] = useState(name || '');
+    const [organizationWebsite, setOrganizationWebsite] = useState(website || '');
+    const [facebookUrl, setFacebookUrl] = useState(facebook || '');
+    const [instagramUrl, setInstagramUrl] = useState(instagram || '');
+    const [youtubeUrl, setYoutubeUrl] = useState(youtube || '');
+    const [tiktokUrl, setTiktokUrl] = useState(tiktok || '');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
@@ -32,6 +49,7 @@ export function OrganizerProfileForm({ userEmail, fullName, jobTitle }: Organize
 
         try {
             await updateProfile({ userName, userRole });
+            await updateOrganizer({ organizationName, organizationWebsite, facebookUrl, instagramUrl, youtubeUrl, tiktokUrl })
 
             toast.success(t('success'));
         } catch (e) {

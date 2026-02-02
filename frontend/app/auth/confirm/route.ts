@@ -55,16 +55,27 @@ export async function GET(request: NextRequest) {
       throw new Error('User not found in verification response');
     }
 
-    const { error: profileError } = await supabase
-      .from('profiles')
-      .insert({ id: user.id })
+    const { data: organizerData, error: organizerError } = await supabase
+      .from('organizers')
+      .insert({ owner_id: user.id })
       .select()
       .single();
 
-      if (profileError && profileError.code !== '23505') { // 23505 is unique_violation
-        console.error('Failed to create profile:', profileError);
-        throw profileError;
-      }
+    if (organizerError && organizerError.code !== '23505') { // 23505 is unique_violation
+      console.error('Failed to create organizer:', organizerError);
+      throw organizerError;
+    }
+    
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .insert({ id: user.id, organizer_id: organizerData.id })
+      .select()
+      .single();
+
+    if (profileError && profileError.code !== '23505') { // 23505 is unique_violation
+      console.error('Failed to create profile:', profileError);
+      throw profileError;
+    }
 
   } catch (error) {
     // Only set error cookie for authentication errors, not system errors
