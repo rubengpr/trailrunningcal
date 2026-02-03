@@ -62,12 +62,12 @@ export function OrganizerProfileForm({
     };
 
     return (
-        <form onSubmit={handleSubmit} className='flex flex-col p-6 gap-10'>
+        <form onSubmit={handleSubmit} className='flex flex-col p-4 md:p-6 gap-14 md:gap-10'>
             <div className='flex flex-col gap-4'>
                 <h3 className="text-xl font-semibold leading-none tracking-tight">
                     {t('user.sectionTitle')}
                 </h3>
-                <div className="grid grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
                     <FormInput
                         id='fullname'
                         label={t('user.fullName')}
@@ -98,7 +98,7 @@ export function OrganizerProfileForm({
                 <h3 className="text-xl font-semibold leading-none tracking-tight">
                     {t('organization.sectionTitle')}
                 </h3>
-                <div className="grid grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
                     <FormInput
                         id='organizationName'
                         label={t('organization.name')}

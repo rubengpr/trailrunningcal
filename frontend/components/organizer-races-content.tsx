@@ -4,8 +4,10 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
 import { InfoModal } from './new-race-modal';
+import TrailRaceCard from './trail-race-card';
 import type { TrailRace } from '@/types/race.types';
 import { formatDateToSpanish, formatDateToCatalan } from '@/lib/date-utils';
+import { generateRaceSlug } from '@/lib/race-utils';
 
 // Dummy data - will be replaced with real data from API
 const dummyRaces: TrailRace[] = [
@@ -204,8 +206,27 @@ export function OrganizerRacesContent() {
                     </button>
                 </div>
 
-                {/* Table */}
-                <div className='w-full bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden'>
+                {/* Cards - Mobile only */}
+                <div className='w-full sm:hidden space-y-4'>
+                    {races.map((race, index) => (
+                        <TrailRaceCard
+                            key={index}
+                            date={race.date}
+                            name={race.name}
+                            distanceKm={race.distanceKm}
+                            elevationGainM={race.elevationGainM}
+                            priceEur={race.priceEur}
+                            city={race.city}
+                            province={race.province}
+                            raceSlug={generateRaceSlug(race.name)}
+                            isVerifiedOrganizer={race.isVerifiedOrganizer}
+                            displayOnly={true}
+                        />
+                    ))}
+                </div>
+
+                {/* Table - Desktop only */}
+                <div className='hidden sm:block w-full bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden'>
                     <div className='overflow-x-auto'>
                         <table className='w-full'>
                             <thead>
@@ -213,7 +234,7 @@ export function OrganizerRacesContent() {
                                     <th className='px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky left-0 bg-white z-10'>
                                         {tTable('name')}
                                     </th>
-                                    <th className='px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell'>
+                                    <th className='px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
                                         {tTable('date')}
                                     </th>
                                     <th className='px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
@@ -240,12 +261,8 @@ export function OrganizerRacesContent() {
                                             <div className='text-sm font-medium text-gray-900'>
                                                 {race.name}
                                             </div>
-                                            <div className='text-xs text-gray-500 sm:hidden mt-1.5 space-y-0.5'>
-                                                <div>{formatDate(race.date)}</div>
-                                                <div>{race.city}</div>
-                                            </div>
                                         </td>
-                                        <td className='px-6 py-5 whitespace-nowrap hidden sm:table-cell'>
+                                        <td className='px-6 py-5 whitespace-nowrap'>
                                             <div className='text-sm text-gray-700'>
                                                 {formatDate(race.date)}
                                             </div>

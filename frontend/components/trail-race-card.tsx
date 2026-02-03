@@ -14,8 +14,9 @@ interface TrailRaceCardProps {
   priceEur: PriceValue;
   city: string;
   province: string;
-  raceSlug: string;
+  raceSlug?: string;
   isVerifiedOrganizer?: boolean;
+  displayOnly?: boolean;
 }
 
 const formatDate = (dateString: string | null, locale: string) => {
@@ -63,6 +64,7 @@ export default function TrailRaceCard({
   province,
   raceSlug,
   isVerifiedOrganizer,
+  displayOnly = false,
 }: TrailRaceCardProps) {
   const t = useTranslations();
   const locale = useLocale();
@@ -73,7 +75,7 @@ export default function TrailRaceCard({
   const displayPrice = getDisplayPrice(priceEur);
 
   const handleCardClick = () => {
-    if (raceSlug) {
+    if (!displayOnly && raceSlug) {
       window.open(
         `/${locale}/carrera/${raceSlug}`,
         '_blank',
@@ -84,8 +86,11 @@ export default function TrailRaceCard({
 
   return (
     <article
-      onClick={handleCardClick}
-      className="w-full bg-white rounded-lg shadow sm:hover:shadow-md transition-shadow sm:cursor-pointer pointer-events-none sm:pointer-events-auto"
+      onClick={displayOnly ? undefined : handleCardClick}
+      className={`w-full bg-white rounded-lg shadow ${displayOnly
+          ? ''
+          : 'sm:hover:shadow-md transition-shadow sm:cursor-pointer pointer-events-none sm:pointer-events-auto'
+        }`}
     >
       <div className="w-full p-2 sm:p-4">
         <div className="flex items-start sm:justify-between mb-1">
@@ -125,7 +130,7 @@ export default function TrailRaceCard({
                   {elevationRatio !== null ? `${elevationRatio} m/km` : '—'}
                 </span>
 
-                {raceSlug && (
+                {!displayOnly && raceSlug && (
                   <Link
                     href={`/${locale}/carrera/${raceSlug}`}
                     target="_blank"
@@ -148,7 +153,7 @@ export default function TrailRaceCard({
             <div className="font-semibold text-gray-900 text-xs sm:text-lg">
               {displayPrice ? `${displayPrice}€` : '—'}
             </div>
-            {raceSlug && (
+            {!displayOnly && raceSlug && (
               <Link
                 href={`/${locale}/carrera/${raceSlug}`}
                 target="_blank"

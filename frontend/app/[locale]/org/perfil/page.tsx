@@ -44,8 +44,8 @@ export default async function OrganizerPage({
   return (
     <div className='flex flex-col md:flex-row'>
       <OrganizerSidebar />
-      <div className='flex flex-col w-full p-6'>
-        <div className='flex flex-row mb-10'>
+      <div className='flex flex-col w-full p-4 md:p-6'>
+        <div className='flex flex-row mb-6 md:mb-10'>
           <h1 className='text-xl font-bold'>{t('title')}</h1>
         </div>
         <OrganizerProfileForm
