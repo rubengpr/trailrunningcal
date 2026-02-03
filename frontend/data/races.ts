@@ -1531,6 +1531,7 @@ export const races: TrailRace[] = [
     city: 'Sant Cugat Sesgarrigues',
     province: 'Barcelona',
     websiteUrl: 'https://www.santkutrail.com/',
+    email: 'santkutrail@gmail.com'
   },
   {
     date: '2026-02-07',
@@ -1541,6 +1542,7 @@ export const races: TrailRace[] = [
     city: 'Sant Cugat Sesgarrigues',
     province: 'Barcelona',
     websiteUrl: 'https://www.santkutrail.com/',
+    email: 'santkutrail@gmail.com'
   },
   {
     date: '2026-02-08',
@@ -1551,6 +1553,7 @@ export const races: TrailRace[] = [
     city: 'Matadepera',
     province: 'Barcelona',
     websiteUrl: 'https://www.cursamontrodon.cat/',
+    email: 'cursesdemuntanya@uem.cat'
   },
   {
     date: '2026-02-08',
@@ -1561,6 +1564,7 @@ export const races: TrailRace[] = [
     city: 'Sant Vicenç dels Horts',
     province: 'Barcelona',
     websiteUrl: 'https://sendersdecancosta.com/',
+    email: 'cesantvi@gmail.com'
   },
   {
     date: '2026-02-08',
@@ -1571,6 +1575,7 @@ export const races: TrailRace[] = [
     city: 'Sant Vicenç dels Horts',
     province: 'Barcelona',
     websiteUrl: 'https://sendersdecancosta.com/',
+    email: 'cesantvi@gmail.com'
   },
   {
     date: '2026-02-08',
@@ -1624,6 +1629,7 @@ export const races: TrailRace[] = [
       '/assets/races/sponsors/universitat-blanquerna.avif',
       '/assets/races/sponsors/rios-running.avif',
     ],
+    email: 'comunicacion@sportevents360.com'
   },
   {
     date: '2026-02-08',
@@ -1677,6 +1683,7 @@ export const races: TrailRace[] = [
       '/assets/races/sponsors/universitat-blanquerna.avif',
       '/assets/races/sponsors/rios-running.avif',
     ],
+    email: 'comunicacion@sportevents360.com'
   },
   {
     date: '2026-02-08',
@@ -1730,6 +1737,7 @@ export const races: TrailRace[] = [
       '/assets/races/sponsors/universitat-blanquerna.avif',
       '/assets/races/sponsors/rios-running.avif',
     ],
+    email: 'comunicacion@sportevents360.com'
   },
   {
     date: '2026-02-08',
@@ -1789,6 +1797,7 @@ export const races: TrailRace[] = [
       '/assets/races/sponsors/universitat-blanquerna.avif',
       '/assets/races/sponsors/rios-running.avif',
     ],
+    email: 'comunicacion@sportevents360.com'
   },
   {
     date: '2026-02-22',
@@ -1799,6 +1808,7 @@ export const races: TrailRace[] = [
     city: 'Sant Andreu de la Barca',
     province: 'Barcelona',
     websiteUrl: 'https://www.sismicarace.es/',
+    email: 'sismicarace@gmail.com'
   },
   {
     date: '2026-02-22',
@@ -1809,6 +1819,7 @@ export const races: TrailRace[] = [
     city: 'Sant Andreu de la Barca',
     province: 'Barcelona',
     websiteUrl: 'https://www.sismicarace.es/',
+    email: 'sismicarace@gmail.com'
   },
   {
     date: '2026-02-28',
@@ -1819,6 +1830,7 @@ export const races: TrailRace[] = [
     city: 'Sitges',
     province: 'Barcelona',
     websiteUrl: 'https://sitgesrocktrail.cat/',
+    email: 'info@sitgesrocktrail.cat'
   },
   {
     date: '2026-02-28',
@@ -1829,6 +1841,7 @@ export const races: TrailRace[] = [
     city: 'Sitges',
     province: 'Barcelona',
     websiteUrl: 'https://sitgesrocktrail.cat/',
+    email: 'info@sitgesrocktrail.cat'
   },
   {
     date: '2026-03-01',
@@ -1838,7 +1851,8 @@ export const races: TrailRace[] = [
     priceEur: 34,
     city: 'Llavaneres',
     province: 'Barcelona',
-    websiteUrl: 'https://traildelsenglar.com/',
+    websiteUrl: 'https://traildelsenglar.com/cabrils/',
+    email: 'xavi@xeventsports.com'
   },
   {
     date: '2026-03-01',
@@ -1848,7 +1862,8 @@ export const races: TrailRace[] = [
     priceEur: 28,
     city: 'Llavaneres',
     province: 'Barcelona',
-    websiteUrl: 'https://traildelsenglar.com/',
+    websiteUrl: 'https://traildelsenglar.com/cabrils/',
+    email: 'xavi@xeventsports.com'
   },
   {
     date: '2026-03-01',
@@ -1858,7 +1873,8 @@ export const races: TrailRace[] = [
     priceEur: 25,
     city: 'Llavaneres',
     province: 'Barcelona',
-    websiteUrl: 'https://traildelsenglar.com/',
+    websiteUrl: 'https://traildelsenglar.com/cabrils/',
+    email: 'xavi@xeventsports.com'
   },
   {
     date: '2026-03-01',
@@ -1869,6 +1885,7 @@ export const races: TrailRace[] = [
     city: "Santa Maria d'Oló",
     province: 'Barcelona',
     websiteUrl: 'https://saltamarrades.cat/',
+    email: 'centreexcursionistaolo@gmail.com'
   },
   {
     date: '2026-03-01',
@@ -1879,6 +1896,7 @@ export const races: TrailRace[] = [
     city: "Santa Maria d'Oló",
     province: 'Barcelona',
     websiteUrl: 'https://saltamarrades.cat/',
+    email: 'centreexcursionistaolo@gmail.com'
   },
   {
     date: '2026-03-01',
@@ -1889,6 +1907,7 @@ export const races: TrailRace[] = [
     city: "Santa Maria d'Oló",
     province: 'Barcelona',
     websiteUrl: 'https://saltamarrades.cat/',
+    email: 'centreexcursionistaolo@gmail.com'
   },
   {
     date: '2026-03-08',
@@ -1939,6 +1958,7 @@ export const races: TrailRace[] = [
       '/assets/races/sponsors/bonarea.png',
       '/assets/races/sponsors/joma.png',
     ],
+    email: 'olitrailmontserrat@gmail.com'
   },
   {
     date: '2026-03-08',
@@ -1982,6 +2002,7 @@ export const races: TrailRace[] = [
         url: 'https://xipgroc.cat/ca/curses/OlesaOTM_2024/11k/resultats',
       },
     ],
+    email: 'olitrailmontserrat@gmail.com'
   },
   {
     date: '2026-03-22',
@@ -1992,6 +2013,7 @@ export const races: TrailRace[] = [
     city: 'Puig-reig',
     province: 'Barcelona',
     websiteUrl: 'https://pugoregistrail.cat/',
+    email: 'info@pugoregistrail.cat'
   },
   {
     date: '2026-03-22',
@@ -2002,6 +2024,7 @@ export const races: TrailRace[] = [
     city: 'Puig-reig',
     province: 'Barcelona',
     websiteUrl: 'https://pugoregistrail.cat/',
+    email: 'info@pugoregistrail.cat'
   },
   {
     date: '2026-03-22',
@@ -2012,6 +2035,7 @@ export const races: TrailRace[] = [
     city: 'Hostalets de Balenyà',
     province: 'Barcelona',
     websiteUrl: 'https://www.cursadelrocgros.com/',
+    email: 'info@cursadelrocgros.com'
   },
   {
     date: '2026-03-22',
@@ -2022,6 +2046,7 @@ export const races: TrailRace[] = [
     city: 'Hostalets de Balenyà',
     province: 'Barcelona',
     websiteUrl: 'https://www.cursadelrocgros.com/',
+    email: 'info@cursadelrocgros.com'
   },
   {
     date: '2026-03-22',
@@ -2032,6 +2057,7 @@ export const races: TrailRace[] = [
     city: 'Vilanova i la Geltrú',
     province: 'Barcelona',
     websiteUrl: 'https://www.cursadelscolls.cat/',
+    email: 'cursadelscolls@deporunners.cat'
   },
   {
     date: '2026-03-22',
@@ -2042,6 +2068,7 @@ export const races: TrailRace[] = [
     city: 'Vilanova i la Geltrú',
     province: 'Barcelona',
     websiteUrl: 'https://www.cursadelscolls.cat/',
+    email: 'cursadelscolls@deporunners.cat'
   },
   {
     date: '2026-03-29',
@@ -2052,6 +2079,7 @@ export const races: TrailRace[] = [
     city: 'Cànoves i Samalús',
     province: 'Barcelona',
     websiteUrl: 'https://www.traildevallforners.es/',
+    email: 'traildevallforners@gmail.com'
   },
   {
     date: '2026-03-29',
@@ -2062,36 +2090,40 @@ export const races: TrailRace[] = [
     city: 'Cànoves i Samalús',
     province: 'Barcelona',
     websiteUrl: 'https://www.traildevallforners.es/',
+    email: 'traildevallforners@gmail.com'
   },
   {
     date: '2026-03-29',
     name: 'Bacanard Trail 38K',
     distanceKm: 38,
     elevationGainM: 1900,
-    priceEur: null,
+    priceEur: 40,
     city: 'Begur',
     province: 'Girona',
-    websiteUrl: null,
+    websiteUrl: 'https://www.bacanardtrail.com/',
+    email: 'bacanardtrail@gmail.com'
   },
   {
     date: '2026-03-29',
     name: 'Bacanard Trail 20K',
     distanceKm: 20,
-    elevationGainM: 1300,
-    priceEur: null,
+    elevationGainM: 1000,
+    priceEur: 25,
     city: 'Begur',
     province: 'Girona',
-    websiteUrl: null,
+    websiteUrl: 'https://www.bacanardtrail.com/',
+    email: 'bacanardtrail@gmail.com'
   },
   {
     date: '2026-03-29',
-    name: 'Bacanard Trail 13K',
-    distanceKm: 13,
-    elevationGainM: 650,
-    priceEur: null,
+    name: 'Bacanard Trail 13.5K',
+    distanceKm: 13.5,
+    elevationGainM: 600,
+    priceEur: 15,
     city: 'Begur',
     province: 'Girona',
-    websiteUrl: null,
+    websiteUrl: 'https://www.bacanardtrail.com/',
+    email: 'bacanardtrail@gmail.com'
   },
   {
     date: '2026-03-29',
@@ -2102,6 +2134,7 @@ export const races: TrailRace[] = [
     city: 'Font-rubí',
     province: 'Barcelona',
     websiteUrl: 'https://encantadadefontrubi.blogspot.com/',
+    email: 'encantadadefontrubi@gmail.com'
   },
   {
     date: '2026-03-29',
@@ -2112,6 +2145,7 @@ export const races: TrailRace[] = [
     city: 'Font-rubí',
     province: 'Barcelona',
     websiteUrl: 'https://encantadadefontrubi.blogspot.com/',
+    email: 'encantadadefontrubi@gmail.com'
   },
   {
     date: '2026-04-04',
@@ -2122,6 +2156,7 @@ export const races: TrailRace[] = [
     city: 'Peramola',
     province: 'Lleida',
     websiteUrl: 'http://voltaperamola.cat/',
+    email: 'voltaperamola@gmail.com'
   },
   {
     date: '2026-04-04',
@@ -2132,6 +2167,7 @@ export const races: TrailRace[] = [
     city: 'Peramola',
     province: 'Lleida',
     websiteUrl: 'http://voltaperamola.cat/',
+    email: 'voltaperamola@gmail.com'
   },
   {
     date: '2026-04-04',
@@ -2142,6 +2178,7 @@ export const races: TrailRace[] = [
     city: 'Peramola',
     province: 'Lleida',
     websiteUrl: 'http://voltaperamola.cat/',
+    email: 'voltaperamola@gmail.com'
   },
   {
     date: '2026-04-04',
@@ -2152,6 +2189,7 @@ export const races: TrailRace[] = [
     city: 'Mas de Barberans',
     province: 'Tarragona',
     websiteUrl: 'https://www.cursadelairosa.cat/',
+    email: 'organitzacio@cursadelairosa.cat'
   },
   {
     date: '2026-04-04',
@@ -2162,6 +2200,7 @@ export const races: TrailRace[] = [
     city: 'Mas de Barberans',
     province: 'Tarragona',
     websiteUrl: 'https://www.cursadelairosa.cat/',
+    email: 'organitzacio@cursadelairosa.cat'
   },
   {
     date: '2026-04-12',
@@ -2172,6 +2211,7 @@ export const races: TrailRace[] = [
     city: 'Torroella de Montgrí',
     province: 'Girona',
     websiteUrl: 'https://www.trailmontgri.com/',
+    email: 'trailmontgri@gmail.com'
   },
   {
     date: '2026-04-12',
@@ -2182,6 +2222,7 @@ export const races: TrailRace[] = [
     city: 'Torroella de Montgrí',
     province: 'Girona',
     websiteUrl: 'https://www.trailmontgri.com/',
+    email: 'trailmontgri@gmail.com'
   },
   {
     date: '2026-04-12',
@@ -2192,6 +2233,7 @@ export const races: TrailRace[] = [
     city: 'Torroella de Montgrí',
     province: 'Girona',
     websiteUrl: 'https://www.trailmontgri.com/',
+    email: 'trailmontgri@gmail.com'
   },
   {
     date: '2026-04-11',
@@ -2202,6 +2244,7 @@ export const races: TrailRace[] = [
     city: 'Viladrau',
     province: 'Barcelona',
     websiteUrl: 'https://www.ultramontseny.com/',
+    email: 'ultramontseny@gmail.com'
   },
   {
     date: '2026-04-11',
@@ -2209,9 +2252,10 @@ export const races: TrailRace[] = [
     distanceKm: 34,
     elevationGainM: 2407,
     priceEur: null,
-    city: 'Montseny',
+    city: 'Viladrau',
     province: 'Barcelona',
     websiteUrl: 'https://www.ultramontseny.com/',
+    email: 'ultramontseny@gmail.com'
   },
   {
     date: '2026-04-11',
@@ -2222,6 +2266,7 @@ export const races: TrailRace[] = [
     city: 'Àger',
     province: 'Lleida',
     websiteUrl: 'https://montsecultratrail.com/',
+    email: 'montsecultratrail@gmail.com'
   },
   {
     date: '2026-04-11',
@@ -2232,6 +2277,7 @@ export const races: TrailRace[] = [
     city: 'Àger',
     province: 'Lleida',
     websiteUrl: 'https://montsecultratrail.com/',
+    email: 'montsecultratrail@gmail.com'
   },
   {
     date: '2026-04-11',
@@ -2242,6 +2288,7 @@ export const races: TrailRace[] = [
     city: 'Àger',
     province: 'Lleida',
     websiteUrl: 'https://montsecultratrail.com/',
+    email: 'montsecultratrail@gmail.com'
   },
   {
     date: '2026-04-12',
@@ -2252,6 +2299,7 @@ export const races: TrailRace[] = [
     city: 'Òrrius',
     province: 'Barcelona',
     websiteUrl: 'https://www.xtrailseriesrun.com/orrius',
+    email: 'comunicacion@sportevents360.com'
   },
   {
     date: '2026-04-12',
@@ -2262,6 +2310,7 @@ export const races: TrailRace[] = [
     city: 'Òrrius',
     province: 'Barcelona',
     websiteUrl: 'https://www.xtrailseriesrun.com/orrius',
+    email: 'comunicacion@sportevents360.com'
   },
   {
     date: '2026-04-12',
@@ -2272,6 +2321,7 @@ export const races: TrailRace[] = [
     city: 'Òrrius',
     province: 'Barcelona',
     websiteUrl: 'https://www.xtrailseriesrun.com/orrius',
+    email: 'comunicacion@sportevents360.com'
   },
   {
     date: '2026-04-12',
@@ -2282,6 +2332,7 @@ export const races: TrailRace[] = [
     city: 'Castellbisbal',
     province: 'Barcelona',
     websiteUrl: 'https://www.mindundisteam.com/cursa-muntanya/',
+    email: 'info@mindundisteam.com'
   },
   {
     date: '2026-04-12',
@@ -2292,6 +2343,7 @@ export const races: TrailRace[] = [
     city: 'Castellbisbal',
     province: 'Barcelona',
     websiteUrl: 'https://www.mindundisteam.com/cursa-muntanya/',
+    email: 'info@mindundisteam.com'
   },
   {
     date: '2026-04-18',
@@ -2302,6 +2354,7 @@ export const races: TrailRace[] = [
     city: 'Sant Feliu de Codines',
     province: 'Barcelona',
     websiteUrl: 'https://www.oncodinestrail.cat/',
+    email: 'info@oncodinestrail.cat'
   },
   {
     date: '2026-04-18',
@@ -2312,6 +2365,7 @@ export const races: TrailRace[] = [
     city: 'Sant Boi de Llobregat',
     province: 'Barcelona',
     websiteUrl: 'https://rocanegra.cat/',
+    email: 'cursa.roca.negra@gmail.com'
   },
   {
     date: '2026-04-18',
@@ -2322,6 +2376,7 @@ export const races: TrailRace[] = [
     city: 'Sant Boi de Llobregat',
     province: 'Barcelona',
     websiteUrl: 'https://rocanegra.cat/',
+    email: 'cursa.roca.negra@gmail.com'
   },
   {
     date: '2026-04-18',
@@ -2332,6 +2387,7 @@ export const races: TrailRace[] = [
     city: 'Torelló',
     province: 'Barcelona',
     websiteUrl: 'https://www.matxos.cat/',
+    email: 'centreexcursionistatorello@gmail.com'
   },
   {
     date: '2026-04-18',
@@ -2343,6 +2399,7 @@ export const races: TrailRace[] = [
     province: 'Tarragona',
     websiteUrl:
       'https://www.naturetime.es/ultra-trail-muntanyes-costa-daurada/',
+    email: 'joan@naturetime.es'
   },
   {
     date: '2026-04-18',
@@ -2354,6 +2411,7 @@ export const races: TrailRace[] = [
     province: 'Tarragona',
     websiteUrl:
       'https://www.naturetime.es/ultra-trail-muntanyes-costa-daurada/',
+    email: 'joan@naturetime.es'
   },
   {
     date: '2026-04-18',
@@ -2365,6 +2423,7 @@ export const races: TrailRace[] = [
     province: 'Tarragona',
     websiteUrl:
       'https://www.naturetime.es/ultra-trail-muntanyes-costa-daurada/',
+    email: 'joan@naturetime.es'
   },
   {
     date: '2026-04-18',
@@ -2376,6 +2435,7 @@ export const races: TrailRace[] = [
     province: 'Tarragona',
     websiteUrl:
       'https://www.naturetime.es/ultra-trail-muntanyes-costa-daurada/',
+    email: 'joan@naturetime.es'
   },
   {
     date: '2026-04-19',
@@ -2386,6 +2446,7 @@ export const races: TrailRace[] = [
     city: 'Vilassar de Dalt',
     province: 'Barcelona',
     websiteUrl: 'https://www.vilatrail.com/',
+    email: 'vilatrail@gmail.com'
   },
   {
     date: '2026-04-19',
@@ -2396,6 +2457,7 @@ export const races: TrailRace[] = [
     city: 'Vilassar de Dalt',
     province: 'Barcelona',
     websiteUrl: 'https://www.vilatrail.com/',
+    email: 'vilatrail@gmail.com'
   },
   {
     date: '2026-04-19',
@@ -2406,6 +2468,7 @@ export const races: TrailRace[] = [
     city: 'Torrelameu',
     province: 'Lleida',
     websiteUrl: 'https://cursadelanoria.weebly.com/',
+    email: 'info@cursadelanoria.cat'
   },
   {
     date: '2026-04-19',
@@ -2416,6 +2479,7 @@ export const races: TrailRace[] = [
     city: 'Torrelameu',
     province: 'Lleida',
     websiteUrl: 'https://cursadelanoria.weebly.com/',
+    email: 'info@cursadelanoria.cat'
   },
   {
     date: '2026-04-25',
@@ -2426,6 +2490,7 @@ export const races: TrailRace[] = [
     city: 'Ribes de Freser',
     province: 'Girona',
     websiteUrl: 'https://www.trailvallderibes.com/es/',
+    email: 'hola.trailvallderibes@gmail.com'
   },
   {
     date: '2026-04-25',
@@ -2436,6 +2501,7 @@ export const races: TrailRace[] = [
     city: 'Ribes de Freser',
     province: 'Girona',
     websiteUrl: 'https://www.trailvallderibes.com/es/',
+    email: 'hola.trailvallderibes@gmail.com'
   },
   {
     date: '2026-04-25',
@@ -2446,6 +2512,18 @@ export const races: TrailRace[] = [
     city: 'Ribes de Freser',
     province: 'Girona',
     websiteUrl: 'https://www.trailvallderibes.com/es/',
+    email: 'hola.trailvallderibes@gmail.com'
+  },
+  {
+    date: '2026-04-25',
+    name: 'Cronoescalada 3 Comarques Alpens 3.9K',
+    distanceKm: 3.9,
+    elevationGainM: 405,
+    priceEur: null,
+    city: 'Alpens',
+    province: 'Barcelona',
+    websiteUrl: 'https://cursa3comarques.com/',
+    email: 'contacte@cursa3comarques.com'
   },
   {
     date: '2026-04-26',
@@ -2456,6 +2534,7 @@ export const races: TrailRace[] = [
     city: 'Girona',
     province: 'Girona',
     websiteUrl: 'https://maratonviasverdes.com/es/girona',
+    email: 'club@statsport.es'
   },
   {
     date: '2026-04-26',
@@ -2466,6 +2545,7 @@ export const races: TrailRace[] = [
     city: 'Cassà de la Selva',
     province: 'Girona',
     websiteUrl: 'https://maratonviasverdes.com/es/girona',
+    email: 'club@statsport.es'
   },
   {
     date: '2026-04-26',
@@ -2476,6 +2556,7 @@ export const races: TrailRace[] = [
     city: 'Llagostera',
     province: 'Girona',
     websiteUrl: 'https://maratonviasverdes.com/es/girona',
+    email: 'club@statsport.es'
   },
   {
     date: '2026-04-26',
@@ -2486,6 +2567,7 @@ export const races: TrailRace[] = [
     city: "Santa Cristina d'Aro",
     province: 'Girona',
     websiteUrl: 'https://maratonviasverdes.com/es/girona',
+    email: 'club@statsport.es'
   },
   {
     date: '2026-04-26',
@@ -2496,6 +2578,7 @@ export const races: TrailRace[] = [
     city: 'La Pobla de Montornés',
     province: 'Barcelona',
     websiteUrl: 'https://trailpoblamontornes.webnode.cat/',
+    email: 'funsportsevents@gmail.com'
   },
   {
     date: '2026-04-26',
@@ -2506,6 +2589,7 @@ export const races: TrailRace[] = [
     city: 'La Pobla de Montornés',
     province: 'Barcelona',
     websiteUrl: 'https://trailpoblamontornes.webnode.cat/',
+    email: 'funsportsevents@gmail.com'
   },
   {
     date: '2026-04-26',
@@ -2516,6 +2600,7 @@ export const races: TrailRace[] = [
     city: 'Rubí',
     province: 'Barcelona',
     websiteUrl: 'https://cursamuntanyarubi.weebly.com/',
+    email: 'cer@rubicer.cat'
   },
   {
     date: '2026-04-26',
@@ -2526,6 +2611,7 @@ export const races: TrailRace[] = [
     city: 'Rubí',
     province: 'Barcelona',
     websiteUrl: 'https://cursamuntanyarubi.weebly.com/',
+    email: 'cer@rubicer.cat'
   },
   {
     date: '2026-04-26',
@@ -2536,6 +2622,7 @@ export const races: TrailRace[] = [
     city: 'Cabrils',
     province: 'Barcelona',
     websiteUrl: 'https://traildelsenglar.com/cabrils/',
+    email: 'xavi@xeventsports.com'
   },
   {
     date: '2026-04-26',
@@ -2546,6 +2633,7 @@ export const races: TrailRace[] = [
     city: 'Cabrils',
     province: 'Barcelona',
     websiteUrl: 'https://traildelsenglar.com/cabrils/',
+    email: 'xavi@xeventsports.com'
   },
   {
     date: '2026-04-26',
@@ -2556,6 +2644,29 @@ export const races: TrailRace[] = [
     city: 'Cabrils',
     province: 'Barcelona',
     websiteUrl: 'https://traildelsenglar.com/cabrils/',
+    email: 'xavi@xeventsports.com'
+  },
+  {
+    date: '2026-04-26',
+    name: 'Trail 3 Comarques Alpens 25K',
+    distanceKm: 25,
+    elevationGainM: 1200,
+    priceEur: null,
+    city: 'Alpens',
+    province: 'Barcelona',
+    websiteUrl: 'https://cursa3comarques.com/',
+    email: 'contacte@cursa3comarques.com'
+  },
+  {
+    date: '2026-04-26',
+    name: 'Trail 3 Comarques Alpens 12.5K',
+    distanceKm: 12.5,
+    elevationGainM: 500,
+    priceEur: null,
+    city: 'Alpens',
+    province: 'Barcelona',
+    websiteUrl: 'https://cursa3comarques.com/',
+    email: 'contacte@cursa3comarques.com'
   },
   {
     date: '2026-05-02',
@@ -2566,6 +2677,7 @@ export const races: TrailRace[] = [
     city: 'Paüls',
     province: 'Tarragona',
     websiteUrl: 'https://www.trencacims.com',
+    email: 'trencacimspauls@gmail.com'
   },
   {
     date: '2026-05-02',
@@ -2576,6 +2688,7 @@ export const races: TrailRace[] = [
     city: 'Paüls',
     province: 'Tarragona',
     websiteUrl: 'https://www.trencacims.com',
+    email: 'trencacimspauls@gmail.com'
   },
   {
     date: '2026-05-03',
@@ -2586,6 +2699,7 @@ export const races: TrailRace[] = [
     city: 'Paüls',
     province: 'Tarragona',
     websiteUrl: 'https://www.trencacims.com',
+    email: 'trencacimspauls@gmail.com'
   },
   {
     date: '2026-05-03',
@@ -2596,6 +2710,7 @@ export const races: TrailRace[] = [
     city: 'Paüls',
     province: 'Tarragona',
     websiteUrl: 'https://www.trencacims.com',
+    email: 'trencacimspauls@gmail.com'
   },
   {
     date: '2026-05-09',
@@ -2606,6 +2721,7 @@ export const races: TrailRace[] = [
     city: 'Berga',
     province: 'Barcelona',
     websiteUrl: 'https://www.lesclassiquesberga.com',
+    email: 'lesclassiquesberga@gmail.com'
   },
   {
     date: '2026-05-09',
@@ -2616,6 +2732,7 @@ export const races: TrailRace[] = [
     city: 'Berga',
     province: 'Barcelona',
     websiteUrl: 'https://www.lesclassiquesberga.com',
+    email: 'lesclassiquesberga@gmail.com'
   },
   {
     date: '2026-05-09',
@@ -2626,6 +2743,7 @@ export const races: TrailRace[] = [
     city: 'Berga',
     province: 'Barcelona',
     websiteUrl: 'https://www.lesclassiquesberga.com',
+    email: 'lesclassiquesberga@gmail.com'
   },
   {
     date: '2026-05-09',
@@ -2636,6 +2754,7 @@ export const races: TrailRace[] = [
     city: 'Soriguera',
     province: 'Lleida',
     websiteUrl: 'https://www.skyracepicdelorri.com',
+    email: 'skyracepicdelorri@gmail.com'
   },
   {
     date: '2026-05-09',
@@ -2646,6 +2765,7 @@ export const races: TrailRace[] = [
     city: 'Soriguera',
     province: 'Lleida',
     websiteUrl: 'https://www.skyracepicdelorri.com',
+    email: 'skyracepicdelorri@gmail.com'
   },
   {
     date: '2026-05-09',
@@ -2656,6 +2776,7 @@ export const races: TrailRace[] = [
     city: 'Soriguera',
     province: 'Lleida',
     websiteUrl: 'https://www.skyracepicdelorri.com',
+    email: 'skyracepicdelorri@gmail.com'
   },
   {
     date: '2026-05-10',
@@ -2666,6 +2787,7 @@ export const races: TrailRace[] = [
     city: 'Vallgorguina',
     province: 'Barcelona',
     websiteUrl: 'https://www.xtrailseriesrun.com',
+    email: 'comunicacion@sportevents360.com'
   },
   {
     date: '2026-05-10',
@@ -2676,6 +2798,7 @@ export const races: TrailRace[] = [
     city: 'Vallgorguina',
     province: 'Barcelona',
     websiteUrl: 'https://www.xtrailseriesrun.com',
+    email: 'comunicacion@sportevents360.com'
   },
   {
     date: '2026-05-10',
@@ -2686,6 +2809,7 @@ export const races: TrailRace[] = [
     city: 'Vallgorguina',
     province: 'Barcelona',
     websiteUrl: 'https://www.xtrailseriesrun.com',
+    email: 'comunicacion@sportevents360.com'
   },
   {
     date: '2026-05-10',
@@ -2696,6 +2820,7 @@ export const races: TrailRace[] = [
     city: 'Lloret de Mar',
     province: 'Girona',
     websiteUrl: 'https://www.lasansi.com/es/lloretdemartrail',
+    email: 'lasansi@lasansi.com'
   },
   {
     date: '2026-05-10',
@@ -2706,6 +2831,29 @@ export const races: TrailRace[] = [
     city: 'Lloret de Mar',
     province: 'Girona',
     websiteUrl: 'https://www.lasansi.com/es/lloretdemartrail',
+    email: 'lasansi@lasansi.com'
+  },
+  {
+    date: '2026-05-10',
+    name: "Trail L'Enxerinada 22K",
+    distanceKm: 22,
+    elevationGainM: 900,
+    priceEur: null,
+    city: 'Girona',
+    province: 'Girona',
+    websiteUrl: 'https://lenxerinada.cat/',
+    email: 'enxerinada@gmail.com'
+  },
+  {
+    date: '2026-05-10',
+    name: "Trail L'Enxerinada 12K",
+    distanceKm: 12,
+    elevationGainM: 450,
+    priceEur: null,
+    city: 'Girona',
+    province: 'Girona',
+    websiteUrl: 'https://lenxerinada.cat/',
+    email: 'enxerinada@gmail.com'
   },
   {
     date: '2026-05-17',
@@ -2715,7 +2863,8 @@ export const races: TrailRace[] = [
     priceEur: null,
     city: 'Sant Martí Sarroca',
     province: 'Barcelona',
-    websiteUrl: null,
+    websiteUrl: 'https://www.samuntatrailrace.cat/',
+    email: 'info@samuntatrailrace.cat'
   },
   {
     date: '2026-05-17',
@@ -2725,7 +2874,8 @@ export const races: TrailRace[] = [
     priceEur: null,
     city: 'Sant Martí Sarroca',
     province: 'Barcelona',
-    websiteUrl: null,
+    websiteUrl: 'https://www.samuntatrailrace.cat/',
+    email: 'info@samuntatrailrace.cat'
   },
   {
     date: '2026-05-24',
@@ -2736,6 +2886,7 @@ export const races: TrailRace[] = [
     city: 'Planoles',
     province: 'Girona',
     websiteUrl: 'https://www.bategalbac.com',
+    email: 'comunicacio@bategalbac.com'
   },
   {
     date: '2026-05-24',
@@ -2746,6 +2897,7 @@ export const races: TrailRace[] = [
     city: 'Planoles',
     province: 'Girona',
     websiteUrl: 'https://www.bategalbac.com',
+    email: 'comunicacio@bategalbac.com'
   },
   {
     date: '2026-05-24',
@@ -2756,6 +2908,7 @@ export const races: TrailRace[] = [
     city: 'Planoles',
     province: 'Girona',
     websiteUrl: 'https://www.bategalbac.com',
+    email: 'comunicacio@bategalbac.com'
   },
   {
     date: '2026-05-31',
@@ -2765,7 +2918,8 @@ export const races: TrailRace[] = [
     priceEur: null,
     city: 'Ripoll',
     province: 'Girona',
-    websiteUrl: null,
+    websiteUrl: 'https://stamandtrail.wixsite.com/my-site-1',
+    email: 'stamandtrail@gmail.com'
   },
   {
     date: '2026-05-31',
@@ -2775,7 +2929,8 @@ export const races: TrailRace[] = [
     priceEur: null,
     city: 'Ripoll',
     province: 'Girona',
-    websiteUrl: null,
+    websiteUrl: 'https://stamandtrail.wixsite.com/my-site-1',
+    email: 'stamandtrail@gmail.com'
   },
   {
     date: '2026-05-31',
@@ -2809,26 +2964,6 @@ export const races: TrailRace[] = [
   },
   {
     date: null,
-    name: "Trail L'Enxerinada 22K",
-    distanceKm: 22,
-    elevationGainM: 900,
-    priceEur: null,
-    city: 'Girona',
-    province: 'Girona',
-    websiteUrl: 'https://lenxerinada.cat/',
-  },
-  {
-    date: null,
-    name: "Trail L'Enxerinada 12K",
-    distanceKm: 12,
-    elevationGainM: 450,
-    priceEur: null,
-    city: 'Girona',
-    province: 'Girona',
-    websiteUrl: 'https://lenxerinada.cat/',
-  },
-  {
-    date: null,
     name: "L'Esgarrinxada 22K",
     distanceKm: 22,
     elevationGainM: 1000,
@@ -2845,26 +2980,6 @@ export const races: TrailRace[] = [
     priceEur: null,
     city: "Vilanova de l'Aguda",
     province: 'Lleida',
-    websiteUrl: null,
-  },
-  {
-    date: null,
-    name: 'Trail 3 Comarques Alpens 24.5K',
-    distanceKm: 24.5,
-    elevationGainM: 1200,
-    priceEur: null,
-    city: 'Alpens',
-    province: 'Barcelona',
-    websiteUrl: null,
-  },
-  {
-    date: null,
-    name: 'Trail 3 Comarques Alpens 12.5K',
-    distanceKm: 12.5,
-    elevationGainM: 500,
-    priceEur: null,
-    city: 'Alpens',
-    province: 'Barcelona',
     websiteUrl: null,
   },
   {
@@ -2916,6 +3031,7 @@ export const races: TrailRace[] = [
     city: 'Catllar',
     province: 'Tarragona',
     websiteUrl: null,
+    email: 'funsportsevents@gmail.com'
   },
 
   {
