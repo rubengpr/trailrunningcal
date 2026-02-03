@@ -42,7 +42,7 @@ export default async function OrganizerPage({
   }
 
   return (
-    <div className='flex flex-row'>
+    <div className='flex flex-col md:flex-row'>
       <OrganizerSidebar />
       <div className='flex flex-col w-full p-6'>
         <div className='flex flex-row mb-10'>

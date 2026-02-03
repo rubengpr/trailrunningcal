@@ -258,6 +258,18 @@
         "title": "Nova cursa",
         "message": "Estem treballant perquè puguis publicar les teves curses automàticament. Estarà llest molt aviat!",
         "close": "Tancar"
+      },
+      "table": {
+        "title": "Tus curses",
+        "raceCount": "{count} curses",
+        "raceCountOne": "1 cursa",
+        "name": "Nom",
+        "date": "Data",
+        "distance": "Distància",
+        "elevation": "Desnivell",
+        "city": "Ciutat",
+        "price": "Preu",
+        "emptyState": "No tens curses registrades"
       }
     }
   }

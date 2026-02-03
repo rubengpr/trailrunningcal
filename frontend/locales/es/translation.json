@@ -255,6 +255,18 @@
         "title": "Nueva carrera",
         "message": "Estamos trabajando para que puedas publicar tus carreras automáticamente. ¡Estará listo muy pronto!",
         "close": "Cerrar"
+      },
+      "table": {
+        "title": "Tus carreras",
+        "raceCount": "{count} carreras",
+        "raceCountOne": "1 carrera",
+        "name": "Nombre",
+        "date": "Fecha",
+        "distance": "Distancia",
+        "elevation": "Desnivel",
+        "city": "Ciudad",
+        "price": "Precio",
+        "emptyState": "No tienes carreras registradas"
       }
     }
   }

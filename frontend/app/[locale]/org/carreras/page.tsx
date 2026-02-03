@@ -20,7 +20,7 @@ export default async function OrganizerRacesPage({
     }
 
     return (
-        <div className='flex flex-row'>
+        <div className='flex flex-col md:flex-row'>
             <OrganizerSidebar />
             <div className='flex flex-col w-full p-6'>
                 <OrganizerRacesContent />
