@@ -14,6 +14,7 @@ export interface TrailRace {
   city: string;
   province: string;
   websiteUrl: string | null;
+  email: string | null;
   isVerifiedOrganizer?: boolean; // Optional: true if organizer is verified
   raceDescriptionStart?: { es: string; ca: string } | null;
   raceDescriptionEnd?: { es: string; ca: string } | null;
