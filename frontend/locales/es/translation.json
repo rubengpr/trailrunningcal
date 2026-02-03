@@ -49,6 +49,17 @@
       "descriptionMobile": "Reclama el evento y conviértete en organizador verificado. Añade fotos, mapa y precios.",
       "benefits": "Los organizadores verificados pueden añadir datos adicionales como fotos, mapa y precios completos del evento.",
       "claimButton": "Reclamar"
+    },
+    "claimModal": {
+      "title": "Reclamar carrera",
+      "message": "Para reclamar esta carrera, envíanos un correo a info@trailrunningcal.com"
+    },
+    "claimConfirmation": {
+      "title": "Reclamar carrera",
+      "message": "Estás a punto de reclamar la propiedad de la carrera. Se enviará un email a info@trailrunningcal.com para revisar la propiedad. Una vez confirmado, podrás editar los datos y contenido de la carrera.",
+      "confirmButton": "Confirmar",
+      "cancelButton": "Cancelar",
+      "successMessage": "Carrera reclamada correctamente"
     }
   },
   "difficulty": {

@@ -16,6 +16,7 @@ import RaceServicesList from '@/components/race-services-list';
 import RaceResultsUrls from '@/components/race-results-urls';
 import Image from 'next/image';
 import Sponsors from '@/components/sponsors';
+import { RaceOrganizerClaimCard } from '@/components/race-organizer-claim-card';
 
 export async function generateStaticParams() {
   const params = locales.flatMap((locale) =>
@@ -258,38 +259,14 @@ export default async function RacePage({
             />
           )}
 
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center px-4 sm:px-6 py-4 border-2 border-gray-300 rounded-xl bg-gray-100 gap-4 sm:gap-0">
-          <div className="flex flex-row justify-start items-center gap-4">
-            <div className="flex flex-row w-16 h-16 sm:w-20 sm:h-20 justify-center items-center border-3 border-gray-300 rounded-full bg-gray-50 shrink-0">
-              <p className="text-2xl sm:text-3xl">🏁</p>
-            </div>
-            <div className="flex flex-col justify-start">
-              <h3 className="text-sm lg:text-lg font-semibold mb-1">
-                <span className="block sm:hidden">
-                  {tRace('organizerCard.titleMobile')}
-                </span>
-                <span className="hidden sm:block">
-                  {tRace('organizerCard.title')}
-                </span>
-              </h3>
-              <p className="text-xs sm:text-sm">
-                <span className="block sm:hidden">
-                  {tRace('organizerCard.descriptionMobile')}
-                </span>
-                <span className="hidden sm:block">
-                  {tRace('organizerCard.description')}
-                  <br />
-                  {tRace('organizerCard.benefits')}
-                </span>
-              </p>
-            </div>
-          </div>
-          <div className="flex flex-row justify-end items-center w-full sm:w-auto">
-            <button className="bg-gray-900 text-white px-4 py-2 rounded-md font-medium hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors cursor-pointer w-full sm:w-auto">
-              {tRace('organizerCard.claimButton')}
-            </button>
-          </div>
-        </div>
+        <RaceOrganizerClaimCard
+          title={tRace('organizerCard.title')}
+          titleMobile={tRace('organizerCard.titleMobile')}
+          description={tRace('organizerCard.description')}
+          descriptionMobile={tRace('organizerCard.descriptionMobile')}
+          benefits={tRace('organizerCard.benefits')}
+          claimButton={tRace('organizerCard.claimButton')}
+        />
       </div>
     </div>
   );

@@ -8,3 +8,4 @@ alwaysApply: true
 - Use UPPER_SNAKE_CASE for constants
 - Organize assets by type/purpose, use kebab-case naming
 - All internal URLs, paths, and links must be generated without trailing slashes
+- Accessibility ARIA attributes or references are not needed

@@ -49,6 +49,17 @@
       "descriptionMobile": "Reclama l'esdeveniment i converteix-te en organitzador verificat. Afegeix fotos, mapa i preus.",
       "benefits": "Els organitzadors verificats poden afegir dades addicionals com fotos, mapa i preus complets de l'esdeveniment.",
       "claimButton": "Reclamar"
+    },
+    "claimModal": {
+      "title": "Reclamar cursa",
+      "message": "Per reclamar aquesta cursa, envia'ns un correu a info@trailrunningcal.com"
+    },
+    "claimConfirmation": {
+      "title": "Reclamar cursa",
+      "message": "Estàs a punt de reclamar la propietat de la cursa. S'enviarà un correu a info@trailrunningcal.com per revisar la propietat. Un cop confirmat, podràs editar les dades i contingut de la cursa.",
+      "confirmButton": "Confirmar",
+      "cancelButton": "Cancel·lar",
+      "successMessage": "Cursa reclamada correctament"
     }
   },
   "difficulty": {
