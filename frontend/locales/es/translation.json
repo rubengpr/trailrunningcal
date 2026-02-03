@@ -266,7 +266,9 @@
         "elevation": "Desnivel",
         "city": "Ciudad",
         "price": "Precio",
-        "emptyState": "No tienes carreras registradas"
+        "emptyState": "No tienes carreras registradas",
+        "claimBannerBefore": "💡 Para ver tus carreras en la tabla, reclámalas desde el",
+        "claimBannerLink": "calendario principal de trailrunningcal"
       }
     }
   }

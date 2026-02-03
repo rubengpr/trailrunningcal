@@ -269,7 +269,9 @@
         "elevation": "Desnivell",
         "city": "Ciutat",
         "price": "Preu",
-        "emptyState": "No tens curses registrades"
+        "emptyState": "No tens curses registrades",
+        "claimBannerBefore": "💡 Per veure les teves curses a la taula, reclama-les des del",
+        "claimBannerLink": "calendari principal de trailrunningcal"
       }
     }
   }

@@ -12,98 +12,24 @@ import { generateRaceSlug } from '@/lib/race-utils';
 // Dummy data - will be replaced with real data from API
 const dummyRaces: TrailRace[] = [
     {
-        date: '2026-02-08',
-        name: 'Xtrail Series Run Mataró 21.5K',
-        distanceKm: 21.5,
-        elevationGainM: 870,
-        priceEur: [
-            { until: '2025-12-03', price: 28 },
-            { until: '2026-01-25', price: 32 },
-            { until: '2026-02-01', price: 36 },
-        ],
-        city: 'Mataró',
+        date: '2026-05-17',
+        name: 'Zegama-Aizkorri',
+        distanceKm: 42.195,
+        elevationGainM: 2736,
+        priceEur: 75,
+        city: 'Zegama',
+        province: 'Guipúzcoa',
+        websiteUrl: 'https://www.zegama-aizkorri.com/',
+    },
+    {
+        date: '2026-10-02',
+        name: 'Salomon Ultra Pirineu',
+        distanceKm: 100,
+        elevationGainM: 6600,
+        priceEur: 198,
+        city: 'Bagà',
         province: 'Barcelona',
-        websiteUrl: 'https://www.xtrailseriesrun.com/mataro',
-    },
-    {
-        date: '2026-02-08',
-        name: 'Xtrail Series Run Mataró 15.5K',
-        distanceKm: 15.5,
-        elevationGainM: 600,
-        priceEur: [
-            { until: '2025-12-03', price: 24 },
-            { until: '2026-01-25', price: 28 },
-            { until: '2026-02-01', price: 32 },
-        ],
-        city: 'Mataró',
-        province: 'Barcelona',
-        websiteUrl: 'https://www.xtrailseriesrun.com/mataro',
-    },
-    {
-        date: '2026-01-18',
-        name: 'Trail Cap de Creus 40K',
-        distanceKm: 40,
-        elevationGainM: 1800,
-        priceEur: 70,
-        city: 'Roses',
-        province: 'Girona',
-        websiteUrl: 'https://www.klassmark.com/trailcapdecreus/',
-    },
-    {
-        date: '2026-01-18',
-        name: 'Trail Cap de Creus 30K',
-        distanceKm: 30,
-        elevationGainM: 1300,
-        priceEur: 60,
-        city: 'Roses',
-        province: 'Girona',
-        websiteUrl: 'https://www.klassmark.com/trailcapdecreus/',
-    },
-    {
-        date: '2026-03-08',
-        name: 'Oli Trail 24K',
-        distanceKm: 24,
-        elevationGainM: 1200,
-        priceEur: [
-            { until: '2026-01-19', price: 25 },
-            { until: '2026-03-06', price: 29 },
-        ],
-        city: 'Olesa de Montserrat',
-        province: 'Barcelona',
-        websiteUrl: 'https://www.olitrail.com/',
-    },
-    {
-        date: '2026-03-08',
-        name: 'Oli Trail 13K',
-        distanceKm: 13,
-        elevationGainM: 600,
-        priceEur: [
-            { until: '2026-01-19', price: 14 },
-            { until: '2026-03-06', price: 17 },
-        ],
-        city: 'Olesa de Montserrat',
-        province: 'Barcelona',
-        websiteUrl: 'https://www.olitrail.com/',
-    },
-    {
-        date: '2025-11-02',
-        name: 'Vallalta Trail 15K',
-        distanceKm: 23,
-        elevationGainM: 1000,
-        priceEur: 25,
-        city: 'Sant Iscle de Vallalta',
-        province: 'Barcelona',
-        websiteUrl: 'https://vallaltatrail.com',
-    },
-    {
-        date: '2025-10-12',
-        name: 'Rural Trail 23.7K',
-        distanceKm: 23.7,
-        elevationGainM: 1000,
-        priceEur: 23,
-        city: 'Bigues i Riells del Fai',
-        province: 'Barcelona',
-        websiteUrl: 'https://ruraltrail.com',
+        websiteUrl: 'https://ultrapirineu.com/es/',
     },
 ];
 
@@ -115,8 +41,15 @@ export function OrganizerRacesContent() {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     // For now, use dummy data. Later this will come from API
-    const races = dummyRaces;
-    const hasRaces = races.length > 0;
+    const realRaces: TrailRace[] = [];
+    const hasRealRaces = realRaces.length > 0;
+    const races = hasRealRaces ? realRaces : dummyRaces;
+
+    // Get the base URL for the link (works in both localhost and production)
+    const baseUrl =
+        typeof window !== 'undefined'
+            ? window.location.origin
+            : 'https://trailrunningcal.com';
 
     const handleOpenModal = () => {
         setIsModalOpen(true);
@@ -142,47 +75,6 @@ export function OrganizerRacesContent() {
         return 'N/D';
     };
 
-    const formatElevation = (elevation: number | null): string => {
-        if (elevation === null) return 'N/D';
-        return `${elevation} m`;
-    };
-
-    const formatCity = (city: string, province: string, isMobile: boolean): string => {
-        if (isMobile) return city;
-        return `${city} (${province})`;
-    };
-
-    if (!hasRaces) {
-        return (
-            <>
-                <div className='flex flex-col items-center justify-center gap-6 min-h-[60vh]'>
-                    <p className='text-base text-gray-700 text-center'>
-                        {t('noRacesMessage')}{' '}
-                        <Link
-                            href={`/${locale}`}
-                            className='text-indigo-600 hover:text-indigo-800 underline font-medium'
-                        >
-                            {t('noRacesMessageLink')}
-                        </Link>
-                    </p>
-                    <button
-                        onClick={handleOpenModal}
-                        className='px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors cursor-pointer w-fit'
-                    >
-                        {t('newRaceButton')}
-                    </button>
-                </div>
-                <InfoModal
-                    isOpen={isModalOpen}
-                    onClose={handleCloseModal}
-                    title={tModal('title')}
-                    message={tModal('message')}
-                    closeButtonLabel={tModal('close')}
-                />
-            </>
-        );
-    }
-
     return (
         <>
             <div className='flex flex-col gap-8'>
@@ -193,8 +85,10 @@ export function OrganizerRacesContent() {
                             {tTable('title')}
                         </h1>
                         <p className='text-sm text-gray-500 mt-1'>
-                            {races.length === 1
-                                ? tTable('raceCountOne')
+                            {hasRealRaces
+                                ? races.length === 1
+                                    ? tTable('raceCountOne')
+                                    : tTable('raceCount', { count: races.length })
                                 : tTable('raceCount', { count: races.length })}
                         </p>
                     </div>
@@ -205,6 +99,21 @@ export function OrganizerRacesContent() {
                         {t('newRaceButton')}
                     </button>
                 </div>
+
+                {/* Banner for placeholder data */}
+                {!hasRealRaces && (
+                    <div className='bg-gray-50 border border-gray-200 rounded-lg p-4'>
+                        <p className='text-sm text-gray-700'>
+                            {tTable('claimBannerBefore')}{' '}
+                            <Link
+                                href={`${baseUrl}/${locale}`}
+                                className='text-gray-900 hover:text-gray-700 underline font-medium'
+                            >
+                                {tTable('claimBannerLink')}
+                            </Link>
+                        </p>
+                    </div>
+                )}
 
                 {/* Cards - Mobile only */}
                 <div className='w-full sm:hidden space-y-4'>
@@ -226,27 +135,25 @@ export function OrganizerRacesContent() {
                 </div>
 
                 {/* Table - Desktop only */}
-                <div className='hidden sm:block w-full bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden'>
+                <div className='hidden sm:block w-full bg-white rounded-2xl shadow-sm border border-gray-50 overflow-hidden'>
                     <div className='overflow-x-auto'>
                         <table className='w-full'>
                             <thead>
                                 <tr className='border-b border-gray-100'>
-                                    <th className='px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky left-0 bg-white z-10'>
+                                    <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider sticky left-0 bg-white z-10 ${!hasRealRaces ? 'text-gray-300' : 'text-gray-500'
+                                        }`}>
                                         {tTable('name')}
                                     </th>
-                                    <th className='px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                                    <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider ${!hasRealRaces ? 'text-gray-300' : 'text-gray-500'
+                                        }`}>
                                         {tTable('date')}
                                     </th>
-                                    <th className='px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                                    <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider ${!hasRealRaces ? 'text-gray-300' : 'text-gray-500'
+                                        }`}>
                                         {tTable('distance')}
                                     </th>
-                                    <th className='px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell'>
-                                        {tTable('elevation')}
-                                    </th>
-                                    <th className='px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell'>
-                                        {tTable('city')}
-                                    </th>
-                                    <th className='px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                                    <th className={`px-6 py-4 text-right text-xs font-medium uppercase tracking-wider ${!hasRealRaces ? 'text-gray-300' : 'text-gray-500'
+                                        }`}>
                                         {tTable('price')}
                                     </th>
                                 </tr>
@@ -255,35 +162,30 @@ export function OrganizerRacesContent() {
                                 {races.map((race, index) => (
                                     <tr
                                         key={index}
-                                        className='hover:bg-gray-50/50 transition-colors duration-150 group'
+                                        className={hasRealRaces ? 'hover:bg-gray-50/50 transition-colors duration-150 group' : ''}
                                     >
-                                        <td className='px-6 py-5 whitespace-nowrap sticky left-0 bg-white group-hover:bg-gray-50/50 z-10'>
-                                            <div className='text-sm font-medium text-gray-900'>
+                                        <td className={`px-6 py-5 whitespace-nowrap sticky left-0 bg-white z-10 ${hasRealRaces ? 'group-hover:bg-gray-50/50' : ''
+                                            }`}>
+                                            <div className={`text-sm font-medium ${!hasRealRaces ? 'text-gray-300' : 'text-gray-900'
+                                                }`}>
                                                 {race.name}
                                             </div>
                                         </td>
                                         <td className='px-6 py-5 whitespace-nowrap'>
-                                            <div className='text-sm text-gray-700'>
+                                            <div className={`text-sm ${!hasRealRaces ? 'text-gray-300' : 'text-gray-700'
+                                                }`}>
                                                 {formatDate(race.date)}
                                             </div>
                                         </td>
                                         <td className='px-6 py-5 whitespace-nowrap'>
-                                            <div className='text-sm text-gray-700'>
+                                            <div className={`text-sm ${!hasRealRaces ? 'text-gray-300' : 'text-gray-700'
+                                                }`}>
                                                 {race.distanceKm} km
                                             </div>
                                         </td>
-                                        <td className='px-6 py-5 whitespace-nowrap hidden md:table-cell'>
-                                            <div className='text-sm text-gray-700'>
-                                                {formatElevation(race.elevationGainM)}
-                                            </div>
-                                        </td>
-                                        <td className='px-6 py-5 whitespace-nowrap hidden lg:table-cell'>
-                                            <div className='text-sm text-gray-700'>
-                                                {formatCity(race.city, race.province, false)}
-                                            </div>
-                                        </td>
                                         <td className='px-6 py-5 whitespace-nowrap text-right'>
-                                            <div className='text-sm font-medium text-gray-900'>
+                                            <div className={`text-sm font-medium ${!hasRealRaces ? 'text-gray-300' : 'text-gray-900'
+                                                }`}>
                                                 {formatPrice(race.priceEur)}
                                             </div>
                                         </td>
