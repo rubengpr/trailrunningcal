@@ -80,7 +80,8 @@
     "calendar": "Calendari",
     "contact": "Contacte",
     "blog": "Blog",
-    "proposeRace": "Vols afegir una cursa?"
+    "proposeRace": "Vols afegir una cursa?",
+    "profile": "El meu perfil"
   },
   "landing": {
     "title": "Calendari curses Trail Running Catalunya",
@@ -199,7 +200,7 @@
   },
   "proposeRace": {
     "title": "Proposar una cursa",
-    "description": "Coneixes una cursa que no està al nostre calendari? Comparteix-la amb nosaltres.",
+    "description": "Vols afegir una cursa que no està al nostre calendari? Comparteix-la amb nosaltres.",
     "raceName": "Nom",
     "raceWebsite": "Web oficial",
     "submit": "Enviar cursa",

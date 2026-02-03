@@ -42,7 +42,7 @@ export default async function ContactPage({
   const t = await getTranslations({ locale });
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 text-gray-900 flex flex-col">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100 text-gray-900 flex flex-col">
       <Navbar />
 
       <main className="flex-1 mx-auto max-w-4xl px-4 py-20">
@@ -59,9 +59,9 @@ export default async function ContactPage({
           <div className="space-y-8">
             <div className="bg-white rounded-lg p-6 shadow-sm">
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-indigo-100 rounded-lg">
+                <div className="p-2 bg-gray-100 rounded-lg">
                   <svg
-                    className="h-6 w-6 text-indigo-600"
+                    className="h-6 w-6 text-gray-600"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -83,7 +83,7 @@ export default async function ContactPage({
               </p>
               <a
                 href={`mailto:${CONTACT_EMAIL}`}
-                className="text-indigo-600 hover:text-indigo-800 font-medium rounded-md px-1"
+                className="text-gray-700 hover:text-gray-900 font-medium rounded-md px-1"
               >
                 {CONTACT_EMAIL}
               </a>
@@ -91,9 +91,9 @@ export default async function ContactPage({
 
             <div className="bg-white rounded-lg p-6 shadow-sm">
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-indigo-100 rounded-lg">
+                <div className="p-2 bg-gray-100 rounded-lg">
                   <svg
-                    className="h-6 w-6 text-indigo-600"
+                    className="h-6 w-6 text-gray-600"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"

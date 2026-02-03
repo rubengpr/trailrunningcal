@@ -37,7 +37,7 @@ export default function LanguagePicker() {
         onClick={() => handleLanguageChange('es')}
         className={`px-2 py-1 rounded-sm sm:rounded-md cursor-pointer transition-colors ${
           locale === 'es'
-            ? 'bg-indigo-100 text-indigo-700'
+            ? 'bg-gray-100 text-gray-700'
             : 'text-gray-700 hover:bg-gray-50'
         }`}
       >
@@ -47,7 +47,7 @@ export default function LanguagePicker() {
         onClick={() => handleLanguageChange('ca')}
         className={`px-2 py-1 rounded-sm sm:rounded-md cursor-pointer transition-colors ${
           locale === 'ca'
-            ? 'bg-indigo-100 text-indigo-700'
+            ? 'bg-gray-100 text-gray-700'
             : 'text-gray-700 hover:bg-gray-50'
         }`}
       >

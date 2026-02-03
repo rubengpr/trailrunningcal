@@ -2,22 +2,52 @@
 
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import posthog from 'posthog-js';
+import { createClient } from '@/lib/supabase/client';
 
 export default function Navbar() {
   const t = useTranslations('navigation');
   const locale = useLocale();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const supabase = createClient();
+        const { data: { user }, error } = await supabase.auth.getUser();
+        if (error || !user) {
+          setIsAuthenticated(false);
+        } else {
+          setIsAuthenticated(true);
+        }
+      } catch {
+        setIsAuthenticated(false);
+      }
+    };
+
+    checkAuth();
+
+    // Listen for auth state changes
+    const supabase = createClient();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAuthenticated(!!session?.user);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const handleMenuClick = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
   return (
-    <header className="w-full bg-white border-b border-indigo-100/60 px-4 py-4 sm:px-6 lg:px-8">
+    <header className="w-full bg-white border-b border-gray-200 px-4 py-4 sm:px-6 lg:px-8">
       <div className="flex justify-between items-center">
         <Link
           href={`/${locale}`}
@@ -45,7 +75,7 @@ export default function Navbar() {
           <div className="hidden sm:flex px-2 py-1 flex-row items-center gap-4">
           <Link
               href={`/${locale}/blog`}
-              className="hover:text-indigo-600 transition-colors"
+              className="hover:text-gray-900 transition-colors"
               onClick={() =>
                 posthog.capture('navbar_link_clicked', {
                   link_text: 'blog',
@@ -58,7 +88,7 @@ export default function Navbar() {
             </Link>
             <Link
               href={`/${locale}/${locale === 'ca' ? 'contacte' : 'contacto'}`}
-              className="hover:text-indigo-600 transition-colors"
+              className="hover:text-gray-900 transition-colors"
               onClick={() =>
                 posthog.capture('navbar_link_clicked', {
                   link_text: 'contact',
@@ -71,6 +101,35 @@ export default function Navbar() {
             >
               {t('contact')}
             </Link>
+            {isAuthenticated && (
+              <Link
+                href={`/${locale}/org/perfil`}
+                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                aria-label={t('profile')}
+                onClick={() =>
+                  posthog.capture('navbar_link_clicked', {
+                    link_text: 'profile',
+                    link_href: `/${locale}/org/perfil`,
+                    locale: locale,
+                  })
+                }
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                  className="w-5 h-5 text-gray-700"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                  />
+                </svg>
+              </Link>
+            )}
           </div>
           <svg
             className="flex sm:hidden mx-auto h-5 w-5 text-gray-400 cursor-pointer"
@@ -130,6 +189,21 @@ export default function Navbar() {
               >
                 {t('blog')}
               </Link>
+              {isAuthenticated && (
+                <Link
+                  href={`/${locale}/org/perfil`}
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    posthog.capture('navbar_link_clicked', {
+                      link_text: 'profile',
+                      link_href: `/${locale}/org/perfil`,
+                      locale: locale,
+                    });
+                  }}
+                >
+                  {t('profile')}
+                </Link>
+              )}
             </div>
           )}
         </nav>

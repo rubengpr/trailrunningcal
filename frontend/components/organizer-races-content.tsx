@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
-import { InfoModal } from './new-race-modal';
+import { ProposeRaceModal } from './propose-race-modal';
 import TrailRaceCard from './trail-race-card';
 import type { TrailRace } from '@/types/race.types';
 import { formatDateToSpanish, formatDateToCatalan } from '@/lib/date-utils';
@@ -36,7 +36,6 @@ const dummyRaces: TrailRace[] = [
 export function OrganizerRacesContent() {
     const t = useTranslations('organizer.races');
     const tTable = useTranslations('organizer.races.table');
-    const tModal = useTranslations('organizer.races.infoModal');
     const locale = useLocale();
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -196,12 +195,9 @@ export function OrganizerRacesContent() {
                     </div>
                 </div>
             </div>
-            <InfoModal
+            <ProposeRaceModal
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
-                title={tModal('title')}
-                message={tModal('message')}
-                closeButtonLabel={tModal('close')}
             />
         </>
     );

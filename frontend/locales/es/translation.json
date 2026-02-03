@@ -80,7 +80,8 @@
     "calendar": "Calendario",
     "contact": "Contacto",
     "blog": "Blog",
-    "proposeRace": "¿Quieres añadir una carrera?"
+    "proposeRace": "¿Quieres añadir una carrera?",
+    "profile": "Mi perfil"
   },
   "landing": {
     "title": "Calendario carreras Trail Running Cataluña",
@@ -196,7 +197,7 @@
   },
   "proposeRace": {
     "title": "Proponer una carrera",
-    "description": "¿Conoces una carrera que no está en nuestro calendario? Compártela con nosotros.",
+    "description": "¿Quieres añadir una carrera que no está en nuestro calendario? Compártela con nosotros.",
     "raceName": "Nombre",
     "raceWebsite": "Web oficial",
     "submit": "Enviar carrera",

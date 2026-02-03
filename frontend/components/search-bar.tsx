@@ -60,12 +60,12 @@ export default function SearchBar({
           value={searchTerm}
           onChange={handleInputChange}
           placeholder={placeholder || t('placeholder')}
-          className="block w-full pl-10 sm:pl-12 pr-10 sm:pr-12 py-2.5 sm:py-2 bg-white border-2 border-indigo-300 rounded-xl text-sm sm:text-base placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+          className="block w-full pl-10 sm:pl-12 pr-10 sm:pr-12 py-2.5 sm:py-2 bg-white border-2 border-gray-300 rounded-xl text-sm sm:text-base placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-colors"
         />
         {searchTerm && (
           <button
             onClick={handleClear}
-            className="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded-md transition-colors"
+            className="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 rounded-md transition-colors"
           >
             <svg
               className="h-5 w-5 sm:h-6 sm:w-6"
