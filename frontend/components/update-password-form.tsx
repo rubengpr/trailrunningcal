@@ -15,7 +15,7 @@ export function UpdatePasswordForm({
   const authT = useTranslations('auth');
   const locale = useLocale();
   const router = useRouter();
-  
+
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
@@ -23,7 +23,7 @@ export function UpdatePasswordForm({
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  
+
 
   const validatePassword = (passwordValue: string): boolean => {
     if (!passwordValue.trim()) {
@@ -85,7 +85,7 @@ export function UpdatePasswordForm({
         }
       }
 
-      router.push(`/${locale}/organizador`);
+      router.push(`/${locale}/org/perfil`);
     } catch (error: unknown) {
       if (error instanceof Error) {
         setError(error.message);

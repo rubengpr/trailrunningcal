@@ -24,7 +24,7 @@ export function LoginForm({
 
   const validateEmail = (emailValue: string): boolean => {
     const trimmedEmail = emailValue.trim();
-    
+
     if (!trimmedEmail) {
       setEmailError(authT('errors.emailRequired'));
       return false;
@@ -54,8 +54,8 @@ export function LoginForm({
 
     // Domain part validations
     // 1. Edge cases (no leading/trailing dots or hyphens)
-    if (domainPart.startsWith('.') || domainPart.endsWith('.') || 
-        domainPart.startsWith('-') || domainPart.endsWith('-')) {
+    if (domainPart.startsWith('.') || domainPart.endsWith('.') ||
+      domainPart.startsWith('-') || domainPart.endsWith('-')) {
       setEmailError(authT('errors.emailInvalid'));
       return false;
     }
@@ -88,10 +88,10 @@ export function LoginForm({
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    
+
     const isEmailValid = validateEmail(email);
     const isPasswordValid = validatePassword(password);
-    
+
     if (!isEmailValid || !isPasswordValid) {
       return;
     }
@@ -105,18 +105,18 @@ export function LoginForm({
         password,
       });
       if (error) throw error;
-      router.push(`/${locale}/organizador`);
+      router.push(`/${locale}/org/perfil`);
     } catch (error: unknown) {
       if (error instanceof Error) {
         // Check for invalid credentials error
         if (error.message.includes('Invalid login credentials') || error.message.includes('Email not confirmed')) {
           setError(t('errors.invalidCredentials'));
+        } else {
+          setError(error.message);
+        }
       } else {
-        setError(error.message);
+        setError(authT('errors.general'));
       }
-    } else {
-      setError(authT('errors.general'));
-    }
     } finally {
       setIsLoading(false);
     }

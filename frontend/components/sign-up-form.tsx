@@ -13,7 +13,7 @@ export function SignUpForm({
   clearErrorCookie,
   className,
   ...props
-}: React.ComponentPropsWithoutRef<'div'> & { 
+}: React.ComponentPropsWithoutRef<'div'> & {
   initialError?: string | null;
   clearErrorCookie?: () => Promise<void>;
 }) {
@@ -37,10 +37,10 @@ export function SignUpForm({
       clearErrorCookie();
     }
   }, [initialError, authT, clearErrorCookie]);
-  
+
   const validateEmail = (emailValue: string): boolean => {
     const trimmedEmail = emailValue.trim();
-    
+
     if (!trimmedEmail) {
       setEmailError(authT('errors.emailRequired'));
       return false;
@@ -70,8 +70,8 @@ export function SignUpForm({
 
     // Domain part validations
     // 1. Edge cases (no leading/trailing dots or hyphens)
-    if (domainPart.startsWith('.') || domainPart.endsWith('.') || 
-        domainPart.startsWith('-') || domainPart.endsWith('-')) {
+    if (domainPart.startsWith('.') || domainPart.endsWith('.') ||
+      domainPart.startsWith('-') || domainPart.endsWith('-')) {
       setEmailError(authT('errors.emailInvalid'));
       return false;
     }
@@ -123,7 +123,7 @@ export function SignUpForm({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/${locale}/organizador`,
+          emailRedirectTo: `${window.location.origin}/${locale}/org/perfil`,
         },
       });
       if (error) throw error;

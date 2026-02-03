@@ -246,6 +246,16 @@
       "errors": {
         "general": "Algo salió mal al guardar los cambios. Por favor, intenta de nuevo."
       }
+    },
+    "races": {
+      "noRacesMessage": "Todavía no tienes ninguna carrera reclamada. Encuentra y reclama tu carrera en",
+      "noRacesMessageLink": "trailrunningcal.com",
+      "newRaceButton": "Nueva carrera",
+      "infoModal": {
+        "title": "Nueva carrera",
+        "message": "Estamos trabajando para que puedas publicar tus carreras automáticamente. ¡Estará listo muy pronto!",
+        "close": "Cerrar"
+      }
     }
   }
 }

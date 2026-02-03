@@ -249,6 +249,16 @@
       "errors": {
         "general": "Alguna cosa ha anat malament en desar els canvis. Si us plau, torna-ho a intentar."
       }
+    },
+    "races": {
+      "noRacesMessage": "Encara no tens cap cursa reclamada. Troba i reclama la teva cursa a",
+      "noRacesMessageLink": "trailrunningcal.com",
+      "newRaceButton": "Nova cursa",
+      "infoModal": {
+        "title": "Nova cursa",
+        "message": "Estem treballant perquè puguis publicar les teves curses automàticament. Estarà llest molt aviat!",
+        "close": "Tancar"
+      }
     }
   }
 }
