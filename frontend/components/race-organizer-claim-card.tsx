@@ -14,6 +14,7 @@ interface RaceOrganizerClaimCardProps {
     descriptionMobile: string;
     benefits: string;
     claimButton: string;
+    raceName: string;
 }
 
 export function RaceOrganizerClaimCard({
@@ -23,10 +24,12 @@ export function RaceOrganizerClaimCard({
     descriptionMobile,
     benefits,
     claimButton,
+    raceName,
 }: RaceOrganizerClaimCardProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
     const [user, setUser] = useState<{ id: string } | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const t = useTranslations('race.claimConfirmation');
 
     useEffect(() => {
@@ -55,9 +58,40 @@ export function RaceOrganizerClaimCard({
         }
     };
 
-    const handleConfirm = () => {
-        toast.success(t('successMessage'));
-        setIsConfirmationModalOpen(false);
+    const handleConfirm = async () => {
+        if (!raceName) {
+            toast.error('Race name is required');
+            return;
+        }
+
+        setIsSubmitting(true);
+        try {
+            const response = await fetch('/api/claim-organizer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ raceName }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to send claim request');
+            }
+
+            toast.success(t('successMessage'));
+            setIsConfirmationModalOpen(false);
+        } catch (error) {
+            console.error('Error claiming organizer:', error);
+            toast.error(
+                error instanceof Error
+                    ? error.message
+                    : 'Failed to send claim request. Please try again later.'
+            );
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -97,12 +131,13 @@ export function RaceOrganizerClaimCard({
             />
             <ConfirmationModal
                 isOpen={isConfirmationModalOpen}
-                onClose={() => setIsConfirmationModalOpen(false)}
+                onClose={() => !isSubmitting && setIsConfirmationModalOpen(false)}
                 onConfirm={handleConfirm}
                 title={t('title')}
                 message={t('message')}
-                confirmButtonText={t('confirmButton')}
+                confirmButtonText={isSubmitting ? 'Enviando...' : t('confirmButton')}
                 cancelButtonText={t('cancelButton')}
+                isSubmitting={isSubmitting}
             />
         </>
     );

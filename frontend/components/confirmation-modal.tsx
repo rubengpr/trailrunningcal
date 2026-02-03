@@ -8,6 +8,7 @@ interface ConfirmationModalProps {
     message: string;
     confirmButtonText: string;
     cancelButtonText: string;
+    isSubmitting?: boolean;
 }
 
 export function ConfirmationModal({
@@ -18,6 +19,7 @@ export function ConfirmationModal({
     message,
     confirmButtonText,
     cancelButtonText,
+    isSubmitting = false,
 }: ConfirmationModalProps) {
     if (!isOpen) return null;
 
@@ -68,13 +70,15 @@ export function ConfirmationModal({
                     <div className="flex flex-row justify-end gap-3">
                         <button
                             onClick={onClose}
-                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors cursor-pointer"
+                            disabled={isSubmitting}
+                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {cancelButtonText}
                         </button>
                         <button
                             onClick={handleConfirm}
-                            className="px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors cursor-pointer"
+                            disabled={isSubmitting}
+                            className="px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {confirmButtonText}
                         </button>

@@ -266,6 +266,7 @@ export default async function RacePage({
           descriptionMobile={tRace('organizerCard.descriptionMobile')}
           benefits={tRace('organizerCard.benefits')}
           claimButton={tRace('organizerCard.claimButton')}
+          raceName={raceData.name}
         />
       </div>
     </div>
