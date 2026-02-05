@@ -64,7 +64,7 @@ export function OrganizerSidebar() {
         },
         {
             href: `/${locale}/org/carreras`,
-            label: 'Carreras',
+            label: locale === 'ca' ? 'Curses' : 'Carreras',
             icon: (
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
