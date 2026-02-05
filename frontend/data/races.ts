@@ -479,7 +479,7 @@ export const races: TrailRace[] = [
     priceEur: null,
     city: 'Taradell',
     province: 'Barcelona',
-    websiteUrl: 'https://www.innovitsport.com',
+    websiteUrl: 'https://www.innovitsport.com/esdeveniments/trail-tocasons/',
   },
   {
     date: '2025-11-09',

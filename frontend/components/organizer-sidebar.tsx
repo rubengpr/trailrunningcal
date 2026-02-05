@@ -82,6 +82,26 @@ export function OrganizerSidebar() {
                 </svg>
             ),
         },
+        {
+            href: `/${locale}/org/sponsors`,
+            label: 'Sponsors',
+            icon: (
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="w-5 h-5"
+                >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.847-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.847a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.847.813a4.5 4.5 0 0 0-3.09 3.09ZM18 8.25l-.32 1.123a3.375 3.375 0 0 1-2.307 2.307L14.25 12l1.123.32a3.375 3.375 0 0 1 2.307 2.307L18 15.75l.32-1.123a3.375 3.375 0 0 1 2.307-2.307L21.75 12l-1.123-.32a3.375 3.375 0 0 1-2.307-2.307L18 8.25Z"
+                    />
+                </svg>
+            ),
+        },
     ];
 
     return (

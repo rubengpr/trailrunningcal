@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
 import { ProposeRaceModal } from './propose-race-modal';
+import { InfoBanner } from './info-banner';
 import TrailRaceCard from './trail-race-card';
 import type { TrailRace } from '@/types/race.types';
 import { formatDateToSpanish, formatDateToCatalan } from '@/lib/date-utils';
@@ -101,17 +102,15 @@ export function OrganizerRacesContent() {
 
                 {/* Banner for placeholder data */}
                 {!hasRealRaces && (
-                    <div className='bg-gray-50 border border-gray-200 rounded-lg p-4'>
-                        <p className='text-sm text-gray-700'>
-                            {tTable('claimBannerBefore')}{' '}
-                            <Link
-                                href={`${baseUrl}/${locale}`}
-                                className='text-gray-900 hover:text-gray-700 underline font-medium'
-                            >
-                                {tTable('claimBannerLink')}
-                            </Link>
-                        </p>
-                    </div>
+                    <InfoBanner>
+                        {tTable('claimBannerBefore')}{' '}
+                        <Link
+                            href={`${baseUrl}/${locale}`}
+                            className='text-gray-900 hover:text-gray-700 underline font-medium'
+                        >
+                            {tTable('claimBannerLink')}
+                        </Link>
+                    </InfoBanner>
                 )}
 
                 {/* Cards - Mobile only */}

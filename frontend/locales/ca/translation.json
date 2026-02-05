@@ -274,6 +274,10 @@
         "claimBannerBefore": "💡 Per veure les teves curses a la taula, reclama-les des del",
         "claimBannerLink": "calendari principal de trailrunningcal"
       }
+    },
+    "sponsors": {
+      "description": "Descobreix marques que donen suport al trail running i als esdeveniments de muntanya.",
+      "bannerNoteText": "💡 Tots els sponsors llistats han patrocinat, com a mínim, una cursa de trail running del nostre calendari."
     }
   }
 }
