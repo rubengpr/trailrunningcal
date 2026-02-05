@@ -10,4 +10,5 @@ alwaysApply: true
 - All internal URLs, paths, and links must be generated without trailing slashes
 - Accessibility ARIA attributes or references are not needed
 - NEVER hardcode user-facing strings. Always define all text strings in translation files
-
+- Never use native error messages for inputs
+- Use Supabase query builder methods (from, select, insert, update, delete) for database operations
