@@ -9,3 +9,5 @@ alwaysApply: true
 - Organize assets by type/purpose, use kebab-case naming
 - All internal URLs, paths, and links must be generated without trailing slashes
 - Accessibility ARIA attributes or references are not needed
+- NEVER hardcode user-facing strings. Always define all text strings in translation files
+
