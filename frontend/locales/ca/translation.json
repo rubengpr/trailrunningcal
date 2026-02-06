@@ -273,6 +273,38 @@
         "emptyState": "No tens curses registrades",
         "claimBannerBefore": "💡 Per veure les teves curses a la taula, reclama-les des del",
         "claimBannerLink": "calendari principal de trailrunningcal"
+      },
+      "form": {
+        "title": "Nova cursa",
+        "editTitle": "Editar cursa",
+        "date": "Data",
+        "name": "Nom",
+        "distanceKm": "Distància (km)",
+        "elevationGainM": "Desnivell (m)",
+        "priceEur": "Preu",
+        "websiteUrl": "Lloc web",
+        "websiteUrlPlaceholder": "https://exemple.com",
+        "save": "Desar",
+        "saving": "Desant...",
+        "success": "Cursa desada correctament",
+        "errors": {
+          "nameRequired": "El nom és obligatori",
+          "nameTooShort": "El nom ha de tenir almenys 5 caràcters",
+          "nameTooLong": "El nom és massa llarg",
+          "dateRequired": "La data és obligatòria",
+          "distanceRequired": "La distància és obligatòria",
+          "distanceInvalid": "Distància invàlida",
+          "distanceTooLong": "Distància massa llarga",
+          "elevationRequired": "El desnivell és obligatori",
+          "elevationInvalid": "Desnivell invàlid",
+          "elevationTooLong": "Desnivell massa llarg",
+          "priceRequired": "El preu és obligatori",
+          "priceInvalid": "Preu invàlid",
+          "priceTooLong": "Preu massa alt",
+          "websiteUrlRequired": "El lloc web és obligatori",
+          "websiteUrlInvalid": "URL invàlida",
+          "general": "Error en desar la cursa"
+        }
       }
     },
     "sponsors": {

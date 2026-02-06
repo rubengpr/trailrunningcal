@@ -270,6 +270,38 @@
         "emptyState": "No tienes carreras registradas",
         "claimBannerBefore": "💡 Para ver tus carreras en la tabla, reclámalas desde el",
         "claimBannerLink": "calendario principal de trailrunningcal"
+      },
+      "form": {
+        "title": "Nueva carrera",
+        "editTitle": "Editar carrera",
+        "date": "Fecha",
+        "name": "Nombre",
+        "distanceKm": "Distancia (km)",
+        "elevationGainM": "Desnivel (m)",
+        "priceEur": "Precio",
+        "websiteUrl": "Sitio web",
+        "websiteUrlPlaceholder": "https://ejemplo.com",
+        "save": "Guardar",
+        "saving": "Guardando...",
+        "success": "Carrera guardada correctamente",
+        "errors": {
+          "nameRequired": "El nombre es obligatorio",
+          "nameTooShort": "El nombre debe tener al menos 5 caracteres",
+          "nameTooLong": "El nombre es demasiado largo",
+          "dateRequired": "La fecha es obligatoria",
+          "distanceRequired": "La distancia es obligatoria",
+          "distanceInvalid": "Distancia inválida",
+          "distanceTooLong": "Distancia demasiado larga",
+          "elevationRequired": "El desnivel es obligatorio",
+          "elevationInvalid": "Desnivel inválido",
+          "elevationTooLong": "Desnivel demasiado largo",
+          "priceRequired": "El precio es obligatorio",
+          "priceInvalid": "Precio inválido",
+          "priceTooLong": "Precio demasiado alto",
+          "websiteUrlRequired": "El sitio web es obligatorio",
+          "websiteUrlInvalid": "URL inválida",
+          "general": "Error al guardar la carrera"
+        }
       }
     },
     "sponsors": {
