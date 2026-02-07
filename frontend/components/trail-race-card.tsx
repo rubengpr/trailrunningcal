@@ -5,6 +5,7 @@ import Link from 'next/link';
 import VerifiedBadgeWithTooltip from './verified-badge-with-tooltip';
 import type { PriceValue } from '@/types/race.types';
 import { getDisplayPrice } from '@/lib/race-utils';
+import { TEST_VERIFIED_RACES_NAME } from '@/lib/constants';
 
 interface TrailRaceCardProps {
   date: string | null;
@@ -84,12 +85,14 @@ export default function TrailRaceCard({
     }
   };
 
+  const isTestRace = TEST_VERIFIED_RACES_NAME.includes(name)
+
   return (
     <article
       onClick={displayOnly ? undefined : handleCardClick}
       className={`w-full bg-white rounded-lg shadow ${displayOnly
-          ? ''
-          : 'sm:hover:shadow-md transition-shadow sm:cursor-pointer pointer-events-none sm:pointer-events-auto'
+        ? ''
+        : 'sm:hover:shadow-md transition-shadow sm:cursor-pointer pointer-events-none sm:pointer-events-auto'
         }`}
     >
       <div className="w-full p-2 sm:p-4">
@@ -109,7 +112,7 @@ export default function TrailRaceCard({
                 <h3 className="text-xs sm:text-lg font-bold text-gray-900">
                   {name}
                 </h3>
-                {isVerifiedOrganizer && (
+                {(isVerifiedOrganizer || isTestRace) && (
                   <VerifiedBadgeWithTooltip size="sm" className="shrink-0" />
                 )}
               </div>

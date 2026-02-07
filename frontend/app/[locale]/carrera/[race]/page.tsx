@@ -17,6 +17,7 @@ import RaceResultsUrls from '@/components/race-results-urls';
 import Image from 'next/image';
 import Sponsors from '@/components/sponsors';
 import { RaceOrganizerClaimCard } from '@/components/race-organizer-claim-card';
+import { TEST_VERIFIED_RACES_NAME } from '@/lib/constants';
 
 export async function generateStaticParams() {
   const params = locales.flatMap((locale) =>
@@ -103,6 +104,8 @@ export async function generateMetadata({
   });
 }
 
+const isTestRace = (raceName: string) => TEST_VERIFIED_RACES_NAME.includes(raceName)
+
 export default async function RacePage({
   params,
 }: {
@@ -139,7 +142,7 @@ export default async function RacePage({
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
                 {raceData.name}
               </h1>
-              {raceData.isVerifiedOrganizer && (
+              {(raceData.isVerifiedOrganizer || isTestRace(raceData.name)) && (
                 <VerifiedBadgeWithTooltip size="md" />
               )}
             </div>
