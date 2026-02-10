@@ -36,16 +36,18 @@ const dummyRaces = [
     },
 ];
 
-export function OrganizerRacesContent() {
+interface OrganizerRacesContentProps {
+    races: TrailRace[];
+}
+
+export function OrganizerRacesContent({ races }: OrganizerRacesContentProps) {
     const t = useTranslations('organizer.races');
     const tTable = useTranslations('organizer.races.table');
     const locale = useLocale();
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    // For now, use dummy data. Later this will come from API
-    const realRaces: TrailRace[] = [];
-    const hasRealRaces = realRaces.length > 0;
-    const races = hasRealRaces ? realRaces : dummyRaces;
+    const hasRealRaces = races.length > 0;
+    const displayRaces = hasRealRaces ? races : dummyRaces;
 
     // Get the base URL for the link (works in both localhost and production)
     const baseUrl =
@@ -88,10 +90,10 @@ export function OrganizerRacesContent() {
                         </h1>
                         <p className='text-sm text-gray-500 mt-1'>
                             {hasRealRaces
-                                ? races.length === 1
+                                ? displayRaces.length === 1
                                     ? tTable('raceCountOne')
-                                    : tTable('raceCount', { count: races.length })
-                                : tTable('raceCount', { count: races.length })}
+                                    : tTable('raceCount', { count: displayRaces.length })
+                                : tTable('raceCount', { count: displayRaces.length })}
                         </p>
                     </div>
                     <button
@@ -117,7 +119,7 @@ export function OrganizerRacesContent() {
 
                 {/* Cards - Mobile only */}
                 <div className='w-full sm:hidden space-y-4'>
-                    {races.map((race, index) => (
+                    {displayRaces.map((race, index) => (
                         <TrailRaceCard
                             key={index}
                             date={race.date}
@@ -159,7 +161,7 @@ export function OrganizerRacesContent() {
                                 </tr>
                             </thead>
                             <tbody className='bg-white divide-y divide-gray-50'>
-                                {races.map((race, index) => (
+                                {displayRaces.map((race, index) => (
                                     <tr
                                         key={index}
                                         className={hasRealRaces ? 'hover:bg-gray-50/50 transition-colors duration-150 group' : ''}
