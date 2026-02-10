@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createStaticClient } from '@/lib/supabase/server';
 import type { TrailRace, PriceValue } from '@/types/race.types';
 
 // Shape of a row in the `races` table as returned by Supabase
@@ -25,12 +25,24 @@ let racesCache: TrailRace[] | null = null;
 
 /**
  * Fetches all races from the database
+ * Automatically detects if called from a static context (build time) and uses
+ * the appropriate Supabase client (static client without cookies for build time,
+ * regular client with cookies for server components).
  * @returns Array of TrailRace objects
  */
 export async function getRaces(): Promise<TrailRace[]> {
   if (racesCache) return racesCache;
 
-  const supabase = await createClient();
+  // Try to use the regular client first (for server components with cookies)
+  // If cookies() is not available (static generation), fall back to static client
+  let supabase;
+  try {
+    supabase = await createClient();
+  } catch (error) {
+    // If cookies() throws an error (e.g., "cookies was called outside a request scope"),
+    // we're in a static generation context, so use the static client
+    supabase = createStaticClient();
+  }
 
   const { data, error } = await supabase
     .from('races')
