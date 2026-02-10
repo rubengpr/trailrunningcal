@@ -1,0 +1,123 @@
+import type { TrailRace } from '../types/race.types';
+
+export const races: TrailRace[] = [
+  {
+    id: '1',
+    date: '2025-10-03',
+    name: 'La Molina Nit Pirineu KV® 2025',
+    distanceKm: 3.8,
+    elevationGainM: 680,
+    priceEur: null,
+    city: 'Bagà',
+    province: 'Barcelona',
+    websiteUrl: 'https://ultrapirineu.com/es/carreras/nit',
+    organizerId: null,
+    description: 'abc',
+  },
+  {
+    id: '2',
+    date: '2025-10-11',
+    name: 'Ultra Serra de Montsant 11K',
+    distanceKm: 11,
+    elevationGainM: 621,
+    priceEur: 24,
+    city: 'Ulldemolins',
+    province: 'Tarragona',
+    websiteUrl: 'https://www.naturetime.es/en/ultra-trail-serra-montsant-4',
+    organizerId: null,
+    description: 'abc',
+  },
+  {
+    id: '3',
+    date: '2026-02-08',
+    name: 'Xtrail Series Run Mataró 21.5K',
+    distanceKm: 21.5,
+    elevationGainM: 870,
+    priceEur: [
+      { until: '2025-12-03', price: 28 },
+      { until: '2026-01-25', price: 32 },
+      { until: '2026-02-01', price: 36 },
+    ],
+    city: 'Mataró',
+    province: 'Barcelona',
+    websiteUrl: 'https://www.xtrailseriesrun.com/mataro',
+    description:
+      'La Xtrail Series Run Mataró 21.5K es la distancia más exigente de esta carrera de alta frecuencia en la zona del Maresme. Con salida y llegada en Mataró, propone un recorrido de 21,5 km y +870 m de desnivel positivo a través de los mejores rincones de la comarca, combinando corriols que se enlazan entre sí y que llevarán a los corredores a las máximas pulsaciones.\n\nEl trazado XTREM explora los senderos más técnicos y variados de la zona, ofreciendo una experiencia intensa y muy completa. Pensada para corredores con experiencia en trail running que buscan un desafío exigente, esta prueba forma parte de un evento con cuatro recorridos diferentes pensados para todos los públicos. La organización cuenta con avituallamientos completos, señalización clara y servicios al corredor en meta. La Xtrail Series Run Mataró 21.5K es una cita perfecta para quienes quieren dar lo máximo de sí mismos en una carrera de alta frecuencia, donde el esfuerzo se ve recompensado con la exploración de los mejores rincones del Maresme.',
+    mapUrl:
+      'https://es.wikiloc.com/wikiloc/embedv2.do?id=200387293&elevation=on&images=off&maptype=H',
+    imagePath: '/assets/races/xtrail-series-run-mataro.jpg',
+    services: [
+      'Avituallamientos recorrido',
+      'Fotografias gratuitas',
+      'Regalo edición 2025',
+      'Almuerzo pre carrera',
+      'Butifarrada + bebida + cafe',
+      'Servicio de duchas y vestuarios',
+      'Ambulancia',
+      'Fisioterapia',
+      'WC Servicios',
+      'Clasificaciones y premios',
+      'Servicio de guarda-ropa',
+      'Productos de NUTRISPORT',
+    ],
+    resultsUrls: [
+      {
+        year: 2025,
+        url: 'https://www.xtrailseriesrun.com/_files/ugd/4c4b8a_e0e70457b08d415bb5294e02bf6492ae.pdf',
+      },
+    ],
+    sponsors: [
+      '/assets/races/sponsors/ajuntament-mataro.avif',
+      '/assets/races/sponsors/dland.avif',
+      '/assets/races/sponsors/nutrisport.avif',
+      '/assets/races/sponsors/universitat-blanquerna.avif',
+      '/assets/races/sponsors/rios-running.avif',
+    ],
+    organizerId: null,
+  },
+  {
+    id: '4',
+    date: '2026-03-08',
+    name: 'Oli Trail 24K',
+    distanceKm: 24,
+    elevationGainM: 1200,
+    priceEur: [
+      { until: '2026-01-19', price: 25 },
+      { until: '2026-03-06', price: 29 },
+    ],
+    city: 'Olesa de Montserrat',
+    province: 'Barcelona',
+    websiteUrl: 'https://www.olitrail.com/',
+    description:
+      'El Oli Trail 24K es una carrera de trail running que se celebra en Olesa de Montserrat, en las inmediaciones del macizo de Montserrat. Con salida y llegada en Olesa de Montserrat, propone un recorrido de 24 km y +1.200 m de desnivel positivo a través de senderos de montaña, caminos forestales y tramos técnicos que permiten descubrir los paisajes característicos de la zona.\n\nEl trazado combina subidas exigentes, descensos técnicos y tramos más corribles, ofreciendo una experiencia variada y desafiante en un entorno natural privilegiado. Pensada para corredores con experiencia en trail running que buscan un desafío intermedio, la prueba ofrece una distancia y desnivel equilibrados que permiten disfrutar del esfuerzo y del entorno. La organización cuenta con señalización clara, avituallamientos, cronometraje con chip y servicios al corredor en meta. El Oli Trail 24K es una opción ideal para quienes quieren experimentar el trail running en la zona de Montserrat con un formato accesible y bien organizado.',
+    mapUrl:
+      'https://es.wikiloc.com/wikiloc/embedv2.do?id=192340144&elevation=on&images=off&maptype=H',
+    imagePath: '/assets/races/olitrail.jpg',
+    services: [
+      'Servicio sanitario',
+      'Fisioterapia',
+      'Café gratuito en la salida',
+      'Avituallamientos líquido y sólido en el recorrido y en la llegada',
+      'Fotografías gratuitas',
+      'Aparcamiento furgonetas',
+    ],
+    resultsUrls: [
+      {
+        year: 2025,
+        url: 'https://xipgroc.cat/ca/curses/OlesaOTM_2025/24k/resultats',
+      },
+      {
+        year: 2024,
+        url: 'https://xipgroc.cat/ca/curses/OlesaOTM_2024/19k/resultats',
+      },
+    ],
+    sponsors: [
+      '/assets/races/sponsors/fca.png',
+      '/assets/races/sponsors/acrofix.jpg',
+      '/assets/races/sponsors/runcaf.png',
+      '/assets/races/sponsors/bonarea.png',
+      '/assets/races/sponsors/joma.png',
+    ],
+    organizerId: null,
+  },
+];

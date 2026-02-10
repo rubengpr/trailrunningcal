@@ -6,22 +6,20 @@ export interface PriceTier {
 export type PriceValue = number | null | PriceTier[];
 
 export interface TrailRace {
-  date: string | null; // 'YYYY-MM-DD' or null if date TBD
+  id: string;
   name: string;
+  date: string | null; // 'YYYY-MM-DD' or null if date TBD
   distanceKm: number;
   elevationGainM: number | null;
-  priceEur: PriceValue;
+  priceEur?: PriceValue | null;
   city: string;
   province: string;
-  websiteUrl: string | null;
-  email?: string | null;
-  isVerifiedOrganizer?: boolean; // Optional: true if organizer is verified
-  raceDescriptionStart?: { es: string; ca: string } | null;
-  raceDescriptionEnd?: { es: string; ca: string } | null;
-  raceUrl?: string | null;
-  imagePath?: string | null;
+  description: string | null;
   mapUrl?: string | null;
-  services?: string[];
-  resultsUrls?: Array<{ year: number; url: string }>;
-  sponsors?: string[];
+  imagePath?: string | null;
+  services?: string[] | null;
+  resultsUrls?: Array<{ year: number; url: string }> | null;
+  sponsors?: string[] | null;
+  organizerId: string | null;
+  websiteUrl?: string | null;
 }

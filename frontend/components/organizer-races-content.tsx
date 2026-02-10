@@ -11,7 +11,7 @@ import { formatDateToSpanish, formatDateToCatalan } from '@/lib/date-utils';
 import { generateRaceSlug } from '@/lib/race-utils';
 
 // Dummy data - will be replaced with real data from API
-const dummyRaces: TrailRace[] = [
+const dummyRaces = [
     {
         date: '2026-05-17',
         name: 'Zegama-Aizkorri',
@@ -21,6 +21,7 @@ const dummyRaces: TrailRace[] = [
         city: 'Zegama',
         province: 'Guipúzcoa',
         websiteUrl: 'https://www.zegama-aizkorri.com/',
+        organizerId: null,
     },
     {
         date: '2026-10-02',
@@ -31,6 +32,7 @@ const dummyRaces: TrailRace[] = [
         city: 'Bagà',
         province: 'Barcelona',
         websiteUrl: 'https://ultrapirineu.com/es/',
+        organizerId: null,
     },
 ];
 
@@ -122,11 +124,11 @@ export function OrganizerRacesContent() {
                             name={race.name}
                             distanceKm={race.distanceKm}
                             elevationGainM={race.elevationGainM}
-                            priceEur={race.priceEur}
+                            priceEur={race.priceEur ?? null}
                             city={race.city}
                             province={race.province}
                             raceSlug={generateRaceSlug(race.name)}
-                            isVerifiedOrganizer={race.isVerifiedOrganizer}
+                            organizerId={race.organizerId}
                             displayOnly={true}
                         />
                     ))}

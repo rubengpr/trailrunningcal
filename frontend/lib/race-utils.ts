@@ -1,4 +1,3 @@
-import { races } from '@/data/races';
 import type { TrailRace, PriceValue } from '@/types/race.types';
 
 /**
@@ -21,7 +20,10 @@ export function generateRaceSlug(name: string): string {
  * @param slug - The slug of the race
  * @returns The race or null if not found
  */
-export function getRaceBySlug(slug: string): TrailRace | null {
+export function getRaceBySlug(
+  slug: string,
+  races: TrailRace[],
+): TrailRace | null {
   return races.find((race) => generateRaceSlug(race.name) === slug) || null;
 }
 
@@ -29,7 +31,7 @@ export function getRaceBySlug(slug: string): TrailRace | null {
  * Gets all race slugs for static generation
  * @returns Array of race slugs
  */
-export function getAllRaceSlugs(): string[] {
+export function getAllRaceSlugs(races: TrailRace[]): string[] {
   return races.map((race) => generateRaceSlug(race.name));
 }
 

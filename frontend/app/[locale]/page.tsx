@@ -4,13 +4,13 @@ import Navbar from '../../components/navbar';
 import Footer from '../../components/footer';
 import HomeClient from '../../components/home-client';
 import HeroSection from '../../components/hero-section';
-import { races } from '../../data/races';
 import {
   getSeoMetaConfig,
   generateMetadataFromOptions,
 } from '../../seo/meta-config';
 import type { Locale } from '../../i18n';
 import { buildHomeAlternateLinks } from '../../lib/alternate-links';
+import { getRaces } from '@/lib/api/races';
 
 export async function generateMetadata({
   params,
@@ -41,6 +41,10 @@ export default async function HomePage({
 }: {
   params: Promise<{ locale: Locale }>;
 }) {
+  const races = await getRaces();
+  console.log('🤖 Getting races from database....')
+  console.log('Fetched races:', races[0])
+
   return (
     <div className="min-h-screen w-full text-gray-900 flex flex-col bg-white">
       <Navbar />

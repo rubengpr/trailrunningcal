@@ -215,11 +215,11 @@ export default function HomeClient({ races }: HomeClientProps) {
                           name={race.name}
                           distanceKm={race.distanceKm}
                           elevationGainM={race.elevationGainM}
-                          priceEur={race.priceEur}
+                          priceEur={race.priceEur ?? null}
                           city={race.city}
                           province={race.province}
                           raceSlug={generateRaceSlug(race.name)}
-                          isVerifiedOrganizer={race.isVerifiedOrganizer}
+                          organizerId={race.organizerId}
                         />
                       </ErrorBoundary>
                     </div>

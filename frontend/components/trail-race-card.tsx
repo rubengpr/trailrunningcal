@@ -16,7 +16,7 @@ interface TrailRaceCardProps {
   city: string;
   province: string;
   raceSlug?: string;
-  isVerifiedOrganizer?: boolean;
+  organizerId: string | null;
   displayOnly?: boolean;
 }
 
@@ -64,7 +64,7 @@ export default function TrailRaceCard({
   city,
   province,
   raceSlug,
-  isVerifiedOrganizer,
+  organizerId,
   displayOnly = false,
 }: TrailRaceCardProps) {
   const t = useTranslations();
@@ -112,7 +112,7 @@ export default function TrailRaceCard({
                 <h3 className="text-xs sm:text-lg font-bold text-gray-900">
                   {name}
                 </h3>
-                {(isVerifiedOrganizer || isTestRace) && (
+                {(organizerId || isTestRace) && (
                   <VerifiedBadgeWithTooltip size="sm" className="shrink-0" />
                 )}
               </div>

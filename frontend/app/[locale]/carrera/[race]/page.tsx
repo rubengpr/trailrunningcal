@@ -4,8 +4,7 @@ import { notFound } from 'next/navigation';
 import { formatDateToSpanish, formatDateToCatalan } from '@/lib/date-utils';
 import { getTranslations } from 'next-intl/server';
 import type { Locale } from '@/i18n';
-import { generateRaceSlug, getRaceBySlug } from '@/lib/race-utils';
-import { races } from '@/data/races';
+import { generateRaceSlug } from '@/lib/race-utils';
 import type { Metadata } from 'next';
 import { generateMetadataFromOptions } from '@/seo/meta-config';
 import { BASE_URL } from '@/lib/config';
@@ -18,8 +17,11 @@ import Image from 'next/image';
 import Sponsors from '@/components/sponsors';
 import { RaceOrganizerClaimCard } from '@/components/race-organizer-claim-card';
 import { TEST_VERIFIED_RACES_NAME } from '@/lib/constants';
+import { getRaces } from '@/lib/api/races';
 
 export async function generateStaticParams() {
+  const races = await getRaces();
+
   const params = locales.flatMap((locale) =>
     races.map((race) => ({
       locale,
@@ -36,7 +38,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale, race } = await params;
 
-  const raceData = getRaceBySlug(race);
+  const races = await getRaces();
+  const raceData = races.find((r) => generateRaceSlug(r.name) === race);
 
   // If race doesn't exist, return minimal metadata (Next.js will handle 404)
   if (!raceData) {
@@ -113,7 +116,8 @@ export default async function RacePage({
 }) {
   const { locale, race } = await params;
 
-  const raceData = getRaceBySlug(race);
+  const races = await getRaces();
+  const raceData = races.find((r) => generateRaceSlug(r.name) === race);
 
   if (!raceData) {
     notFound();
@@ -142,7 +146,7 @@ export default async function RacePage({
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
                 {raceData.name}
               </h1>
-              {(raceData.isVerifiedOrganizer || isTestRace(raceData.name)) && (
+              {(raceData.organizerId || isTestRace(raceData.name)) && (
                 <VerifiedBadgeWithTooltip size="md" />
               )}
             </div>
@@ -200,7 +204,7 @@ export default async function RacePage({
             </div>
           )}
         </div>
-        {raceData.isVerifiedOrganizer && raceData.imagePath && (
+        {raceData.organizerId && raceData.imagePath && (
           <div className="mt-6 sm:mt-8 w-full relative aspect-video sm:aspect-21/9 lg:aspect-16/7 rounded-lg overflow-hidden">
             <Image
               src={raceData.imagePath}
@@ -212,18 +216,13 @@ export default async function RacePage({
           </div>
         )}
         <div className="w-full my-6 sm:my-8">
-          {raceData.isVerifiedOrganizer && (
-            <>
-              <p className="text-sm sm:text-base lg:text-lg mb-4">
-                {raceData.raceDescriptionStart?.[locale as Locale]}
-              </p>
-              <p className="text-sm sm:text-base lg:text-lg">
-                {raceData.raceDescriptionEnd?.[locale as Locale]}
-              </p>
-            </>
+          {raceData.organizerId && raceData.description && (
+            <p className="text-sm sm:text-base lg:text-lg whitespace-pre-line">
+              {raceData.description}
+            </p>
           )}
         </div>
-        {raceData.isVerifiedOrganizer && raceData.sponsors && (
+        {raceData.organizerId && raceData.sponsors && (
           <Sponsors sponsors={raceData.sponsors} />
         )}
         {raceData.mapUrl && (
@@ -244,7 +243,7 @@ export default async function RacePage({
           />
         )}
 
-        {raceData.isVerifiedOrganizer &&
+        {raceData.organizerId &&
           raceData.services &&
           raceData.services.length > 0 && (
             <RaceServicesList
@@ -253,7 +252,7 @@ export default async function RacePage({
             />
           )}
 
-        {raceData.isVerifiedOrganizer &&
+        {raceData.organizerId &&
           raceData.resultsUrls &&
           raceData.resultsUrls.length > 0 && (
             <RaceResultsUrls

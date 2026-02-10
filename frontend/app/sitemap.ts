@@ -2,8 +2,8 @@ import { MetadataRoute } from 'next';
 import { BASE_URL } from '@/lib/config';
 import { locales, type Locale } from '@/i18n';
 import { getAllBlogPosts } from '@/lib/blog-utils';
-import { races } from '@/data/races';
 import { generateRaceSlug } from '@/lib/race-utils';
+import { getRaces } from '@/lib/api/races';
 import {
   buildHomeAlternateLinks,
   buildBlogListingAlternateLinks,
@@ -17,8 +17,10 @@ const CONTACT_PATHS: Record<Locale, string> = {
   ca: 'contacte',
 };
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const currentDate = new Date();
+
+  const races = await getRaces();
 
   const urls: MetadataRoute.Sitemap = [];
 

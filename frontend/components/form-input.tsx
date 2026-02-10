@@ -6,6 +6,7 @@ interface FormInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement
   id: string;
   label: string | React.ReactNode;
   error?: string;
+  helperText?: string;
   showPasswordToggle?: boolean;
   labelRightContent?: React.ReactNode;
   type?: React.InputHTMLAttributes<HTMLInputElement>['type'];
@@ -15,6 +16,7 @@ export function FormInput({
   id,
   label,
   error,
+  helperText,
   showPasswordToggle = false,
   labelRightContent,
   type = 'text',
@@ -97,7 +99,10 @@ export function FormInput({
           </button>
         )}
       </div>
-      {error && <p className="text-sm text-red-500 ml-1">{error}</p>}
+      <div className="h-5">
+        {error && <p className="text-sm text-red-500 ml-1">{error}</p>}
+        {helperText && !error && <p className="text-xs text-gray-500 ml-1">{helperText}</p>}
+      </div>
     </div>
   );
 }
