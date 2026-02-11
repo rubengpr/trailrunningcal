@@ -212,8 +212,8 @@ async function migrateRaces() {
 
   // Create Supabase client once
   const supabase = createClient(
-    'https://wghqldoshvwulyqqbqln.supabase.co',
-    'supabase_service_role_key',
+    'https://ppmdbmyxgtqvmvtbptmg.supabase.co',
+    'sb_secret_9GJxhzTzUg39wfdm-ftvAg_qnWR0oDn',
   );
 
   const CHUNK_SIZE = 50; // Insert 50 races at a time

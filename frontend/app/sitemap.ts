@@ -20,7 +20,8 @@ const CONTACT_PATHS: Record<Locale, string> = {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const currentDate = new Date();
 
-  const races = await getRaces();
+  // Use static client for static generation (sitemap is always generated at build time)
+  const races = await getRaces(true);
 
   const urls: MetadataRoute.Sitemap = [];
 

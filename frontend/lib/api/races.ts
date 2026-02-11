@@ -25,24 +25,18 @@ let racesCache: TrailRace[] | null = null;
 
 /**
  * Fetches all races from the database
- * Automatically detects if called from a static context (build time) and uses
- * the appropriate Supabase client (static client without cookies for build time,
- * regular client with cookies for server components).
+ * @param useStaticClient - If true, uses the static client (for build-time static generation).
+ *                          If false or undefined, uses the regular client with cookies (for server components).
  * @returns Array of TrailRace objects
  */
-export async function getRaces(): Promise<TrailRace[]> {
+export async function getRaces(useStaticClient?: boolean): Promise<TrailRace[]> {
   if (racesCache) return racesCache;
 
-  // Try to use the regular client first (for server components with cookies)
-  // If cookies() is not available (static generation), fall back to static client
-  let supabase;
-  try {
-    supabase = await createClient();
-  } catch (error) {
-    // If cookies() throws an error (e.g., "cookies was called outside a request scope"),
-    // we're in a static generation context, so use the static client
-    supabase = createStaticClient();
-  }
+  // Use static client for static generation contexts (generateStaticParams, generateMetadata)
+  // Use regular client for server components that need cookies/auth
+  const supabase = useStaticClient
+    ? createStaticClient()
+    : await createClient();
 
   const { data, error } = await supabase
     .from('races')

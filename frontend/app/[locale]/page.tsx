@@ -41,7 +41,8 @@ export default async function HomePage({
 }: {
   params: Promise<{ locale: Locale }>;
 }) {
-  const races = await getRaces();
+  // Use static client since this page is statically generated via generateStaticParams in layout
+  const races = await getRaces(true);
   console.log('🤖 Getting races from database....')
   console.log('Fetched races:', races[0])
 

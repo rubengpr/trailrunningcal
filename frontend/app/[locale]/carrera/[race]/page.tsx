@@ -20,7 +20,8 @@ import { TEST_VERIFIED_RACES_NAME } from '@/lib/constants';
 import { getRaces } from '@/lib/api/races';
 
 export async function generateStaticParams() {
-  const races = await getRaces();
+  // Use static client for static generation
+  const races = await getRaces(true);
 
   const params = locales.flatMap((locale) =>
     races.map((race) => ({
@@ -38,7 +39,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale, race } = await params;
 
-  const races = await getRaces();
+  // Use static client for static generation
+  const races = await getRaces(true);
   const raceData = races.find((r) => generateRaceSlug(r.name) === race);
 
   // If race doesn't exist, return minimal metadata (Next.js will handle 404)
@@ -116,7 +118,8 @@ export default async function RacePage({
 }) {
   const { locale, race } = await params;
 
-  const races = await getRaces();
+  // Use static client since this page is statically generated via generateStaticParams
+  const races = await getRaces(true);
   const raceData = races.find((r) => generateRaceSlug(r.name) === race);
 
   if (!raceData) {
