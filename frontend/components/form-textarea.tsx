@@ -13,8 +13,6 @@ interface FormTextareaProps extends Omit<React.TextareaHTMLAttributes<HTMLTextAr
 export function FormTextarea({
   id,
   label,
-  error,
-  helperText,
   maxLength,
   showCharacterCount = false,
   labelRightContent,
