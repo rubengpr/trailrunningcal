@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { Toaster } from 'react-hot-toast';
+import { Analytics } from '@vercel/analytics/next';
 import { locales, type Locale } from '../../i18n';
 import '../globals.css';
 
@@ -80,6 +81,7 @@ export default async function LocaleLayout({
             }}
           />
         </NextIntlClientProvider>
+        <Analytics />
       </body>
     </html>
   );
