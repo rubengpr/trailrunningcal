@@ -26,17 +26,15 @@ let racesCache: TrailRace[] | null = null;
 
 /**
  * Fetches all races from the database
- * @param useStaticClient - If true, uses the static client (for build-time static generation).
- *                          If false or undefined, uses the regular client with cookies (for server components).
+ * @param useStaticClient - If true, uses the static client and in-memory cache (for build-time e.g. sitemap).
+ *                          If false or undefined, uses the regular client with cookies and no cache; each call gets fresh data from the database.
  * @returns Array of TrailRace objects
  */
 export async function getRaces(
   useStaticClient?: boolean,
 ): Promise<TrailRace[]> {
-  if (racesCache) return racesCache;
+  if (useStaticClient && racesCache) return racesCache;
 
-  // Use static client for static generation contexts (generateStaticParams, generateMetadata)
-  // Use regular client for server components that need cookies/auth
   const supabase = useStaticClient
     ? createStaticClient()
     : await createClient();
@@ -63,12 +61,12 @@ export async function getRaces(
 
   if (error) {
     console.error('Failed to fetch races:', error);
-    racesCache = [];
-    return racesCache;
+    if (useStaticClient) racesCache = [];
+    return [];
   }
 
   const rows = (data ?? []) as RaceRow[];
-  racesCache = rows.map(raceRowToTrailRace);
-
-  return racesCache;
+  const result = rows.map(raceRowToTrailRace);
+  if (useStaticClient) racesCache = result;
+  return result;
 }

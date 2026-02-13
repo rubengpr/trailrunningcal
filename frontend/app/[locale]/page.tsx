@@ -12,6 +12,8 @@ import type { Locale } from '../../i18n';
 import { buildHomeAlternateLinks } from '../../lib/alternate-links';
 import { getRaces } from '@/lib/db/races';
 
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata({
   params,
 }: {
@@ -41,8 +43,8 @@ export default async function HomePage({
 }: {
   params: Promise<{ locale: Locale }>;
 }) {
-  // Use static client since this page is statically generated via generateStaticParams in layout
-  const races = await getRaces(true);
+  // Fetch fresh race list on each request so new races appear immediately
+  const races = await getRaces();
 
   return (
     <div className="min-h-screen w-full text-gray-900 flex flex-col bg-white">

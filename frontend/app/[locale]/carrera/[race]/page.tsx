@@ -20,18 +20,7 @@ import { TEST_VERIFIED_RACES_NAME } from '@/lib/constants';
 import { getRaces } from '@/lib/db/races';
 import { getDisplayPrice } from '@/lib/race-utils';
 
-export async function generateStaticParams() {
-  // Use static client for static generation
-  const races = await getRaces(true);
-
-  const params = locales.flatMap((locale) =>
-    races.map((race) => ({
-      locale,
-      race: generateRaceSlug(race.name),
-    })),
-  );
-  return params;
-}
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({
   params,
@@ -40,8 +29,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale, race } = await params;
 
-  // Use static client for static generation
-  const races = await getRaces(true);
+  const races = await getRaces();
   const raceData = races.find((r) => generateRaceSlug(r.name) === race);
 
   // If race doesn't exist, return minimal metadata (Next.js will handle 404)
@@ -119,8 +107,8 @@ export default async function RacePage({
 }) {
   const { locale, race } = await params;
 
-  // Use static client since this page is statically generated via generateStaticParams
-  const races = await getRaces(true);
+  // Fetch fresh race data on each request
+  const races = await getRaces();
   const raceData = races.find((r) => generateRaceSlug(r.name) === race);
   const displayPrice = getDisplayPrice(raceData?.priceEur);
 
