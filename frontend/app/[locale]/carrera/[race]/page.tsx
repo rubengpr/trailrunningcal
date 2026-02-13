@@ -18,6 +18,7 @@ import Sponsors from '@/components/sponsors';
 import { RaceOrganizerClaimCard } from '@/components/race-organizer-claim-card';
 import { TEST_VERIFIED_RACES_NAME } from '@/lib/constants';
 import { getRaces } from '@/lib/db/races';
+import { getDisplayPrice } from '@/lib/race-utils';
 
 export async function generateStaticParams() {
   // Use static client for static generation
@@ -121,6 +122,7 @@ export default async function RacePage({
   // Use static client since this page is statically generated via generateStaticParams
   const races = await getRaces(true);
   const raceData = races.find((r) => generateRaceSlug(r.name) === race);
+  const displayPrice = getDisplayPrice(raceData?.priceEur);
 
   if (!raceData) {
     notFound();
@@ -179,18 +181,18 @@ export default async function RacePage({
                     </h3>
                   )}
                 </div>
-                {typeof raceData.priceEur === 'number' && (
+                {displayPrice &&
                   <>
                     <div className="hidden sm:block">
                       <h3 className="text-base sm:text-lg lg:text-xl">|</h3>
                     </div>
                     <div className="hidden sm:block">
                       <h3 className="text-base sm:text-lg lg:text-xl">
-                        {raceData.priceEur}€
+                        {displayPrice}€
                       </h3>
                     </div>
                   </>
-                )}
+                }
               </div>
             </div>
           </div>
