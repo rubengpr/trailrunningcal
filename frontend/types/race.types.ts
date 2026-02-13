@@ -3,7 +3,25 @@ export interface PriceTier {
   price: number;
 }
 
-export type PriceValue = number | null | PriceTier[];
+// Shape of a row in the races table as returned by Supabase
+export type RaceRow = {
+  id: string;
+  name: string;
+  date: string | null;
+  distance_km: number;
+  elevation_gain_m: number | null;
+  race_tiers: Array<{ price_eur: number }> | null;
+  city: string;
+  province: string;
+  description: string | null;
+  map_url?: string | null;
+  image_path?: string | null;
+  services?: string[] | null;
+  results_urls?: Array<{ year: number; url: string }> | null;
+  sponsors?: string[] | null;
+  organizer_id: string | null;
+  website_url?: string | null;
+};
 
 export interface TrailRace {
   id: string;
@@ -11,7 +29,7 @@ export interface TrailRace {
   date: string | null; // 'YYYY-MM-DD' or null if date TBD
   distanceKm: number;
   elevationGainM: number | null;
-  priceEur?: PriceValue | null;
+  priceEur?: Array<{ price_eur: number }> | null;
   city: string;
   province: string;
   description: string | null;

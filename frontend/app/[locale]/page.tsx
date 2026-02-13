@@ -10,7 +10,7 @@ import {
 } from '../../seo/meta-config';
 import type { Locale } from '../../i18n';
 import { buildHomeAlternateLinks } from '../../lib/alternate-links';
-import { getRaces } from '@/lib/api/races';
+import { getRaces } from '@/lib/db/races';
 
 export async function generateMetadata({
   params,

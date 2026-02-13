@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import { ProposeRaceModal } from './propose-race-modal';
 import { InfoBanner } from './info-banner';
@@ -11,26 +12,30 @@ import { formatDateToSpanish, formatDateToCatalan } from '@/lib/date-utils';
 import { generateRaceSlug } from '@/lib/race-utils';
 
 // Dummy data - will be replaced with real data from API
-const dummyRaces = [
+const dummyRaces: TrailRace[] = [
     {
+        id: 'dummy-1',
         date: '2026-05-17',
         name: 'Zegama-Aizkorri',
         distanceKm: 42.195,
         elevationGainM: 2736,
-        priceEur: 75,
+        priceEur: [{ price_eur: 75 }],
         city: 'Zegama',
         province: 'Guipúzcoa',
+        description: null,
         websiteUrl: 'https://www.zegama-aizkorri.com/',
         organizerId: null,
     },
     {
+        id: 'dummy-2',
         date: '2026-10-02',
         name: 'Salomon Ultra Pirineu',
         distanceKm: 100,
         elevationGainM: 6600,
-        priceEur: 198,
+        priceEur: [{ price_eur: 198 }],
         city: 'Bagà',
         province: 'Barcelona',
+        description: null,
         websiteUrl: 'https://ultrapirineu.com/es/',
         organizerId: null,
     },
@@ -44,6 +49,7 @@ export function OrganizerRacesContent({ races }: OrganizerRacesContentProps) {
     const t = useTranslations('organizer.races');
     const tTable = useTranslations('organizer.races.table');
     const locale = useLocale();
+    const router = useRouter();
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const hasRealRaces = races.length > 0;
@@ -63,6 +69,10 @@ export function OrganizerRacesContent({ races }: OrganizerRacesContentProps) {
         setIsModalOpen(false);
     };
 
+    const handleRaceClick = (raceId: string) => {
+        router.push(`/${locale}/org/carreras/${raceId}`);
+    };
+
     const formatDate = (dateString: string | null) => {
         if (!dateString) return 'N/D';
         return locale === 'ca'
@@ -74,7 +84,7 @@ export function OrganizerRacesContent({ races }: OrganizerRacesContentProps) {
         if (price === null) return 'N/D';
         if (typeof price === 'number') return `${price}€`;
         if (Array.isArray(price) && price.length > 0) {
-            return `${price[0].price}€`;
+            return `${price[0].price_eur}€`;
         }
         return 'N/D';
     };
@@ -120,19 +130,24 @@ export function OrganizerRacesContent({ races }: OrganizerRacesContentProps) {
                 {/* Cards - Mobile only */}
                 <div className='w-full sm:hidden space-y-4'>
                     {displayRaces.map((race, index) => (
-                        <TrailRaceCard
+                        <div
                             key={index}
-                            date={race.date}
-                            name={race.name}
-                            distanceKm={race.distanceKm}
-                            elevationGainM={race.elevationGainM}
-                            priceEur={race.priceEur ?? null}
-                            city={race.city}
-                            province={race.province}
-                            raceSlug={generateRaceSlug(race.name)}
-                            organizerId={race.organizerId}
-                            displayOnly={true}
-                        />
+                            onClick={hasRealRaces && race.id ? () => handleRaceClick(race.id) : undefined}
+                            className={hasRealRaces ? 'cursor-pointer' : ''}
+                        >
+                            <TrailRaceCard
+                                date={race.date}
+                                name={race.name}
+                                distanceKm={race.distanceKm}
+                                elevationGainM={race.elevationGainM}
+                                priceEur={race.priceEur ?? null}
+                                city={race.city}
+                                province={race.province}
+                                raceSlug={generateRaceSlug(race.name)}
+                                organizerId={race.organizerId}
+                                displayOnly={true}
+                            />
+                        </div>
                     ))}
                 </div>
 
@@ -164,7 +179,8 @@ export function OrganizerRacesContent({ races }: OrganizerRacesContentProps) {
                                 {displayRaces.map((race, index) => (
                                     <tr
                                         key={index}
-                                        className={hasRealRaces ? 'hover:bg-gray-50/50 transition-colors duration-150 group' : ''}
+                                        onClick={hasRealRaces && race.id ? () => handleRaceClick(race.id) : undefined}
+                                        className={hasRealRaces ? 'hover:bg-gray-50/50 transition-colors duration-150 group cursor-pointer' : ''}
                                     >
                                         <td className={`px-6 py-5 whitespace-nowrap sticky left-0 bg-white z-10 ${hasRealRaces ? 'group-hover:bg-gray-50/50' : ''
                                             }`}>

@@ -3,7 +3,7 @@ import { BASE_URL } from '@/lib/config';
 import { locales, type Locale } from '@/i18n';
 import { getAllBlogPosts } from '@/lib/blog-utils';
 import { generateRaceSlug } from '@/lib/race-utils';
-import { getRaces } from '@/lib/api/races';
+import { getRaces } from '@/lib/db/races';
 import {
   buildHomeAlternateLinks,
   buildBlogListingAlternateLinks,

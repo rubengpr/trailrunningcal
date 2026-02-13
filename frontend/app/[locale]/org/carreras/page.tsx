@@ -2,27 +2,8 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { OrganizerSidebar } from '@/components/organizer-sidebar';
 import { OrganizerRacesContent } from '@/components/organizer-races-content';
-import type { TrailRace, PriceValue } from '@/types/race.types';
-
-// Shape of a row in the `races` table as returned by Supabase
-type RaceRow = {
-    id: string;
-    name: string;
-    date: string | null;
-    distance_km: number;
-    elevation_gain_m: number | null;
-    price_eur?: PriceValue | null;
-    city: string;
-    province: string;
-    description: string | null;
-    map_url?: string | null;
-    image_path?: string | null;
-    services?: string[] | null;
-    results_urls?: Array<{ year: number; url: string }> | null;
-    sponsors?: string[] | null;
-    organizer_id: string | null;
-    website_url?: string | null;
-};
+import { raceRowToTrailRace } from '@/lib/db/races';
+import type { TrailRace, RaceRow } from '@/types/race.types';
 
 export default async function OrganizerRacesPage({
     params,
@@ -42,7 +23,7 @@ export default async function OrganizerRacesPage({
 
     // Fetch organizer for this user
     let organizerRaces: TrailRace[] = [];
-    
+
     try {
         const { data: organizer, error: organizerError } = await supabase
             .from('organizers')
@@ -57,7 +38,20 @@ export default async function OrganizerRacesPage({
             // Fetch races for this organizer
             const { data: racesData, error: racesError } = await supabase
                 .from('races')
-                .select('*')
+                .select(`
+                    id,
+                    name,
+                    date,
+                    distance_km,
+                    elevation_gain_m,
+                    city,
+                    province,
+                    organizer_id,
+                    description,
+                    map_url,
+                    website_url,
+                    race_tiers ( price_eur )
+                  `)
                 .eq('organizer_id', organizer.id)
                 .order('date', { ascending: true, nullsFirst: false });
 
@@ -66,27 +60,7 @@ export default async function OrganizerRacesPage({
             } else {
                 const rows = (racesData ?? []) as RaceRow[];
 
-                // Map database snake_case to TypeScript camelCase
-                organizerRaces = rows.map(
-                    (race): TrailRace => ({
-                        id: race.id,
-                        name: race.name,
-                        date: race.date ?? null,
-                        distanceKm: race.distance_km,
-                        elevationGainM: race.elevation_gain_m ?? null,
-                        priceEur: race.price_eur ?? null,
-                        city: race.city,
-                        province: race.province,
-                        description: race.description ?? null,
-                        mapUrl: race.map_url ?? null,
-                        imagePath: race.image_path ?? null,
-                        services: race.services ?? null,
-                        resultsUrls: race.results_urls ?? null,
-                        sponsors: race.sponsors ?? null,
-                        organizerId: race.organizer_id ?? null,
-                        websiteUrl: race.website_url ?? null,
-                    }),
-                );
+                organizerRaces = rows.map(raceRowToTrailRace);
             }
         }
     } catch (error) {

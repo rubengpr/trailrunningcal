@@ -10,14 +10,14 @@ import { generateMetadataFromOptions } from '@/seo/meta-config';
 import { BASE_URL } from '@/lib/config';
 import { buildRaceAlternateLinks } from '@/lib/alternate-links';
 import VerifiedBadgeWithTooltip from '@/components/verified-badge-with-tooltip';
-import PriceTiersTable from '@/components/price-tiers-table';
-import RaceServicesList from '@/components/race-services-list';
-import RaceResultsUrls from '@/components/race-results-urls';
+//import PriceTiersTable from '@/components/price-tiers-table';
+//import RaceServicesList from '@/components/race-services-list';
+//import RaceResultsUrls from '@/components/race-results-urls';
 import Image from 'next/image';
 import Sponsors from '@/components/sponsors';
 import { RaceOrganizerClaimCard } from '@/components/race-organizer-claim-card';
 import { TEST_VERIFIED_RACES_NAME } from '@/lib/constants';
-import { getRaces } from '@/lib/api/races';
+import { getRaces } from '@/lib/db/races';
 
 export async function generateStaticParams() {
   // Use static client for static generation
@@ -239,30 +239,30 @@ export default async function RacePage({
           ></iframe>
         )}
 
-        {Array.isArray(raceData.priceEur) && (
+        {/*{Array.isArray(raceData.priceEur) && (
           <PriceTiersTable
             tiers={raceData.priceEur}
             locale={locale as Locale}
           />
-        )}
+        )}*/}
 
-        {raceData.organizerId &&
+        {/*{raceData.organizerId &&
           raceData.services &&
           raceData.services.length > 0 && (
             <RaceServicesList
               services={raceData.services}
               locale={locale as Locale}
             />
-          )}
+          )}*/}
 
-        {raceData.organizerId &&
+        {/*{raceData.organizerId &&
           raceData.resultsUrls &&
           raceData.resultsUrls.length > 0 && (
             <RaceResultsUrls
               resultsUrls={raceData.resultsUrls}
               locale={locale as Locale}
             />
-          )}
+          )}*/}
 
         <RaceOrganizerClaimCard
           title={tRace('organizerCard.title')}

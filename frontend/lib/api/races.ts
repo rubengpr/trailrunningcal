@@ -1,77 +1,32 @@
-import { createClient, createStaticClient } from '@/lib/supabase/server';
-import type { TrailRace, PriceValue } from '@/types/race.types';
-
-// Shape of a row in the `races` table as returned by Supabase
-type RaceRow = {
-  id: string;
-  name: string;
-  date: string | null;
-  distance_km: number;
-  elevation_gain_m: number | null;
-  price_eur?: PriceValue | null;
-  city: string;
-  province: string;
-  description: string | null;
-  map_url?: string | null;
-  image_path?: string | null;
-  services?: string[] | null;
-  results_urls?: Array<{ year: number; url: string }> | null;
-  sponsors?: string[] | null;
-  organizer_id: string | null;
-  website_url?: string | null;
-};
-
-let racesCache: TrailRace[] | null = null;
-
 /**
- * Fetches all races from the database
- * @param useStaticClient - If true, uses the static client (for build-time static generation).
- *                          If false or undefined, uses the regular client with cookies (for server components).
- * @returns Array of TrailRace objects
+ * Updates a race via the API. Safe to call from client components.
  */
-export async function getRaces(useStaticClient?: boolean): Promise<TrailRace[]> {
-  if (racesCache) return racesCache;
+export async function updateRace(
+  raceId: string,
+  date: string,
+  name: string,
+  distanceKm: string,
+  elevationGainM: string,
+  websiteUrl: string,
+) {
+  const response = await fetch('/api/races', {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      raceId,
+      date,
+      name,
+      distanceKm: Number(distanceKm),
+      elevationGainM: Number(elevationGainM),
+      websiteUrl,
+    }),
+  });
 
-  // Use static client for static generation contexts (generateStaticParams, generateMetadata)
-  // Use regular client for server components that need cookies/auth
-  const supabase = useStaticClient
-    ? createStaticClient()
-    : await createClient();
+  const responseData = await response.json();
 
-  const { data, error } = await supabase
-    .from('races')
-    .select('*')
-    .order('date', { ascending: true, nullsFirst: false });
-
-  if (error) {
-    console.error('Failed to fetch races:', error);
-    racesCache = [];
-    return racesCache;
+  if (!response.ok) {
+    throw new Error(responseData.error || 'Failed to update race');
   }
 
-  const rows = (data ?? []) as RaceRow[];
-
-  // Map database snake_case to TypeScript camelCase
-  racesCache = rows.map(
-    (race): TrailRace => ({
-      id: race.id,
-      name: race.name,
-      date: race.date ?? null,
-      distanceKm: race.distance_km,
-      elevationGainM: race.elevation_gain_m ?? null,
-      priceEur: race.price_eur ?? null,
-      city: race.city,
-      province: race.province,
-      description: race.description ?? null,
-      mapUrl: race.map_url ?? null,
-      imagePath: race.image_path ?? null,
-      services: race.services ?? null,
-      resultsUrls: race.results_urls ?? null,
-      sponsors: race.sponsors ?? null,
-      organizerId: race.organizer_id ?? null,
-      websiteUrl: race.website_url ?? null,
-    }),
-  );
-
-  return racesCache;
+  return responseData;
 }

@@ -4,20 +4,28 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
 import { FormInput } from './form-input';
+import type { TrailRace } from '@/types/race.types';
+import { updateRace } from '@/lib/api/races';
+import { updatePrice } from '@/lib/api/race_tiers';
 
 interface RaceFormProps {
     raceId: string;
+    initialData: TrailRace | null;
     isEditMode: boolean;
 }
 
-export function RaceForm({ raceId, isEditMode }: RaceFormProps) {
+export function RaceForm({ raceId, initialData, isEditMode }: RaceFormProps) {
     const t = useTranslations('organizer.races.form');
-    const [date, setDate] = useState('');
-    const [name, setName] = useState('');
-    const [distanceKm, setDistanceKm] = useState<string>('');
-    const [elevationGainM, setElevationGainM] = useState<string>('');
-    const [priceEur, setPriceEur] = useState<string>('');
-    const [websiteUrl, setWebsiteUrl] = useState<string>('');
+    const [date, setDate] = useState(initialData?.date ?? '');
+    const [name, setName] = useState(initialData?.name ?? '');
+    const [distanceKm, setDistanceKm] = useState<string>(initialData != null ? String(initialData.distanceKm) : '');
+    const [elevationGainM, setElevationGainM] = useState<string>(initialData?.elevationGainM != null ? String(initialData.elevationGainM) : '');
+    const [priceEur, setPriceEur] = useState<string>(
+        initialData?.priceEur && Array.isArray(initialData.priceEur) && initialData.priceEur.length > 0
+            ? String(initialData.priceEur[0].price_eur)
+            : ''
+    );
+    const [websiteUrl, setWebsiteUrl] = useState(initialData?.websiteUrl ?? '');
 
     const [dateError, setDateError] = useState('');
     const [nameError, setNameError] = useState('');
@@ -127,10 +135,7 @@ export function RaceForm({ raceId, isEditMode }: RaceFormProps) {
         }
 
         const trimmedValue = value.trim();
-
-        // Replace comma with dot for parsing (European format)
-        const normalizedValue = trimmedValue.replace(',', '.');
-        const numValue = parseFloat(normalizedValue);
+        const numValue = parseInt(trimmedValue, 10);
 
         if (isNaN(numValue) || numValue < 0) {
             setPriceEurError(t('errors.priceInvalid'));
@@ -138,6 +143,11 @@ export function RaceForm({ raceId, isEditMode }: RaceFormProps) {
         }
         if (numValue >= 1000) {
             setPriceEurError(t('errors.priceTooLong'));
+            return false;
+        }
+        // Check if it's a whole number (no decimals)
+        if (trimmedValue.includes(',') || trimmedValue.includes('.')) {
+            setPriceEurError(t('errors.priceInvalid'));
             return false;
         }
         setPriceEurError('');
@@ -193,8 +203,8 @@ export function RaceForm({ raceId, isEditMode }: RaceFormProps) {
         setIsLoading(true);
 
         try {
-            // Simulate API call - for now just show success message
-            await new Promise(resolve => setTimeout(resolve, 500));
+            await updateRace(raceId, date, name, distanceKm, elevationGainM, websiteUrl)
+            await updatePrice({ raceId, priceEur: parseInt(priceEur, 10) })
 
             toast.success(t('success'));
 
@@ -207,8 +217,8 @@ export function RaceForm({ raceId, isEditMode }: RaceFormProps) {
                 setPriceEur('');
                 setWebsiteUrl('');
             }
-        } catch (error: unknown) {
-            const errorMessage = error instanceof Error ? error.message : t('errors.general');
+        } catch (e) {
+            const errorMessage = e instanceof Error ? e.message : t('errors.general');
             setError(errorMessage);
             toast.error(errorMessage);
         } finally {
@@ -290,16 +300,11 @@ export function RaceForm({ raceId, isEditMode }: RaceFormProps) {
                         id='priceEur'
                         label={t('priceEur')}
                         type='text'
-                        inputMode='decimal'
+                        inputMode='numeric'
                         value={priceEur}
                         onChange={(e) => {
-                            // Allow comma as decimal separator, normalize dots to commas
-                            let inputValue = e.target.value.replace(/[^0-9,.]/g, '').replace(/\./g, ',');
-                            // Ensure only one comma
-                            const commaIndex = inputValue.indexOf(',');
-                            if (commaIndex !== -1) {
-                                inputValue = inputValue.substring(0, commaIndex + 1) + inputValue.substring(commaIndex + 1).replace(/,/g, '');
-                            }
+                            // Only allow whole numbers (no decimals)
+                            const inputValue = e.target.value.replace(/[^0-9]/g, '');
                             setPriceEur(inputValue);
                             setPriceEurError('');
                             setError('');

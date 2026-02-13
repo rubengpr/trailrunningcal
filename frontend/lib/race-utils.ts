@@ -1,4 +1,4 @@
-import type { TrailRace, PriceValue } from '@/types/race.types';
+import type { TrailRace } from '@/types/race.types';
 
 /**
  * Generates a URL-friendly slug from a race name
@@ -36,43 +36,18 @@ export function getAllRaceSlugs(races: TrailRace[]): string[] {
 }
 
 /**
- * Extracts a single display price from PriceValue
- * For PriceTier arrays, returns the current applicable price based on today's date
- * @param priceEur - The price value (number, null, or PriceTier array)
+ * Extracts a single display price from price array
+ * @param priceEur - The price value (array of price objects or null)
  * @returns A single price number or null
  */
-export function getDisplayPrice(priceEur: PriceValue): number | null {
-  // Handle number or null directly
-  if (typeof priceEur === 'number') {
-    return priceEur;
-  }
-  if (priceEur === null) {
+export function getDisplayPrice(
+  priceEur: TrailRace['priceEur'],
+): number | null {
+  if (priceEur === null || priceEur === undefined) {
     return null;
   }
-
-  // Handle PriceTier array
   if (!Array.isArray(priceEur) || priceEur.length === 0) {
     return null;
   }
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0); // Reset time for accurate date comparison
-
-  // Find the current applicable tier
-  for (const tier of priceEur) {
-    // If tier has no until date (null), it's the final price
-    if (tier.until === null) {
-      return tier.price;
-    }
-
-    // Check if today is before or equal to the tier's until date
-    const untilDate = new Date(tier.until);
-    untilDate.setHours(0, 0, 0, 0);
-    if (today <= untilDate) {
-      return tier.price;
-    }
-  }
-
-  // If all dates are in the past, return the last tier's price as fallback
-  return priceEur[priceEur.length - 1].price;
+  return priceEur[0].price_eur;
 }

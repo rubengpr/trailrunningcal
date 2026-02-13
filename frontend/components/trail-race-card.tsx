@@ -3,7 +3,6 @@
 import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
 import VerifiedBadgeWithTooltip from './verified-badge-with-tooltip';
-import type { PriceValue } from '@/types/race.types';
 import { getDisplayPrice } from '@/lib/race-utils';
 import { TEST_VERIFIED_RACES_NAME } from '@/lib/constants';
 
@@ -12,7 +11,7 @@ interface TrailRaceCardProps {
   name: string;
   distanceKm: number;
   elevationGainM: number | null;
-  priceEur: PriceValue;
+  priceEur?: Array<{ price_eur: number }> | null;
   city: string;
   province: string;
   raceSlug?: string;
