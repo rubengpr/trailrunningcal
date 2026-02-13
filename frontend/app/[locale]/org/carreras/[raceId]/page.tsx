@@ -68,6 +68,8 @@ export default async function RaceFormPage({
     const initialRaceData =
         race != null ? { ...race, priceEur } : null;
 
+    console.log('initialData:', initialRaceData)
+
     return (
         <div className='flex flex-col md:flex-row'>
             <OrganizerSidebar />
