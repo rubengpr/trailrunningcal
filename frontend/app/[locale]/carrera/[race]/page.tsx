@@ -123,7 +123,6 @@ export default async function RacePage({
   const races = await getRaces(true);
   const raceData = races.find((r) => generateRaceSlug(r.name) === race);
   const displayPrice = getDisplayPrice(raceData?.priceEur);
-  console.log('raceData:', raceData)
 
   if (!raceData) {
     notFound();
