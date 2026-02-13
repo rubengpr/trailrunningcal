@@ -8,6 +8,7 @@ export async function updateRace(
   distanceKm: string,
   elevationGainM: string,
   websiteUrl: string,
+  description: string,
 ) {
   const response = await fetch('/api/races', {
     method: 'PATCH',
@@ -19,6 +20,7 @@ export async function updateRace(
       distanceKm: Number(distanceKm),
       elevationGainM: Number(elevationGainM),
       websiteUrl,
+      description,
     }),
   });
 

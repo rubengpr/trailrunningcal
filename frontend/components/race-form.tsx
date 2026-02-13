@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
 import { FormInput } from './form-input';
+import { FormTextarea } from './form-textarea';
 import type { TrailRace } from '@/types/race.types';
 import { updateRace } from '@/lib/api/races';
 import { updatePrice } from '@/lib/api/race_tiers';
@@ -22,6 +23,7 @@ export function RaceForm({ raceId, initialData, isEditMode }: RaceFormProps) {
     const [elevationGainM, setElevationGainM] = useState<string>(initialData?.elevationGainM != null ? String(initialData.elevationGainM) : '');
     const [priceEur, setPriceEur] = useState<string>(initialData != null ? String(initialData.priceEur) : '');
     const [websiteUrl, setWebsiteUrl] = useState(initialData?.websiteUrl ?? '');
+    const [description, setDescription] = useState(initialData?.description ?? '');
 
     const [dateError, setDateError] = useState('');
     const [nameError, setNameError] = useState('');
@@ -29,6 +31,7 @@ export function RaceForm({ raceId, initialData, isEditMode }: RaceFormProps) {
     const [elevationGainMError, setElevationGainMError] = useState('');
     const [priceEurError, setPriceEurError] = useState('');
     const [websiteUrlError, setWebsiteUrlError] = useState('');
+    const [descriptionError, setDescriptionError] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
@@ -181,6 +184,25 @@ export function RaceForm({ raceId, initialData, isEditMode }: RaceFormProps) {
         return true;
     };
 
+    const validateDescription = (value: string): boolean => {
+        const trimmedValue = value.trim();
+
+        // Description is optional, but if provided, must meet length requirements
+        if (trimmedValue.length > 0) {
+            if (trimmedValue.length < 10) {
+                setDescriptionError(t('errors.descriptionTooShort'));
+                return false;
+            }
+            if (trimmedValue.length > 1000) {
+                setDescriptionError(t('errors.descriptionTooLong'));
+                return false;
+            }
+        }
+
+        setDescriptionError('');
+        return true;
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
@@ -191,15 +213,16 @@ export function RaceForm({ raceId, initialData, isEditMode }: RaceFormProps) {
         const isElevationGainMValid = validateElevationGainM(elevationGainM);
         const isPriceEurValid = validatePriceEur(priceEur);
         const isWebsiteUrlValid = validateWebsiteUrl(websiteUrl);
+        const isDescriptionValid = validateDescription(description);
 
-        if (!isNameValid || !isDateValid || !isDistanceKmValid || !isElevationGainMValid || !isPriceEurValid || !isWebsiteUrlValid) {
+        if (!isNameValid || !isDateValid || !isDistanceKmValid || !isElevationGainMValid || !isPriceEurValid || !isWebsiteUrlValid || !isDescriptionValid) {
             return;
         }
 
         setIsLoading(true);
 
         try {
-            await updateRace(raceId, date, name, distanceKm, elevationGainM, websiteUrl)
+            await updateRace(raceId, date, name, distanceKm, elevationGainM, websiteUrl, description)
             await updatePrice({ raceId, priceEur: parseInt(priceEur, 10) })
 
             toast.success(t('success'));
@@ -212,6 +235,7 @@ export function RaceForm({ raceId, initialData, isEditMode }: RaceFormProps) {
                 setElevationGainM('');
                 setPriceEur('');
                 setWebsiteUrl('');
+                setDescription('');
             }
         } catch (e) {
             const errorMessage = e instanceof Error ? e.message : t('errors.general');
@@ -321,6 +345,21 @@ export function RaceForm({ raceId, initialData, isEditMode }: RaceFormProps) {
                         error={websiteUrlError}
                     />
                 </div>
+                <FormTextarea
+                    id='description'
+                    label={t('description')}
+                    value={description}
+                    placeholder={t('descriptionPlaceholder')}
+                    maxLength={2000}
+                    showCharacterCount={true}
+                    rows={5}
+                    onChange={(e) => {
+                        setDescription(e.target.value);
+                        setDescriptionError('');
+                        setError('');
+                    }}
+                    error={descriptionError}
+                />
             </div>
             <div className='flex justify-end'>
                 <button

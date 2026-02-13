@@ -281,6 +281,8 @@
         "priceEur": "Precio",
         "websiteUrl": "Sitio web",
         "websiteUrlPlaceholder": "https://ejemplo.com",
+        "description": "Descripción",
+        "descriptionPlaceholder": "Describe la carrera...",
         "save": "Guardar",
         "saving": "Guardando...",
         "success": "Carrera guardada correctamente",
@@ -300,6 +302,8 @@
           "priceTooLong": "Precio demasiado alto",
           "websiteUrlRequired": "El sitio web es obligatorio",
           "websiteUrlInvalid": "URL inválida",
+          "descriptionTooShort": "La descripción debe tener al menos 10 caracteres",
+          "descriptionTooLong": "La descripción no puede exceder 1000 caracteres",
           "general": "Error al guardar la carrera"
         }
       }

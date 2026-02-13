@@ -284,6 +284,8 @@
         "priceEur": "Preu",
         "websiteUrl": "Lloc web",
         "websiteUrlPlaceholder": "https://exemple.com",
+        "description": "Descripció",
+        "descriptionPlaceholder": "Descriu la cursa...",
         "save": "Desar",
         "saving": "Desant...",
         "success": "Cursa desada correctament",
@@ -303,6 +305,8 @@
           "priceTooLong": "Preu massa alt",
           "websiteUrlRequired": "El lloc web és obligatori",
           "websiteUrlInvalid": "URL invàlida",
+          "descriptionTooShort": "La descripció ha de tenir almenys 10 caràcters",
+          "descriptionTooLong": "La descripció no pot excedir 1000 caràcters",
           "general": "Error en desar la cursa"
         }
       }
