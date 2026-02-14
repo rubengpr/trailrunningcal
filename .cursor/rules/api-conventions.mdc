@@ -1,308 +1,115 @@
 ---
-description: 'Backend API development, REST patterns, and data handling for PERN-TS stack'
-globs: backend/src/**/*.ts
+description: 'Next.js API routes, Route Handlers, and data layer conventions'
+globs: frontend/app/api/**/*.ts, frontend/lib/api/**/*.ts, frontend/lib/db/**/*.ts
 alwaysApply: false
 ---
 
-# API Conventions
+# Next.js API Conventions
 
-## REST API Structure
+## Route Handlers
 
-- Use standard REST endpoints with clear resource naming
-- Follow HTTP status codes and methods consistently
-- Keep endpoints simple and predictable
+- Export named async functions per HTTP method: `GET`, `POST`, `PATCH`, `PUT`, `DELETE`
+- Use `NextRequest` and `NextResponse` from `next/server`
 
 ```typescript
-// routes/trails.routes.ts
-import { Router } from 'express';
-import {
-  getAllTrails,
-  getTrailById,
-  createTrail,
-  updateTrail,
-  deleteTrail,
-} from '../controllers/trail.controller';
-
-const router = Router();
-
-router.get('/', getAllTrails);
-router.get('/:id', getTrailById);
-router.post('/', createTrail);
-router.put('/:id', updateTrail);
-router.delete('/:id', deleteTrail);
-
-export default router;
+// app/api/races/route.ts
+export async function PATCH(request: NextRequest) {
+  const body = await request.json();
+  // ...
+  return NextResponse.json({ success: true, data }, { status: 200 });
+}
 ```
 
-## Controller Patterns
+## Response Format
 
-- Keep controllers thin - delegate business logic to services
-- Use proper error handling and status codes
-- Validate input data before processing
+- Success: `{ success: true, data }` with status 200
+- Error: `{ error: string }` with appropriate status (400, 401, 404, 429, 500)
 
 ```typescript
-// controllers/trail.controller.ts
-import { Request, Response } from 'express';
-import { getAllTrails as getAllTrailsService } from '../services/trail.service';
-import { handleError } from '../utils/error.util';
-
-export const getAllTrails = async (req: Request, res: Response) => {
-  try {
-    const { page = 1, limit = 20, difficulty } = req.query;
-    const trails = await getAllTrailsService({
-      page: Number(page),
-      limit: Number(limit),
-      difficulty: difficulty as string,
-    });
-
-    res.status(200).json({ success: true, data: trails });
-  } catch (error) {
-    const { message, statusCode } = handleError(error);
-    res.status(statusCode).json({ message });
-  }
-};
-
-export const getTrailById = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const trail = await getTrailByIdService(id);
-
-    if (!trail) {
-      res.status(404).json({ message: 'Sendero no encontrado' });
-      return;
-    }
-
-    res.status(200).json({ success: true, data: trail });
-  } catch (error) {
-    const { message, statusCode } = handleError(error);
-    res.status(statusCode).json({ message });
-  }
-};
+return NextResponse.json({ success: true, data });
+return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 ```
 
-## Service Layer
+## Auth
 
-- Handle business logic and database operations
-- Use dependency injection for testability
-- Keep services focused on single responsibilities
+- Check `supabase.auth.getUser()` at the start of protected routes
+- Return 401 when auth fails or user is missing
 
 ```typescript
-// services/trail.service.ts
-import { findAll, findByName, create } from '../repositories/trail.repository';
-import type { Trail, TrailWithoutId, TrailFilters } from '../types/trail.types';
-
-export const createTrail = async (data: TrailWithoutId): Promise<Trail> => {
-  const { name, distance, difficulty, location } = data;
-
-  if (!name || !distance || !difficulty || !location) {
-    throw { message: 'Faltan campos requeridos', statusCode: 400 };
-  }
-
-  if (name.length < 1 || name.length > 100) {
-    throw {
-      message: 'El nombre del sendero debe tener entre 1 y 100 caracteres',
-      statusCode: 400,
-    };
-  }
-
-  if (distance <= 0 || distance > 1000) {
-    throw {
-      message: 'La distancia debe estar entre 0.1 y 1000 km',
-      statusCode: 400,
-    };
-  }
-
-  const allowedDifficulties = ['fácil', 'moderado', 'difícil', 'experto'];
-  if (!allowedDifficulties.includes(difficulty)) {
-    throw { message: 'Dificultad no válida', statusCode: 400 };
-  }
-
-  const existingTrail = await findByName(name);
-  if (existingTrail) {
-    throw { message: 'Ya existe un sendero con este nombre', statusCode: 409 };
-  }
-
-  try {
-    return await create(data);
-  } catch (error) {
-    throw { message: 'Error al crear sendero', statusCode: 500 };
-  }
-};
+const supabase = await createClient();
+const { data: { user }, error: authError } = await supabase.auth.getUser();
+if (authError || !user) {
+  return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+}
 ```
 
-## Database Repository Pattern with Prisma
+## Validation
 
-- Use Prisma ORM for type-safe database operations
-- Keep repository pattern for business logic separation
-- Handle Prisma errors gracefully
+- Validate and sanitize all input inside the handler before DB or external calls
+- Check types, lengths, required fields, and formats (e.g. URL)
 
 ```typescript
-// repositories/trail.repository.ts
-import { PrismaClient } from '@prisma/client';
-import type { Trail, TrailWithoutId, TrailFilters } from '../types/trail.types';
+if (!raceName || typeof raceName !== 'string' || raceName.trim().length === 0) {
+  return NextResponse.json({ error: 'Race name is required' }, { status: 400 });
+}
+try { new URL(raceWebsite); } catch {
+  return NextResponse.json({ error: 'Invalid website URL format' }, { status: 400 });
+}
+```
 
-const prisma = new PrismaClient();
+## Data Layer
 
-const mapPrismaToTrail = (prismaTrail: any): Trail => ({
-  id: prismaTrail.id,
-  name: prismaTrail.name,
-  distance: prismaTrail.distance,
-  difficulty: prismaTrail.difficulty,
-  location: prismaTrail.location,
-  createdAt: prismaTrail.createdAt,
-  updatedAt: prismaTrail.updatedAt,
-});
+- Reads: Server Components call `lib/db/*` directly (e.g. `getRaces()`)
+- Mutations: expose API routes; client calls `lib/api/*` wrappers (e.g. `updateRace()`)
+- Do not fetch from client for server-available data
 
-export const findAll = async (filters: TrailFilters): Promise<Trail[]> => {
-  const { page = 1, limit = 20, difficulty } = filters;
-  const skip = (page - 1) * limit;
+```typescript
+// lib/db/races.ts - used in Server Components
+export async function getRaces(): Promise<TrailRace[]> { /* ... */ }
 
-  const trails = await prisma.trail.findMany({
-    where: difficulty ? { difficulty } : undefined,
-    orderBy: { createdAt: 'desc' },
-    skip,
-    take: limit,
-  });
-
-  return trails.map(mapPrismaToTrail);
-};
-
-export const findById = async (id: string): Promise<Trail | null> => {
-  const trail = await prisma.trail.findUnique({ where: { id } });
-  return trail ? mapPrismaToTrail(trail) : null;
-};
-
-export const create = async (trailData: TrailWithoutId): Promise<Trail> => {
-  const trail = await prisma.trail.create({ data: trailData });
-  return mapPrismaToTrail(trail);
-};
+// lib/api/races.ts - used in Client Components for mutations
+export async function updateRace(...) {
+  const response = await fetch('/api/races', { method: 'PATCH', ... });
+  if (!response.ok) throw new Error(responseData.error);
+  return responseData;
+}
 ```
 
 ## Error Handling
 
-- Create custom error classes for different scenarios
-- Use centralized error handling for consistency
+- Wrap handler logic in try/catch
+- Return 4xx/5xx via `NextResponse.json` with an `error` message
+- Log errors with `console.error` before returning
 
 ```typescript
-// utils/error.util.ts
-export const handleError = (
-  error: unknown,
-): { message: string; statusCode: number } => {
-  if (
-    typeof error === 'object' &&
-    error !== null &&
-    'message' in error &&
-    'statusCode' in error
-  ) {
-    return {
-      message: String(error.message),
-      statusCode: Number(error.statusCode),
-    };
-  }
-
-  return {
-    message: error instanceof Error ? error.message : 'Something went wrong',
-    statusCode: 500,
-  };
-};
-```
-
-## Middleware Patterns
-
-- Use middleware for common functionality
-- Keep middleware focused and reusable
-- Handle errors in middleware
-
-```typescript
-// middleware/validation.middleware.ts
-import { Request, Response, NextFunction } from 'express';
-
-export const validateTrailData = (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): void => {
-  const { name, distance, difficulty } = req.body;
-
-  if (!name || name.trim().length === 0) {
-    throw new ValidationError('El nombre del sendero es requerido', 'name');
-  }
-
-  if (!distance || distance <= 0) {
-    throw new ValidationError('La distancia debe ser mayor a 0', 'distance');
-  }
-
-  if (
-    !difficulty ||
-    !['fácil', 'moderado', 'difícil', 'experto'].includes(difficulty)
-  ) {
-    throw new ValidationError('Dificultad inválida', 'difficulty');
-  }
-
-  next();
-};
-
-// middleware/error.middleware.ts
-export const errorHandler = (
-  error: unknown,
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): void => {
-  if (
-    typeof error === 'object' &&
-    error !== null &&
-    'message' in error &&
-    'statusCode' in error
-  ) {
-    res.status(Number(error.statusCode)).json({
-      message: String(error.message),
-    });
-  } else {
-    console.error('Unexpected error:', error);
-    res.status(500).json({
-      message: 'Internal server error',
-    });
-  }
-};
-```
-
-## API Response Format
-
-- Use consistent response structure
-- Include success status and data
-- Provide meaningful error messages
-
-```typescript
-// types/api.types.ts
-export interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  message?: string;
-  code?: string;
-  pagination?: {
-    page: number;
-    limit: number;
-    total: number;
-  };
+try {
+  // ... handler logic
+} catch (error) {
+  console.error('API error:', error);
+  return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
 }
+```
 
-// utils/response.util.ts
-export const createSuccessResponse = <T>(
-  data: T,
-  message?: string,
-): ApiResponse<T> => ({
-  success: true,
-  data,
-  message,
-});
+## Rate Limiting
 
-export const createErrorResponse = (
-  message: string,
-  code?: string,
-): ApiResponse<null> => ({
-  success: false,
-  message,
-  code,
-});
+- Call `checkRateLimit(request)` at the start of public POST endpoints
+- Return 429 when limit is exceeded
+
+```typescript
+const rateLimitResult = checkRateLimit(request);
+if (!rateLimitResult.success) {
+  return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 });
+}
+```
+
+## File Structure
+
+- One `route.ts` per resource under `app/api/[resource]/`
+- Dynamic segments: `app/api/races/[id]/route.ts` for `GET /api/races/123`
+
+```
+app/api/
+  races/route.ts        → PATCH /api/races
+  propose-race/route.ts → POST /api/propose-race
+  health/route.ts       → GET /api/health
 ```
