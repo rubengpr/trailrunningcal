@@ -124,9 +124,6 @@ export default function HomeClient({ races }: HomeClientProps) {
       <main>
         <ErrorBoundary
           fallback={<SearchError onRetry={handleRetry} />}
-          onError={(error, errorInfo) => {
-            console.error('Error in main content area:', error, errorInfo);
-          }}
         >
           <section id="carreras" className="py-4">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">

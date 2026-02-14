@@ -83,7 +83,6 @@ export function RaceOrganizerClaimCard({
             toast.success(t('successMessage'));
             setIsConfirmationModalOpen(false);
         } catch (error) {
-            console.error('Error claiming organizer:', error);
             toast.error(
                 error instanceof Error
                     ? error.message

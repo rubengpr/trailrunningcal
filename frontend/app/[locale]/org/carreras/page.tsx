@@ -33,7 +33,6 @@ export default async function OrganizerRacesPage({
 
         if (organizerError || !organizer) {
             // No organizer record found - treat as no races yet
-            console.log('No organizer record found for user:', user.id);
         } else {
             // Fetch races for this organizer
             const { data: racesData, error: racesError } = await supabase
