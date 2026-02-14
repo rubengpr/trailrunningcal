@@ -38,7 +38,6 @@ export async function generateMetadata({
 }
 
 export default async function HomePage({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   params: _params,
 }: {
   params: Promise<{ locale: Locale }>;
