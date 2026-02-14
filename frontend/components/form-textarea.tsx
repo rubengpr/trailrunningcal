@@ -64,6 +64,9 @@ export function FormTextarea({
         value={value}
         {...props}
       />
+      {props.error && (
+        <p className="text-sm text-red-500">{props.error}</p>
+      )}
     </div>
   );
 }
