@@ -95,7 +95,7 @@ export function RaceForm({ raceId, initialData, isEditMode }: RaceFormProps) {
         ],
         description: [
             ValidationRules.optionalMinLength(10, t('errors.descriptionTooShort')),
-            ValidationRules.maxLength(1000, t('errors.descriptionTooLong')),
+            ValidationRules.maxLength(2000, t('errors.descriptionTooLong')),
         ],
     };
 
