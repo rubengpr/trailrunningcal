@@ -19,11 +19,11 @@ export async function PATCH(request: NextRequest) {
 
     // Validate and sanitize description if provided
     let sanitizedDescription: string | null = null;
-    
+
     if (description !== undefined && description !== null) {
       if (typeof description !== 'string') {
         return NextResponse.json(
-          { error: 'Description must be a string' },
+          { error: 'Invalid input' },
           { status: 400 },
         );
       }
@@ -32,15 +32,9 @@ export async function PATCH(request: NextRequest) {
 
       // Description is optional, but if provided, must meet length requirements
       if (trimmedDescription.length > 0) {
-        if (trimmedDescription.length < 10) {
+        if (trimmedDescription.length < 10 || trimmedDescription.length > 2000) {
           return NextResponse.json(
-            { error: 'Description must be at least 10 characters' },
-            { status: 400 },
-          );
-        }
-        if (trimmedDescription.length > 1000) {
-          return NextResponse.json(
-            { error: 'Description cannot exceed 1000 characters' },
+            { error: 'Invalid input' },
             { status: 400 },
           );
         }
