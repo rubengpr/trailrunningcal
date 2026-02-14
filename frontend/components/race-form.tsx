@@ -8,6 +8,7 @@ import { FormTextarea } from './form-textarea';
 import type { TrailRace } from '@/types/race.types';
 import { updateRace } from '@/lib/api/races';
 import { updatePrice } from '@/lib/api/race_tiers';
+import { ValidationRules, normalizeUrl, type FieldErrors } from '@/lib/validation';
 
 interface RaceFormProps {
     raceId: string;
@@ -25,204 +26,93 @@ export function RaceForm({ raceId, initialData, isEditMode }: RaceFormProps) {
     const [websiteUrl, setWebsiteUrl] = useState(initialData?.websiteUrl ?? '');
     const [description, setDescription] = useState(initialData?.description ?? '');
 
-    const [dateError, setDateError] = useState('');
-    const [nameError, setNameError] = useState('');
-    const [distanceKmError, setDistanceKmError] = useState('');
-    const [elevationGainMError, setElevationGainMError] = useState('');
-    const [priceEurError, setPriceEurError] = useState('');
-    const [websiteUrlError, setWebsiteUrlError] = useState('');
-    const [descriptionError, setDescriptionError] = useState('');
+    const [errors, setErrors] = useState<FieldErrors>({});
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    const validateName = (value: string): boolean => {
-        const trimmedValue = value.trim();
-        if (!trimmedValue) {
-            setNameError(t('errors.nameRequired'));
-            return false;
-        }
-        if (trimmedValue.length < 5) {
-            setNameError(t('errors.nameTooShort'));
-            return false;
-        }
-        if (trimmedValue.length > 200) {
-            setNameError(t('errors.nameTooLong'));
-            return false;
-        }
-        setNameError('');
-        return true;
-    };
+    // Validation rules configuration
+    const getValidationRules = () => ({
+        name: [
+            ValidationRules.required(t('errors.nameRequired')),
+            ValidationRules.minLength(5, t('errors.nameTooShort')),
+            ValidationRules.maxLength(200, t('errors.nameTooLong')),
+        ],
+        date: [
+            ValidationRules.required(t('errors.dateRequired')),
+        ],
+        distanceKm: [
+            ValidationRules.required(t('errors.distanceRequired')),
+            ValidationRules.noLeadingZeros(t('errors.distanceInvalid')),
+            ValidationRules.numericRange(0.01, 1000, t('errors.distanceInvalid')),
+        ],
+        elevationGainM: [
+            ValidationRules.required(t('errors.elevationRequired')),
+            ValidationRules.noDecimals(t('errors.elevationInvalid')),
+            ValidationRules.noLeadingZeros(t('errors.elevationInvalid')),
+            ValidationRules.integerRange(1, 100000, t('errors.elevationInvalid')),
+        ],
+        priceEur: [
+            ValidationRules.required(t('errors.priceRequired')),
+            ValidationRules.noDecimals(t('errors.priceInvalid')),
+            ValidationRules.integerRange(0, 1000, t('errors.priceInvalid')),
+        ],
+        websiteUrl: [
+            ValidationRules.validUrl(t('errors.websiteUrlInvalid')),
+        ],
+        description: [
+            ValidationRules.optionalMinLength(10, t('errors.descriptionTooShort')),
+            ValidationRules.maxLength(1000, t('errors.descriptionTooLong')),
+        ],
+    });
 
-    const validateDate = (value: string): boolean => {
-        if (!value) {
-            setDateError(t('errors.dateRequired'));
-            return false;
-        }
-        setDateError('');
-        return true;
-    };
+    const validateField = (field: string, value: string) => {
+        const rules = getValidationRules()[field as keyof ReturnType<typeof getValidationRules>];
+        if (!rules) return true;
 
-    const validateDistanceKm = (value: string): boolean => {
-        if (!value || value.trim() === '') {
-            setDistanceKmError(t('errors.distanceRequired'));
-            return false;
-        }
-        // Check for leading zeros (invalid: 0000005, 05, etc.)
-        // But allow 0.5 or 0,5 (decimal values)
-        const trimmedValue = value.trim();
-        const decimalIndex = trimmedValue.indexOf(',') !== -1 ? trimmedValue.indexOf(',') : trimmedValue.indexOf('.');
-        const integerPart = decimalIndex !== -1 ? trimmedValue.substring(0, decimalIndex) : trimmedValue;
-
-        // Check if integer part has leading zeros (more than one zero or zero followed by digits)
-        if (integerPart.length > 1 && integerPart.startsWith('0')) {
-            setDistanceKmError(t('errors.distanceInvalid'));
-            return false;
-        }
-
-        // Replace comma with dot for parsing (European format)
-        const normalizedValue = trimmedValue.replace(',', '.');
-        const numValue = parseFloat(normalizedValue);
-        if (isNaN(numValue) || numValue <= 0) {
-            setDistanceKmError(t('errors.distanceInvalid'));
-            return false;
-        }
-        if (numValue >= 1000) {
-            setDistanceKmError(t('errors.distanceTooLong'));
-            return false;
-        }
-        setDistanceKmError('');
-        return true;
-    };
-
-    const validateElevationGainM = (value: string): boolean => {
-        if (!value || value.trim() === '') {
-            setElevationGainMError(t('errors.elevationRequired'));
-            return false;
-        }
-
-        const trimmedValue = value.trim();
-
-        // Check for decimals (not allowed)
-        if (trimmedValue.includes('.') || trimmedValue.includes(',')) {
-            setElevationGainMError(t('errors.elevationInvalid'));
-            return false;
-        }
-
-        // Check for leading zeros
-        if (trimmedValue.length > 1 && trimmedValue.startsWith('0')) {
-            setElevationGainMError(t('errors.elevationInvalid'));
-            return false;
-        }
-
-        const numValue = parseInt(trimmedValue, 10);
-        if (isNaN(numValue) || numValue <= 0) {
-            setElevationGainMError(t('errors.elevationInvalid'));
-            return false;
-        }
-        if (numValue >= 100000) {
-            setElevationGainMError(t('errors.elevationTooLong'));
-            return false;
-        }
-        setElevationGainMError('');
-        return true;
-    };
-
-    const validatePriceEur = (value: string): boolean => {
-        if (!value || value.trim() === '') {
-            setPriceEurError(t('errors.priceRequired'));
-            return false;
-        }
-
-        const trimmedValue = value.trim();
-        const numValue = parseInt(trimmedValue, 10);
-
-        if (isNaN(numValue) || numValue < 0) {
-            setPriceEurError(t('errors.priceInvalid'));
-            return false;
-        }
-        if (numValue >= 1000) {
-            setPriceEurError(t('errors.priceTooLong'));
-            return false;
-        }
-        // Check if it's a whole number (no decimals)
-        if (trimmedValue.includes(',') || trimmedValue.includes('.')) {
-            setPriceEurError(t('errors.priceInvalid'));
-            return false;
-        }
-        setPriceEurError('');
-        return true;
-    };
-
-    const validateWebsiteUrl = (value: string): boolean => {
-        const trimmedValue = value.trim();
-
-        if (!trimmedValue) {
-            setWebsiteUrlError(t('errors.websiteUrlRequired'));
-            return false;
-        }
-
-        // Normalize URL: prepend https:// if no protocol is present
-        let normalizedUrl = trimmedValue;
-        if (!trimmedValue.startsWith('http://') && !trimmedValue.startsWith('https://')) {
-            normalizedUrl = `https://${trimmedValue}`;
-            // Update the input field with the normalized URL
-            setWebsiteUrl(normalizedUrl);
-        }
-
-        try {
-            const url = new URL(normalizedUrl);
-            if (url.protocol !== 'http:' && url.protocol !== 'https:') {
-                setWebsiteUrlError(t('errors.websiteUrlInvalid'));
-                return false;
-            }
-        } catch {
-            setWebsiteUrlError(t('errors.websiteUrlInvalid'));
-            return false;
-        }
-
-        setWebsiteUrlError('');
-        return true;
-    };
-
-    const validateDescription = (value: string): boolean => {
-        const trimmedValue = value.trim();
-
-        // Description is optional, but if provided, must meet length requirements
-        if (trimmedValue.length > 0) {
-            if (trimmedValue.length < 10) {
-                setDescriptionError(t('errors.descriptionTooShort'));
-                return false;
-            }
-            if (trimmedValue.length > 1000) {
-                setDescriptionError(t('errors.descriptionTooLong'));
+        for (const rule of rules) {
+            if (!rule.validate(value)) {
+                setErrors(prev => ({ ...prev, [field]: rule.errorMessage }));
                 return false;
             }
         }
-
-        setDescriptionError('');
+        setErrors(prev => ({ ...prev, [field]: '' }));
         return true;
+    };
+
+    const clearFieldError = (field: string) => {
+        setErrors(prev => ({ ...prev, [field]: '' }));
+        setError('');
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
 
-        const isNameValid = validateName(name);
-        const isDateValid = validateDate(date);
-        const isDistanceKmValid = validateDistanceKm(distanceKm);
-        const isElevationGainMValid = validateElevationGainM(elevationGainM);
-        const isPriceEurValid = validatePriceEur(priceEur);
-        const isWebsiteUrlValid = validateWebsiteUrl(websiteUrl);
-        const isDescriptionValid = validateDescription(description);
+        // Normalize URL before validation
+        const normalizedWebsiteUrl = normalizeUrl(websiteUrl);
+        if (normalizedWebsiteUrl !== websiteUrl) {
+            setWebsiteUrl(normalizedWebsiteUrl);
+        }
 
-        if (!isNameValid || !isDateValid || !isDistanceKmValid || !isElevationGainMValid || !isPriceEurValid || !isWebsiteUrlValid || !isDescriptionValid) {
+        // Validate all fields
+        const validationResults = [
+            validateField('name', name),
+            validateField('date', date),
+            validateField('distanceKm', distanceKm),
+            validateField('elevationGainM', elevationGainM),
+            validateField('priceEur', priceEur),
+            validateField('websiteUrl', normalizedWebsiteUrl),
+            validateField('description', description),
+        ];
+
+        if (!validationResults.every(Boolean)) {
             return;
         }
 
         setIsLoading(true);
 
         try {
-            await updateRace(raceId, date, name, distanceKm, elevationGainM, websiteUrl, description)
+            await updateRace(raceId, date, name, distanceKm, elevationGainM, normalizedWebsiteUrl, description)
             await updatePrice({ raceId, priceEur: parseInt(priceEur, 10) })
 
             toast.success(t('success'));
@@ -260,10 +150,9 @@ export function RaceForm({ raceId, initialData, isEditMode }: RaceFormProps) {
                         value={name}
                         onChange={(e) => {
                             setName(e.target.value);
-                            setNameError('');
-                            setError('');
+                            clearFieldError('name');
                         }}
-                        error={nameError}
+                        error={errors.name}
                     />
                     <FormInput
                         id='date'
@@ -272,10 +161,9 @@ export function RaceForm({ raceId, initialData, isEditMode }: RaceFormProps) {
                         value={date}
                         onChange={(e) => {
                             setDate(e.target.value);
-                            setDateError('');
-                            setError('');
+                            clearFieldError('date');
                         }}
-                        error={dateError}
+                        error={errors.date}
                     />
                     <FormInput
                         id='distanceKm'
@@ -292,10 +180,9 @@ export function RaceForm({ raceId, initialData, isEditMode }: RaceFormProps) {
                                 inputValue = inputValue.substring(0, commaIndex + 1) + inputValue.substring(commaIndex + 1).replace(/,/g, '');
                             }
                             setDistanceKm(inputValue);
-                            setDistanceKmError('');
-                            setError('');
+                            clearFieldError('distanceKm');
                         }}
-                        error={distanceKmError}
+                        error={errors.distanceKm}
                     />
                     <FormInput
                         id='elevationGainM'
@@ -311,10 +198,9 @@ export function RaceForm({ raceId, initialData, isEditMode }: RaceFormProps) {
                                 inputValue = inputValue.replace(/^0+/, '') || '';
                             }
                             setElevationGainM(inputValue);
-                            setElevationGainMError('');
-                            setError('');
+                            clearFieldError('elevationGainM');
                         }}
-                        error={elevationGainMError}
+                        error={errors.elevationGainM}
                     />
                     <FormInput
                         id='priceEur'
@@ -326,10 +212,9 @@ export function RaceForm({ raceId, initialData, isEditMode }: RaceFormProps) {
                             // Only allow whole numbers (no decimals)
                             const inputValue = e.target.value.replace(/[^0-9]/g, '');
                             setPriceEur(inputValue);
-                            setPriceEurError('');
-                            setError('');
+                            clearFieldError('priceEur');
                         }}
-                        error={priceEurError}
+                        error={errors.priceEur}
                     />
                     <FormInput
                         id='websiteUrl'
@@ -339,10 +224,9 @@ export function RaceForm({ raceId, initialData, isEditMode }: RaceFormProps) {
                         placeholder={t('websiteUrlPlaceholder')}
                         onChange={(e) => {
                             setWebsiteUrl(e.target.value);
-                            setWebsiteUrlError('');
-                            setError('');
+                            clearFieldError('websiteUrl');
                         }}
-                        error={websiteUrlError}
+                        error={errors.websiteUrl}
                     />
                 </div>
                 <FormTextarea
@@ -355,10 +239,9 @@ export function RaceForm({ raceId, initialData, isEditMode }: RaceFormProps) {
                     rows={5}
                     onChange={(e) => {
                         setDescription(e.target.value);
-                        setDescriptionError('');
-                        setError('');
+                        clearFieldError('description');
                     }}
-                    error={descriptionError}
+                    error={errors.description}
                 />
             </div>
             <div className='flex justify-end'>
