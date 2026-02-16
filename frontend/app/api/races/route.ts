@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
+import { getOrganizerRaceContext } from '@/lib/auth-organizer';
 
 export async function PATCH(request: NextRequest) {
   try {
@@ -16,6 +17,11 @@ export async function PATCH(request: NextRequest) {
 
     const { raceId, date, name, distanceKm, elevationGainM, websiteUrl, description } =
       await request.json();
+
+    const context = await getOrganizerRaceContext(supabase, raceId);
+    if (!context) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
 
     // Validate and sanitize description if provided
     let sanitizedDescription: string | null = null;

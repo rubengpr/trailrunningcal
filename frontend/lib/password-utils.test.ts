@@ -20,8 +20,8 @@ describe('validatePasswordStrength', () => {
     });
 
     it('should fail for null or undefined', () => {
-      expect(validatePasswordStrength(null as any)).toBe(false);
-      expect(validatePasswordStrength(undefined as any)).toBe(false);
+      expect(validatePasswordStrength(null as unknown as string)).toBe(false);
+      expect(validatePasswordStrength(undefined as unknown as string)).toBe(false);
     });
   });
 

@@ -286,6 +286,23 @@
         "save": "Guardar",
         "saving": "Guardando...",
         "success": "Carrera guardada correctamente",
+        "image": {
+          "label": "Imagen principal",
+          "selectFile": "Seleccionar archivo",
+          "changeFile": "Cambiar archivo",
+          "replaceFile": "Reemplazar imagen",
+          "checking": "Comprobando imagen...",
+          "uploaded": "Imagen subida",
+          "noImage": "No hay imagen subida",
+          "removeImage": "Quitar imagen",
+          "removed": "Imagen eliminada",
+          "errors": {
+            "fileType": "Formato no válido. Usa JPEG, PNG o WebP.",
+            "fileSize": "El archivo es demasiado grande. Máx. 2 MB.",
+            "general": "Error al subir la imagen",
+            "uploadFailed": "Los datos se guardaron pero la imagen no se pudo subir. Inténtalo de nuevo."
+          }
+        },
         "errors": {
           "nameRequired": "El nombre es obligatorio",
           "nameTooShort": "El nombre debe tener al menos 5 caracteres",

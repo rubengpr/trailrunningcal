@@ -128,16 +128,16 @@ export interface FieldErrors {
     [key: string]: string;
 }
 
-export interface FormValidator<T extends Record<string, any>> {
+export interface FormValidator<T> {
     errors: FieldErrors;
-    validate: (field: keyof T, value: any, rules: ValidationRule[]) => boolean;
+    validate: (field: keyof T, value: string, rules: ValidationRule[]) => boolean;
     validateAll: (fields: Partial<Record<keyof T, ValidationRule[]>>, values: T) => boolean;
     clearError: (field: keyof T) => void;
     clearAll: () => void;
     setErrors: (errors: FieldErrors) => void;
 }
 
-export function createFormValidator<T extends Record<string, any>>(
+export function createFormValidator<T>(
     setErrors: (errors: FieldErrors) => void,
     errors: FieldErrors
 ): FormValidator<T> {
@@ -153,7 +153,7 @@ export function createFormValidator<T extends Record<string, any>>(
             let allValid = true;
 
             for (const [field, rules] of Object.entries(fieldRules)) {
-                const value = values[field as keyof T];
+                const value = values[field as keyof T] as string;
                 const result = validateField(value, rules as ValidationRule[]);
                 newErrors[field] = result.error;
                 if (!result.isValid) {

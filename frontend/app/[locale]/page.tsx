@@ -37,11 +37,7 @@ export async function generateMetadata({
   });
 }
 
-export default async function HomePage({
-  params: _params,
-}: {
-  params: Promise<{ locale: Locale }>;
-}) {
+export default async function HomePage() {
   // Fetch fresh race list on each request so new races appear immediately
   const races = await getRaces();
 

@@ -1,13 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
 import { FormInput } from './form-input';
 import { FormTextarea } from './form-textarea';
+import { FormImageInput } from './form-image-input';
 import type { TrailRace } from '@/types/race.types';
 import { updateRace } from '@/lib/api/races';
 import { updatePrice } from '@/lib/api/race_tiers';
+import { uploadRaceImage, checkRaceImage, removeRaceImage, type RaceImageStatus } from '@/lib/api/race-image';
 import {
     ValidationRule,
     ValidationRules,
@@ -45,6 +47,21 @@ export function RaceForm({ raceId, initialData, isEditMode }: RaceFormProps) {
     const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+
+    const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
+    const [imageError, setImageError] = useState('');
+    const [existingImageStatus, setExistingImageStatus] = useState<RaceImageStatus | null>(null);
+    const [isCheckingImage, setIsCheckingImage] = useState(false);
+
+    useEffect(() => {
+        if (isEditMode && initialData?.organizerId) {
+            setIsCheckingImage(true);
+            checkRaceImage(raceId)
+                .then(status => setExistingImageStatus(status))
+                .catch(err => console.error('Failed to check image:', err))
+                .finally(() => setIsCheckingImage(false));
+        }
+    }, [raceId, isEditMode, initialData?.organizerId]);
 
     const validator = createFormValidator<RaceFormFields>(setFieldErrors, fieldErrors);
 
@@ -132,6 +149,21 @@ export function RaceForm({ raceId, initialData, isEditMode }: RaceFormProps) {
             await updateRace(raceId, date, name, distanceKm, elevationGainM, websiteUrl, description)
             await updatePrice({ raceId, priceEur: parseInt(priceEur, 10) })
 
+            if (selectedImageFile) {
+                try {
+                    await uploadRaceImage(raceId, selectedImageFile);
+                    setSelectedImageFile(null);
+                    const status = await checkRaceImage(raceId);
+                    setExistingImageStatus(status);
+                } catch (err) {
+                    const imageErrorMsg = err instanceof Error ? err.message : t('image.errors.general');
+                    toast.error(t('image.errors.uploadFailed'));
+                    setImageError(imageErrorMsg);
+                    setIsLoading(false);
+                    return;
+                }
+            }
+
             toast.success(t('success'));
 
             // Clear form only if creating new race
@@ -143,6 +175,7 @@ export function RaceForm({ raceId, initialData, isEditMode }: RaceFormProps) {
                 setPriceEur('');
                 setWebsiteUrl('');
                 setDescription('');
+                setSelectedImageFile(null);
             }
         } catch (e) {
             const errorMessage = e instanceof Error ? e.message : t('errors.general');
@@ -152,6 +185,8 @@ export function RaceForm({ raceId, initialData, isEditMode }: RaceFormProps) {
             setIsLoading(false);
         }
     };
+
+    const showImageBlock = isEditMode && initialData?.organizerId;
 
     return (
         <form onSubmit={handleSubmit} noValidate className='flex flex-col p-4 md:p-6 gap-14 md:gap-10'>
@@ -267,6 +302,43 @@ export function RaceForm({ raceId, initialData, isEditMode }: RaceFormProps) {
                     }}
                     error={fieldErrors.description}
                 />
+                {showImageBlock && (
+                    <FormImageInput
+                        id='race-image'
+                        label={t('image.label')}
+                        value={selectedImageFile}
+                        onChange={(file) => {
+                            setSelectedImageFile(file);
+                            setImageError('');
+                        }}
+                        error={imageError}
+                        disabled={isLoading}
+                        existingImage={existingImageStatus}
+                        isCheckingExisting={isCheckingImage}
+                        onRemoveExisting={async () => {
+                            try {
+                                await removeRaceImage(raceId);
+                                const status = await checkRaceImage(raceId);
+                                setExistingImageStatus(status);
+                                toast.success(t('image.removed'));
+                            } catch (err) {
+                                const errorMsg = err instanceof Error ? err.message : t('image.errors.general');
+                                toast.error(errorMsg);
+                            }
+                        }}
+                        messages={{
+                            selectFile: t('image.selectFile'),
+                            changeFile: t('image.changeFile'),
+                            replaceFile: t('image.replaceFile'),
+                            checking: t('image.checking'),
+                            uploaded: t('image.uploaded'),
+                            noImage: t('image.noImage'),
+                            removeImage: t('image.removeImage'),
+                            fileTypeError: t('image.errors.fileType'),
+                            fileSizeError: t('image.errors.fileSize'),
+                        }}
+                    />
+                )}
             </div>
             <div className='flex justify-end'>
                 <button

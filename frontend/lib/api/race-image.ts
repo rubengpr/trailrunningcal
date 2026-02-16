@@ -1,0 +1,46 @@
+export interface RaceImageStatus {
+  hasImage: boolean;
+  filename?: string;
+}
+
+export async function checkRaceImage(raceId: string): Promise<RaceImageStatus> {
+  const response = await fetch(`/api/races/${raceId}/image`, {
+    method: 'GET',
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error ?? 'Failed to check image');
+  }
+
+  return data;
+}
+
+export async function uploadRaceImage(raceId: string, file: File): Promise<void> {
+  const formData = new FormData();
+  formData.append('image', file);
+
+  const response = await fetch(`/api/races/${raceId}/image`, {
+    method: 'POST',
+    body: formData,
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error ?? 'Failed to update race');
+  }
+}
+
+export async function removeRaceImage(raceId: string): Promise<void> {
+  const response = await fetch(`/api/races/${raceId}/image`, {
+    method: 'DELETE',
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error ?? 'Failed to update race');
+  }
+}

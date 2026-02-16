@@ -345,6 +345,11 @@ describe('createFormValidator', () => {
   let errors: FieldErrors;
   let setErrors: (newErrors: FieldErrors) => void;
 
+  interface TestFormFields {
+    name: string;
+    email: string;
+  }
+
   beforeEach(() => {
     errors = {};
     setErrors = vi.fn((newErrors) => {
@@ -354,7 +359,7 @@ describe('createFormValidator', () => {
 
   describe('validate', () => {
     it('should validate a single field and update errors', () => {
-      const validator = createFormValidator(setErrors, errors);
+      const validator = createFormValidator<TestFormFields>(setErrors, errors);
       const rules = [ValidationRules.required('Required')];
 
       const result = validator.validate('name', 'test', rules);
@@ -364,7 +369,7 @@ describe('createFormValidator', () => {
     });
 
     it('should set error when validation fails', () => {
-      const validator = createFormValidator(setErrors, errors);
+      const validator = createFormValidator<TestFormFields>(setErrors, errors);
       const rules = [ValidationRules.required('Required')];
 
       const result = validator.validate('name', '', rules);
@@ -375,7 +380,7 @@ describe('createFormValidator', () => {
 
     it('should preserve existing errors for other fields', () => {
       const existingErrors = { email: 'Invalid email' };
-      const validator = createFormValidator(setErrors, existingErrors);
+      const validator = createFormValidator<TestFormFields>(setErrors, existingErrors);
       const rules = [ValidationRules.required('Required')];
 
       validator.validate('name', '', rules);
@@ -386,7 +391,7 @@ describe('createFormValidator', () => {
 
   describe('validateAll', () => {
     it('should validate multiple fields and return true when all pass', () => {
-      const validator = createFormValidator(setErrors, errors);
+      const validator = createFormValidator<TestFormFields>(setErrors, errors);
       const fieldRules = {
         name: [ValidationRules.required('Name required')],
         email: [ValidationRules.required('Email required')],
@@ -400,7 +405,7 @@ describe('createFormValidator', () => {
     });
 
     it('should validate multiple fields and return false when any fail', () => {
-      const validator = createFormValidator(setErrors, errors);
+      const validator = createFormValidator<TestFormFields>(setErrors, errors);
       const fieldRules = {
         name: [ValidationRules.required('Name required')],
         email: [ValidationRules.required('Email required')],
@@ -414,7 +419,7 @@ describe('createFormValidator', () => {
     });
 
     it('should collect all errors even when multiple fields fail', () => {
-      const validator = createFormValidator(setErrors, errors);
+      const validator = createFormValidator<TestFormFields>(setErrors, errors);
       const fieldRules = {
         name: [ValidationRules.required('Name required')],
         email: [ValidationRules.required('Email required')],
@@ -434,7 +439,7 @@ describe('createFormValidator', () => {
   describe('clearError', () => {
     it('should clear error for a specific field', () => {
       const existingErrors = { name: 'Required', email: 'Invalid' };
-      const validator = createFormValidator(setErrors, existingErrors);
+      const validator = createFormValidator<TestFormFields>(setErrors, existingErrors);
 
       validator.clearError('name');
 
@@ -445,7 +450,7 @@ describe('createFormValidator', () => {
   describe('clearAll', () => {
     it('should clear all errors', () => {
       const existingErrors = { name: 'Required', email: 'Invalid' };
-      const validator = createFormValidator(setErrors, existingErrors);
+      const validator = createFormValidator<TestFormFields>(setErrors, existingErrors);
 
       validator.clearAll();
 
@@ -455,7 +460,7 @@ describe('createFormValidator', () => {
 
   describe('setErrors', () => {
     it('should expose setErrors method', () => {
-      const validator = createFormValidator(setErrors, errors);
+      const validator = createFormValidator<TestFormFields>(setErrors, errors);
       const newErrors = { name: 'Error 1', email: 'Error 2' };
 
       validator.setErrors(newErrors);

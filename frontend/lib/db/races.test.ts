@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { raceRowToTrailRace } from './races';
-import type { RaceRow, TrailRace } from '@/types/race.types';
+import type { RaceRow } from '@/types/race.types';
 
 describe('raceRowToTrailRace', () => {
   describe('complete transformation', () => {
@@ -167,7 +167,9 @@ describe('raceRowToTrailRace', () => {
       };
 
       const result = raceRowToTrailRace(row);
-      expect(result.resultsUrls).toEqual([{ year: 2024, url: 'https://example.com' }]);
+      expect(result.resultsUrls).toEqual([
+        { year: 2024, url: 'https://example.com' },
+      ]);
       expect(result).not.toHaveProperty('results_urls');
     });
 
@@ -319,7 +321,12 @@ describe('raceRowToTrailRace', () => {
       };
 
       const result = raceRowToTrailRace(row);
-      expect(result.services).toEqual(['parking', 'showers', 'medical', 'food']);
+      expect(result.services).toEqual([
+        'parking',
+        'showers',
+        'medical',
+        'food',
+      ]);
     });
 
     it('should preserve sponsors array', () => {
@@ -362,7 +369,10 @@ describe('raceRowToTrailRace', () => {
 
       const result = raceRowToTrailRace(row);
       expect(result.resultsUrls).toHaveLength(3);
-      expect(result.resultsUrls?.[0]).toEqual({ year: 2022, url: 'https://example.com/2022' });
+      expect(result.resultsUrls?.[0]).toEqual({
+        year: 2022,
+        url: 'https://example.com/2022',
+      });
     });
   });
 

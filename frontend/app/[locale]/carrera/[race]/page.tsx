@@ -13,8 +13,8 @@ import VerifiedBadgeWithTooltip from '@/components/verified-badge-with-tooltip';
 //import PriceTiersTable from '@/components/price-tiers-table';
 //import RaceServicesList from '@/components/race-services-list';
 //import RaceResultsUrls from '@/components/race-results-urls';
-import Image from 'next/image';
 import Sponsors from '@/components/sponsors';
+import { RaceHeroImage } from '@/components/race-hero-image';
 import { RaceOrganizerClaimCard } from '@/components/race-organizer-claim-card';
 import { TEST_VERIFIED_RACES_NAME } from '@/lib/constants';
 import { getRaces } from '@/lib/db/races';
@@ -197,16 +197,12 @@ export default async function RacePage({
             </div>
           )}
         </div>
-        {raceData.organizerId && raceData.imagePath && (
-          <div className="mt-6 sm:mt-8 w-full relative aspect-video sm:aspect-21/9 lg:aspect-16/7 rounded-lg overflow-hidden">
-            <Image
-              src={raceData.imagePath}
-              alt={raceData.name}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, (max-width: 1600px) 80vw, 1200px"
-            />
-          </div>
+        {raceData.organizerId && (
+          <RaceHeroImage
+            organizerId={raceData.organizerId}
+            raceId={raceData.id}
+            alt={raceData.name}
+          />
         )}
         <div className="w-full my-6 sm:my-8">
           {raceData.organizerId && raceData.description && (

@@ -308,6 +308,6 @@ describe('getDisplayPrice', () => {
   });
 
   it('should return null for non-array input', () => {
-    expect(getDisplayPrice('not-an-array' as any)).toBeNull();
+    expect(getDisplayPrice('not-an-array' as unknown as Array<{ price_eur: number }>)).toBeNull();
   });
 });

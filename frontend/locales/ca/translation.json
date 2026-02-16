@@ -289,6 +289,23 @@
         "save": "Desar",
         "saving": "Desant...",
         "success": "Cursa desada correctament",
+        "image": {
+          "label": "Imatge principal",
+          "selectFile": "Seleccionar fitxer",
+          "changeFile": "Canviar fitxer",
+          "replaceFile": "Reemplaçar imatge",
+          "checking": "Comprovant imatge...",
+          "uploaded": "Imatge pujada",
+          "noImage": "No hi ha imatge pujada",
+          "removeImage": "Treure imatge",
+          "removed": "Imatge eliminada",
+          "errors": {
+            "fileType": "Format no vàlid. Usa JPEG, PNG o WebP.",
+            "fileSize": "El fitxer és massa gran. Màx. 2 MB.",
+            "general": "Error en pujar la imatge",
+            "uploadFailed": "Les dades es van desar però la imatge no es va poder pujar. Torna-ho a provar."
+          }
+        },
         "errors": {
           "nameRequired": "El nom és obligatori",
           "nameTooShort": "El nom ha de tenir almenys 5 caràcters",
