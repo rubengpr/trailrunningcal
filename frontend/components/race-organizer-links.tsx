@@ -71,9 +71,9 @@ export default function RaceOrganizerLinks({
           target="_blank"
           rel="noopener noreferrer"
           title={key.charAt(0).toUpperCase() + key.slice(1)}
-          className="min-h-[44px] min-w-[44px] p-2 inline-flex items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 focus:outline-none transition-colors cursor-pointer"
+          className="min-h-[36px] min-w-[36px] p-1.5 inline-flex items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 focus:outline-none transition-colors cursor-pointer"
         >
-          {SOCIAL_ICONS[key]('w-5 h-5 sm:w-6 sm:h-6')}
+          {SOCIAL_ICONS[key]('w-4 h-4')}
         </a>
       ))}
     </div>
