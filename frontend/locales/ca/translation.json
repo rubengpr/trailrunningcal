@@ -42,6 +42,13 @@
     "results": {
       "title": "Classificació edicions anteriors"
     },
+    "organizer": {
+      "sectionTitle": "Organitzador",
+      "facebook": "Facebook",
+      "instagram": "Instagram",
+      "youtube": "YouTube",
+      "tiktok": "TikTok"
+    },
     "organizerCard": {
       "title": "Ets l'organitzador d'aquesta cursa?",
       "titleMobile": "Ets organitzador?",

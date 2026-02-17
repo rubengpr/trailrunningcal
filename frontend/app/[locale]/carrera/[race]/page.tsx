@@ -18,7 +18,9 @@ import { RaceHeroImage } from '@/components/race-hero-image';
 import { RaceOrganizerClaimCard } from '@/components/race-organizer-claim-card';
 import { TEST_VERIFIED_RACES_NAME } from '@/lib/constants';
 import { getRaces } from '@/lib/db/races';
+import { getOrganizerById } from '@/lib/db/organizers';
 import { getDisplayPrice } from '@/lib/race-utils';
+import RaceOrganizerLinks from '@/components/race-organizer-links';
 
 export const dynamic = 'force-dynamic';
 
@@ -123,6 +125,10 @@ export default async function RacePage({
   // Get translations for the race page
   const tRace = await getTranslations({ locale, namespace: 'race' });
 
+  const organizer = raceData.organizerId
+    ? await getOrganizerById(raceData.organizerId)
+    : null;
+
   const formattedDate = raceData.date
     ? locale === 'ca'
       ? formatDateToCatalan(raceData.date)
@@ -184,18 +190,21 @@ export default async function RacePage({
               </div>
             </div>
           </div>
-          {raceData.websiteUrl && (
-            <div className="flex-shrink-0">
+          <div className="flex w-full shrink-0 flex-col gap-3 sm:w-auto sm:items-end">
+            {raceData.websiteUrl && (
               <a
                 href={raceData.websiteUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-gray-900 text-white px-4 py-2 rounded-md font-medium hover:bg-gray-600 focus:outline-none transition-colors cursor-pointer inline-block text-center whitespace-nowrap"
+                className="w-full bg-gray-900 text-white px-4 py-2 rounded-md font-medium hover:bg-gray-600 focus:outline-none transition-colors cursor-pointer inline-block text-center whitespace-nowrap sm:w-auto"
               >
                 Web oficial
               </a>
-            </div>
-          )}
+            )}
+            {organizer && (
+              <RaceOrganizerLinks organizer={organizer} />
+            )}
+          </div>
         </div>
         {raceData.organizerId && (
           <RaceHeroImage

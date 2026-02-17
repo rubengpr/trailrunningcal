@@ -42,6 +42,13 @@
     "results": {
       "title": "Clasificación ediciones anteriores"
     },
+    "organizer": {
+      "sectionTitle": "Organizador",
+      "facebook": "Facebook",
+      "instagram": "Instagram",
+      "youtube": "YouTube",
+      "tiktok": "TikTok"
+    },
     "organizerCard": {
       "title": "¿Eres el organizador de esta carrera?",
       "titleMobile": "¿Eres organizador?",
