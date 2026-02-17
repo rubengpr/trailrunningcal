@@ -52,7 +52,8 @@ export default async function OrganizerRacesPage({
                     race_tiers ( price_eur )
                   `)
                 .eq('organizer_id', organizer.id)
-                .order('date', { ascending: true, nullsFirst: false });
+                .order('date', { ascending: true, nullsFirst: false })
+                .order('name', { ascending: true });
 
             if (racesError) {
                 console.error('Failed to fetch organizer races:', racesError);

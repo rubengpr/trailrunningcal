@@ -57,7 +57,8 @@ export async function getRaces(
       race_tiers ( price_eur )
     `,
     )
-    .order('date', { ascending: true, nullsFirst: false });
+    .order('date', { ascending: true, nullsFirst: false })
+    .order('name', { ascending: true });
 
   if (error) {
     console.error('Failed to fetch races:', error);
