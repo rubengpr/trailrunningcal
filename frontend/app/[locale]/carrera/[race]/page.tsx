@@ -132,10 +132,10 @@ export default async function RacePage({
   return (
     <div className="min-h-screen w-full text-gray-900 flex flex-col bg-white">
       <Navbar />
-      <div className="flex flex-col max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-20 py-6 sm:py-10">
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-0">
-          <div className="flex flex-col">
-            <div className="flex flex-row items-center gap-2 mb-1">
+      <div className="flex flex-col max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+        <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6">
+          <div className="flex flex-col flex-1">
+            <div className="flex flex-row items-center gap-2 mb-2">
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
                 {raceData.name}
               </h1>
@@ -185,12 +185,12 @@ export default async function RacePage({
             </div>
           </div>
           {raceData.websiteUrl && (
-            <div className="w-full sm:w-auto">
+            <div className="flex-shrink-0">
               <a
                 href={raceData.websiteUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-gray-900 text-white px-4 py-2 rounded-md font-medium hover:bg-gray-600 focus:outline-none transition-colors cursor-pointer inline-block w-full sm:w-auto text-center"
+                className="bg-gray-900 text-white px-4 py-2 rounded-md font-medium hover:bg-gray-600 focus:outline-none transition-colors cursor-pointer inline-block text-center whitespace-nowrap"
               >
                 Web oficial
               </a>
