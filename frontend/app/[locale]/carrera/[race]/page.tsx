@@ -250,15 +250,17 @@ export default async function RacePage({
             />
           )}*/}
 
-        <RaceOrganizerClaimCard
-          title={tRace('organizerCard.title')}
-          titleMobile={tRace('organizerCard.titleMobile')}
-          description={tRace('organizerCard.description')}
-          descriptionMobile={tRace('organizerCard.descriptionMobile')}
-          benefits={tRace('organizerCard.benefits')}
-          claimButton={tRace('organizerCard.claimButton')}
-          raceName={raceData.name}
-        />
+        {!raceData.organizerId && (
+          <RaceOrganizerClaimCard
+            title={tRace('organizerCard.title')}
+            titleMobile={tRace('organizerCard.titleMobile')}
+            description={tRace('organizerCard.description')}
+            descriptionMobile={tRace('organizerCard.descriptionMobile')}
+            benefits={tRace('organizerCard.benefits')}
+            claimButton={tRace('organizerCard.claimButton')}
+            raceName={raceData.name}
+          />
+        )}
       </div>
     </div>
   );
