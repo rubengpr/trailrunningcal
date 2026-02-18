@@ -268,7 +268,7 @@
         "close": "Tancar"
       },
       "table": {
-        "title": "Tus curses",
+        "title": "Les teves curses",
         "raceCount": "{count} curses",
         "raceCountOne": "1 cursa",
         "name": "Nom",
