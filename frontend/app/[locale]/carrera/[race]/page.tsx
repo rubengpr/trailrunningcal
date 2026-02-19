@@ -214,7 +214,7 @@ export default async function RacePage({
           />
         )}
         <div className="w-full my-6 sm:my-8">
-          {raceData.organizerId && raceData.description && (
+          {raceData.description && (
             <p className="text-sm sm:text-base lg:text-lg whitespace-pre-line">
               {raceData.description}
             </p>
