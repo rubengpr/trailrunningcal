@@ -81,12 +81,14 @@ export function OrganizerRacesContent({ races }: OrganizerRacesContentProps) {
     };
 
     const formatPrice = (price: TrailRace['priceEur']): string => {
-        if (price === null) return 'N/D';
+        if (price === null) return '-';
         if (typeof price === 'number') return `${price}€`;
         if (Array.isArray(price) && price.length > 0) {
-            return `${price[0].price_eur}€`;
+            const priceValue = price[0].price_eur;
+            if (priceValue === null || priceValue === undefined) return '-';
+            return `${priceValue}€`;
         }
-        return 'N/D';
+        return '-';
     };
 
     return (

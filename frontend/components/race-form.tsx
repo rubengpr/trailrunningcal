@@ -40,7 +40,7 @@ export function RaceForm({ raceId, initialData, isEditMode }: RaceFormProps) {
     const [name, setName] = useState(initialData?.name ?? '');
     const [distanceKm, setDistanceKm] = useState<string>(initialData != null ? String(initialData.distanceKm) : '');
     const [elevationGainM, setElevationGainM] = useState<string>(initialData?.elevationGainM != null ? String(initialData.elevationGainM) : '');
-    const [priceEur, setPriceEur] = useState<string>(initialData != null ? String(initialData.priceEur) : '');
+    const [priceEur, setPriceEur] = useState<string>(initialData?.priceEur != null ? String(initialData.priceEur) : '');
     const [websiteUrl, setWebsiteUrl] = useState(initialData?.websiteUrl ?? '');
     const [description, setDescription] = useState(initialData?.description ?? '');
 
