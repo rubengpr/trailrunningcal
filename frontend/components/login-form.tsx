@@ -6,6 +6,10 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { FormInput } from './form-input';
+import {
+  validateEmail as validateEmailUtil,
+  validatePassword as validatePasswordUtil,
+} from '@/lib/auth-validation';
 
 export function LoginForm({
   className,
@@ -22,75 +26,26 @@ export function LoginForm({
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const validateEmail = (emailValue: string): boolean => {
-    const trimmedEmail = emailValue.trim();
-
-    if (!trimmedEmail) {
-      setEmailError(authT('errors.emailRequired'));
-      return false;
-    }
-
-    // Check maximum length (RFC 5321: 254 characters)
-    if (trimmedEmail.length > 254) {
-      setEmailError(authT('errors.emailTooLong'));
-      return false;
-    }
-
-    // Basic email format check (TLD must be at least 2 characters)
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-    if (!emailRegex.test(trimmedEmail)) {
-      setEmailError(authT('errors.emailInvalid'));
-      return false;
-    }
-
-    // Split email into local and domain parts
-    const [localPart, domainPart] = trimmedEmail.split('@');
-
-    // Local part validations
-    if (localPart.startsWith('.') || localPart.endsWith('.') || localPart.includes('..')) {
-      setEmailError(authT('errors.emailInvalid'));
-      return false;
-    }
-
-    // Domain part validations
-    // 1. Edge cases (no leading/trailing dots or hyphens)
-    if (domainPart.startsWith('.') || domainPart.endsWith('.') ||
-      domainPart.startsWith('-') || domainPart.endsWith('-')) {
-      setEmailError(authT('errors.emailInvalid'));
-      return false;
-    }
-
-    // 2. Consecutive dots
-    if (domainPart.includes('..')) {
-      setEmailError(authT('errors.emailInvalid'));
-      return false;
-    }
-
-    // 3. Hyphens adjacent to dots (invalid label boundaries)
-    if (domainPart.includes('.-') || domainPart.includes('-.')) {
-      setEmailError(authT('errors.emailInvalid'));
-      return false;
-    }
-
-    setEmailError('');
-    return true;
+  const handleEmailValidation = (emailValue: string): boolean => {
+    const error = validateEmailUtil(emailValue, (key) => authT(`errors.${key}`));
+    setEmailError(error || '');
+    return error === null;
   };
 
-  const validatePassword = (passwordValue: string): boolean => {
-    if (!passwordValue.trim()) {
-      setPasswordError(authT('errors.passwordRequired'));
-      return false;
-    }
-    setPasswordError('');
-    return true;
+  const handlePasswordValidation = (passwordValue: string): boolean => {
+    const error = validatePasswordUtil(passwordValue, (key) => authT(`errors.${key}`), {
+      requireStrength: false,
+    });
+    setPasswordError(error || '');
+    return error === null;
   };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
-    const isEmailValid = validateEmail(email);
-    const isPasswordValid = validatePassword(password);
+    const isEmailValid = handleEmailValidation(email);
+    const isPasswordValid = handlePasswordValidation(password);
 
     if (!isEmailValid || !isPasswordValid) {
       return;

@@ -1,11 +1,11 @@
 'use client';
 
 import { createClient } from '@/lib/supabase/client';
-import { validatePasswordStrength } from '@/lib/password-utils';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { FormInput } from './form-input';
+import { validatePassword as validatePasswordUtil } from '@/lib/auth-validation';
 
 export function UpdatePasswordForm({
   className,
@@ -25,19 +25,10 @@ export function UpdatePasswordForm({
 
 
 
-  const validatePassword = (passwordValue: string): boolean => {
-    if (!passwordValue.trim()) {
-      setPasswordError(authT('errors.passwordRequired'));
-      return false;
-    }
-
-    if (!validatePasswordStrength(passwordValue)) {
-      setPasswordError(authT('errors.passwordStrength'));
-      return false;
-    }
-
-    setPasswordError('');
-    return true;
+  const handlePasswordValidation = (passwordValue: string): boolean => {
+    const error = validatePasswordUtil(passwordValue, (key) => authT(`errors.${key}`));
+    setPasswordError(error || '');
+    return error === null;
   };
 
   const validateRepeatPassword = (repeatPasswordValue: string): boolean => {
@@ -61,7 +52,7 @@ export function UpdatePasswordForm({
     setPasswordError('');
     setRepeatPasswordError('');
 
-    const isPasswordValid = validatePassword(password);
+    const isPasswordValid = handlePasswordValidation(password);
     const isRepeatPasswordValid = validateRepeatPassword(repeatPassword);
 
     if (!isPasswordValid || !isRepeatPasswordValid) {

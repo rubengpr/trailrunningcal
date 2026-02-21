@@ -1,12 +1,15 @@
 'use client';
 
 import { createClient } from '@/lib/supabase/client';
-import { validatePasswordStrength } from '@/lib/password-utils';
 import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { FormInput } from './form-input';
+import {
+  validateEmail as validateEmailUtil,
+  validatePassword as validatePasswordUtil,
+} from '@/lib/auth-validation';
 
 export function SignUpForm({
   initialError,
@@ -38,58 +41,10 @@ export function SignUpForm({
     }
   }, [initialError, authT, clearErrorCookie]);
 
-  const validateEmail = (emailValue: string): boolean => {
-    const trimmedEmail = emailValue.trim();
-
-    if (!trimmedEmail) {
-      setEmailError(authT('errors.emailRequired'));
-      return false;
-    }
-
-    // Check maximum length (RFC 5321: 254 characters)
-    if (trimmedEmail.length > 254) {
-      setEmailError(authT('errors.emailTooLong'));
-      return false;
-    }
-
-    // Basic email format check (TLD must be at least 2 characters)
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-    if (!emailRegex.test(trimmedEmail)) {
-      setEmailError(authT('errors.emailInvalid'));
-      return false;
-    }
-
-    // Split email into local and domain parts
-    const [localPart, domainPart] = trimmedEmail.split('@');
-
-    // Local part validations
-    if (localPart.startsWith('.') || localPart.endsWith('.') || localPart.includes('..')) {
-      setEmailError(authT('errors.emailInvalid'));
-      return false;
-    }
-
-    // Domain part validations
-    // 1. Edge cases (no leading/trailing dots or hyphens)
-    if (domainPart.startsWith('.') || domainPart.endsWith('.') ||
-      domainPart.startsWith('-') || domainPart.endsWith('-')) {
-      setEmailError(authT('errors.emailInvalid'));
-      return false;
-    }
-
-    // 2. Consecutive dots
-    if (domainPart.includes('..')) {
-      setEmailError(authT('errors.emailInvalid'));
-      return false;
-    }
-
-    // 3. Hyphens adjacent to dots (invalid label boundaries)
-    if (domainPart.includes('.-') || domainPart.includes('-.')) {
-      setEmailError(authT('errors.emailInvalid'));
-      return false;
-    }
-
-    setEmailError('');
-    return true;
+  const handleEmailValidation = (emailValue: string): boolean => {
+    const error = validateEmailUtil(emailValue, (key) => authT(`errors.${key}`));
+    setEmailError(error || '');
+    return error === null;
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -97,14 +52,15 @@ export function SignUpForm({
     setError(null);
     setEmailError('');
 
-    const isEmailValid = validateEmail(email);
+    const isEmailValid = handleEmailValidation(email);
     if (!isEmailValid) {
       setIsLoading(false);
       return;
     }
 
-    if (!validatePasswordStrength(password)) {
-      setError(authT('errors.passwordStrength'));
+    const passwordError = validatePasswordUtil(password, (key) => authT(`errors.${key}`));
+    if (passwordError) {
+      setError(passwordError);
       setIsLoading(false);
       return;
     }
