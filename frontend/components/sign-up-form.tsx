@@ -3,7 +3,6 @@
 import { createClient } from '@/lib/supabase/client';
 import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { FormInput } from './form-input';
 import {
@@ -22,6 +21,7 @@ export function SignUpForm({
 }) {
   const t = useTranslations('signUp');
   const authT = useTranslations('auth');
+  const successT = useTranslations('signUpSuccess');
   const locale = useLocale();
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -29,7 +29,7 @@ export function SignUpForm({
   const [repeatPassword, setRepeatPassword] = useState('');
   const [error, setError] = useState<string | null>(initialError === 'invalid-token' ? (authT('errors.invalidToken') || 'Invalid or expired token') : null);
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+  const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
     if (initialError === 'invalid-token') {
@@ -87,7 +87,7 @@ export function SignUpForm({
         setEmailError(t('errors.emailAlreadyExists'));
         return;
       }
-      router.push(`/${locale}/sign-up-success`);
+      setShowSuccess(true);
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : authT('errors.general'));
     } finally {
@@ -101,62 +101,91 @@ export function SignUpForm({
       {...props}
     >
       <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
-        <div className="flex flex-col space-y-1.5 p-6">
-          <h3 className="text-2xl font-semibold leading-none tracking-tight">
-            {t('title')}
-          </h3>
-          <p className="text-sm text-gray-500">{t('description')}</p>
-        </div>
-        <div className="p-6 pt-0">
-          <form onSubmit={handleSignUp} noValidate>
-            <div className="flex flex-col gap-6">
-              <FormInput
-                id="email"
-                label={t('email')}
-                type="email"
-                placeholder="kilian@zegama.com"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  setEmailError('');
-                }}
-                error={emailError}
-              />
-              <FormInput
-                id="password"
-                label={t('password')}
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                showPasswordToggle
-              />
-              <FormInput
-                id="repeat-password"
-                label={t('repeatPassword')}
-                type="password"
-                required
-                value={repeatPassword}
-                onChange={(e) => setRepeatPassword(e.target.value)}
-                showPasswordToggle
-              />
-              {error && <p className="text-sm text-red-500">{error}</p>}
-              <button
-                type="submit"
-                className="w-full inline-flex items-center justify-center rounded-md bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:pointer-events-none disabled:opacity-50"
-                disabled={isLoading}
+        {showSuccess ? (
+          <div className="flex flex-col items-center space-y-4 p-6">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-green-600"
               >
-                {isLoading ? t('creatingAccount') : t('submit')}
-              </button>
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
             </div>
-            <div className="mt-4 text-center text-sm">
-              {t('alreadyHaveAccount')}{' '}
-              <Link href={`/${locale}/login`} className="underline underline-offset-4">
-                {t('login')}
-              </Link>
+            <div className="flex flex-col space-y-2 text-center">
+              <h3 className="text-2xl font-semibold leading-none tracking-tight">
+                {successT('title')}
+              </h3>
+              <p className="text-sm text-gray-600">{successT('instructions')}</p>
             </div>
-          </form>
-        </div>
+          </div>
+        ) : (
+          <>
+            <div className="flex flex-col space-y-1.5 p-6">
+              <h3 className="text-2xl font-semibold leading-none tracking-tight">
+                {t('title')}
+              </h3>
+              <p className="text-sm text-gray-500">{t('description')}</p>
+            </div>
+            <div className="p-6 pt-0">
+              <form onSubmit={handleSignUp} noValidate>
+                <div className="flex flex-col gap-6">
+                  <FormInput
+                    id="email"
+                    label={t('email')}
+                    type="email"
+                    placeholder="kilian@zegama.com"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      setEmailError('');
+                    }}
+                    error={emailError}
+                  />
+                  <FormInput
+                    id="password"
+                    label={t('password')}
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    showPasswordToggle
+                  />
+                  <FormInput
+                    id="repeat-password"
+                    label={t('repeatPassword')}
+                    type="password"
+                    required
+                    value={repeatPassword}
+                    onChange={(e) => setRepeatPassword(e.target.value)}
+                    showPasswordToggle
+                  />
+                  {error && <p className="text-sm text-red-500">{error}</p>}
+                  <button
+                    type="submit"
+                    className="w-full inline-flex items-center justify-center rounded-md bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:pointer-events-none disabled:opacity-50"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? t('creatingAccount') : t('submit')}
+                  </button>
+                </div>
+                <div className="mt-4 text-center text-sm">
+                  {t('alreadyHaveAccount')}{' '}
+                  <Link href={`/${locale}/login`} className="underline underline-offset-4">
+                    {t('login')}
+                  </Link>
+                </div>
+              </form>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
