@@ -5,6 +5,9 @@ import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { FormInput } from './form-input';
+import { FormCard } from './form-card';
+import { Button } from './button';
+import { InlineError } from './inline-error';
 import { validateEmail as validateEmailUtil } from '@/lib/auth-validation';
 
 export function PasswordRecoveryForm({
@@ -79,25 +82,17 @@ export function PasswordRecoveryForm({
         className={`flex flex-col gap-6${className ? ` ${className}` : ''}`}
         {...props}
       >
-        <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
-          <div className="flex flex-col space-y-1.5 p-6">
-            <h3 className="text-2xl font-semibold leading-none tracking-tight">
-              {t('successTitle')}
-            </h3>
-            <p className="text-sm text-gray-500">{t('successDescription')}</p>
+        <FormCard title={t('successTitle')} description={t('successDescription')}>
+          <div className="flex flex-col gap-6">
+            <p className="text-sm text-gray-700">{t('successInstructions')}</p>
+            <Link
+              href={`/${locale}/login`}
+              className="w-full inline-flex items-center justify-center rounded-md bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800"
+            >
+              {t('backToLogin')}
+            </Link>
           </div>
-          <div className="p-6 pt-0">
-            <div className="flex flex-col gap-6">
-              <p className="text-sm text-gray-700">{t('successInstructions')}</p>
-              <Link
-                href={`/${locale}/login`}
-                className="w-full inline-flex items-center justify-center rounded-md bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800"
-              >
-                {t('backToLogin')}
-              </Link>
-            </div>
-          </div>
-        </div>
+        </FormCard>
       </div>
     );
   }
@@ -107,46 +102,39 @@ export function PasswordRecoveryForm({
       className={`flex flex-col gap-6${className ? ` ${className}` : ''}`}
       {...props}
     >
-      <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
-        <div className="flex flex-col space-y-1.5 p-6">
-          <h3 className="text-2xl font-semibold leading-none tracking-tight">
-            {t('title')}
-          </h3>
-          <p className="text-sm text-gray-500">{t('description')}</p>
-        </div>
-        <div className="p-6 pt-0">
-          <form onSubmit={handleSubmit} noValidate>
-            <div className="flex flex-col gap-6">
-              <FormInput
-                id="email"
-                label={t('email')}
-                type="email"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  setEmailError('');
-                  setError(null);
-                }}
-                error={emailError}
-                placeholder="kilian@zegama.com"
-              />
-              {error && <p className="text-sm text-red-500">{error}</p>}
-              <button
-                type="submit"
-                className="w-full inline-flex items-center justify-center rounded-md bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none disabled:pointer-events-none disabled:opacity-50"
-                disabled={isLoading}
-              >
-                {isLoading ? t('sending') : t('submit')}
-              </button>
-            </div>
-            <div className="mt-4 text-center text-sm">
-              <Link href={`/${locale}/login`} className="underline underline-offset-4">
-                {t('backToLogin')}
-              </Link>
-            </div>
-          </form>
-        </div>
-      </div>
+      <FormCard title={t('title')} description={t('description')}>
+        <form onSubmit={handleSubmit} noValidate>
+          <div className="flex flex-col gap-6">
+            <FormInput
+              id="email"
+              label={t('email')}
+              type="email"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setEmailError('');
+                setError(null);
+              }}
+              error={emailError}
+              placeholder="kilian@zegama.com"
+            />
+            <InlineError error={error || undefined} />
+            <Button
+              type="submit"
+              fullWidth
+              isLoading={isLoading}
+              loadingText={t('sending')}
+            >
+              {t('submit')}
+            </Button>
+          </div>
+          <div className="mt-4 text-center text-sm">
+            <Link href={`/${locale}/login`} className="underline underline-offset-4">
+              {t('backToLogin')}
+            </Link>
+          </div>
+        </form>
+      </FormCard>
     </div>
   );
 }

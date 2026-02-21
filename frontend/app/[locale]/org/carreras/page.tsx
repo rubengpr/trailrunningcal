@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import { OrganizerSidebar } from '@/components/organizer-sidebar';
+import { OrganizerLayout } from '@/components/organizer-layout';
 import { OrganizerRacesContent } from '@/components/organizer-races-content';
 import { raceRowToTrailRace } from '@/lib/db/races';
 import type { TrailRace, RaceRow } from '@/types/race.types';
@@ -69,11 +69,8 @@ export default async function OrganizerRacesPage({
     }
 
     return (
-        <div className='flex flex-col md:flex-row'>
-            <OrganizerSidebar />
-            <div className='flex flex-col w-full p-6'>
-                <OrganizerRacesContent races={organizerRaces} />
-            </div>
-        </div>
+        <OrganizerLayout>
+            <OrganizerRacesContent races={organizerRaces} />
+        </OrganizerLayout>
     );
 }
