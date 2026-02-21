@@ -8,7 +8,6 @@ import MonthFilter from './month-filter';
 import TrailRaceCard from './trail-race-card';
 import ErrorBoundary from './error-boundary';
 import { SearchError } from './error-message';
-import { getMonthNumber } from '../lib/date-utils';
 import ProvinceFilter from './province-filter';
 import { generateRaceSlug } from '../lib/race-utils';
 import { ProposeRaceModal } from './propose-race-modal';
@@ -44,7 +43,7 @@ export default function HomeClient({ races }: HomeClientProps) {
 
     // Filter by month if selected
     if (selectedMonth) {
-      const monthNumber = getMonthNumber(selectedMonth);
+      const monthNumber = parseInt(selectedMonth, 10);
       filtered = filtered.filter((race) => {
         if (!race.date) return false; // Exclude races with null dates from month filtering
         const raceDate = new Date(race.date);

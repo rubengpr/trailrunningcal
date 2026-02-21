@@ -8,20 +8,7 @@ interface MonthFilterProps {
   onMonthSelect: (month: string) => void;
 }
 
-const MONTH_KEYS = [
-  'ene',
-  'feb',
-  'mar',
-  'abr',
-  'may',
-  'jun',
-  'jul',
-  'ago',
-  'sep',
-  'oct',
-  'nov',
-  'dic',
-];
+const MONTH_INDICES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 
 export default function MonthFilter({
   initialSelectedMonth = '',
@@ -36,9 +23,9 @@ export default function MonthFilter({
     setSelectedMonth(initialSelectedMonth);
   }, [initialSelectedMonth]);
 
-  const months = MONTH_KEYS.map((key) => ({
-    key,
-    label: tMonths(key),
+  const months = MONTH_INDICES.map((index) => ({
+    key: index.toString(),
+    label: tMonths(index.toString()),
   }));
 
   const handleMonthClick = (monthKey: string) => {

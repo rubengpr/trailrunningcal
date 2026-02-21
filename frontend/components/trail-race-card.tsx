@@ -19,14 +19,26 @@ interface TrailRaceCardProps {
   displayOnly?: boolean;
 }
 
-const formatDate = (dateString: string | null, locale: string) => {
+const formatDate = (
+  dateString: string | null,
+  t: (key: string) => string
+) => {
   if (!dateString) {
     return { day: '-', month: '-', dayOfWeek: '-' };
   }
   const date = new Date(dateString);
   const day = date.getDate();
-  const month = date.toLocaleDateString(locale, { month: 'short' });
-  const dayOfWeek = date.toLocaleDateString(locale, { weekday: 'short' });
+
+  // Get numeric month and weekday
+  const monthIndex = date.getMonth(); // 0-11
+  const weekdayIndex = date.getDay(); // 0-6 (Sunday=0)
+
+  // Map to translation keys
+  const weekdayKeys = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+
+  const month = t(`months.${monthIndex}`);
+  const dayOfWeek = t(`weekdays.${weekdayKeys[weekdayIndex]}`);
+
   return { day, month, dayOfWeek };
 };
 
@@ -68,7 +80,7 @@ export default function TrailRaceCard({
 }: TrailRaceCardProps) {
   const t = useTranslations();
   const locale = useLocale();
-  const { day, month, dayOfWeek } = formatDate(date, locale);
+  const { day, month, dayOfWeek } = formatDate(date, t);
   const elevationRatio = calculateElevationRatio(elevationGainM, distanceKm);
   const raceCategory = getRaceCategory(distanceKm);
   const elevationRatioColor = getElevationRatioColor(elevationRatio);

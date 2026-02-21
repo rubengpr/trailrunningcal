@@ -10,18 +10,27 @@
     "clearFilters": "Limpiar filtros"
   },
   "months": {
-    "ene": "Ene",
-    "feb": "Feb",
-    "mar": "Mar",
-    "abr": "Abr",
-    "may": "May",
-    "jun": "Jun",
-    "jul": "Jul",
-    "ago": "Ago",
-    "sep": "Sep",
-    "oct": "Oct",
-    "nov": "Nov",
-    "dic": "Dic"
+    "0": "Ene",
+    "1": "Feb",
+    "2": "Mar",
+    "3": "Abr",
+    "4": "May",
+    "5": "Jun",
+    "6": "Jul",
+    "7": "Ago",
+    "8": "Sep",
+    "9": "Oct",
+    "10": "Nov",
+    "11": "Dic"
+  },
+  "weekdays": {
+    "sun": "Dom",
+    "mon": "Lun",
+    "tue": "Mar",
+    "wed": "Mié",
+    "thu": "Jue",
+    "fri": "Vie",
+    "sat": "Sáb"
   },
   "results": {
     "noRacesFound": "No se encontraron carreras",

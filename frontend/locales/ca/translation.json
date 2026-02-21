@@ -10,18 +10,27 @@
     "clearFilters": "Netejar filtres"
   },
   "months": {
-    "ene": "Gen",
-    "feb": "Feb",
-    "mar": "Mar",
-    "abr": "Abr",
-    "may": "Mai",
-    "jun": "Jun",
-    "jul": "Jul",
-    "ago": "Ago",
-    "sep": "Set",
-    "oct": "Oct",
-    "nov": "Nov",
-    "dic": "Des"
+    "0": "Gen",
+    "1": "Feb",
+    "2": "Mar",
+    "3": "Abr",
+    "4": "Mai",
+    "5": "Jun",
+    "6": "Jul",
+    "7": "Ago",
+    "8": "Set",
+    "9": "Oct",
+    "10": "Nov",
+    "11": "Des"
+  },
+  "weekdays": {
+    "sun": "Diu",
+    "mon": "Dil",
+    "tue": "Dim",
+    "wed": "Dim",
+    "thu": "Dij",
+    "fri": "Div",
+    "sat": "Dis"
   },
   "results": {
     "noRacesFound": "No s'han trobat curses",
