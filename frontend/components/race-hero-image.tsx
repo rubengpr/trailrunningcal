@@ -57,7 +57,16 @@ export function RaceHeroImage({ organizerId, raceId, alt }: RaceHeroImageProps) 
     };
   }, [organizerId, raceId]);
 
-  if (isChecking || !workingUrl) {
+  if (isChecking) {
+    return (
+      <div
+        className="mt-6 sm:mt-8 w-full relative aspect-video sm:aspect-21/9 lg:aspect-16/7 rounded-lg overflow-hidden bg-gray-50 dark:bg-gray-100 animate-pulse"
+        aria-hidden
+      />
+    );
+  }
+
+  if (!workingUrl) {
     return null;
   }
 
