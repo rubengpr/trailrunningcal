@@ -68,7 +68,8 @@
     },
     "claimModal": {
       "title": "Reclamar carrera",
-      "message": "Para reclamar esta carrera, envíanos un correo a info@trailrunningcal.com"
+      "message": "Para reclamar esta carrera, envíanos un correo a info@trailrunningcal.com",
+      "close": "Cerrar"
     },
     "claimConfirmation": {
       "title": "Reclamar carrera",

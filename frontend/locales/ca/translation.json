@@ -68,7 +68,8 @@
     },
     "claimModal": {
       "title": "Reclamar cursa",
-      "message": "Per reclamar aquesta cursa, envia'ns un correu a info@trailrunningcal.com"
+      "message": "Per reclamar aquesta cursa, envia'ns un correu a info@trailrunningcal.com",
+      "close": "Tancar"
     },
     "claimConfirmation": {
       "title": "Reclamar cursa",
