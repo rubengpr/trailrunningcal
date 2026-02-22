@@ -137,7 +137,6 @@ export default async function RacePage({
 
   return (
     <div className="min-h-screen w-full text-gray-900 flex flex-col bg-white">
-      <Navbar />
       <div className="flex flex-col max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
         <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6">
           <div className="flex flex-col flex-1">
