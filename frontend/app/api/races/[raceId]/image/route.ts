@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { getOrganizerRaceContext } from '@/lib/auth-organizer';
+import { getRaceImageUrlWithFilename } from '@/lib/race-image-url';
 import {
   RACE_IMAGE_BUCKET,
   ALLOWED_RACE_IMAGE_MIME_TYPES,
@@ -13,6 +14,28 @@ import {
 
 const FORM_FIELD_IMAGE = 'image';
 
+function pickRaceImageFilenameFromList(
+  files: { name: string }[],
+): string | null {
+  const raceImageFiles = files.filter(file => {
+    const isOldFormat = RACE_IMAGE_EXTENSIONS.some(ext => file.name === getRaceImageFilename(ext));
+    const versionedPattern = new RegExp(`^main-\\d+\\.(${RACE_IMAGE_EXTENSIONS.join('|')})$`);
+    const isVersionedFormat = versionedPattern.test(file.name);
+    return isOldFormat || isVersionedFormat;
+  });
+  if (raceImageFiles.length === 0) return null;
+  const oldFormatFile = raceImageFiles.find(file =>
+    RACE_IMAGE_EXTENSIONS.some(ext => file.name === getRaceImageFilename(ext)),
+  );
+  if (oldFormatFile) return oldFormatFile.name;
+  const sorted = [...raceImageFiles].sort((a, b) => {
+    const tsA = parseInt(a.name.match(/^main-(\d+)\./)?.[1] || '0', 10);
+    const tsB = parseInt(b.name.match(/^main-(\d+)\./)?.[1] || '0', 10);
+    return tsB - tsA;
+  });
+  return sorted[0]?.name ?? null;
+}
+
 export async function GET(
   _request: NextRequest,
   context: { params: Promise<{ raceId: string }> },
@@ -21,80 +44,45 @@ export async function GET(
     const { raceId } = await context.params;
     const supabase = await createClient();
 
-    // Try to get organizer context (for authenticated requests)
-    // If not authenticated, look up the race to get organizerId (for public access)
-    let organizerId: string | null = null;
-    
-    const organizerContext = await getOrganizerRaceContext(supabase, raceId);
-    if (organizerContext) {
-      organizerId = organizerContext.organizerId;
-    } else {
-      // Public access: look up the race to get organizerId
-      const { data: raceRow, error: raceError } = await supabase
-        .from('races')
-        .select('organizer_id')
-        .eq('id', raceId)
-        .single();
-      
-      if (raceError || !raceRow || !raceRow.organizer_id) {
-        return NextResponse.json({ hasImage: false });
+    const { data: raceRow, error: raceError } = await supabase
+      .from('races')
+      .select('organizer_id, hero_image_filename')
+      .eq('id', raceId)
+      .single();
+
+    if (raceError || !raceRow || !raceRow.organizer_id) {
+      return NextResponse.json({ hasImage: false });
+    }
+
+    const organizerId = raceRow.organizer_id;
+    let filename: string | null =
+      raceRow.hero_image_filename?.trim() || null;
+
+    if (!filename) {
+      const folderPath = `${organizerId}/${raceId}`;
+      const { data: files } = await supabase.storage
+        .from(RACE_IMAGE_BUCKET)
+        .list(folderPath);
+      const picked = files?.length ? pickRaceImageFilenameFromList(files) : null;
+      if (picked) {
+        await supabase
+          .from('races')
+          .update({ hero_image_filename: picked })
+          .eq('id', raceId)
+          .eq('organizer_id', organizerId);
+        filename = picked;
       }
-      
-      organizerId = raceRow.organizer_id;
     }
 
-    if (!organizerId) {
+    if (!filename) {
       return NextResponse.json({ hasImage: false });
     }
 
-    const folderPath = `${organizerId}/${raceId}`;
-    const { data: files } = await supabase.storage
-      .from(RACE_IMAGE_BUCKET)
-      .list(folderPath);
-
-    if (!files || files.length === 0) {
-      return NextResponse.json({ hasImage: false });
-    }
-
-    // Find files matching race image patterns: main.{ext} or main-{timestamp}.{ext}
-    const raceImageFiles = files.filter(file => {
-      // Check for old format: main.{ext}
-      const isOldFormat = RACE_IMAGE_EXTENSIONS.some(ext => file.name === getRaceImageFilename(ext));
-      
-      // Check for new versioned format: main-{timestamp}.{ext}
-      const versionedPattern = new RegExp(`^main-\\d+\\.(${RACE_IMAGE_EXTENSIONS.join('|')})$`);
-      const isVersionedFormat = versionedPattern.test(file.name);
-      
-      return isOldFormat || isVersionedFormat;
-    });
-
-    if (raceImageFiles.length === 0) {
-      return NextResponse.json({ hasImage: false });
-    }
-
-    // If we have versioned files, find the latest one by timestamp
-    // Otherwise, use the old format file
-    let imageFile = raceImageFiles.find(file => 
-      RACE_IMAGE_EXTENSIONS.some(ext => file.name === getRaceImageFilename(ext))
-    );
-
-    if (!imageFile) {
-      // Sort versioned files by timestamp (extracted from filename) descending
-      const sortedVersionedFiles = raceImageFiles.sort((a, b) => {
-        const timestampA = parseInt(a.name.match(/^main-(\d+)\./)?.[1] || '0', 10);
-        const timestampB = parseInt(b.name.match(/^main-(\d+)\./)?.[1] || '0', 10);
-        return timestampB - timestampA;
-      });
-      imageFile = sortedVersionedFiles[0];
-    }
-
-    if (!imageFile) {
-      return NextResponse.json({ hasImage: false });
-    }
-
-    return NextResponse.json({ 
+    const imageUrl = getRaceImageUrlWithFilename(organizerId, raceId, filename);
+    return NextResponse.json({
       hasImage: true,
-      filename: imageFile.name,
+      filename,
+      imageUrl,
     });
   } catch (error) {
     console.error('API error:', error);
@@ -160,22 +148,15 @@ export async function POST(
       fileSize: file.size,
     });
 
-    // Delete all existing images for this race before uploading the new one
-    // This ensures only one image exists and prevents accumulation of old versioned files
     const folderPath = `${organizerContext.organizerId}/${raceId}`;
-    const { data: existingFiles } = await supabase.storage
-      .from(RACE_IMAGE_BUCKET)
-      .list(folderPath);
-
-    if (existingFiles && existingFiles.length > 0) {
-      const filePaths = existingFiles.map(file => `${folderPath}/${file.name}`);
+    const existingFilename = organizerContext.race.heroImageFilename?.trim();
+    if (existingFilename) {
+      const filePath = `${folderPath}/${existingFilename}`;
       const { error: removeError } = await supabase.storage
         .from(RACE_IMAGE_BUCKET)
-        .remove(filePaths);
-      
+        .remove([filePath]);
       if (removeError) {
         console.error('Storage remove error:', removeError);
-        // Continue anyway - new filename is unique
       }
     }
 
@@ -192,6 +173,16 @@ export async function POST(
         { error: 'Failed to update race' },
         { status: 500 },
       );
+    }
+
+    const { error: updateError } = await supabase
+      .from('races')
+      .update({ hero_image_filename: filename })
+      .eq('id', raceId)
+      .eq('organizer_id', organizerContext.organizerId);
+
+    if (updateError) {
+      console.error('DB update error:', updateError);
     }
 
     console.log('Image uploaded successfully:', { path: uploadData?.path, filename });
@@ -220,15 +211,17 @@ export async function DELETE(
     }
 
     const folderPath = `${organizerContext.organizerId}/${raceId}`;
-    
-    const { data: files } = await supabase.storage
-      .from(RACE_IMAGE_BUCKET)
-      .list(folderPath);
-
-    if (files && files.length > 0) {
-      const filePaths = files.map(file => `${folderPath}/${file.name}`);
-      await supabase.storage.from(RACE_IMAGE_BUCKET).remove(filePaths);
+    const filename = organizerContext.race.heroImageFilename?.trim();
+    if (filename) {
+      const filePath = `${folderPath}/${filename}`;
+      await supabase.storage.from(RACE_IMAGE_BUCKET).remove([filePath]);
     }
+
+    await supabase
+      .from('races')
+      .update({ hero_image_filename: null })
+      .eq('id', raceId)
+      .eq('organizer_id', organizerContext.organizerId);
 
     return NextResponse.json({ success: true });
   } catch (error) {

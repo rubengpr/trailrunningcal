@@ -19,6 +19,7 @@ export function raceRowToTrailRace(row: RaceRow): TrailRace {
     sponsors: row.sponsors ?? null,
     organizerId: row.organizer_id ?? null,
     websiteUrl: row.website_url ?? null,
+    heroImageFilename: row.hero_image_filename ?? null,
   };
 }
 

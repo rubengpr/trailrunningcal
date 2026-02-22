@@ -1,6 +1,7 @@
 export interface RaceImageStatus {
   hasImage: boolean;
   filename?: string;
+  imageUrl?: string;
 }
 
 export async function checkRaceImage(raceId: string): Promise<RaceImageStatus> {

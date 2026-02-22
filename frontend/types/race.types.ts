@@ -21,6 +21,7 @@ export type RaceRow = {
   sponsors?: string[] | null;
   organizer_id: string | null;
   website_url?: string | null;
+  hero_image_filename?: string | null;
 };
 
 export interface TrailRace {
@@ -40,4 +41,5 @@ export interface TrailRace {
   sponsors?: string[] | null;
   organizerId: string | null;
   websiteUrl?: string | null;
+  heroImageFilename?: string | null;
 }

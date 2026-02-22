@@ -1,4 +1,3 @@
-import Navbar from '@/components/navbar';
 import { locales } from '@/i18n';
 import { notFound } from 'next/navigation';
 import { formatDateToSpanish, formatDateToCatalan } from '@/lib/date-utils';

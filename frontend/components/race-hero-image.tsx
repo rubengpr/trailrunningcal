@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { getRaceImageUrls, getRaceImageUrlWithFilename } from '@/lib/race-image-url';
+import { getRaceImageUrlWithFilename } from '@/lib/race-image-url';
 import { checkRaceImage } from '@/lib/api/race-image';
 
 interface RaceHeroImageProps {
@@ -20,14 +20,16 @@ export function RaceHeroImage({ organizerId, raceId, alt }: RaceHeroImageProps) 
 
     async function findWorkingImage() {
       try {
-        // First, try to get the filename from the API
         const imageStatus = await checkRaceImage(raceId);
-        
+
+        if (imageStatus.hasImage && imageStatus.imageUrl && !cancelled) {
+          setWorkingUrl(imageStatus.imageUrl);
+          setIsChecking(false);
+          return;
+        }
+
         if (imageStatus.hasImage && imageStatus.filename && !cancelled) {
-          // Use the actual filename from the API
           const url = getRaceImageUrlWithFilename(organizerId, raceId, imageStatus.filename);
-          
-          // Verify the image exists
           try {
             const response = await fetch(url, { method: 'HEAD' });
             if (response.ok && !cancelled) {
@@ -36,33 +38,13 @@ export function RaceHeroImage({ organizerId, raceId, alt }: RaceHeroImageProps) 
               return;
             }
           } catch {
-            // If the specific filename doesn't work, fall through to fallback
+            // Fall through
           }
         }
       } catch (error) {
-        // If API call fails, fall through to fallback behavior
         console.error('Failed to check race image:', error);
       }
-      
-      // Fallback: try all possible extensions (backward compatibility)
-      if (!cancelled) {
-        const imageUrls = getRaceImageUrls(organizerId, raceId);
-        for (const url of imageUrls) {
-          if (cancelled) return;
-          
-          try {
-            const response = await fetch(url, { method: 'HEAD' });
-            if (response.ok && !cancelled) {
-              setWorkingUrl(url);
-              setIsChecking(false);
-              return;
-            }
-          } catch {
-            // Continue to next URL
-          }
-        }
-      }
-      
+
       if (!cancelled) {
         setIsChecking(false);
       }
