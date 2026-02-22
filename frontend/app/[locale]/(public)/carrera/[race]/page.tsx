@@ -155,16 +155,16 @@ export default async function RacePage({
                 <VerifiedBadgeWithTooltip size="md" />
               )}
             </div>
-            <div className="flex flex-col sm:flex-row text-gray-600 gap-2 sm:gap-3">
-              <h3 className="text-base sm:text-lg lg:text-xl font-bold text-black">
+            <div className="flex flex-col sm:flex-row sm:flex-wrap text-gray-600 gap-2 sm:gap-3">
+              <h3 className="text-base sm:text-lg lg:text-xl font-bold text-black whitespace-nowrap">
                 {formattedDate}
               </h3>
-              <div className="flex flex-row gap-2 sm:gap-3">
+              <div className="flex flex-row flex-wrap gap-2 sm:gap-3">
                 <div className="flex flex-row gap-1">
-                  <h3 className="text-base sm:text-lg lg:text-xl">
+                  <h3 className="text-base sm:text-lg lg:text-xl whitespace-nowrap">
                     {raceData.city},
                   </h3>
-                  <h3 className="text-base sm:text-lg lg:text-xl">
+                  <h3 className="text-base sm:text-lg lg:text-xl whitespace-nowrap">
                     {raceData.province}
                   </h3>
                 </div>
@@ -172,11 +172,11 @@ export default async function RacePage({
                   <h3 className="text-base sm:text-lg lg:text-xl">|</h3>
                 </div>
                 <div className="flex flex-row gap-1">
-                  <h3 className="text-base sm:text-lg lg:text-xl">
+                  <h3 className="text-base sm:text-lg lg:text-xl whitespace-nowrap">
                     {raceData.distanceKm}km
                   </h3>
                   {raceData.elevationGainM !== null && (
-                    <h3 className="text-base sm:text-lg lg:text-xl">
+                    <h3 className="text-base sm:text-lg lg:text-xl whitespace-nowrap">
                       +{raceData.elevationGainM}m
                     </h3>
                   )}
@@ -187,7 +187,7 @@ export default async function RacePage({
                       <h3 className="text-base sm:text-lg lg:text-xl">|</h3>
                     </div>
                     <div className="hidden sm:block">
-                      <h3 className="text-base sm:text-lg lg:text-xl">
+                      <h3 className="text-base sm:text-lg lg:text-xl whitespace-nowrap">
                         {displayPrice}€
                       </h3>
                     </div>
