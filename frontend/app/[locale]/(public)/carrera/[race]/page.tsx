@@ -20,6 +20,7 @@ import { getRaces } from '@/lib/db/races';
 import { getOrganizerById } from '@/lib/db/organizers';
 import { getDisplayPrice } from '@/lib/race-utils';
 import RaceOrganizerLinks from '@/components/race-organizer-links';
+import { buildRaceJsonLd } from '@/lib/seo/race-json-ld';
 
 export const dynamic = 'force-dynamic';
 
@@ -134,8 +135,15 @@ export default async function RacePage({
       : formatDateToSpanish(raceData.date)
     : '-';
 
+  const jsonLd = buildRaceJsonLd(raceData, race);
+
   return (
-    <div className="min-h-screen w-full text-gray-900 flex flex-col bg-white">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <div className="min-h-screen w-full text-gray-900 flex flex-col bg-white">
       <div className="flex flex-col max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
         <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6">
           <div className="flex flex-col flex-1">
@@ -270,5 +278,6 @@ export default async function RacePage({
         )}
       </div>
     </div>
+    </>
   );
 }
