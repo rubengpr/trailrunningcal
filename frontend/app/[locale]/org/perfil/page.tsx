@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { OrganizerProfileForm } from '@/components/organizer-profile-form';
-import { OrganizerSidebar } from '@/components/organizer-sidebar';
+import { OrganizerLayout } from '@/components/organizer-layout';
 
 export default async function OrganizerPage({
   params,
@@ -42,24 +42,21 @@ export default async function OrganizerPage({
   }
 
   return (
-    <div className='flex flex-col md:flex-row'>
-      <OrganizerSidebar />
-      <div className='flex flex-col w-full p-4 md:p-6'>
-        <div className='flex flex-row mb-6 md:mb-10'>
-          <h1 className='text-xl font-bold'>{t('title')}</h1>
-        </div>
-        <OrganizerProfileForm
-          userEmail={user.email || ''}
-          fullName={profile?.full_name}
-          jobTitle={profile?.job_title}
-          name={organizer?.name || ''}
-          website={organizer?.website || ''}
-          facebook={organizer?.facebook_url || ''}
-          instagram={organizer?.instagram_url || ''}
-          youtube={organizer?.youtube_url || ''}
-          tiktok={organizer?.tiktok_url || ''}
-        />
+    <OrganizerLayout>
+      <div className='flex flex-row mb-6 md:mb-10'>
+        <h1 className='text-xl font-bold'>{t('title')}</h1>
       </div>
-    </div>
+      <OrganizerProfileForm
+        userEmail={user.email || ''}
+        fullName={profile?.full_name}
+        jobTitle={profile?.job_title}
+        name={organizer?.name || ''}
+        website={organizer?.website || ''}
+        facebook={organizer?.facebook_url || ''}
+        instagram={organizer?.instagram_url || ''}
+        youtube={organizer?.youtube_url || ''}
+        tiktok={organizer?.tiktok_url || ''}
+      />
+    </OrganizerLayout>
   );
 }

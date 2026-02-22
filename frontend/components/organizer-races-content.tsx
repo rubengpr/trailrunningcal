@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import { ProposeRaceModal } from './propose-race-modal';
 import { InfoBanner } from './info-banner';
+import { SectionHeader } from './section-header';
+import { useModal } from '@/hooks/use-modal';
 import TrailRaceCard from './trail-race-card';
 import type { TrailRace } from '@/types/race.types';
 import { formatDateToSpanish, formatDateToCatalan } from '@/lib/date-utils';
@@ -50,7 +51,7 @@ export function OrganizerRacesContent({ races }: OrganizerRacesContentProps) {
     const tTable = useTranslations('organizer.races.table');
     const locale = useLocale();
     const router = useRouter();
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const { isOpen: isModalOpen, open: handleOpenModal, close: handleCloseModal } = useModal();
 
     const hasRealRaces = races.length > 0;
     const displayRaces = hasRealRaces ? races : dummyRaces;
@@ -60,14 +61,6 @@ export function OrganizerRacesContent({ races }: OrganizerRacesContentProps) {
         typeof window !== 'undefined'
             ? window.location.origin
             : 'https://trailrunningcal.com';
-
-    const handleOpenModal = () => {
-        setIsModalOpen(true);
-    };
-
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-    };
 
     const handleRaceClick = (raceId: string) => {
         router.push(`/${locale}/org/carreras/${raceId}`);
@@ -94,27 +87,24 @@ export function OrganizerRacesContent({ races }: OrganizerRacesContentProps) {
     return (
         <>
             <div className='flex flex-col gap-8'>
-                {/* Header */}
-                <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
-                    <div>
-                        <h1 className='text-2xl font-semibold text-gray-900 tracking-tight'>
-                            {tTable('title')}
-                        </h1>
-                        <p className='text-sm text-gray-500 mt-1'>
-                            {hasRealRaces
-                                ? displayRaces.length === 1
-                                    ? tTable('raceCountOne')
-                                    : tTable('raceCount', { count: displayRaces.length })
-                                : tTable('raceCount', { count: displayRaces.length })}
-                        </p>
-                    </div>
-                    <button
-                        onClick={handleOpenModal}
-                        className='px-5 py-2.5 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 transition-all duration-200 cursor-pointer w-fit shadow-sm hover:shadow'
-                    >
-                        {t('newRaceButton')}
-                    </button>
-                </div>
+                <SectionHeader
+                    title={tTable('title')}
+                    subtitle={
+                        hasRealRaces
+                            ? displayRaces.length === 1
+                                ? tTable('raceCountOne')
+                                : tTable('raceCount', { count: displayRaces.length })
+                            : tTable('raceCount', { count: displayRaces.length })
+                    }
+                    action={
+                        <button
+                            onClick={handleOpenModal}
+                            className='px-5 py-2.5 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 transition-all duration-200 cursor-pointer w-fit shadow-sm hover:shadow'
+                        >
+                            {t('newRaceButton')}
+                        </button>
+                    }
+                />
 
                 {/* Banner for placeholder data */}
                 {!hasRealRaces && (

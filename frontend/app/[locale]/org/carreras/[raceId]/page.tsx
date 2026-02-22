@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import { OrganizerSidebar } from '@/components/organizer-sidebar';
+import { OrganizerLayout } from '@/components/organizer-layout';
 import { RaceForm } from '@/components/race-form';
 import { raceRowToTrailRace } from '@/lib/db/races';
 import type { RaceRow } from '@/types/race.types';
@@ -69,11 +69,8 @@ export default async function RaceFormPage({
         race != null ? { ...race, priceEur } : null;
 
     return (
-        <div className='flex flex-col md:flex-row'>
-            <OrganizerSidebar />
-            <div className='flex flex-col w-full p-6'>
-                <RaceForm raceId={raceId} initialData={initialRaceData} isEditMode={isEditMode} />
-            </div>
-        </div>
+        <OrganizerLayout>
+            <RaceForm raceId={raceId} initialData={initialRaceData} isEditMode={isEditMode} />
+        </OrganizerLayout>
     );
 }

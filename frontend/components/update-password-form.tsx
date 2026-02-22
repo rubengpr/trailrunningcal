@@ -5,6 +5,9 @@ import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { FormInput } from './form-input';
+import { FormCard } from './form-card';
+import { Button } from './button';
+import { InlineError } from './inline-error';
 import { validatePassword as validatePasswordUtil } from '@/lib/auth-validation';
 
 export function UpdatePasswordForm({
@@ -93,54 +96,47 @@ export function UpdatePasswordForm({
       className={`flex flex-col gap-6${className ? ` ${className}` : ''}`}
       {...props}
     >
-      <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
-        <div className="flex flex-col space-y-1.5 p-6">
-          <h3 className="text-2xl font-semibold leading-none tracking-tight">
-            {t('title')}
-          </h3>
-          <p className="text-sm text-gray-500">{t('description')}</p>
-        </div>
-        <div className="p-6 pt-0">
-          <form onSubmit={handleSubmit} noValidate>
-            <div className="flex flex-col gap-6">
-              <FormInput
-                id="password"
-                label={t('password')}
-                type="password"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  setPasswordError('');
-                  setError(null);
-                }}
-                error={passwordError}
-                showPasswordToggle
-              />
-              <FormInput
-                id="repeat-password"
-                label={t('repeatPassword')}
-                type="password"
-                value={repeatPassword}
-                onChange={(e) => {
-                  setRepeatPassword(e.target.value);
-                  setRepeatPasswordError('');
-                  setError(null);
-                }}
-                error={repeatPasswordError}
-                showPasswordToggle
-              />
-              {error && <p className="text-sm text-red-500">{error}</p>}
-              <button
-                type="submit"
-                className="w-full inline-flex items-center justify-center rounded-md bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none disabled:pointer-events-none disabled:opacity-50"
-                disabled={isLoading}
-              >
-                {isLoading ? t('updating') : t('submit')}
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
+      <FormCard title={t('title')} description={t('description')}>
+        <form onSubmit={handleSubmit} noValidate>
+          <div className="flex flex-col gap-6">
+            <FormInput
+              id="password"
+              label={t('password')}
+              type="password"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setPasswordError('');
+                setError(null);
+              }}
+              error={passwordError}
+              showPasswordToggle
+            />
+            <FormInput
+              id="repeat-password"
+              label={t('repeatPassword')}
+              type="password"
+              value={repeatPassword}
+              onChange={(e) => {
+                setRepeatPassword(e.target.value);
+                setRepeatPasswordError('');
+                setError(null);
+              }}
+              error={repeatPasswordError}
+              showPasswordToggle
+            />
+            <InlineError error={error || undefined} />
+            <Button
+              type="submit"
+              fullWidth
+              isLoading={isLoading}
+              loadingText={t('updating')}
+            >
+              {t('submit')}
+            </Button>
+          </div>
+        </form>
+      </FormCard>
     </div>
   );
 }
