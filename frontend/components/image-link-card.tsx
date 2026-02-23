@@ -1,3 +1,6 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -8,15 +11,21 @@ interface ImageLinkCardProps {
 }
 
 export default function ImageLinkCard({ href, label, imageSrc }: ImageLinkCardProps) {
+  const [isLoaded, setIsLoaded] = useState(false);
+
   return (
     <Link href={href} className="w-full lg:flex-1 border border-gray-200 rounded-lg overflow-hidden block">
       <div className="relative h-32 w-full bg-gray-100">
+        {imageSrc && !isLoaded && (
+          <div className="absolute inset-0 bg-gray-50 dark:bg-gray-100 animate-pulse" />
+        )}
         {imageSrc && (
           <Image
             src={imageSrc}
             alt={label}
             fill
             className="object-cover"
+            onLoad={() => setIsLoaded(true)}
           />
         )}
       </div>
