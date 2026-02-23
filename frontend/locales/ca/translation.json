@@ -77,6 +77,10 @@
       "confirmButton": "Confirmar",
       "cancelButton": "Cancel·lar",
       "successMessage": "Cursa reclamada correctament"
+    },
+    "provincia": {
+      "racePageLabel": "Més curses de trail running a {province}",
+      "racePageLinkText": "Veure totes les curses a {province} →"
     }
   },
   "difficulty": {
@@ -234,6 +238,18 @@
       "raceWebsiteRequired": "La web de la cursa és obligatòria",
       "raceWebsiteInvalid": "La URL no és vàlida",
       "general": "Alguna cosa ha anat malament. Si us plau, torna-ho a intentar."
+    }
+  },
+  "provincia": {
+    "pageTitle": "Trail running a {province} - Curses de muntanya 2026",
+    "pageSubtitle": "Calendari complet de curses de trail running a la provincia de {province}. Dates, distàncies, desnivells i tota la informació.",
+    "pageDescription": "Troba totes les curses de trail running a {province}: ultres, maratons de muntanya, trails curts i proves per a tots els nivells. Actualitzat per al 2026.",
+    "breadcrumb": "Trail Running · Catalunya",
+    "names": {
+      "barcelona": "Barcelona",
+      "girona": "Girona",
+      "lleida": "Lleida",
+      "tarragona": "Tarragona"
     }
   },
   "notFound": {

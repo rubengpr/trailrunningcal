@@ -21,6 +21,21 @@ import { getOrganizerById } from '@/lib/db/organizers';
 import { getDisplayPrice } from '@/lib/race-utils';
 import RaceOrganizerLinks from '@/components/race-organizer-links';
 import { buildRaceJsonLd } from '@/lib/seo/race-json-ld';
+import ProvinceLink from '@/components/province-link';
+
+const PROVINCE_SLUGS: Record<string, string> = {
+  Barcelona: 'barcelona',
+  Girona: 'girona',
+  Lleida: 'lleida',
+  Tarragona: 'tarragona',
+};
+
+const PROVINCE_IMAGES: Record<string, string> = {
+  Barcelona: 'https://ppmdbmyxgtqvmvtbptmg.supabase.co/storage/v1/object/public/stock/logos/provinces/barcelona.jpg',
+  Girona: 'https://ppmdbmyxgtqvmvtbptmg.supabase.co/storage/v1/object/public/stock/logos/provinces/girona.jpeg',
+  Lleida: 'https://ppmdbmyxgtqvmvtbptmg.supabase.co/storage/v1/object/public/stock/logos/provinces/lleida.jpg',
+  Tarragona: 'https://ppmdbmyxgtqvmvtbptmg.supabase.co/storage/v1/object/public/stock/logos/provinces/tarragona.webp',
+};
 
 export const dynamic = 'force-dynamic';
 
@@ -136,6 +151,7 @@ export default async function RacePage({
     : '-';
 
   const jsonLd = buildRaceJsonLd(raceData, race);
+  const provinceSlug = PROVINCE_SLUGS[raceData.province] ?? null;
 
   return (
     <>
@@ -274,6 +290,14 @@ export default async function RacePage({
             benefits={tRace('organizerCard.benefits')}
             claimButton={tRace('organizerCard.claimButton')}
             raceName={raceData.name}
+          />
+        )}
+        {provinceSlug && (
+          <ProvinceLink
+            label={tRace('provincia.racePageLabel', { province: raceData.province })}
+            linkText={tRace('provincia.racePageLinkText', { province: raceData.province })}
+            href={`/${locale}/provincia/${provinceSlug}`}
+            imageSrc={PROVINCE_IMAGES[raceData.province]}
           />
         )}
       </div>

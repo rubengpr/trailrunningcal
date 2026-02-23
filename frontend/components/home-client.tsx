@@ -16,9 +16,10 @@ import { ProposeRaceModal } from './propose-race-modal';
 
 interface HomeClientProps {
   races: TrailRace[];
+  showProvinceFilter?: boolean;
 }
 
-export default function HomeClient({ races }: HomeClientProps) {
+export default function HomeClient({ races, showProvinceFilter = true }: HomeClientProps) {
   const tResults = useTranslations('results');
   const tFilters = useTranslations('filters');
   const tErrors = useTranslations('errors');
@@ -116,9 +117,11 @@ export default function HomeClient({ races }: HomeClientProps) {
               onMonthSelect={handleMonthSelect}
             />
           </div>
-          <div className="flex justify-center gap-2">
-            <ProvinceFilter onProvinceSelect={handleProvinceSelect} />
-          </div>
+          {showProvinceFilter && (
+            <div className="flex justify-center gap-2">
+              <ProvinceFilter onProvinceSelect={handleProvinceSelect} />
+            </div>
+          )}
         </div>
       </section>
 

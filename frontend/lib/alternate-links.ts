@@ -72,6 +72,22 @@ export function buildContactAlternateLinks(): Record<string, string> {
 }
 
 /**
+ * Builds alternate language links for a province page
+ * Province slugs are the same across locales
+ * @param provinceSlug - The province slug (e.g. 'barcelona')
+ * @returns Record with es, ca, and x-default URLs
+ */
+export function buildProvinceAlternateLinks(
+  provinceSlug: string,
+): Record<string, string> {
+  return {
+    es: `${BASE_URL}/es/provincia/${provinceSlug}`,
+    ca: `${BASE_URL}/ca/provincia/${provinceSlug}`,
+    'x-default': `${BASE_URL}/es/provincia/${provinceSlug}`,
+  };
+}
+
+/**
  * Builds alternate language links for a race page
  * Race slugs are the same across locales (generated from race name)
  * @param raceSlug - The race slug

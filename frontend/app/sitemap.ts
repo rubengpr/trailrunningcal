@@ -10,7 +10,10 @@ import {
   buildContactAlternateLinks,
   buildRaceAlternateLinks,
   buildBlogPostAlternateLinks,
+  buildProvinceAlternateLinks,
 } from '@/lib/alternate-links';
+
+const PROVINCE_SLUGS = ['barcelona', 'girona', 'lleida', 'tarragona'] as const;
 
 const CONTACT_PATHS: Record<Locale, string> = {
   es: 'contacto',
@@ -82,6 +85,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.9,
         alternates: {
           languages: alternateLinks,
+        },
+      });
+    }
+  }
+
+  // Add province pages (all locales)
+  for (const province of PROVINCE_SLUGS) {
+    for (const locale of locales) {
+      urls.push({
+        url: `${BASE_URL}/${locale}/provincia/${province}`,
+        lastModified: currentDate,
+        changeFrequency: 'weekly',
+        priority: 0.9,
+        alternates: {
+          languages: buildProvinceAlternateLinks(province),
         },
       });
     }
