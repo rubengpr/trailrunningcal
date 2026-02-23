@@ -80,7 +80,7 @@
     },
     "provincia": {
       "racePageLabel": "Más carreras de trail running en {province}",
-      "racePageLinkText": "Ver todas las carreras en {province} →"
+      "racePageLinkText": "Carreras en {province}"
     }
   },
   "difficulty": {

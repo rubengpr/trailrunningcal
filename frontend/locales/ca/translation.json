@@ -80,7 +80,7 @@
     },
     "provincia": {
       "racePageLabel": "Més curses de trail running a {province}",
-      "racePageLinkText": "Veure totes les curses a {province} →"
+      "racePageLinkText": "Curses a {province}"
     }
   },
   "difficulty": {
