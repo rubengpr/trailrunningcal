@@ -30,11 +30,19 @@ const PROVINCE_SLUGS: Record<string, string> = {
   Tarragona: 'tarragona',
 };
 
+const STOCK_IMAGES_COUNT = 21;
+const STOCK_IMAGE_BASE_URL = 'https://ppmdbmyxgtqvmvtbptmg.supabase.co/storage/v1/object/public/stock/images';
+
+function randomStockImageUrl(): string {
+  const n = Math.floor(Math.random() * STOCK_IMAGES_COUNT) + 1;
+  return `${STOCK_IMAGE_BASE_URL}/image-${n}.jpg`;
+}
+
 const PROVINCE_IMAGES: Record<string, string> = {
-  Barcelona: 'https://ppmdbmyxgtqvmvtbptmg.supabase.co/storage/v1/object/public/stock/logos/provinces/barcelona.jpg',
-  Girona: 'https://ppmdbmyxgtqvmvtbptmg.supabase.co/storage/v1/object/public/stock/logos/provinces/girona.jpeg',
-  Lleida: 'https://ppmdbmyxgtqvmvtbptmg.supabase.co/storage/v1/object/public/stock/logos/provinces/lleida.jpg',
-  Tarragona: 'https://ppmdbmyxgtqvmvtbptmg.supabase.co/storage/v1/object/public/stock/logos/provinces/tarragona.webp',
+  Barcelona: 'https://ppmdbmyxgtqvmvtbptmg.supabase.co/storage/v1/object/public/stock/provinces/barcelona.jpg',
+  Girona: 'https://ppmdbmyxgtqvmvtbptmg.supabase.co/storage/v1/object/public/stock/provinces/girona.jpg',
+  Lleida: 'https://ppmdbmyxgtqvmvtbptmg.supabase.co/storage/v1/object/public/stock/provinces/lleida.jpg',
+  Tarragona: 'https://ppmdbmyxgtqvmvtbptmg.supabase.co/storage/v1/object/public/stock/provinces/tarragona.jpg',
 };
 
 export const dynamic = 'force-dynamic';
@@ -152,6 +160,20 @@ export default async function RacePage({
 
   const jsonLd = buildRaceJsonLd(raceData, race);
   const provinceSlug = PROVINCE_SLUGS[raceData.province] ?? null;
+
+  const recommendedRaces = races
+    .filter((r) => {
+      if (r.province !== raceData.province || r.id === raceData.id) return false;
+      if (!raceData.date) return !!r.date;
+      return !!r.date && r.date >= raceData.date;
+    })
+    .sort((a, b) => a.date!.localeCompare(b.date!))
+    .slice(0, 3)
+    .map((r) => ({
+      href: `/${locale}/carrera/${generateRaceSlug(r.name)}`,
+      label: r.name,
+      imageSrc: randomStockImageUrl(),
+    }));
 
   return (
     <>
@@ -298,6 +320,7 @@ export default async function RacePage({
             linkText={tRace('provincia.racePageLinkText', { province: raceData.province })}
             href={`/${locale}/provincia/${provinceSlug}`}
             imageSrc={PROVINCE_IMAGES[raceData.province]}
+            additionalCards={recommendedRaces}
           />
         )}
       </div>

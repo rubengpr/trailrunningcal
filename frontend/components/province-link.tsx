@@ -1,35 +1,29 @@
-import Link from 'next/link';
-import Image from 'next/image';
+import ImageLinkCard from '@/components/image-link-card';
+
+interface AdditionalCard {
+  href: string;
+  label: string;
+  imageSrc?: string;
+}
 
 interface ProvinceLinkProps {
   label: string;
   linkText: string;
   href: string;
   imageSrc?: string;
+  additionalCards?: AdditionalCard[];
 }
 
-export default function ProvinceLink({ label, linkText, href, imageSrc }: ProvinceLinkProps) {
+export default function ProvinceLink({ label, linkText, href, imageSrc, additionalCards }: ProvinceLinkProps) {
   return (
     <div className="flex flex-col gap-3 mt-6">
       <p className="text-sm sm:text-base font-bold">{label}</p>
-      <Link
-        href={href}
-        className="border border-gray-200 rounded-lg overflow-hidden block w-72"
-      >
-        <div className="relative h-32 w-full bg-gray-100">
-          {imageSrc && (
-            <Image
-              src={imageSrc}
-              alt={label}
-              fill
-              className="object-cover"
-            />
-          )}
-        </div>
-        <div className="p-3">
-          <span className="text-sm font-medium text-gray-900">{linkText}</span>
-        </div>
-      </Link>
+      <div className="flex flex-col gap-3 lg:flex-row">
+        <ImageLinkCard href={href} label={linkText} imageSrc={imageSrc} />
+        {additionalCards?.map((card) => (
+          <ImageLinkCard key={card.href} href={card.href} label={card.label} imageSrc={card.imageSrc ?? imageSrc} />
+        ))}
+      </div>
     </div>
   );
 }
