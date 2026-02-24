@@ -234,7 +234,7 @@
     "errors": {
       "raceNameRequired": "El nom de la cursa és obligatori",
       "raceNameTooLong": "El nom de la cursa no pot tenir més de 200 caràcters",
-      "raceWebsiteTooLong": "L'enllaç de la cursa no pot tenir més de 200 caràcters.",
+      "raceWebsiteTooLong": "L'enllaç de la cursa no pot tenir més de 200 caràcters",
       "raceWebsiteRequired": "La web de la cursa és obligatòria",
       "raceWebsiteInvalid": "La URL no és vàlida",
       "general": "Alguna cosa ha anat malament. Si us plau, torna-ho a intentar."
