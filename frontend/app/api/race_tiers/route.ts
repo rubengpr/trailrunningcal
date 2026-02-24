@@ -24,7 +24,7 @@ export async function PATCH(request: NextRequest) {
     if (error) {
       console.error('Database error:', error);
       return NextResponse.json(
-        { error: 'Failed to update profile' },
+        { error: 'Failed to update prices' },
         { status: 500 },
       );
     }
