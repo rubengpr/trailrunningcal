@@ -7,6 +7,13 @@ export async function PATCH(request: NextRequest) {
     const supabase = await createClient();
     const { raceId, priceEur } = await request.json();
 
+    if (!raceId || typeof raceId !== 'string') {
+      return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
+    }
+    if (typeof priceEur !== 'number' || priceEur < 0 || priceEur > 9999) {
+      return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
+    }
+
     const context = await getOrganizerRaceContext(supabase, raceId);
     if (!context) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });

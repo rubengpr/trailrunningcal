@@ -15,6 +15,19 @@ export async function PATCH(request: NextRequest) {
 
         const { organizationName, organizationWebsite, facebookUrl, instagramUrl, youtubeUrl, tiktokUrl } = await request.json();
 
+        if (!organizationName || typeof organizationName !== 'string' || organizationName.trim().length === 0 || organizationName.trim().length > 100) {
+            return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
+        }
+
+        const urlFields = { organizationWebsite, facebookUrl, instagramUrl, youtubeUrl, tiktokUrl };
+        for (const [, value] of Object.entries(urlFields)) {
+            if (value !== undefined && value !== null && value !== '') {
+                try { new URL(value); } catch {
+                    return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
+                }
+            }
+        }
+
         const { data, error } = await supabase
             .from('organizers')
             .update({

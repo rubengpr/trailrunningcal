@@ -15,6 +15,13 @@ export async function PATCH(request: NextRequest) {
 
         const { userName, userRole } = await request.json();
 
+        if (!userName || typeof userName !== 'string' || userName.trim().length === 0 || userName.trim().length > 100) {
+            return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
+        }
+        if (userRole !== undefined && userRole !== null && (typeof userRole !== 'string' || userRole.length > 100)) {
+            return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
+        }
+
         const { data, error } = await supabase
             .from('profiles')
             .update({
