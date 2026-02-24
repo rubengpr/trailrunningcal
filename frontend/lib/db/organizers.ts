@@ -10,7 +10,7 @@ type OrganizerRow = {
   tiktok_url: string | null;
 };
 
-function organizerRowToPublic(row: OrganizerRow): OrganizerPublic {
+export function organizerRowToPublic(row: OrganizerRow): OrganizerPublic {
   return {
     name: row.name ?? null,
     website: row.website ?? null,
