@@ -1,19 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { getOrganizerRaceContext } from '@/lib/auth-organizer';
 
 export async function PATCH(request: NextRequest) {
   try {
     const supabase = await createClient();
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const { raceId, priceEur } = await request.json();
+
+    const context = await getOrganizerRaceContext(supabase, raceId);
+    if (!context) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
 
     const { data, error } = await supabase
       .from('race_tiers')
