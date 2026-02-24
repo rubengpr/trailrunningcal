@@ -18,8 +18,9 @@ function getRateLimitKey(request: NextRequest): string {
   // Try x-forwarded-for header (Vercel provides this)
   const forwardedFor = request.headers.get('x-forwarded-for');
   if (forwardedFor) {
-    // x-forwarded-for can contain multiple IPs, take the first one
-    return forwardedFor.split(',')[0].trim();
+    // x-forwarded-for can contain multiple IPs; take the last one (appended by the trusted Vercel proxy)
+    const ips = forwardedFor.split(',');
+    return ips[ips.length - 1].trim();
   }
 
   // Try x-real-ip header as fallback
