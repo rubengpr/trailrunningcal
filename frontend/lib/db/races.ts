@@ -55,6 +55,7 @@ export async function getRaces(
       description,
       map_url,
       website_url,
+      hero_image_filename,
       race_tiers ( price_eur )
     `,
     )

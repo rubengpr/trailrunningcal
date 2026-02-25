@@ -22,6 +22,7 @@ import { getDisplayPrice } from '@/lib/race-utils';
 import RaceOrganizerLinks from '@/components/race-organizer-links';
 import { buildRaceJsonLd } from '@/lib/seo/race-json-ld';
 import ProvinceLink from '@/components/province-link';
+import { getRaceImageUrlWithFilename } from '@/lib/race-image-url';
 
 const PROVINCE_SLUGS: Record<string, string> = {
   Barcelona: 'barcelona',
@@ -158,6 +159,11 @@ export default async function RacePage({
       : formatDateToSpanish(raceData.date)
     : '-';
 
+  const heroImageUrl =
+    raceData.organizerId && raceData.heroImageFilename
+      ? getRaceImageUrlWithFilename(raceData.organizerId, raceData.id, raceData.heroImageFilename)
+      : null;
+
   const jsonLd = buildRaceJsonLd(raceData, race);
   const provinceSlug = PROVINCE_SLUGS[raceData.province] ?? null;
 
@@ -250,12 +256,8 @@ export default async function RacePage({
             )}
           </div>
         </div>
-        {raceData.organizerId && (
-          <RaceHeroImage
-            organizerId={raceData.organizerId}
-            raceId={raceData.id}
-            alt={raceData.name}
-          />
+        {heroImageUrl && (
+          <RaceHeroImage imageUrl={heroImageUrl} alt={raceData.name} />
         )}
         <div className="w-full my-6 sm:my-8">
           {raceData.description && (
