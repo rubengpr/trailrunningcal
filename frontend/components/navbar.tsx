@@ -23,6 +23,7 @@ export default function Navbar() {
           setIsAuthenticated(false);
         } else {
           setIsAuthenticated(true);
+          posthog.identify(user.id, { email: user.email });
         }
       } catch {
         setIsAuthenticated(false);
@@ -34,7 +35,13 @@ export default function Navbar() {
     // Listen for auth state changes
     const supabase = createClient();
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsAuthenticated(!!session?.user);
+      if (session?.user) {
+        setIsAuthenticated(true);
+        posthog.identify(session.user.id, { email: session.user.email });
+      } else {
+        setIsAuthenticated(false);
+        posthog.reset();
+      }
     });
 
     return () => {
