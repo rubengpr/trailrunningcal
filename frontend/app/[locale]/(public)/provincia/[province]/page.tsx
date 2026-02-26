@@ -6,6 +6,7 @@ import { getRaces } from '@/lib/db/races';
 import { generateMetadataFromOptions } from '../../../../../seo/meta-config';
 import { buildProvinceAlternateLinks } from '../../../../../lib/alternate-links';
 import { BASE_URL } from '../../../../../lib/config';
+import { buildBreadcrumbJsonLd } from '@/lib/seo/breadcrumb-json-ld';
 import ProvinceHeroSection from '../../../../../components/province-hero-section';
 import HomeClient from '../../../../../components/home-client';
 
@@ -65,7 +66,13 @@ export default async function ProvincePage({
   }
 
   const t = await getTranslations({ locale, namespace: 'provincia' });
+  const tNav = await getTranslations({ locale, namespace: 'navigation' });
   const provinceName = t(`names.${province}`);
+
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+    { name: tNav('calendar'), url: `${BASE_URL}/${locale}` },
+    { name: provinceName, url: `${BASE_URL}/${locale}/provincia/${province}` },
+  ]);
 
   const allRaces = await getRaces();
   const provinceRaces = allRaces.filter(
@@ -74,6 +81,10 @@ export default async function ProvincePage({
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <ProvinceHeroSection
         title={t('pageTitle', { province: provinceName })}
         subtitle={t('pageSubtitle', { province: provinceName })}

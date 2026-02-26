@@ -21,6 +21,7 @@ import { getOrganizerById } from '@/lib/db/organizers';
 import { getDisplayPrice } from '@/lib/race-utils';
 import RaceOrganizerLinks from '@/components/race-organizer-links';
 import { buildRaceJsonLd } from '@/lib/seo/race-json-ld';
+import { buildBreadcrumbJsonLd } from '@/lib/seo/breadcrumb-json-ld';
 import ProvinceLink from '@/components/province-link';
 import { getRaceImageUrlWithFilename } from '@/lib/race-image-url';
 
@@ -146,8 +147,9 @@ export default async function RacePage({
     notFound();
   }
 
-  // Get translations for the race page
   const tRace = await getTranslations({ locale, namespace: 'race' });
+  const tNav = await getTranslations({ locale, namespace: 'navigation' });
+  const tProvincia = await getTranslations({ locale, namespace: 'provincia' });
 
   const organizer = raceData.organizerId
     ? await getOrganizerById(raceData.organizerId)
@@ -166,6 +168,19 @@ export default async function RacePage({
 
   const jsonLd = buildRaceJsonLd(raceData, race, locale as Locale);
   const provinceSlug = PROVINCE_SLUGS[raceData.province] ?? null;
+
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+    { name: tNav('calendar'), url: `${BASE_URL}/${locale}` },
+    ...(provinceSlug
+      ? [
+          {
+            name: tProvincia(`names.${provinceSlug}`),
+            url: `${BASE_URL}/${locale}/provincia/${provinceSlug}`,
+          },
+        ]
+      : []),
+    { name: raceData.name, url: `${BASE_URL}/${locale}/carrera/${race}` },
+  ]);
 
   const recommendedRaces = races
     .filter((r) => {
@@ -186,6 +201,10 @@ export default async function RacePage({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       <div className="min-h-screen w-full text-gray-900 flex flex-col bg-white">
       <div className="flex flex-col max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
