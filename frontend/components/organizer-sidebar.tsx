@@ -117,7 +117,7 @@ export function OrganizerSidebar() {
                             src="https://ppmdbmyxgtqvmvtbptmg.supabase.co/storage/v1/object/public/brand/logos/trc-logo.svg"
                             width={40}
                             height={40}
-                            alt="Trailruningcal.com logo"
+                            alt="Trailrunningcal.com logo"
                             className="w-8 h-8"
                         />
                     </Link>
@@ -147,7 +147,7 @@ export function OrganizerSidebar() {
                             src="https://ppmdbmyxgtqvmvtbptmg.supabase.co/storage/v1/object/public/brand/logos/trc-logo.svg"
                             width={48}
                             height={48}
-                            alt="Trailruningcal.com logo"
+                            alt="Trailrunningcal.com logo"
                             className="w-12 h-12"
                         />
                     </div>
@@ -180,7 +180,7 @@ export function OrganizerSidebar() {
                         src="https://ppmdbmyxgtqvmvtbptmg.supabase.co/storage/v1/object/public/brand/logos/trc-logo.svg"
                         width={48}
                         height={48}
-                        alt="Trailruningcal.com logo"
+                        alt="Trailrunningcal.com logo"
                         className="w-12 h-12"
                     />
                 </div>
