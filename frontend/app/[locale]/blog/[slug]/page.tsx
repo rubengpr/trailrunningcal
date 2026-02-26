@@ -9,6 +9,7 @@ import { renderMDXFile } from '@/lib/mdx-renderer';
 import { BASE_URL } from '@/lib/config';
 import { generateMetadataFromOptions } from '@/seo/meta-config';
 import { buildBlogPostAlternateLinks } from '@/lib/alternate-links';
+import { buildBlogJsonLd } from '@/lib/seo/blog-json-ld';
 
 interface PageProps {
   params: Promise<{
@@ -65,10 +66,17 @@ export default async function BlogPostPage({ params }: PageProps) {
 
   // Render MDX content
   const MDXContent = await renderMDXFile(post.filePath, locale);
+  const jsonLd = buildBlogJsonLd(post);
 
   return (
-    <div className="w-full px-6 sm:px-10 lg:px-16 sm:py-8 lg:py-12">
-      <MDXContent />
-    </div>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <div className="w-full px-6 sm:px-10 lg:px-16 sm:py-8 lg:py-12">
+        <MDXContent />
+      </div>
+    </>
   );
 }
