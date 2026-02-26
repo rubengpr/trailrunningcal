@@ -13,4 +13,4 @@ Allow: /ca/
 Allow: /es/
 
 # Sitemap location
-Sitemap: https://trailrunningcal.com/sitemap.xml
+Sitemap: https://www.trailrunningcal.com/sitemap.xml
