@@ -1,9 +1,10 @@
 import type { TrailRace } from '@/types/race.types';
+import type { Locale } from '@/i18n';
 import { BASE_URL } from '@/lib/config';
 import { getDisplayPrice } from '@/lib/race-utils';
 
-export function buildRaceJsonLd(race: TrailRace, raceSlug: string): Record<string, unknown> {
-  const eventUrl = `${BASE_URL}/es/carrera/${raceSlug}`;
+export function buildRaceJsonLd(race: TrailRace, raceSlug: string, locale: Locale): Record<string, unknown> {
+  const eventUrl = `${BASE_URL}/${locale}/carrera/${raceSlug}`;
 
   const jsonLd: Record<string, unknown> = {
     '@context': 'https://schema.org',

@@ -164,7 +164,7 @@ export default async function RacePage({
       ? getRaceImageUrlWithFilename(raceData.organizerId, raceData.id, raceData.heroImageFilename)
       : null;
 
-  const jsonLd = buildRaceJsonLd(raceData, race);
+  const jsonLd = buildRaceJsonLd(raceData, race, locale as Locale);
   const provinceSlug = PROVINCE_SLUGS[raceData.province] ?? null;
 
   const recommendedRaces = races
