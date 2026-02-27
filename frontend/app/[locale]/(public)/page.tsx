@@ -21,7 +21,8 @@ export async function generateMetadata({
   const t = await getTranslations({ locale });
   const seoMeta = getSeoMetaConfig('home', locale);
 
-  const title = t(seoMeta.titleKey);
+  const year = new Date().getFullYear();
+  const title = `${t(seoMeta.titleKey)} ${year}`;
   const description = t(seoMeta.descriptionKey);
 
   return generateMetadataFromOptions({
