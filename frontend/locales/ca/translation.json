@@ -242,8 +242,8 @@
   },
   "provincia": {
     "pageTitle": "Trail running a {province} - Curses de muntanya {year}",
-    "pageSubtitle": "Calendari complet de curses de trail running a la provincia de {province}. Dates, distàncies, desnivells i tota la informació.",
     "pageDescription": "Troba totes les curses de trail running a {province}: ultres, maratons de muntanya, trails curts i proves per a tots els nivells. Actualitzat per al {year}.",
+    "pageBody": "Descobreix totes les curses de trail running a la província de {province}: senders, muntanyes i rutes de tota mena de distància i dificultat. El trail running a {province} combina paisatges únics amb una creixent comunitat de corredors de muntanya activa durant tot l'any.",
     "breadcrumb": "Trail Running · Catalunya",
     "names": {
       "barcelona": "Barcelona",
@@ -368,20 +368,20 @@
   },
   "ultraTrail": {
     "pageTitle": "Ultra Trail Running {year} - Curses de més de 50 km",
-    "pageSubtitle": "Calendari de curses d'ultra trail running a Catalunya.",
     "pageDescription": "Troba totes les curses d'ultra trail running a Catalunya (més de 50 km). Dates, desnivells i tota la informació per al {year}.",
+    "pageBody": "Les curses d'ultra trail (més de 50 km) representen el màxim desafiament del running de muntanya: distàncies extremes, grans desnivells i terrenys alpins d'alta muntanya. A Catalunya, l'ultra trail té el seu escenari al Pirineu, el Prepirineu i espais naturals protegits, amb proves que van dels 50 fins als més de 100 km.",
     "breadcrumb": "Ultra Trail"
   },
   "maraton": {
     "pageTitle": "Marató Trail Running {year} - Curses de 40 a 50 km",
-    "pageSubtitle": "Calendari de curses de trail running en distància de marató a Catalunya.",
     "pageDescription": "Troba totes les curses de trail running de marató a Catalunya (40-50 km). Dates, desnivells i tota la informació per al {year}.",
+    "pageBody": "La marató de trail running (40–50 km) és la distància de referència per a corredors de muntanya amb experiència. Combina resistència, tècnica i coneixement del terreny en recorreguts per senders, crestes i cims. A Catalunya, les maratons de trail discorren per entorns únics com el Pirineu, el Montseny i els Ports de Tortosa-Beseit.",
     "breadcrumb": "Marató Trail"
   },
   "mediaMaraton": {
     "pageTitle": "Mitja Marató Trail Running {year} - Curses de 20 a 24 km",
-    "pageSubtitle": "Calendari de curses de trail running en distància de mitja marató a Catalunya.",
     "pageDescription": "Troba totes les curses de trail running de mitja marató a Catalunya (20-24 km). Dates, desnivells i tota la informació per al {year}.",
+    "pageBody": "La mitja marató de trail running (20–24 km) és una de les distàncies més populars entre els corredors de muntanya. Una distància exigent que combina resistència i tècnica en terreny de muntanya, i un pas habitual cap a maratons i ultres. A Catalunya trobaràs mitges maratons de trail pel Pirineu, el Montseny, la Costa Brava i el Garraf al llarg de tot l'any.",
     "breadcrumb": "Mitja Marató Trail"
   }
 }

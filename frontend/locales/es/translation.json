@@ -239,8 +239,8 @@
   },
   "provincia": {
     "pageTitle": "Trail running en {province} - Carreras de montaña {year}",
-    "pageSubtitle": "Calendario completo de carreras de trail running en la provincia de {province}. Fechas, distancias, desniveles y toda la información.",
     "pageDescription": "Encuentra todas las carreras de trail running en {province}: ultras, maratones de montaña, trails cortos y pruebas para todos los niveles. Actualizado para {year}.",
+    "pageBody": "Descubre todas las carreras de trail running en la provincia de {province}: senderos, montañas y rutas de todo tipo de distancia y dificultad. El trail running en {province} combina paisajes únicos con una creciente comunidad de corredores de montaña activa durante todo el año.",
     "breadcrumb": "Trail Running · Cataluña",
     "names": {
       "barcelona": "Barcelona",
@@ -365,20 +365,20 @@
   },
   "ultraTrail": {
     "pageTitle": "Ultra Trail Running {year} - Carreras de más de 50 km",
-    "pageSubtitle": "Calendario de carreras de ultra trail running en Cataluña.",
     "pageDescription": "Encuentra todas las carreras de ultra trail running en Cataluña (más de 50 km). Fechas, desniveles y toda la información para {year}.",
+    "pageBody": "Las carreras de ultra trail (más de 50 km) representan el máximo desafío del running de montaña: distancias extremas, grandes desniveles y terrenos alpinos de alta montaña. En Cataluña, el ultra trail tiene su escenario en el Pirineo, el Prepirineo y espacios naturales protegidos, con pruebas que van desde los 50 hasta los más de 100 km.",
     "breadcrumb": "Ultra Trail"
   },
   "maraton": {
     "pageTitle": "Maratón Trail Running {year} - Carreras de 40 a 50 km",
-    "pageSubtitle": "Calendario de carreras de trail running en distancia de maratón en Cataluña.",
     "pageDescription": "Encuentra todas las carreras de trail running de maratón en Cataluña (40-50 km). Fechas, desniveles y toda la información para {year}.",
+    "pageBody": "La maratón de trail running (40–50 km) es la distancia de referencia para corredores de montaña con experiencia. Combina resistencia, técnica y conocimiento del terreno en recorridos por senderos, crestas y cimas. En Cataluña, las maratones de trail discurren por entornos únicos como el Pirineo, el Montseny y los Ports de Tortosa-Beseit.",
     "breadcrumb": "Maratón Trail"
   },
   "mediaMaraton": {
     "pageTitle": "Media Maratón Trail Running {year} - Carreras de 20 a 24 km",
-    "pageSubtitle": "Calendario de carreras de trail running en distancia de media maratón en Cataluña.",
     "pageDescription": "Encuentra todas las carreras de trail running de media maratón en Cataluña (20-24 km). Fechas, desniveles y toda la información para {year}.",
+    "pageBody": "La media maratón de trail running (20–24 km) es una de las distancias más populares entre corredores de montaña. Una distancia exigente que combina resistencia y técnica en terreno de montaña, y un paso habitual hacia maratones y ultras. En Cataluña encontrarás media maratones de trail por el Pirineo, el Montseny, la Costa Brava y el Garraf a lo largo de todo el año.",
     "breadcrumb": "Media Maratón Trail"
   }
 }

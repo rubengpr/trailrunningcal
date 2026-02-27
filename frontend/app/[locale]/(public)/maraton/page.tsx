@@ -67,8 +67,8 @@ export default async function MaratonPage({
       />
       <CategoryHeroSection
         title={t('pageTitle', { year })}
-        subtitle={t('pageSubtitle')}
         description={t('pageDescription', { year })}
+        body={t('pageBody')}
         breadcrumb={t('breadcrumb')}
       />
       <HomeClient races={maratonRaces} showProvinceFilter={false} />

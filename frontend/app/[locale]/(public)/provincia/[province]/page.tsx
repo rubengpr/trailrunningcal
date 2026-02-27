@@ -89,8 +89,8 @@ export default async function ProvincePage({
       />
       <CategoryHeroSection
         title={t('pageTitle', { province: provinceName, year })}
-        subtitle={t('pageSubtitle', { province: provinceName })}
         description={t('pageDescription', { province: provinceName, year })}
+        body={t('pageBody', { province: provinceName })}
         breadcrumb={t('breadcrumb')}
       />
       <HomeClient races={provinceRaces} showProvinceFilter={false} />

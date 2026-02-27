@@ -64,8 +64,8 @@ export default async function UltraTrailPage({
       />
       <CategoryHeroSection
         title={t('pageTitle', { year })}
-        subtitle={t('pageSubtitle')}
         description={t('pageDescription', { year })}
+        body={t('pageBody')}
         breadcrumb={t('breadcrumb')}
       />
       <HomeClient races={ultraTrailRaces} showProvinceFilter={false} />
