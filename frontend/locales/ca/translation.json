@@ -366,6 +366,12 @@
       "bannerNoteText": "💡 Tots els sponsors llistats han patrocinat, com a mínim, una cursa de trail running del nostre calendari."
     }
   },
+  "maraton": {
+    "pageTitle": "Marató Trail Running {year} - Curses de 40 a 45 km",
+    "pageSubtitle": "Calendari de curses de trail running en distància de marató a Catalunya.",
+    "pageDescription": "Troba totes les curses de trail running de marató a Catalunya (40-45 km). Dates, desnivells i tota la informació per al {year}.",
+    "breadcrumb": "Marató Trail"
+  },
   "mediaMaraton": {
     "pageTitle": "Mitja Marató Trail Running {year} - Curses de 20 a 24 km",
     "pageSubtitle": "Calendari de curses de trail running en distància de mitja marató a Catalunya.",

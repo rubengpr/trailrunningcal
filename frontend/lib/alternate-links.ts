@@ -88,6 +88,18 @@ export function buildProvinceAlternateLinks(
 }
 
 /**
+ * Builds alternate language links for the maraton page
+ * @returns Record with es, ca, and x-default URLs
+ */
+export function buildMaratonAlternateLinks(): Record<string, string> {
+  return {
+    es: `${BASE_URL}/es/maraton`,
+    ca: `${BASE_URL}/ca/maraton`,
+    'x-default': `${BASE_URL}/es/maraton`,
+  };
+}
+
+/**
  * Builds alternate language links for the media-maraton page
  * @returns Record with es, ca, and x-default URLs
  */

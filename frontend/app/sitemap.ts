@@ -11,6 +11,7 @@ import {
   buildRaceAlternateLinks,
   buildBlogPostAlternateLinks,
   buildProvinceAlternateLinks,
+  buildMaratonAlternateLinks,
   buildMediaMaratonAlternateLinks,
 } from '@/lib/alternate-links';
 
@@ -104,6 +105,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         },
       });
     }
+  }
+
+  // Add marathon page (both locales)
+  for (const locale of locales) {
+    urls.push({
+      url: `${BASE_URL}/${locale}/maraton`,
+      lastModified: currentDate,
+      changeFrequency: 'weekly',
+      priority: 0.8,
+      alternates: {
+        languages: buildMaratonAlternateLinks(),
+      },
+    });
   }
 
   // Add half-marathon page (both locales)
