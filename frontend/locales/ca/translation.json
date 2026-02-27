@@ -241,9 +241,9 @@
     }
   },
   "provincia": {
-    "pageTitle": "Trail running a {province} - Curses de muntanya 2026",
+    "pageTitle": "Trail running a {province} - Curses de muntanya {year}",
     "pageSubtitle": "Calendari complet de curses de trail running a la provincia de {province}. Dates, distàncies, desnivells i tota la informació.",
-    "pageDescription": "Troba totes les curses de trail running a {province}: ultres, maratons de muntanya, trails curts i proves per a tots els nivells. Actualitzat per al 2026.",
+    "pageDescription": "Troba totes les curses de trail running a {province}: ultres, maratons de muntanya, trails curts i proves per a tots els nivells. Actualitzat per al {year}.",
     "breadcrumb": "Trail Running · Catalunya",
     "names": {
       "barcelona": "Barcelona",

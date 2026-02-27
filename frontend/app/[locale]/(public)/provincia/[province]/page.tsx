@@ -39,8 +39,9 @@ export async function generateMetadata({
 
   const t = await getTranslations({ locale, namespace: 'provincia' });
   const provinceName = t(`names.${province}`);
-  const title = t('pageTitle', { province: provinceName });
-  const description = t('pageDescription', { province: provinceName });
+  const year = new Date().getFullYear();
+  const title = t('pageTitle', { province: provinceName, year });
+  const description = t('pageDescription', { province: provinceName, year });
   const canonicalUrl = `${BASE_URL}/${locale}/provincia/${province}`;
 
   return generateMetadataFromOptions({
@@ -68,6 +69,7 @@ export default async function ProvincePage({
   const t = await getTranslations({ locale, namespace: 'provincia' });
   const tNav = await getTranslations({ locale, namespace: 'navigation' });
   const provinceName = t(`names.${province}`);
+  const year = new Date().getFullYear();
 
   const breadcrumbJsonLd = buildBreadcrumbJsonLd([
     { name: tNav('calendar'), url: `${BASE_URL}/${locale}` },
@@ -86,9 +88,9 @@ export default async function ProvincePage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       <ProvinceHeroSection
-        title={t('pageTitle', { province: provinceName })}
+        title={t('pageTitle', { province: provinceName, year })}
         subtitle={t('pageSubtitle', { province: provinceName })}
-        description={t('pageDescription', { province: provinceName })}
+        description={t('pageDescription', { province: provinceName, year })}
         breadcrumb={t('breadcrumb')}
       />
       <HomeClient races={provinceRaces} showProvinceFilter={false} />
