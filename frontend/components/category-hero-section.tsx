@@ -1,16 +1,16 @@
-interface ProvinceHeroSectionProps {
+interface CategoryHeroSectionProps {
   title: string;
   subtitle: string;
   description: string;
   breadcrumb: string;
 }
 
-export default function ProvinceHeroSection({
+export default function CategoryHeroSection({
   title,
   subtitle,
   description,
   breadcrumb,
-}: ProvinceHeroSectionProps) {
+}: CategoryHeroSectionProps) {
   return (
     <section className="bg-gradient-to-b from-gray-50 to-white px-6 py-10">
       <div className="flex justify-center items-center text-center">

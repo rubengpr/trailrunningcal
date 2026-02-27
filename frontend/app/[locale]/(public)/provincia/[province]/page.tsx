@@ -7,7 +7,7 @@ import { generateMetadataFromOptions } from '../../../../../seo/meta-config';
 import { buildProvinceAlternateLinks } from '../../../../../lib/alternate-links';
 import { BASE_URL } from '../../../../../lib/config';
 import { buildBreadcrumbJsonLd } from '@/lib/seo/breadcrumb-json-ld';
-import ProvinceHeroSection from '../../../../../components/province-hero-section';
+import CategoryHeroSection from '../../../../../components/category-hero-section';
 import HomeClient from '../../../../../components/home-client';
 
 export const dynamic = 'force-dynamic';
@@ -87,7 +87,7 @@ export default async function ProvincePage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      <ProvinceHeroSection
+      <CategoryHeroSection
         title={t('pageTitle', { province: provinceName, year })}
         subtitle={t('pageSubtitle', { province: provinceName })}
         description={t('pageDescription', { province: provinceName, year })}
