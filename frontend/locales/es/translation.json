@@ -362,5 +362,11 @@
       "description": "Descubre marcas que apoyan el trail running y los eventos de montaña.",
       "bannerNoteText": "💡 Todos los sponsors listados han patrocinado, al menos, una carrera de trail running de nuestro calendario."
     }
+  },
+  "mediaMaraton": {
+    "pageTitle": "Media Maratón Trail Running {year} - Carreras de 20 a 24 km",
+    "pageSubtitle": "Calendario de carreras de trail running en distancia de media maratón en Cataluña.",
+    "pageDescription": "Encuentra todas las carreras de trail running de media maratón en Cataluña (20-24 km). Fechas, desniveles y toda la información para {year}.",
+    "breadcrumb": "Media Maratón Trail"
   }
 }

@@ -11,6 +11,7 @@ import {
   buildRaceAlternateLinks,
   buildBlogPostAlternateLinks,
   buildProvinceAlternateLinks,
+  buildMediaMaratonAlternateLinks,
 } from '@/lib/alternate-links';
 
 const PROVINCE_SLUGS = ['barcelona', 'girona', 'lleida', 'tarragona'] as const;
@@ -103,6 +104,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         },
       });
     }
+  }
+
+  // Add half-marathon page (both locales)
+  for (const locale of locales) {
+    urls.push({
+      url: `${BASE_URL}/${locale}/media-maraton`,
+      lastModified: currentDate,
+      changeFrequency: 'weekly',
+      priority: 0.8,
+      alternates: {
+        languages: buildMediaMaratonAlternateLinks(),
+      },
+    });
   }
 
   // Add race pages (all locales)

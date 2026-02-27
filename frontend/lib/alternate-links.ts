@@ -88,6 +88,18 @@ export function buildProvinceAlternateLinks(
 }
 
 /**
+ * Builds alternate language links for the media-maraton page
+ * @returns Record with es, ca, and x-default URLs
+ */
+export function buildMediaMaratonAlternateLinks(): Record<string, string> {
+  return {
+    es: `${BASE_URL}/es/media-maraton`,
+    ca: `${BASE_URL}/ca/media-maraton`,
+    'x-default': `${BASE_URL}/es/media-maraton`,
+  };
+}
+
+/**
  * Builds alternate language links for a race page
  * Race slugs are the same across locales (generated from race name)
  * @param raceSlug - The race slug
