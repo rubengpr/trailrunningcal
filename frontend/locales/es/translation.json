@@ -370,9 +370,9 @@
     "breadcrumb": "Ultra Trail"
   },
   "maraton": {
-    "pageTitle": "Maratón Trail Running {year} - Carreras de 40 a 45 km",
+    "pageTitle": "Maratón Trail Running {year} - Carreras de 40 a 50 km",
     "pageSubtitle": "Calendario de carreras de trail running en distancia de maratón en Cataluña.",
-    "pageDescription": "Encuentra todas las carreras de trail running de maratón en Cataluña (40-45 km). Fechas, desniveles y toda la información para {year}.",
+    "pageDescription": "Encuentra todas las carreras de trail running de maratón en Cataluña (40-50 km). Fechas, desniveles y toda la información para {year}.",
     "breadcrumb": "Maratón Trail"
   },
   "mediaMaraton": {

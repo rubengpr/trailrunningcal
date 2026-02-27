@@ -373,9 +373,9 @@
     "breadcrumb": "Ultra Trail"
   },
   "maraton": {
-    "pageTitle": "Marató Trail Running {year} - Curses de 40 a 45 km",
+    "pageTitle": "Marató Trail Running {year} - Curses de 40 a 50 km",
     "pageSubtitle": "Calendari de curses de trail running en distància de marató a Catalunya.",
-    "pageDescription": "Troba totes les curses de trail running de marató a Catalunya (40-45 km). Dates, desnivells i tota la informació per al {year}.",
+    "pageDescription": "Troba totes les curses de trail running de marató a Catalunya (40-50 km). Dates, desnivells i tota la informació per al {year}.",
     "breadcrumb": "Marató Trail"
   },
   "mediaMaraton": {

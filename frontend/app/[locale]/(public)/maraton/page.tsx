@@ -12,7 +12,7 @@ import HomeClient from '../../../../components/home-client';
 export const dynamic = 'force-dynamic';
 
 const DISTANCE_MIN = 40;
-const DISTANCE_MAX = 45;
+const DISTANCE_MAX = 50;
 
 export async function generateMetadata({
   params,
@@ -56,7 +56,7 @@ export default async function MaratonPage({
 
   const allRaces = await getRaces();
   const maratonRaces = allRaces.filter(
-    (race) => race.distanceKm >= DISTANCE_MIN && race.distanceKm <= DISTANCE_MAX,
+    (race) => race.distanceKm >= DISTANCE_MIN && race.distanceKm < DISTANCE_MAX,
   );
 
   return (
