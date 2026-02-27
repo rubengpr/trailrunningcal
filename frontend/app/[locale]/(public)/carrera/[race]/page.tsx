@@ -79,9 +79,9 @@ export async function generateMetadata({
     ? new Date(raceData.date).getFullYear()
     : new Date().getFullYear();
 
-  // Generate title: "{Race Name} - Trail Running en/a {City} ({Year})"
+  // Generate title: "{Race Name} {Year} - Trail Running en/a {City}"
   const preposition = localeTyped === 'ca' ? 'a' : 'en';
-  const title = `${raceData.name} - Trail Running ${preposition} ${raceData.city} (${year})`;
+  const title = `${raceData.name} ${year} - Trail Running ${preposition} ${raceData.city}`;
 
   // Format date for description
   const formattedDate = raceData.date
