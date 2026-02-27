@@ -88,6 +88,18 @@ export function buildProvinceAlternateLinks(
 }
 
 /**
+ * Builds alternate language links for the ultra-trail page
+ * @returns Record with es, ca, and x-default URLs
+ */
+export function buildUltraTrailAlternateLinks(): Record<string, string> {
+  return {
+    es: `${BASE_URL}/es/ultra-trail`,
+    ca: `${BASE_URL}/ca/ultra-trail`,
+    'x-default': `${BASE_URL}/es/ultra-trail`,
+  };
+}
+
+/**
  * Builds alternate language links for the maraton page
  * @returns Record with es, ca, and x-default URLs
  */

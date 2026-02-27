@@ -366,6 +366,12 @@
       "bannerNoteText": "💡 Tots els sponsors llistats han patrocinat, com a mínim, una cursa de trail running del nostre calendari."
     }
   },
+  "ultraTrail": {
+    "pageTitle": "Ultra Trail Running {year} - Curses de més de 50 km",
+    "pageSubtitle": "Calendari de curses d'ultra trail running a Catalunya.",
+    "pageDescription": "Troba totes les curses d'ultra trail running a Catalunya (més de 50 km). Dates, desnivells i tota la informació per al {year}.",
+    "breadcrumb": "Ultra Trail"
+  },
   "maraton": {
     "pageTitle": "Marató Trail Running {year} - Curses de 40 a 45 km",
     "pageSubtitle": "Calendari de curses de trail running en distància de marató a Catalunya.",

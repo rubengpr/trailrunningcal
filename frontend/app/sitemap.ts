@@ -11,6 +11,7 @@ import {
   buildRaceAlternateLinks,
   buildBlogPostAlternateLinks,
   buildProvinceAlternateLinks,
+  buildUltraTrailAlternateLinks,
   buildMaratonAlternateLinks,
   buildMediaMaratonAlternateLinks,
 } from '@/lib/alternate-links';
@@ -105,6 +106,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         },
       });
     }
+  }
+
+  // Add ultra trail page (both locales)
+  for (const locale of locales) {
+    urls.push({
+      url: `${BASE_URL}/${locale}/ultra-trail`,
+      lastModified: currentDate,
+      changeFrequency: 'weekly',
+      priority: 0.8,
+      alternates: {
+        languages: buildUltraTrailAlternateLinks(),
+      },
+    });
   }
 
   // Add marathon page (both locales)
