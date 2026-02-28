@@ -1,9 +1,4 @@
 import { createClient } from '@supabase/supabase-js';
-import { config } from 'dotenv';
-import { resolve } from 'path';
-
-config({ path: resolve(__dirname, '../.env') });
-
 import { generateRaceSlug } from '../lib/race-utils';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
