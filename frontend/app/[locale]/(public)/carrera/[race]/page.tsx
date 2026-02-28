@@ -261,13 +261,13 @@ export default async function RacePage({
             </div>
           </div>
           <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto sm:items-end">
-            <div className="flex w-full flex-row items-center gap-2 sm:flex-col sm:items-end">
+            <div className="flex w-full flex-row items-center gap-2 sm:flex-col">
               {raceData.websiteUrl && (
                 <a
                   href={raceData.websiteUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 bg-gray-900 text-white px-4 py-2 rounded-md font-medium hover:bg-gray-600 focus:outline-none transition-colors cursor-pointer text-center whitespace-nowrap sm:flex-none sm:w-auto"
+                  className="flex-1 bg-gray-900 text-white px-4 py-2 rounded-md font-medium hover:bg-gray-600 focus:outline-none transition-colors cursor-pointer text-center whitespace-nowrap sm:flex-none sm:w-full"
                 >
                   Web oficial
                 </a>

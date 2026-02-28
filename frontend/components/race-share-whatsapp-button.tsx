@@ -13,7 +13,7 @@ export default function RaceShareWhatsappButton({ message, label }: RaceShareWha
       href={whatsappUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center gap-1.5 px-3 py-2 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors font-medium whitespace-nowrap"
+      className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors font-medium whitespace-nowrap"
     >
       <svg
         viewBox="0 0 24 24"
