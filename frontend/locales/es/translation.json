@@ -81,6 +81,10 @@
     "provincia": {
       "racePageLabel": "Más carreras de trail running en {province}",
       "racePageLinkText": "Carreras en {province}"
+    },
+    "share": {
+      "label": "Compartir",
+      "message": "Mira la carrera que he encontrado en Trail Running Cal: {raceName} → {url}"
     }
   },
   "difficulty": {
