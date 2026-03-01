@@ -370,6 +370,16 @@
       "bannerNoteText": "💡 Tots els sponsors llistats han patrocinat, com a mínim, una cursa de trail running del nostre calendari."
     }
   },
+  "faq": {
+    "calendarQ": "On puc trobar el calendari de curses de trail running a Catalunya?",
+    "calendarA": "Trail Running Cal és el calendari més complet de curses de trail running a Catalunya. Inclou curses de les quatre províncies —Barcelona, Girona, Lleida i Tarragona— amb filtres per mes, distància i dificultat, actualitzat per al 2026.",
+    "typesQ": "Quins tipus de curses de trail running hi ha a Catalunya?",
+    "typesA": "A Catalunya trobaràs ultra trail (més de 50 km), marató de trail (40-50 km), mitja marató de trail (20-24 km) i trails curts. Les proves recorren entorns com el Pirineu, el Montseny, la Costa Brava i el Garraf.",
+    "provincesQ": "En quines províncies de Catalunya hi ha curses de trail running?",
+    "provincesA": "Hi ha curses de trail running a les quatre províncies catalanes: Barcelona, Girona, Lleida i Tarragona. Pots filtrar per província al calendari per veure totes les proves de cada regió.",
+    "addRaceQ": "Com puc afegir una cursa al calendari de Trail Running Cal?",
+    "addRaceA": "Pots proposar una cursa fent servir el formulari de la web o contactant a info@trailrunningcal.com. Si ets l'organitzador, pots reclamar la propietat de l'esdeveniment i afegir dades com fotos, mapa i preus."
+  },
   "ultraTrail": {
     "pageTitle": "Ultra Trail Running {year} - Curses de més de 50 km",
     "pageDescription": "Troba totes les curses d'ultra trail running a Catalunya (més de 50 km). Dates, desnivells i tota la informació per al {year}.",

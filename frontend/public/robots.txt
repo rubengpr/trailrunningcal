@@ -1,7 +1,7 @@
 User-agent: *
 Allow: /
 
-# Disallow access to admin or private areas (if any)
+# Disallow access to admin or private areas
 Disallow: /admin/
 Disallow: /api/
 Disallow: /private/
@@ -11,6 +11,31 @@ Disallow: /cdn-cgi/
 Allow: /
 Allow: /ca/
 Allow: /es/
+
+# AI search engine bots - explicitly allowed for GEO (Generative Engine Optimization)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Applebot
+Allow: /
 
 # Sitemap location
 Sitemap: https://www.trailrunningcal.com/sitemap.xml
