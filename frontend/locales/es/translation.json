@@ -307,7 +307,8 @@
         "price": "Precio",
         "emptyState": "No tienes carreras registradas",
         "claimBannerBefore": "💡 Para ver tus carreras en la tabla, reclámalas desde el",
-        "claimBannerLink": "calendario principal de trailrunningcal"
+        "claimBannerLink": "calendario principal de trailrunningcal",
+        "raceLimitReached": "Has alcanzado el límite de 5 carreras"
       },
       "form": {
         "title": "Nueva carrera",
@@ -319,11 +320,22 @@
         "priceEur": "Precio",
         "websiteUrl": "Sitio web",
         "websiteUrlPlaceholder": "https://ejemplo.com",
+        "city": "Ciudad",
+        "province": "Provincia",
         "description": "Descripción",
         "descriptionPlaceholder": "Describe la carrera...",
         "save": "Guardar",
         "saving": "Guardando...",
         "success": "Carrera guardada correctamente",
+        "deleteSuccess": "Carrera eliminada correctamente",
+        "deleteButton": "Eliminar carrera",
+        "deleting": "Eliminando...",
+        "deleteConfirm": {
+          "title": "Eliminar carrera",
+          "message": "¿Estás seguro de que quieres eliminar esta carrera? Esta acción no se puede deshacer.",
+          "confirm": "Eliminar",
+          "cancel": "Cancelar"
+        },
         "image": {
           "label": "Imagen principal",
           "selectFile": "Seleccionar archivo",
@@ -357,9 +369,14 @@
           "priceTooLong": "Precio demasiado alto",
           "websiteUrlRequired": "El sitio web es obligatorio",
           "websiteUrlInvalid": "URL inválida",
+          "cityRequired": "La ciudad es obligatoria",
+          "cityTooLong": "La ciudad no puede tener más de 100 caracteres",
+          "provinceRequired": "La provincia es obligatoria",
+          "provinceTooLong": "La provincia no puede tener más de 100 caracteres",
           "descriptionTooShort": "La descripción debe tener al menos 10 caracteres",
           "descriptionTooLong": "La descripción no puede exceder 1000 caracteres",
-          "general": "Error al guardar la carrera"
+          "general": "Error al guardar la carrera",
+          "deleteFailed": "Error al eliminar la carrera"
         }
       }
     },

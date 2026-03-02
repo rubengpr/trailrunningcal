@@ -3,14 +3,14 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
-import { ProposeRaceModal } from './propose-race-modal';
 import { InfoBanner } from './info-banner';
 import { SectionHeader } from './section-header';
-import { useModal } from '@/hooks/use-modal';
 import TrailRaceCard from './trail-race-card';
 import type { TrailRace } from '@/types/race.types';
 import { formatDateToSpanish, formatDateToCatalan } from '@/lib/date-utils';
 import { generateRaceSlug } from '@/lib/race-utils';
+
+const MAX_RACES = 5;
 
 // Dummy data - will be replaced with real data from API
 const dummyRaces: TrailRace[] = [
@@ -51,9 +51,9 @@ export function OrganizerRacesContent({ races }: OrganizerRacesContentProps) {
     const tTable = useTranslations('organizer.races.table');
     const locale = useLocale();
     const router = useRouter();
-    const { isOpen: isModalOpen, open: handleOpenModal, close: handleCloseModal } = useModal();
 
     const hasRealRaces = races.length > 0;
+    const isAtLimit = races.length >= MAX_RACES;
     const displayRaces = hasRealRaces ? races : dummyRaces;
 
     // Get the base URL for the link (works in both localhost and production)
@@ -97,12 +97,15 @@ export function OrganizerRacesContent({ races }: OrganizerRacesContentProps) {
                             : tTable('raceCount', { count: displayRaces.length })
                     }
                     action={
-                        <button
-                            onClick={handleOpenModal}
-                            className='px-5 py-2.5 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 transition-all duration-200 cursor-pointer w-fit shadow-sm hover:shadow'
-                        >
-                            {t('newRaceButton')}
-                        </button>
+                        <span title={isAtLimit ? tTable('raceLimitReached') : undefined}>
+                            <button
+                                onClick={() => router.push(`/${locale}/org/carreras/new`)}
+                                disabled={isAtLimit}
+                                className='px-5 py-2.5 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 transition-all duration-200 w-fit shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed'
+                            >
+                                {t('newRaceButton')}
+                            </button>
+                        </span>
                     }
                 />
 
@@ -206,10 +209,6 @@ export function OrganizerRacesContent({ races }: OrganizerRacesContentProps) {
                     </div>
                 </div>
             </div>
-            <ProposeRaceModal
-                isOpen={isModalOpen}
-                onClose={handleCloseModal}
-            />
         </>
     );
 }

@@ -2,13 +2,16 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
+import { useRouter, useParams } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { FormInput } from './form-input';
 import { FormTextarea } from './form-textarea';
 import { FormImageInput } from './form-image-input';
 import type { TrailRace } from '@/types/race.types';
-import { updateRace } from '@/lib/api/races';
+import { updateRace, createRace, deleteRace } from '@/lib/api/races';
 import { updatePrice } from '@/lib/api/race_tiers';
+import { ConfirmationModal } from './confirmation-modal';
+import { useModal } from '@/hooks/use-modal';
 import { uploadRaceImage, checkRaceImage, removeRaceImage, type RaceImageStatus } from '@/lib/api/race-image';
 import {
     ValidationRule,
@@ -25,6 +28,8 @@ interface RaceFormFields {
     elevationGainM: string;
     priceEur: string;
     websiteUrl: string;
+    city: string;
+    province: string;
     description: string;
 }
 
@@ -36,17 +41,24 @@ interface RaceFormProps {
 
 export function RaceForm({ raceId, initialData, isEditMode }: RaceFormProps) {
     const t = useTranslations('organizer.races.form');
+    const router = useRouter();
+    const params = useParams();
+    const locale = typeof params?.locale === 'string' ? params.locale : 'es';
     const [date, setDate] = useState(initialData?.date ?? '');
     const [name, setName] = useState(initialData?.name ?? '');
     const [distanceKm, setDistanceKm] = useState<string>(initialData != null ? String(initialData.distanceKm) : '');
     const [elevationGainM, setElevationGainM] = useState<string>(initialData?.elevationGainM != null ? String(initialData.elevationGainM) : '');
     const [priceEur, setPriceEur] = useState<string>(initialData?.priceEur != null ? String(initialData.priceEur) : '');
     const [websiteUrl, setWebsiteUrl] = useState(initialData?.websiteUrl ?? '');
+    const [city, setCity] = useState(initialData?.city ?? '');
+    const [province, setProvince] = useState(initialData?.province ?? '');
     const [description, setDescription] = useState(initialData?.description ?? '');
 
     const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const { isOpen: isDeleteModalOpen, open: openDeleteModal, close: closeDeleteModal } = useModal();
 
     const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
     const [imageError, setImageError] = useState('');
@@ -110,6 +122,14 @@ export function RaceForm({ raceId, initialData, isEditMode }: RaceFormProps) {
             ValidationRules.required(t('errors.websiteUrlRequired')),
             ValidationRules.validUrl(t('errors.websiteUrlInvalid')),
         ],
+        city: [
+            ValidationRules.required(t('errors.cityRequired')),
+            ValidationRules.maxLength(100, t('errors.cityTooLong')),
+        ],
+        province: [
+            ValidationRules.required(t('errors.provinceRequired')),
+            ValidationRules.maxLength(100, t('errors.provinceTooLong')),
+        ],
         description: [
             ValidationRules.optionalMinLength(10, t('errors.descriptionTooShort')),
             ValidationRules.maxLength(2000, t('errors.descriptionTooLong')),
@@ -131,11 +151,26 @@ export function RaceForm({ raceId, initialData, isEditMode }: RaceFormProps) {
         return validator.validate('websiteUrl', normalized, validationRules.websiteUrl!);
     };
 
+    const handleDelete = async () => {
+        setIsDeleting(true);
+        try {
+            await deleteRace(raceId);
+            toast.success(t('deleteSuccess'));
+            router.push(`/${locale}/org/carreras`);
+        } catch (e) {
+            const errorMessage = e instanceof Error ? e.message : t('errors.deleteFailed');
+            toast.error(errorMessage);
+        } finally {
+            setIsDeleting(false);
+            closeDeleteModal();
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
 
-        const values: RaceFormFields = { name, date, distanceKm, elevationGainM, priceEur, websiteUrl, description };
+        const values: RaceFormFields = { name, date, distanceKm, elevationGainM, priceEur, websiteUrl, city, province, description };
         const isUrlValid = validateAndNormalizeUrl(websiteUrl);
         const isValid = validator.validateAll(validationRules, values) && isUrlValid;
 
@@ -146,8 +181,15 @@ export function RaceForm({ raceId, initialData, isEditMode }: RaceFormProps) {
         setIsLoading(true);
 
         try {
-            await updateRace(raceId, date, name, distanceKm, elevationGainM, websiteUrl, description)
-            await updatePrice({ raceId, priceEur: parseInt(priceEur, 10) })
+            if (!isEditMode) {
+                await createRace({ date, name, distanceKm, elevationGainM, priceEur, websiteUrl, city, province, description });
+                toast.success(t('success'));
+                router.push(`/${locale}/org/carreras`);
+                return;
+            }
+
+            await updateRace(raceId, date, name, distanceKm, elevationGainM, websiteUrl, city, province, description);
+            await updatePrice({ raceId, priceEur: parseInt(priceEur, 10) });
 
             if (selectedImageFile) {
                 try {
@@ -165,18 +207,6 @@ export function RaceForm({ raceId, initialData, isEditMode }: RaceFormProps) {
             }
 
             toast.success(t('success'));
-
-            // Clear form only if creating new race
-            if (!isEditMode) {
-                setDate('');
-                setName('');
-                setDistanceKm('');
-                setElevationGainM('');
-                setPriceEur('');
-                setWebsiteUrl('');
-                setDescription('');
-                setSelectedImageFile(null);
-            }
         } catch (e) {
             const errorMessage = e instanceof Error ? e.message : t('errors.general');
             setError(errorMessage);
@@ -286,6 +316,30 @@ export function RaceForm({ raceId, initialData, isEditMode }: RaceFormProps) {
                         }}
                         error={fieldErrors.websiteUrl}
                     />
+                    <FormInput
+                        id='city'
+                        label={t('city')}
+                        type='text'
+                        value={city}
+                        onChange={(e) => {
+                            setCity(e.target.value);
+                            validator.clearError('city');
+                            setError('');
+                        }}
+                        error={fieldErrors.city}
+                    />
+                    <FormInput
+                        id='province'
+                        label={t('province')}
+                        type='text'
+                        value={province}
+                        onChange={(e) => {
+                            setProvince(e.target.value);
+                            validator.clearError('province');
+                            setError('');
+                        }}
+                        error={fieldErrors.province}
+                    />
                 </div>
                 <FormTextarea
                     id='description'
@@ -340,11 +394,21 @@ export function RaceForm({ raceId, initialData, isEditMode }: RaceFormProps) {
                     />
                 )}
             </div>
-            <div className='flex justify-end'>
+            <div className='flex justify-end items-center gap-3'>
+                {isEditMode && (
+                    <button
+                        type='button'
+                        onClick={openDeleteModal}
+                        disabled={isLoading || isDeleting}
+                        className='inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-red-600 border border-red-200 hover:bg-red-50 transition-colors focus:outline-none disabled:pointer-events-none disabled:opacity-50 cursor-pointer'
+                    >
+                        {isDeleting ? t('deleting') : t('deleteButton')}
+                    </button>
+                )}
                 <button
                     type='submit'
                     className='inline-flex items-center justify-center rounded-md bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none disabled:pointer-events-none disabled:opacity-50 cursor-pointer'
-                    disabled={isLoading}
+                    disabled={isLoading || isDeleting}
                 >
                     {isLoading ? t('saving') : t('save')}
                 </button>
@@ -352,6 +416,16 @@ export function RaceForm({ raceId, initialData, isEditMode }: RaceFormProps) {
             {error && (
                 <p className='text-sm text-red-500'>{error}</p>
             )}
+            <ConfirmationModal
+                isOpen={isDeleteModalOpen}
+                onClose={closeDeleteModal}
+                onConfirm={handleDelete}
+                title={t('deleteConfirm.title')}
+                message={t('deleteConfirm.message')}
+                confirmButtonText={t('deleteConfirm.confirm')}
+                cancelButtonText={t('deleteConfirm.cancel')}
+                isSubmitting={isDeleting}
+            />
         </form>
     );
 }

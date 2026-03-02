@@ -310,7 +310,8 @@
         "price": "Preu",
         "emptyState": "No tens curses registrades",
         "claimBannerBefore": "💡 Per veure les teves curses a la taula, reclama-les des del",
-        "claimBannerLink": "calendari principal de trailrunningcal"
+        "claimBannerLink": "calendari principal de trailrunningcal",
+        "raceLimitReached": "Has assolit el límit de 5 curses"
       },
       "form": {
         "title": "Nova cursa",
@@ -322,11 +323,22 @@
         "priceEur": "Preu",
         "websiteUrl": "Lloc web",
         "websiteUrlPlaceholder": "https://exemple.com",
+        "city": "Ciutat",
+        "province": "Província",
         "description": "Descripció",
         "descriptionPlaceholder": "Descriu la cursa...",
         "save": "Desar",
         "saving": "Desant...",
         "success": "Cursa desada correctament",
+        "deleteSuccess": "Cursa eliminada correctament",
+        "deleteButton": "Eliminar cursa",
+        "deleting": "Eliminant...",
+        "deleteConfirm": {
+          "title": "Eliminar cursa",
+          "message": "Estàs segur que vols eliminar aquesta cursa? Aquesta acció no es pot desfer.",
+          "confirm": "Eliminar",
+          "cancel": "Cancel·lar"
+        },
         "image": {
           "label": "Imatge principal",
           "selectFile": "Seleccionar fitxer",
@@ -360,9 +372,14 @@
           "priceTooLong": "Preu massa alt",
           "websiteUrlRequired": "El lloc web és obligatori",
           "websiteUrlInvalid": "URL invàlida",
+          "cityRequired": "La ciutat és obligatòria",
+          "cityTooLong": "La ciutat no pot tenir més de 100 caràcters",
+          "provinceRequired": "La província és obligatòria",
+          "provinceTooLong": "La província no pot tenir més de 100 caràcters",
           "descriptionTooShort": "La descripció ha de tenir almenys 10 caràcters",
           "descriptionTooLong": "La descripció no pot excedir 1000 caràcters",
-          "general": "Error en desar la cursa"
+          "general": "Error en desar la cursa",
+          "deleteFailed": "Error en eliminar la cursa"
         }
       }
     },
