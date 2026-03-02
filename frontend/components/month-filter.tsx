@@ -42,7 +42,7 @@ export default function MonthFilter({
           onClick={() => handleMonthClick(month.key)}
           className={`
             px-2 py-1.5 rounded-md text-xs sm:text-sm font-medium transition-all duration-200
-            border border-gray-300 hover:border-gray-400 hover:cursor-pointer
+            border border-gray-300 hover:border-gray-400 cursor-pointer
             focus:outline-none
             ${
               selectedMonth === month.key

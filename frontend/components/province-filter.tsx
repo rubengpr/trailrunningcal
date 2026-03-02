@@ -26,7 +26,7 @@ export default function ProvinceFilter({
           key={province}
           onClick={() => handleProvinceClick(province)}
           className={`px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-md text-xs sm:text-sm font-medium transition-all duration-200
-            border border-gray-300 hover:border-gray-400 hover:cursor-pointer
+            border border-gray-300 hover:border-gray-400 cursor-pointer
             focus:outline-none ${
               selectedProvince === province
                 ? 'bg-black text-white border-black shadow-md'

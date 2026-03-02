@@ -65,7 +65,7 @@ export default function SearchBar({
         {searchTerm && (
           <button
             onClick={handleClear}
-            className="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 rounded-md transition-colors"
+            className="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 rounded-md transition-colors cursor-pointer"
           >
             <svg
               className="h-5 w-5 sm:h-6 sm:w-6"
