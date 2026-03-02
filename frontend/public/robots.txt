@@ -7,14 +7,29 @@ Disallow: /api/
 Disallow: /private/
 Disallow: /cdn-cgi/
 
-# Allow access to main pages
-Allow: /
-Allow: /ca/
-Allow: /es/
+# --- AI TRAINING scrapers: blocked to protect content ---
+# These bots scrape content to train AI models, not to answer user queries
 
-# AI search engine bots - explicitly allowed for GEO (Generative Engine Optimization)
 User-agent: GPTBot
-Allow: /
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: meta-externalagent
+Disallow: /
+
+User-agent: Amazonbot
+Disallow: /
+
+User-agent: Applebot-Extended
+Disallow: /
+
+# --- AI SEARCH bots: allowed for GEO (Generative Engine Optimization) ---
+# These bots retrieve content to cite in real-time AI search answers
 
 User-agent: ChatGPT-User
 Allow: /
