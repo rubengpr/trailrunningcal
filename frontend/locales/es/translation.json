@@ -40,6 +40,7 @@
     "racesList": "Carreras de trail running"
   },
   "race": {
+    "confirmedDate": "Fecha confirmada",
     "difficulty": "Dificultad: {{level}}",
     "difficultyNotSpecified": "Dificultad: No especificada",
     "webLink": "Web →",

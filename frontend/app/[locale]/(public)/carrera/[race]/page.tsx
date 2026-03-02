@@ -9,6 +9,7 @@ import { generateMetadataFromOptions } from '@/seo/meta-config';
 import { BASE_URL } from '@/lib/config';
 import { buildRaceAlternateLinks } from '@/lib/alternate-links';
 import VerifiedBadgeWithTooltip from '@/components/verified-badge-with-tooltip';
+import { ConfirmedDateBadge } from '@/components/confirmed-date-badge';
 //import PriceTiersTable from '@/components/price-tiers-table';
 //import RaceServicesList from '@/components/race-services-list';
 //import RaceResultsUrls from '@/components/race-results-urls';
@@ -220,9 +221,12 @@ export default async function RacePage({
               )}
             </div>
             <div className="flex flex-col sm:flex-row sm:flex-wrap text-gray-600 gap-2 sm:gap-3">
-              <span className="text-base sm:text-lg lg:text-xl font-bold text-black whitespace-nowrap">
-                {formattedDate}
-              </span>
+              <div className="flex flex-row items-center gap-2">
+                <span className="text-base sm:text-lg lg:text-xl font-bold text-black whitespace-nowrap">
+                  {formattedDate}
+                </span>
+                {raceData.date && <ConfirmedDateBadge locale={locale} />}
+              </div>
               <div className="flex flex-row flex-wrap gap-2 sm:gap-3">
                 <div className="flex flex-row gap-1">
                   <span className="text-base sm:text-lg lg:text-xl whitespace-nowrap">

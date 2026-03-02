@@ -40,6 +40,7 @@
     "racesList": "Curses de trail running"
   },
   "race": {
+    "confirmedDate": "Data confirmada",
     "difficulty": "Dificultat: {{level}}",
     "difficultyNotSpecified": "Dificultat: No especificada",
     "webLink": "Web →",
