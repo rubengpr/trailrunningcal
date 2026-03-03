@@ -68,7 +68,7 @@ export default function Navbar() {
           }
         >
           <Image
-            src="https://ppmdbmyxgtqvmvtbptmg.supabase.co/storage/v1/object/public/brand/logos/trc-logo.svg"
+            src="/logo.svg"
             width={40}
             height={40}
             className="w-6 h-6 sm:w-10 sm:h-10"
