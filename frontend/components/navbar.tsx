@@ -54,8 +54,8 @@ export default function Navbar() {
   };
 
   return (
-    <header className="w-full bg-white border-b border-gray-200 px-4 py-4 sm:px-6 lg:px-8">
-      <div className="flex justify-between items-center">
+    <header className="w-full h-14 sm:h-[72px] bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8 flex items-center">
+      <div className="w-full flex justify-between items-center">
         <Link
           href={`/${locale}`}
           className="flex items-center gap-3"
@@ -155,7 +155,7 @@ export default function Navbar() {
             />
           </svg>
           {isMenuOpen && (
-            <div className="fixed text-black inset-0 top-20 bg-white z-40 flex flex-col items-center justify-start pt-8 gap-6 font-semibold text-lg">
+            <div className="fixed text-black inset-0 top-14 bg-white z-40 flex flex-col items-center justify-start pt-8 gap-6 font-semibold text-lg">
               <Link
                 href={`/${locale}`}
                 onClick={() => {
