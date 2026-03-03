@@ -7,7 +7,7 @@ interface BlogHeaderImageProps {
 
 export default function BlogHeaderImage({ src, alt }: BlogHeaderImageProps) {
   return (
-    <div className="my-8 w-full relative aspect-4/3 sm:aspect-4/1 rounded-lg overflow-hidden ">
+    <div className="my-8 w-full relative aspect-video rounded-lg overflow-hidden">
       <Image
         src={src}
         alt={alt}
