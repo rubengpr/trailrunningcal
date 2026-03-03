@@ -9,7 +9,7 @@ import { buildBreadcrumbJsonLd } from '@/lib/seo/breadcrumb-json-ld';
 import CategoryHeroSection from '../../../../components/category-hero-section';
 import HomeClient from '../../../../components/home-client';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300; // 5 minutes
 
 const DISTANCE_MIN = 40;
 const DISTANCE_MAX = 50;

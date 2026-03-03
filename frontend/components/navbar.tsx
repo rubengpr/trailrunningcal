@@ -73,6 +73,7 @@ export default function Navbar() {
             height={40}
             className="w-6 h-6 sm:w-10 sm:h-10"
             alt="Trail Running Calendar logo"
+            priority
           />
           <span className="font-semibold text-xs sm:text-lg">
             {t('appName')}

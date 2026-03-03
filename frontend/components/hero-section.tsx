@@ -1,9 +1,7 @@
-'use client';
+import { getTranslations } from 'next-intl/server';
 
-import { useTranslations } from 'next-intl';
-
-export default function HeroSection() {
-  const t = useTranslations('landing');
+export default async function HeroSection() {
+  const t = await getTranslations('landing');
 
   return (
     <section className="px-6 py-10">

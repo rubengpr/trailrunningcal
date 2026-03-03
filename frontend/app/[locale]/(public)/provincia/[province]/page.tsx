@@ -10,7 +10,7 @@ import { buildBreadcrumbJsonLd } from '@/lib/seo/breadcrumb-json-ld';
 import CategoryHeroSection from '../../../../../components/category-hero-section';
 import HomeClient from '../../../../../components/home-client';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300; // 5 minutes
 
 const PROVINCE_SLUGS = ['barcelona', 'girona', 'lleida', 'tarragona'] as const;
 type ProvinceSlug = (typeof PROVINCE_SLUGS)[number];

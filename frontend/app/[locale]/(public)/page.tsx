@@ -15,7 +15,7 @@ import {
   buildFaqJsonLd,
 } from '@/lib/seo/home-json-ld';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300; // 5 minutes
 
 export async function generateMetadata({
   params,
@@ -49,7 +49,6 @@ export default async function HomePage({
   const { locale } = await params;
   const t = await getTranslations({ locale });
 
-  // Fetch fresh race list on each request so new races appear immediately
   const races = await getRaces();
 
   const websiteJsonLd = buildWebsiteJsonLd();
