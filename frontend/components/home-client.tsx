@@ -30,41 +30,27 @@ export default function HomeClient({ races, showProvinceFilter = true }: HomeCli
   const [selectedProvince, setSelectedProvince] = useState<string>('');
   const [isProposeRaceModalOpen, setIsProposeRaceModalOpen] = useState(false);
 
+  const racesWithDates = useMemo(() =>
+    races.map((race) => {
+      if (!race.date) return { race, parsedDate: null };
+      const d = new Date(race.date);
+      d.setHours(0, 0, 0, 0);
+      return { race, parsedDate: d };
+    }),
+    [races]
+  );
+
   const filteredRaces = useMemo(() => {
-    let filtered = races;
-
-    // Filter by date - only show races with dates higher than today or races without dates
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Reset time to start of day for accurate comparison
+    today.setHours(0, 0, 0, 0);
+    const monthNumber = selectedMonth ? parseInt(selectedMonth, 10) : null;
 
-    filtered = filtered.filter((race) => {
-      if (!race.date) return true; // Include races with null dates (TBD races)
-      const raceDate = new Date(race.date);
-      raceDate.setHours(0, 0, 0, 0); // Reset time to start of day for accurate comparison
-      return raceDate > today;
-    });
-
-    // Filter by month if selected
-    if (selectedMonth) {
-      const monthNumber = parseInt(selectedMonth, 10);
-      filtered = filtered.filter((race) => {
-        if (!race.date) return false; // Exclude races with null dates from month filtering
-        const raceDate = new Date(race.date);
-        return raceDate.getMonth() === monthNumber;
-      });
-    }
-
-    //Filter by province if selected
-    if (selectedProvince) {
-      //Filtrar por provincia del objeto
-      filtered = filtered.filter((race) => {
-        const raceProvince = race.province;
-        return raceProvince === selectedProvince;
-      });
-    }
-
-    return filtered;
-  }, [races, selectedMonth, selectedProvince]);
+    return racesWithDates
+      .filter(({ parsedDate }) => !parsedDate || parsedDate > today)
+      .filter(({ parsedDate }) => monthNumber === null ? true : parsedDate !== null && parsedDate.getMonth() === monthNumber)
+      .filter(({ race }) => !selectedProvince || race.province === selectedProvince)
+      .map(({ race }) => race);
+  }, [racesWithDates, selectedMonth, selectedProvince]);
 
   const handleMonthSelect = (month: string) => {
     setSelectedMonth(month);
