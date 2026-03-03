@@ -115,7 +115,7 @@ export default function HomeClient({ races, showProvinceFilter = true }: HomeCli
         >
           <section id="carreras" className="py-4">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="grid gap-4">
+              <div className="grid gap-4 min-h-[400px]">
                 {filteredRaces.length === 0 ? (
                   <EmptyState
                     icon={
