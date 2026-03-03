@@ -39,7 +39,7 @@ async function handlePostHogProxy(request: NextRequest): Promise<NextResponse> {
   requestHeaders.set('host', hostname);
   requestHeaders.delete('connection');
 
-  const fetchOptions: RequestInit = {
+  const fetchOptions: RequestInit & { duplex?: string } = {
     method: request.method,
     headers: requestHeaders,
   };
