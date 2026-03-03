@@ -67,13 +67,13 @@ export default function HomeClient({ races, showProvinceFilter = true }: HomeCli
   }, [races, selectedMonth, selectedProvince]);
 
   const handleMonthSelect = (month: string) => {
-    posthog.capture('race_month_filter_applied', { month: month });
     setSelectedMonth(month);
+    setTimeout(() => posthog.capture('race_month_filter_applied', { month }), 0);
   };
 
   const handleProvinceSelect = (province: string) => {
-    posthog.capture('race_province_filter_applied', { province: province });
     setSelectedProvince(province);
+    setTimeout(() => posthog.capture('race_province_filter_applied', { province }), 0);
   };
 
   const handleRetry = () => {
@@ -84,16 +84,14 @@ export default function HomeClient({ races, showProvinceFilter = true }: HomeCli
   };
 
   const handleClearFilters = () => {
-    posthog.capture('race_filters_cleared');
     setSelectedMonth('');
     setSelectedProvince('');
+    setTimeout(() => posthog.capture('race_filters_cleared'), 0);
   };
 
   const handleProposeRaceClick = () => {
     setIsProposeRaceModalOpen(true);
-    posthog.capture('propose_race_clicked', {
-      locale: locale,
-    });
+    setTimeout(() => posthog.capture('propose_race_clicked', { locale }), 0);
   };
 
   return (

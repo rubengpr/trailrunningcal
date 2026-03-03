@@ -54,7 +54,7 @@ const nextConfig: NextConfig = {
     ];
   },
 
-  // PostHog rewrites
+  // PostHog rewrites (EU region) — static assets first, then catch-all
   async rewrites() {
     return [
       {
@@ -63,6 +63,15 @@ const nextConfig: NextConfig = {
       },
       {
         source: '/ingest/:path*',
+        destination: 'https://eu.i.posthog.com/:path*',
+      },
+      // Locale-prefixed paths (next-intl with localePrefix: 'always')
+      {
+        source: '/:locale(es|ca)/ingest/static/:path*',
+        destination: 'https://eu-assets.i.posthog.com/static/:path*',
+      },
+      {
+        source: '/:locale(es|ca)/ingest/:path*',
         destination: 'https://eu.i.posthog.com/:path*',
       },
     ];

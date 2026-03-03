@@ -60,11 +60,11 @@ export default function Navbar() {
           href={`/${locale}`}
           className="flex items-center gap-3"
           onClick={() =>
-            posthog.capture('navbar_link_clicked', {
+            setTimeout(() => posthog.capture('navbar_link_clicked', {
               link_text: 'home_logo',
               link_href: `/${locale}`,
               locale: locale,
-            })
+            }), 0)
           }
         >
           <Image
@@ -85,11 +85,11 @@ export default function Navbar() {
               href={`/${locale}/blog`}
               className="hover:text-gray-900 transition-colors"
               onClick={() =>
-                posthog.capture('navbar_link_clicked', {
+                setTimeout(() => posthog.capture('navbar_link_clicked', {
                   link_text: 'blog',
                   link_href: `/${locale}/blog`,
                   locale: locale,
-                })
+                }), 0)
               }
             >
               {t('blog')}
@@ -98,13 +98,11 @@ export default function Navbar() {
               href={`/${locale}/${locale === 'ca' ? 'contacte' : 'contacto'}`}
               className="hover:text-gray-900 transition-colors"
               onClick={() =>
-                posthog.capture('navbar_link_clicked', {
+                setTimeout(() => posthog.capture('navbar_link_clicked', {
                   link_text: 'contact',
-                  link_href: `/${locale}/${
-                    locale === 'ca' ? 'contacte' : 'contacto'
-                  }`,
+                  link_href: `/${locale}/${locale === 'ca' ? 'contacte' : 'contacto'}`,
                   locale: locale,
-                })
+                }), 0)
               }
             >
               {t('contact')}
@@ -115,11 +113,11 @@ export default function Navbar() {
                 className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
                 aria-label={t('profile')}
                 onClick={() =>
-                  posthog.capture('navbar_link_clicked', {
+                  setTimeout(() => posthog.capture('navbar_link_clicked', {
                     link_text: 'profile',
                     link_href: `/${locale}/org/perfil`,
                     locale: locale,
-                  })
+                  }), 0)
                 }
               >
                 <svg
@@ -160,11 +158,11 @@ export default function Navbar() {
                 href={`/${locale}`}
                 onClick={() => {
                   setIsMenuOpen(false);
-                  posthog.capture('navbar_link_clicked', {
+                  setTimeout(() => posthog.capture('navbar_link_clicked', {
                     link_text: 'home',
                     link_href: `/${locale}`,
                     locale: locale,
-                  });
+                  }), 0);
                 }}
               >
                 {t('calendar')}
@@ -173,13 +171,11 @@ export default function Navbar() {
                 href={`/${locale}/${locale === 'ca' ? 'contacte' : 'contacto'}`}
                 onClick={() => {
                   setIsMenuOpen(false);
-                  posthog.capture('navbar_link_clicked', {
+                  setTimeout(() => posthog.capture('navbar_link_clicked', {
                     link_text: 'contact',
-                    link_href: `/${locale}/${
-                      locale === 'ca' ? 'contacte' : 'contacto'
-                    }`,
+                    link_href: `/${locale}/${locale === 'ca' ? 'contacte' : 'contacto'}`,
                     locale: locale,
-                  });
+                  }), 0);
                 }}
               >
                 {t('contact')}
@@ -188,11 +184,11 @@ export default function Navbar() {
                 href={`/${locale}/blog`}
                 onClick={() => {
                   setIsMenuOpen(false);
-                  posthog.capture('navbar_link_clicked', {
+                  setTimeout(() => posthog.capture('navbar_link_clicked', {
                     link_text: 'blog',
                     link_href: `/${locale}/blog`,
                     locale: locale,
-                  });
+                  }), 0);
                 }}
               >
                 {t('blog')}
@@ -202,11 +198,11 @@ export default function Navbar() {
                   href={`/${locale}/org/perfil`}
                   onClick={() => {
                     setIsMenuOpen(false);
-                    posthog.capture('navbar_link_clicked', {
+                    setTimeout(() => posthog.capture('navbar_link_clicked', {
                       link_text: 'profile',
                       link_href: `/${locale}/org/perfil`,
                       locale: locale,
-                    });
+                    }), 0);
                   }}
                 >
                   {t('profile')}

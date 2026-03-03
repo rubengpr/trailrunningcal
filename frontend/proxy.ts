@@ -26,5 +26,6 @@ export default function proxy(request: NextRequest) {
 //Static assets: /favicon.ico, /_next/static/..., /assets/...
 //Next.js internals: /_next/*, /_vercel/*
 export const config = {
-  matcher: ['/((?!api|auth|_next|_vercel|.*\\..*).*)'],
+  // Exclude ingest so PostHog proxy rewrites can match before middleware
+  matcher: ['/((?!api|auth|_next|_vercel|ingest|.*\\..*).*)'],
 };
