@@ -12,6 +12,7 @@ interface BlogPostCardProps {
   locale: Locale;
   image: string;
   imageAlt: string;
+  priority?: boolean;
 }
 
 export default function BlogPostCard({
@@ -23,6 +24,7 @@ export default function BlogPostCard({
   locale,
   image,
   imageAlt,
+  priority = false,
 }: BlogPostCardProps) {
   return (
     <Link href={`/${locale}/blog/${slug}`}>
@@ -35,6 +37,7 @@ export default function BlogPostCard({
             fill
             className="object-cover"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            priority={priority}
           />
         </div>
 
