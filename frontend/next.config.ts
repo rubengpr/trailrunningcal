@@ -27,6 +27,28 @@ const nextConfig: NextConfig = {
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
           { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains; preload' },
+          {
+            key: 'Content-Security-Policy',
+            value: [
+              "default-src 'self'",
+              // Next.js hydration + JSON-LD inline scripts require unsafe-inline.
+              // PostHog is proxied via /ingest/* rewrites so no external origin needed.
+              "script-src 'self' 'unsafe-inline'",
+              // Tailwind and component inline styles require unsafe-inline.
+              "style-src 'self' 'unsafe-inline'",
+              // Geist font is self-hosted by next/font at build time.
+              "font-src 'self'",
+              // Supabase storage for race/province/brand images. data: for Next.js blur placeholders.
+              "img-src 'self' data: https://ppmdbmyxgtqvmvtbptmg.supabase.co",
+              // Supabase JS client (auth + DB) connects directly from the browser.
+              // PostHog ingest is proxied to self via rewrites.
+              "connect-src 'self' https://ppmdbmyxgtqvmvtbptmg.supabase.co",
+              "frame-ancestors 'none'",
+              "object-src 'none'",
+              "base-uri 'self'",
+              "form-action 'self'",
+            ].join('; '),
+          },
         ],
       },
     ];
