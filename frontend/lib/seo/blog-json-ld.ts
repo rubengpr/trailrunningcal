@@ -18,6 +18,7 @@ export function buildBlogJsonLd(post: BlogPost): Record<string, unknown> {
     headline: post.title,
     description: post.excerpt,
     datePublished: post.date,
+    dateModified: post.dateModified ?? post.date,
     url: postUrl,
     inLanguage: LOCALE_LANGUAGE[post.locale],
     image: {

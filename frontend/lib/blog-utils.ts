@@ -7,6 +7,7 @@ export interface BlogPostFrontmatter {
   title: string;
   excerpt: string;
   date: string;
+  dateModified?: string;
   readTime: string;
   slug: string;
   translationKey: string;
@@ -78,6 +79,7 @@ export function getAllBlogPosts(): BlogPost[] {
           title: data.title,
           excerpt: data.excerpt || '',
           date: data.date || '',
+          dateModified: data.dateModified || undefined,
           readTime: data.readTime || '',
           slug: data.slug,
           translationKey: data.translationKey,
