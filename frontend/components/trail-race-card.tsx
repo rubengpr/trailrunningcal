@@ -123,9 +123,10 @@ export default function TrailRaceCard({
                 <h3 className="text-xs sm:text-lg font-bold text-gray-900">
                   {name}
                 </h3>
-                {(organizerId || isTestRace) && (
-                  <VerifiedBadgeWithTooltip size="sm" className="shrink-0" />
-                )}
+                <VerifiedBadgeWithTooltip
+                  size="sm"
+                  className={`shrink-0 ${(organizerId || isTestRace) ? 'visible' : 'invisible'}`}
+                />
               </div>
               <div className="flex gap-3 text-[10px] sm:text-sm text-gray-600 mb-2">
                 <span>{distanceKm}km</span>
