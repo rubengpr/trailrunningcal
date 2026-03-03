@@ -1,10 +1,35 @@
 {
   "version": 1,
   "skills": {
+    "accessibility": {
+      "source": "addyosmani/web-quality-skills",
+      "sourceType": "github",
+      "computedHash": "a16b37abf64fe636f19f43b22aa1a09a4d5271e2d2972dfb9333f7bc7fa0355d"
+    },
+    "best-practices": {
+      "source": "addyosmani/web-quality-skills",
+      "sourceType": "github",
+      "computedHash": "98dafea60ec1a7f5f70f6febcdd4b4fa3fe15723ad9c0b991c0818615bff7ba6"
+    },
+    "core-web-vitals": {
+      "source": "addyosmani/web-quality-skills",
+      "sourceType": "github",
+      "computedHash": "fa437acc2249cea2cb28f190ba7faf8fdfac829d1c1aafa9ce938c6dd9338721"
+    },
+    "performance": {
+      "source": "addyosmani/web-quality-skills",
+      "sourceType": "github",
+      "computedHash": "acbafe2fcbfc3a1a67db47c2f6299d5c0e16f543c4e683e38e74a8ccb54888fb"
+    },
     "programmatic-seo": {
       "source": "coreyhaines31/marketingskills",
       "sourceType": "github",
       "computedHash": "8eed8401fa4980cc67ac308bc9d09e21bb312848f03990ab73dafe7265590c61"
+    },
+    "seo": {
+      "source": "addyosmani/web-quality-skills",
+      "sourceType": "github",
+      "computedHash": "f1fed683b76913d26fbf1aa1e008e6932f7771701fc3a79925b042236aa4681a"
     },
     "seo-audit": {
       "source": "coreyhaines31/marketingskills",
@@ -15,6 +40,11 @@
       "source": "resciencelab/opc-skills",
       "sourceType": "github",
       "computedHash": "56f90ba46b36563bb5461feb8462aed9283e74dfc4cdac2a98c42c4bc86a95be"
+    },
+    "web-quality-audit": {
+      "source": "addyosmani/web-quality-skills",
+      "sourceType": "github",
+      "computedHash": "1168be21aa9fe7bdc6e6e053ca05b6ca5a45675a527c103cdf77bc56ce8159af"
     }
   }
 }
