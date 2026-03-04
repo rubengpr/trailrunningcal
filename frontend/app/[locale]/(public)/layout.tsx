@@ -1,15 +1,30 @@
+import { getTranslations } from 'next-intl/server';
 import Navbar from '@/components/navbar';
 import Footer from '@/components/footer';
+import type { Locale } from '@/i18n';
 
-export default function PublicLayout({
+export default async function PublicLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: Promise<{ locale: Locale }>;
 }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'navigation' });
+
   return (
     <div className="min-h-screen w-full text-gray-900 flex flex-col bg-white">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-4 focus:left-4 focus:px-4 focus:py-2 focus:bg-white focus:text-gray-900 focus:rounded-md focus:shadow-md focus:text-sm focus:font-medium"
+      >
+        {t('skipToContent')}
+      </a>
       <Navbar />
-      {children}
+      <div id="main-content">
+        {children}
+      </div>
       <Footer />
     </div>
   );

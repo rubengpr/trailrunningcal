@@ -108,7 +108,8 @@
     "blog": "Blog",
     "proposeRace": "Vols afegir una cursa?",
     "profile": "El meu perfil",
-    "openMenu": "Obrir menú"
+    "openMenu": "Obrir menú",
+    "skipToContent": "Anar al contingut principal"
   },
   "landing": {
     "title": "Calendari curses Trail Running Catalunya",
