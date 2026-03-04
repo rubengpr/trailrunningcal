@@ -33,7 +33,6 @@ export function ProposeRaceModal({ isOpen, onClose }: ProposeRaceModalProps) {
       onClose={handleClose}
       title={isSuccess ? t('successTitle') : t('title')}
       description={isSuccess ? t('successDescription') : t('description')}
-      closeButtonLabel={t('close')}
     >
       {isSuccess ? (
         <div className="flex flex-col gap-6">

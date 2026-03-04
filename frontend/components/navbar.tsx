@@ -111,7 +111,6 @@ export default function Navbar() {
               <Link
                 href={`/${locale}/org/perfil`}
                 className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                aria-label={t('profile')}
                 onClick={() =>
                   setTimeout(() => posthog.capture('navbar_link_clicked', {
                     link_text: 'profile',
@@ -140,8 +139,6 @@ export default function Navbar() {
           <button
             className="flex sm:hidden p-1 text-gray-400"
             onClick={handleMenuClick}
-            aria-label={t('openMenu')}
-            aria-expanded={isMenuOpen}
           >
             <svg
               className="h-5 w-5"
@@ -149,7 +146,6 @@ export default function Navbar() {
               stroke="currentColor"
               viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg"
-              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"

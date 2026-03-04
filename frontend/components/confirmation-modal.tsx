@@ -29,7 +29,6 @@ export function ConfirmationModal({
             isOpen={isOpen}
             onClose={onClose}
             title={title}
-            closeButtonLabel={cancelButtonText}
         >
             <p className="text-sm sm:text-base text-gray-700 mb-6">{message}</p>
             <div className="flex flex-row justify-end gap-3">

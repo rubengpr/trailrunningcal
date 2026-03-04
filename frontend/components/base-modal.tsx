@@ -8,7 +8,6 @@ interface BaseModalProps {
   title: string;
   description?: string;
   children: ReactNode;
-  closeButtonLabel?: string;
   maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 }
 
@@ -18,7 +17,6 @@ export function BaseModal({
   title,
   description,
   children,
-  closeButtonLabel = 'Close',
   maxWidth = '2xl',
 }: BaseModalProps) {
   useEffect(() => {
@@ -46,7 +44,6 @@ export function BaseModal({
       <div
         className="absolute inset-0 bg-black/50"
         onClick={onClose}
-        aria-hidden="true"
       />
 
       {/* Modal */}
@@ -59,7 +56,6 @@ export function BaseModal({
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
-              aria-label={closeButtonLabel}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

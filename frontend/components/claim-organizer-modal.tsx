@@ -19,7 +19,6 @@ export function ClaimOrganizerModal({
             isOpen={isOpen}
             onClose={onClose}
             title={t('title')}
-            closeButtonLabel={t('close')}
         >
             <p className="text-sm sm:text-base text-gray-700">{t('message')}</p>
         </BaseModal>
