@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { createClient, createStaticClient } from '@/lib/supabase/server';
 import type { TrailRace, RaceRow } from '@/types/race.types';
 
@@ -31,7 +32,7 @@ let racesCache: TrailRace[] | null = null;
  *                          If false or undefined, uses the regular client with cookies and no cache; each call gets fresh data from the database.
  * @returns Array of TrailRace objects
  */
-export async function getRaces(
+export const getRaces = cache(async function getRaces(
   useStaticClient?: boolean,
 ): Promise<TrailRace[]> {
   if (useStaticClient && racesCache) return racesCache;
@@ -72,4 +73,4 @@ export async function getRaces(
   const result = rows.map(raceRowToTrailRace);
   if (useStaticClient) racesCache = result;
   return result;
-}
+});
