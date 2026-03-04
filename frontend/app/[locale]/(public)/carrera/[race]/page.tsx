@@ -37,9 +37,10 @@ const PROVINCE_SLUGS: Record<string, string> = {
 const STOCK_IMAGES_COUNT = 21;
 const STOCK_IMAGE_BASE_URL = 'https://ppmdbmyxgtqvmvtbptmg.supabase.co/storage/v1/object/public/stock/images';
 
-function randomStockImageUrl(): string {
-  const n = Math.floor(Math.random() * STOCK_IMAGES_COUNT) + 1;
-  return `${STOCK_IMAGE_BASE_URL}/image-${n}.jpg`;
+function stockImageUrlForRace(raceId: string): string {
+  const hash = [...raceId].reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const index = (hash % STOCK_IMAGES_COUNT) + 1;
+  return `${STOCK_IMAGE_BASE_URL}/image-${index}.jpg`;
 }
 
 const PROVINCE_IMAGES: Record<string, string> = {
@@ -49,7 +50,7 @@ const PROVINCE_IMAGES: Record<string, string> = {
   Tarragona: 'https://ppmdbmyxgtqvmvtbptmg.supabase.co/storage/v1/object/public/stock/provinces/tarragona.jpg',
 };
 
-export const revalidate = 300; // 5 minutes
+export const revalidate = 3600; // 1 hour
 
 export async function generateMetadata({
   params,
@@ -195,7 +196,7 @@ export default async function RacePage({
     .map((r) => ({
       href: `/${locale}/carrera/${generateRaceSlug(r.name)}`,
       label: r.name,
-      imageSrc: randomStockImageUrl(),
+      imageSrc: stockImageUrlForRace(r.id),
     }));
 
   return (

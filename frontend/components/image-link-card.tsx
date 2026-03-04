@@ -25,6 +25,7 @@ export default function ImageLinkCard({ href, label, imageSrc }: ImageLinkCardPr
             alt={label}
             fill
             className="object-cover"
+            sizes="(max-width: 1024px) 100vw, 400px"
             onLoad={() => setIsLoaded(true)}
           />
         )}
