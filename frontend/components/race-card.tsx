@@ -41,7 +41,7 @@ export default function RaceCard({
         fill
         className="object-cover"
         sizes="100vw"
-        priority
+        loading="lazy"
       />
 
       {/* Dark Overlay for better text readability */}
