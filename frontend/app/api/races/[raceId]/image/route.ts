@@ -138,15 +138,17 @@ export async function POST(
     const filename = getVersionedRaceImageFilename(extension);
     const storagePath = `${organizerContext.organizerId}/${raceId}/${filename}`;
 
-    console.log('Upload details:', {
-      organizerId: organizerContext.organizerId,
-      raceId,
-      extension,
-      filename,
-      storagePath,
-      mimeType,
-      fileSize: file.size,
-    });
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Upload details:', {
+        organizerId: organizerContext.organizerId,
+        raceId,
+        extension,
+        filename,
+        storagePath,
+        mimeType,
+        fileSize: file.size,
+      });
+    }
 
     const folderPath = `${organizerContext.organizerId}/${raceId}`;
     const existingFilename = organizerContext.race.heroImageFilename?.trim();
@@ -185,7 +187,9 @@ export async function POST(
       console.error('DB update error:', updateError);
     }
 
-    console.log('Image uploaded successfully:', { path: uploadData?.path, filename });
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Image uploaded successfully:', { path: uploadData?.path, filename });
+    }
 
     return NextResponse.json({ success: true, filename });
   } catch (error) {
