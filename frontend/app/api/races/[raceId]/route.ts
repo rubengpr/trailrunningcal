@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { getOrganizerRaceContext } from '@/lib/auth-organizer';
+import { generateRaceSlug } from '@/lib/race-utils';
 
 export async function DELETE(
   _request: NextRequest,
@@ -24,6 +26,12 @@ export async function DELETE(
     if (error) {
       console.error('Delete error:', error);
       return NextResponse.json({ error: 'Failed to delete race' }, { status: 500 });
+    }
+
+    const slug = generateRaceSlug(organizerContext.race.name);
+    for (const locale of ['es', 'ca']) {
+      revalidatePath(`/${locale}`, 'page');
+      revalidatePath(`/${locale}/carrera/${slug}`, 'page');
     }
 
     return NextResponse.json({ success: true });

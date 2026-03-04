@@ -1,6 +1,23 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { getOrganizerRaceContext } from '@/lib/auth-organizer';
+import { generateRaceSlug } from '@/lib/race-utils';
+
+const LOCALES = ['es', 'ca'] as const;
+
+function revalidateHomepages() {
+  for (const locale of LOCALES) {
+    revalidatePath(`/${locale}`, 'page');
+  }
+}
+
+function revalidateRacePages(raceName: string) {
+  const slug = generateRaceSlug(raceName);
+  for (const locale of LOCALES) {
+    revalidatePath(`/${locale}/carrera/${slug}`, 'page');
+  }
+}
 
 const MAX_RACES_PER_ORGANIZER = 5;
 
@@ -124,6 +141,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to create race price' }, { status: 500 });
     }
 
+    revalidateHomepages();
+
     return NextResponse.json({ success: true, data: { id: newRace.id } }, { status: 201 });
   } catch (error) {
     console.error('API error:', error);
@@ -184,6 +203,9 @@ export async function PATCH(request: NextRequest) {
         { status: 500 },
       );
     }
+
+    revalidateHomepages();
+    revalidateRacePages(context.race.name);
 
     return NextResponse.json({
       success: true,

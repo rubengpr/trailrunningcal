@@ -15,7 +15,7 @@ import {
   buildFaqJsonLd,
 } from '@/lib/seo/home-json-ld';
 
-export const revalidate = 300; // 5 minutes
+export const revalidate = 3600; // 1 hour fallback; mutations trigger on-demand revalidation
 
 export async function generateMetadata({
   params,

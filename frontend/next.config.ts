@@ -18,6 +18,10 @@ const nextConfig: NextConfig = {
   },
 
   async headers() {
+    const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL
+      ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).origin
+      : 'https://ppmdbmyxgtqvmvtbptmg.supabase.co';
+
     return [
       {
         source: '/(.*)',
@@ -39,10 +43,10 @@ const nextConfig: NextConfig = {
               // Geist font is self-hosted by next/font at build time.
               "font-src 'self'",
               // Supabase storage for race/province/brand images. data: for Next.js blur placeholders.
-              "img-src 'self' data: https://ppmdbmyxgtqvmvtbptmg.supabase.co",
+              `img-src 'self' data: ${supabaseHost}`,
               // Supabase JS client (auth + DB) connects directly from the browser.
               // PostHog ingest is proxied to self via rewrites.
-              "connect-src 'self' https://ppmdbmyxgtqvmvtbptmg.supabase.co",
+              `connect-src 'self' ${supabaseHost}`,
               "frame-ancestors 'none'",
               "object-src 'none'",
               "base-uri 'self'",

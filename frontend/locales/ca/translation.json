@@ -159,7 +159,8 @@
       "passwordsDoNotMatch": "Les contrasenyes no coincideixen",
       "samePassword": "La nova contrasenya ha de ser diferent a l'actual",
       "invalidToken": "L'enllaç no és vàlid o ha expirat",
-      "general": "Alguna cosa ha anat malament"
+      "general": "Alguna cosa ha anat malament",
+      "connectionError": "Error de connexió. Comprova la teva xarxa i torna-ho a provar."
     }
   },
   "footer": {

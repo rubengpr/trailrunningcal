@@ -69,6 +69,11 @@ export function LoginForm({
         // Check for invalid credentials error
         if (error.message.includes('Invalid login credentials') || error.message.includes('Email not confirmed')) {
           setError(t('errors.invalidCredentials'));
+        } else if (
+          error.message === 'Failed to fetch' ||
+          error.message.toLowerCase().includes('fetch failed')
+        ) {
+          setError(authT('errors.connectionError'));
         } else {
           setError(error.message);
         }

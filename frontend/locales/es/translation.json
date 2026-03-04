@@ -159,7 +159,8 @@
       "passwordsDoNotMatch": "Las contraseñas no coinciden",
       "samePassword": "La nueva contraseña debe ser diferente a la actual",
       "invalidToken": "El enlace no es válido o ha expirado",
-      "general": "Algo salió mal"
+      "general": "Algo salió mal",
+      "connectionError": "Error de conexión. Comprueba tu red e inténtalo de nuevo."
     }
   },
   "footer": {
