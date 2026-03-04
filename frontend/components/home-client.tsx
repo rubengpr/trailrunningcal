@@ -157,8 +157,8 @@ export default function HomeClient({ races, showProvinceFilter = true }: HomeCli
                     }
                   />
                 ) : (
-                  filteredRaces.map((race, index) => (
-                    <div key={index}>
+                  filteredRaces.map((race) => (
+                    <div key={race.id}>
                       <ErrorBoundary
                         fallback={
                           <div className="bg-white rounded-lg shadow-sm border border-red-200 p-6">
