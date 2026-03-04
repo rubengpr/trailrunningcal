@@ -47,8 +47,15 @@ export default async function LocaleLayout({
 
   const messages = await getMessages();
 
+  const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL
+    ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).origin
+    : 'https://ppmdbmyxgtqvmvtbptmg.supabase.co';
+
   return (
     <html lang={locale}>
+      <head>
+        <link rel="preconnect" href={supabaseHost} />
+      </head>
       <body
         className={`${geistSans.variable} antialiased`}
       >
