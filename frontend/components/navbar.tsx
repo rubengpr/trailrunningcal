@@ -137,23 +137,28 @@ export default function Navbar() {
               </Link>
             )}
           </div>
-          <svg
-            className="flex sm:hidden mx-auto h-5 w-5 text-gray-400 cursor-pointer"
+          <button
+            className="flex sm:hidden p-1 text-gray-400"
             onClick={handleMenuClick}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
             aria-label={t('openMenu')}
-            role="button"
+            aria-expanded={isMenuOpen}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M4 6h16M4 12h16M4 18h16"
-            />
-          </svg>
+            <svg
+              className="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
           {isMenuOpen && (
             <div className="fixed text-black inset-0 top-14 bg-white z-40 flex flex-col items-center justify-start pt-8 gap-6 font-semibold text-lg">
               <Link
