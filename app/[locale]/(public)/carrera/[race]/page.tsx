@@ -210,8 +210,8 @@ export default async function RacePage({
       <div className="min-h-screen w-full text-gray-900 flex flex-col bg-white">
       <div className="flex flex-col max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
         <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6">
-          <div className="flex flex-col flex-1">
-            <div className="flex flex-row items-center gap-2 mb-2">
+          <div className="flex flex-col flex-1 gap-2">
+            <div className="flex flex-row items-center gap-2">
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
                 {raceData.name}
               </h1>
@@ -219,49 +219,42 @@ export default async function RacePage({
                 <VerifiedBadgeWithTooltip size="md" className="shrink-0 self-start" />
               )}
             </div>
-            <div className="flex flex-col sm:flex-row sm:flex-wrap text-gray-600 gap-2 sm:gap-3">
-              <div className="flex flex-row items-center gap-2">
-                <span className="text-base sm:text-lg lg:text-xl font-bold text-black whitespace-nowrap">
-                  {formattedDate}
+            <div className="flex flex-row items-center gap-2">
+              <span className="text-base sm:text-lg lg:text-xl font-bold text-black whitespace-nowrap">
+                {formattedDate}
+              </span>
+              {raceData.date && <ConfirmedDateBadge locale={locale} />}
+            </div>
+            <div className="flex flex-row flex-wrap gap-x-3 gap-y-1 text-gray-600">
+              <div className="flex flex-row gap-1">
+                <span className="text-base sm:text-lg lg:text-xl whitespace-nowrap">
+                  {raceData.city},
                 </span>
-                {raceData.date && <ConfirmedDateBadge locale={locale} />}
+                <span className="text-base sm:text-lg lg:text-xl whitespace-nowrap">
+                  {raceData.province}
+                </span>
               </div>
-              <div className="flex flex-row flex-wrap gap-2 sm:gap-3">
-                <div className="flex flex-row gap-1">
+              <div className="flex flex-row gap-2">
+                <span className="text-base sm:text-lg lg:text-xl whitespace-nowrap">
+                  {raceData.distanceKm}km
+                </span>
+                {raceData.elevationGainM !== null && (
                   <span className="text-base sm:text-lg lg:text-xl whitespace-nowrap">
-                    {raceData.city},
+                    +{raceData.elevationGainM}m
                   </span>
+                )}
+                {displayPrice && (
                   <span className="text-base sm:text-lg lg:text-xl whitespace-nowrap">
-                    {raceData.province}
+                    · {displayPrice}€
                   </span>
-                </div>
-                <div className="hidden sm:block">
-                  <span className="text-base sm:text-lg lg:text-xl">|</span>
-                </div>
-                <div className="flex flex-row gap-1">
-                  <span className="text-base sm:text-lg lg:text-xl whitespace-nowrap">
-                    {raceData.distanceKm}km
-                  </span>
-                  {raceData.elevationGainM !== null && (
-                    <span className="text-base sm:text-lg lg:text-xl whitespace-nowrap">
-                      +{raceData.elevationGainM}m
-                    </span>
-                  )}
-                </div>
-                {displayPrice &&
-                  <>
-                    <div className="hidden sm:block">
-                      <span className="text-base sm:text-lg lg:text-xl">|</span>
-                    </div>
-                    <div className="hidden sm:block">
-                      <span className="text-base sm:text-lg lg:text-xl whitespace-nowrap">
-                        {displayPrice}€
-                      </span>
-                    </div>
-                  </>
-                }
+                )}
               </div>
             </div>
+            {organizer && (
+              <div className="mt-1">
+                <RaceOrganizerLinks organizer={organizer} />
+              </div>
+            )}
           </div>
           <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto sm:items-end">
             <div className="flex w-full flex-col gap-2">
@@ -291,9 +284,6 @@ export default async function RacePage({
                 />
               </div>
             </div>
-            {organizer && (
-              <RaceOrganizerLinks organizer={organizer} />
-            )}
           </div>
         </div>
         {heroImageUrl && (

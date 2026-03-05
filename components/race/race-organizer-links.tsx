@@ -63,7 +63,7 @@ export default function RaceOrganizerLinks({
   }
 
   return (
-    <div className="flex flex-wrap gap-1.5 justify-start sm:justify-end">
+    <div className="flex flex-wrap gap-1.5">
       {links.map(({ url, key }) => (
         <a
           key={key}
