@@ -3,9 +3,9 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
-import { InfoBanner } from './info-banner';
-import { SectionHeader } from './section-header';
-import TrailRaceCard from './trail-race-card';
+import { InfoBanner } from '@/components/ui/info-banner';
+import { SectionHeader } from '@/components/ui/section-header';
+import TrailRaceCard from '@/components/race/trail-race-card';
 import type { TrailRace } from '@/types/race.types';
 import { formatDateToSpanish, formatDateToCatalan } from '@/lib/date-utils';
 import { generateRaceSlug } from '@/lib/race-utils';

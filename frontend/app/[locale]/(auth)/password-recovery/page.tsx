@@ -1,4 +1,4 @@
-import { PasswordRecoveryForm } from '@/components/password-recovery-form';
+import { PasswordRecoveryForm } from '@/components/auth/password-recovery-form';
 import { cookies } from 'next/headers';
 
 async function clearAuthErrorCookie() {

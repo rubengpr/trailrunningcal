@@ -1,4 +1,4 @@
-import ImageLinkCard from '@/components/image-link-card';
+import ImageLinkCard from '@/components/home/image-link-card';
 
 interface AdditionalCard {
   href: string;

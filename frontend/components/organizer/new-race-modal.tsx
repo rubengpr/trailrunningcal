@@ -1,6 +1,6 @@
 'use client';
 
-import { BaseModal } from './base-modal';
+import { BaseModal } from '@/components/ui/base-modal';
 
 interface InfoModalProps {
     isOpen: boolean;

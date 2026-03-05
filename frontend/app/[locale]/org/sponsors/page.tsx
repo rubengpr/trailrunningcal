@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
-import { OrganizerLayout } from '@/components/organizer-layout';
-import { InfoBanner } from '@/components/info-banner';
+import { OrganizerLayout } from '@/components/organizer/organizer-layout';
+import { InfoBanner } from '@/components/ui/info-banner';
 import { sponsors } from '@/data/sponsors';
 import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';

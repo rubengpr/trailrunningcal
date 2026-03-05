@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { getLocale, getTranslations } from 'next-intl/server';
-import Navbar from '../../components/navbar';
-import Footer from '../../components/footer';
+import Navbar from '@/components/layout/navbar';
+import Footer from '@/components/layout/footer';
 
 export default async function NotFound() {
   const locale = await getLocale();

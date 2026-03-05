@@ -5,10 +5,10 @@ import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { FormInput } from './form-input';
-import { FormCard } from './form-card';
-import { Button } from './button';
-import { InlineError } from './inline-error';
+import { FormInput } from '@/components/ui/form-input';
+import { FormCard } from '@/components/ui/form-card';
+import { Button } from '@/components/ui/button';
+import { InlineError } from '@/components/ui/inline-error';
 import {
   validateEmail as validateEmailUtil,
   validatePassword as validatePasswordUtil,

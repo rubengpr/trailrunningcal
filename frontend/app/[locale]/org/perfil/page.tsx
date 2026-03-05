@@ -1,8 +1,8 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
-import { OrganizerProfileForm } from '@/components/organizer-profile-form';
-import { OrganizerLayout } from '@/components/organizer-layout';
+import { OrganizerProfileForm } from '@/components/organizer/organizer-profile-form';
+import { OrganizerLayout } from '@/components/organizer/organizer-layout';
 
 export default async function OrganizerPage({
   params,

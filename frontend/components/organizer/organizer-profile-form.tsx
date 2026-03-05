@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
-import { FormInput } from './form-input';
+import { FormInput } from '@/components/ui/form-input';
 import { updateProfile } from '@/lib/api/profiles';
 import { updateOrganizer } from '@/lib/api/organizers';
 

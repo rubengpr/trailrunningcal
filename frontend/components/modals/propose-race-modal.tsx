@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { ProposeRaceForm } from './propose-race-form';
 import { useState } from 'react';
-import { BaseModal } from './base-modal';
+import { BaseModal } from '@/components/ui/base-modal';
 
 interface ProposeRaceModalProps {
   isOpen: boolean;

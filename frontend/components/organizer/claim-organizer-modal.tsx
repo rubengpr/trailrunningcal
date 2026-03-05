@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { BaseModal } from './base-modal';
+import { BaseModal } from '@/components/ui/base-modal';
 
 interface ClaimOrganizerModalProps {
     isOpen: boolean;

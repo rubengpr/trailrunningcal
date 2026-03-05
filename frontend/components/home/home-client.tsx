@@ -3,16 +3,16 @@
 import { useState, useMemo } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import posthog from 'posthog-js';
-import type { TrailRace } from '../types/race.types';
-import MonthFilter from './month-filter';
-import TrailRaceCard from './trail-race-card';
-import ErrorBoundary from './error-boundary';
-import { SearchError } from './error-message';
-import ProvinceFilter from './province-filter';
-import { EmptyState } from './empty-state';
-import { Button } from './button';
-import { generateRaceSlug } from '../lib/race-utils';
-import { ProposeRaceModal } from './propose-race-modal';
+import type { TrailRace } from '@/types/race.types';
+import MonthFilter from '@/components/filters/month-filter';
+import TrailRaceCard from '@/components/race/trail-race-card';
+import ErrorBoundary from '@/components/ui/error-boundary';
+import { SearchError } from '@/components/ui/error-message';
+import ProvinceFilter from '@/components/filters/province-filter';
+import { EmptyState } from '@/components/ui/empty-state';
+import { Button } from '@/components/ui/button';
+import { generateRaceSlug } from '@/lib/race-utils';
+import { ProposeRaceModal } from '@/components/modals/propose-race-modal';
 
 interface HomeClientProps {
   races: TrailRace[];

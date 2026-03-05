@@ -1,7 +1,7 @@
 'use client';
 
-import { BaseModal } from './base-modal';
-import { Button } from './button';
+import { BaseModal } from '@/components/ui/base-modal';
+import { Button } from '@/components/ui/button';
 
 interface ConfirmationModalProps {
     isOpen: boolean;

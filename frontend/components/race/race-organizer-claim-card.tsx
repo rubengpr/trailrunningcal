@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase/client';
-import { ClaimOrganizerModal } from './claim-organizer-modal';
-import { ConfirmationModal } from './confirmation-modal';
+import { ClaimOrganizerModal } from '@/components/organizer/claim-organizer-modal';
+import { ConfirmationModal } from '@/components/modals/confirmation-modal';
 
 interface RaceOrganizerClaimCardProps {
     title: string;

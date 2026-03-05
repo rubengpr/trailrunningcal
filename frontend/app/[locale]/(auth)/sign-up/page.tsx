@@ -1,4 +1,4 @@
-import { SignUpForm } from '@/components/sign-up-form';
+import { SignUpForm } from '@/components/auth/sign-up-form';
 import { cookies } from 'next/headers';
 
 async function clearAuthErrorCookie() {

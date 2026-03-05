@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import HomeClient from '../../../components/home-client';
-import HeroSection from '../../../components/hero-section';
+import HomeClient from '@/components/home/home-client';
+import HeroSection from '@/components/layout/hero-section';
 import {
   getSeoMetaConfig,
   generateMetadataFromOptions,

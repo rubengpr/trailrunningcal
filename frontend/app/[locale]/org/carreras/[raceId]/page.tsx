@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import { OrganizerLayout } from '@/components/organizer-layout';
-import { RaceForm } from '@/components/race-form';
+import { OrganizerLayout } from '@/components/organizer/organizer-layout';
+import { RaceForm } from '@/components/race/race-form';
 import { raceRowToTrailRace } from '@/lib/db/races';
 import type { RaceRow } from '@/types/race.types';
 

@@ -1,5 +1,5 @@
 import VerifiedBadge from './verified-badge';
-import Tooltip from './tooltip';
+import Tooltip from '@/components/ui/tooltip';
 
 interface VerifiedBadgeWithTooltipProps {
   size?: 'sm' | 'md' | 'lg';

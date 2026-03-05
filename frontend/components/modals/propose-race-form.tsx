@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { FormInput } from './form-input';
+import { FormInput } from '@/components/ui/form-input';
 
 interface ProposeRaceFormProps {
   onSuccess: () => void;

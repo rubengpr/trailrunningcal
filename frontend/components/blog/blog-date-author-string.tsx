@@ -1,4 +1,4 @@
-import { formatDateToSpanish, formatDateToCatalan } from '../lib/date-utils';
+import { formatDateToSpanish, formatDateToCatalan } from '@/lib/date-utils';
 import type { Locale } from '@/i18n';
 
 interface DateAuthorStringProps {

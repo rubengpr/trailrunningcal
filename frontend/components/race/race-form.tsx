@@ -4,13 +4,13 @@ import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter, useParams } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { FormInput } from './form-input';
-import { FormTextarea } from './form-textarea';
-import { FormImageInput } from './form-image-input';
+import { FormInput } from '@/components/ui/form-input';
+import { FormTextarea } from '@/components/ui/form-textarea';
+import { FormImageInput } from '@/components/ui/form-image-input';
 import type { TrailRace } from '@/types/race.types';
 import { updateRace, createRace, deleteRace } from '@/lib/api/races';
 import { updatePrice } from '@/lib/api/race_tiers';
-import { ConfirmationModal } from './confirmation-modal';
+import { ConfirmationModal } from '@/components/modals/confirmation-modal';
 import { useModal } from '@/hooks/use-modal';
 import { uploadRaceImage, checkRaceImage, removeRaceImage, type RaceImageStatus } from '@/lib/api/race-image';
 import {
