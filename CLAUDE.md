@@ -17,7 +17,7 @@
 
 ## TypeScript Conventions
 
-**Applies to:** `frontend/**/*.ts`, `frontend/**/*.tsx`
+**Applies to:** `**/*.ts`, `**/*.tsx`
 
 ### Type Definitions
 
@@ -148,7 +148,7 @@ const finalLocale: Locale = isSupportedLocale(locale) ? locale : defaultLocale;
 
 ## React Conventions
 
-**Applies to:** `frontend/app/**/*.tsx`, `frontend/components/**/*.tsx`
+**Applies to:** `app/**/*.tsx`, `components/**/*.tsx`
 
 ### Server vs Client Components
 
@@ -269,7 +269,7 @@ className="text-[10px] sm:text-sm lg:text-base p-2 sm:p-4"
 
 ## API Conventions
 
-**Applies to:** `frontend/app/api/**/*.ts`, `frontend/lib/api/**/*.ts`, `frontend/lib/db/**/*.ts`
+**Applies to:** `app/api/**/*.ts`, `lib/api/**/*.ts`, `lib/db/**/*.ts`
 
 ### Route Handlers
 
@@ -383,7 +383,7 @@ app/api/
 
 ## Security Conventions
 
-**Applies to:** `frontend/app/**/*.ts`, `frontend/app/**/*.tsx`, `frontend/lib/**/*.ts`, `frontend/components/**/*.tsx`
+**Applies to:** `app/**/*.ts`, `app/**/*.tsx`, `lib/**/*.ts`, `components/**/*.tsx`
 
 ### Input Validation and XSS Prevention
 
