@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import type { Locale } from '../../../../i18n';
+import type { Locale } from '@/i18n';
 import { getRaces } from '@/lib/db/races';
-import { generateMetadataFromOptions } from '../../../../seo/meta-config';
-import { buildMaratonAlternateLinks } from '../../../../lib/alternate-links';
-import { BASE_URL } from '../../../../lib/config';
+import { generateMetadataFromOptions } from '@/seo/meta-config';
+import { buildMaratonAlternateLinks } from '@/lib/alternate-links';
+import { BASE_URL } from '@/lib/config';
 import { buildBreadcrumbJsonLd } from '@/lib/seo/breadcrumb-json-ld';
 import CategoryHeroSection from '@/components/layout/category-hero-section';
 import HomeClient from '@/components/home/home-client';

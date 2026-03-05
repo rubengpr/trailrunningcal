@@ -5,9 +5,9 @@ import HeroSection from '@/components/layout/hero-section';
 import {
   getSeoMetaConfig,
   generateMetadataFromOptions,
-} from '../../../seo/meta-config';
-import type { Locale } from '../../../i18n';
-import { buildHomeAlternateLinks } from '../../../lib/alternate-links';
+} from '@/seo/meta-config';
+import type { Locale } from '@/i18n';
+import { buildHomeAlternateLinks } from '@/lib/alternate-links';
 import { getRaces } from '@/lib/db/races';
 import {
   buildWebsiteJsonLd,
