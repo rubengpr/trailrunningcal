@@ -89,7 +89,8 @@
     },
     "favorite": {
       "save": "Guardar carrera",
-      "remove": "Eliminar de favoritos"
+      "remove": "Eliminar de favoritos",
+      "savedToast": "Carrera guardada en Mis carreras"
     }
   },
   "difficulty": {

@@ -89,7 +89,8 @@
     },
     "favorite": {
       "save": "Desa cursa",
-      "remove": "Elimina dels favorits"
+      "remove": "Elimina dels favorits",
+      "savedToast": "Cursa desada a Les meves curses"
     }
   },
   "difficulty": {
