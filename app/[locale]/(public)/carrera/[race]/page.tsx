@@ -216,7 +216,7 @@ export default async function RacePage({
                 {raceData.name}
               </h1>
               {(raceData.organizerId || isTestRace(raceData.name)) && (
-                <VerifiedBadgeWithTooltip size="md" className="shrink-0 self-start" />
+                <VerifiedBadgeWithTooltip size="md" className="shrink-0" />
               )}
             </div>
             <div className="flex flex-row items-center gap-2">
