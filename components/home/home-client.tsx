@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useTranslations, useLocale } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import posthog from 'posthog-js';
 import type { TrailRace } from '@/types/race.types';
 import MonthFilter from '@/components/filters/month-filter';
@@ -12,7 +12,6 @@ import ProvinceFilter from '@/components/filters/province-filter';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Button } from '@/components/ui/button';
 import { generateRaceSlug } from '@/lib/race-utils';
-import { ProposeRaceModal } from '@/components/modals/propose-race-modal';
 
 interface HomeClientProps {
   races: TrailRace[];
@@ -23,12 +22,9 @@ export default function HomeClient({ races, showProvinceFilter = true }: HomeCli
   const tResults = useTranslations('results');
   const tFilters = useTranslations('filters');
   const tErrors = useTranslations('errors');
-  const tNavigation = useTranslations('navigation');
-  const locale = useLocale();
 
   const [selectedMonth, setSelectedMonth] = useState<string>('');
   const [selectedProvince, setSelectedProvince] = useState<string>('');
-  const [isProposeRaceModalOpen, setIsProposeRaceModalOpen] = useState(false);
 
   const racesWithDates = useMemo(() =>
     races.map((race) => {
@@ -75,26 +71,11 @@ export default function HomeClient({ races, showProvinceFilter = true }: HomeCli
     setTimeout(() => posthog.capture('race_filters_cleared'), 0);
   };
 
-  const handleProposeRaceClick = () => {
-    setIsProposeRaceModalOpen(true);
-    setTimeout(() => posthog.capture('propose_race_clicked', { locale }), 0);
-  };
-
   return (
     <>
       {/* Filters section */}
       <section className="w-full pt-4 pb-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Prominent "Añadir carrera" button */}
-          <div className="flex justify-center mb-8">
-            <button
-              onClick={handleProposeRaceClick}
-              className="inline-flex items-center gap-2 px-4 py-0.5 sm:py-1 sm:px-5 border-2 border-gray-300 bg-gray-100 text-gray-800 text-xs sm:text-sm font-medium rounded-full focus:outline-non transition-all duration-200 transform cursor-pointer"
-            >
-              <span className="text-lg sm:text-xl">🏁</span>
-              {tNavigation('proposeRace')}
-            </button>
-          </div>
           <div className="flex justify-center mb-3">
             <MonthFilter
               initialSelectedMonth={selectedMonth}
@@ -208,10 +189,6 @@ export default function HomeClient({ races, showProvinceFilter = true }: HomeCli
           </section>
         </ErrorBoundary>
       </main>
-      <ProposeRaceModal
-        isOpen={isProposeRaceModalOpen}
-        onClose={() => setIsProposeRaceModalOpen(false)}
-      />
     </>
   );
 }
