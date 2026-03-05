@@ -86,6 +86,10 @@
     "share": {
       "label": "Compartir",
       "message": "Mira la cursa que he trobat a Trail Running Cal: {raceName} → {url}"
+    },
+    "favorite": {
+      "save": "Desa cursa",
+      "remove": "Elimina dels favorits"
     }
   },
   "difficulty": {
@@ -106,9 +110,16 @@
     "calendar": "Calendari",
     "contact": "Contacte",
     "blog": "Blog",
+    "myRaces": "Les meves curses",
     "proposeRace": "Vols afegir una cursa?",
     "profile": "El meu perfil",
     "skipToContent": "Anar al contingut principal"
+  },
+  "favorites": {
+    "pageTitle": "Les meves curses desades",
+    "empty": "No tens curses desades",
+    "emptyMessage": "Prem el cor a qualsevol cursa per desar-la aquí.",
+    "backToCalendar": "Veure calendari complet"
   },
   "landing": {
     "title": "Calendari curses Trail Running Catalunya",

@@ -19,6 +19,7 @@ import { getOrganizerById } from '@/lib/db/organizers';
 import { getDisplayPrice } from '@/lib/race-utils';
 import RaceOrganizerLinks from '@/components/race/race-organizer-links';
 import RaceShareWhatsappButton from '@/components/race/race-share-whatsapp-button';
+import { RaceFavoriteButton } from '@/components/race/race-favorite-button';
 import { buildRaceJsonLd } from '@/lib/seo/race-json-ld';
 import { buildBreadcrumbJsonLd } from '@/lib/seo/breadcrumb-json-ld';
 import ProvinceLink from '@/components/filters/province-link';
@@ -263,21 +264,32 @@ export default async function RacePage({
             </div>
           </div>
           <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto sm:items-end">
-            <div className="flex w-full flex-row items-center gap-2 sm:flex-col">
+            <div className="flex w-full flex-col gap-2">
               {raceData.websiteUrl && (
                 <a
                   href={raceData.websiteUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 bg-gray-900 text-white px-4 py-2 rounded-md font-medium hover:bg-gray-600 focus:outline-none transition-colors cursor-pointer text-center whitespace-nowrap sm:flex-none sm:w-full"
+                  className="w-full bg-gray-900 text-white px-4 py-2 rounded-md font-medium hover:bg-gray-600 focus:outline-none transition-colors cursor-pointer text-center whitespace-nowrap"
                 >
                   {tRace('officialWebsite')}
                 </a>
               )}
-              <RaceShareWhatsappButton
-                message={tRace('share.message', { raceName: raceData.name, url: `${BASE_URL}/${locale}/carrera/${race}` })}
-                label={tRace('share.label')}
-              />
+              <div className="flex flex-row gap-2">
+                <RaceShareWhatsappButton
+                  message={tRace('share.message', { raceName: raceData.name, url: `${BASE_URL}/${locale}/carrera/${race}` })}
+                  label={tRace('share.label')}
+                  iconOnly
+                  className="flex-1"
+                />
+                <RaceFavoriteButton
+                  raceId={raceData.id}
+                  saveLabel={tRace('favorite.save')}
+                  removeLabel={tRace('favorite.remove')}
+                  iconOnly
+                  className="flex-1"
+                />
+              </div>
             </div>
             {organizer && (
               <RaceOrganizerLinks organizer={organizer} />

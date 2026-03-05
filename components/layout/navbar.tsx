@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import posthog from 'posthog-js';
 import { createClient } from '@/lib/supabase/client';
+import { useFavorites } from '@/hooks/use-favorites';
 
 export default function Navbar() {
   const t = useTranslations('navigation');
@@ -13,6 +14,7 @@ export default function Navbar() {
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { favorites } = useFavorites();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -81,6 +83,35 @@ export default function Navbar() {
         </Link>
         <nav className="text-sm flex justify-center items-center gap-6">
           <div className="hidden sm:flex px-2 py-1 flex-row items-center gap-4">
+            <Link
+              href={`/${locale}/mis-carreras`}
+              className="relative p-1 hover:text-gray-900 transition-colors"
+              onClick={() =>
+                setTimeout(() => posthog.capture('navbar_link_clicked', {
+                  link_text: 'my_races',
+                  link_href: `/${locale}/mis-carreras`,
+                  locale: locale,
+                }), 0)
+              }
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-5 h-5 text-gray-700"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
+                />
+              </svg>
+              {favorites.size > 0 && (
+                <span className="absolute top-0 right-0 block w-2 h-2 rounded-full bg-red-500" />
+              )}
+            </Link>
           <Link
               href={`/${locale}/blog`}
               className="hover:text-gray-900 transition-colors"
@@ -169,6 +200,19 @@ export default function Navbar() {
                 }}
               >
                 {t('calendar')}
+              </Link>
+              <Link
+                href={`/${locale}/mis-carreras`}
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  setTimeout(() => posthog.capture('navbar_link_clicked', {
+                    link_text: 'my_races',
+                    link_href: `/${locale}/mis-carreras`,
+                    locale: locale,
+                  }), 0);
+                }}
+              >
+                {t('myRaces')}
               </Link>
               <Link
                 href={`/${locale}/${locale === 'ca' ? 'contacte' : 'contacto'}`}

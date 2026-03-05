@@ -86,6 +86,10 @@
     "share": {
       "label": "Compartir",
       "message": "Mira la carrera que he encontrado en Trail Running Cal: {raceName} → {url}"
+    },
+    "favorite": {
+      "save": "Guardar carrera",
+      "remove": "Eliminar de favoritos"
     }
   },
   "difficulty": {
@@ -106,9 +110,16 @@
     "calendar": "Calendario",
     "contact": "Contacto",
     "blog": "Blog",
+    "myRaces": "Mis carreras",
     "proposeRace": "¿Quieres añadir una carrera?",
     "profile": "Mi perfil",
     "skipToContent": "Ir al contenido principal"
+  },
+  "favorites": {
+    "pageTitle": "Mis carreras guardadas",
+    "empty": "No tienes carreras guardadas",
+    "emptyMessage": "Pulsa el corazón en cualquier carrera para guardarla aquí.",
+    "backToCalendar": "Ver calendario completo"
   },
   "landing": {
     "title": "Calendario carreras Trail Running Cataluña",
