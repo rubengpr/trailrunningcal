@@ -1,6 +1,6 @@
 ---
 description: 'Security conventions for Next.js app: input validation, auth, secrets, rate limiting'
-globs: frontend/app/**/*.ts, frontend/app/**/*.tsx, frontend/lib/**/*.ts, frontend/components/**/*.tsx
+globs: app/**/*.ts, app/**/*.tsx, lib/**/*.ts, components/**/*.tsx
 alwaysApply: false
 ---
 

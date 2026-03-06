@@ -1,6 +1,6 @@
 ---
 description: 'Next.js API routes, Route Handlers, and data layer conventions'
-globs: frontend/app/api/**/*.ts, frontend/lib/api/**/*.ts, frontend/lib/db/**/*.ts
+globs: app/api/**/*.ts, lib/api/**/*.ts, lib/db/**/*.ts
 alwaysApply: false
 ---
 

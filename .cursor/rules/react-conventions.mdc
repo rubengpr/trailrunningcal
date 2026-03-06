@@ -1,6 +1,6 @@
 ---
 description: 'React and Next.js component patterns, Server/Client Components, and i18n'
-globs: frontend/app/**/*.tsx, frontend/components/**/*.tsx
+globs: app/**/*.tsx, components/**/*.tsx
 alwaysApply: false
 ---
 
