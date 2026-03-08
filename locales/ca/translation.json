@@ -60,12 +60,8 @@
       "tiktok": "TikTok"
     },
     "organizerCard": {
-      "title": "Ets l'organitzador d'aquesta cursa?",
-      "titleMobile": "Ets organitzador?",
-      "description": "Reclama la propietat de l'esdeveniment i converteix-te en un organitzador verificat.",
-      "descriptionMobile": "Reclama l'esdeveniment i converteix-te en organitzador verificat. Afegeix fotos, mapa i preus.",
-      "benefits": "Els organitzadors verificats poden afegir dades addicionals com fotos, mapa i preus complets de l'esdeveniment.",
-      "claimButton": "Reclamar"
+      "claimButton": "Reclamar",
+      "label": "Ets l'organitzador d'aquesta cursa?"
     },
     "claimModal": {
       "title": "Reclamar cursa",

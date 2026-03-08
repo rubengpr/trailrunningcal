@@ -375,17 +375,6 @@ export default async function RacePage({
             />
           )}*/}
 
-        {!raceData.organizerId && (
-          <RaceOrganizerClaimCard
-            title={tRace('organizerCard.title')}
-            titleMobile={tRace('organizerCard.titleMobile')}
-            description={tRace('organizerCard.description')}
-            descriptionMobile={tRace('organizerCard.descriptionMobile')}
-            benefits={tRace('organizerCard.benefits')}
-            claimButton={tRace('organizerCard.claimButton')}
-            raceName={raceData.name}
-          />
-        )}
         {provinceSlug && (
           <ProvinceLink
             label={tRace('provincia.racePageLabel', { province: raceData.province })}
@@ -394,6 +383,15 @@ export default async function RacePage({
             imageSrc={PROVINCE_IMAGES[raceData.province]}
             additionalCards={recommendedRaces}
           />
+        )}
+        {!raceData.organizerId && (
+          <div className="mt-10">
+            <RaceOrganizerClaimCard
+              label={tRace('organizerCard.label')}
+              claimButton={tRace('organizerCard.claimButton')}
+              raceName={raceData.name}
+            />
+          </div>
         )}
       </div>
     </div>
