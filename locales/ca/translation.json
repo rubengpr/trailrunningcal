@@ -153,6 +153,7 @@
   "blog": {
     "title": "El blog de Trail Running Calendar",
     "description": "Descobreix informació sobre curses de trail running a Catalunya, consells d'entrenament, nutrició esportiva i guies per millorar el teu rendiment a la muntanya.",
+    "relatedPosts": "Articles relacionats",
     "raceInfo": {
       "distance": "Distància",
       "elevation": "Desnivell",

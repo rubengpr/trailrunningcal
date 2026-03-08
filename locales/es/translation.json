@@ -153,6 +153,7 @@
   "blog": {
     "title": "El blog de Trail Running Calendar",
     "description": "Descubre información sobre carreras de trail running en Cataluña, consejos de entrenamiento, nutrición deportiva y guías para mejorar tu rendimiento en montaña.",
+    "relatedPosts": "Artículos relacionados",
     "raceInfo": {
       "distance": "Distancia",
       "elevation": "Desnivel",

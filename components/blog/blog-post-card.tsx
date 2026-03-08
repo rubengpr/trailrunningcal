@@ -13,6 +13,7 @@ interface BlogPostCardProps {
   image: string;
   imageAlt: string;
   priority?: boolean;
+  compact?: boolean;
 }
 
 export default function BlogPostCard({
@@ -25,12 +26,13 @@ export default function BlogPostCard({
   image,
   imageAlt,
   priority = false,
+  compact = false,
 }: BlogPostCardProps) {
   return (
     <Link href={`/${locale}/blog/${slug}`}>
       <article className="flex flex-col group cursor-pointer p-4 -m-4 rounded-2xl transition-all duration-200 hover:bg-white hover:ring-1 hover:ring-gray-200 hover:shadow-lg">
         {/* Image */}
-        <div className="aspect-16/10 w-full rounded-xl overflow-hidden mb-6 relative shadow-sm">
+        <div className={`w-full rounded-xl overflow-hidden relative shadow-sm ${compact ? 'aspect-16/7 mb-2' : 'aspect-16/10 mb-6'}`}>
           <Image
             src={image}
             alt={imageAlt}
@@ -43,7 +45,7 @@ export default function BlogPostCard({
 
         {/* Content */}
         <div className="flex flex-col grow">
-          <div className="flex items-center gap-3 text-sm text-gray-500 mb-3">
+          <div className={`flex items-center gap-2 text-gray-500 mb-2 ${compact ? 'text-xs' : 'text-sm mb-3'}`}>
             <time dateTime={date}>
               {locale === 'ca'
                 ? formatDateToCatalan(date)
@@ -53,13 +55,15 @@ export default function BlogPostCard({
             <span>{readTime}</span>
           </div>
 
-          <h3 className="text-xl font-bold text-gray-700 mb-3 group-hover:text-gray-950 transition-colors">
+          <h3 className={`font-bold text-gray-700 group-hover:text-gray-950 transition-colors ${compact ? 'text-sm' : 'text-xl mb-3'}`}>
             {title}
           </h3>
 
-          <p className="text-gray-600 leading-relaxed line-clamp-3">
-            {excerpt}
-          </p>
+          {!compact && (
+            <p className="text-gray-600 leading-relaxed line-clamp-3">
+              {excerpt}
+            </p>
+          )}
         </div>
       </article>
     </Link>
