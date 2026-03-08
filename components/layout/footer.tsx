@@ -51,7 +51,7 @@ export default async function Footer() {
                   <Link
                     key={slug}
                     href={`/${locale}/${slug}`}
-                    className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors"
+                    className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors py-1"
                   >
                     {tNav(key)}
                   </Link>
@@ -67,7 +67,7 @@ export default async function Footer() {
                   <Link
                     key={province}
                     href={`/${locale}/provincia/${province}`}
-                    className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors"
+                    className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors py-1"
                   >
                     {tNav(province)}
                   </Link>
@@ -81,7 +81,7 @@ export default async function Footer() {
               <div className="flex flex-col gap-1">
                 <Link
                   href={`/${locale}/blog`}
-                  className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors"
+                  className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors py-1"
                 >
                   {t('blog')}
                 </Link>
@@ -89,7 +89,7 @@ export default async function Footer() {
                   <Link
                     key={post.slug}
                     href={`/${locale}/blog/${post.slug}`}
-                    className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors line-clamp-1"
+                    className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors py-1 line-clamp-1"
                   >
                     {post.title}
                   </Link>
