@@ -173,7 +173,6 @@ export default function TrailRaceCard({
                   <Link
                     href={`/${locale}/carrera/${raceSlug}`}
                     target="_blank"
-                    rel="noopener noreferrer"
                     className="sm:hidden inline-block pointer-events-auto bg-black text-white px-2 py-0.5 rounded-sm text-[10px] font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
                     onClick={(e) => {
                       e.stopPropagation();
@@ -196,7 +195,6 @@ export default function TrailRaceCard({
               <Link
                 href={`/${locale}/carrera/${raceSlug}`}
                 target="_blank"
-                rel="noopener noreferrer"
                 className="hidden sm:inline-block bg-black text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
                 onClick={(e) => {
                   e.stopPropagation();
