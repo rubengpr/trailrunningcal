@@ -152,6 +152,7 @@ export default async function RacePage({
   const tRace = await getTranslations({ locale, namespace: 'race' });
   const tNav = await getTranslations({ locale, namespace: 'navigation' });
   const tProvincia = await getTranslations({ locale, namespace: 'provincia' });
+  const tCategory = await getTranslations({ locale, namespace: 'category' });
 
   const organizer = raceData.organizerId
     ? await getOrganizerById(raceData.organizerId)
@@ -170,6 +171,17 @@ export default async function RacePage({
 
   const jsonLd = buildRaceJsonLd(raceData, race, locale as Locale);
   const provinceSlug = PROVINCE_SLUGS[raceData.province] ?? null;
+
+  const CATEGORY_SLUG: Record<string, string> = {
+    ultra: 'ultra-trail',
+    maraton: 'maraton',
+    media: 'media-maraton',
+  };
+  const raceCategory =
+    raceData.distanceKm > 42 ? 'ultra' :
+    raceData.distanceKm >= 42 ? 'maraton' :
+    raceData.distanceKm >= 20 ? 'media' : null;
+  const categorySlug = raceCategory ? CATEGORY_SLUG[raceCategory] : null;
 
   const breadcrumbJsonLd = buildBreadcrumbJsonLd([
     { name: tNav('calendar'), url: `${BASE_URL}/${locale}` },
@@ -216,6 +228,14 @@ export default async function RacePage({
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
                 {raceData.name}
               </h1>
+              {categorySlug && raceCategory && (
+                <Link
+                  href={`/${locale}/${categorySlug}`}
+                  className="shrink-0 px-2 py-0.5 text-xs font-medium rounded-sm bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors"
+                >
+                  {tCategory(raceCategory)}
+                </Link>
+              )}
               {(raceData.organizerId || isTestRace(raceData.name)) && (
                 <VerifiedBadgeWithTooltip size="md" className="shrink-0" />
               )}

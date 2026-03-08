@@ -153,13 +153,13 @@ export default function TrailRaceCard({
                 {categorySlug ? (
                   <Link
                     href={`/${locale}/${categorySlug}`}
-                    className="hidden sm:block px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-sm bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors"
+                    className="pointer-events-auto px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-sm bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors"
                     onClick={(e) => e.stopPropagation()}
                   >
                     {t('category.' + raceCategory)}
                   </Link>
                 ) : (
-                  <span className="hidden sm:block px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-sm bg-gray-100 text-gray-800">
+                  <span className="px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-sm bg-gray-100 text-gray-800">
                     {t('category.' + raceCategory)}
                   </span>
                 )}
