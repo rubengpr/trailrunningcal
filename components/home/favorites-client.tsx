@@ -19,7 +19,7 @@ export default function FavoritesClient({ races }: FavoritesClientProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    queueMicrotask(() => setMounted(true));
   }, []);
 
   const favoriteRaces = mounted ? races.filter((race) => favorites.has(race.id)) : [];

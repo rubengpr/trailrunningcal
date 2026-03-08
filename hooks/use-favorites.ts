@@ -14,15 +14,17 @@ export function useFavorites(): UseFavoritesReturn {
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored) as string[];
-        setFavorites(new Set(parsed));
+    queueMicrotask(() => {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          const parsed = JSON.parse(stored) as string[];
+          setFavorites(new Set(parsed));
+        }
+      } catch {
+        // ignore parse errors
       }
-    } catch {
-      // ignore parse errors
-    }
+    });
   }, []);
 
   const toggleFavorite = useCallback((id: string) => {
