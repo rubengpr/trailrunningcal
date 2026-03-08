@@ -131,14 +131,14 @@ export default function TrailRaceCard({
                     className="pointer-events-auto hover:underline sm:hover:no-underline"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <h3 className="text-xs sm:text-lg font-bold text-gray-900">
+                    <h2 className="text-xs sm:text-lg font-bold text-gray-900">
                       {name}
-                    </h3>
+                    </h2>
                   </Link>
                 ) : (
-                  <h3 className="text-xs sm:text-lg font-bold text-gray-900">
+                  <h2 className="text-xs sm:text-lg font-bold text-gray-900">
                     {name}
-                  </h3>
+                  </h2>
                 )}
                 <VerifiedBadgeWithTooltip
                   size="sm"
