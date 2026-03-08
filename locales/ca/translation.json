@@ -188,7 +188,11 @@
     }
   },
   "footer": {
-    "copyright": "© {year} Trail Running Cal"
+    "copyright": "© {year} Trail Running Cal",
+    "description": "El teu calendari de curses de trail running a Catalunya. Troba la teva propera cursa de muntanya.",
+    "byDistance": "Per distància",
+    "byProvince": "Per província",
+    "blog": "Blog"
   },
   "signUp": {
     "title": "Crear compte",

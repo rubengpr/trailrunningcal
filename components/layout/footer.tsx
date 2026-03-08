@@ -1,12 +1,108 @@
-import { getTranslations } from 'next-intl/server';
+import Image from 'next/image';
+import Link from 'next/link';
+import { getLocale, getTranslations } from 'next-intl/server';
+import { getPostsForLocale } from '@/lib/blog-utils';
+import type { Locale } from '@/i18n';
+
+const CATEGORY_SLUGS = [
+  { slug: 'ultra-trail', key: 'ultraTrail' },
+  { slug: 'maraton', key: 'maraton' },
+  { slug: 'media-maraton', key: 'mediaMaraton' },
+] as const;
+
+const PROVINCE_SLUGS = ['barcelona', 'girona', 'lleida', 'tarragona'] as const;
+
+const MAX_FOOTER_POSTS = 5;
 
 export default async function Footer() {
+  const locale = (await getLocale()) as Locale;
   const t = await getTranslations('footer');
+  const tNav = await getTranslations('navigation');
+  const blogPosts = getPostsForLocale(locale).slice(0, MAX_FOOTER_POSTS);
 
   return (
     <footer className="border-t border-gray-200 bg-white/70 backdrop-blur">
-      <div className="mx-auto max-w-7xl px-4 py-6 flex items-center justify-center text-sm text-gray-600">
-        <p>{t('copyright', { year: new Date().getFullYear() })}</p>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+        <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex flex-col gap-3 max-w-sm">
+            <Link href={`/${locale}`} className="flex items-center gap-2 w-fit">
+              <Image
+                src="/logo.svg"
+                width={32}
+                height={32}
+                className="w-8 h-8"
+                alt="Trail Running Cal logo"
+              />
+              <span className="font-semibold text-sm text-gray-900">
+                {tNav('appName')}
+              </span>
+            </Link>
+            <p className="text-sm text-gray-600 leading-relaxed">
+              {t('description')}
+            </p>
+          </div>
+          <nav className="flex flex-row gap-10">
+            <div className="flex flex-col gap-2">
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                {t('byDistance')}
+              </p>
+              <div className="flex flex-col gap-1">
+                {CATEGORY_SLUGS.map(({ slug, key }) => (
+                  <Link
+                    key={slug}
+                    href={`/${locale}/${slug}`}
+                    className="text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors"
+                  >
+                    {tNav(key)}
+                  </Link>
+                ))}
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                {t('byProvince')}
+              </p>
+              <div className="flex flex-col gap-1">
+                {PROVINCE_SLUGS.map((province) => (
+                  <Link
+                    key={province}
+                    href={`/${locale}/provincia/${province}`}
+                    className="text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors"
+                  >
+                    {tNav(province)}
+                  </Link>
+                ))}
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                {t('blog')}
+              </p>
+              <div className="flex flex-col gap-1">
+                <Link
+                  href={`/${locale}/blog`}
+                  className="text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors"
+                >
+                  {t('blog')}
+                </Link>
+                {blogPosts.map((post) => (
+                  <Link
+                    key={post.slug}
+                    href={`/${locale}/blog/${post.slug}`}
+                    className="text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors"
+                  >
+                    {post.title}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </nav>
+        </div>
+        <div className="mt-8 pt-6 border-t border-gray-100">
+          <p className="text-sm text-gray-500">
+            {t('copyright', { year: new Date().getFullYear() })}
+          </p>
+        </div>
       </div>
     </footer>
   );
