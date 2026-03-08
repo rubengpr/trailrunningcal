@@ -7,7 +7,6 @@ interface BreadcrumbItem {
 
 interface CategoryHeroSectionProps {
   title: string;
-  description: string;
   breadcrumbItems: BreadcrumbItem[];
   body?: string;
 }

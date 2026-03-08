@@ -67,7 +67,6 @@ export default async function MediaMaratonPage({
       />
       <CategoryHeroSection
         title={t('pageTitle', { year })}
-        description={t('pageDescription', { year })}
         body={t('pageBody')}
         breadcrumbItems={[
           { name: tNav('calendar'), href: `/${locale}` },

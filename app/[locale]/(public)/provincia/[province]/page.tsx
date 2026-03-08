@@ -89,7 +89,6 @@ export default async function ProvincePage({
       />
       <CategoryHeroSection
         title={t('pageTitle', { province: provinceName, year })}
-        description={t('pageDescription', { province: provinceName, year })}
         body={t('pageBody', { province: provinceName })}
         breadcrumbItems={[
           { name: tNav('calendar'), href: `/${locale}` },
