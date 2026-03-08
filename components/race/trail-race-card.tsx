@@ -139,7 +139,14 @@ export default function TrailRaceCard({
                 <span>{distanceKm}km</span>
                 <span>{elevationGainM ? `${elevationGainM}m+` : '-'}</span>
                 <span className="truncate">
-                  {city}, {province}
+                  {city},{' '}
+                  <Link
+                    href={`/${locale}/provincia/${province.toLowerCase()}`}
+                    className="pointer-events-auto hover:underline"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {province}
+                  </Link>
                 </span>
               </div>
               <div className="flex justify-start items-center gap-2">

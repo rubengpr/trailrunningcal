@@ -1,5 +1,6 @@
 import { locales } from '@/i18n';
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
 import { formatDateToSpanish, formatDateToCatalan } from '@/lib/date-utils';
 import { getTranslations } from 'next-intl/server';
 import type { Locale } from '@/i18n';
@@ -230,9 +231,18 @@ export default async function RacePage({
                 <span className="text-base sm:text-lg lg:text-xl whitespace-nowrap">
                   {raceData.city},
                 </span>
-                <span className="text-base sm:text-lg lg:text-xl whitespace-nowrap">
-                  {raceData.province}
-                </span>
+                {provinceSlug ? (
+                  <Link
+                    href={`/${locale}/provincia/${provinceSlug}`}
+                    className="text-base sm:text-lg lg:text-xl whitespace-nowrap hover:underline"
+                  >
+                    {raceData.province}
+                  </Link>
+                ) : (
+                  <span className="text-base sm:text-lg lg:text-xl whitespace-nowrap">
+                    {raceData.province}
+                  </span>
+                )}
               </div>
               <div className="flex flex-row gap-2">
                 <span className="text-base sm:text-lg lg:text-xl whitespace-nowrap">
