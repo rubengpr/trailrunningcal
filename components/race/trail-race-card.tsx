@@ -58,6 +58,12 @@ const getRaceCategory = (distanceKm: number): string => {
   return 'sprint';
 };
 
+const CATEGORY_SLUG: Record<string, string> = {
+  ultra: 'ultra-trail',
+  maraton: 'maraton',
+  media: 'media-maraton',
+};
+
 const getElevationRatioColor = (ratio: number | null): string => {
   if (ratio === null) return 'bg-gray-100 text-gray-800';
   if (ratio < 40) return 'bg-green-100 text-green-800';
@@ -83,6 +89,7 @@ export default function TrailRaceCard({
   const { day, month, dayOfWeek } = formatDate(date, t);
   const elevationRatio = calculateElevationRatio(elevationGainM, distanceKm);
   const raceCategory = getRaceCategory(distanceKm);
+  const categorySlug = CATEGORY_SLUG[raceCategory] ?? null;
   const elevationRatioColor = getElevationRatioColor(elevationRatio);
   const displayPrice = getDisplayPrice(priceEur);
 
@@ -136,9 +143,19 @@ export default function TrailRaceCard({
                 </span>
               </div>
               <div className="flex justify-start items-center gap-2">
-                <span className="hidden sm:block px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-sm bg-gray-100 text-gray-800">
-                  {t('category.' + raceCategory)}
-                </span>
+                {categorySlug ? (
+                  <Link
+                    href={`/${locale}/${categorySlug}`}
+                    className="hidden sm:block px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-sm bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {t('category.' + raceCategory)}
+                  </Link>
+                ) : (
+                  <span className="hidden sm:block px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-sm bg-gray-100 text-gray-800">
+                    {t('category.' + raceCategory)}
+                  </span>
+                )}
                 <span
                   className={`hidden sm:block px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-sm ${elevationRatioColor}`}
                 >

@@ -24,6 +24,7 @@
     "gray-matter": "^4.0.3",
     "next": "^16.1.2",
     "next-intl": "^4.5.3",
+    "openai": "^6.27.0",
     "posthog-js": "^1.299.0",
     "posthog-node": "^5.15.0",
     "react": "19.2.1",

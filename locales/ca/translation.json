@@ -114,7 +114,18 @@
     "myRaces": "Les meves curses",
     "proposeRace": "Vols afegir una cursa?",
     "profile": "El meu perfil",
-    "skipToContent": "Anar al contingut principal"
+    "skipToContent": "Anar al contingut principal",
+    "ultraTrail": "Ultratrail",
+    "maraton": "Marató trail",
+    "mediaMaraton": "Mitja marató trail",
+    "categories": "Categories",
+    "explore": "Explorar",
+    "categoriesHeading": "Categories",
+    "provincesHeading": "Províncies",
+    "barcelona": "Barcelona",
+    "girona": "Girona",
+    "lleida": "Lleida",
+    "tarragona": "Tarragona"
   },
   "favorites": {
     "pageTitle": "Les meves curses desades",

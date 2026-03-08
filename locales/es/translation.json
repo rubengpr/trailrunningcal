@@ -114,7 +114,18 @@
     "myRaces": "Mis carreras",
     "proposeRace": "¿Quieres añadir una carrera?",
     "profile": "Mi perfil",
-    "skipToContent": "Ir al contenido principal"
+    "skipToContent": "Ir al contenido principal",
+    "ultraTrail": "Ultratrail",
+    "maraton": "Maratón trail",
+    "mediaMaraton": "Media maratón trail",
+    "categories": "Categorías",
+    "explore": "Explorar",
+    "categoriesHeading": "Categorías",
+    "provincesHeading": "Provincias",
+    "barcelona": "Barcelona",
+    "girona": "Girona",
+    "lleida": "Lleida",
+    "tarragona": "Tarragona"
   },
   "favorites": {
     "pageTitle": "Mis carreras guardadas",

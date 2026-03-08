@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import posthog from 'posthog-js';
 import { createClient } from '@/lib/supabase/client';
@@ -14,6 +14,8 @@ export default function Navbar() {
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
+  const categoriesRef = useRef<HTMLDivElement>(null);
   const { favorites } = useFavorites();
 
   useEffect(() => {
@@ -50,6 +52,22 @@ export default function Navbar() {
       subscription.unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (categoriesRef.current && !categoriesRef.current.contains(event.target as Node)) {
+        setIsCategoriesOpen(false);
+      }
+    };
+
+    if (isCategoriesOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isCategoriesOpen]);
 
   const handleMenuClick = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -112,7 +130,91 @@ export default function Navbar() {
                 <span className="absolute top-0 right-0 block w-2 h-2 rounded-full bg-red-500" />
               )}
             </Link>
-          <Link
+          <div
+              className="relative"
+              ref={categoriesRef}
+            >
+              <button
+                className="flex items-center gap-1 hover:text-gray-900 transition-colors cursor-pointer"
+                onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}
+              >
+                {t('explore')}
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m6 9 6 6 6-6"/>
+                </svg>
+              </button>
+              {isCategoriesOpen && (
+                <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[320px] p-3 flex gap-6">
+                  <div className="flex-1">
+                    <p className="px-2 pb-1 text-xs font-semibold text-gray-400 uppercase tracking-wide">{t('categoriesHeading')}</p>
+                    <Link
+                      href={`/${locale}/ultra-trail`}
+                      className="block px-2 py-1.5 text-sm rounded hover:bg-gray-50 transition-colors"
+                      onClick={() => {
+                        setIsCategoriesOpen(false);
+                        setTimeout(() => posthog.capture('navbar_link_clicked', {
+                          link_text: 'ultra_trail',
+                          link_href: `/${locale}/ultra-trail`,
+                          locale: locale,
+                        }), 0);
+                      }}
+                    >
+                      {t('ultraTrail')}
+                    </Link>
+                    <Link
+                      href={`/${locale}/maraton`}
+                      className="block px-2 py-1.5 text-sm rounded hover:bg-gray-50 transition-colors"
+                      onClick={() => {
+                        setIsCategoriesOpen(false);
+                        setTimeout(() => posthog.capture('navbar_link_clicked', {
+                          link_text: 'maraton',
+                          link_href: `/${locale}/maraton`,
+                          locale: locale,
+                        }), 0);
+                      }}
+                    >
+                      {t('maraton')}
+                    </Link>
+                    <Link
+                      href={`/${locale}/media-maraton`}
+                      className="block px-2 py-1.5 text-sm rounded hover:bg-gray-50 transition-colors"
+                      onClick={() => {
+                        setIsCategoriesOpen(false);
+                        setTimeout(() => posthog.capture('navbar_link_clicked', {
+                          link_text: 'media_maraton',
+                          link_href: `/${locale}/media-maraton`,
+                          locale: locale,
+                        }), 0);
+                      }}
+                    >
+                      {t('mediaMaraton')}
+                    </Link>
+                  </div>
+                  <div className="w-px bg-gray-100" />
+                  <div className="flex-1">
+                    <p className="px-2 pb-1 text-xs font-semibold text-gray-400 uppercase tracking-wide">{t('provincesHeading')}</p>
+                    {(['barcelona', 'girona', 'lleida', 'tarragona'] as const).map((province) => (
+                      <Link
+                        key={province}
+                        href={`/${locale}/provincia/${province}`}
+                        className="block px-2 py-1.5 text-sm rounded hover:bg-gray-50 transition-colors"
+                        onClick={() => {
+                          setIsCategoriesOpen(false);
+                          setTimeout(() => posthog.capture('navbar_link_clicked', {
+                            link_text: province,
+                            link_href: `/${locale}/provincia/${province}`,
+                            locale: locale,
+                          }), 0);
+                        }}
+                      >
+                        {t(province)}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+            <Link
               href={`/${locale}/blog`}
               className="hover:text-gray-900 transition-colors"
               onClick={() =>
@@ -268,6 +370,45 @@ export default function Navbar() {
                 }}
               >
                 {t('blog')}
+              </Link>
+              <Link
+                href={`/${locale}/ultra-trail`}
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  setTimeout(() => posthog.capture('navbar_link_clicked', {
+                    link_text: 'ultra_trail',
+                    link_href: `/${locale}/ultra-trail`,
+                    locale: locale,
+                  }), 0);
+                }}
+              >
+                {t('ultraTrail')}
+              </Link>
+              <Link
+                href={`/${locale}/maraton`}
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  setTimeout(() => posthog.capture('navbar_link_clicked', {
+                    link_text: 'maraton',
+                    link_href: `/${locale}/maraton`,
+                    locale: locale,
+                  }), 0);
+                }}
+              >
+                {t('maraton')}
+              </Link>
+              <Link
+                href={`/${locale}/media-maraton`}
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  setTimeout(() => posthog.capture('navbar_link_clicked', {
+                    link_text: 'media_maraton',
+                    link_href: `/${locale}/media-maraton`,
+                    locale: locale,
+                  }), 0);
+                }}
+              >
+                {t('mediaMaraton')}
               </Link>
               {isAuthenticated && (
                 <Link
