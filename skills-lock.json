@@ -21,6 +21,11 @@
       "sourceType": "github",
       "computedHash": "6412eb4eb3b91595ebab937f0c69501240e7ba761b3d82510b5cf506ec5c7adc"
     },
+    "internal-linking-optimizer": {
+      "source": "aaron-he-zhu/seo-geo-claude-skills",
+      "sourceType": "github",
+      "computedHash": "b14c8f08bd015314b521772a677cb8ad134b6730af71b35357adf6e534465d55"
+    },
     "performance": {
       "source": "addyosmani/web-quality-skills",
       "sourceType": "github",
