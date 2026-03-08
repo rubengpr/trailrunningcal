@@ -189,7 +189,8 @@
     "description": "El teu calendari de curses de trail running a Catalunya. Troba la teva propera cursa de muntanya.",
     "byDistance": "Distància",
     "byProvince": "Província",
-    "blog": "Blog"
+    "blog": "Blog",
+    "contact": "Contacte"
   },
   "signUp": {
     "title": "Crear compte",

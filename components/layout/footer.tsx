@@ -98,10 +98,16 @@ export default async function Footer() {
             </div>
           </nav>
         </div>
-        <div className="mt-8 pt-6 border-t border-gray-100">
+        <div className="mt-8 pt-6 border-t border-gray-100 flex items-center gap-4">
           <p className="text-sm text-gray-500">
             {t('copyright', { year: new Date().getFullYear() })}
           </p>
+          <Link
+            href={`/${locale}/${locale === 'ca' ? 'contacte' : 'contacto'}`}
+            className="text-sm text-gray-500 hover:text-gray-900 hover:underline transition-colors"
+          >
+            {t('contact')}
+          </Link>
         </div>
       </div>
     </footer>

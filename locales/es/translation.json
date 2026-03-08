@@ -189,7 +189,8 @@
     "description": "Tu calendario de carreras de trail running en Cataluña. Encuentra tu próxima carrera de montaña.",
     "byDistance": "Distancia",
     "byProvince": "Provincia",
-    "blog": "Blog"
+    "blog": "Blog",
+    "contact": "Contacto"
   },
   "signUp": {
     "title": "Crear cuenta",
