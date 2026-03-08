@@ -127,9 +127,21 @@ export default function TrailRaceCard({
             </div>
             <div className="flex-1">
               <div className="flex flex-row items-center gap-1.5 mb-1">
-                <h3 className="text-xs sm:text-lg font-bold text-gray-900">
-                  {name}
-                </h3>
+                {!displayOnly && raceSlug ? (
+                  <Link
+                    href={`/${locale}/carrera/${raceSlug}`}
+                    className="pointer-events-auto hover:underline"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <h3 className="text-xs sm:text-lg font-bold text-gray-900">
+                      {name}
+                    </h3>
+                  </Link>
+                ) : (
+                  <h3 className="text-xs sm:text-lg font-bold text-gray-900">
+                    {name}
+                  </h3>
+                )}
                 <VerifiedBadgeWithTooltip
                   size="sm"
                   className={`shrink-0 ${(organizerId || isTestRace) ? 'visible' : 'invisible'}`}
