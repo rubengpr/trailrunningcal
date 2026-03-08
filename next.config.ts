@@ -37,7 +37,8 @@ const nextConfig: NextConfig = {
               "default-src 'self'",
               // Next.js hydration + JSON-LD inline scripts require unsafe-inline.
               // PostHog is proxied via /ingest/* rewrites so no external origin needed.
-              "script-src 'self' 'unsafe-inline'",
+              // Cloudflare Web Analytics beacon is injected automatically by Cloudflare.
+              "script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com",
               // Tailwind and component inline styles require unsafe-inline.
               "style-src 'self' 'unsafe-inline'",
               // Geist font is self-hosted by next/font at build time.
