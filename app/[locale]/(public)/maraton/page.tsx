@@ -69,7 +69,10 @@ export default async function MaratonPage({
         title={t('pageTitle', { year })}
         description={t('pageDescription', { year })}
         body={t('pageBody')}
-        breadcrumb={t('breadcrumb')}
+        breadcrumbItems={[
+          { name: tNav('calendar'), href: `/${locale}` },
+          { name: t('breadcrumb') },
+        ]}
       />
       <HomeClient races={maratonRaces} showProvinceFilter={false} />
     </>

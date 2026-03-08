@@ -23,6 +23,7 @@ import RaceShareWhatsappButton from '@/components/race/race-share-whatsapp-butto
 import { RaceFavoriteButton } from '@/components/race/race-favorite-button';
 import { buildRaceJsonLd } from '@/lib/seo/race-json-ld';
 import { buildBreadcrumbJsonLd } from '@/lib/seo/breadcrumb-json-ld';
+import { Breadcrumb } from '@/components/layout/breadcrumb';
 import ProvinceLink from '@/components/filters/province-link';
 import { getRaceImageUrlWithFilename } from '@/lib/race-image-url';
 
@@ -224,6 +225,15 @@ export default async function RacePage({
       <div className="flex flex-col max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
         <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6">
           <div className="flex flex-col flex-1 gap-2">
+            <Breadcrumb
+              items={[
+                { name: tNav('calendar'), href: `/${locale}` },
+                ...(provinceSlug
+                  ? [{ name: tProvincia(`names.${provinceSlug}`), href: `/${locale}/provincia/${provinceSlug}` }]
+                  : []),
+                { name: raceData.name },
+              ]}
+            />
             <div className="flex flex-row items-center gap-2">
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
                 {raceData.name}

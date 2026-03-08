@@ -66,7 +66,10 @@ export default async function UltraTrailPage({
         title={t('pageTitle', { year })}
         description={t('pageDescription', { year })}
         body={t('pageBody')}
-        breadcrumb={t('breadcrumb')}
+        breadcrumbItems={[
+          { name: tNav('calendar'), href: `/${locale}` },
+          { name: t('breadcrumb') },
+        ]}
       />
       <HomeClient races={ultraTrailRaces} showProvinceFilter={false} />
     </>

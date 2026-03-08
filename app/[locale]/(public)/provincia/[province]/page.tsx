@@ -91,7 +91,10 @@ export default async function ProvincePage({
         title={t('pageTitle', { province: provinceName, year })}
         description={t('pageDescription', { province: provinceName, year })}
         body={t('pageBody', { province: provinceName })}
-        breadcrumb={t('breadcrumb')}
+        breadcrumbItems={[
+          { name: tNav('calendar'), href: `/${locale}` },
+          { name: provinceName },
+        ]}
       />
       <HomeClient races={provinceRaces} showProvinceFilter={false} />
     </>
