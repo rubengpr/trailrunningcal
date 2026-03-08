@@ -272,6 +272,7 @@ export default function Navbar() {
           <Link
             href={`/${locale}/mis-carreras`}
             className="relative flex sm:hidden p-1 text-gray-400"
+            title={t('myRaces')}
             onClick={() =>
               setTimeout(() => posthog.capture('navbar_link_clicked', {
                 link_text: 'my_races',
