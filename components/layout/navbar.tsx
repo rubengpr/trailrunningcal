@@ -371,45 +371,6 @@ export default function Navbar() {
               >
                 {t('blog')}
               </Link>
-              <Link
-                href={`/${locale}/ultra-trail`}
-                onClick={() => {
-                  setIsMenuOpen(false);
-                  setTimeout(() => posthog.capture('navbar_link_clicked', {
-                    link_text: 'ultra_trail',
-                    link_href: `/${locale}/ultra-trail`,
-                    locale: locale,
-                  }), 0);
-                }}
-              >
-                {t('ultraTrail')}
-              </Link>
-              <Link
-                href={`/${locale}/maraton`}
-                onClick={() => {
-                  setIsMenuOpen(false);
-                  setTimeout(() => posthog.capture('navbar_link_clicked', {
-                    link_text: 'maraton',
-                    link_href: `/${locale}/maraton`,
-                    locale: locale,
-                  }), 0);
-                }}
-              >
-                {t('maraton')}
-              </Link>
-              <Link
-                href={`/${locale}/media-maraton`}
-                onClick={() => {
-                  setIsMenuOpen(false);
-                  setTimeout(() => posthog.capture('navbar_link_clicked', {
-                    link_text: 'media_maraton',
-                    link_href: `/${locale}/media-maraton`,
-                    locale: locale,
-                  }), 0);
-                }}
-              >
-                {t('mediaMaraton')}
-              </Link>
               {isAuthenticated && (
                 <Link
                   href={`/${locale}/org/perfil`}
