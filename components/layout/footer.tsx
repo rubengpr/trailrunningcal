@@ -41,9 +41,9 @@ export default async function Footer() {
               {t('description')}
             </p>
           </div>
-          <nav className="flex flex-row gap-10">
+          <nav className="grid grid-cols-2 gap-x-8 gap-y-6 sm:flex sm:flex-row sm:gap-10">
             <div className="flex flex-col gap-2">
-              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">
                 {t('byDistance')}
               </p>
               <div className="flex flex-col gap-1">
@@ -51,7 +51,7 @@ export default async function Footer() {
                   <Link
                     key={slug}
                     href={`/${locale}/${slug}`}
-                    className="text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors"
+                    className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors"
                   >
                     {tNav(key)}
                   </Link>
@@ -59,7 +59,7 @@ export default async function Footer() {
               </div>
             </div>
             <div className="flex flex-col gap-2">
-              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">
                 {t('byProvince')}
               </p>
               <div className="flex flex-col gap-1">
@@ -67,21 +67,21 @@ export default async function Footer() {
                   <Link
                     key={province}
                     href={`/${locale}/provincia/${province}`}
-                    className="text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors"
+                    className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors"
                   >
                     {tNav(province)}
                   </Link>
                 ))}
               </div>
             </div>
-            <div className="flex flex-col gap-2">
-              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+            <div className="col-span-2 sm:col-span-1 flex flex-col gap-2">
+              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">
                 {t('blog')}
               </p>
               <div className="flex flex-col gap-1">
                 <Link
                   href={`/${locale}/blog`}
-                  className="text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors"
+                  className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors"
                 >
                   {t('blog')}
                 </Link>
@@ -89,7 +89,7 @@ export default async function Footer() {
                   <Link
                     key={post.slug}
                     href={`/${locale}/blog/${post.slug}`}
-                    className="text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors"
+                    className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors line-clamp-1"
                   >
                     {post.title}
                   </Link>

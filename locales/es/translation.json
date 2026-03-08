@@ -187,8 +187,8 @@
   "footer": {
     "copyright": "© {year} Trail Running Cal",
     "description": "Tu calendario de carreras de trail running en Cataluña. Encuentra tu próxima carrera de montaña.",
-    "byDistance": "Por distancia",
-    "byProvince": "Por provincia",
+    "byDistance": "Distancia",
+    "byProvince": "Provincia",
     "blog": "Blog"
   },
   "signUp": {
