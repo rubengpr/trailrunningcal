@@ -301,6 +301,7 @@ export default function Navbar() {
           <button
             className="flex sm:hidden p-1 text-gray-400"
             onClick={handleMenuClick}
+            title={t('openMenu')}
           >
             <svg
               className="h-5 w-5"
