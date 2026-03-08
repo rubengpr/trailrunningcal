@@ -8,6 +8,8 @@ import {
   generateMetadataFromOptions,
 } from '@/seo/meta-config';
 import { buildBlogListingAlternateLinks } from '@/lib/alternate-links';
+import { buildBreadcrumbJsonLd } from '@/lib/seo/breadcrumb-json-ld';
+import { BASE_URL } from '@/lib/config';
 
 export async function generateMetadata({
   params,
@@ -40,9 +42,19 @@ export default async function BlogPage({
   const { locale } = await params;
   const blogPosts = getPostsForLocale(locale);
   const t = await getTranslations({ locale });
+  const tNav = await getTranslations({ locale, namespace: 'navigation' });
+
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+    { name: tNav('calendar'), url: `${BASE_URL}/${locale}` },
+    { name: tNav('blog'), url: `${BASE_URL}/${locale}/blog` },
+  ]);
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       {/* Header Section */}
       <div className="py-16 sm:py-24 text-center px-4">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 tracking-tight">

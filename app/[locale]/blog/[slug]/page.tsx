@@ -10,6 +10,8 @@ import { BASE_URL } from '@/lib/config';
 import { generateMetadataFromOptions } from '@/seo/meta-config';
 import { buildBlogPostAlternateLinks } from '@/lib/alternate-links';
 import { buildBlogJsonLd } from '@/lib/seo/blog-json-ld';
+import { buildBreadcrumbJsonLd } from '@/lib/seo/breadcrumb-json-ld';
+import { getTranslations } from 'next-intl/server';
 
 interface PageProps {
   params: Promise<{
@@ -67,12 +69,23 @@ export default async function BlogPostPage({ params }: PageProps) {
   // Render MDX content
   const MDXContent = await renderMDXFile(post.filePath, locale);
   const jsonLd = buildBlogJsonLd(post);
+  const tNav = await getTranslations({ locale, namespace: 'navigation' });
+
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+    { name: tNav('calendar'), url: `${BASE_URL}/${locale}` },
+    { name: tNav('blog'), url: `${BASE_URL}/${locale}/blog` },
+    { name: post.title, url: `${BASE_URL}/${locale}/blog/${slug}` },
+  ]);
 
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       <div className="w-full px-6 sm:px-10 lg:px-16 sm:py-8 lg:py-12">
         <MDXContent />
