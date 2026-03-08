@@ -429,5 +429,10 @@
     "pageDescription": "Troba totes les curses de trail running de mitja marató a Catalunya (20-24 km). Dates, desnivells i tota la informació per al {year}.",
     "pageBody": "La mitja marató de trail running (20–24 km) és una de les distàncies més populars entre els corredors de muntanya. Una distància exigent que combina resistència i tècnica en terreny de muntanya, i un pas habitual cap a maratons i ultres. A Catalunya trobaràs mitges maratons de trail pel Pirineu, el Montseny, la Costa Brava i el Garraf al llarg de tot l'any.",
     "breadcrumb": "Mitja Marató Trail"
+  },
+  "playground": {
+    "title": "Playground",
+    "inputPlaceholder": "Escriu un missatge...",
+    "send": "Enviar"
   }
 }
