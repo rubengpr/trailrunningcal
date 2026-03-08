@@ -128,7 +128,7 @@ export default function TrailRaceCard({
                 {!displayOnly && raceSlug ? (
                   <Link
                     href={`/${locale}/carrera/${raceSlug}`}
-                    className="pointer-events-auto hover:underline"
+                    className="pointer-events-auto hover:underline sm:hover:no-underline"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <h3 className="text-xs sm:text-lg font-bold text-gray-900">
@@ -152,7 +152,7 @@ export default function TrailRaceCard({
                   {city},{' '}
                   <Link
                     href={`/${locale}/provincia/${province.toLowerCase()}`}
-                    className="pointer-events-auto hover:underline"
+                    className="pointer-events-auto hover:underline sm:hover:no-underline"
                     onClick={(e) => e.stopPropagation()}
                   >
                     {province}
