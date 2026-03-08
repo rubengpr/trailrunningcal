@@ -43,7 +43,7 @@ export default async function Footer() {
           </div>
           <nav className="grid grid-cols-2 gap-x-8 gap-y-6 sm:flex sm:flex-row sm:gap-10">
             <div className="flex flex-col gap-2">
-              <p className="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">
+              <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 {t('byDistance')}
               </p>
               <div className="flex flex-col gap-1">
@@ -59,7 +59,7 @@ export default async function Footer() {
               </div>
             </div>
             <div className="flex flex-col gap-2">
-              <p className="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">
+              <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 {t('byProvince')}
               </p>
               <div className="flex flex-col gap-1">
@@ -75,7 +75,7 @@ export default async function Footer() {
               </div>
             </div>
             <div className="col-span-2 sm:col-span-1 flex flex-col gap-2">
-              <p className="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">
+              <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 {t('blog')}
               </p>
               <div className="flex flex-col gap-1">

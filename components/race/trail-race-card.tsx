@@ -115,11 +115,11 @@ export default function TrailRaceCard({
         <div className="flex items-start sm:justify-between mb-1">
           <div className="flex gap-4">
             <div className="flex flex-col items-center justify-center min-w-[50px] px-3 py-2 bg-amber-50 text-gray-800 rounded-sm">
-              <span className="text-[8px] sm:text-[10px] font-medium uppercase tracking-wide">
+              <span className="text-[10px] sm:text-xs font-medium uppercase tracking-wide">
                 {dayOfWeek}
               </span>
               <span className="text-base sm:text-lg font-bold">{day}</span>
-              <span className="text-[10px] sm:text-xs font-medium capitalize">
+              <span className="text-xs font-medium capitalize">
                 {month}
               </span>
             </div>
@@ -145,7 +145,7 @@ export default function TrailRaceCard({
                   className={`shrink-0 ${(organizerId || isTestRace) ? 'visible' : 'invisible'}`}
                 />
               </div>
-              <div className="flex gap-3 text-[10px] sm:text-sm text-gray-600 mb-2">
+              <div className="flex gap-3 text-xs sm:text-sm text-gray-600 mb-2">
                 <span>{distanceKm}km</span>
                 <span>{elevationGainM ? `${elevationGainM}m+` : '-'}</span>
                 <span className="truncate">
@@ -163,18 +163,18 @@ export default function TrailRaceCard({
                 {categorySlug ? (
                   <Link
                     href={`/${locale}/${categorySlug}`}
-                    className="pointer-events-auto px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-sm bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors"
+                    className="pointer-events-auto px-2 py-0.5 text-xs font-medium rounded-sm bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors"
                     onClick={(e) => e.stopPropagation()}
                   >
                     {t('category.' + raceCategory)}
                   </Link>
                 ) : (
-                  <span className="px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-sm bg-gray-100 text-gray-800">
+                  <span className="px-2 py-0.5 text-xs font-medium rounded-sm bg-gray-100 text-gray-800">
                     {t('category.' + raceCategory)}
                   </span>
                 )}
                 <span
-                  className={`hidden sm:block px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-sm ${elevationRatioColor}`}
+                  className={`hidden sm:block px-2 py-0.5 text-xs font-medium rounded-sm ${elevationRatioColor}`}
                 >
                   {elevationRatio !== null ? `${elevationRatio} m/km` : '—'}
                 </span>
@@ -182,7 +182,7 @@ export default function TrailRaceCard({
                 {!displayOnly && raceSlug && (
                   <Link
                     href={`/${locale}/carrera/${raceSlug}`}
-                    className="sm:hidden inline-block pointer-events-auto bg-black text-white px-2 py-0.5 rounded-sm text-[10px] font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+                    className="sm:hidden inline-block pointer-events-auto bg-black text-white px-2 py-0.5 rounded-sm text-xs font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
                     onClick={(e) => {
                       e.stopPropagation();
                     }}
