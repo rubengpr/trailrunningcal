@@ -1,21 +1,18 @@
 'use client';
 
-import { useState } from 'react';
-
 interface ProvinceFilterProps {
+  selectedProvince: string;
   onProvinceSelect: (province: string) => void;
 }
 
 const PROVINCES = ['Barcelona', 'Girona', 'Lleida', 'Tarragona'];
 
 export default function ProvinceFilter({
+  selectedProvince,
   onProvinceSelect,
 }: ProvinceFilterProps) {
-  const [selectedProvince, setSelectedProvince] = useState<string>('');
-
   const handleProvinceClick = (provinceName: string) => {
     const newProvince = provinceName === selectedProvince ? '' : provinceName;
-    setSelectedProvince(newProvince);
     onProvinceSelect(newProvince);
   };
 

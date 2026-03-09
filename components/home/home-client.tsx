@@ -84,7 +84,7 @@ export default function HomeClient({ races, showProvinceFilter = true }: HomeCli
           </div>
           {showProvinceFilter && (
             <div className="flex justify-center gap-2">
-              <ProvinceFilter onProvinceSelect={handleProvinceSelect} />
+              <ProvinceFilter selectedProvince={selectedProvince} onProvinceSelect={handleProvinceSelect} />
             </div>
           )}
         </div>
