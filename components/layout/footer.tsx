@@ -32,6 +32,7 @@ export default async function Footer() {
                 height={32}
                 className="w-8 h-8"
                 alt="Trail Running Cal logo"
+                unoptimized
               />
               <span className="font-semibold text-sm text-gray-900">
                 {tNav('appName')}
