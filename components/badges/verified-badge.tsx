@@ -36,6 +36,7 @@ export default function VerifiedBadge({
       width={width}
       height={height}
       className={`${classes} ${className}`}
+      unoptimized
     />
   );
 }

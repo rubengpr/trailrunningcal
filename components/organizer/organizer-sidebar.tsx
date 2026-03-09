@@ -119,6 +119,7 @@ export function OrganizerSidebar() {
                             height={40}
                             alt="Trailrunningcal.com logo"
                             className="w-8 h-8"
+                            unoptimized
                         />
                     </Link>
                     <svg
@@ -149,6 +150,7 @@ export function OrganizerSidebar() {
                             height={48}
                             alt="Trailrunningcal.com logo"
                             className="w-12 h-12"
+                            unoptimized
                         />
                     </div>
                     {navItems.map((item) => {
@@ -182,6 +184,7 @@ export function OrganizerSidebar() {
                         height={48}
                         alt="Trailrunningcal.com logo"
                         className="w-12 h-12"
+                        unoptimized
                     />
                 </div>
                 <nav className="flex flex-col flex-1 px-4 py-6 gap-1">
