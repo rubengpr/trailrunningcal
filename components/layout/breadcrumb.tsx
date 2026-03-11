@@ -25,23 +25,26 @@ export function Breadcrumb({ items, captureContext }: BreadcrumbProps) {
   };
 
   return (
-    <nav className="flex items-center gap-1.5 text-sm text-gray-500 mb-4">
-      {items.map((item, index) => (
-        <span key={index} className="flex items-center gap-1.5">
-          {index > 0 && <span>/</span>}
-          {item.href ? (
-            <Link
-              href={item.href}
-              className="hover:text-gray-900 transition-colors"
-              onClick={() => handleLinkClick(item)}
-            >
-              {item.name}
-            </Link>
-          ) : (
-            <span className="text-gray-700">{item.name}</span>
-          )}
-        </span>
-      ))}
+    <nav className="flex items-center gap-1.5 text-sm text-gray-500 mb-4 min-w-0">
+      {items.map((item, index) => {
+        const isLast = index === items.length - 1;
+        return (
+          <span key={index} className={`flex items-center gap-1.5${isLast ? ' min-w-0' : ' shrink-0'}`}>
+            {index > 0 && <span className="shrink-0">/</span>}
+            {item.href ? (
+              <Link
+                href={item.href}
+                className="hover:text-gray-900 transition-colors"
+                onClick={() => handleLinkClick(item)}
+              >
+                {item.name}
+              </Link>
+            ) : (
+              <span className={`text-gray-700${isLast ? ' truncate' : ''}`}>{item.name}</span>
+            )}
+          </span>
+        );
+      })}
     </nav>
   );
 }
