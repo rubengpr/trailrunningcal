@@ -239,6 +239,15 @@ export default async function RacePage({
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
                 {raceData.name}
               </h1>
+              {(raceData.organizerId || isTestRace(raceData.name)) && (
+                <VerifiedBadgeWithTooltip size="md" className="shrink-0" />
+              )}
+            </div>
+            <div className="flex flex-row items-center gap-2">
+              <span className="text-base sm:text-lg lg:text-xl font-bold text-black whitespace-nowrap">
+                {formattedDate}
+              </span>
+              {raceData.date && <ConfirmedDateBadge locale={locale} />}
               {categorySlug && raceCategory && (
                 <TrackedLink
                   href={`/${locale}/${categorySlug}`}
@@ -249,15 +258,6 @@ export default async function RacePage({
                   {tCategory(raceCategory)}
                 </TrackedLink>
               )}
-              {(raceData.organizerId || isTestRace(raceData.name)) && (
-                <VerifiedBadgeWithTooltip size="md" className="shrink-0" />
-              )}
-            </div>
-            <div className="flex flex-row items-center gap-2">
-              <span className="text-base sm:text-lg lg:text-xl font-bold text-black whitespace-nowrap">
-                {formattedDate}
-              </span>
-              {raceData.date && <ConfirmedDateBadge locale={locale} />}
             </div>
             <div className="flex flex-row flex-wrap gap-x-3 gap-y-1 text-gray-600">
               <div className="flex flex-row gap-1">
