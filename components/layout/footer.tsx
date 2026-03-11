@@ -21,7 +21,7 @@ export default async function Footer() {
   const blogPosts = getPostsForLocale(locale).slice(0, MAX_FOOTER_POSTS);
 
   return (
-    <footer className="border-t border-gray-200 bg-white/70 backdrop-blur">
+    <footer className="border-t border-gray-200 bg-gray-50">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
         <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex flex-col gap-3 max-w-sm">
