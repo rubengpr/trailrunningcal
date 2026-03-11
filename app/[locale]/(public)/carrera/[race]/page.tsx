@@ -1,6 +1,5 @@
 import { locales } from '@/i18n';
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
 import { formatDateToSpanish, formatDateToCatalan } from '@/lib/date-utils';
 import { getTranslations } from 'next-intl/server';
 import type { Locale } from '@/i18n';
@@ -26,6 +25,7 @@ import { buildBreadcrumbJsonLd } from '@/lib/seo/breadcrumb-json-ld';
 import { Breadcrumb } from '@/components/layout/breadcrumb';
 import ProvinceLink from '@/components/filters/province-link';
 import { getRaceImageUrlWithFilename } from '@/lib/race-image-url';
+import { TrackedLink } from '@/components/ui/tracked-link';
 
 const PROVINCE_SLUGS: Record<string, string> = {
   Barcelona: 'barcelona',
@@ -233,18 +233,21 @@ export default async function RacePage({
                   : []),
                 { name: raceData.name },
               ]}
+              captureContext={{ page: 'race', race_id: raceData.id, race_slug: race }}
             />
             <div className="flex flex-row items-center gap-2">
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
                 {raceData.name}
               </h1>
               {categorySlug && raceCategory && (
-                <Link
+                <TrackedLink
                   href={`/${locale}/${categorySlug}`}
+                  eventName="race_category_link_clicked"
+                  eventProperties={{ race_id: raceData.id, race_slug: race, category: raceCategory }}
                   className="shrink-0 px-2 py-0.5 text-xs font-medium rounded-sm bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors"
                 >
                   {tCategory(raceCategory)}
-                </Link>
+                </TrackedLink>
               )}
               {(raceData.organizerId || isTestRace(raceData.name)) && (
                 <VerifiedBadgeWithTooltip size="md" className="shrink-0" />
@@ -262,12 +265,14 @@ export default async function RacePage({
                   {raceData.city},
                 </span>
                 {provinceSlug ? (
-                  <Link
+                  <TrackedLink
                     href={`/${locale}/provincia/${provinceSlug}`}
+                    eventName="race_province_inline_clicked"
+                    eventProperties={{ race_id: raceData.id, race_slug: race, province: raceData.province }}
                     className="text-base sm:text-lg lg:text-xl whitespace-nowrap hover:underline"
                   >
                     {raceData.province}
-                  </Link>
+                  </TrackedLink>
                 ) : (
                   <span className="text-base sm:text-lg lg:text-xl whitespace-nowrap">
                     {raceData.province}
@@ -292,21 +297,26 @@ export default async function RacePage({
             </div>
             {organizer && (
               <div className="mt-1">
-                <RaceOrganizerLinks organizer={organizer} />
+                <RaceOrganizerLinks
+                  organizer={organizer}
+                  raceId={raceData.id}
+                  raceSlug={race}
+                />
               </div>
             )}
           </div>
           <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto sm:items-end">
             <div className="flex w-full flex-col gap-2">
               {raceData.websiteUrl && (
-                <a
+                <TrackedLink
                   href={raceData.websiteUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  eventName="race_official_website_clicked"
+                  eventProperties={{ race_id: raceData.id, race_slug: race }}
+                  external
                   className="w-full bg-gray-900 text-white px-4 py-2 rounded-md font-medium hover:bg-gray-600 focus:outline-none transition-colors cursor-pointer text-center whitespace-nowrap"
                 >
                   {tRace('officialWebsite')}
-                </a>
+                </TrackedLink>
               )}
               <div className="flex flex-row gap-2">
                 <RaceShareWhatsappButton
@@ -384,6 +394,7 @@ export default async function RacePage({
             href={`/${locale}/provincia/${provinceSlug}`}
             imageSrc={PROVINCE_IMAGES[raceData.province]}
             additionalCards={recommendedRaces}
+            captureContext={{ race_id: raceData.id, race_slug: race }}
           />
         )}
         {!raceData.organizerId && (

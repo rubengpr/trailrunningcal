@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import posthog from 'posthog-js';
 import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase/client';
@@ -43,6 +44,7 @@ export function RaceOrganizerClaimCard({
     }, []);
 
     const handleButtonClick = () => {
+        posthog.capture('race_organizer_claim_clicked', { race_name: raceName });
         if (user) {
             setIsConfirmationModalOpen(true);
         } else {
