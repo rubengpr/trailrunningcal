@@ -1,14 +1,32 @@
 'use client';
 
+import posthog from 'posthog-js';
+
 interface RaceShareWhatsappButtonProps {
   message: string;
   label: string;
   iconOnly?: boolean;
   className?: string;
+  raceId?: string;
+  raceSlug?: string;
 }
 
-export default function RaceShareWhatsappButton({ message, label, iconOnly = false, className = '' }: RaceShareWhatsappButtonProps) {
+export default function RaceShareWhatsappButton({
+  message,
+  label,
+  iconOnly = false,
+  className = '',
+  raceId,
+  raceSlug,
+}: RaceShareWhatsappButtonProps) {
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+
+  const handleClick = () => {
+    posthog.capture('race_share_clicked', {
+      ...(raceId && { race_id: raceId }),
+      ...(raceSlug && { race_slug: raceSlug }),
+    });
+  };
 
   return (
     <a
@@ -16,6 +34,7 @@ export default function RaceShareWhatsappButton({ message, label, iconOnly = fal
       target="_blank"
       rel="noopener noreferrer"
       title={label}
+      onClick={handleClick}
       className={`flex items-center justify-center gap-1.5 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors font-medium whitespace-nowrap ${iconOnly ? 'p-2' : 'px-3 py-2'} ${className}`}
     >
       <svg

@@ -314,6 +314,8 @@ export default async function RacePage({
                   label={tRace('share.label')}
                   iconOnly
                   className="flex-1"
+                  raceId={raceData.id}
+                  raceSlug={race}
                 />
                 <RaceFavoriteButton
                   raceId={raceData.id}
