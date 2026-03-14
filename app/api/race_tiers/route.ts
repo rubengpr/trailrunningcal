@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { getOrganizerRaceContext } from '@/lib/auth-organizer';
+import { generateRaceSlug } from '@/lib/race-utils';
+
+const LOCALES = ['es', 'ca'] as const;
 
 export async function PATCH(request: NextRequest) {
   try {
@@ -31,6 +35,12 @@ export async function PATCH(request: NextRequest) {
         { error: 'Failed to update prices' },
         { status: 500 },
       );
+    }
+
+    const slug = generateRaceSlug(context.race.name);
+    for (const locale of LOCALES) {
+      revalidatePath(`/${locale}`, 'page');
+      revalidatePath(`/${locale}/carrera/${slug}`, 'page');
     }
 
     return NextResponse.json({
