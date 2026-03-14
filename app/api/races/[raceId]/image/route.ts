@@ -185,6 +185,12 @@ export async function POST(
 
     if (updateError) {
       console.error('DB update error:', updateError);
+      // Rollback: remove the uploaded image to avoid orphaned files
+      await supabase.storage.from(RACE_IMAGE_BUCKET).remove([storagePath]);
+      return NextResponse.json(
+        { error: 'Failed to update race' },
+        { status: 500 },
+      );
     }
 
     if (process.env.NODE_ENV === 'development') {
