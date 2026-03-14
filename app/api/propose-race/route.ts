@@ -1,6 +1,7 @@
 import { Resend } from 'resend';
 import { NextRequest, NextResponse } from 'next/server';
 import { checkRateLimit } from '@/lib/rate-limit';
+import { escapeHtml } from '@/lib/security/escape-html';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -43,18 +44,6 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-
-    // Escape HTML to prevent XSS
-    const escapeHtml = (text: string): string => {
-      const map: Record<string, string> = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#039;',
-      };
-      return text.replace(/[&<>"']/g, (m) => map[m]);
-    };
 
     const escapedRaceName = escapeHtml(raceName.trim());
     const escapedRaceWebsite = escapeHtml(raceWebsite.trim());
