@@ -14,7 +14,7 @@ import Sponsors from '@/components/home/sponsors';
 import { RaceHeroImage } from '@/components/race/race-hero-image';
 import { RaceOrganizerClaimCard } from '@/components/race/race-organizer-claim-card';
 import { TEST_VERIFIED_RACES_NAME } from '@/lib/constants';
-import { getRaces } from '@/lib/db/races';
+import { getRaceBySlug, getRecommendedRaces } from '@/lib/db/races';
 import { getOrganizerById } from '@/lib/db/organizers';
 import { getDisplayPrice } from '@/lib/race-utils';
 import RaceOrganizerLinks from '@/components/race/race-organizer-links';
@@ -59,8 +59,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale, race } = await params;
 
-  const races = await getRaces();
-  const raceData = races.find((r) => generateRaceSlug(r.name) === race);
+  const raceData = await getRaceBySlug(race);
 
   // If race doesn't exist, return minimal metadata (Next.js will handle 404)
   if (!raceData) {
@@ -137,9 +136,7 @@ export default async function RacePage({
 }) {
   const { locale, race } = await params;
 
-  // Fetch fresh race data on each request
-  const races = await getRaces();
-  const raceData = races.find((r) => generateRaceSlug(r.name) === race);
+  const raceData = await getRaceBySlug(race);
   const displayPrice = getDisplayPrice(raceData?.priceEur);
 
   if (!raceData) {
@@ -197,19 +194,17 @@ export default async function RacePage({
     { name: raceData.name, url: `${BASE_URL}/${locale}/carrera/${race}` },
   ]);
 
-  const recommendedRaces = races
-    .filter((r) => {
-      if (r.province !== raceData.province || r.id === raceData.id) return false;
-      if (!raceData.date) return !!r.date;
-      return !!r.date && r.date >= raceData.date;
-    })
-    .sort((a, b) => a.date!.localeCompare(b.date!))
-    .slice(0, 3)
-    .map((r) => ({
-      href: `/${locale}/carrera/${generateRaceSlug(r.name)}`,
-      label: r.name,
-      imageSrc: stockImageUrlForRace(r.id),
-    }));
+  const recommended = await getRecommendedRaces(
+    raceData.province,
+    raceData.id,
+    raceData.date,
+    3,
+  );
+  const recommendedRaces = recommended.map((r) => ({
+    href: `/${locale}/carrera/${generateRaceSlug(r.name)}`,
+    label: r.name,
+    imageSrc: stockImageUrlForRace(r.id),
+  }));
 
   return (
     <>

@@ -1,6 +1,7 @@
 import { cache } from 'react';
 import { createClient, createStaticClient } from '@/lib/supabase/server';
 import type { TrailRace, RaceRow } from '@/types/race.types';
+import { generateRaceSlug } from '@/lib/race-utils';
 
 export function raceRowToTrailRace(row: RaceRow): TrailRace {
   return {
@@ -73,4 +74,85 @@ export const getRaces = cache(async function getRaces(
   const result = rows.map(raceRowToTrailRace);
   if (useStaticClient) racesCache = result;
   return result;
+});
+
+const RACE_SELECT = `
+  id, name, date, distance_km, elevation_gain_m,
+  city, province, organizer_id, description,
+  map_url, website_url, hero_image_filename,
+  race_tiers ( price_eur )
+` as const;
+
+/**
+ * Fetches a single race by its URL slug.
+ * Does a lightweight lookup (id + name only) to find the matching race,
+ * then fetches the full row for that single race.
+ */
+export const getRaceBySlug = cache(async function getRaceBySlug(
+  slug: string,
+): Promise<TrailRace | null> {
+  const supabase = await createClient();
+
+  const { data: nameRows, error: nameError } = await supabase
+    .from('races')
+    .select('id, name');
+
+  if (nameError || !nameRows) {
+    console.error('Failed to fetch race names:', nameError);
+    return null;
+  }
+
+  const match = nameRows.find(
+    (r: { id: string; name: string }) => generateRaceSlug(r.name) === slug,
+  );
+
+  if (!match) return null;
+
+  const { data, error } = await supabase
+    .from('races')
+    .select(RACE_SELECT)
+    .eq('id', match.id)
+    .single();
+
+  if (error || !data) {
+    console.error('Failed to fetch race by id:', error);
+    return null;
+  }
+
+  return raceRowToTrailRace(data as RaceRow);
+});
+
+/**
+ * Fetches recommended races from the same province, ordered by date.
+ * Returns up to `limit` races after the given date (or any dated races if date is null).
+ */
+export const getRecommendedRaces = cache(async function getRecommendedRaces(
+  province: string,
+  excludeId: string,
+  afterDate: string | null,
+  limit: number = 3,
+): Promise<TrailRace[]> {
+  const supabase = await createClient();
+
+  let query = supabase
+    .from('races')
+    .select('id, name, date, distance_km, elevation_gain_m, city, province, organizer_id')
+    .eq('province', province)
+    .neq('id', excludeId)
+    .not('date', 'is', null)
+    .order('date', { ascending: true })
+    .limit(limit);
+
+  if (afterDate) {
+    query = query.gte('date', afterDate);
+  }
+
+  const { data, error } = await query;
+
+  if (error || !data) {
+    console.error('Failed to fetch recommended races:', error);
+    return [];
+  }
+
+  return (data as RaceRow[]).map(raceRowToTrailRace);
 });
