@@ -50,7 +50,7 @@ const PROVINCE_IMAGES: Record<string, string> = {
   Tarragona: 'https://ppmdbmyxgtqvmvtbptmg.supabase.co/storage/v1/object/public/stock/provinces/tarragona.jpg',
 };
 
-export const revalidate = 3600; // 1 hour
+export const revalidate = 86400; // 24 hours (on-demand revalidation handles mutations)
 
 export async function generateMetadata({
   params,
