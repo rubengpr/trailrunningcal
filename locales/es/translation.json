@@ -84,6 +84,7 @@
       "message": "Mira la carrera que he encontrado en Trail Running Cal: {raceName} → {url}"
     },
     "favorite": {
+      "label": "Favoritos",
       "save": "Guardar carrera",
       "remove": "Eliminar de favoritos",
       "savedToast": "Carrera guardada en Mis carreras"

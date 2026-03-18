@@ -84,6 +84,7 @@
       "message": "Mira la cursa que he trobat a Trail Running Cal: {raceName} → {url}"
     },
     "favorite": {
+      "label": "Favorits",
       "save": "Desa cursa",
       "remove": "Elimina dels favorits",
       "savedToast": "Cursa desada a Les meves curses"

@@ -68,11 +68,15 @@ export function RaceFavoriteButton({ raceId, saveLabel, removeLabel, iconOnly, c
     }
   };
 
+  const displayLabel = iconOnly ? t('label') : (favorited ? removeLabel : saveLabel);
+  const tooltipLabel = favorited ? removeLabel : saveLabel;
+
   return (
     <FavoriteButton
       isFavorited={favorited}
       onToggle={handleToggle}
-      label={favorited ? removeLabel : saveLabel}
+      label={displayLabel}
+      title={tooltipLabel}
       iconOnly={iconOnly}
       className={className}
     />

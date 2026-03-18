@@ -35,7 +35,7 @@ export default function RaceShareWhatsappButton({
       rel="noopener noreferrer"
       title={label}
       onClick={handleClick}
-      className={`flex items-center justify-center gap-1.5 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors font-medium whitespace-nowrap ${iconOnly ? 'p-2' : 'px-3 py-2'} ${className}`}
+      className={`flex items-center justify-center gap-1.5 rounded-md border border-gray-200 bg-white text-gray-600 hover:bg-gray-100 transition-colors font-medium whitespace-nowrap ${iconOnly ? 'p-2' : 'px-3 py-2'} ${className}`}
     >
       <svg
         viewBox="0 0 24 24"
