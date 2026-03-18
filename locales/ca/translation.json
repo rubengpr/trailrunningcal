@@ -87,7 +87,7 @@
       "label": "Favorits",
       "save": "Desa cursa",
       "remove": "Elimina dels favorits",
-      "savedToast": "Cursa desada a Les meves curses"
+      "savedToast": "Cursa afegida a favorits"
     }
   },
   "difficulty": {
