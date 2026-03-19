@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createAdminClient } from '@/lib/supabase/server';
 import { getOrganizerRaceContext } from '@/lib/auth-organizer';
+import { isAdminEmail } from '@/lib/auth-admin';
 import { generateRaceSlug } from '@/lib/race-utils';
 
 const LOCALES = ['es', 'ca'] as const;
@@ -18,12 +19,27 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
     }
 
-    const context = await getOrganizerRaceContext(supabase, raceId);
-    if (!context) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { data, error } = await supabase
+    const isAdmin = isAdminEmail(user.email);
+
+    if (!isAdmin) {
+      const context = await getOrganizerRaceContext(supabase, raceId);
+      if (!context) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
+    }
+
+    const dbClient = isAdmin ? createAdminClient() : supabase;
+
+    const { data, error } = await dbClient
       .from('race_tiers')
       .update({ price_eur: priceEur, updated_at: new Date().toISOString() })
       .eq('race_id', raceId)
@@ -37,10 +53,18 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    const slug = generateRaceSlug(context.race.name);
+    const { data: race } = await dbClient
+      .from('races')
+      .select('name')
+      .eq('id', raceId)
+      .single();
+
+    const slug = race?.name ? generateRaceSlug(race.name) : null;
     for (const locale of LOCALES) {
       revalidatePath(`/${locale}`, 'page');
-      revalidatePath(`/${locale}/carrera/${slug}`, 'page');
+      if (slug) {
+        revalidatePath(`/${locale}/carrera/${slug}`, 'page');
+      }
     }
 
     return NextResponse.json({

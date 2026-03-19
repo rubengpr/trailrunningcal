@@ -1,7 +1,8 @@
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createAdminClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { getOrganizerRaceContext } from '@/lib/auth-organizer';
+import { isAdminEmail } from '@/lib/auth-admin';
 import { generateRaceSlug } from '@/lib/race-utils';
 
 const LOCALES = ['es', 'ca'] as const;
@@ -166,9 +167,13 @@ export async function PATCH(request: NextRequest) {
     const { raceId, date, name, distanceKm, elevationGainM, websiteUrl, city, province, description } =
       await request.json();
 
-    const context = await getOrganizerRaceContext(supabase, raceId);
-    if (!context) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const isAdmin = isAdminEmail(user.email);
+
+    if (!isAdmin) {
+      const context = await getOrganizerRaceContext(supabase, raceId);
+      if (!context) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
     }
 
     const descResult = sanitizeDescription(description);
@@ -189,7 +194,15 @@ export async function PATCH(request: NextRequest) {
     if (city !== undefined) updateFields.city = city;
     if (province !== undefined) updateFields.province = province;
 
-    const { data, error } = await supabase
+    const dbClient = isAdmin ? createAdminClient() : supabase;
+
+    const { data: existingRace } = await dbClient
+      .from('races')
+      .select('name')
+      .eq('id', raceId)
+      .single();
+
+    const { data, error } = await dbClient
       .from('races')
       .update(updateFields)
       .eq('id', raceId)
@@ -205,7 +218,9 @@ export async function PATCH(request: NextRequest) {
     }
 
     revalidateHomepages();
-    revalidateRacePages(context.race.name);
+    if (existingRace?.name) {
+      revalidateRacePages(existingRace.name);
+    }
 
     return NextResponse.json({
       success: true,
