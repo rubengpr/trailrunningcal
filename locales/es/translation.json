@@ -353,6 +353,9 @@
         "province": "Provincia",
         "description": "Descripción",
         "descriptionPlaceholder": "Describe la carrera...",
+        "scrapeWebsite": "Extraer datos de la web",
+        "scraping": "Extrayendo...",
+        "scrapeComingSoon": "Funcionalidad próximamente disponible",
         "save": "Guardar",
         "saving": "Guardando...",
         "success": "Carrera guardada correctamente",
@@ -464,10 +467,7 @@
         "date": "Fecha",
         "distance": "Distancia",
         "price": "Precio",
-        "newRaceButton": "Nueva carrera",
-        "createFromScratch": "Crear desde cero",
-        "crawlWebsite": "Rastrear web",
-        "comingSoon": "Próximamente"
+        "newRaceButton": "Nueva carrera"
       }
     }
   },

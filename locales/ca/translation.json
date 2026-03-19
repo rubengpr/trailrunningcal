@@ -356,6 +356,9 @@
         "province": "Província",
         "description": "Descripció",
         "descriptionPlaceholder": "Descriu la cursa...",
+        "scrapeWebsite": "Extreure dades de la web",
+        "scraping": "Extrayent...",
+        "scrapeComingSoon": "Funcionalitat properament disponible",
         "save": "Desar",
         "saving": "Desant...",
         "success": "Cursa desada correctament",
@@ -467,10 +470,7 @@
         "date": "Data",
         "distance": "Distància",
         "price": "Preu",
-        "newRaceButton": "Nova cursa",
-        "createFromScratch": "Crear des de zero",
-        "crawlWebsite": "Rastrejar web",
-        "comingSoon": "Properament"
+        "newRaceButton": "Nova cursa"
       }
     }
   },
