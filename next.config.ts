@@ -49,7 +49,7 @@ const nextConfig: NextConfig = {
               // Geist font is self-hosted by next/font at build time.
               "font-src 'self'",
               // Supabase storage for race/province/brand images. data: for Next.js blur placeholders.
-              `img-src 'self' data: ${supabaseHost}`,
+              `img-src 'self' data: ${supabaseHost} https://ppmdbmyxgtqvmvtbptmg.supabase.co`,
               // Supabase JS client (auth + DB) connects directly from the browser.
               // PostHog ingest is proxied to self via rewrites.
               `connect-src 'self' ${supabaseHost}`,
