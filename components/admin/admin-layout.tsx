@@ -1,10 +1,15 @@
 'use client';
 
+import type { ReactNode } from 'react';
 import { useLocale } from 'next-intl';
 import { AppSidebar } from '@/components/ui/app-sidebar';
 import type { NavItem } from '@/components/ui/app-sidebar';
 
-export function OrganizerSidebar() {
+interface AdminLayoutProps {
+    children: ReactNode;
+}
+
+export function AdminLayout({ children }: AdminLayoutProps) {
     const locale = useLocale();
 
     const navItems: NavItem[] = [
@@ -29,27 +34,7 @@ export function OrganizerSidebar() {
             ),
         },
         {
-            href: `/${locale}/org/perfil`,
-            label: 'Perfil',
-            icon: (
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
-                    className="w-5 h-5"
-                >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                    />
-                </svg>
-            ),
-        },
-        {
-            href: `/${locale}/org/carreras`,
+            href: `/${locale}/admin/carreras`,
             label: locale === 'ca' ? 'Curses' : 'Carreras',
             icon: (
                 <svg
@@ -68,27 +53,14 @@ export function OrganizerSidebar() {
                 </svg>
             ),
         },
-        {
-            href: `/${locale}/org/sponsors`,
-            label: 'Sponsors',
-            icon: (
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
-                    className="w-5 h-5"
-                >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.847-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.847a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.847.813a4.5 4.5 0 0 0-3.09 3.09ZM18 8.25l-.32 1.123a3.375 3.375 0 0 1-2.307 2.307L14.25 12l1.123.32a3.375 3.375 0 0 1 2.307 2.307L18 15.75l.32-1.123a3.375 3.375 0 0 1 2.307-2.307L21.75 12l-1.123-.32a3.375 3.375 0 0 1-2.307-2.307L18 8.25Z"
-                    />
-                </svg>
-            ),
-        },
     ];
 
-    return <AppSidebar navItems={navItems} />;
+    return (
+        <div className="flex flex-col md:flex-row">
+            <AppSidebar navItems={navItems} />
+            <div className="flex flex-col w-full p-6">
+                {children}
+            </div>
+        </div>
+    );
 }

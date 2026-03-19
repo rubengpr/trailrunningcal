@@ -442,6 +442,19 @@
     "pageBody": "La media maratón de trail running (20–24 km) es una de las distancias más populares entre corredores de montaña. Una distancia exigente que combina resistencia y técnica en terreno de montaña, y un paso habitual hacia maratones y ultras. En Cataluña encontrarás media maratones de trail por el Pirineo, el Montseny, la Costa Brava y el Garraf a lo largo de todo el año.",
     "breadcrumb": "Media Maratón Trail"
   },
+  "admin": {
+    "races": {
+      "table": {
+        "title": "Todas las carreras",
+        "raceCount": "{count} carreras",
+        "raceCountOne": "1 carrera",
+        "name": "Nombre",
+        "date": "Fecha",
+        "distance": "Distancia",
+        "price": "Precio"
+      }
+    }
+  },
   "playground": {
     "title": "Playground",
     "inputPlaceholder": "Escribe un mensaje...",
