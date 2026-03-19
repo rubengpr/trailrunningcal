@@ -60,8 +60,9 @@ export default async function AdminRaceEditPage({
         redirect(`/${locale}/admin/login`);
     }
 
-    const race = await getRaceById(raceId);
-    const priceEur = await getRacePrice(raceId);
+    const isEditMode = raceId !== 'new';
+    const race = isEditMode ? await getRaceById(raceId) : null;
+    const priceEur = isEditMode ? await getRacePrice(raceId) : null;
 
     const initialRaceData = race != null ? { ...race, priceEur } : null;
 
@@ -70,7 +71,7 @@ export default async function AdminRaceEditPage({
             <RaceForm
                 raceId={raceId}
                 initialData={initialRaceData}
-                isEditMode={true}
+                isEditMode={isEditMode}
                 redirectBasePath="admin/carreras"
             />
         </AdminLayout>

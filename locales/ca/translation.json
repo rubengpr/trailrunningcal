@@ -466,7 +466,11 @@
         "name": "Nom",
         "date": "Data",
         "distance": "Distància",
-        "price": "Preu"
+        "price": "Preu",
+        "newRaceButton": "Nova cursa",
+        "createFromScratch": "Crear des de zero",
+        "crawlWebsite": "Rastrejar web",
+        "comingSoon": "Properament"
       }
     }
   },

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
+import { Button } from '@/components/ui/button';
 import { InfoBanner } from '@/components/ui/info-banner';
 import { SectionHeader } from '@/components/ui/section-header';
 import TrailRaceCard from '@/components/race/trail-race-card';
@@ -98,13 +99,12 @@ export function OrganizerRacesContent({ races }: OrganizerRacesContentProps) {
                     }
                     action={
                         <span title={isAtLimit ? tTable('raceLimitReached') : undefined}>
-                            <button
+                            <Button
                                 onClick={() => router.push(`/${locale}/org/carreras/new`)}
                                 disabled={isAtLimit}
-                                className='px-5 py-2.5 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 transition-all duration-200 w-fit shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
                             >
                                 {t('newRaceButton')}
-                            </button>
+                            </Button>
                         </span>
                     }
                 />

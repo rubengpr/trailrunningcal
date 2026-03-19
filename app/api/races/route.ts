@@ -49,31 +49,39 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { data: organizer, error: organizerError } = await supabase
-      .from('organizers')
-      .select('id')
-      .eq('owner_id', user.id)
-      .single();
+    const isAdmin = isAdminEmail(user.email);
 
-    if (organizerError || !organizer) {
-      return NextResponse.json({ error: 'Organizer not found' }, { status: 404 });
-    }
+    let organizerId: string | null = null;
 
-    const { count, error: countError } = await supabase
-      .from('races')
-      .select('id', { count: 'exact', head: true })
-      .eq('organizer_id', organizer.id);
+    if (!isAdmin) {
+      const { data: organizer, error: organizerError } = await supabase
+        .from('organizers')
+        .select('id')
+        .eq('owner_id', user.id)
+        .single();
 
-    if (countError) {
-      console.error('Count error:', countError);
-      return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-    }
+      if (organizerError || !organizer) {
+        return NextResponse.json({ error: 'Organizer not found' }, { status: 404 });
+      }
 
-    if ((count ?? 0) >= MAX_RACES_PER_ORGANIZER) {
-      return NextResponse.json(
-        { error: 'Race limit reached. Maximum 5 races per organizer.' },
-        { status: 403 },
-      );
+      organizerId = organizer.id;
+
+      const { count, error: countError } = await supabase
+        .from('races')
+        .select('id', { count: 'exact', head: true })
+        .eq('organizer_id', organizer.id);
+
+      if (countError) {
+        console.error('Count error:', countError);
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+      }
+
+      if ((count ?? 0) >= MAX_RACES_PER_ORGANIZER) {
+        return NextResponse.json(
+          { error: 'Race limit reached. Maximum 5 races per organizer.' },
+          { status: 403 },
+        );
+      }
     }
 
     const body = await request.json();
@@ -112,7 +120,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: descResult.error }, { status: 400 });
     }
 
-    const { data: newRace, error: insertError } = await supabase
+    const dbClient = isAdmin ? createAdminClient() : supabase;
+
+    const { data: newRace, error: insertError } = await dbClient
       .from('races')
       .insert({
         name: name.trim(),
@@ -123,7 +133,7 @@ export async function POST(request: NextRequest) {
         city: city.trim(),
         province: province.trim(),
         description: descResult.value,
-        organizer_id: organizer.id,
+        organizer_id: organizerId,
       })
       .select('id')
       .single();
@@ -133,7 +143,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to create race' }, { status: 500 });
     }
 
-    const { error: tierError } = await supabase
+    const { error: tierError } = await dbClient
       .from('race_tiers')
       .insert({ race_id: newRace.id, price_eur: priceEur });
 

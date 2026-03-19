@@ -1,7 +1,9 @@
 'use client';
 
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
+import { Button } from '@/components/ui/button';
 import { SectionHeader } from '@/components/ui/section-header';
 import TrailRaceCard from '@/components/race/trail-race-card';
 import type { TrailRace } from '@/types/race.types';
@@ -16,9 +18,30 @@ export function AdminRacesContent({ races }: AdminRacesContentProps) {
     const t = useTranslations('admin.races.table');
     const locale = useLocale();
     const router = useRouter();
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsDropdownOpen(false);
+            }
+        }
+
+        if (isDropdownOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [isDropdownOpen]);
 
     const handleRaceClick = (raceId: string) => {
         router.push(`/${locale}/admin/carreras/${raceId}`);
+    };
+
+    const handleCreateFromScratch = () => {
+        setIsDropdownOpen(false);
+        router.push(`/${locale}/admin/carreras/new`);
     };
 
     const formatDate = (dateString: string | null): string => {
@@ -47,6 +70,31 @@ export function AdminRacesContent({ races }: AdminRacesContentProps) {
                     races.length === 1
                         ? t('raceCountOne')
                         : t('raceCount', { count: races.length })
+                }
+                action={
+                    <div className='relative' ref={dropdownRef}>
+                        <Button
+                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                        >
+                            {t('newRaceButton')}
+                        </Button>
+                        {isDropdownOpen && (
+                            <div className='absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-100 z-20'>
+                                <button
+                                    onClick={handleCreateFromScratch}
+                                    className='w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 rounded-t-lg transition-colors'
+                                >
+                                    {t('createFromScratch')}
+                                </button>
+                                <div className='px-4 py-3 text-sm text-gray-400 cursor-not-allowed rounded-b-lg flex items-center justify-between'>
+                                    <span>{t('crawlWebsite')}</span>
+                                    <span className='text-xs bg-gray-100 text-gray-400 px-2 py-0.5 rounded-full'>
+                                        {t('comingSoon')}
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 }
             />
 
