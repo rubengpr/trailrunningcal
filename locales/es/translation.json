@@ -443,6 +443,18 @@
     "breadcrumb": "Media Maratón Trail"
   },
   "admin": {
+    "login": {
+      "title": "Admin",
+      "description": "Accede al panel de administración.",
+      "email": "Email",
+      "password": "Contraseña",
+      "loggingIn": "Iniciando sesión...",
+      "submit": "Iniciar sesión",
+      "errors": {
+        "invalidCredentials": "Email o contraseña incorrectos",
+        "notAdmin": "Tu cuenta no tiene acceso al panel de administración. Esta área es solo para gestores de Trail Running Cal."
+      }
+    },
     "races": {
       "table": {
         "title": "Todas las carreras",

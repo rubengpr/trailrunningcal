@@ -446,6 +446,18 @@
     "breadcrumb": "Mitja Marató Trail"
   },
   "admin": {
+    "login": {
+      "title": "Admin",
+      "description": "Accedeix al panell d'administració.",
+      "email": "Email",
+      "password": "Contrasenya",
+      "loggingIn": "Iniciant sessió...",
+      "submit": "Iniciar sessió",
+      "errors": {
+        "invalidCredentials": "Email o contrasenya incorrectes",
+        "notAdmin": "El teu compte no té accés al panell d'administració. Aquesta àrea és només per a gestors de Trail Running Cal."
+      }
+    },
     "races": {
       "table": {
         "title": "Totes les curses",
