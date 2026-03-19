@@ -37,9 +37,10 @@ interface RaceFormProps {
     raceId: string;
     initialData: TrailRace | null;
     isEditMode: boolean;
+    redirectBasePath?: string;
 }
 
-export function RaceForm({ raceId, initialData, isEditMode }: RaceFormProps) {
+export function RaceForm({ raceId, initialData, isEditMode, redirectBasePath = 'org/carreras' }: RaceFormProps) {
     const t = useTranslations('organizer.races.form');
     const router = useRouter();
     const params = useParams();
@@ -156,7 +157,7 @@ export function RaceForm({ raceId, initialData, isEditMode }: RaceFormProps) {
         try {
             await deleteRace(raceId);
             toast.success(t('deleteSuccess'));
-            router.push(`/${locale}/org/carreras`);
+            router.push(`/${locale}/${redirectBasePath}`);
         } catch (e) {
             const errorMessage = e instanceof Error ? e.message : t('errors.deleteFailed');
             toast.error(errorMessage);
@@ -184,7 +185,7 @@ export function RaceForm({ raceId, initialData, isEditMode }: RaceFormProps) {
             if (!isEditMode) {
                 await createRace({ date, name, distanceKm, elevationGainM, priceEur, websiteUrl, city, province, description });
                 toast.success(t('success'));
-                router.push(`/${locale}/org/carreras`);
+                router.push(`/${locale}/${redirectBasePath}`);
                 return;
             }
 
