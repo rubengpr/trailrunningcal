@@ -238,7 +238,7 @@ export default async function RacePage({
                 <VerifiedBadgeWithTooltip size="md" className="shrink-0" />
               )}
             </div>
-            <div className="flex flex-row items-center gap-2">
+            <div className="flex flex-row flex-wrap items-center gap-2">
               <span className="text-base sm:text-lg lg:text-xl font-bold text-black whitespace-nowrap">
                 {formattedDate}
               </span>
