@@ -53,6 +53,57 @@ export async function deleteRace(raceId: string): Promise<void> {
 }
 
 /**
+ * Scrapes race data from an event website via the agent API. Admin-only.
+ */
+export async function scrapeRaces(websiteUrl: string): Promise<import('@/types/trail-race-agent.types').TrailRaceAgentRaceRow[]> {
+  const response = await fetch('/api/races/scrape', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ websiteUrl }),
+  });
+
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(responseData.error || 'Failed to scrape races');
+  }
+
+  return responseData.data.races;
+}
+
+/**
+ * Accepts a scraped race by creating it in the database. Admin-only.
+ */
+export async function acceptScrapedRace(
+  race: import('@/types/trail-race-agent.types').TrailRaceAgentRaceRow,
+  websiteUrl: string,
+): Promise<{ id: string }> {
+  const response = await fetch('/api/races', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      name: race.name,
+      date: race.date,
+      distanceKm: race.distanceKm,
+      elevationGainM: race.elevationGainM,
+      priceEur: null,
+      websiteUrl,
+      city: race.city,
+      province: race.province,
+      description: race.description,
+    }),
+  });
+
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(responseData.error || 'Failed to accept race');
+  }
+
+  return responseData.data;
+}
+
+/**
  * Creates a new race via the API. Safe to call from client components.
  */
 export async function createRace(fields: {
