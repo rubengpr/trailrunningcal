@@ -73,7 +73,6 @@ export default async function AdminRaceEditPage({
                 initialData={initialRaceData}
                 isEditMode={isEditMode}
                 redirectBasePath="admin/carreras"
-                showScrapeAction={!isEditMode}
             />
         </AdminLayout>
     );

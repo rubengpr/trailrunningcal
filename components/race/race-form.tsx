@@ -7,7 +7,6 @@ import toast from 'react-hot-toast';
 import { FormInput } from '@/components/ui/form-input';
 import { FormTextarea } from '@/components/ui/form-textarea';
 import { FormImageInput } from '@/components/ui/form-image-input';
-import { Button } from '@/components/ui/button';
 import type { TrailRace } from '@/types/race.types';
 import { updateRace, createRace, deleteRace } from '@/lib/api/races';
 import { updatePrice } from '@/lib/api/race_tiers';
@@ -39,10 +38,9 @@ interface RaceFormProps {
     initialData: TrailRace | null;
     isEditMode: boolean;
     redirectBasePath?: string;
-    showScrapeAction?: boolean;
 }
 
-export function RaceForm({ raceId, initialData, isEditMode, redirectBasePath = 'org/carreras', showScrapeAction = false }: RaceFormProps) {
+export function RaceForm({ raceId, initialData, isEditMode, redirectBasePath = 'org/carreras' }: RaceFormProps) {
     const t = useTranslations('organizer.races.form');
     const router = useRouter();
     const params = useParams();
@@ -67,25 +65,6 @@ export function RaceForm({ raceId, initialData, isEditMode, redirectBasePath = '
     const [imageError, setImageError] = useState('');
     const [existingImageStatus, setExistingImageStatus] = useState<RaceImageStatus | null>(null);
     const [isCheckingImage, setIsCheckingImage] = useState(false);
-    const [isScraping, setIsScraping] = useState(false);
-
-    const isValidUrl = (url: string): boolean => {
-        const trimmed = url.trim();
-        if (!trimmed) return false;
-        try {
-            new URL(normalizeUrl(trimmed));
-            return true;
-        } catch {
-            return false;
-        }
-    };
-
-    const handleScrape = async () => {
-        setIsScraping(true);
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        toast(t('scrapeComingSoon'));
-        setIsScraping(false);
-    };
 
     useEffect(() => {
         if (isEditMode && initialData?.organizerId) {
@@ -325,37 +304,19 @@ export function RaceForm({ raceId, initialData, isEditMode, redirectBasePath = '
                         }}
                         error={fieldErrors.priceEur}
                     />
-                    <div className={showScrapeAction ? 'flex items-start gap-2' : ''}>
-                        <div className={showScrapeAction ? 'flex-1' : ''}>
-                            <FormInput
-                                id='websiteUrl'
-                                label={t('websiteUrl')}
-                                type='url'
-                                value={websiteUrl}
-                                placeholder={t('websiteUrlPlaceholder')}
-                                onChange={(e) => {
-                                    setWebsiteUrl(e.target.value);
-                                    validator.clearError('websiteUrl');
-                                    setError('');
-                                }}
-                                error={fieldErrors.websiteUrl}
-                            />
-                        </div>
-                        {showScrapeAction && (
-                            <div className='pt-6'>
-                                <Button
-                                    type='button'
-                                    variant='secondary'
-                                    onClick={handleScrape}
-                                    disabled={!isValidUrl(websiteUrl) || isScraping}
-                                    isLoading={isScraping}
-                                    loadingText={t('scraping')}
-                                >
-                                    {t('scrapeWebsite')}
-                                </Button>
-                            </div>
-                        )}
-                    </div>
+                    <FormInput
+                        id='websiteUrl'
+                        label={t('websiteUrl')}
+                        type='url'
+                        value={websiteUrl}
+                        placeholder={t('websiteUrlPlaceholder')}
+                        onChange={(e) => {
+                            setWebsiteUrl(e.target.value);
+                            validator.clearError('websiteUrl');
+                            setError('');
+                        }}
+                        error={fieldErrors.websiteUrl}
+                    />
                     <FormInput
                         id='city'
                         label={t('city')}
