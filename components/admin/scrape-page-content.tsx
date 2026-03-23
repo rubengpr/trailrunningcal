@@ -7,7 +7,7 @@ import { FormInput } from '@/components/ui/form-input';
 import { Button } from '@/components/ui/button';
 import { SectionHeader } from '@/components/ui/section-header';
 import { DUMMY_SCRAPED_RACES, ScrapedRacesPreview } from '@/components/race/scraped-races-preview';
-import { scrapeRaces, acceptScrapedRace } from '@/lib/api/races';
+import { scrapeRaces, scrapeRacesGemini, acceptScrapedRace } from '@/lib/api/races';
 import { normalizeUrl } from '@/lib/validation';
 import type { TrailRaceAgentRaceRow } from '@/types/trail-race-agent.types';
 
@@ -15,6 +15,7 @@ export function ScrapePageContent() {
     const t = useTranslations('admin.races.scrape');
 
     const [websiteUrl, setWebsiteUrl] = useState('');
+    const [provider, setProvider] = useState<'openai' | 'gemini'>('openai');
     const [isScraping, setIsScraping] = useState(false);
     const [scrapedRaces, setScrapedRaces] = useState<TrailRaceAgentRaceRow[]>([]);
     const [scrapeError, setScrapeError] = useState<string | null>(null);
@@ -46,7 +47,9 @@ export function ScrapePageContent() {
 
         try {
             const normalizedUrl = normalizeUrl(websiteUrl.trim());
-            const races = await scrapeRaces(normalizedUrl);
+            const races = provider === 'gemini'
+                ? await scrapeRacesGemini(normalizedUrl)
+                : await scrapeRaces(normalizedUrl);
             setScrapedRaces(races);
             setHasScraped(true);
         } catch (err) {
@@ -100,6 +103,22 @@ export function ScrapePageContent() {
                 title={t('title')}
                 subtitle={t('subtitle')}
             />
+            <div className="flex gap-3">
+                <span className="text-sm text-gray-600">{t('provider.label')}:</span>
+                {(['openai', 'gemini'] as const).map((p) => (
+                    <label key={p} className="flex items-center gap-1.5 cursor-pointer">
+                        <input
+                            type="radio"
+                            name="provider"
+                            value={p}
+                            checked={provider === p}
+                            onChange={() => setProvider(p)}
+                            disabled={isScraping}
+                        />
+                        <span className="text-sm">{t(`provider.${p}`)}</span>
+                    </label>
+                ))}
+            </div>
             <div className="flex flex-col sm:flex-row items-start gap-3 max-w-2xl">
                 <div className="flex-1 w-full">
                     <FormInput

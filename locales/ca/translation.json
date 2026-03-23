@@ -481,6 +481,11 @@
         "scrapeNoResults": "No s'han trobat curses en aquesta web",
         "scrapeError": "Error en extreure dades de la web",
         "loadDummyRaces": "Carregar dades de prova (sense IA)",
+        "provider": {
+          "label": "Model d'IA",
+          "openai": "OpenAI",
+          "gemini": "Gemini"
+        },
         "results": {
           "title": "Curses trobades",
           "loading": "Cercant curses a la web... Això pot trigar fins a 30 segons.",

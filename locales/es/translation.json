@@ -478,6 +478,11 @@
         "scrapeNoResults": "No se encontraron carreras en esta web",
         "scrapeError": "Error al extraer datos de la web",
         "loadDummyRaces": "Cargar datos de prueba (sin IA)",
+        "provider": {
+          "label": "Modelo de IA",
+          "openai": "OpenAI",
+          "gemini": "Gemini"
+        },
         "results": {
           "title": "Carreras encontradas",
           "loading": "Buscando carreras en la web... Esto puede tardar hasta 30 segundos.",

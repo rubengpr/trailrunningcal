@@ -72,6 +72,25 @@ export async function scrapeRaces(websiteUrl: string): Promise<import('@/types/t
 }
 
 /**
+ * Scrapes race data using Gemini URL Context. Admin-only.
+ */
+export async function scrapeRacesGemini(websiteUrl: string): Promise<import('@/types/trail-race-agent.types').TrailRaceAgentRaceRow[]> {
+  const response = await fetch('/api/races/scrape-gemini', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ websiteUrl }),
+  });
+
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(responseData.error || 'Failed to scrape races');
+  }
+
+  return responseData.data.races;
+}
+
+/**
  * Accepts a scraped race by creating it in the database. Admin-only.
  */
 export async function acceptScrapedRace(
