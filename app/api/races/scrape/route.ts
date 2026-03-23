@@ -37,7 +37,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const client = createOpenAIClient();
     const result = await runTrailRaceDomainAgent(client, { eventUrl: normalizedUrl });
 
-    return NextResponse.json({ success: true, data: { races: result.races } });
+    const todayStr = new Date().toISOString().split('T')[0];
+    const futureRaces = result.races.filter((race) => race.date >= todayStr);
+    return NextResponse.json({ success: true, data: { races: futureRaces } });
   } catch (error) {
     console.error('Scrape API error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
