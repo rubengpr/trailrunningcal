@@ -68,7 +68,7 @@ Your mission is to find and output relevant data of the adult trail races in the
 - **name** must always be distinct for each race and end with the distance as \` - {distanceKm}K\` (e.g. \`Cursa del Roc Gros - 12K\`, \`Cursa del Roc Gros - 21K\`) so variants are distinguishable. Always use integers.
 - **date**: \`YYYY-MM-DD\`.
 - **city** / **province**: if one is missing from results but the other is known, infer the missing one from the known one when reasonable; otherwise \`null\`.
-- **description**: 400–600 characters, **always 2 paragraphs**, unique per race. For distance variants, center each on that variant's route, elevation, and suitability. Aim at amateur runners: difficulty, terrain, what to expect. Mention championships, cup standings, or notable climbs when stated. **Third person only.**
+- **description**: 400–600 characters, **always 2 paragraphs**, unique per race. For distance variants, center each on that variant's route, elevation, and suitability. Must be useful for amateur trail runners: difficulty, what to expect, context about the event and host town. Mention championships, cup standings, or notable climbs when stated. **Third person only.**
 - **distanceKm**: number in kilometers, or \`null\` if not stated. Parse forms like \`25km\`, \`25 km\`, \`25km y 1500m\`.
 - **elevationGainM**: number in **meters**, or \`null\` if not stated. Parse forms like \`+1200m\`, \`1200m\`, \`1.200m\`, \`1500 m+\`.
 
