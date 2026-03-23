@@ -1,6 +1,12 @@
 import OpenAI from 'openai';
-import type { Response, ResponseCreateParamsNonStreaming } from 'openai/resources/responses/responses';
-import type { TrailRaceAgentParsed, TrailRaceAgentRaceRow } from '@/types/trail-race-agent.types';
+import type {
+  Response,
+  ResponseCreateParamsNonStreaming,
+} from 'openai/resources/responses/responses';
+import type {
+  TrailRaceAgentParsed,
+  TrailRaceAgentRaceRow,
+} from '@/types/trail-race-agent.types';
 
 const MODEL = 'gpt-5.4-mini';
 
@@ -12,7 +18,9 @@ export function requireOpenAIApiKey(): string {
   return apiKey;
 }
 
-export function createOpenAIClient(apiKey: string = requireOpenAIApiKey()): OpenAI {
+export function createOpenAIClient(
+  apiKey: string = requireOpenAIApiKey(),
+): OpenAI {
   return new OpenAI({ apiKey });
 }
 
@@ -21,7 +29,9 @@ export function hostnameFromEventUrl(eventUrl: string): string {
   return hostname.replace(/^www\./i, '');
 }
 
-export function parseJsonOutputText(outputText: string): TrailRaceAgentParsed | null {
+export function parseJsonOutputText(
+  outputText: string,
+): TrailRaceAgentParsed | null {
   try {
     return JSON.parse(outputText) as TrailRaceAgentParsed;
   } catch {
@@ -47,10 +57,10 @@ Your mission is to find and output relevant data of the adult trail races in the
 
 - Return a structured JSON with a \`races\` array.
 - If nothing qualifies, return races as an empty array—keep the field, no nulls, no invented races.
+- If the event appears **suspended, cancelled, or not held** as a normal edition (see Hard constraints), return \`races\` as \`[]\`—same as when nothing qualifies.
 - **One object per race** described in the content: single-race sites → one element; multi-distance events → one element per distance/modality.
 - **Always include walk modalities** when the site lists them with a distance: **caminada** / caminada popular and **marcha** / **marxa** (Catalan).
 - All user-facing text in the JSON (e.g. descriptions) must be **Spanish**.
-- Only include races happening in future dates.
 
 ## Field rules
 
@@ -64,53 +74,57 @@ Your mission is to find and output relevant data of the adult trail races in the
 
 ## Hard constraints
 
+- **Suspended or cancelled:** If on-domain content shows the edition is suspended, cancelled, or postponed with no firm new date, return \`races\` as \`[]\`; do not backfill from past editions or generic pages.
 - Respect **domain scope** (see Discovery): inspect wikiloc or komoot domain if found in the domain.
 - Do **not** invent or infer facts beyond what the content (and the city/province rule above) supports.
 - **Exclude children's races** entirely (e.g. infantil, juvenil, benjamín, alevín, prebenjamín, or any race aimed at children).
 - Always rely on domain data first. Use wikiloc or komoot data as fallback.
 `.trim();
 
-export const trailRaceAgentTextFormat: ResponseCreateParamsNonStreaming['text'] = {
-  format: {
-    type: 'json_schema',
-    name: 'trail_race',
-    strict: true,
-    schema: {
-      type: 'object',
-      additionalProperties: false,
-      properties: {
-        races: {
-          type: 'array',
-          items: {
-            type: 'object',
-            additionalProperties: false,
-            properties: {
-              name: { type: 'string' },
-              date: { type: 'string' },
-              city: { type: 'string' },
-              province: { type: 'string' },
-              description: { type: 'string' },
-              distanceKm: { type: 'number' },
-              elevationGainM: { type: ['number', 'null'] },
+export const trailRaceAgentTextFormat: ResponseCreateParamsNonStreaming['text'] =
+  {
+    format: {
+      type: 'json_schema',
+      name: 'trail_race',
+      strict: true,
+      schema: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          races: {
+            type: 'array',
+            items: {
+              type: 'object',
+              additionalProperties: false,
+              properties: {
+                name: { type: 'string' },
+                date: { type: 'string' },
+                city: { type: 'string' },
+                province: { type: 'string' },
+                description: { type: 'string' },
+                distanceKm: { type: 'number' },
+                elevationGainM: { type: ['number', 'null'] },
+              },
+              required: [
+                'name',
+                'date',
+                'city',
+                'province',
+                'description',
+                'distanceKm',
+                'elevationGainM',
+              ],
             },
-            required: [
-              'name',
-              'date',
-              'city',
-              'province',
-              'description',
-              'distanceKm',
-              'elevationGainM',
-            ],
           },
         },
+        required: ['races'],
       },
-      required: ['races'],
     },
-  },
-};
+  };
 
-export function trailRaceDomainWebSearchTools(allowedDomain: string): NonNullable<ResponseCreateParamsNonStreaming['tools']> {
+export function trailRaceDomainWebSearchTools(
+  allowedDomain: string,
+): NonNullable<ResponseCreateParamsNonStreaming['tools']> {
   return [
     {
       type: 'web_search',
