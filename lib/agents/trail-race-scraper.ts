@@ -66,6 +66,7 @@ Your mission is to find and output relevant data of the adult trail races in the
 
 - If a value cannot be determined with **certainty**, use \`null\` (except where inference below is explicitly allowed).
 - **name** must always be distinct for each race and end with the distance as \` - {distanceKm}K\` (e.g. \`Cursa del Roc Gros - 12K\`, \`Cursa del Roc Gros - 21K\`) so variants are distinguishable. Always use integers.
+- If the modality is a **marxa**, **marcha** (marcha popular), **caminada**, or **caminada popular**, include that in **name** (e.g. \`Marxa de Sant Jordi - 20K\`, \`Caminada popular del poble - 10K\`)—use the same term as on the site when clear; otherwise prefer Spanish **Marcha** / **Caminada** or Catalan **Marxa** / **Caminada** to match the event region.
 - **date**: \`YYYY-MM-DD\`.
 - **city** / **province**: if one is missing from results but the other is known, infer the missing one from the known one when reasonable; otherwise \`null\`.
 - **description**: 400–600 characters, **always 2 paragraphs**, unique per race. For distance variants, center each on that variant's route, elevation, and suitability. Must be useful for amateur trail runners: difficulty, what to expect, context about the event and host town. Mention championships, cup standings, or notable climbs when stated. **Third person only.**
