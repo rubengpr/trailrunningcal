@@ -96,10 +96,16 @@ export async function POST(request: NextRequest) {
     if (typeof distanceKm !== 'number' || distanceKm <= 0 || distanceKm >= 1000) {
       return NextResponse.json({ error: 'Invalid distance' }, { status: 400 });
     }
-    if (typeof elevationGainM !== 'number' || elevationGainM <= 0 || elevationGainM >= 100000) {
+    if (elevationGainM === null && !isAdmin) {
       return NextResponse.json({ error: 'Invalid elevation gain' }, { status: 400 });
     }
-    if (typeof priceEur !== 'number' || !Number.isInteger(priceEur) || priceEur < 0 || priceEur >= 1000) {
+    if (elevationGainM !== null && (typeof elevationGainM !== 'number' || elevationGainM <= 0 || elevationGainM >= 100000)) {
+      return NextResponse.json({ error: 'Invalid elevation gain' }, { status: 400 });
+    }
+    if (priceEur === null && !isAdmin) {
+      return NextResponse.json({ error: 'Invalid price' }, { status: 400 });
+    }
+    if (priceEur !== null && (typeof priceEur !== 'number' || !Number.isInteger(priceEur) || priceEur < 0 || priceEur >= 1000)) {
       return NextResponse.json({ error: 'Invalid price' }, { status: 400 });
     }
     if (!websiteUrl || typeof websiteUrl !== 'string') {
