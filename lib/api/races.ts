@@ -52,10 +52,15 @@ export async function deleteRace(raceId: string): Promise<void> {
   }
 }
 
+export interface ScrapeRacesResult {
+  races: import('@/types/trail-race-agent.types').TrailRaceAgentRaceRow[];
+  markdown: string;
+}
+
 /**
  * Scrapes race data from an event website via the agent API. Admin-only.
  */
-export async function scrapeRaces(websiteUrl: string): Promise<import('@/types/trail-race-agent.types').TrailRaceAgentRaceRow[]> {
+export async function scrapeRaces(websiteUrl: string): Promise<ScrapeRacesResult> {
   const response = await fetch('/api/races/scrape', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -68,7 +73,7 @@ export async function scrapeRaces(websiteUrl: string): Promise<import('@/types/t
     throw new Error(responseData.error || 'Failed to scrape races');
   }
 
-  return responseData.data.races;
+  return responseData.data;
 }
 
 /**

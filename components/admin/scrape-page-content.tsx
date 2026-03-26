@@ -20,6 +20,8 @@ export function ScrapePageContent() {
     const [scrapeError, setScrapeError] = useState<string | null>(null);
     const [hasScraped, setHasScraped] = useState(false);
 
+    const [scrapeMarkdown, setScrapeMarkdown] = useState<string | null>(null);
+
     const [acceptedIndexes, setAcceptedIndexes] = useState<Set<number>>(new Set());
     const [acceptingIndex, setAcceptingIndex] = useState<number | null>(null);
     const [rejectedIndexes, setRejectedIndexes] = useState<Set<number>>(new Set());
@@ -40,14 +42,16 @@ export function ScrapePageContent() {
         setScrapeError(null);
         setScrapedRaces([]);
         setHasScraped(false);
+        setScrapeMarkdown(null);
         setAcceptedIndexes(new Set());
         setAcceptingIndex(null);
         setRejectedIndexes(new Set());
 
         try {
             const normalizedUrl = normalizeUrl(websiteUrl.trim());
-            const races = await scrapeRaces(normalizedUrl);
+            const { races, markdown } = await scrapeRaces(normalizedUrl);
             setScrapedRaces(races);
+            setScrapeMarkdown(markdown);
             setHasScraped(true);
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : t('scrapeError');
@@ -92,6 +96,18 @@ export function ScrapePageContent() {
         setRejectedIndexes(new Set());
     };
 
+    const handleDownloadMarkdown = () => {
+        if (!scrapeMarkdown) return;
+        const hostname = new URL(normalizeUrl(websiteUrl.trim())).hostname.replace(/^www\./, '');
+        const blob = new Blob([scrapeMarkdown], { type: 'text/markdown' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `crawl-${hostname}.md`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+
     const isDev = process.env.NODE_ENV === 'development';
 
     return (
@@ -122,6 +138,15 @@ export function ScrapePageContent() {
                     >
                         {t('scrapeButton')}
                     </Button>
+                    {scrapeMarkdown && (
+                        <Button
+                            type="button"
+                            variant="secondary"
+                            onClick={handleDownloadMarkdown}
+                        >
+                            {t('downloadMarkdown')}
+                        </Button>
+                    )}
                     {isDev && (
                         <Button
                             type="button"

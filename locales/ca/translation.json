@@ -480,6 +480,7 @@
         "scrapeSuccess": "S'han trobat {count} curses",
         "scrapeNoResults": "No s'han trobat curses en aquesta web",
         "scrapeError": "Error en extreure dades de la web",
+        "downloadMarkdown": "Descarregar .md",
         "loadDummyRaces": "Carregar dades de prova (sense IA)",
         "results": {
           "title": "Curses trobades",
