@@ -10,7 +10,8 @@
     "test": "vitest",
     "migrate:races": "tsx scripts/migrate-races.ts",
     "migrate:price-eur": "tsx scripts/migrate-price-eur.ts",
-    "migrate:price-eur:dry": "tsx scripts/migrate-price-eur.ts --dry-run"
+    "migrate:price-eur:dry": "tsx scripts/migrate-price-eur.ts --dry-run",
+    "spider:crawl": "tsx scripts/spider-crawl-run.ts"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.1",
