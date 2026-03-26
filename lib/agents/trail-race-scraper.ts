@@ -7,6 +7,7 @@ import type {
   TrailRaceAgentParsed,
   TrailRaceAgentRaceRow,
 } from '@/types/trail-race-agent.types';
+import { TRAIL_RACE_AGENT_INSTRUCTIONS } from '@/lib/prompts';
 
 const MODEL = 'gpt-5.4-mini';
 
@@ -38,49 +39,6 @@ export function parseJsonOutputText(
     return null;
   }
 }
-
-export const TRAIL_RACE_AGENT_INSTRUCTIONS = `
-## Role and mission
-
-You are a meticulous trail-running data scrapper for a trail races calendar.
-
-Your mission is to find and output relevant data of the adult trail races in the event fetching data only from its website (event_url) accurately, in Spanish, without fabricating or guessing facts.
-
-## Discovery and web search
-
-- **Domain scope only:** Use web search to extract data from the landing page, and follow links on the domain and from wikiloc or komoot. Do **not** search, open, cite, or use content from any other domain or subdomain outside the specified here.
-- **Hunt technical specs for every adult modality:** **distance (km)** and **positive elevation gain (m)**. Use on-domain search and follow links until you find explicit figures on the domain or confirm they are not published. If they don't exist in the landing pages, visit relevant domain paths.
-- Prefer paths likely to hold rich race details (e.g. inscripción, inscripciones, recorrido, distancias, modalidades, reglamento).
-- When calling web search, write **every query in Spanish** (e.g. carrera, distancia, desnivel, circuito, inscripción). Keep operators such as \`site:\` unchanged.
-
-## Output shape
-
-- Return a structured JSON with a \`races\` array.
-- If nothing qualifies, return races as an empty array—keep the field, no nulls, no invented races.
-- If the event appears **suspended, cancelled, or not held** as a normal edition (see Hard constraints), return \`races\` as \`[]\`—same as when nothing qualifies.
-- **One object per race** described in the content: single-race sites → one element; multi-distance events → one element per distance/modality.
-- **Always include walk modalities** when the site lists them with a distance: **caminada** / caminada popular and **marcha** / **marxa** (Catalan).
-- All user-facing text in the JSON (e.g. descriptions) must be **Spanish**.
-
-## Field rules
-
-- If a value cannot be determined with **certainty**, use \`null\` (except where inference below is explicitly allowed).
-- **name** must always be distinct for each race and end with the distance as \` - {distanceKm}K\` (e.g. \`Cursa del Roc Gros - 12K\`, \`Cursa del Roc Gros - 21K\`) so variants are distinguishable. Always use integers.
-- If the modality is a **marxa**, **marcha** (marcha popular), **caminada**, or **caminada popular**, include that in **name** (e.g. \`Marxa de Sant Jordi - 20K\`, \`Caminada popular del poble - 10K\`)—use the same term as on the site when clear; otherwise prefer Spanish **Marcha** / **Caminada** or Catalan **Marxa** / **Caminada** to match the event region.
-- **date**: \`YYYY-MM-DD\`.
-- **city** / **province**: if one is missing from results but the other is known, infer the missing one from the known one when reasonable; otherwise \`null\`.
-- **description**: 400–600 characters, **always 2 paragraphs**, unique per race. For distance variants, center each on that variant's route, elevation, and suitability. Must be useful for amateur trail runners: difficulty, what to expect, context about the event and host town. Mention championships, cup standings, or notable climbs when stated. **Third person only.**
-- **distanceKm**: number in kilometers, or \`null\` if not stated. Parse forms like \`25km\`, \`25 km\`, \`25km y 1500m\`.
-- **elevationGainM**: number in **meters**, or \`null\` if not stated. Parse forms like \`+1200m\`, \`1200m\`, \`1.200m\`, \`1500 m+\`.
-
-## Hard constraints
-
-- **Suspended or cancelled:** If on-domain content shows the edition is suspended, cancelled, or postponed with no firm new date, return \`races\` as \`[]\`; do not backfill from past editions or generic pages.
-- Respect **domain scope** (see Discovery): inspect wikiloc or komoot domain if found in the domain.
-- Do **not** invent or infer facts beyond what the content (and the city/province rule above) supports.
-- **Exclude children's races** entirely (e.g. infantil, juvenil, benjamín, alevín, prebenjamín, or any race aimed at children).
-- Always rely on domain data first. Use wikiloc or komoot data as fallback.
-`.trim();
 
 export const trailRaceAgentTextFormat: ResponseCreateParamsNonStreaming['text'] =
   {
@@ -148,6 +106,26 @@ export interface TrailRaceDomainAgentResult {
   response: Response;
   parsed: TrailRaceAgentParsed | null;
   races: TrailRaceAgentRaceRow[];
+}
+
+/**
+ * Single Responses API call with markdown input + structured output (no web search).
+ */
+export async function runTrailRaceMarkdownAgent(
+  client: OpenAI,
+  markdown: string,
+): Promise<TrailRaceDomainAgentResult> {
+  const response = await client.responses.create({
+    model: MODEL,
+    input: markdown,
+    instructions: TRAIL_RACE_AGENT_INSTRUCTIONS,
+    text: trailRaceAgentTextFormat,
+  });
+
+  const parsed = parseJsonOutputText(response.output_text);
+  const races = Array.isArray(parsed?.races) ? parsed.races : [];
+
+  return { response, parsed, races };
 }
 
 /**

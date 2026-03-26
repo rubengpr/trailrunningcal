@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { isAdminEmail } from '@/lib/auth-admin';
-import { createOpenAIClient, runTrailRaceDomainAgent } from '@/lib/agents/trail-race-scraper';
+import { createOpenAIClient, runTrailRaceMarkdownAgent } from '@/lib/agents/trail-race-scraper';
+import { spiderCloudCrawl } from '@/lib/agents/spider-crawl';
+import { joinSpiderCrawlPagesToMarkdown } from '@/lib/agents/spider-crawl-join-markdown';
 import { normalizeUrl } from '@/lib/validation';
 
-export const maxDuration = 60;
+export const maxDuration = 300;
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
@@ -34,12 +36,15 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ error: 'Invalid URL format' }, { status: 400 });
     }
 
+    const pages = await spiderCloudCrawl(normalizedUrl);
+    const markdown = joinSpiderCrawlPagesToMarkdown(normalizedUrl, pages);
+
     const client = createOpenAIClient();
-    const result = await runTrailRaceDomainAgent(client, { eventUrl: normalizedUrl });
+    const result = await runTrailRaceMarkdownAgent(client, markdown);
 
     const todayStr = new Date().toISOString().split('T')[0];
     const futureRaces = result.races.filter((race) => race.date >= todayStr);
-    return NextResponse.json({ success: true, data: { races: futureRaces } });
+    return NextResponse.json({ success: true, data: { races: futureRaces, markdown } });
   } catch (error) {
     console.error('Scrape API error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
