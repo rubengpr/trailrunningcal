@@ -117,6 +117,7 @@
     "ultraTrail": "Ultratrail",
     "maraton": "Maratón trail",
     "mediaMaraton": "Media maratón trail",
+    "marcha": "Marcha popular",
     "categories": "Categorías",
     "explore": "Explorar",
     "categoriesHeading": "Categorías",
@@ -441,6 +442,12 @@
     "pageDescription": "Encuentra todas las carreras de trail running de media maratón en Cataluña (20-24 km). Fechas, desniveles y toda la información para {year}.",
     "pageBody": "La media maratón de trail running (20–24 km) es una de las distancias más populares entre corredores de montaña. Una distancia exigente que combina resistencia y técnica en terreno de montaña, y un paso habitual hacia maratones y ultras. En Cataluña encontrarás media maratones de trail por el Pirineo, el Montseny, la Costa Brava y el Garraf a lo largo de todo el año.",
     "breadcrumb": "Media Maratón Trail"
+  },
+  "marcha": {
+    "pageTitle": "Marchas y Caminadas {year} - Rutas no competitivas en Cataluña",
+    "pageDescription": "Encuentra todas las marchas populares y caminadas en Cataluña. Rutas para todos los niveles, sin competición, en entornos naturales. Fechas e información para {year}.",
+    "pageBody": "Las marchas populares y caminadas son pruebas no competitivas pensadas para disfrutar del entorno natural a pie o corriendo sin cronómetro. En Cataluña encontrarás marchas por el Pirineo, el Montseny, la Costa Brava y el Garraf, con recorridos para todos los niveles y edades. Una opción ideal para iniciarse en el trail running o para participar en familia.",
+    "breadcrumb": "Marcha Popular"
   },
   "admin": {
     "login": {

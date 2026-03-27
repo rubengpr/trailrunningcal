@@ -117,6 +117,7 @@
     "ultraTrail": "Ultratrail",
     "maraton": "Marató trail",
     "mediaMaraton": "Mitja marató trail",
+    "marcha": "Marxes i caminades",
     "categories": "Categories",
     "explore": "Explorar",
     "categoriesHeading": "Categories",
@@ -444,6 +445,12 @@
     "pageDescription": "Troba totes les curses de trail running de mitja marató a Catalunya (20-24 km). Dates, desnivells i tota la informació per al {year}.",
     "pageBody": "La mitja marató de trail running (20–24 km) és una de les distàncies més populars entre els corredors de muntanya. Una distància exigent que combina resistència i tècnica en terreny de muntanya, i un pas habitual cap a maratons i ultres. A Catalunya trobaràs mitges maratons de trail pel Pirineu, el Montseny, la Costa Brava i el Garraf al llarg de tot l'any.",
     "breadcrumb": "Mitja Marató Trail"
+  },
+  "marcha": {
+    "pageTitle": "Marxes i Caminades {year} - Rutes no competitives a Catalunya",
+    "pageDescription": "Troba totes les marxes populars i caminades a Catalunya. Rutes per a tots els nivells, sense competició, en entorns naturals. Dates i informació per al {year}.",
+    "pageBody": "Les marxes populars i caminades són proves no competitives pensades per gaudir de l'entorn natural a peu o corrent sense cronòmetre. A Catalunya trobaràs marxes pel Pirineu, el Montseny, la Costa Brava i el Garraf, amb recorreguts per a tots els nivells i edats. Una opció ideal per iniciar-se al trail running o per participar en família.",
+    "breadcrumb": "Marxa Popular"
   },
   "admin": {
     "login": {

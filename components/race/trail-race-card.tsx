@@ -67,6 +67,7 @@ const CATEGORY_SLUG: Record<string, string> = {
   ultra: 'ultra-trail',
   maraton: 'maraton',
   media: 'media-maraton',
+  marcha: 'marcha',
 };
 
 const getElevationRatioColor = (ratio: number | null): string => {

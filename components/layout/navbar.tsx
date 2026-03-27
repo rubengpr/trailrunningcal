@@ -190,6 +190,20 @@ export default function Navbar() {
                     >
                       {t('mediaMaraton')}
                     </Link>
+                    <Link
+                      href={`/${locale}/marcha`}
+                      className="block px-2 py-1.5 text-sm rounded hover:bg-gray-50 transition-colors"
+                      onClick={() => {
+                        setIsCategoriesOpen(false);
+                        setTimeout(() => posthog.capture('navbar_link_clicked', {
+                          link_text: 'marcha',
+                          link_href: `/${locale}/marcha`,
+                          locale: locale,
+                        }), 0);
+                      }}
+                    >
+                      {t('marcha')}
+                    </Link>
                   </div>
                   <div className="w-px bg-gray-100" />
                   <div className="flex-1">
