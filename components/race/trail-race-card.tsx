@@ -51,7 +51,11 @@ const calculateElevationRatio = (
   return Math.round(elevationGainM / distanceKm);
 };
 
-const getRaceCategory = (distanceKm: number): string => {
+const getRaceCategory = (distanceKm: number, name: string): string => {
+  const lowerName = name.toLowerCase();
+  if (lowerName.includes('marcha') || lowerName.includes('marxa') || lowerName.includes('caminada')) {
+    return 'marcha';
+  }
   if (distanceKm > 42) return 'ultra';
   if (distanceKm >= 42) return 'maraton';
   if (distanceKm >= 20) return 'media';
@@ -90,7 +94,7 @@ export default function TrailRaceCard({
   const router = useRouter();
   const { day, month, dayOfWeek } = formatDate(date, t);
   const elevationRatio = calculateElevationRatio(elevationGainM, distanceKm);
-  const raceCategory = getRaceCategory(distanceKm);
+  const raceCategory = getRaceCategory(distanceKm, name);
   const categorySlug = CATEGORY_SLUG[raceCategory] ?? null;
   const elevationRatioColor = getElevationRatioColor(elevationRatio);
   const displayPrice = getDisplayPrice(priceEur);

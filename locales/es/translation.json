@@ -101,7 +101,8 @@
     "maraton": "Maratón",
     "media": "Media",
     "trail": "Trail",
-    "sprint": "Sprint"
+    "sprint": "Sprint",
+    "marcha": "Marcha"
   },
   "navigation": {
     "appName": "Trail Running Cal",
