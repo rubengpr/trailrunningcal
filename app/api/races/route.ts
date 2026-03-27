@@ -102,9 +102,6 @@ export async function POST(request: NextRequest) {
     if (elevationGainM !== null && (typeof elevationGainM !== 'number' || elevationGainM <= 0 || elevationGainM >= 100000)) {
       return NextResponse.json({ error: 'Invalid elevation gain' }, { status: 400 });
     }
-    if (priceEur === null && !isAdmin) {
-      return NextResponse.json({ error: 'Invalid price' }, { status: 400 });
-    }
     if (priceEur !== null && (typeof priceEur !== 'number' || !Number.isInteger(priceEur) || priceEur < 0 || priceEur >= 1000)) {
       return NextResponse.json({ error: 'Invalid price' }, { status: 400 });
     }

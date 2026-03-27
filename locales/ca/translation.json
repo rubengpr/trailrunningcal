@@ -396,7 +396,6 @@
           "elevationRequired": "El desnivell és obligatori",
           "elevationInvalid": "Desnivell invàlid",
           "elevationTooLong": "Desnivell massa llarg",
-          "priceRequired": "El preu és obligatori",
           "priceInvalid": "Preu invàlid",
           "priceTooLong": "Preu massa alt",
           "websiteUrlRequired": "El lloc web és obligatori",

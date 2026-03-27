@@ -393,7 +393,6 @@
           "elevationRequired": "El desnivel es obligatorio",
           "elevationInvalid": "Desnivel inválido",
           "elevationTooLong": "Desnivel demasiado largo",
-          "priceRequired": "El precio es obligatorio",
           "priceInvalid": "Precio inválido",
           "priceTooLong": "Precio demasiado alto",
           "websiteUrlRequired": "El sitio web es obligatorio",

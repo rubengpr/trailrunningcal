@@ -115,7 +115,6 @@ export function RaceForm({ raceId, initialData, isEditMode, redirectBasePath = '
             },
         ],
         priceEur: [
-            ValidationRules.required(t('errors.priceRequired')),
             ValidationRules.noDecimals(t('errors.priceInvalid')),
             ValidationRules.integerRange(0, 1000, t('errors.priceInvalid')),
         ],
