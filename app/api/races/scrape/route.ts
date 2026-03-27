@@ -6,7 +6,7 @@ import { spiderCloudCrawl } from '@/lib/agents/spider-crawl';
 import { joinSpiderCrawlPagesToMarkdown } from '@/lib/agents/spider-crawl-join-markdown';
 import { normalizeUrl } from '@/lib/validation';
 
-export const maxDuration = 300;
+export const maxDuration = 60;
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
