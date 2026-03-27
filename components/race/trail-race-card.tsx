@@ -51,11 +51,20 @@ const calculateElevationRatio = (
   return Math.round(elevationGainM / distanceKm);
 };
 
-const getRaceCategory = (distanceKm: number, name: string): string => {
+const getRaceCategory = (distanceKm: number, name: string, elevationGainM: number | null): string => {
   const lowerName = name.toLowerCase();
   if (lowerName.includes('marcha') || lowerName.includes('marxa') || lowerName.includes('caminada')) {
     return 'marcha';
   }
+  const hasVkKeyword =
+    lowerName.includes('kilómetro vertical') ||
+    lowerName.includes('quilòmetre vertical') ||
+    lowerName.includes('km vertical') ||
+    lowerName.includes(' kv ') ||
+    lowerName.startsWith('kv ') ||
+    lowerName.endsWith(' kv');
+  const hasVkRatio = distanceKm < 4 && elevationGainM !== null && elevationGainM >= 600;
+  if (hasVkKeyword || hasVkRatio) return 'vk';
   if (distanceKm > 42) return 'ultra';
   if (distanceKm >= 42) return 'maraton';
   if (distanceKm >= 20) return 'media';
@@ -68,6 +77,7 @@ const CATEGORY_SLUG: Record<string, string> = {
   maraton: 'maraton',
   media: 'media-maraton',
   marcha: 'marcha',
+  vk: 'km-vertical',
 };
 
 const getElevationRatioColor = (ratio: number | null): string => {
@@ -95,7 +105,7 @@ export default function TrailRaceCard({
   const router = useRouter();
   const { day, month, dayOfWeek } = formatDate(date, t);
   const elevationRatio = calculateElevationRatio(elevationGainM, distanceKm);
-  const raceCategory = getRaceCategory(distanceKm, name);
+  const raceCategory = getRaceCategory(distanceKm, name, elevationGainM);
   const categorySlug = CATEGORY_SLUG[raceCategory] ?? null;
   const elevationRatioColor = getElevationRatioColor(elevationRatio);
   const displayPrice = getDisplayPrice(priceEur);

@@ -102,7 +102,8 @@
     "media": "Mitja",
     "trail": "Trail",
     "sprint": "Sprint",
-    "marcha": "Marxa"
+    "marcha": "Marxa",
+    "vk": "Quilòmetre Vertical"
   },
   "navigation": {
     "appName": "Trail Running Cal",
@@ -118,6 +119,7 @@
     "maraton": "Marató trail",
     "mediaMaraton": "Mitja marató trail",
     "marcha": "Marxes i caminades",
+    "kmVertical": "Quilòmetre Vertical",
     "categories": "Categories",
     "explore": "Explorar",
     "categoriesHeading": "Categories",
@@ -451,6 +453,12 @@
     "pageDescription": "Troba totes les marxes populars i caminades a Catalunya. Rutes per a tots els nivells, sense competició, en entorns naturals. Dates i informació per al {year}.",
     "pageBody": "Les marxes populars i caminades són proves no competitives pensades per gaudir de l'entorn natural a peu o corrent sense cronòmetre. A Catalunya trobaràs marxes pel Pirineu, el Montseny, la Costa Brava i el Garraf, amb recorreguts per a tots els nivells i edats. Una opció ideal per iniciar-se al trail running o per participar en família.",
     "breadcrumb": "Marxa Popular"
+  },
+  "kmVertical": {
+    "pageTitle": "Quilòmetre Vertical {year} - Curses d'alta muntanya a Catalunya",
+    "pageDescription": "Troba totes les curses de quilòmetre vertical a Catalunya. Proves de curta distància amb desnivell extrem per al {year}.",
+    "pageBody": "El quilòmetre vertical (KV) és una modalitat de cursa de muntanya caracteritzada per una distància curta —generalment entre 3 i 5 km— amb un desnivell positiu molt elevat en proporció. Requereix una potència i resistència muscular excepcionals. A Catalunya, els KV se celebren als entorns més verticals del Pirineu i les serralades prelitorals, amb proves que formen part de circuits nacionals i internacionals.",
+    "breadcrumb": "Quilòmetre Vertical"
   },
   "admin": {
     "login": {

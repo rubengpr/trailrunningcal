@@ -102,7 +102,8 @@
     "media": "Media",
     "trail": "Trail",
     "sprint": "Sprint",
-    "marcha": "Marcha"
+    "marcha": "Marcha",
+    "vk": "Kilómetro Vertical"
   },
   "navigation": {
     "appName": "Trail Running Cal",
@@ -118,6 +119,7 @@
     "maraton": "Maratón trail",
     "mediaMaraton": "Media maratón trail",
     "marcha": "Marcha popular",
+    "kmVertical": "Kilómetro Vertical",
     "categories": "Categorías",
     "explore": "Explorar",
     "categoriesHeading": "Categorías",
@@ -448,6 +450,12 @@
     "pageDescription": "Encuentra todas las marchas populares y caminadas en Cataluña. Rutas para todos los niveles, sin competición, en entornos naturales. Fechas e información para {year}.",
     "pageBody": "Las marchas populares y caminadas son pruebas no competitivas pensadas para disfrutar del entorno natural a pie o corriendo sin cronómetro. En Cataluña encontrarás marchas por el Pirineo, el Montseny, la Costa Brava y el Garraf, con recorridos para todos los niveles y edades. Una opción ideal para iniciarse en el trail running o para participar en familia.",
     "breadcrumb": "Marcha Popular"
+  },
+  "kmVertical": {
+    "pageTitle": "Kilómetro Vertical {year} - Carreras de alta montaña en Cataluña",
+    "pageDescription": "Encuentra todas las carreras de kilómetro vertical en Cataluña. Pruebas de corta distancia con desnivel extremo para {year}.",
+    "pageBody": "El kilómetro vertical (KV) es una modalidad de carrera de montaña caracterizada por una distancia corta —generalmente entre 3 y 5 km— con un desnivel positivo muy elevado en proporción. Requiere una potencia y resistencia muscular excepcionales. En Cataluña, los KV se celebran en los entornos más verticales del Pirineo y las cordilleras prelitorales, con pruebas que forman parte de circuitos nacionales e internacionales.",
+    "breadcrumb": "Kilómetro Vertical"
   },
   "admin": {
     "login": {

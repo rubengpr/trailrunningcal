@@ -204,6 +204,20 @@ export default function Navbar() {
                     >
                       {t('marcha')}
                     </Link>
+                    <Link
+                      href={`/${locale}/km-vertical`}
+                      className="block px-2 py-1.5 text-sm rounded hover:bg-gray-50 transition-colors"
+                      onClick={() => {
+                        setIsCategoriesOpen(false);
+                        setTimeout(() => posthog.capture('navbar_link_clicked', {
+                          link_text: 'km_vertical',
+                          link_href: `/${locale}/km-vertical`,
+                          locale: locale,
+                        }), 0);
+                      }}
+                    >
+                      {t('kmVertical')}
+                    </Link>
                   </div>
                   <div className="w-px bg-gray-100" />
                   <div className="flex-1">
