@@ -10,3 +10,13 @@ input[type='number']::-webkit-outer-spin-button {
 input[type='number'] {
   -moz-appearance: textfield;
 }
+
+/* Races map: single rounded card (MarkerPopupBody) without double padding */
+.maplibregl-popup-content:has(.race-map-popup-body) {
+  padding: 0;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow:
+    0 1px 3px 0 rgb(0 0 0 / 0.1),
+    0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
