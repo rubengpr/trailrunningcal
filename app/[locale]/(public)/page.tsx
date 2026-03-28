@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import HomeClient from '@/components/home/home-client';
 import HeroSection from '@/components/layout/hero-section';
+import MapaCalendarMapClient from '@/components/mapa/mapa-calendar-map-client';
 import {
   getSeoMetaConfig,
   generateMetadataFromOptions,
@@ -9,13 +9,16 @@ import {
 import type { Locale } from '@/i18n';
 import { buildHomeAlternateLinks } from '@/lib/alternate-links';
 import { getRaces } from '@/lib/db/races';
+import { getRacesMapData } from '@/lib/db/races-map';
 import {
   buildWebsiteJsonLd,
   buildOrganizationJsonLd,
   buildFaqJsonLd,
 } from '@/lib/seo/home-json-ld';
+import type { MapPageLabels } from '@/types/map.types';
 
-export const revalidate = 3600; // 1 hour fallback; mutations trigger on-demand revalidation
+/** Calendar + map data; map markers benefit from fresher revalidation than static-only home. */
+export const revalidate = 300;
 
 export async function generateMetadata({
   params,
@@ -49,7 +52,17 @@ export default async function HomePage({
   const { locale } = await params;
   const t = await getTranslations({ locale });
 
-  const races = await getRaces();
+  const [races, { markers }] = await Promise.all([
+    getRaces(),
+    getRacesMapData(),
+  ]);
+
+  const labels: MapPageLabels = {
+    previousRace: t('map.previousRace'),
+    nextRace: t('map.nextRace'),
+    racePageLink: t('map.racePageLink'),
+    notAvailable: t('race.notAvailable'),
+  };
 
   const websiteJsonLd = buildWebsiteJsonLd();
   const organizationJsonLd = buildOrganizationJsonLd();
@@ -75,7 +88,14 @@ export default async function HomePage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
       <HeroSection />
-      <HomeClient races={races} />
+      <div className="mx-auto w-full pt-6 pb-16 sm:pt-10 lg:pt-4">
+        <MapaCalendarMapClient
+          races={races}
+          markers={markers}
+          locale={locale}
+          labels={labels}
+        />
+      </div>
     </>
   );
 }
