@@ -1,6 +1,14 @@
 {
   "title": "Calendario carreras trail running Cataluña",
   "subtitle": "Descubre el calendario más completo de carreras de trail running en Cataluña. Encuentra tu próxima carrera de montaña con filtros por mes, provincia y dificultad.",
+  "map": {
+    "title": "Mapa de carreras",
+    "description": "Carreras próximas por ciudad. Haz clic en un punto para ver detalles.",
+    "empty": "No hay carreras con ubicación en el mapa. Cuando haya coordenadas para las ciudades del calendario, aparecerán aquí.",
+    "previousRace": "Anterior",
+    "nextRace": "Siguiente",
+    "racePageLink": "Ver carrera"
+  },
   "search": {
     "placeholder": "Buscar por nombre, ciudad o provincia...",
     "clear": "Limpiar búsqueda",

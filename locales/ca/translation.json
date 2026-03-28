@@ -1,6 +1,14 @@
 {
   "title": "Calendari curses trail running Catalunya",
   "subtitle": "Descobreix el calendari més complet de curses de trail running a Catalunya. Troba la teva pròxima cursa de muntanya amb filtres per mes, província i dificultat.",
+  "map": {
+    "title": "Mapa de curses",
+    "description": "Properes curses per ciutat. Fes clic en un punt per veure els detalls.",
+    "empty": "No hi ha curses amb ubicació al mapa. Quan hi hagi coordenades per les ciutats del calendari, apareixeran aquí.",
+    "previousRace": "Anterior",
+    "nextRace": "Següent",
+    "racePageLink": "Veure cursa"
+  },
   "search": {
     "placeholder": "Cercar per nom, ciutat o província...",
     "clear": "Netejar cerca",
