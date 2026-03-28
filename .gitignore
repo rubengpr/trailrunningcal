@@ -25,6 +25,9 @@
 .DS_Store
 *.pem
 
+# geocode script cache (Nominatim — do not commit)
+scripts/.cache/
+
 # debug
 npm-debug.log*
 yarn-debug.log*
