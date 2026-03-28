@@ -18,6 +18,10 @@ interface TrailRaceCardProps {
   raceSlug?: string;
   organizerId: string | null;
   displayOnly?: boolean;
+  /** Tighter layout for narrow columns (e.g. mapa split). */
+  variant?: 'default' | 'compact';
+  /** When set, called on card click instead of navigating to the race page. */
+  onCardClick?: () => void;
 }
 
 const formatDate = (
@@ -99,6 +103,8 @@ export default function TrailRaceCard({
   raceSlug,
   organizerId,
   displayOnly = false,
+  variant = 'default',
+  onCardClick,
 }: TrailRaceCardProps) {
   const t = useTranslations();
   const locale = useLocale();
@@ -111,12 +117,31 @@ export default function TrailRaceCard({
   const displayPrice = getDisplayPrice(priceEur);
 
   const handleCardClick = () => {
-    if (!displayOnly && raceSlug) {
+    if (displayOnly) return;
+    if (onCardClick) {
+      onCardClick();
+      return;
+    }
+    if (raceSlug) {
       router.push(`/${locale}/carrera/${raceSlug}`);
     }
   };
 
-  const isTestRace = TEST_VERIFIED_RACES_NAME.includes(name)
+  const isTestRace = TEST_VERIFIED_RACES_NAME.includes(name);
+
+  const isCompact = variant === 'compact';
+  const innerPadding = isCompact
+    ? 'px-3 py-2 sm:px-4 sm:py-2'
+    : 'p-2 sm:p-4';
+  const dateBlockClass = isCompact
+    ? 'flex flex-col items-center justify-center min-w-[44px] px-2 py-1.5 bg-amber-50 text-gray-800 rounded-sm'
+    : 'flex flex-col items-center justify-center min-w-[50px] px-3 py-2 bg-amber-50 text-gray-800 rounded-sm';
+  const titleClass = isCompact
+    ? 'text-xs sm:text-sm font-bold text-gray-900'
+    : 'text-xs sm:text-lg font-bold text-gray-900';
+  const dayNumClass = isCompact ? 'text-sm sm:text-base font-bold' : 'text-base sm:text-lg font-bold';
+  const metaRowClass = isCompact ? 'flex gap-2 text-[11px] sm:text-xs text-gray-600 mb-1.5' : 'flex gap-3 text-xs sm:text-sm text-gray-600 mb-2';
+  const mainGap = isCompact ? 'gap-3' : 'gap-4';
 
   return (
     <article
@@ -126,32 +151,32 @@ export default function TrailRaceCard({
         : 'sm:hover:shadow-md transition-shadow sm:cursor-pointer pointer-events-none sm:pointer-events-auto'
         }`}
     >
-      <div className="w-full p-2 sm:p-4">
+      <div className={`w-full ${innerPadding}`}>
         <div className="flex items-start sm:justify-between mb-1">
-          <div className="flex gap-4">
-            <div className="flex flex-col items-center justify-center min-w-[50px] px-3 py-2 bg-amber-50 text-gray-800 rounded-sm">
-              <span className="text-[10px] sm:text-xs font-medium uppercase tracking-wide">
+          <div className={`flex ${mainGap}`}>
+            <div className={dateBlockClass}>
+              <span className="text-[9px] sm:text-[10px] font-medium uppercase tracking-wide">
                 {dayOfWeek}
               </span>
-              <span className="text-base sm:text-lg font-bold">{day}</span>
+              <span className={dayNumClass}>{day}</span>
               <span className="text-xs font-medium capitalize">
                 {month}
               </span>
             </div>
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <div className="flex flex-row items-center gap-1.5 mb-1">
                 {!displayOnly && raceSlug ? (
                   <Link
                     href={`/${locale}/carrera/${raceSlug}`}
-                    className="pointer-events-auto hover:underline sm:hover:no-underline"
+                    className="pointer-events-auto hover:underline sm:hover:no-underline min-w-0"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <h2 className="text-xs sm:text-lg font-bold text-gray-900">
+                    <h2 className={`${titleClass} line-clamp-2`}>
                       {name}
                     </h2>
                   </Link>
                 ) : (
-                  <h2 className="text-xs sm:text-lg font-bold text-gray-900">
+                  <h2 className={`${titleClass} line-clamp-2`}>
                     {name}
                   </h2>
                 )}
@@ -160,7 +185,7 @@ export default function TrailRaceCard({
                   className={`shrink-0 ${(organizerId || isTestRace) ? 'visible' : 'invisible'}`}
                 />
               </div>
-              <div className="flex gap-3 text-xs sm:text-sm text-gray-600 mb-2">
+              <div className={metaRowClass}>
                 <span>{distanceKm}km</span>
                 <span>{elevationGainM ? `${elevationGainM}m+` : '-'}</span>
                 <span className="truncate">
@@ -197,7 +222,7 @@ export default function TrailRaceCard({
                 {!displayOnly && raceSlug && (
                   <Link
                     href={`/${locale}/carrera/${raceSlug}`}
-                    className="sm:hidden inline-block pointer-events-auto bg-black text-white px-2 py-0.5 rounded-sm text-xs font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+                    className="sm:hidden inline-block pointer-events-auto bg-black text-white px-2 py-1 rounded-sm text-xs font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
                     onClick={(e) => {
                       e.stopPropagation();
                     }}
@@ -211,14 +236,16 @@ export default function TrailRaceCard({
               </div>
             </div>
           </div>
-          <div className="hidden sm:flex flex-col items-end gap-2">
-            <div className="font-semibold text-gray-900 text-xs sm:text-lg">
+          <div className="hidden sm:flex flex-col items-end gap-2 shrink-0">
+            <div
+              className={`font-semibold text-gray-900 ${isCompact ? 'text-xs sm:text-sm' : 'text-xs sm:text-lg'}`}
+            >
               {displayPrice ? `${displayPrice}€` : '—'}
             </div>
             {!displayOnly && raceSlug && (
               <Link
                 href={`/${locale}/carrera/${raceSlug}`}
-                className="hidden sm:inline-block bg-black text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+                className={`hidden sm:inline-block bg-black text-white rounded-md font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors ${isCompact ? 'px-3 py-1 text-xs' : 'px-3 py-1.5 text-sm'}`}
                 onClick={(e) => {
                   e.stopPropagation();
                 }}
