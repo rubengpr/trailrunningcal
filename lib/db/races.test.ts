@@ -49,6 +49,7 @@ describe('raceRowToTrailRace', () => {
         sponsors: ['Sponsor A', 'Sponsor B'],
         organizerId: 'org-456',
         websiteUrl: 'https://example.com',
+        heroImageFilename: null,
       });
     });
   });
