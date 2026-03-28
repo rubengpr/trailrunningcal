@@ -49,10 +49,14 @@ const nextConfig: NextConfig = {
               // Geist font is self-hosted by next/font at build time.
               "font-src 'self'",
               // Supabase storage for race/province/brand images. data: for Next.js blur placeholders.
-              `img-src 'self' data: ${supabaseHost} https://ppmdbmyxgtqvmvtbptmg.supabase.co`,
+              // OSM Standard raster tiles (MapLibre races map).
+              `img-src 'self' data: ${supabaseHost} https://ppmdbmyxgtqvmvtbptmg.supabase.co https://tile.openstreetmap.org`,
               // Supabase JS client (auth + DB) connects directly from the browser.
               // PostHog ingest is proxied to self via rewrites.
-              `connect-src 'self' ${supabaseHost}`,
+              // MapLibre (races map): OpenStreetMap Standard tile requests.
+              `connect-src 'self' ${supabaseHost} https://tile.openstreetmap.org`,
+              // MapLibre GL loads its worker from a blob URL by default.
+              "worker-src 'self' blob:",
               "frame-ancestors 'none'",
               "object-src 'none'",
               "base-uri 'self'",
