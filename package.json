@@ -11,7 +11,8 @@
     "migrate:races": "tsx scripts/migrate-races.ts",
     "migrate:price-eur": "tsx scripts/migrate-price-eur.ts",
     "migrate:price-eur:dry": "tsx scripts/migrate-price-eur.ts --dry-run",
-    "spider:crawl": "tsx scripts/spider-crawl-run.ts"
+    "spider:crawl": "tsx scripts/spider-crawl-run.ts",
+    "geocode:city-locations": "tsx scripts/geocode-city-locations.ts"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.1",
@@ -23,6 +24,7 @@
     "@types/mdx": "^2.0.13",
     "@vercel/analytics": "^1.6.1",
     "gray-matter": "^4.0.3",
+    "maplibre-gl": "^5.21.1",
     "next": "^16.1.2",
     "next-intl": "^4.5.3",
     "openai": "^6.27.0",
