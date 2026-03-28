@@ -18,7 +18,7 @@ interface TrailRaceCardProps {
   raceSlug?: string;
   organizerId: string | null;
   displayOnly?: boolean;
-  /** Tighter layout for narrow columns (e.g. mapa split). */
+  /** Tighter layout for narrow columns (e.g. home list beside map). */
   variant?: 'default' | 'compact';
   /** When set, called on card click instead of navigating to the race page. */
   onCardClick?: () => void;
