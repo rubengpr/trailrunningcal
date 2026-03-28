@@ -11,6 +11,7 @@ import { SearchError } from '@/components/ui/error-message';
 import ProvinceFilter from '@/components/filters/province-filter';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Button } from '@/components/ui/button';
+import { filterHomeRaces } from '@/lib/home-race-filters';
 import { generateRaceSlug } from '@/lib/race-utils';
 
 interface HomeClientProps {
@@ -26,27 +27,10 @@ export default function HomeClient({ races, showProvinceFilter = true }: HomeCli
   const [selectedMonth, setSelectedMonth] = useState<string>('');
   const [selectedProvince, setSelectedProvince] = useState<string>('');
 
-  const racesWithDates = useMemo(() =>
-    races.map((race) => {
-      if (!race.date) return { race, parsedDate: null };
-      const d = new Date(race.date);
-      d.setHours(0, 0, 0, 0);
-      return { race, parsedDate: d };
-    }),
-    [races]
+  const filteredRaces = useMemo(
+    () => filterHomeRaces(races, selectedMonth, selectedProvince),
+    [races, selectedMonth, selectedProvince],
   );
-
-  const filteredRaces = useMemo(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const monthNumber = selectedMonth ? parseInt(selectedMonth, 10) : null;
-
-    return racesWithDates
-      .filter(({ parsedDate }) => !parsedDate || parsedDate > today)
-      .filter(({ parsedDate }) => monthNumber === null ? true : parsedDate !== null && parsedDate.getMonth() === monthNumber)
-      .filter(({ race }) => !selectedProvince || race.province === selectedProvince)
-      .map(({ race }) => race);
-  }, [racesWithDates, selectedMonth, selectedProvince]);
 
   const handleMonthSelect = (month: string) => {
     setSelectedMonth(month);
