@@ -15,16 +15,18 @@ import ProvinceFilter from '@/components/filters/province-filter';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Button } from '@/components/ui/button';
 import RacesMap from '@/components/races-map/races-map';
-import DesktopRacesMapGate from '@/components/races-map/desktop-races-map-gate';
 import { useMinWidthLg } from '@/hooks/use-min-width-lg';
 import { filterHomeRaces, filterMapMarkersByRaceIds } from '@/lib/home-race-filters';
 import { generateRaceSlug } from '@/lib/race-utils';
+
+type MobileView = 'list' | 'map';
 
 interface MapaCalendarMapClientProps {
   races: TrailRace[];
   markers: RaceMapMarker[];
   locale: Locale;
   labels: MapPageLabels;
+  showProvinceFilter?: boolean;
 }
 
 export default function MapaCalendarMapClient({
@@ -32,6 +34,7 @@ export default function MapaCalendarMapClient({
   markers,
   locale,
   labels,
+  showProvinceFilter = true,
 }: MapaCalendarMapClientProps) {
   const tResults = useTranslations('results');
   const tFilters = useTranslations('filters');
@@ -42,6 +45,7 @@ export default function MapaCalendarMapClient({
   const [selectedProvince, setSelectedProvince] = useState<string>('');
   const [focusRaceId, setFocusRaceId] = useState<string | null>(null);
   const [focusRaceNonce, setFocusRaceNonce] = useState(0);
+  const [mobileView, setMobileView] = useState<MobileView>('list');
 
   const router = useRouter();
   const isDesktopMap = useMinWidthLg();
@@ -97,11 +101,24 @@ export default function MapaCalendarMapClient({
     [focusRaceOnMap, isDesktopMap, filteredMarkers, locale, router],
   );
 
-  /** Height only on the map root — sticky lives on a wrapper so the column aligns with the list. */
-  const mapPanelClassName =
+  /** Split column — sticky map; height on map root. */
+  const mapPanelClassNameDesktop =
     'h-[min(78vh,640px)] min-h-[280px] lg:min-h-[360px]';
 
+  /** Full-width map below filters on small screens. */
+  const mapPanelClassNameMobile =
+    'h-[min(85dvh,720px)] min-h-[280px]';
+
   const hasServerMarkers = markers.length > 0;
+
+  const showListPanel = isDesktopMap || mobileView === 'list';
+  const showMapPanel = isDesktopMap || mobileView === 'map';
+
+  const showMobileMapFab = !isDesktopMap && hasServerMarkers;
+
+  /** Capsule / pill: override Button `rounded-md`; generous horizontal padding. */
+  const mapToggleFabClassName =
+    '!rounded-full px-5 py-1 min-h-12 whitespace-nowrap shadow-lg';
 
   return (
     <>
@@ -113,9 +130,11 @@ export default function MapaCalendarMapClient({
               onMonthSelect={handleMonthSelect}
             />
           </div>
-          <div className="flex justify-center gap-2">
-            <ProvinceFilter selectedProvince={selectedProvince} onProvinceSelect={handleProvinceSelect} />
-          </div>
+          {showProvinceFilter && (
+            <div className="flex justify-center gap-2">
+              <ProvinceFilter selectedProvince={selectedProvince} onProvinceSelect={handleProvinceSelect} />
+            </div>
+          )}
         </div>
       </section>
 
@@ -124,32 +143,17 @@ export default function MapaCalendarMapClient({
           <section id="carreras">
             <div className="mx-auto w-full max-w-4xl px-4 sm:px-6 lg:max-w-7xl lg:px-8">
               <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-8">
-                <div className="min-w-0 w-full min-h-0 lg:w-1/2 lg:max-h-[calc(100vh-12rem)] lg:overflow-y-auto lg:pr-1">
-                  <div className="grid gap-4 min-h-[200px]">
-                    {filteredRaces.length === 0 ? (
-                      <EmptyState
-                        icon={
-                          <svg
-                            className="mx-auto h-16 w-16 text-gray-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={1.5}
-                              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                            />
-                          </svg>
-                        }
-                        title={tResults('noRacesFound')}
-                        description={tResults('noRacesMessage')}
-                        action={
-                          <Button onClick={handleClearFilters}>
+                {showListPanel && (
+                  <div
+                    className={`min-w-0 w-full min-h-0 lg:w-1/2 lg:max-h-[calc(100vh-12rem)] lg:overflow-y-auto lg:pr-1 ${showMobileMapFab && mobileView === 'list' ? 'pb-20' : ''
+                      }`}
+                  >
+                    <div className="grid gap-4 min-h-[200px]">
+                      {filteredRaces.length === 0 ? (
+                        <EmptyState
+                          icon={
                             <svg
-                              className="w-4 h-4 mr-2"
+                              className="mx-auto h-16 w-16 text-gray-400"
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -158,72 +162,92 @@ export default function MapaCalendarMapClient({
                               <path
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                                strokeWidth={1.5}
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                               />
                             </svg>
-                            {tFilters('clearFilters')}
-                          </Button>
-                        }
-                      />
-                    ) : (
-                      filteredRaces.map((race) => {
-                        const raceSlug = generateRaceSlug(race.name);
-                        return (
-                        <div key={race.id}>
-                          <ErrorBoundary
-                            fallback={
-                              <div className="bg-white rounded-lg shadow-sm border border-red-200 p-6">
-                                <div className="text-center">
-                                  <div className="mb-2">
-                                    <svg
-                                      className="mx-auto h-8 w-8 text-red-500"
-                                      fill="none"
-                                      stroke="currentColor"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
-                                      />
-                                    </svg>
+                          }
+                          title={tResults('noRacesFound')}
+                          description={tResults('noRacesMessage')}
+                          action={
+                            <Button onClick={handleClearFilters}>
+                              <svg
+                                className="w-4 h-4 mr-2"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                                />
+                              </svg>
+                              {tFilters('clearFilters')}
+                            </Button>
+                          }
+                        />
+                      ) : (
+                        filteredRaces.map((race) => {
+                          const raceSlug = generateRaceSlug(race.name);
+                          return (
+                            <div key={race.id}>
+                              <ErrorBoundary
+                                fallback={
+                                  <div className="bg-white rounded-lg shadow-sm border border-red-200 p-6">
+                                    <div className="text-center">
+                                      <div className="mb-2">
+                                        <svg
+                                          className="mx-auto h-8 w-8 text-red-500"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          viewBox="0 0 24 24"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+                                          />
+                                        </svg>
+                                      </div>
+                                      <h4 className="text-sm font-semibold text-gray-900 mb-1">
+                                        {tErrors('raceLoadError')}
+                                      </h4>
+                                      <p className="text-xs text-gray-600">
+                                        {tErrors('raceLoadErrorMessage')}
+                                      </p>
+                                    </div>
                                   </div>
-                                  <h4 className="text-sm font-semibold text-gray-900 mb-1">
-                                    {tErrors('raceLoadError')}
-                                  </h4>
-                                  <p className="text-xs text-gray-600">
-                                    {tErrors('raceLoadErrorMessage')}
-                                  </p>
-                                </div>
-                              </div>
-                            }
-                          >
-                            <TrailRaceCard
-                              variant="compact"
-                              date={race.date}
-                              name={race.name}
-                              distanceKm={race.distanceKm}
-                              elevationGainM={race.elevationGainM}
-                              priceEur={race.priceEur ?? null}
-                              city={race.city}
-                              province={race.province}
-                              raceSlug={raceSlug}
-                              organizerId={race.organizerId}
-                              onCardClick={() =>
-                                handleRaceCardClick(race.id, raceSlug)
-                              }
-                            />
-                          </ErrorBoundary>
-                        </div>
-                        );
-                      })
-                    )}
+                                }
+                              >
+                                <TrailRaceCard
+                                  variant="compact"
+                                  date={race.date}
+                                  name={race.name}
+                                  distanceKm={race.distanceKm}
+                                  elevationGainM={race.elevationGainM}
+                                  priceEur={race.priceEur ?? null}
+                                  city={race.city}
+                                  province={race.province}
+                                  raceSlug={raceSlug}
+                                  organizerId={race.organizerId}
+                                  onCardClick={() =>
+                                    handleRaceCardClick(race.id, raceSlug)
+                                  }
+                                />
+                              </ErrorBoundary>
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
 
-                <DesktopRacesMapGate>
+                {showMapPanel && (
                   <div className="min-w-0 w-full min-h-0 shrink-0 lg:w-1/2 lg:self-start">
                     {!hasServerMarkers ? (
                       <p className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-6 text-center text-sm text-gray-600">
@@ -235,7 +259,11 @@ export default function MapaCalendarMapClient({
                           markers={filteredMarkers}
                           locale={locale}
                           labels={labels}
-                          className={mapPanelClassName}
+                          className={
+                            isDesktopMap
+                              ? mapPanelClassNameDesktop
+                              : mapPanelClassNameMobile
+                          }
                           focusRaceId={focusRaceId}
                           focusRaceNonce={focusRaceNonce}
                           onMarkerPinClick={focusRaceOnMap}
@@ -243,12 +271,36 @@ export default function MapaCalendarMapClient({
                       </div>
                     )}
                   </div>
-                </DesktopRacesMapGate>
+                )}
               </div>
             </div>
           </section>
         </ErrorBoundary>
       </main>
+
+      {showMobileMapFab && (
+        <div className="lg:hidden fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-1/2 z-20 -translate-x-1/2">
+          {mobileView === 'list' ? (
+            <Button
+              type="button"
+              variant="primary"
+              className={mapToggleFabClassName}
+              onClick={() => setMobileView('map')}
+            >
+              {tMap('viewMap')}
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              variant="primary"
+              className={mapToggleFabClassName}
+              onClick={() => setMobileView('list')}
+            >
+              {tMap('viewList')}
+            </Button>
+          )}
+        </div>
+      )}
     </>
   );
 }
