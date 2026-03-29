@@ -7,7 +7,9 @@
     "empty": "No hi ha curses amb ubicació al mapa. Quan hi hagi coordenades per les ciutats del calendari, apareixeran aquí.",
     "previousRace": "Anterior",
     "nextRace": "Següent",
-    "racePageLink": "Veure cursa"
+    "racePageLink": "Veure cursa",
+    "viewMap": "Veure mapa",
+    "viewList": "Veure llista"
   },
   "search": {
     "placeholder": "Cercar per nom, ciutat o província...",

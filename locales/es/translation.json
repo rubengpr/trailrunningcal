@@ -7,7 +7,9 @@
     "empty": "No hay carreras con ubicación en el mapa. Cuando haya coordenadas para las ciudades del calendario, aparecerán aquí.",
     "previousRace": "Anterior",
     "nextRace": "Siguiente",
-    "racePageLink": "Ver carrera"
+    "racePageLink": "Ver carrera",
+    "viewMap": "Ver mapa",
+    "viewList": "Ver lista"
   },
   "search": {
     "placeholder": "Buscar por nombre, ciudad o provincia...",
