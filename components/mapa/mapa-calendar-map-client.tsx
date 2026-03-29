@@ -82,6 +82,12 @@ export default function MapaCalendarMapClient({
     setTimeout(() => posthog.capture('race_filters_cleared'), 0);
   };
 
+  const handleViewMapClick = (): void => {
+    setMobileView('map');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    setTimeout(() => posthog.capture('calendar_view_map_clicked', { locale }), 0);
+  };
+
   const focusRaceOnMap = useCallback((raceId: string) => {
     setFocusRaceId(raceId);
     setFocusRaceNonce((n) => n + 1);
@@ -285,7 +291,7 @@ export default function MapaCalendarMapClient({
               type="button"
               variant="primary"
               className={mapToggleFabClassName}
-              onClick={() => { setMobileView('map'); window.scrollTo({ top: 0, behavior: 'instant' }); }}
+              onClick={handleViewMapClick}
             >
               {tMap('viewMap')}
             </Button>
