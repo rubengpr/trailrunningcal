@@ -285,7 +285,7 @@ export default function MapaCalendarMapClient({
               type="button"
               variant="primary"
               className={mapToggleFabClassName}
-              onClick={() => setMobileView('map')}
+              onClick={() => { setMobileView('map'); window.scrollTo({ top: 0, behavior: 'instant' }); }}
             >
               {tMap('viewMap')}
             </Button>
