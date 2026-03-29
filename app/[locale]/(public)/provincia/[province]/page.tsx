@@ -8,7 +8,9 @@ import { buildProvinceAlternateLinks } from '@/lib/alternate-links';
 import { BASE_URL } from '@/lib/config';
 import { buildBreadcrumbJsonLd } from '@/lib/seo/breadcrumb-json-ld';
 import CategoryHeroSection from '@/components/layout/category-hero-section';
-import HomeClient from '@/components/home/home-client';
+import MapaCalendarMapClient from '@/components/mapa/mapa-calendar-map-client';
+import { getRacesMapData } from '@/lib/db/races-map';
+import type { MapPageLabels } from '@/types/map.types';
 
 export const revalidate = 300; // 5 minutes
 
@@ -68,15 +70,23 @@ export default async function ProvincePage({
 
   const t = await getTranslations({ locale, namespace: 'provincia' });
   const tNav = await getTranslations({ locale, namespace: 'navigation' });
+  const tCommon = await getTranslations({ locale });
   const provinceName = t(`names.${province}`);
   const year = new Date().getFullYear();
+
+  const labels: MapPageLabels = {
+    previousRace: tCommon('map.previousRace'),
+    nextRace: tCommon('map.nextRace'),
+    racePageLink: tCommon('map.racePageLink'),
+    notAvailable: tCommon('race.notAvailable'),
+  };
 
   const breadcrumbJsonLd = buildBreadcrumbJsonLd([
     { name: tNav('calendar'), url: `${BASE_URL}/${locale}` },
     { name: provinceName, url: `${BASE_URL}/${locale}/provincia/${province}` },
   ]);
 
-  const allRaces = await getRaces();
+  const [allRaces, { markers }] = await Promise.all([getRaces(), getRacesMapData()]);
   const provinceRaces = allRaces.filter(
     (race) => race.province === PROVINCE_DB_NAMES[province],
   );
@@ -95,7 +105,15 @@ export default async function ProvincePage({
           { name: provinceName },
         ]}
       />
-      <HomeClient races={provinceRaces} showProvinceFilter={false} />
+      <div className="mx-auto w-full pt-6 pb-16 sm:pt-10 lg:pt-4">
+        <MapaCalendarMapClient
+          races={provinceRaces}
+          markers={markers}
+          locale={locale}
+          labels={labels}
+          showProvinceFilter={false}
+        />
+      </div>
     </>
   );
 }

@@ -7,7 +7,9 @@ import { buildMarchaAlternateLinks } from '@/lib/alternate-links';
 import { BASE_URL } from '@/lib/config';
 import { buildBreadcrumbJsonLd } from '@/lib/seo/breadcrumb-json-ld';
 import CategoryHeroSection from '@/components/layout/category-hero-section';
-import HomeClient from '@/components/home/home-client';
+import MapaCalendarMapClient from '@/components/mapa/mapa-calendar-map-client';
+import { getRacesMapData } from '@/lib/db/races-map';
+import type { MapPageLabels } from '@/types/map.types';
 
 export const revalidate = 300;
 
@@ -46,14 +48,22 @@ export default async function MarchaPage({
 
   const t = await getTranslations({ locale, namespace: 'marcha' });
   const tNav = await getTranslations({ locale, namespace: 'navigation' });
+  const tCommon = await getTranslations({ locale });
   const year = new Date().getFullYear();
+
+  const labels: MapPageLabels = {
+    previousRace: tCommon('map.previousRace'),
+    nextRace: tCommon('map.nextRace'),
+    racePageLink: tCommon('map.racePageLink'),
+    notAvailable: tCommon('race.notAvailable'),
+  };
 
   const breadcrumbJsonLd = buildBreadcrumbJsonLd([
     { name: tNav('calendar'), url: `${BASE_URL}/${locale}` },
     { name: t('breadcrumb'), url: `${BASE_URL}/${locale}/marcha` },
   ]);
 
-  const allRaces = await getRaces();
+  const [allRaces, { markers }] = await Promise.all([getRaces(), getRacesMapData()]);
   const marchaRaces = allRaces.filter((race) => {
     const lowerName = race.name.toLowerCase();
     return WALKING_KEYWORDS.some((keyword) => lowerName.includes(keyword));
@@ -73,7 +83,15 @@ export default async function MarchaPage({
           { name: t('breadcrumb') },
         ]}
       />
-      <HomeClient races={marchaRaces} showProvinceFilter={false} />
+      <div className="mx-auto w-full pt-6 pb-16 sm:pt-10 lg:pt-4">
+        <MapaCalendarMapClient
+          races={marchaRaces}
+          markers={markers}
+          locale={locale}
+          labels={labels}
+          showProvinceFilter={false}
+        />
+      </div>
     </>
   );
 }
