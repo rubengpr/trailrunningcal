@@ -2,7 +2,7 @@ import type { TrailRace } from '@/types/race.types';
 import type { RaceMapMarker } from '@/types/map.types';
 
 /**
- * Same rules as the home calendar: future or undated races, optional month and province.
+ * Same rules as the home calendar: future dated races only, optional month and province filter.
  */
 export function filterHomeRaces(
   races: TrailRace[],
@@ -21,7 +21,7 @@ export function filterHomeRaces(
   });
 
   return racesWithDates
-    .filter(({ parsedDate }) => !parsedDate || parsedDate > today)
+    .filter(({ parsedDate }) => parsedDate !== null && parsedDate > today)
     .filter(({ parsedDate }) =>
       monthNumber === null ? true : parsedDate !== null && parsedDate.getMonth() === monthNumber,
     )
