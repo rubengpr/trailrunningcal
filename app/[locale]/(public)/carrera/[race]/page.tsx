@@ -328,7 +328,7 @@ export default async function RacePage({
           )}
           <div className="w-full my-6 sm:my-8">
             {raceData.description && (
-              <p className="text-xs sm:text-sm lg:text-base whitespace-pre-line">
+              <p className="text-base whitespace-pre-line">
                 {raceData.description}
               </p>
             )}
