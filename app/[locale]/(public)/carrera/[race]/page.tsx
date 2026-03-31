@@ -254,7 +254,7 @@ export default async function RacePage({
                   </TrackedLink>
                 )}
               </div>
-              <div className="flex flex-row flex-wrap gap-x-3 gap-y-1 text-xs sm:text-sm lg:text-base text-gray-600">
+              <div className="flex flex-row flex-wrap gap-x-3 gap-y-1 text-sm lg:text-base text-gray-600">
                 <div className="flex flex-row gap-1">
                   <span className="whitespace-nowrap">{raceData.city},</span>
                   {provinceSlug ? (
