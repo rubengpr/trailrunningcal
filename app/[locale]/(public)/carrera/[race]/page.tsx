@@ -229,7 +229,7 @@ export default async function RacePage({
             captureContext={{ page: 'race', race_id: raceData.id, race_slug: race }}
           />
           <div className="mt-3 sm:mt-4 flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6">
-            <div className="flex flex-col flex-1 gap-1">
+            <div className="flex flex-col flex-1 gap-1.5 sm:gap-1">
               <div className="flex flex-row items-center gap-2">
                 <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">
                   {raceData.name}
