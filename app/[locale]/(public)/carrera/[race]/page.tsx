@@ -231,7 +231,7 @@ export default async function RacePage({
           <div className="mt-3 sm:mt-4 flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6">
             <div className="flex flex-col flex-1 gap-2">
               <div className="flex flex-row items-center gap-2">
-                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">
                   {raceData.name}
                 </h1>
                 {(raceData.organizerId || isTestRace(raceData.name)) && (
@@ -239,7 +239,7 @@ export default async function RacePage({
                 )}
               </div>
               <div className="flex flex-row flex-wrap items-center gap-2">
-                <span className="text-base sm:text-lg lg:text-xl font-bold text-black whitespace-nowrap">
+                <span className="text-sm sm:text-base lg:text-lg font-bold text-black whitespace-nowrap">
                   {formattedDate}
                 </span>
                 {raceData.date && <ConfirmedDateBadge locale={locale} />}
@@ -254,39 +254,29 @@ export default async function RacePage({
                   </TrackedLink>
                 )}
               </div>
-              <div className="flex flex-row flex-wrap gap-x-3 gap-y-1 text-gray-600">
+              <div className="flex flex-row flex-wrap gap-x-3 gap-y-1 text-xs sm:text-sm lg:text-base text-gray-600">
                 <div className="flex flex-row gap-1">
-                  <span className="text-base sm:text-lg lg:text-xl whitespace-nowrap">
-                    {raceData.city},
-                  </span>
+                  <span className="whitespace-nowrap">{raceData.city},</span>
                   {provinceSlug ? (
                     <TrackedLink
                       href={`/${locale}/provincia/${provinceSlug}`}
                       eventName="race_province_inline_clicked"
                       eventProperties={{ race_id: raceData.id, race_slug: race, province: raceData.province }}
-                      className="text-base sm:text-lg lg:text-xl whitespace-nowrap hover:underline"
+                      className="whitespace-nowrap hover:underline"
                     >
                       {raceData.province}
                     </TrackedLink>
                   ) : (
-                    <span className="text-base sm:text-lg lg:text-xl whitespace-nowrap">
-                      {raceData.province}
-                    </span>
+                    <span className="whitespace-nowrap">{raceData.province}</span>
                   )}
                 </div>
                 <div className="flex flex-row gap-2">
-                  <span className="text-base sm:text-lg lg:text-xl whitespace-nowrap">
-                    {raceData.distanceKm}km
-                  </span>
+                  <span className="whitespace-nowrap">{raceData.distanceKm}km</span>
                   {raceData.elevationGainM !== null && (
-                    <span className="text-base sm:text-lg lg:text-xl whitespace-nowrap">
-                      +{raceData.elevationGainM}m
-                    </span>
+                    <span className="whitespace-nowrap">+{raceData.elevationGainM}m</span>
                   )}
                   {displayPrice && (
-                    <span className="text-base sm:text-lg lg:text-xl whitespace-nowrap">
-                      · {displayPrice}€
-                    </span>
+                    <span className="whitespace-nowrap">· {displayPrice}€</span>
                   )}
                 </div>
               </div>
@@ -338,7 +328,7 @@ export default async function RacePage({
           )}
           <div className="w-full my-6 sm:my-8">
             {raceData.description && (
-              <p className="text-sm sm:text-base lg:text-lg whitespace-pre-line">
+              <p className="text-xs sm:text-sm lg:text-base whitespace-pre-line">
                 {raceData.description}
               </p>
             )}
