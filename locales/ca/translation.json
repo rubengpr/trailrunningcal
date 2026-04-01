@@ -9,7 +9,9 @@
     "nextRace": "Següent",
     "racePageLink": "Veure cursa",
     "viewMap": "Veure mapa",
-    "viewList": "Veure llista"
+    "viewList": "Veure llista",
+    "zoomIn": "Apropar",
+    "zoomOut": "Allunyar"
   },
   "search": {
     "placeholder": "Cercar per nom, ciutat o província...",

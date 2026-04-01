@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ReactElement } from 'react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { createRoot, type Root } from 'react-dom/client';
 import maplibregl, { type StyleSpecification } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -340,6 +341,7 @@ export default function RacesMap({
   focusRaceNonce = 0,
   onMarkerPinClick,
 }: RacesMapProps) {
+  const tMap = useTranslations('map');
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const markerRegistryRef = useRef<MarkerRegistryEntry[]>([]);
@@ -353,8 +355,14 @@ export default function RacesMap({
       style: OSM_STANDARD_STYLE,
       center: DEFAULT_CENTER,
       zoom: DEFAULT_ZOOM,
+      locale: {
+        'NavigationControl.ZoomIn': tMap('zoomIn'),
+        'NavigationControl.ZoomOut': tMap('zoomOut'),
+      },
     });
     mapRef.current = map;
+
+    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right');
 
     map.on('load', () => {
       addSpainBoundaryLayers(map);
@@ -446,7 +454,7 @@ export default function RacesMap({
       mapRef.current = null;
       map.remove();
     };
-  }, [markers, locale, labels, onMarkerPinClick]);
+  }, [markers, locale, labels, onMarkerPinClick, tMap]);
 
   useEffect(() => {
     if (!focusRaceId) return;

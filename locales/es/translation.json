@@ -9,7 +9,9 @@
     "nextRace": "Siguiente",
     "racePageLink": "Ver carrera",
     "viewMap": "Ver mapa",
-    "viewList": "Ver lista"
+    "viewList": "Ver lista",
+    "zoomIn": "Acercar",
+    "zoomOut": "Alejar"
   },
   "search": {
     "placeholder": "Buscar por nombre, ciudad o provincia...",
