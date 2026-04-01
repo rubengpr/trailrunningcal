@@ -1,3 +1,5 @@
+import type { OpenRouterScrapeModelId } from '@/lib/openrouter/scrape-models';
+
 /**
  * Updates a race via the API. Safe to call from client components.
  */
@@ -55,16 +57,28 @@ export async function deleteRace(raceId: string): Promise<void> {
 export interface ScrapeRacesResult {
   races: import('@/types/trail-race-agent.types').TrailRaceAgentRaceRow[];
   markdown: string;
+  rawModelOutput: string;
 }
 
+export type ScrapeRacesOptions =
+  | { model: OpenRouterScrapeModelId; websiteUrl: string }
+  | { model: OpenRouterScrapeModelId; markdown: string };
+
 /**
- * Scrapes race data from an event website via the agent API. Admin-only.
+ * Scrapes race data from a crawled URL or from markdown via the agent API. Admin-only.
  */
-export async function scrapeRaces(websiteUrl: string): Promise<ScrapeRacesResult> {
+export async function scrapeRaces(
+  options: ScrapeRacesOptions,
+): Promise<ScrapeRacesResult> {
+  const body =
+    'markdown' in options
+      ? { markdown: options.markdown, model: options.model }
+      : { websiteUrl: options.websiteUrl, model: options.model };
+
   const response = await fetch('/api/races/scrape', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ websiteUrl }),
+    body: JSON.stringify(body),
   });
 
   const responseData = await response.json();
