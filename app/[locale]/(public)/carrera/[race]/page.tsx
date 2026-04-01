@@ -231,7 +231,7 @@ export default async function RacePage({
           <div className="mt-3 sm:mt-4 flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6">
             <div className="flex flex-col flex-1 gap-1.5 sm:gap-1">
               <div className="flex flex-row items-center gap-2">
-                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold">
                   {raceData.name}
                 </h1>
                 {(raceData.organizerId || isTestRace(raceData.name)) && (
@@ -239,7 +239,7 @@ export default async function RacePage({
                 )}
               </div>
               <div className="flex flex-row flex-wrap items-center gap-2">
-                <span className="text-sm sm:text-base lg:text-lg font-bold text-black whitespace-nowrap">
+                <span className="text-sm sm:text-base lg:text-lg font-semibold text-black whitespace-nowrap">
                   {formattedDate}
                 </span>
                 {raceData.date && <ConfirmedDateBadge locale={locale} />}
