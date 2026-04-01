@@ -57,7 +57,7 @@ export async function runTrailRaceMarkdownAgentOpenRouter(
 
   const choices = completion.choices;
   if (choices === undefined || choices.length === 0) {
-    const completionRecord = completion as Record<string, unknown>;
+    const completionRecord = completion as unknown as Record<string, unknown>;
     const providerMessage = openRouterProviderErrorMessage(completionRecord);
     if (providerMessage) {
       console.error('OpenRouter API error', { model, message: providerMessage });
