@@ -1,0 +1,85 @@
+import type OpenAI from 'openai';
+import { TRAIL_RACE_AGENT_JSON_SCHEMA } from '@/lib/agents/trail-race-agent-schema';
+import type { OpenRouterScrapeModelId } from '@/lib/openrouter/scrape-models';
+import type {
+  TrailRaceAgentParsed,
+  TrailRaceAgentRaceRow,
+} from '@/types/trail-race-agent.types';
+import { TRAIL_RACE_AGENT_INSTRUCTIONS } from '@/lib/prompts';
+import { parseJsonOutputText } from '@/lib/agents/trail-race-scraper';
+
+export interface TrailRaceOpenRouterAgentResult {
+  parsed: TrailRaceAgentParsed | null;
+  races: TrailRaceAgentRaceRow[];
+  /** Raw `message.content` from the model before JSON parse (debug). */
+  rawModelOutput: string;
+}
+
+function openRouterProviderErrorMessage(
+  completionRecord: Record<string, unknown>,
+): string | null {
+  const apiError = completionRecord.error;
+  if (
+    apiError &&
+    typeof apiError === 'object' &&
+    apiError !== null &&
+    'message' in apiError &&
+    typeof (apiError as { message: unknown }).message === 'string'
+  ) {
+    return (apiError as { message: string }).message;
+  }
+  return null;
+}
+
+export async function runTrailRaceMarkdownAgentOpenRouter(
+  client: OpenAI,
+  markdown: string,
+  model: OpenRouterScrapeModelId,
+): Promise<TrailRaceOpenRouterAgentResult> {
+  const completion = await client.chat.completions.create({
+    model,
+    messages: [
+      { role: 'system', content: TRAIL_RACE_AGENT_INSTRUCTIONS },
+      { role: 'user', content: markdown },
+    ],
+    response_format: {
+      type: 'json_schema',
+      json_schema: {
+        name: 'trail_race',
+        strict: true,
+        schema: TRAIL_RACE_AGENT_JSON_SCHEMA as unknown as Record<
+          string,
+          unknown
+        >,
+      },
+    },
+  });
+
+  const choices = completion.choices;
+  if (choices === undefined || choices.length === 0) {
+    const completionRecord = completion as Record<string, unknown>;
+    const providerMessage = openRouterProviderErrorMessage(completionRecord);
+    if (providerMessage) {
+      console.error('OpenRouter API error', { model, message: providerMessage });
+      throw new Error(providerMessage);
+    }
+    console.error('OpenRouter completion has no usable choices', {
+      model,
+      choicesMissing: choices === undefined,
+      choiceCount: choices?.length ?? 0,
+      completionId: completionRecord.id,
+      topLevelKeys: Object.keys(completionRecord),
+      error: completionRecord.error,
+    });
+    throw new Error('OpenRouter returned no completion choices');
+  }
+
+  const messageContent = choices[0].message?.content;
+  const rawModelOutput =
+    typeof messageContent === 'string' ? messageContent : '';
+
+  const parsed = parseJsonOutputText(rawModelOutput);
+  const races = Array.isArray(parsed?.races) ? parsed.races : [];
+
+  return { parsed, races, rawModelOutput };
+}

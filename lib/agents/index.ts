@@ -9,6 +9,14 @@ export {
   trailRaceAgentTextFormat,
   trailRaceDomainWebSearchTools,
 } from './trail-race-scraper';
+export { runTrailRaceMarkdownAgentOpenRouter } from './trail-race-openrouter';
+export type { TrailRaceOpenRouterAgentResult } from './trail-race-openrouter';
+export { createOpenRouterClient, requireOpenRouterApiKey } from '@/lib/openrouter/openrouter-client';
+export {
+  OPENROUTER_SCRAPE_MODEL_IDS,
+  isOpenRouterScrapeModelId,
+} from '@/lib/openrouter/scrape-models';
+export type { OpenRouterScrapeModelId } from '@/lib/openrouter/scrape-models';
 export type {
   RunTrailRaceDomainAgentOptions,
   TrailRaceDomainAgentResult,

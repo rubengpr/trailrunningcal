@@ -7,6 +7,7 @@ import type {
   TrailRaceAgentParsed,
   TrailRaceAgentRaceRow,
 } from '@/types/trail-race-agent.types';
+import { TRAIL_RACE_AGENT_JSON_SCHEMA } from '@/lib/agents/trail-race-agent-schema';
 import { TRAIL_RACE_AGENT_INSTRUCTIONS } from '@/lib/prompts';
 
 const MODEL = 'gpt-5.4-mini';
@@ -30,14 +31,46 @@ export function hostnameFromEventUrl(eventUrl: string): string {
   return hostname.replace(/^www\./i, '');
 }
 
-export function parseJsonOutputText(
-  outputText: string,
-): TrailRaceAgentParsed | null {
+/**
+ * Some chat models (e.g. Minimax via OpenRouter) wrap JSON in markdown fences even when
+ * `response_format` asks for raw JSON. Strip fences so `JSON.parse` succeeds.
+ */
+function stripMarkdownJsonCodeFence(text: string): string {
+  let s = text.trim();
+  if (!s.startsWith('```')) {
+    return s;
+  }
+  s = s.replace(/^```[^\n]*\r?\n?/, '');
+  s = s.replace(/\r?\n?```\s*$/, '');
+  return s.trim();
+}
+
+function tryParseTrailRaceJson(raw: string): TrailRaceAgentParsed | null {
   try {
-    return JSON.parse(outputText) as TrailRaceAgentParsed;
+    return JSON.parse(raw) as TrailRaceAgentParsed;
   } catch {
     return null;
   }
+}
+
+export function parseJsonOutputText(
+  outputText: string,
+): TrailRaceAgentParsed | null {
+  const fencedStripped = stripMarkdownJsonCodeFence(outputText);
+  const direct = tryParseTrailRaceJson(fencedStripped);
+  if (direct) {
+    return direct;
+  }
+
+  const firstBrace = fencedStripped.indexOf('{');
+  const lastBrace = fencedStripped.lastIndexOf('}');
+  if (firstBrace !== -1 && lastBrace > firstBrace) {
+    return tryParseTrailRaceJson(
+      fencedStripped.slice(firstBrace, lastBrace + 1),
+    );
+  }
+
+  return null;
 }
 
 export const trailRaceAgentTextFormat: ResponseCreateParamsNonStreaming['text'] =
@@ -46,38 +79,10 @@ export const trailRaceAgentTextFormat: ResponseCreateParamsNonStreaming['text'] 
       type: 'json_schema',
       name: 'trail_race',
       strict: true,
-      schema: {
-        type: 'object',
-        additionalProperties: false,
-        properties: {
-          races: {
-            type: 'array',
-            items: {
-              type: 'object',
-              additionalProperties: false,
-              properties: {
-                name: { type: 'string' },
-                date: { type: 'string' },
-                city: { type: 'string' },
-                province: { type: 'string' },
-                description: { type: 'string' },
-                distanceKm: { type: 'number' },
-                elevationGainM: { type: ['number', 'null'] },
-              },
-              required: [
-                'name',
-                'date',
-                'city',
-                'province',
-                'description',
-                'distanceKm',
-                'elevationGainM',
-              ],
-            },
-          },
-        },
-        required: ['races'],
-      },
+      schema: TRAIL_RACE_AGENT_JSON_SCHEMA as unknown as Record<
+        string,
+        unknown
+      >,
     },
   };
 
