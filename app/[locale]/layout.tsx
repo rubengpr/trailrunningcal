@@ -19,9 +19,6 @@ const geistSans = Geist({
 export const metadata: Metadata = {
   title: 'Trail Running Calendar',
   description: 'Calendario de carreras de trail running',
-  icons: {
-    icon: '/favicon.ico',
-  },
   openGraph: {
     title: 'Trail Running Cal',
     description: 'Calendario de carreras de trail running',
@@ -56,6 +53,7 @@ export default async function LocaleLayout({
     <html lang={locale}>
       <head>
         <link rel="preconnect" href={supabaseHost} />
+        <meta name="apple-mobile-web-app-title" content="Trailrunningcal" />
       </head>
       <body
         className={`${geistSans.variable} antialiased`}
