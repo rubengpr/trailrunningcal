@@ -1,5 +1,28 @@
 @import 'tailwindcss';
 
+@keyframes pipeline-loading-dot-pulse {
+  0%,
+  100% {
+    opacity: 0.42;
+    transform: scale(0.99);
+  }
+  50% {
+    opacity: 0.88;
+    transform: scale(1);
+  }
+}
+
+.pipeline-loading-dot {
+  animation: pipeline-loading-dot-pulse 2.25s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pipeline-loading-dot {
+    animation: none;
+    opacity: 0.55;
+  }
+}
+
 /* Hide number input spinners */
 input[type='number']::-webkit-inner-spin-button,
 input[type='number']::-webkit-outer-spin-button {
