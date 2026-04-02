@@ -5,6 +5,7 @@ import type {
   TrailRaceAgentParsed,
   TrailRaceAgentRaceRow,
 } from '@/types/trail-race-agent.types';
+import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 import { TRAIL_RACE_AGENT_INSTRUCTIONS } from '@/lib/prompts';
 import { parseJsonOutputText } from '@/lib/agents/trail-race-scraper';
 
@@ -13,6 +14,42 @@ export interface TrailRaceOpenRouterAgentResult {
   races: TrailRaceAgentRaceRow[];
   /** Raw `message.content` from the model before JSON parse (debug). */
   rawModelOutput: string;
+  usage: OpenRouterScrapeUsage | null;
+}
+
+function mapCompletionUsageToScrapeUsage(
+  usage: unknown,
+): OpenRouterScrapeUsage | null {
+  if (usage === null || usage === undefined || typeof usage !== 'object') {
+    return null;
+  }
+  const record = usage as Record<string, unknown>;
+  const promptTokens = record.prompt_tokens;
+  const completionTokens = record.completion_tokens;
+  const totalTokens = record.total_tokens;
+  if (
+    typeof promptTokens !== 'number' ||
+    typeof completionTokens !== 'number' ||
+    typeof totalTokens !== 'number'
+  ) {
+    return null;
+  }
+
+  const details = record.completion_tokens_details;
+  let reasoningTokens: number | null = null;
+  if (details !== null && details !== undefined && typeof details === 'object') {
+    const reasoning = (details as Record<string, unknown>).reasoning_tokens;
+    if (typeof reasoning === 'number') {
+      reasoningTokens = reasoning;
+    }
+  }
+
+  return {
+    promptTokens,
+    completionTokens,
+    totalTokens,
+    reasoningTokens,
+  };
 }
 
 function openRouterProviderErrorMessage(
@@ -81,5 +118,7 @@ export async function runTrailRaceMarkdownAgentOpenRouter(
   const parsed = parseJsonOutputText(rawModelOutput);
   const races = Array.isArray(parsed?.races) ? parsed.races : [];
 
-  return { parsed, races, rawModelOutput };
+  const usage = mapCompletionUsageToScrapeUsage(completion.usage);
+
+  return { parsed, races, rawModelOutput, usage };
 }

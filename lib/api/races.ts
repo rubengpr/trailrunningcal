@@ -1,4 +1,6 @@
 import type { OpenRouterScrapeModelId } from '@/lib/openrouter/scrape-models';
+import type { CrawlPageStats } from '@/types/races-scrape-api.types';
+import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 
 /**
  * Updates a race via the API. Safe to call from client components.
@@ -58,22 +60,56 @@ export interface ScrapeRacesResult {
   races: import('@/types/trail-race-agent.types').TrailRaceAgentRaceRow[];
   markdown: string;
   rawModelOutput: string;
+  usage: OpenRouterScrapeUsage | null;
+  crawlPageStats: CrawlPageStats;
 }
 
 export type ScrapeRacesOptions =
-  | { model: OpenRouterScrapeModelId; websiteUrl: string }
-  | { model: OpenRouterScrapeModelId; markdown: string };
+  | { mode: 'crawlAndLlm'; model: OpenRouterScrapeModelId; websiteUrl: string }
+  | { mode: 'llmFromMarkdown'; model: OpenRouterScrapeModelId; markdown: string };
 
 /**
- * Scrapes race data from a crawled URL or from markdown via the agent API. Admin-only.
+ * Crawls an event website and returns joined markdown only (no LLM). Admin-only.
+ */
+export async function crawlEventWebsiteMarkdown(
+  websiteUrl: string,
+): Promise<{ markdown: string; crawlPageStats: CrawlPageStats }> {
+  const response = await fetch('/api/races/scrape', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      mode: 'crawlOnly',
+      websiteUrl,
+    }),
+  });
+
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(responseData.error || 'Failed to crawl website');
+  }
+
+  return responseData.data;
+}
+
+/**
+ * Runs the trail race agent on a crawled URL or on uploaded markdown. Admin-only.
  */
 export async function scrapeRaces(
   options: ScrapeRacesOptions,
 ): Promise<ScrapeRacesResult> {
   const body =
-    'markdown' in options
-      ? { markdown: options.markdown, model: options.model }
-      : { websiteUrl: options.websiteUrl, model: options.model };
+    options.mode === 'llmFromMarkdown'
+      ? {
+          mode: options.mode,
+          markdown: options.markdown,
+          model: options.model,
+        }
+      : {
+          mode: options.mode,
+          websiteUrl: options.websiteUrl,
+          model: options.model,
+        };
 
   const response = await fetch('/api/races/scrape', {
     method: 'POST',

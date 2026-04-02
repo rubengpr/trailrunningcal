@@ -1,3 +1,5 @@
+import type { CrawlPageStats } from '@/types/races-scrape-api.types';
+
 const SPIDER_CRAWL_ENDPOINT = 'https://api.spider.cloud/crawl';
 
 export interface SpiderCrawlCosts {
@@ -70,6 +72,24 @@ function normalizeSpiderCrawlPageItem(raw: unknown): SpiderCrawlPageItem {
   return item;
 }
 
+/**
+ * Groups crawl results by HTTP status: 2xx → success, everything else → error.
+ * Guarantees successCount + errorCount === pages.length.
+ */
+export function summarizeSpiderCrawlHttpStatus(
+  pages: SpiderCrawlPageItem[],
+): CrawlPageStats {
+  const total = pages.length;
+  let successCount = 0;
+  for (const page of pages) {
+    if (page.status >= 200 && page.status < 300) {
+      successCount += 1;
+    }
+  }
+  const errorCount = total - successCount;
+  return { total, successCount, errorCount };
+}
+
 export function requireSpiderApiKey(): string {
   const apiKey = process.env.SPIDER_API_KEY;
   if (!apiKey) {
@@ -103,10 +123,13 @@ export interface SpiderCloudCrawlOptions {
    */
   executionScripts?: Record<string, string>;
   /**
-   * Spider `request_timeout` (seconds, typically 5–255). Increase if you add long `wait_for` delays.
+   * Spider `request_timeout` (seconds per page, typically 5–255). Default 60s per
+   * [efficient scraping](https://spider.cloud/docs/core/efficient-scraping). Increase if you add long `wait_for` delays.
    */
   requestTimeout?: number;
 }
+
+const DEFAULT_SPIDER_REQUEST_TIMEOUT_SEC = 60;
 
 export async function spiderCloudCrawl(
   seedUrl: string,
@@ -121,13 +144,13 @@ export async function spiderCloudCrawl(
   const apiKey = requireSpiderApiKey();
 
   const {
-    limit = 50,
+    limit = 25,
     depth = 3,
     request = 'smart',
     returnFormat = 'markdown',
     waitFor,
     executionScripts,
-    requestTimeout,
+    requestTimeout = DEFAULT_SPIDER_REQUEST_TIMEOUT_SEC,
   } = options ?? {};
 
   const body: Record<string, unknown> = {
@@ -136,6 +159,7 @@ export async function spiderCloudCrawl(
     depth,
     request,
     return_format: returnFormat,
+    request_timeout: requestTimeout,
   };
 
   if (waitFor !== undefined) {
@@ -143,9 +167,6 @@ export async function spiderCloudCrawl(
   }
   if (executionScripts !== undefined) {
     body.execution_scripts = executionScripts;
-  }
-  if (requestTimeout !== undefined) {
-    body.request_timeout = requestTimeout;
   }
 
   const response = await fetch(SPIDER_CRAWL_ENDPOINT, {
