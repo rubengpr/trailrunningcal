@@ -2,6 +2,92 @@ import type { CrawlPageStats } from '@/types/races-scrape-api.types';
 
 const SPIDER_CRAWL_ENDPOINT = 'https://api.spider.cloud/crawl';
 
+/**
+ * URL patterns (regex strings) that are irrelevant to trail race data extraction.
+ * Applied by default on every crawl to avoid wasting credits on media, past results,
+ * legal pages, shop pages, and other non-race-info content.
+ *
+ * Spider.cloud matches these against each discovered URL before fetching it.
+ * @see https://spider.cloud/docs/api — parameter `blacklist`
+ */
+export const SPIDER_CRAWL_URL_BLACKLIST: readonly string[] = [
+  // Media & gallery
+  'galeria',
+  'gallery',
+  'foto',
+  'photo',
+  'video',
+  'imatge',
+  'imagen',
+  'album',
+  // Past results & rankings
+  'classificaci',
+  'clasificacion',
+  'resultats',
+  'resultados',
+  'results',
+  'premis',
+  'podis',
+  // Past editions (year-based)
+  'edicions-anteriors',
+  'edicio-20',
+  'edicion-20',
+  '2010',
+  '2011',
+  '2012',
+  '2013',
+  '2014',
+  '2015',
+  '2016',
+  '2017',
+  '2018',
+  '2019',
+  '2020',
+  '2021',
+  '2022',
+  '2023',
+  '2024',
+  // Legal & privacy
+  'legal',
+  'privacy',
+  'privacidad',
+  'privacitat',
+  'cookies',
+  'policy',
+  'politica',
+  // Shop & products
+  'botiga',
+  'tienda',
+  'product-page',
+  // Social sharing
+  'xarxes',
+  'sharer',
+  'intent',
+  // Accommodation
+  'allotjaments',
+  'alojamientos',
+  // Kids races
+  'kids',
+  'infantil',
+  'correxics',
+  // Portfolio (unrelated website sections)
+  'portfolio',
+  // News & comments
+  'noticies',
+  'noticias',
+  'news',
+  'comentarios',
+  'comentaris',
+  // Platform / technical artifacts
+  'ad_campaign',
+  'settings',
+  'elementor',
+  'allactivity',
+  '\\/help\\/',
+  'pages\\/create',
+  'rss',
+];
+
 export interface SpiderCrawlCosts {
   file_cost?: number;
   ai_cost?: number;
@@ -127,6 +213,13 @@ export interface SpiderCloudCrawlOptions {
    * [efficient scraping](https://spider.cloud/docs/core/efficient-scraping). Increase if you add long `wait_for` delays.
    */
   requestTimeout?: number;
+  /**
+   * Spider `blacklist`: regex patterns matched against discovered URLs.
+   * Any URL containing a match is skipped entirely (not fetched or counted against the limit).
+   * Defaults to `SPIDER_CRAWL_URL_BLACKLIST`. Pass `[]` to disable.
+   * @see https://spider.cloud/docs/api — parameter `blacklist`
+   */
+  blacklist?: string[];
 }
 
 const DEFAULT_SPIDER_REQUEST_TIMEOUT_SEC = 60;
@@ -145,12 +238,13 @@ export async function spiderCloudCrawl(
 
   const {
     limit = 25,
-    depth = 3,
+    depth = 2,
     request = 'smart',
     returnFormat = 'markdown',
     waitFor,
     executionScripts,
     requestTimeout = DEFAULT_SPIDER_REQUEST_TIMEOUT_SEC,
+    blacklist = [...SPIDER_CRAWL_URL_BLACKLIST],
   } = options ?? {};
 
   const body: Record<string, unknown> = {
@@ -162,6 +256,9 @@ export async function spiderCloudCrawl(
     request_timeout: requestTimeout,
   };
 
+  if (blacklist.length > 0) {
+    body.blacklist = blacklist;
+  }
   if (waitFor !== undefined) {
     body.wait_for = waitFor;
   }
