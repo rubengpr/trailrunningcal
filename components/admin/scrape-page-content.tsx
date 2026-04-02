@@ -902,17 +902,17 @@ export function ScrapePageContent() {
                                                 )}
                                                 {workflow === 'crawlAndLlm' && crawlPageStats !== null && (
                                                     <span className="inline-flex flex-wrap items-center gap-1.5">
-                                                        <span className="inline-flex items-center rounded-full border border-gray-200/80 bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-800 tabular-nums">
+                                                        <span className="inline-flex items-center rounded-full border border-gray-200/80 bg-gray-100 px-2 text-[11px] font-medium text-gray-800 tabular-nums">
                                                             {t('crawledPagesTotal', {
                                                                 scrapedPages: crawlPageStats.total,
                                                             })}
                                                         </span>
-                                                        <span className="inline-flex items-center rounded-full border border-green-200/80 bg-green-100 px-2 py-0.5 text-[11px] font-medium text-green-800 tabular-nums">
+                                                        <span className="inline-flex items-center rounded-full border border-green-200/80 bg-green-100 px-2 text-[11px] font-medium text-green-800 tabular-nums">
                                                             {t('crawledPagesHttpSuccess', {
                                                                 successPages: crawlPageStats.successCount,
                                                             })}
                                                         </span>
-                                                        <span className="inline-flex items-center rounded-full border border-red-200/80 bg-red-100 px-2 py-0.5 text-[11px] font-medium text-red-800 tabular-nums">
+                                                        <span className="inline-flex items-center rounded-full border border-red-200/80 bg-red-100 px-2 text-[11px] font-medium text-red-800 tabular-nums">
                                                             {t('crawledPagesHttpError', {
                                                                 errorPages: crawlPageStats.errorCount,
                                                             })}
