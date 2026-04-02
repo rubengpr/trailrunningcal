@@ -34,6 +34,61 @@ import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.type
 
 type ScrapeWorkflow = 'crawlMdOnly' | 'llmFromMd' | 'crawlAndLlm';
 
+const FULL_PIPELINE_DEMO_STEP_MS = 5000;
+
+type ScrapePhase = 'idle' | 'crawling' | 'llm';
+
+type FullPipelineRowKind = 'loading' | 'success' | 'error' | 'pending';
+
+interface FullPipelineRowConfig {
+    kind: FullPipelineRowKind;
+    /** Translation key for title line (omit when kind is pending). */
+    titleKey?: string;
+    errorDetail?: string | null;
+}
+
+function FullPipelineRowIcon({ kind }: { kind: FullPipelineRowKind }): React.ReactElement {
+    if (kind === 'loading') {
+        return (
+            <div
+                className="pipeline-loading-dot h-2.5 w-2.5 shrink-0 rounded-full bg-gray-300"
+                aria-hidden
+            />
+        );
+    }
+    if (kind === 'success') {
+        return (
+            <div
+                className="h-2.5 w-2.5 shrink-0 translate-y-px rounded-full bg-green-600"
+                aria-hidden
+            />
+        );
+    }
+    if (kind === 'error') {
+        return (
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-4 w-4 shrink-0 text-red-600"
+                aria-hidden
+            >
+                <circle cx="12" cy="12" r="10" />
+                <path d="m15 9-6 6M9 9l6 6" />
+            </svg>
+        );
+    }
+    return (
+        <span className="inline-flex h-4 w-4 shrink-0 items-center justify-center text-xs leading-none text-gray-300" aria-hidden>
+            —
+        </span>
+    );
+}
+
 function RestartIcon({ className = 'h-5 w-5' }: { className?: string }): React.ReactElement {
     return (
         <svg
@@ -67,6 +122,11 @@ export function ScrapePageContent() {
 
     const markdownFileInputRef = useRef<HTMLInputElement>(null);
     const runStartedAtRef = useRef<number | null>(null);
+    const pipelineDemoTimeoutIdsRef = useRef<number[]>([]);
+    const fullPipelineCrawlStartedAtRef = useRef<number | null>(null);
+    const fullPipelineCrawlEndedAtRef = useRef<number | null>(null);
+    const fullPipelineLlmStartedAtRef = useRef<number | null>(null);
+    const fullPipelineLlmEndedAtRef = useRef<number | null>(null);
 
     const [workflow, setWorkflow] = useState<ScrapeWorkflow>('crawlAndLlm');
     const [websiteUrl, setWebsiteUrl] = useState('');
@@ -77,6 +137,8 @@ export function ScrapePageContent() {
         OPENROUTER_SCRAPE_MODEL_IDS[0],
     );
     const [isScraping, setIsScraping] = useState(false);
+    const [scrapePhase, setScrapePhase] = useState<ScrapePhase>('idle');
+    const [fullPipelineUiActive, setFullPipelineUiActive] = useState(false);
     const [liveElapsedMs, setLiveElapsedMs] = useState(0);
     const [lastRunDurationMs, setLastRunDurationMs] = useState<number | null>(null);
     const [scrapedRaces, setScrapedRaces] = useState<TrailRaceAgentRaceRow[]>([]);
@@ -109,7 +171,18 @@ export function ScrapePageContent() {
             ? isValidUrl(websiteUrl)
             : Boolean(uploadedMarkdown && uploadedMarkdown.length > 0));
 
+    const clearFullPipelineStepRefs = (): void => {
+        fullPipelineCrawlStartedAtRef.current = null;
+        fullPipelineCrawlEndedAtRef.current = null;
+        fullPipelineLlmStartedAtRef.current = null;
+        fullPipelineLlmEndedAtRef.current = null;
+    };
+
     const handleWorkflowChange = (next: ScrapeWorkflow): void => {
+        if (next !== 'crawlAndLlm') {
+            setFullPipelineUiActive(false);
+            clearFullPipelineStepRefs();
+        }
         setWorkflow(next);
         if (next !== 'llmFromMd') {
             setUploadedMarkdown(null);
@@ -185,11 +258,40 @@ export function ScrapePageContent() {
         };
     }, [isScraping]);
 
+    useEffect(() => {
+        return () => {
+            for (const timeoutId of pipelineDemoTimeoutIdsRef.current) {
+                window.clearTimeout(timeoutId);
+            }
+            pipelineDemoTimeoutIdsRef.current = [];
+        };
+    }, []);
+
+    const clearPipelineDemoTimeouts = (): void => {
+        for (const id of pipelineDemoTimeoutIdsRef.current) {
+            window.clearTimeout(id);
+        }
+        pipelineDemoTimeoutIdsRef.current = [];
+    };
+
     const handleScrape = async () => {
+        clearPipelineDemoTimeouts();
         runStartedAtRef.current = performance.now();
         setLiveElapsedMs(0);
         setLastRunDurationMs(null);
         setIsScraping(true);
+        if (workflow === 'crawlAndLlm') {
+            setFullPipelineUiActive(true);
+            setScrapePhase('crawling');
+            fullPipelineCrawlStartedAtRef.current = performance.now();
+            fullPipelineCrawlEndedAtRef.current = null;
+            fullPipelineLlmStartedAtRef.current = null;
+            fullPipelineLlmEndedAtRef.current = null;
+        } else {
+            setFullPipelineUiActive(false);
+            setScrapePhase('idle');
+            clearFullPipelineStepRefs();
+        }
         setScrapeError(null);
         setScrapedRaces([]);
         setHasScraped(false);
@@ -227,16 +329,44 @@ export function ScrapePageContent() {
                 setScrapeUsage(data.usage);
             } else {
                 const normalizedUrl = normalizeUrl(websiteUrl.trim());
-                const data = await scrapeRaces({
-                    mode: 'crawlAndLlm',
-                    websiteUrl: normalizedUrl,
-                    model: selectedModelId,
-                });
-                setScrapedRaces(data.races);
-                setScrapeMarkdown(data.markdown);
-                setRawModelOutput(data.rawModelOutput);
-                setScrapeUsage(data.usage);
-                setCrawlPageStats(data.crawlPageStats);
+                let crawlData;
+                try {
+                    crawlData = await crawlEventWebsiteMarkdown(normalizedUrl);
+                } catch (crawlErr) {
+                    fullPipelineCrawlEndedAtRef.current = performance.now();
+                    const errorMessage =
+                        crawlErr instanceof Error ? crawlErr.message : t('crawlError');
+                    setScrapeError(errorMessage);
+                    setHasScraped(true);
+                    toast.error(t('crawlError'));
+                    return;
+                }
+                const crawlEndedAt = performance.now();
+                fullPipelineCrawlEndedAtRef.current = crawlEndedAt;
+                fullPipelineLlmStartedAtRef.current = crawlEndedAt;
+                setScrapeMarkdown(crawlData.markdown);
+                setCrawlPageStats(crawlData.crawlPageStats);
+                setScrapePhase('llm');
+                let llmData;
+                try {
+                    llmData = await scrapeRaces({
+                        mode: 'llmFromMarkdown',
+                        markdown: crawlData.markdown,
+                        model: selectedModelId,
+                    });
+                } catch (llmErr) {
+                    fullPipelineLlmEndedAtRef.current = performance.now();
+                    const errorMessage =
+                        llmErr instanceof Error ? llmErr.message : t('llmError');
+                    setScrapeError(errorMessage);
+                    setHasScraped(true);
+                    toast.error(t('llmError'));
+                    return;
+                }
+                setScrapedRaces(llmData.races);
+                setScrapeMarkdown(llmData.markdown);
+                setRawModelOutput(llmData.rawModelOutput);
+                setScrapeUsage(llmData.usage);
             }
             setHasScraped(true);
         } catch (err) {
@@ -245,12 +375,19 @@ export function ScrapePageContent() {
             setHasScraped(true);
             toast.error(t('scrapeError'));
         } finally {
+            if (
+                fullPipelineLlmStartedAtRef.current !== null &&
+                fullPipelineLlmEndedAtRef.current === null
+            ) {
+                fullPipelineLlmEndedAtRef.current = performance.now();
+            }
             const startedAt = runStartedAtRef.current;
             const durationMs =
                 startedAt !== null ? Math.round(performance.now() - startedAt) : 0;
             setLastRunDurationMs(durationMs);
             runStartedAtRef.current = null;
             setLiveElapsedMs(0);
+            setScrapePhase('idle');
             setIsScraping(false);
         }
     };
@@ -279,10 +416,70 @@ export function ScrapePageContent() {
         setScrapedRaces(prev => prev.map((r, i) => i === index ? updatedRace : r));
     };
 
+    const handleDemoFullPipelineSteps = (): void => {
+        if (workflow !== 'crawlAndLlm' || isScraping) {
+            return;
+        }
+        clearPipelineDemoTimeouts();
+        runStartedAtRef.current = performance.now();
+        setLiveElapsedMs(0);
+        setLastRunDurationMs(null);
+        setIsScraping(true);
+        setFullPipelineUiActive(true);
+        setScrapePhase('crawling');
+        fullPipelineCrawlStartedAtRef.current = performance.now();
+        fullPipelineCrawlEndedAtRef.current = null;
+        fullPipelineLlmStartedAtRef.current = null;
+        fullPipelineLlmEndedAtRef.current = null;
+        setScrapeError(null);
+        setHasScraped(false);
+        setScrapeMarkdown(null);
+        setRawModelOutput(null);
+        setScrapeUsage(null);
+        setCrawlPageStats(null);
+        setScrapedRaces([]);
+        setAcceptedIndexes(new Set());
+        setAcceptingIndex(null);
+        setRejectedIndexes(new Set());
+
+        const firstTimeoutId = window.setTimeout(() => {
+            const crawlBoundary = performance.now();
+            fullPipelineCrawlEndedAtRef.current = crawlBoundary;
+            fullPipelineLlmStartedAtRef.current = crawlBoundary;
+            setScrapePhase('llm');
+            setScrapeMarkdown(DUMMY_SCRAPE_MARKDOWN);
+            setCrawlPageStats({ ...DUMMY_CRAWL_PAGE_STATS });
+        }, FULL_PIPELINE_DEMO_STEP_MS);
+
+        const secondTimeoutId = window.setTimeout(() => {
+            fullPipelineLlmEndedAtRef.current = performance.now();
+            setScrapePhase('idle');
+            setIsScraping(false);
+            setHasScraped(true);
+            setScrapeMarkdown(DUMMY_SCRAPE_MARKDOWN);
+            setScrapedRaces([...DUMMY_SCRAPED_RACES]);
+            setRawModelOutput(DUMMY_RAW_MODEL_OUTPUT);
+            setScrapeUsage({ ...DUMMY_SCRAPE_USAGE });
+            setCrawlPageStats({ ...DUMMY_CRAWL_PAGE_STATS });
+            const startedAt = runStartedAtRef.current;
+            setLastRunDurationMs(
+                startedAt !== null ? Math.round(performance.now() - startedAt) : 0,
+            );
+            runStartedAtRef.current = null;
+            setLiveElapsedMs(0);
+            pipelineDemoTimeoutIdsRef.current = [];
+        }, FULL_PIPELINE_DEMO_STEP_MS * 2);
+
+        pipelineDemoTimeoutIdsRef.current = [firstTimeoutId, secondTimeoutId];
+    };
+
     const handleLoadDummyPreview = (): void => {
+        clearPipelineDemoTimeouts();
+        clearFullPipelineStepRefs();
         setScrapeError(null);
         setHasScraped(true);
         setIsScraping(false);
+        setScrapePhase('idle');
         setAcceptedIndexes(new Set());
         setAcceptingIndex(null);
         setRejectedIndexes(new Set());
@@ -309,12 +506,16 @@ export function ScrapePageContent() {
         setScrapeMarkdown(DUMMY_SCRAPE_MARKDOWN);
         setRawModelOutput(DUMMY_RAW_MODEL_OUTPUT);
         setScrapeUsage({ ...DUMMY_SCRAPE_USAGE });
+        if (workflow === 'crawlAndLlm') {
+            setFullPipelineUiActive(true);
+        }
     };
 
     const handleRestart = (): void => {
         if (isScraping) {
             return;
         }
+        clearPipelineDemoTimeouts();
         setWebsiteUrl('');
         setUploadedMarkdown(null);
         setUploadedFileName(null);
@@ -331,6 +532,9 @@ export function ScrapePageContent() {
         setAcceptingIndex(null);
         setRejectedIndexes(new Set());
         runStartedAtRef.current = null;
+        setScrapePhase('idle');
+        setFullPipelineUiActive(false);
+        clearFullPipelineStepRefs();
         if (markdownFileInputRef.current) {
             markdownFileInputRef.current.value = '';
         }
@@ -370,7 +574,11 @@ export function ScrapePageContent() {
         workflow === 'crawlMdOnly' ? t('crawlMdButton') : t('scrapeButton');
 
     const primaryLoadingLabel =
-        workflow === 'crawlMdOnly' ? t('crawlingMarkdown') : t('scraping');
+        workflow === 'crawlMdOnly'
+            ? t('crawlingMarkdown')
+            : workflow === 'crawlAndLlm' && scrapePhase === 'crawling'
+                ? t('crawlingMarkdown')
+                : t('scraping');
 
     const markdownTokenEstimate = useMemo((): number | null => {
         if (scrapeMarkdown === null || scrapeMarkdown === '') {
@@ -395,6 +603,97 @@ export function ScrapePageContent() {
 
     /** Token usage and estimado: Parse + Full (LLM), not crawl-only. Run duration is shown for all workflows. */
     const showLlmMetricsUi = workflow !== 'crawlMdOnly';
+
+    const fullPipelineSteps = useMemo((): {
+        row1: FullPipelineRowConfig;
+        row2: FullPipelineRowConfig;
+    } | null => {
+        if (workflow !== 'crawlAndLlm' || !fullPipelineUiActive) {
+            return null;
+        }
+        if (!isScraping && !hasScraped) {
+            return null;
+        }
+        let row1: FullPipelineRowConfig;
+        if (isScraping && scrapePhase === 'crawling') {
+            row1 = { kind: 'loading', titleKey: 'fullPipelineCrawlingWebsite' };
+        } else if (isScraping && scrapePhase === 'llm') {
+            row1 = { kind: 'success', titleKey: 'fullPipelineCrawlSuccess' };
+        } else if (!isScraping && hasScraped && scrapeError && !scrapeMarkdown) {
+            row1 = { kind: 'error', titleKey: 'crawlError', errorDetail: scrapeError };
+        } else if (!isScraping && hasScraped && scrapeError && scrapeMarkdown) {
+            row1 = { kind: 'success', titleKey: 'fullPipelineCrawlSuccess' };
+        } else if (!isScraping && hasScraped && !scrapeError) {
+            row1 = { kind: 'success', titleKey: 'fullPipelineCrawlSuccess' };
+        } else if (isScraping) {
+            row1 = { kind: 'loading', titleKey: 'fullPipelineCrawlingWebsite' };
+        } else {
+            row1 = { kind: 'loading', titleKey: 'fullPipelineCrawlingWebsite' };
+        }
+
+        let row2: FullPipelineRowConfig;
+        if (isScraping && scrapePhase === 'crawling') {
+            row2 = { kind: 'loading', titleKey: 'fullPipelineWaitingForCrawl' };
+        } else if (isScraping && scrapePhase === 'llm') {
+            row2 = { kind: 'loading', titleKey: 'fullPipelineParsingWithLlm' };
+        } else if (!isScraping && hasScraped && !scrapeError) {
+            row2 = { kind: 'success', titleKey: 'fullPipelineParseSuccess' };
+        } else if (!isScraping && hasScraped && scrapeError && !scrapeMarkdown) {
+            row2 = { kind: 'pending' };
+        } else if (!isScraping && hasScraped && scrapeError && scrapeMarkdown) {
+            row2 = { kind: 'error', titleKey: 'llmError', errorDetail: scrapeError };
+        } else if (isScraping) {
+            row2 = { kind: 'loading', titleKey: 'fullPipelineWaitingForCrawl' };
+        } else {
+            row2 = { kind: 'pending' };
+        }
+
+        return { row1, row2 };
+    }, [
+        workflow,
+        fullPipelineUiActive,
+        isScraping,
+        hasScraped,
+        scrapePhase,
+        scrapeError,
+        scrapeMarkdown,
+    ]);
+
+    const fullPipelineCrawlStepMs = useMemo((): number | null => {
+        if (workflow !== 'crawlAndLlm' || !fullPipelineUiActive) {
+            return null;
+        }
+        if (fullPipelineCrawlStartedAtRef.current === null) {
+            return null;
+        }
+        if (fullPipelineCrawlEndedAtRef.current !== null) {
+            return Math.round(
+                fullPipelineCrawlEndedAtRef.current - fullPipelineCrawlStartedAtRef.current,
+            );
+        }
+        if (isScraping && scrapePhase === 'crawling') {
+            return Math.round(performance.now() - fullPipelineCrawlStartedAtRef.current);
+        }
+        return null;
+    }, [workflow, fullPipelineUiActive, isScraping, scrapePhase, liveElapsedMs]);
+
+    const fullPipelineLlmStepMs = useMemo((): number | null => {
+        if (workflow !== 'crawlAndLlm' || !fullPipelineUiActive) {
+            return null;
+        }
+        if (fullPipelineLlmStartedAtRef.current === null) {
+            return null;
+        }
+        if (fullPipelineLlmEndedAtRef.current !== null) {
+            return Math.round(
+                fullPipelineLlmEndedAtRef.current - fullPipelineLlmStartedAtRef.current,
+            );
+        }
+        if (isScraping && scrapePhase === 'llm') {
+            return Math.round(performance.now() - fullPipelineLlmStartedAtRef.current);
+        }
+        return null;
+    }, [workflow, fullPipelineUiActive, isScraping, scrapePhase, liveElapsedMs]);
 
     return (
         <div className="flex flex-col gap-8">
@@ -549,6 +848,16 @@ export function ScrapePageContent() {
                                 {t('downloadRawResponse')}
                             </Button>
                         )}
+                        {workflow === 'crawlAndLlm' && (
+                            <Button
+                                type="button"
+                                variant="secondary"
+                                onClick={handleDemoFullPipelineSteps}
+                                disabled={isScraping}
+                            >
+                                {t('demoFullPipelineSteps')}
+                            </Button>
+                        )}
                         <Button
                             type="button"
                             variant="secondary"
@@ -568,8 +877,96 @@ export function ScrapePageContent() {
                             <RestartIcon className="h-5 w-5" />
                         </Button>
                     </div>
-                    {(workflow === 'crawlMdOnly' || workflow === 'crawlAndLlm') &&
-                        crawlPageStats !== null && (
+                    {fullPipelineSteps !== null && (
+                        <div className="space-y-3 border-t border-gray-100 pt-4">
+                            <div className="flex items-start gap-3">
+                                <div className="flex h-5 w-4 shrink-0 flex-col items-center justify-center">
+                                    <FullPipelineRowIcon kind={fullPipelineSteps.row1.kind} />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                    {fullPipelineSteps.row1.titleKey !== undefined && (
+                                        <>
+                                            <p
+                                                className={`flex flex-wrap items-center gap-x-2 text-sm font-medium leading-5 ${fullPipelineSteps.row1.kind === 'error'
+                                                    ? 'text-red-700'
+                                                    : 'text-gray-900'
+                                                    }`}
+                                            >
+                                                <span>{t(fullPipelineSteps.row1.titleKey)}</span>
+                                                {fullPipelineCrawlStepMs !== null && (
+                                                    <span className="text-xs font-normal text-gray-500 tabular-nums">
+                                                        {t('fullPipelineStepDuration', {
+                                                            duration: formatDurationMs(fullPipelineCrawlStepMs),
+                                                        })}
+                                                    </span>
+                                                )}
+                                                {workflow === 'crawlAndLlm' && crawlPageStats !== null && (
+                                                    <span className="inline-flex flex-wrap items-center gap-1.5">
+                                                        <span className="inline-flex items-center rounded-full border border-gray-200/80 bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-800 tabular-nums">
+                                                            {t('crawledPagesTotal', {
+                                                                scrapedPages: crawlPageStats.total,
+                                                            })}
+                                                        </span>
+                                                        <span className="inline-flex items-center rounded-full border border-green-200/80 bg-green-100 px-2 py-0.5 text-[11px] font-medium text-green-800 tabular-nums">
+                                                            {t('crawledPagesHttpSuccess', {
+                                                                successPages: crawlPageStats.successCount,
+                                                            })}
+                                                        </span>
+                                                        <span className="inline-flex items-center rounded-full border border-red-200/80 bg-red-100 px-2 py-0.5 text-[11px] font-medium text-red-800 tabular-nums">
+                                                            {t('crawledPagesHttpError', {
+                                                                errorPages: crawlPageStats.errorCount,
+                                                            })}
+                                                        </span>
+                                                    </span>
+                                                )}
+                                            </p>
+                                            {fullPipelineSteps.row1.errorDetail !== undefined &&
+                                                fullPipelineSteps.row1.errorDetail !== null &&
+                                                fullPipelineSteps.row1.errorDetail !== '' && (
+                                                    <p className="mt-0.5 text-xs text-red-600">
+                                                        {fullPipelineSteps.row1.errorDetail}
+                                                    </p>
+                                                )}
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <div className="flex h-5 w-4 shrink-0 flex-col items-center justify-center">
+                                    <FullPipelineRowIcon kind={fullPipelineSteps.row2.kind} />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                    {fullPipelineSteps.row2.titleKey !== undefined && (
+                                        <>
+                                            <p
+                                                className={`flex flex-wrap items-center gap-x-2 text-sm font-medium leading-5 ${fullPipelineSteps.row2.kind === 'error'
+                                                    ? 'text-red-700'
+                                                    : 'text-gray-900'
+                                                    }`}
+                                            >
+                                                <span>{t(fullPipelineSteps.row2.titleKey)}</span>
+                                                {fullPipelineLlmStepMs !== null && (
+                                                    <span className="text-xs font-normal text-gray-500 tabular-nums">
+                                                        {t('fullPipelineStepDuration', {
+                                                            duration: formatDurationMs(fullPipelineLlmStepMs),
+                                                        })}
+                                                    </span>
+                                                )}
+                                            </p>
+                                            {fullPipelineSteps.row2.errorDetail !== undefined &&
+                                                fullPipelineSteps.row2.errorDetail !== null &&
+                                                fullPipelineSteps.row2.errorDetail !== '' && (
+                                                    <p className="mt-0.5 text-xs text-red-600">
+                                                        {fullPipelineSteps.row2.errorDetail}
+                                                    </p>
+                                                )}
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    {workflow === 'crawlMdOnly' && crawlPageStats !== null && (
                         <div className="flex flex-wrap items-center gap-2">
                             <span className="inline-flex items-center rounded-full border border-gray-200/80 bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-800 tabular-nums">
                                 {t('crawledPagesTotal', {
@@ -591,23 +988,23 @@ export function ScrapePageContent() {
                     {showLlmMetricsUi &&
                         ((parseUploadTokenEstimate !== null && uploadedMarkdown !== null) ||
                             (markdownTokenEstimate !== null && scrapeMarkdown !== null)) && (
-                        <p className="text-xs text-gray-500 tabular-nums">
-                            {t('markdownStatEstimatedPrefix')}{' '}
-                            <span className="font-bold">
-                                {parseUploadTokenEstimate !== null
-                                    ? parseUploadTokenEstimate
-                                    : markdownTokenEstimate!}
-                            </span>{' '}
-                            {t('markdownStatTokensLabel')}
-                            {' · '}
-                            <span className="font-bold">
-                                {parseUploadTokenEstimate !== null
-                                    ? markdownTrimmedCharCount(uploadedMarkdown!)
-                                    : markdownTrimmedCharCount(scrapeMarkdown!)}
-                            </span>{' '}
-                            {t('markdownStatCharactersLabel')}
-                        </p>
-                    )}
+                            <p className="text-xs text-gray-500 tabular-nums">
+                                {t('markdownStatEstimatedPrefix')}{' '}
+                                <span className="font-bold">
+                                    {parseUploadTokenEstimate !== null
+                                        ? parseUploadTokenEstimate
+                                        : markdownTokenEstimate!}
+                                </span>{' '}
+                                {t('markdownStatTokensLabel')}
+                                {' · '}
+                                <span className="font-bold">
+                                    {parseUploadTokenEstimate !== null
+                                        ? markdownTrimmedCharCount(uploadedMarkdown!)
+                                        : markdownTrimmedCharCount(scrapeMarkdown!)}
+                                </span>{' '}
+                                {t('markdownStatCharactersLabel')}
+                            </p>
+                        )}
                     {isScraping && (
                         <p className="text-xs text-gray-500 tabular-nums">
                             {t('runDurationRunning', {
@@ -628,22 +1025,22 @@ export function ScrapePageContent() {
                 hasScraped &&
                 scrapeError === null &&
                 scrapeUsage !== null && (
-                <div className="max-w-3xl rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-5">
-                    <p className="text-sm text-gray-600 tabular-nums">
-                        <span className="font-bold text-gray-900">{scrapeUsage.promptTokens}</span>
-                        {' / '}
-                        <span className="font-bold text-gray-900">{scrapeUsage.completionTokens}</span>
-                        {' · '}
-                        <span className="font-bold text-gray-900">
-                            {scrapeUsage.reasoningTokens === null ? '—' : scrapeUsage.reasoningTokens}
-                        </span>{' '}
-                        {t('usageReasoningTokens')}
-                        {' · '}
-                        <span className="font-bold text-gray-900">{scrapeUsage.totalTokens}</span>{' '}
-                        {t('usageTotalTokens')}
-                    </p>
-                </div>
-            )}
+                    <div className="max-w-3xl rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-5">
+                        <p className="text-sm text-gray-600 tabular-nums">
+                            <span className="font-bold text-gray-900">{scrapeUsage.promptTokens}</span>
+                            {' / '}
+                            <span className="font-bold text-gray-900">{scrapeUsage.completionTokens}</span>
+                            {' · '}
+                            <span className="font-bold text-gray-900">
+                                {scrapeUsage.reasoningTokens === null ? '—' : scrapeUsage.reasoningTokens}
+                            </span>{' '}
+                            {t('usageReasoningTokens')}
+                            {' · '}
+                            <span className="font-bold text-gray-900">{scrapeUsage.totalTokens}</span>{' '}
+                            {t('usageTotalTokens')}
+                        </p>
+                    </div>
+                )}
             {showScrapedRacesPreview && (
                 <ScrapedRacesPreview
                     races={scrapedRaces}
