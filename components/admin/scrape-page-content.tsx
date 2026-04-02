@@ -51,7 +51,7 @@ function FullPipelineRowIcon({ kind }: { kind: FullPipelineRowKind }): React.Rea
     if (kind === 'loading') {
         return (
             <div
-                className="pipeline-loading-dot h-2.5 w-2.5 shrink-0 rounded-full bg-gray-300"
+                className="pipeline-loading-dot h-2.5 w-2.5 shrink-0 translate-y-px rounded-full bg-radial-[at_50%_50%] from-gray-300 to-gray-200"
                 aria-hidden
             />
         );
@@ -59,7 +59,7 @@ function FullPipelineRowIcon({ kind }: { kind: FullPipelineRowKind }): React.Rea
     if (kind === 'success') {
         return (
             <div
-                className="h-2.5 w-2.5 shrink-0 translate-y-px rounded-full bg-green-600"
+                className="h-2.5 w-2.5 shrink-0 translate-y-px rounded-full bg-radial-[at_50%_50%] from-green-300 to-green-200"
                 aria-hidden
             />
         );
@@ -604,6 +604,11 @@ export function ScrapePageContent() {
     /** Token usage and estimado: Parse + Full (LLM), not crawl-only. Run duration is shown for all workflows. */
     const showLlmMetricsUi = workflow !== 'crawlMdOnly';
 
+    const showMarkdownEstimateLine =
+        showLlmMetricsUi &&
+        ((parseUploadTokenEstimate !== null && uploadedMarkdown !== null) ||
+            (markdownTokenEstimate !== null && scrapeMarkdown !== null));
+
     const fullPipelineSteps = useMemo((): {
         row1: FullPipelineRowConfig;
         row2: FullPipelineRowConfig;
@@ -658,6 +663,12 @@ export function ScrapePageContent() {
         scrapeError,
         scrapeMarkdown,
     ]);
+
+    const showMarkdownEstimateBesideCrawlPageStats =
+        workflow === 'crawlAndLlm' &&
+        fullPipelineSteps !== null &&
+        crawlPageStats !== null &&
+        showMarkdownEstimateLine;
 
     const fullPipelineCrawlStepMs = useMemo((): number | null => {
         if (workflow !== 'crawlAndLlm' || !fullPipelineUiActive) {
@@ -917,6 +928,23 @@ export function ScrapePageContent() {
                                                                 errorPages: crawlPageStats.errorCount,
                                                             })}
                                                         </span>
+                                                        {showMarkdownEstimateBesideCrawlPageStats && (
+                                                            <span className="text-xs font-normal text-gray-500 tabular-nums">
+                                                                <span className="font-bold text-gray-700">
+                                                                    {parseUploadTokenEstimate !== null
+                                                                        ? parseUploadTokenEstimate
+                                                                        : markdownTokenEstimate!}
+                                                                </span>{' '}
+                                                                {t('markdownStatTokensLabel')}
+                                                                {' · '}
+                                                                <span className="font-bold text-gray-700">
+                                                                    {parseUploadTokenEstimate !== null
+                                                                        ? markdownTrimmedCharCount(uploadedMarkdown!)
+                                                                        : markdownTrimmedCharCount(scrapeMarkdown!)}
+                                                                </span>{' '}
+                                                                {t('markdownStatCharactersLabel')}
+                                                            </span>
+                                                        )}
                                                     </span>
                                                 )}
                                             </p>
@@ -985,26 +1013,23 @@ export function ScrapePageContent() {
                             </span>
                         </div>
                     )}
-                    {showLlmMetricsUi &&
-                        ((parseUploadTokenEstimate !== null && uploadedMarkdown !== null) ||
-                            (markdownTokenEstimate !== null && scrapeMarkdown !== null)) && (
-                            <p className="text-xs text-gray-500 tabular-nums">
-                                {t('markdownStatEstimatedPrefix')}{' '}
-                                <span className="font-bold">
-                                    {parseUploadTokenEstimate !== null
-                                        ? parseUploadTokenEstimate
-                                        : markdownTokenEstimate!}
-                                </span>{' '}
-                                {t('markdownStatTokensLabel')}
-                                {' · '}
-                                <span className="font-bold">
-                                    {parseUploadTokenEstimate !== null
-                                        ? markdownTrimmedCharCount(uploadedMarkdown!)
-                                        : markdownTrimmedCharCount(scrapeMarkdown!)}
-                                </span>{' '}
-                                {t('markdownStatCharactersLabel')}
-                            </p>
-                        )}
+                    {showMarkdownEstimateLine && !showMarkdownEstimateBesideCrawlPageStats && (
+                        <p className="text-xs text-gray-500 tabular-nums">
+                            <span className="font-bold">
+                                {parseUploadTokenEstimate !== null
+                                    ? parseUploadTokenEstimate
+                                    : markdownTokenEstimate!}
+                            </span>{' '}
+                            {t('markdownStatTokensLabel')}
+                            {' · '}
+                            <span className="font-bold">
+                                {parseUploadTokenEstimate !== null
+                                    ? markdownTrimmedCharCount(uploadedMarkdown!)
+                                    : markdownTrimmedCharCount(scrapeMarkdown!)}
+                            </span>{' '}
+                            {t('markdownStatCharactersLabel')}
+                        </p>
+                    )}
                     {isScraping && (
                         <p className="text-xs text-gray-500 tabular-nums">
                             {t('runDurationRunning', {

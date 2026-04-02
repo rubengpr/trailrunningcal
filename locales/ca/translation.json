@@ -533,7 +533,6 @@
         "crawledPagesTotal": "{scrapedPages} pages",
         "crawledPagesHttpSuccess": "{successPages} success",
         "crawledPagesHttpError": "{errorPages} error",
-        "markdownStatEstimatedPrefix": "Estimat:",
         "markdownStatTokensLabel": "tokens",
         "markdownStatCharactersLabel": "caràcters",
         "downloadMarkdown": "Descarregar .md",
