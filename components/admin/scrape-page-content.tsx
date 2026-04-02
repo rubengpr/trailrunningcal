@@ -393,7 +393,7 @@ export function ScrapePageContent() {
         return estimateMarkdownTokensHeuristic(uploadedMarkdown);
     }, [workflow, uploadedMarkdown, scrapeMarkdown]);
 
-    /** Token usage, estimado, and duration: Parse + Full (LLM), not Scrap-only. */
+    /** Token usage and estimado: Parse + Full (LLM), not crawl-only. Run duration is shown for all workflows. */
     const showLlmMetricsUi = workflow !== 'crawlMdOnly';
 
     return (
@@ -608,14 +608,14 @@ export function ScrapePageContent() {
                             {t('markdownStatCharactersLabel')}
                         </p>
                     )}
-                    {showLlmMetricsUi && isScraping && (
+                    {isScraping && (
                         <p className="text-xs text-gray-500 tabular-nums">
                             {t('runDurationRunning', {
                                 duration: formatDurationMs(liveElapsedMs),
                             })}
                         </p>
                     )}
-                    {showLlmMetricsUi && !isScraping && lastRunDurationMs !== null && (
+                    {!isScraping && lastRunDurationMs !== null && (
                         <p className="text-xs text-gray-500 tabular-nums">
                             {t('runDurationComplete', {
                                 duration: formatDurationMs(lastRunDurationMs),
