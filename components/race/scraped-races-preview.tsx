@@ -48,7 +48,7 @@ export function ScrapedRacesPreview({ races, isLoading, error, onAccept, accepte
     if (isLoading) {
         return (
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
-                <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600 mb-3" />
+                <div className="pipeline-loading-dot inline-block h-4 w-4 rounded-full bg-gray-300 mb-3" />
                 <p className="text-sm text-gray-600">{t('loading')}</p>
             </div>
         );
