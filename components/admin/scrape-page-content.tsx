@@ -258,28 +258,32 @@ export function ScrapePageContent() {
 
     const compressImageToDataUrl = (file: File): Promise<string> =>
         new Promise((resolve, reject) => {
-            const objectUrl = URL.createObjectURL(file);
-            const img = new Image();
-            img.onload = () => {
-                URL.revokeObjectURL(objectUrl);
-                const MAX_W = 1920;
-                const MAX_H = 1920;
-                let { width, height } = img;
-                if (width > MAX_W || height > MAX_H) {
-                    const ratio = Math.min(MAX_W / width, MAX_H / height);
-                    width = Math.round(width * ratio);
-                    height = Math.round(height * ratio);
-                }
-                const canvas = document.createElement('canvas');
-                canvas.width = width;
-                canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                if (!ctx) { reject(new Error('Canvas unavailable')); return; }
-                ctx.drawImage(img, 0, 0, width, height);
-                resolve(canvas.toDataURL('image/jpeg', 0.82));
+            const reader = new FileReader();
+            reader.onerror = reject;
+            reader.onload = () => {
+                const srcDataUrl = reader.result as string;
+                const img = new Image();
+                img.onerror = reject;
+                img.onload = () => {
+                    const MAX_W = 1920;
+                    const MAX_H = 1920;
+                    let { width, height } = img;
+                    if (width > MAX_W || height > MAX_H) {
+                        const ratio = Math.min(MAX_W / width, MAX_H / height);
+                        width = Math.round(width * ratio);
+                        height = Math.round(height * ratio);
+                    }
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    if (!ctx) { reject(new Error('Canvas unavailable')); return; }
+                    ctx.drawImage(img, 0, 0, width, height);
+                    resolve(canvas.toDataURL('image/jpeg', 0.82));
+                };
+                img.src = srcDataUrl;
             };
-            img.onerror = reject;
-            img.src = objectUrl;
+            reader.readAsDataURL(file);
         });
 
     const handleImageFilesChange = async (
