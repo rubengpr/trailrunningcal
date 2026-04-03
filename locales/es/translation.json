@@ -534,7 +534,6 @@
         "markdownStatCharactersLabel": "caracteres",
         "downloadMarkdown": "Descargar .md",
         "loadDummyPreview": "Mock data",
-        "demoFullPipelineSteps": "Demo pasos del pipeline",
         "restart": "Reiniciar",
         "usageReasoningTokens": "reasoning",
         "usageTotalTokens": "total",

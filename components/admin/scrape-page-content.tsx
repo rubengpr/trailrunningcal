@@ -34,8 +34,6 @@ import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.type
 
 type ScrapeWorkflow = 'crawlMdOnly' | 'llmFromMd' | 'crawlAndLlm';
 
-const FULL_PIPELINE_DEMO_STEP_MS = 5000;
-
 type ScrapePhase = 'idle' | 'crawling' | 'llm';
 
 type FullPipelineRowKind = 'loading' | 'success' | 'error' | 'pending';
@@ -122,7 +120,6 @@ export function ScrapePageContent() {
 
     const markdownFileInputRef = useRef<HTMLInputElement>(null);
     const runStartedAtRef = useRef<number | null>(null);
-    const pipelineDemoTimeoutIdsRef = useRef<number[]>([]);
     const fullPipelineCrawlStartedAtRef = useRef<number | null>(null);
     const fullPipelineCrawlEndedAtRef = useRef<number | null>(null);
     const fullPipelineLlmStartedAtRef = useRef<number | null>(null);
@@ -258,24 +255,7 @@ export function ScrapePageContent() {
         };
     }, [isScraping]);
 
-    useEffect(() => {
-        return () => {
-            for (const timeoutId of pipelineDemoTimeoutIdsRef.current) {
-                window.clearTimeout(timeoutId);
-            }
-            pipelineDemoTimeoutIdsRef.current = [];
-        };
-    }, []);
-
-    const clearPipelineDemoTimeouts = (): void => {
-        for (const id of pipelineDemoTimeoutIdsRef.current) {
-            window.clearTimeout(id);
-        }
-        pipelineDemoTimeoutIdsRef.current = [];
-    };
-
     const handleScrape = async () => {
-        clearPipelineDemoTimeouts();
         runStartedAtRef.current = performance.now();
         setLiveElapsedMs(0);
         setLastRunDurationMs(null);
@@ -416,65 +396,7 @@ export function ScrapePageContent() {
         setScrapedRaces(prev => prev.map((r, i) => i === index ? updatedRace : r));
     };
 
-    const handleDemoFullPipelineSteps = (): void => {
-        if (workflow !== 'crawlAndLlm' || isScraping) {
-            return;
-        }
-        clearPipelineDemoTimeouts();
-        runStartedAtRef.current = performance.now();
-        setLiveElapsedMs(0);
-        setLastRunDurationMs(null);
-        setIsScraping(true);
-        setFullPipelineUiActive(true);
-        setScrapePhase('crawling');
-        fullPipelineCrawlStartedAtRef.current = performance.now();
-        fullPipelineCrawlEndedAtRef.current = null;
-        fullPipelineLlmStartedAtRef.current = null;
-        fullPipelineLlmEndedAtRef.current = null;
-        setScrapeError(null);
-        setHasScraped(false);
-        setScrapeMarkdown(null);
-        setRawModelOutput(null);
-        setScrapeUsage(null);
-        setCrawlPageStats(null);
-        setScrapedRaces([]);
-        setAcceptedIndexes(new Set());
-        setAcceptingIndex(null);
-        setRejectedIndexes(new Set());
-
-        const firstTimeoutId = window.setTimeout(() => {
-            const crawlBoundary = performance.now();
-            fullPipelineCrawlEndedAtRef.current = crawlBoundary;
-            fullPipelineLlmStartedAtRef.current = crawlBoundary;
-            setScrapePhase('llm');
-            setScrapeMarkdown(DUMMY_SCRAPE_MARKDOWN);
-            setCrawlPageStats({ ...DUMMY_CRAWL_PAGE_STATS });
-        }, FULL_PIPELINE_DEMO_STEP_MS);
-
-        const secondTimeoutId = window.setTimeout(() => {
-            fullPipelineLlmEndedAtRef.current = performance.now();
-            setScrapePhase('idle');
-            setIsScraping(false);
-            setHasScraped(true);
-            setScrapeMarkdown(DUMMY_SCRAPE_MARKDOWN);
-            setScrapedRaces([...DUMMY_SCRAPED_RACES]);
-            setRawModelOutput(DUMMY_RAW_MODEL_OUTPUT);
-            setScrapeUsage({ ...DUMMY_SCRAPE_USAGE });
-            setCrawlPageStats({ ...DUMMY_CRAWL_PAGE_STATS });
-            const startedAt = runStartedAtRef.current;
-            setLastRunDurationMs(
-                startedAt !== null ? Math.round(performance.now() - startedAt) : 0,
-            );
-            runStartedAtRef.current = null;
-            setLiveElapsedMs(0);
-            pipelineDemoTimeoutIdsRef.current = [];
-        }, FULL_PIPELINE_DEMO_STEP_MS * 2);
-
-        pipelineDemoTimeoutIdsRef.current = [firstTimeoutId, secondTimeoutId];
-    };
-
     const handleLoadDummyPreview = (): void => {
-        clearPipelineDemoTimeouts();
         clearFullPipelineStepRefs();
         setScrapeError(null);
         setHasScraped(true);
@@ -515,7 +437,6 @@ export function ScrapePageContent() {
         if (isScraping) {
             return;
         }
-        clearPipelineDemoTimeouts();
         setWebsiteUrl('');
         setUploadedMarkdown(null);
         setUploadedFileName(null);
@@ -857,16 +778,6 @@ export function ScrapePageContent() {
                                 onClick={handleDownloadRawModelOutput}
                             >
                                 {t('downloadRawResponse')}
-                            </Button>
-                        )}
-                        {workflow === 'crawlAndLlm' && (
-                            <Button
-                                type="button"
-                                variant="secondary"
-                                onClick={handleDemoFullPipelineSteps}
-                                disabled={isScraping}
-                            >
-                                {t('demoFullPipelineSteps')}
                             </Button>
                         )}
                         <Button
