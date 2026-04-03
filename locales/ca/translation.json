@@ -513,7 +513,7 @@
         "selectImageFiles": "Trieu imatges",
         "clearImages": "Treure imatges",
         "fileTypeErrorImage": "Només es permeten imatges (JPEG, PNG, WebP)",
-        "imageSizeError": "Cada imatge ha de pesar menys de 4 MB",
+        "imageSizeError": "Les imatges són massa grans. Usa captures de pantalla més petites.",
         "imageLimitError": "Màxim 5 imatges per extracció",
         "imageCount": "{count} imatge(s) seleccionada(es)",
         "fileTypeErrorMd": "Només es permeten arxius .md",

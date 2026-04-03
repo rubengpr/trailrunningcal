@@ -252,8 +252,35 @@ export function ScrapePageContent() {
         }
     };
 
-    const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
     const MAX_IMAGES_PER_REQUEST = 5;
+    const MAX_IMAGE_RAW_BYTES = 20 * 1024 * 1024;
+    const MAX_TOTAL_PAYLOAD_BYTES = 3.5 * 1024 * 1024;
+
+    const compressImageToDataUrl = (file: File): Promise<string> =>
+        new Promise((resolve, reject) => {
+            const objectUrl = URL.createObjectURL(file);
+            const img = new Image();
+            img.onload = () => {
+                URL.revokeObjectURL(objectUrl);
+                const MAX_W = 1920;
+                const MAX_H = 1920;
+                let { width, height } = img;
+                if (width > MAX_W || height > MAX_H) {
+                    const ratio = Math.min(MAX_W / width, MAX_H / height);
+                    width = Math.round(width * ratio);
+                    height = Math.round(height * ratio);
+                }
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                if (!ctx) { reject(new Error('Canvas unavailable')); return; }
+                ctx.drawImage(img, 0, 0, width, height);
+                resolve(canvas.toDataURL('image/jpeg', 0.82));
+            };
+            img.onerror = reject;
+            img.src = objectUrl;
+        });
 
     const handleImageFilesChange = async (
         event: React.ChangeEvent<HTMLInputElement>,
@@ -268,7 +295,7 @@ export function ScrapePageContent() {
                 event.target.value = '';
                 return;
             }
-            if (file.size > MAX_IMAGE_BYTES) {
+            if (file.size > MAX_IMAGE_RAW_BYTES) {
                 toast.error(t('imageSizeError'));
                 event.target.value = '';
                 return;
@@ -278,13 +305,15 @@ export function ScrapePageContent() {
                 event.target.value = '';
                 return;
             }
-            const dataUrl = await new Promise<string>((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result as string);
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
+            const dataUrl = await compressImageToDataUrl(file);
             combined.push({ dataUrl, name: file.name });
+        }
+
+        const totalBytes = combined.reduce((sum, img) => sum + img.dataUrl.length, 0);
+        if (totalBytes > MAX_TOTAL_PAYLOAD_BYTES) {
+            toast.error(t('imageSizeError'));
+            event.target.value = '';
+            return;
         }
 
         setUploadedImages(combined);

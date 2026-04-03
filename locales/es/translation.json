@@ -510,7 +510,7 @@
         "selectImageFiles": "Elegir imágenes",
         "clearImages": "Quitar imágenes",
         "fileTypeErrorImage": "Solo se permiten imágenes (JPEG, PNG, WebP)",
-        "imageSizeError": "Cada imagen debe pesar menos de 4 MB",
+        "imageSizeError": "Las imágenes son demasiado grandes. Usa capturas de pantalla más pequeñas.",
         "imageLimitError": "Máximo 5 imágenes por extracción",
         "imageCount": "{count} imagen(es) seleccionada(s)",
         "fileTypeErrorMd": "Solo se permiten archivos .md",
