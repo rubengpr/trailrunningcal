@@ -254,7 +254,7 @@ export function ScrapePageContent() {
 
     const MAX_IMAGES_PER_REQUEST = 5;
     const MAX_IMAGE_RAW_BYTES = 20 * 1024 * 1024;
-    const MAX_TOTAL_PAYLOAD_BYTES = 3.5 * 1024 * 1024;
+    const MAX_TOTAL_PAYLOAD_CHARS = 4 * 1024 * 1024;
 
     const compressImageToDataUrl = (file: File): Promise<string> =>
         new Promise((resolve, reject) => {
@@ -288,45 +288,50 @@ export function ScrapePageContent() {
         const files = Array.from(event.target.files ?? []);
         if (files.length === 0) return;
 
-        const combined = [...uploadedImages];
-        for (const file of files) {
-            if (!file.type.startsWith('image/')) {
-                toast.error(t('fileTypeErrorImage'));
-                event.target.value = '';
-                return;
+        try {
+            const combined = [...uploadedImages];
+            for (const file of files) {
+                if (!file.type.startsWith('image/')) {
+                    toast.error(t('fileTypeErrorImage'));
+                    event.target.value = '';
+                    return;
+                }
+                if (file.size > MAX_IMAGE_RAW_BYTES) {
+                    toast.error(t('imageSizeError'));
+                    event.target.value = '';
+                    return;
+                }
+                if (combined.length >= MAX_IMAGES_PER_REQUEST) {
+                    toast.error(t('imageLimitError'));
+                    event.target.value = '';
+                    return;
+                }
+                const dataUrl = await compressImageToDataUrl(file);
+                combined.push({ dataUrl, name: file.name });
             }
-            if (file.size > MAX_IMAGE_RAW_BYTES) {
+
+            const totalChars = combined.reduce((sum, img) => sum + img.dataUrl.length, 0);
+            if (totalChars > MAX_TOTAL_PAYLOAD_CHARS) {
                 toast.error(t('imageSizeError'));
                 event.target.value = '';
                 return;
             }
-            if (combined.length >= MAX_IMAGES_PER_REQUEST) {
-                toast.error(t('imageLimitError'));
-                event.target.value = '';
-                return;
-            }
-            const dataUrl = await compressImageToDataUrl(file);
-            combined.push({ dataUrl, name: file.name });
-        }
 
-        const totalBytes = combined.reduce((sum, img) => sum + img.dataUrl.length, 0);
-        if (totalBytes > MAX_TOTAL_PAYLOAD_BYTES) {
-            toast.error(t('imageSizeError'));
+            setUploadedImages(combined);
+            setScrapeMarkdown(null);
+            setRawModelOutput(null);
+            setScrapeUsage(null);
+            setCrawlPageStats(null);
+            setHasScraped(false);
+            setScrapeError(null);
+            setScrapedRaces([]);
+            setAcceptedIndexes(new Set());
+            setRejectedIndexes(new Set());
+        } catch {
+            toast.error(t('scrapeError'));
+        } finally {
             event.target.value = '';
-            return;
         }
-
-        setUploadedImages(combined);
-        setScrapeMarkdown(null);
-        setRawModelOutput(null);
-        setScrapeUsage(null);
-        setCrawlPageStats(null);
-        setHasScraped(false);
-        setScrapeError(null);
-        setScrapedRaces([]);
-        setAcceptedIndexes(new Set());
-        setRejectedIndexes(new Set());
-        event.target.value = '';
     };
 
     const handleRemoveImage = (index: number): void => {
