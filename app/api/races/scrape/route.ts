@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { isAdminEmail } from '@/lib/auth-admin';
-import { runTrailRaceMarkdownAgentOpenRouter } from '@/lib/agents/trail-race-openrouter';
+import { runTrailRaceMarkdownAgentOpenRouter, runTrailRaceImagesAgentOpenRouter } from '@/lib/agents/trail-race-openrouter';
 import { createOpenRouterClient } from '@/lib/openrouter/openrouter-client';
-import { isOpenRouterScrapeModelId } from '@/lib/openrouter/scrape-models';
+import { isOpenRouterScrapeModelId, isOpenRouterVisionModelId } from '@/lib/openrouter/scrape-models';
 import {
   spiderCloudCrawl,
   summarizeSpiderCrawlHttpStatus,
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     const body = await request.json();
-    const { websiteUrl, markdown, model, mode: bodyMode } = body;
+    const { websiteUrl, markdown, model, mode: bodyMode, images } = body;
 
     const urlStr =
       typeof websiteUrl === 'string' ? websiteUrl.trim() : '';
@@ -167,6 +167,45 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           { status: 400 },
         );
       }
+    }
+
+    const MAX_IMAGES = 5;
+
+    if (mode === 'llmFromImages') {
+      if (!Array.isArray(images) || images.length === 0) {
+        return NextResponse.json({ error: 'At least one image is required' }, { status: 400 });
+      }
+      if (images.length > MAX_IMAGES) {
+        return NextResponse.json(
+          { error: `Maximum ${MAX_IMAGES} images per request` },
+          { status: 400 },
+        );
+      }
+      for (const img of images) {
+        if (typeof img !== 'string' || !img.startsWith('data:image/')) {
+          return NextResponse.json({ error: 'Invalid image format' }, { status: 400 });
+        }
+      }
+      if (model === undefined || model === null || model === '') {
+        return NextResponse.json({ error: 'Model is required' }, { status: 400 });
+      }
+      if (!isOpenRouterVisionModelId(model)) {
+        return NextResponse.json({ error: 'Invalid vision model' }, { status: 400 });
+      }
+      const client = createOpenRouterClient();
+      const result = await runTrailRaceImagesAgentOpenRouter(client, images, model);
+      const todayStr = new Date().toISOString().split('T')[0];
+      const futureRaces = result.races.filter((race) => race.date >= todayStr);
+      return NextResponse.json({
+        success: true,
+        data: {
+          races: futureRaces,
+          markdown: '',
+          rawModelOutput: result.rawModelOutput,
+          usage: result.usage,
+          crawlPageStats: EMPTY_CRAWL_PAGE_STATS,
+        },
+      });
     }
 
     if (model === undefined || model === null || model === '') {

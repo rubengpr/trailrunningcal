@@ -20,8 +20,8 @@ import {
     scrapeRaces,
     acceptScrapedRace,
 } from '@/lib/api/races';
-import { OPENROUTER_SCRAPE_MODEL_IDS } from '@/lib/openrouter/scrape-models';
-import type { OpenRouterScrapeModelId } from '@/lib/openrouter/scrape-models';
+import { OPENROUTER_SCRAPE_MODEL_IDS, OPENROUTER_VISION_MODEL_IDS } from '@/lib/openrouter/scrape-models';
+import type { OpenRouterScrapeModelId, OpenRouterVisionModelId } from '@/lib/openrouter/scrape-models';
 import { formatDurationMs } from '@/lib/format-duration';
 import {
     estimateMarkdownTokensHeuristic,
@@ -32,7 +32,7 @@ import type { CrawlPageStats } from '@/types/races-scrape-api.types';
 import type { TrailRaceAgentRaceRow } from '@/types/trail-race-agent.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 
-type ScrapeWorkflow = 'crawlMdOnly' | 'llmFromMd' | 'crawlAndLlm';
+type ScrapeWorkflow = 'crawlMdOnly' | 'llmFromMd' | 'crawlAndLlm' | 'llmFromImages';
 
 type ScrapePhase = 'idle' | 'crawling' | 'llm';
 
@@ -119,6 +119,7 @@ export function ScrapePageContent() {
     const t = useTranslations('admin.races.scrape');
 
     const markdownFileInputRef = useRef<HTMLInputElement>(null);
+    const imageFileInputRef = useRef<HTMLInputElement>(null);
     const runStartedAtRef = useRef<number | null>(null);
     const fullPipelineCrawlStartedAtRef = useRef<number | null>(null);
     const fullPipelineCrawlEndedAtRef = useRef<number | null>(null);
@@ -133,6 +134,10 @@ export function ScrapePageContent() {
     const [selectedModelId, setSelectedModelId] = useState<OpenRouterScrapeModelId>(
         OPENROUTER_SCRAPE_MODEL_IDS[0],
     );
+    const [selectedVisionModelId, setSelectedVisionModelId] = useState<OpenRouterVisionModelId>(
+        OPENROUTER_VISION_MODEL_IDS[0],
+    );
+    const [uploadedImages, setUploadedImages] = useState<{ dataUrl: string; name: string }[]>([]);
     const [isScraping, setIsScraping] = useState(false);
     const [scrapePhase, setScrapePhase] = useState<ScrapePhase>('idle');
     const [fullPipelineUiActive, setFullPipelineUiActive] = useState(false);
@@ -166,7 +171,9 @@ export function ScrapePageContent() {
         !isScraping &&
         (workflow === 'crawlMdOnly' || workflow === 'crawlAndLlm'
             ? isValidUrl(websiteUrl)
-            : Boolean(uploadedMarkdown && uploadedMarkdown.length > 0));
+            : workflow === 'llmFromImages'
+              ? uploadedImages.length > 0
+              : Boolean(uploadedMarkdown && uploadedMarkdown.length > 0));
 
     const clearFullPipelineStepRefs = (): void => {
         fullPipelineCrawlStartedAtRef.current = null;
@@ -186,6 +193,12 @@ export function ScrapePageContent() {
             setUploadedFileName(null);
             if (markdownFileInputRef.current) {
                 markdownFileInputRef.current.value = '';
+            }
+        }
+        if (next !== 'llmFromImages') {
+            setUploadedImages([]);
+            if (imageFileInputRef.current) {
+                imageFileInputRef.current.value = '';
             }
         }
     };
@@ -236,6 +249,74 @@ export function ScrapePageContent() {
         setRejectedIndexes(new Set());
         if (markdownFileInputRef.current) {
             markdownFileInputRef.current.value = '';
+        }
+    };
+
+    const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
+    const MAX_IMAGES_PER_REQUEST = 5;
+
+    const handleImageFilesChange = async (
+        event: React.ChangeEvent<HTMLInputElement>,
+    ): Promise<void> => {
+        const files = Array.from(event.target.files ?? []);
+        if (files.length === 0) return;
+
+        const combined = [...uploadedImages];
+        for (const file of files) {
+            if (!file.type.startsWith('image/')) {
+                toast.error(t('fileTypeErrorImage'));
+                event.target.value = '';
+                return;
+            }
+            if (file.size > MAX_IMAGE_BYTES) {
+                toast.error(t('imageSizeError'));
+                event.target.value = '';
+                return;
+            }
+            if (combined.length >= MAX_IMAGES_PER_REQUEST) {
+                toast.error(t('imageLimitError'));
+                event.target.value = '';
+                return;
+            }
+            const dataUrl = await new Promise<string>((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result as string);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+            combined.push({ dataUrl, name: file.name });
+        }
+
+        setUploadedImages(combined);
+        setScrapeMarkdown(null);
+        setRawModelOutput(null);
+        setScrapeUsage(null);
+        setCrawlPageStats(null);
+        setHasScraped(false);
+        setScrapeError(null);
+        setScrapedRaces([]);
+        setAcceptedIndexes(new Set());
+        setRejectedIndexes(new Set());
+        event.target.value = '';
+    };
+
+    const handleRemoveImage = (index: number): void => {
+        setUploadedImages(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const handleClearImages = (): void => {
+        setUploadedImages([]);
+        setScrapeMarkdown(null);
+        setRawModelOutput(null);
+        setScrapeUsage(null);
+        setCrawlPageStats(null);
+        setHasScraped(false);
+        setScrapeError(null);
+        setScrapedRaces([]);
+        setAcceptedIndexes(new Set());
+        setRejectedIndexes(new Set());
+        if (imageFileInputRef.current) {
+            imageFileInputRef.current.value = '';
         }
     };
 
@@ -293,7 +374,19 @@ export function ScrapePageContent() {
                 return;
             }
 
-            if (workflow === 'llmFromMd') {
+            if (workflow === 'llmFromImages') {
+                if (uploadedImages.length === 0) {
+                    return;
+                }
+                const data = await scrapeRaces({
+                    mode: 'llmFromImages',
+                    images: uploadedImages.map(img => img.dataUrl),
+                    model: selectedVisionModelId,
+                });
+                setScrapedRaces(data.races);
+                setRawModelOutput(data.rawModelOutput);
+                setScrapeUsage(data.usage);
+            } else if (workflow === 'llmFromMd') {
                 const markdownBody = uploadedMarkdown;
                 if (!markdownBody) {
                     return;
@@ -440,6 +533,10 @@ export function ScrapePageContent() {
         setWebsiteUrl('');
         setUploadedMarkdown(null);
         setUploadedFileName(null);
+        setUploadedImages([]);
+        if (imageFileInputRef.current) {
+            imageFileInputRef.current.value = '';
+        }
         setLiveElapsedMs(0);
         setLastRunDurationMs(null);
         setScrapedRaces([]);
@@ -501,6 +598,8 @@ export function ScrapePageContent() {
                 ? t('crawlingMarkdown')
                 : t('scraping');
 
+    const showLlmMetricsUi = workflow !== 'crawlMdOnly';
+
     const markdownTokenEstimate = useMemo((): number | null => {
         if (scrapeMarkdown === null || scrapeMarkdown === '') {
             return null;
@@ -521,9 +620,6 @@ export function ScrapePageContent() {
         }
         return estimateMarkdownTokensHeuristic(uploadedMarkdown);
     }, [workflow, uploadedMarkdown, scrapeMarkdown]);
-
-    /** Token usage and estimado: Parse + Full (LLM), not crawl-only. Run duration is shown for all workflows. */
-    const showLlmMetricsUi = workflow !== 'crawlMdOnly';
 
     const showMarkdownEstimateLine =
         showLlmMetricsUi &&
@@ -669,6 +765,17 @@ export function ScrapePageContent() {
                         >
                             {t('workflowLlmFromMd')}
                         </button>
+                        <button
+                            type="button"
+                            onClick={() => handleWorkflowChange('llmFromImages')}
+                            disabled={isScraping}
+                            className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${workflow === 'llmFromImages'
+                                ? 'bg-white text-gray-900 shadow-sm'
+                                : 'text-gray-600 hover:text-gray-900'
+                                }`}
+                        >
+                            {t('workflowLlmFromImages')}
+                        </button>
                     </div>
 
                     {(workflow === 'crawlMdOnly' || workflow === 'crawlAndLlm') && (
@@ -735,6 +842,83 @@ export function ScrapePageContent() {
                         </>
                     )}
 
+                    {/* IMAGE UPLOAD - shown for llmFromImages workflow */}
+                    {workflow === 'llmFromImages' && (
+                        <>
+                            <div className="grid gap-2 w-full">
+                                <label htmlFor="imageFiles" className="text-sm font-medium leading-none text-gray-900">
+                                    {t('imageUploadLabel')}
+                                </label>
+                                <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+                                    <input
+                                        ref={imageFileInputRef}
+                                        id="imageFiles"
+                                        type="file"
+                                        accept="image/*"
+                                        multiple
+                                        className="sr-only"
+                                        onChange={handleImageFilesChange}
+                                        disabled={isScraping}
+                                    />
+                                    <label
+                                        htmlFor="imageFiles"
+                                        className="inline-flex h-10 cursor-pointer items-center justify-center rounded-md border border-gray-200 bg-white px-4 text-sm font-medium text-gray-900 shadow-sm transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-200/80 has-disabled:cursor-not-allowed has-disabled:opacity-50"
+                                    >
+                                        {t('selectImageFiles')}
+                                    </label>
+                                    {uploadedImages.length > 0 && (
+                                        <>
+                                            <span className="text-sm text-gray-600">
+                                                {t('imageCount', { count: uploadedImages.length })}
+                                            </span>
+                                            <Button
+                                                type="button"
+                                                variant="secondary"
+                                                onClick={handleClearImages}
+                                                disabled={isScraping}
+                                            >
+                                                {t('clearImages')}
+                                            </Button>
+                                        </>
+                                    )}
+                                </div>
+                                {uploadedImages.length > 0 && (
+                                    <div className="flex flex-wrap gap-2 mt-1">
+                                        {uploadedImages.map((img, idx) => (
+                                            <div key={idx} className="relative flex items-center gap-1.5 rounded-md border border-gray-200 bg-gray-50 px-2 py-1.5">
+                                                <img
+                                                    src={img.dataUrl}
+                                                    alt={img.name}
+                                                    className="h-8 w-8 rounded object-cover"
+                                                />
+                                                <span className="max-w-[120px] truncate text-xs text-gray-600">{img.name}</span>
+                                                {!isScraping && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleRemoveImage(idx)}
+                                                        className="ml-1 text-gray-400 hover:text-gray-700"
+                                                    >
+                                                        ×
+                                                    </button>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                            <FormInput
+                                id="websiteUrlForImagesAccept"
+                                label={t('eventUrlForAcceptLabel')}
+                                helperText={t('urlForAcceptHint')}
+                                type="url"
+                                value={websiteUrl}
+                                placeholder={t('websiteUrlPlaceholder')}
+                                onChange={(e) => setWebsiteUrl(e.target.value)}
+                                disabled={isScraping}
+                            />
+                        </>
+                    )}
+
                     {(workflow === 'llmFromMd' || workflow === 'crawlAndLlm') && (
                         <FormSelect
                             id="openrouterModel"
@@ -746,6 +930,24 @@ export function ScrapePageContent() {
                             disabled={isScraping}
                         >
                             {OPENROUTER_SCRAPE_MODEL_IDS.map((id) => (
+                                <option key={id} value={id}>
+                                    {id}
+                                </option>
+                            ))}
+                        </FormSelect>
+                    )}
+
+                    {workflow === 'llmFromImages' && (
+                        <FormSelect
+                            id="openrouterVisionModel"
+                            label={t('modelLabel')}
+                            value={selectedVisionModelId}
+                            onChange={(e) =>
+                                setSelectedVisionModelId(e.target.value as OpenRouterVisionModelId)
+                            }
+                            disabled={isScraping}
+                        >
+                            {OPENROUTER_VISION_MODEL_IDS.map((id) => (
                                 <option key={id} value={id}>
                                     {id}
                                 </option>

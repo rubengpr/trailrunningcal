@@ -9,6 +9,7 @@ export const SCRAPE_PIPELINE_MODES = [
   'crawlOnly',
   'llmFromMarkdown',
   'crawlAndLlm',
+  'llmFromImages',
 ] as const;
 
 export type ScrapePipelineMode = (typeof SCRAPE_PIPELINE_MODES)[number];

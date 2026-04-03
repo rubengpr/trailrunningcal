@@ -1,4 +1,4 @@
-import type { OpenRouterScrapeModelId } from '@/lib/openrouter/scrape-models';
+import type { OpenRouterScrapeModelId, OpenRouterVisionModelId } from '@/lib/openrouter/scrape-models';
 import type { CrawlPageStats } from '@/types/races-scrape-api.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 
@@ -66,7 +66,8 @@ export interface ScrapeRacesResult {
 
 export type ScrapeRacesOptions =
   | { mode: 'crawlAndLlm'; model: OpenRouterScrapeModelId; websiteUrl: string }
-  | { mode: 'llmFromMarkdown'; model: OpenRouterScrapeModelId; markdown: string };
+  | { mode: 'llmFromMarkdown'; model: OpenRouterScrapeModelId; markdown: string }
+  | { mode: 'llmFromImages'; model: OpenRouterVisionModelId; images: string[] };
 
 /**
  * Crawls an event website and returns joined markdown only (no LLM). Admin-only.
@@ -105,11 +106,17 @@ export async function scrapeRaces(
           markdown: options.markdown,
           model: options.model,
         }
-      : {
-          mode: options.mode,
-          websiteUrl: options.websiteUrl,
-          model: options.model,
-        };
+      : options.mode === 'llmFromImages'
+        ? {
+            mode: options.mode,
+            images: options.images,
+            model: options.model,
+          }
+        : {
+            mode: options.mode,
+            websiteUrl: options.websiteUrl,
+            model: options.model,
+          };
 
   const response = await fetch('/api/races/scrape', {
     method: 'POST',

@@ -1,6 +1,6 @@
 import type OpenAI from 'openai';
 import { TRAIL_RACE_AGENT_JSON_SCHEMA } from '@/lib/agents/trail-race-agent-schema';
-import type { OpenRouterScrapeModelId } from '@/lib/openrouter/scrape-models';
+import type { OpenRouterScrapeModelId, OpenRouterVisionModelId } from '@/lib/openrouter/scrape-models';
 import type {
   TrailRaceAgentParsed,
   TrailRaceAgentRaceRow,
@@ -66,6 +66,67 @@ function openRouterProviderErrorMessage(
     return (apiError as { message: string }).message;
   }
   return null;
+}
+
+export async function runTrailRaceImagesAgentOpenRouter(
+  client: OpenAI,
+  images: string[],
+  model: OpenRouterVisionModelId,
+): Promise<TrailRaceOpenRouterAgentResult> {
+  const completion = await client.chat.completions.create({
+    model,
+    messages: [
+      { role: 'system', content: TRAIL_RACE_AGENT_INSTRUCTIONS },
+      {
+        role: 'user',
+        content: images.map((url) => ({
+          type: 'image_url' as const,
+          image_url: { url },
+        })),
+      },
+    ],
+    response_format: {
+      type: 'json_schema',
+      json_schema: {
+        name: 'trail_race',
+        strict: true,
+        schema: TRAIL_RACE_AGENT_JSON_SCHEMA as unknown as Record<
+          string,
+          unknown
+        >,
+      },
+    },
+  });
+
+  const choices = completion.choices;
+  if (choices === undefined || choices.length === 0) {
+    const completionRecord = completion as unknown as Record<string, unknown>;
+    const providerMessage = openRouterProviderErrorMessage(completionRecord);
+    if (providerMessage) {
+      console.error('OpenRouter API error', { model, message: providerMessage });
+      throw new Error(providerMessage);
+    }
+    console.error('OpenRouter completion has no usable choices', {
+      model,
+      choicesMissing: choices === undefined,
+      choiceCount: choices?.length ?? 0,
+      completionId: completionRecord.id,
+      topLevelKeys: Object.keys(completionRecord),
+      error: completionRecord.error,
+    });
+    throw new Error('OpenRouter returned no completion choices');
+  }
+
+  const messageContent = choices[0].message?.content;
+  const rawModelOutput =
+    typeof messageContent === 'string' ? messageContent : '';
+
+  const parsed = parseJsonOutputText(rawModelOutput);
+  const races = Array.isArray(parsed?.races) ? parsed.races : [];
+
+  const usage = mapCompletionUsageToScrapeUsage(completion.usage);
+
+  return { parsed, races, rawModelOutput, usage };
 }
 
 export async function runTrailRaceMarkdownAgentOpenRouter(
