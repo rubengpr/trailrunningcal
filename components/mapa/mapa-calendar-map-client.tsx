@@ -146,7 +146,7 @@ export default function MapaCalendarMapClient({
   return (
     <>
       {/* Mobile sticky filter trigger */}
-      <div className="sm:hidden sticky top-0 z-10 bg-white border-b border-gray-300 px-4 py-6 shadow-[0_4px_8px_-2px_rgba(0,0,0,0.06)]">
+      <div className="sm:hidden sticky top-0 z-10 w-full min-w-0 max-w-full bg-white border-b border-gray-300 px-4 py-6 shadow-[0_4px_8px_-2px_rgba(0,0,0,0.06)]">
         <button
           onClick={openFiltersModal}
           className="flex items-center justify-center gap-2 w-full text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors cursor-pointer"
@@ -180,8 +180,8 @@ export default function MapaCalendarMapClient({
         </button>
       </div>
 
-      <section className="w-full pb-6 lg:pb-8">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8">
+      <section className="w-full min-w-0 pb-6 lg:pb-8">
+        <div className="max-w-4xl mx-auto min-w-0 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
           <div className="hidden sm:flex justify-center mb-3">
             <MonthFilter
               initialSelectedMonth={selectedMonth}
@@ -196,17 +196,17 @@ export default function MapaCalendarMapClient({
         </div>
       </section>
 
-      <main>
+      <main className="min-w-0">
         <ErrorBoundary fallback={<SearchError onRetry={handleRetry} />}>
           <section id="carreras">
-            <div className="mx-auto w-full max-w-4xl px-4 sm:px-6 lg:max-w-7xl lg:px-8">
-              <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-8">
+            <div className="mx-auto w-full min-w-0 max-w-4xl px-4 sm:px-6 lg:max-w-7xl lg:px-8">
+              <div className="flex min-w-0 flex-col gap-6 lg:flex-row lg:items-start lg:gap-8">
                 {showListPanel && (
                   <div
                     className={`min-w-0 w-full min-h-0 lg:w-1/2 lg:max-h-[calc(100vh-12rem)] lg:overflow-y-auto lg:pr-1 ${showMobileMapFab && mobileView === 'list' ? 'pb-20' : ''
                       }`}
                   >
-                    <div className="grid gap-4 min-h-[200px]">
+                    <div className="grid min-h-[200px] min-w-0 grid-cols-1 gap-4">
                       {filteredRaces.length === 0 ? (
                         <EmptyState
                           icon={
@@ -251,7 +251,7 @@ export default function MapaCalendarMapClient({
                         filteredRaces.map((race) => {
                           const raceSlug = generateRaceSlug(race.name);
                           return (
-                            <div key={race.id}>
+                            <div key={race.id} className="min-w-0">
                               <ErrorBoundary
                                 fallback={
                                   <div className="bg-white rounded-lg shadow-sm border border-red-200 p-6">

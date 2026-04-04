@@ -146,14 +146,14 @@ export default function TrailRaceCard({
   return (
     <article
       onClick={displayOnly ? undefined : handleCardClick}
-      className={`w-full bg-white rounded-lg shadow ${displayOnly
+      className={`w-full min-w-0 max-w-full bg-white rounded-lg shadow ${displayOnly
         ? ''
         : 'sm:hover:shadow-md transition-shadow sm:cursor-pointer pointer-events-none sm:pointer-events-auto'
         }`}
     >
       <div className={`w-full ${innerPadding}`}>
-        <div className="flex items-start sm:justify-between mb-1">
-          <div className={`flex ${mainGap}`}>
+        <div className="flex min-w-0 items-start sm:justify-between mb-1">
+          <div className={`flex min-w-0 flex-1 ${mainGap}`}>
             <div className={dateBlockClass}>
               <span className="text-[9px] sm:text-[10px] font-medium uppercase tracking-wide">
                 {dayOfWeek}
@@ -199,17 +199,17 @@ export default function TrailRaceCard({
                   </Link>
                 </span>
               </div>
-              <div className="flex justify-start items-center gap-2">
+              <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1.5">
                 {categorySlug ? (
                   <Link
                     href={`/${locale}/${categorySlug}`}
-                    className="pointer-events-auto px-2 py-0.5 text-xs font-medium rounded-sm bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors"
+                    className="pointer-events-auto min-w-0 max-w-full wrap-break-word px-2 py-0.5 text-xs font-medium rounded-sm bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors sm:max-w-none"
                     onClick={(e) => e.stopPropagation()}
                   >
                     {t('category.' + raceCategory)}
                   </Link>
                 ) : (
-                  <span className="px-2 py-0.5 text-xs font-medium rounded-sm bg-gray-100 text-gray-800">
+                  <span className="min-w-0 max-w-full wrap-break-word px-2 py-0.5 text-xs font-medium rounded-sm bg-gray-100 text-gray-800 sm:max-w-none">
                     {t('category.' + raceCategory)}
                   </span>
                 )}
@@ -222,7 +222,7 @@ export default function TrailRaceCard({
                 {!displayOnly && raceSlug && (
                   <Link
                     href={`/${locale}/carrera/${raceSlug}`}
-                    className="sm:hidden inline-block pointer-events-auto bg-black text-white px-2 py-1 rounded-sm text-xs font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+                    className="sm:hidden inline-flex shrink-0 pointer-events-auto bg-black text-white px-2 py-1 rounded-sm text-xs font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
                     onClick={(e) => {
                       e.stopPropagation();
                     }}
@@ -230,7 +230,7 @@ export default function TrailRaceCard({
                     {t('race.webLink')}
                   </Link>
                 )}
-                <div className="block sm:hidden font-semibold text-gray-900 text-xs sm:text-lg">
+                <div className="block sm:hidden shrink-0 font-semibold text-gray-900 text-xs sm:text-lg">
                   {displayPrice ? `${displayPrice}€` : '—'}
                 </div>
               </div>
