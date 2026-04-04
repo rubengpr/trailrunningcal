@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import posthog from 'posthog-js';
@@ -17,7 +17,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { Button } from '@/components/ui/button';
 import RacesMap from '@/components/races-map/races-map';
 import { useMinWidthLg } from '@/hooks/use-min-width-lg';
-import { useModal } from '@/hooks/use-modal';
+import { useMobileFilters } from '@/components/providers/mobile-filters-provider';
 import { filterHomeRaces, filterMapMarkersByRaceIds } from '@/lib/home-race-filters';
 import { generateRaceSlug } from '@/lib/race-utils';
 
@@ -51,7 +51,16 @@ export default function MapaCalendarMapClient({
 
   const router = useRouter();
   const isDesktopMap = useMinWidthLg();
-  const { isOpen: isFiltersModalOpen, open: openFiltersModal, close: closeFiltersModal } = useModal();
+  const { isOpen: isFiltersModalOpen, open: openFiltersModal, close: closeFiltersModal, register, unregister, updateFilterCount } = useMobileFilters();
+
+  useEffect(() => {
+    register();
+    return () => unregister();
+  }, [register, unregister]);
+
+  useEffect(() => {
+    updateFilterCount((selectedMonth ? 1 : 0) + (selectedProvince ? 1 : 0));
+  }, [selectedMonth, selectedProvince, updateFilterCount]);
 
   const filteredRaces = useMemo(
     () => filterHomeRaces(races, selectedMonth, selectedProvince),
@@ -96,8 +105,6 @@ export default function MapaCalendarMapClient({
     }
     closeFiltersModal();
   };
-
-  const filterCount = (selectedMonth ? 1 : 0) + (selectedProvince ? 1 : 0);
 
   const handleViewMapClick = (): void => {
     setMobileView('map');
@@ -145,41 +152,6 @@ export default function MapaCalendarMapClient({
 
   return (
     <>
-      {/* Mobile sticky filter trigger */}
-      <div className="sm:hidden sticky top-0 z-10 w-full min-w-0 max-w-full bg-white border-b border-gray-300 px-4 py-6 shadow-[0_4px_8px_-2px_rgba(0,0,0,0.06)]">
-        <button
-          onClick={openFiltersModal}
-          className="flex items-center justify-center gap-2 w-full text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors cursor-pointer"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-4 w-4 shrink-0"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={3}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M10 5H3" />
-            <path d="M12 19H3" />
-            <path d="M14 3v4" />
-            <path d="M16 17v4" />
-            <path d="M21 12h-9" />
-            <path d="M21 19h-5" />
-            <path d="M21 5h-7" />
-            <path d="M8 10v4" />
-            <path d="M8 12H3" />
-          </svg>
-          <span className="text-base font-semibold">{tFilters('filtersLabel')}</span>
-          {filterCount > 0 && (
-            <span className="flex h-4 w-4 items-center justify-center rounded-full bg-black text-[10px] font-semibold text-white">
-              {filterCount}
-            </span>
-          )}
-        </button>
-      </div>
-
       <section className="w-full min-w-0 pb-6 lg:pb-8">
         <div className="max-w-4xl mx-auto min-w-0 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
           <div className="hidden sm:flex justify-center mb-3">
