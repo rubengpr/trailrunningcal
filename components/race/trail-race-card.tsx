@@ -131,8 +131,8 @@ export default function TrailRaceCard({
 
   const isCompact = variant === 'compact';
   const innerPadding = isCompact
-    ? 'px-3 py-2 sm:px-4 sm:py-2'
-    : 'p-2 sm:p-4';
+    ? 'px-3 py-3 sm:px-4 sm:py-3'
+    : 'px-2 py-3 sm:px-4 sm:py-5';
   const dateBlockClass = isCompact
     ? 'flex flex-col items-center justify-center min-w-[44px] px-2 py-1.5 bg-amber-50 text-gray-800 rounded-sm'
     : 'flex flex-col items-center justify-center min-w-[50px] px-3 py-2 bg-amber-50 text-gray-800 rounded-sm';
@@ -222,7 +222,7 @@ export default function TrailRaceCard({
                 {!displayOnly && raceSlug && (
                   <Link
                     href={`/${locale}/carrera/${raceSlug}`}
-                    className="sm:hidden inline-flex shrink-0 pointer-events-auto bg-black text-white px-2 py-1 rounded-sm text-xs font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+                    className="sm:hidden inline-flex shrink-0 items-center pointer-events-auto bg-black text-white px-2 py-0.5 rounded-sm text-xs font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
                     onClick={(e) => {
                       e.stopPropagation();
                     }}
@@ -245,7 +245,7 @@ export default function TrailRaceCard({
             {!displayOnly && raceSlug && (
               <Link
                 href={`/${locale}/carrera/${raceSlug}`}
-                className={`hidden sm:inline-block bg-black text-white rounded-md font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors ${isCompact ? 'px-3 py-1 text-xs' : 'px-3 py-1.5 text-sm'}`}
+                className="hidden sm:inline-flex items-center bg-black text-white rounded-sm px-3 py-0.5 text-xs font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
                 onClick={(e) => {
                   e.stopPropagation();
                 }}
