@@ -340,6 +340,7 @@ export default function MapaCalendarMapClient({
         isOpen={isFiltersModalOpen}
         onClose={closeFiltersModal}
         onApply={handleFiltersApply}
+        onClear={handleClearFilters}
         initialMonth={selectedMonth}
         initialProvince={selectedProvince}
       />

@@ -10,6 +10,7 @@ interface MobileFiltersModalProps {
   isOpen: boolean;
   onClose: () => void;
   onApply: (month: string, province: string) => void;
+  onClear: () => void;
   initialMonth: string;
   initialProvince: string;
 }
@@ -18,6 +19,7 @@ export default function MobileFiltersModal({
   isOpen,
   onClose,
   onApply,
+  onClear,
   initialMonth,
   initialProvince,
 }: MobileFiltersModalProps) {
@@ -48,6 +50,14 @@ export default function MobileFiltersModal({
     onApply(draftMonth, draftProvince);
   };
 
+  const handleClearAll = () => {
+    setDraftMonth('');
+    setDraftProvince('');
+    onClear();
+  };
+
+  const hasActiveFilters = draftMonth !== '' || draftProvince !== '';
+
   if (!isOpen) return null;
 
   return (
@@ -75,7 +85,6 @@ export default function MobileFiltersModal({
         <span className="text-base font-semibold text-gray-900">
           {tFilters('filtersLabel')}
         </span>
-        {/* Spacer to center the title */}
         <div className="w-8" />
       </div>
 
@@ -102,7 +111,28 @@ export default function MobileFiltersModal({
       </div>
 
       {/* Footer */}
-      <div className="border-t border-gray-200 px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+      <div className="border-t border-gray-200 px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] flex items-center gap-3">
+        {hasActiveFilters && (
+          <button
+            onClick={handleClearAll}
+            className="flex items-center justify-center h-[52px] w-[52px] shrink-0 rounded-xl border border-gray-300 text-gray-500 hover:text-gray-800 hover:border-gray-400 transition-colors cursor-pointer"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+              <path d="M3 6h18" />
+              <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+            </svg>
+          </button>
+        )}
         <Button variant="primary" fullWidth onClick={handleApply} className="py-4">
           {tFilters('apply')}
         </Button>
