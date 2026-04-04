@@ -19,7 +19,11 @@
     "section": "Búsqueda y filtros"
   },
   "filters": {
-    "clearFilters": "Limpiar filtros"
+    "clearFilters": "Limpiar filtros",
+    "filtersLabel": "Filtrar",
+    "apply": "Aplicar filtros",
+    "monthLabel": "Mes",
+    "provinceLabel": "Provincia"
   },
   "months": {
     "0": "Ene",

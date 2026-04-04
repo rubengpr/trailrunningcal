@@ -19,7 +19,11 @@
     "section": "Cerca i filtres"
   },
   "filters": {
-    "clearFilters": "Netejar filtres"
+    "clearFilters": "Netejar filtres",
+    "filtersLabel": "Filtrar",
+    "apply": "Aplicar filtres",
+    "monthLabel": "Mes",
+    "provinceLabel": "Província"
   },
   "months": {
     "0": "Gen",
