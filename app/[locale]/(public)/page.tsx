@@ -88,7 +88,7 @@ export default async function HomePage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
       <HeroSection />
-      <div className="mx-auto w-full pt-6 pb-16 sm:pt-10 lg:pt-4">
+      <div className="mx-auto w-full min-w-0 pt-6 pb-16 sm:pt-10 lg:pt-4">
         <MapaCalendarMapClient
           races={races}
           markers={markers}

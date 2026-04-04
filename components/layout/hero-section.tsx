@@ -4,7 +4,7 @@ export default async function HeroSection() {
   const t = await getTranslations('landing');
 
   return (
-    <section className="px-6 py-10 lg:pb-6">
+    <section className="min-w-0 px-6 py-10 lg:pb-6">
       <div className="flex justify-center items-center text-center">
         <div className="flex flex-col items-center justify-center max-w-4xl mx-auto">
           <h1 className="text-2xl sm:text-4xl font-extrabold leading-tight">

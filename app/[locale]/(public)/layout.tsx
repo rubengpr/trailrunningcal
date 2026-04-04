@@ -15,7 +15,7 @@ export default async function PublicLayout({
   const t = await getTranslations({ locale, namespace: 'navigation' });
 
   return (
-    <div className="min-h-screen w-full text-gray-900 flex flex-col bg-white">
+    <div className="min-h-screen w-full min-w-0 text-gray-900 flex flex-col bg-white overflow-x-hidden">
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-4 focus:left-4 focus:px-4 focus:py-2 focus:bg-white focus:text-gray-900 focus:rounded-md focus:shadow-md focus:text-sm focus:font-medium"
@@ -23,7 +23,7 @@ export default async function PublicLayout({
         {t('skipToContent')}
       </a>
       <Navbar />
-      <div id="main-content">
+      <div id="main-content" className="min-w-0">
         {children}
       </div>
       <Footer />
