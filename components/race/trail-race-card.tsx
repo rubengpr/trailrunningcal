@@ -245,7 +245,7 @@ export default function TrailRaceCard({
             {!displayOnly && raceSlug && (
               <Link
                 href={`/${locale}/carrera/${raceSlug}`}
-                className="hidden sm:inline-flex items-center bg-black text-white rounded-sm px-3 py-0.5 text-xs font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+                className="hidden sm:inline-flex items-center bg-black text-white rounded-sm px-3 py-1 text-xs font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
                 onClick={(e) => {
                   e.stopPropagation();
                 }}
