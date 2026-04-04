@@ -17,6 +17,7 @@ import {
 } from '@/lib/fixtures/dummy-scrape-preview';
 import {
     crawlEventWebsiteMarkdown,
+    scrapeEventPageMarkdown,
     scrapeRaces,
     acceptScrapedRace,
 } from '@/lib/api/races';
@@ -127,6 +128,7 @@ export function ScrapePageContent() {
     const fullPipelineLlmEndedAtRef = useRef<number | null>(null);
 
     const [workflow, setWorkflow] = useState<ScrapeWorkflow>('crawlAndLlm');
+    const [isSinglePageScrape, setIsSinglePageScrape] = useState(false);
     const [websiteUrl, setWebsiteUrl] = useState('');
     const [uploadedMarkdown, setUploadedMarkdown] = useState<string | null>(null);
     const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
@@ -402,10 +404,14 @@ export function ScrapePageContent() {
         setAcceptingIndex(null);
         setRejectedIndexes(new Set());
 
+        const fetchPageFn = isSinglePageScrape
+            ? scrapeEventPageMarkdown
+            : crawlEventWebsiteMarkdown;
+
         try {
             if (workflow === 'crawlMdOnly') {
                 const normalizedUrl = normalizeUrl(websiteUrl.trim());
-                const data = await crawlEventWebsiteMarkdown(normalizedUrl);
+                const data = await fetchPageFn(normalizedUrl);
                 setScrapeMarkdown(data.markdown);
                 setCrawlPageStats(data.crawlPageStats);
                 setHasScraped(true);
@@ -442,14 +448,14 @@ export function ScrapePageContent() {
                 const normalizedUrl = normalizeUrl(websiteUrl.trim());
                 let crawlData;
                 try {
-                    crawlData = await crawlEventWebsiteMarkdown(normalizedUrl);
+                    crawlData = await fetchPageFn(normalizedUrl);
                 } catch (crawlErr) {
                     fullPipelineCrawlEndedAtRef.current = performance.now();
                     const errorMessage =
                         crawlErr instanceof Error ? crawlErr.message : t('crawlError');
                     setScrapeError(errorMessage);
                     setHasScraped(true);
-                    toast.error(t('crawlError'));
+                    toast.error(isSinglePageScrape ? t('scrapePageError') : t('crawlError'));
                     return;
                 }
                 const crawlEndedAt = performance.now();
@@ -817,15 +823,39 @@ export function ScrapePageContent() {
                     </div>
 
                     {(workflow === 'crawlMdOnly' || workflow === 'crawlAndLlm') && (
-                        <FormInput
-                            id="websiteUrl"
-                            label={t('websiteUrlLabel')}
-                            type="url"
-                            value={websiteUrl}
-                            placeholder={t('websiteUrlPlaceholder')}
-                            onChange={(e) => setWebsiteUrl(e.target.value)}
-                            disabled={isScraping}
-                        />
+                        <div className="grid gap-2 w-full">
+                            <label htmlFor="websiteUrl" className="text-sm font-medium leading-none">
+                                {t('websiteUrlLabel')}
+                            </label>
+                            <input
+                                id="websiteUrl"
+                                type="url"
+                                value={websiteUrl}
+                                placeholder={t('websiteUrlPlaceholder')}
+                                onChange={(e) => setWebsiteUrl(e.target.value)}
+                                disabled={isScraping}
+                                className="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-500 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                            />
+                            <label className="flex items-center gap-1.5 cursor-pointer w-fit">
+                                <div className="relative h-3 w-3 shrink-0">
+                                    <input
+                                        type="checkbox"
+                                        checked={isSinglePageScrape}
+                                        onChange={(e) => setIsSinglePageScrape(e.target.checked)}
+                                        disabled={isScraping}
+                                        className="peer absolute inset-0 h-full w-full cursor-pointer appearance-none rounded border border-gray-300 transition-colors checked:border-gray-900 checked:bg-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
+                                    />
+                                    <svg
+                                        viewBox="0 0 10 10"
+                                        fill="none"
+                                        className="pointer-events-none absolute inset-0 m-auto hidden h-2 w-2 text-white peer-checked:block"
+                                    >
+                                        <path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
+                                </div>
+                                <span className="text-xs text-gray-500">{t('spiderModeScrape')}</span>
+                            </label>
+                        </div>
                     )}
 
                     {workflow === 'llmFromMd' && (

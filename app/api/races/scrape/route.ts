@@ -6,6 +6,7 @@ import { createOpenRouterClient } from '@/lib/openrouter/openrouter-client';
 import { isOpenRouterScrapeModelId, isOpenRouterVisionModelId } from '@/lib/openrouter/scrape-models';
 import {
   spiderCloudCrawl,
+  spiderCloudScrape,
   summarizeSpiderCrawlHttpStatus,
 } from '@/lib/agents/spider-crawl';
 import { joinSpiderCrawlPagesToMarkdown } from '@/lib/agents/spider-crawl-join-markdown';
@@ -48,6 +49,21 @@ const EMPTY_CRAWL_PAGE_STATS: CrawlPageStats = {
   successCount: 0,
   errorCount: 0,
 };
+
+async function scrapeUrlToMarkdown(
+  urlStr: string,
+): Promise<{ markdown: string; crawlPageStats: CrawlPageStats }> {
+  const normalizedUrl = normalizeUrl(urlStr);
+  try {
+    new URL(normalizedUrl);
+  } catch {
+    throw new Error('INVALID_URL');
+  }
+  const pages = await spiderCloudScrape(normalizedUrl);
+  const crawlPageStats = summarizeSpiderCrawlHttpStatus(pages);
+  const markdown = joinSpiderCrawlPagesToMarkdown(normalizedUrl, pages);
+  return { markdown, crawlPageStats };
+}
 
 async function crawlUrlToMarkdown(
   urlStr: string,
@@ -136,6 +152,33 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           return NextResponse.json({ error: 'Invalid URL format' }, { status: 400 });
         }
         throw crawlError;
+      }
+    }
+
+    if (mode === 'scrapeOnly') {
+      if (hasMarkdown) {
+        return NextResponse.json(
+          { error: 'Scrape-only mode does not accept markdown' },
+          { status: 400 },
+        );
+      }
+      if (!hasUrl) {
+        return NextResponse.json(
+          { error: 'Website URL is required for scrape-only mode' },
+          { status: 400 },
+        );
+      }
+      try {
+        const { markdown, crawlPageStats } = await scrapeUrlToMarkdown(urlStr);
+        return NextResponse.json({
+          success: true,
+          data: { markdown, crawlPageStats },
+        });
+      } catch (scrapeError) {
+        if (scrapeError instanceof Error && scrapeError.message === 'INVALID_URL') {
+          return NextResponse.json({ error: 'Invalid URL format' }, { status: 400 });
+        }
+        throw scrapeError;
       }
     }
 

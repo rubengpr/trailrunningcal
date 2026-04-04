@@ -1,6 +1,7 @@
 import type { CrawlPageStats } from '@/types/races-scrape-api.types';
 
 const SPIDER_CRAWL_ENDPOINT = 'https://api.spider.cloud/crawl';
+const SPIDER_SCRAPE_ENDPOINT = 'https://api.spider.cloud/scrape';
 
 /**
  * URL patterns (regex strings) that are irrelevant to trail race data extraction.
@@ -223,6 +224,84 @@ export interface SpiderCloudCrawlOptions {
 }
 
 const DEFAULT_SPIDER_REQUEST_TIMEOUT_SEC = 60;
+
+export interface SpiderCloudScrapeOptions {
+  request?: 'http' | 'chrome' | 'smart';
+  returnFormat?: 'markdown' | 'raw' | 'text' | string;
+  waitFor?: Record<string, unknown>;
+  executionScripts?: Record<string, string>;
+  requestTimeout?: number;
+  blacklist?: string[];
+}
+
+export async function spiderCloudScrape(
+  url: string,
+  options?: SpiderCloudScrapeOptions,
+): Promise<SpiderCrawlPageItem[]> {
+  try {
+    new URL(url);
+  } catch {
+    throw new Error('Invalid seed URL');
+  }
+
+  const apiKey = requireSpiderApiKey();
+
+  const {
+    request = 'smart',
+    returnFormat = 'markdown',
+    waitFor,
+    executionScripts,
+    requestTimeout = DEFAULT_SPIDER_REQUEST_TIMEOUT_SEC,
+    blacklist = [...SPIDER_CRAWL_URL_BLACKLIST],
+  } = options ?? {};
+
+  const body: Record<string, unknown> = {
+    url,
+    request,
+    return_format: returnFormat,
+    request_timeout: requestTimeout,
+  };
+
+  if (blacklist.length > 0) {
+    body.blacklist = blacklist;
+  }
+  if (waitFor !== undefined) {
+    body.wait_for = waitFor;
+  }
+  if (executionScripts !== undefined) {
+    body.execution_scripts = executionScripts;
+  }
+
+  const response = await fetch(SPIDER_SCRAPE_ENDPOINT, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+
+  const responseText = await response.text();
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(responseText) as unknown;
+  } catch {
+    console.error('Spider scrape non-JSON response:', responseText);
+    throw new Error('Spider scrape returned non-JSON body');
+  }
+
+  if (!response.ok) {
+    console.error('Spider scrape failed:', response.status, parsed);
+    throw new Error(`Spider scrape failed: ${response.status}`);
+  }
+
+  if (!Array.isArray(parsed)) {
+    console.error('Unexpected Spider scrape response shape:', parsed);
+    throw new Error('Unexpected Spider scrape response shape');
+  }
+
+  return parsed.map((entry) => normalizeSpiderCrawlPageItem(entry));
+}
 
 export async function spiderCloudCrawl(
   seedUrl: string,

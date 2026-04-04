@@ -94,6 +94,30 @@ export async function crawlEventWebsiteMarkdown(
 }
 
 /**
+ * Scrapes a single event page (no link-following) and returns markdown only (no LLM). Admin-only.
+ */
+export async function scrapeEventPageMarkdown(
+  websiteUrl: string,
+): Promise<{ markdown: string; crawlPageStats: CrawlPageStats }> {
+  const response = await fetch('/api/races/scrape', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      mode: 'scrapeOnly',
+      websiteUrl,
+    }),
+  });
+
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(responseData.error || 'Failed to scrape page');
+  }
+
+  return responseData.data;
+}
+
+/**
  * Runs the trail race agent on a crawled URL or on uploaded markdown. Admin-only.
  */
 export async function scrapeRaces(

@@ -7,6 +7,7 @@ export interface CrawlPageStats {
 
 export const SCRAPE_PIPELINE_MODES = [
   'crawlOnly',
+  'scrapeOnly',
   'llmFromMarkdown',
   'crawlAndLlm',
   'llmFromImages',
