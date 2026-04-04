@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { getLocale, getTranslations } from 'next-intl/server';
 import Navbar from '@/components/layout/navbar';
 import Footer from '@/components/layout/footer';
+import { MobileFiltersProvider } from '@/components/providers/mobile-filters-provider';
 
 export default async function NotFound() {
   const locale = await getLocale();
@@ -9,7 +10,8 @@ export default async function NotFound() {
   const homeUrl = `/${locale}`;
 
   return (
-    <div className="min-h-screen w-full text-gray-900 flex flex-col bg-white">
+    <MobileFiltersProvider>
+    <div className="min-h-screen w-full min-w-0 text-gray-900 flex flex-col bg-white [overflow-x:clip]">
       <Navbar />
       <main className="flex-1 flex items-center justify-center px-4 py-16 sm:py-24">
         <div className="text-center py-16 px-4">
@@ -56,5 +58,6 @@ export default async function NotFound() {
       </main>
       <Footer />
     </div>
+    </MobileFiltersProvider>
   );
 }
