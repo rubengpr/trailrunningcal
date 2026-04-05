@@ -8,9 +8,11 @@ interface MobileFiltersContextValue {
   close: () => void;
   isAvailable: boolean;
   filterCount: number;
+  filterVariant: string | boolean | undefined;
   register: () => void;
   unregister: () => void;
   updateFilterCount: (count: number) => void;
+  updateFilterVariant: (variant: string | boolean | undefined) => void;
 }
 
 const MobileFiltersContext = createContext<MobileFiltersContextValue | null>(null);
@@ -19,6 +21,7 @@ export function MobileFiltersProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isAvailable, setIsAvailable] = useState(false);
   const [filterCount, setFilterCount] = useState(0);
+  const [filterVariant, setFilterVariant] = useState<string | boolean | undefined>(undefined);
 
   const open = useCallback(() => setIsOpen(true), []);
   const close = useCallback(() => setIsOpen(false), []);
@@ -32,10 +35,11 @@ export function MobileFiltersProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const updateFilterCount = useCallback((count: number) => setFilterCount(count), []);
+  const updateFilterVariant = useCallback((variant: string | boolean | undefined) => setFilterVariant(variant), []);
 
   return (
     <MobileFiltersContext.Provider
-      value={{ isOpen, open, close, isAvailable, filterCount, register, unregister, updateFilterCount }}
+      value={{ isOpen, open, close, isAvailable, filterCount, filterVariant, register, unregister, updateFilterCount, updateFilterVariant }}
     >
       {children}
     </MobileFiltersContext.Provider>
@@ -49,9 +53,11 @@ const NO_FILTERS: MobileFiltersContextValue = {
   close: NOOP,
   isAvailable: false,
   filterCount: 0,
+  filterVariant: undefined,
   register: NOOP,
   unregister: NOOP,
   updateFilterCount: NOOP,
+  updateFilterVariant: NOOP,
 };
 
 export function useMobileFilters(): MobileFiltersContextValue {

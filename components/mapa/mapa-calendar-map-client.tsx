@@ -54,7 +54,11 @@ export default function MapaCalendarMapClient({
   const isDesktopMap = useMinWidthLg();
   const filterVariant = useFeatureFlagVariantKey('filter-flag');
   const isControlVariant = filterVariant === 'control';
-  const { isOpen: isFiltersModalOpen, open: openFiltersModal, close: closeFiltersModal, register, unregister, updateFilterCount } = useMobileFilters();
+  const { isOpen: isFiltersModalOpen, open: openFiltersModal, close: closeFiltersModal, register, unregister, updateFilterCount, updateFilterVariant } = useMobileFilters();
+
+  useEffect(() => {
+    updateFilterVariant(filterVariant);
+  }, [filterVariant, updateFilterVariant]);
 
   useEffect(() => {
     if (isControlVariant) return;

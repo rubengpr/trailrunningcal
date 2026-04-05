@@ -6,7 +6,6 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import posthog from 'posthog-js';
-import { useFeatureFlagVariantKey } from 'posthog-js/react';
 import { createClient } from '@/lib/supabase/client';
 import { useFavorites } from '@/hooks/use-favorites';
 import { useMobileFilters } from '@/components/providers/mobile-filters-provider';
@@ -22,8 +21,7 @@ export default function Navbar() {
   const categoriesRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const { favorites } = useFavorites();
-  const { isAvailable: isFilterAvailable, open: openFilters, filterCount } = useMobileFilters();
-  const filterVariant = useFeatureFlagVariantKey('filter-flag');
+  const { isAvailable: isFilterAvailable, open: openFilters, filterCount, filterVariant } = useMobileFilters();
 
   const isHomepage = pathname === `/${locale}`;
 
