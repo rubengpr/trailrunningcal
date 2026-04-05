@@ -158,6 +158,10 @@ export function ScrapePageContent() {
     const [acceptingIndex, setAcceptingIndex] = useState<number | null>(null);
     const [rejectedIndexes, setRejectedIndexes] = useState<Set<number>>(new Set());
 
+    const [jsonView, setJsonView] = useState(false);
+    const [jsonEditorValue, setJsonEditorValue] = useState('');
+    const [jsonEditorError, setJsonEditorError] = useState<string | null>(null);
+
     const isValidUrl = (url: string): boolean => {
         const trimmed = url.trim();
         if (!trimmed) return false;
@@ -403,6 +407,9 @@ export function ScrapePageContent() {
         setAcceptedIndexes(new Set());
         setAcceptingIndex(null);
         setRejectedIndexes(new Set());
+        setJsonView(false);
+        setJsonEditorValue('');
+        setJsonEditorError(null);
 
         const fetchPageFn = isSinglePageScrape
             ? scrapeEventPageMarkdown
@@ -533,6 +540,29 @@ export function ScrapePageContent() {
         setScrapedRaces(prev => prev.map((r, i) => i === index ? updatedRace : r));
     };
 
+    const handleSwitchToJsonView = (): void => {
+        setJsonEditorValue(JSON.stringify(scrapedRaces, null, 2));
+        setJsonEditorError(null);
+        setJsonView(true);
+    };
+
+    const handleApplyJson = (): void => {
+        try {
+            const parsed = JSON.parse(jsonEditorValue);
+            if (!Array.isArray(parsed)) {
+                setJsonEditorError(t('jsonNotArrayError'));
+                return;
+            }
+            setScrapedRaces(parsed as TrailRaceAgentRaceRow[]);
+            setAcceptedIndexes(new Set());
+            setRejectedIndexes(new Set());
+            setJsonEditorError(null);
+            setJsonView(false);
+        } catch (err) {
+            setJsonEditorError(err instanceof Error ? err.message : t('jsonParseError'));
+        }
+    };
+
     const handleLoadDummyPreview = (): void => {
         clearFullPipelineStepRefs();
         setScrapeError(null);
@@ -593,6 +623,9 @@ export function ScrapePageContent() {
         setAcceptedIndexes(new Set());
         setAcceptingIndex(null);
         setRejectedIndexes(new Set());
+        setJsonView(false);
+        setJsonEditorValue('');
+        setJsonEditorError(null);
         runStartedAtRef.current = null;
         setScrapePhase('idle');
         setFullPipelineUiActive(false);
@@ -1247,7 +1280,25 @@ export function ScrapePageContent() {
                         </p>
                     </div>
                 )}
-            {showScrapedRacesPreview && (
+            {showLlmMetricsUi && hasScraped && !isScraping && scrapeError === null && (
+                <div className="inline-flex rounded-lg border border-gray-200 bg-gray-50/80 p-1 self-start">
+                    <button
+                        type="button"
+                        onClick={() => setJsonView(false)}
+                        className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${!jsonView ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}
+                    >
+                        {t('racesTab')}
+                    </button>
+                    <button
+                        type="button"
+                        onClick={handleSwitchToJsonView}
+                        className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${jsonView ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}
+                    >
+                        {t('jsonTab')}
+                    </button>
+                </div>
+            )}
+            {showScrapedRacesPreview && !jsonView && (
                 <ScrapedRacesPreview
                     races={scrapedRaces}
                     isLoading={isScraping}
@@ -1259,6 +1310,28 @@ export function ScrapePageContent() {
                     rejectedIndexes={rejectedIndexes}
                     onSave={handleSave}
                 />
+            )}
+            {jsonView && hasScraped && !isScraping && scrapeError === null && (
+                <div className="max-w-3xl flex flex-col gap-3">
+                    <textarea
+                        value={jsonEditorValue}
+                        onChange={(e) => setJsonEditorValue(e.target.value)}
+                        className="w-full rounded-xl border border-gray-200 bg-white p-4 font-mono text-xs text-gray-800 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-200/80 resize-y"
+                        rows={30}
+                        spellCheck={false}
+                    />
+                    {jsonEditorError && (
+                        <p className="text-xs text-red-600">{jsonEditorError}</p>
+                    )}
+                    <div className="flex gap-2">
+                        <Button type="button" onClick={handleApplyJson}>
+                            {t('applyJson')}
+                        </Button>
+                        <Button type="button" variant="secondary" onClick={() => { setJsonView(false); setJsonEditorError(null); }}>
+                            {t('cancelJson')}
+                        </Button>
+                    </div>
+                </div>
             )}
         </div>
     );
