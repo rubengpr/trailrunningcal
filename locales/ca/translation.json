@@ -119,7 +119,8 @@
     "trail": "Trail",
     "sprint": "Sprint",
     "marcha": "Marxa",
-    "vk": "Km Vertical"
+    "vk": "Km Vertical",
+    "backyard": "Backyard"
   },
   "navigation": {
     "appName": "Trail Running Cal",
@@ -136,6 +137,7 @@
     "mediaMaraton": "Mitja marató trail",
     "marcha": "Marxes i caminades",
     "kmVertical": "Quilòmetre Vertical",
+    "backyard": "Backyard Ultra",
     "categories": "Categories",
     "explore": "Explorar",
     "categoriesHeading": "Categories",
@@ -475,6 +477,12 @@
     "pageDescription": "Troba totes les curses de quilòmetre vertical a Catalunya. Proves de curta distància amb desnivell extrem per al {year}.",
     "pageBody": "El quilòmetre vertical (KV) és una modalitat de cursa de muntanya caracteritzada per una distància curta —generalment entre 3 i 5 km— amb un desnivell positiu molt elevat en proporció. Requereix una potència i resistència muscular excepcionals. A Catalunya, els KV se celebren als entorns més verticals del Pirineu i les serralades prelitorals, amb proves que formen part de circuits nacionals i internacionals.",
     "breadcrumb": "Quilòmetre Vertical"
+  },
+  "backyard": {
+    "pageTitle": "Backyard Ultra {year} - Curses Backyard a Catalunya",
+    "pageDescription": "Troba totes les curses Backyard Ultra a Catalunya. El format més extrem del running: corre fins que només en quedi un. Dates i informació per al {year}.",
+    "pageBody": "Les curses Backyard Ultra són un format en què els participants completen bucles de ~6,7 km (una hora) de manera contínua fins que només queda un corredor en peu. Sense distància fixa ni límit de temps, el Backyard és una prova de resistència mental i física portada a l'extrem. A Catalunya, aquest format guanya popularitat com una de les experiències més desafiants del trail running.",
+    "breadcrumb": "Backyard Ultra"
   },
   "admin": {
     "login": {

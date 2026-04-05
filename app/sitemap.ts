@@ -16,6 +16,7 @@ import {
   buildMediaMaratonAlternateLinks,
   buildMarchaAlternateLinks,
   buildKmVerticalAlternateLinks,
+  buildBackyardAlternateLinks,
 } from '@/lib/alternate-links';
 
 const PROVINCE_SLUGS = ['barcelona', 'girona', 'lleida', 'tarragona'] as const;
@@ -171,6 +172,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
       alternates: {
         languages: buildKmVerticalAlternateLinks(),
+      },
+    });
+  }
+
+  // Add backyard page (both locales)
+  for (const locale of locales) {
+    urls.push({
+      url: `${BASE_URL}/${locale}/backyard`,
+      lastModified: currentDate,
+      changeFrequency: 'weekly',
+      priority: 0.8,
+      alternates: {
+        languages: buildBackyardAlternateLinks(),
       },
     });
   }

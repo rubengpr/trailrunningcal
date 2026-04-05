@@ -136,6 +136,18 @@ export function buildMarchaAlternateLinks(): Record<string, string> {
 }
 
 /**
+ * Builds alternate language links for the backyard page
+ * @returns Record with es, ca, and x-default URLs
+ */
+export function buildBackyardAlternateLinks(): Record<string, string> {
+  return {
+    es: `${BASE_URL}/es/backyard`,
+    ca: `${BASE_URL}/ca/backyard`,
+    'x-default': `${BASE_URL}/es/backyard`,
+  };
+}
+
+/**
  * Builds alternate language links for the km-vertical page
  * @returns Record with es, ca, and x-default URLs
  */

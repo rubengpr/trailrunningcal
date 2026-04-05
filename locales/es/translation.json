@@ -119,7 +119,8 @@
     "trail": "Trail",
     "sprint": "Sprint",
     "marcha": "Marcha",
-    "vk": "Km Vertical"
+    "vk": "Km Vertical",
+    "backyard": "Backyard"
   },
   "navigation": {
     "appName": "Trail Running Cal",
@@ -136,6 +137,7 @@
     "mediaMaraton": "Media maratón trail",
     "marcha": "Marcha popular",
     "kmVertical": "Kilómetro Vertical",
+    "backyard": "Backyard Ultra",
     "categories": "Categorías",
     "explore": "Explorar",
     "categoriesHeading": "Categorías",
@@ -472,6 +474,12 @@
     "pageDescription": "Encuentra todas las carreras de kilómetro vertical en Cataluña. Pruebas de corta distancia con desnivel extremo para {year}.",
     "pageBody": "El kilómetro vertical (KV) es una modalidad de carrera de montaña caracterizada por una distancia corta —generalmente entre 3 y 5 km— con un desnivel positivo muy elevado en proporción. Requiere una potencia y resistencia muscular excepcionales. En Cataluña, los KV se celebran en los entornos más verticales del Pirineo y las cordilleras prelitorales, con pruebas que forman parte de circuitos nacionales e internacionales.",
     "breadcrumb": "Kilómetro Vertical"
+  },
+  "backyard": {
+    "pageTitle": "Backyard Ultra {year} - Carreras Backyard en Cataluña",
+    "pageDescription": "Encuentra todas las carreras Backyard Ultra en Cataluña. El formato más extremo del running: corres hasta que solo queda uno. Fechas e información para {year}.",
+    "pageBody": "Las carreras Backyard Ultra son un formato en el que los participantes completan bucles de ~6,7 km (una hora) de forma continua hasta que solo queda un corredor en pie. Sin distancia fija ni tiempo límite, el Backyard es una prueba de resistencia mental y física llevada al extremo. En Cataluña, este formato está ganando popularidad como una de las experiencias más desafiantes del trail running.",
+    "breadcrumb": "Backyard Ultra"
   },
   "admin": {
     "login": {
