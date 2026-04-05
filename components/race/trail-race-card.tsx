@@ -60,6 +60,7 @@ const getRaceCategory = (distanceKm: number, name: string, elevationGainM: numbe
   if (lowerName.includes('marcha') || lowerName.includes('marxa') || lowerName.includes('caminada')) {
     return 'marcha';
   }
+  if (lowerName.includes('backyard')) return 'backyard';
   const hasVkKeyword =
     lowerName.includes('kilómetro vertical') ||
     lowerName.includes('quilòmetre vertical') ||
@@ -82,6 +83,7 @@ const CATEGORY_SLUG: Record<string, string> = {
   media: 'media-maraton',
   marcha: 'marcha',
   vk: 'km-vertical',
+  backyard: 'backyard',
 };
 
 const getElevationRatioColor = (ratio: number | null): string => {
