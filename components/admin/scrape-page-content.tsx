@@ -213,7 +213,7 @@ export function ScrapePageContent() {
             return;
         }
         const lowerName = file.name.toLowerCase();
-        if (!lowerName.endsWith('.md')) {
+        if (!lowerName.endsWith('.md') && !lowerName.endsWith('.json')) {
             toast.error(t('fileTypeErrorMd'));
             event.target.value = '';
             return;
@@ -869,7 +869,7 @@ export function ScrapePageContent() {
                                         ref={markdownFileInputRef}
                                         id="markdownFile"
                                         type="file"
-                                        accept=".md,text/markdown,text/plain"
+                                        accept=".md,.json,text/markdown,text/plain,application/json"
                                         className="sr-only"
                                         onChange={handleMarkdownFileChange}
                                         disabled={isScraping}
