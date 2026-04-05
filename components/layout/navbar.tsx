@@ -6,12 +6,14 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import posthog from 'posthog-js';
+import { useFeatureFlagVariantKey } from 'posthog-js/react';
 import { createClient } from '@/lib/supabase/client';
 import { useFavorites } from '@/hooks/use-favorites';
 import { useMobileFilters } from '@/components/providers/mobile-filters-provider';
 
 export default function Navbar() {
   const t = useTranslations('navigation');
+  const tFilters = useTranslations('filters');
   const locale = useLocale();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -21,6 +23,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const { favorites } = useFavorites();
   const { isAvailable: isFilterAvailable, open: openFilters, filterCount } = useMobileFilters();
+  const filterVariant = useFeatureFlagVariantKey('filter-flag');
 
   const isHomepage = pathname === `/${locale}`;
 
@@ -236,9 +239,12 @@ export default function Navbar() {
           {/* Mobile: filter icon */}
           {isFilterAvailable && (
             <button
-              className="relative flex sm:hidden p-1 text-gray-400"
-              onClick={openFilters}
+              className="relative flex sm:hidden items-center gap-1 p-1 text-gray-400"
+              onClick={() => { openFilters(); setTimeout(() => posthog.capture('navbar_filter_icon_clicked', { filter_count: filterCount, variant: filterVariant }), 0); }}
             >
+              {filterVariant === 'icon-text' && (
+                <span className="text-xs font-medium text-gray-600">{tFilters('filtersLabel')}</span>
+              )}
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                 <path d="M10 5H3" />
                 <path d="M12 19H3" />

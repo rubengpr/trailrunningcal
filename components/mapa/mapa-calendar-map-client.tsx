@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import posthog from 'posthog-js';
+import { useFeatureFlagVariantKey } from 'posthog-js/react';
 import type { TrailRace } from '@/types/race.types';
 import type { Locale } from '@/i18n';
 import type { MapPageLabels, RaceMapMarker } from '@/types/map.types';
@@ -51,12 +52,15 @@ export default function MapaCalendarMapClient({
 
   const router = useRouter();
   const isDesktopMap = useMinWidthLg();
+  const filterVariant = useFeatureFlagVariantKey('filter-flag');
+  const isControlVariant = filterVariant === 'control';
   const { isOpen: isFiltersModalOpen, open: openFiltersModal, close: closeFiltersModal, register, unregister, updateFilterCount } = useMobileFilters();
 
   useEffect(() => {
+    if (isControlVariant) return;
     register();
     return () => unregister();
-  }, [register, unregister]);
+  }, [isControlVariant, register, unregister]);
 
   useEffect(() => {
     updateFilterCount((selectedMonth ? 1 : 0) + (selectedProvince ? 1 : 0));
@@ -74,12 +78,18 @@ export default function MapaCalendarMapClient({
 
   const handleMonthSelect = (month: string) => {
     setSelectedMonth(month);
-    setTimeout(() => posthog.capture('race_month_filter_applied', { month }), 0);
+    setTimeout(() => {
+      posthog.capture('race_month_filter_applied', { month });
+      if (isControlVariant) posthog.capture('filters_applied', { variant: 'control' });
+    }, 0);
   };
 
   const handleProvinceSelect = (province: string) => {
     setSelectedProvince(province);
-    setTimeout(() => posthog.capture('race_province_filter_applied', { province }), 0);
+    setTimeout(() => {
+      posthog.capture('race_province_filter_applied', { province });
+      if (isControlVariant) posthog.capture('filters_applied', { variant: 'control' });
+    }, 0);
   };
 
   const handleRetry = () => {
@@ -103,6 +113,7 @@ export default function MapaCalendarMapClient({
       setSelectedProvince(province);
       setTimeout(() => posthog.capture('race_province_filter_applied', { province }), 0);
     }
+    setTimeout(() => posthog.capture('filters_applied', { variant: filterVariant }), 0);
     closeFiltersModal();
   };
 
@@ -154,15 +165,17 @@ export default function MapaCalendarMapClient({
     <>
       <section className="w-full min-w-0 pb-6 lg:pb-8">
         <div className="max-w-4xl mx-auto min-w-0 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
-          <div className="hidden sm:flex justify-center mb-3">
+          <div className={`${isControlVariant ? 'flex' : 'hidden sm:flex'} justify-center mb-3`}>
             <MonthFilter
               initialSelectedMonth={selectedMonth}
               onMonthSelect={handleMonthSelect}
             />
           </div>
           {showProvinceFilter && (
-            <div className="hidden sm:flex justify-center gap-2">
-              <ProvinceFilter selectedProvince={selectedProvince} onProvinceSelect={handleProvinceSelect} />
+            <div className={`${isControlVariant ? 'flex' : 'hidden sm:flex'} justify-center gap-2`}>
+              <ProvinceFilter
+                selectedProvince={selectedProvince}
+                onProvinceSelect={handleProvinceSelect} />
             </div>
           )}
         </div>
@@ -308,14 +321,16 @@ export default function MapaCalendarMapClient({
         </ErrorBoundary>
       </main>
 
-      <MobileFiltersModal
-        isOpen={isFiltersModalOpen}
-        onClose={closeFiltersModal}
-        onApply={handleFiltersApply}
-        onClear={handleClearFilters}
-        initialMonth={selectedMonth}
-        initialProvince={selectedProvince}
-      />
+      {!isControlVariant && (
+        <MobileFiltersModal
+          isOpen={isFiltersModalOpen}
+          onClose={closeFiltersModal}
+          onApply={handleFiltersApply}
+          onClear={handleClearFilters}
+          initialMonth={selectedMonth}
+          initialProvince={selectedProvince}
+        />
+      )}
 
       {showMobileMapFab && (
         <div className="lg:hidden fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-1/2 z-20 -translate-x-1/2">
