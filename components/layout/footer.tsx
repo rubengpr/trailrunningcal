@@ -8,6 +8,9 @@ const CATEGORY_SLUGS = [
   { slug: 'ultra-trail', key: 'ultraTrail' },
   { slug: 'maraton', key: 'maraton' },
   { slug: 'media-maraton', key: 'mediaMaraton' },
+  { slug: 'marcha', key: 'marcha' },
+  { slug: 'km-vertical', key: 'kmVertical' },
+  { slug: 'backyard', key: 'backyard' },
 ] as const;
 
 const PROVINCE_SLUGS = ['barcelona', 'girona', 'lleida', 'tarragona'] as const;
