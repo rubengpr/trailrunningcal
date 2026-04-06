@@ -8,14 +8,15 @@ import { useFeatureFlagVariantKey } from 'posthog-js/react';
 import type { TrailRace } from '@/types/race.types';
 import type { Locale } from '@/i18n';
 import type { MapPageLabels, RaceMapMarker } from '@/types/map.types';
-import MonthFilter from '@/components/filters/month-filter';
+import FilterBar from '@/components/filters/filter-bar';
 import MobileFiltersModal from '@/components/filters/mobile-filters-modal';
 import TrailRaceCard from '@/components/race/trail-race-card';
 import ErrorBoundary from '@/components/ui/error-boundary';
 import { SearchError } from '@/components/ui/error-message';
-import ProvinceFilter from '@/components/filters/province-filter';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Button } from '@/components/ui/button';
+import { LayoutToggle } from '@/components/ui/layout-toggle';
+import type { DesktopLayout, LayoutToggleButton } from '@/components/ui/layout-toggle';
 import RacesMap from '@/components/races-map/races-map';
 import { useMinWidthLg } from '@/hooks/use-min-width-lg';
 import { useMobileFilters } from '@/components/providers/mobile-filters-provider';
@@ -30,6 +31,7 @@ interface MapaCalendarMapClientProps {
   locale: Locale;
   labels: MapPageLabels;
   showProvinceFilter?: boolean;
+  showDistanceFilter?: boolean;
 }
 
 export default function MapaCalendarMapClient({
@@ -38,6 +40,7 @@ export default function MapaCalendarMapClient({
   locale,
   labels,
   showProvinceFilter = true,
+  showDistanceFilter = true,
 }: MapaCalendarMapClientProps) {
   const tResults = useTranslations('results');
   const tFilters = useTranslations('filters');
@@ -46,9 +49,11 @@ export default function MapaCalendarMapClient({
 
   const [selectedMonth, setSelectedMonth] = useState<string>('');
   const [selectedProvince, setSelectedProvince] = useState<string>('');
+  const [selectedDistance, setSelectedDistance] = useState<string>('');
   const [focusRaceId, setFocusRaceId] = useState<string | null>(null);
   const [focusRaceNonce, setFocusRaceNonce] = useState(0);
   const [mobileView, setMobileView] = useState<MobileView>('list');
+  const [desktopLayout, setDesktopLayout] = useState<DesktopLayout>('both');
 
   const router = useRouter();
   const isDesktopMap = useMinWidthLg();
@@ -67,12 +72,12 @@ export default function MapaCalendarMapClient({
   }, [isControlVariant, register, unregister]);
 
   useEffect(() => {
-    updateFilterCount((selectedMonth ? 1 : 0) + (selectedProvince ? 1 : 0));
-  }, [selectedMonth, selectedProvince, updateFilterCount]);
+    updateFilterCount((selectedMonth ? 1 : 0) + (selectedProvince ? 1 : 0) + (selectedDistance ? 1 : 0));
+  }, [selectedMonth, selectedProvince, selectedDistance, updateFilterCount]);
 
   const filteredRaces = useMemo(
-    () => filterHomeRaces(races, selectedMonth, selectedProvince),
-    [races, selectedMonth, selectedProvince],
+    () => filterHomeRaces(races, selectedMonth, selectedProvince, selectedDistance),
+    [races, selectedMonth, selectedProvince, selectedDistance],
   );
 
   const filteredMarkers = useMemo(() => {
@@ -96,6 +101,11 @@ export default function MapaCalendarMapClient({
     }, 0);
   };
 
+  const handleDistanceSelect = (distance: string) => {
+    setSelectedDistance(distance);
+    setTimeout(() => posthog.capture('race_distance_filter_applied', { distance }), 0);
+  };
+
   const handleRetry = () => {
     setSelectedMonth('');
     setSelectedProvince('');
@@ -105,10 +115,11 @@ export default function MapaCalendarMapClient({
   const handleClearFilters = () => {
     setSelectedMonth('');
     setSelectedProvince('');
+    setSelectedDistance('');
     setTimeout(() => posthog.capture('race_filters_cleared'), 0);
   };
 
-  const handleFiltersApply = (month: string, province: string) => {
+  const handleFiltersApply = (month: string, province: string, distance: string) => {
     if (month !== selectedMonth) {
       setSelectedMonth(month);
       setTimeout(() => posthog.capture('race_month_filter_applied', { month }), 0);
@@ -117,8 +128,17 @@ export default function MapaCalendarMapClient({
       setSelectedProvince(province);
       setTimeout(() => posthog.capture('race_province_filter_applied', { province }), 0);
     }
+    if (distance !== selectedDistance) {
+      setSelectedDistance(distance);
+      setTimeout(() => posthog.capture('race_distance_filter_applied', { distance }), 0);
+    }
     setTimeout(() => posthog.capture('filters_applied', { variant: filterVariant }), 0);
     closeFiltersModal();
+  };
+
+  const handleDesktopLayoutChange = (layout: DesktopLayout, button: LayoutToggleButton): void => {
+    setDesktopLayout(layout);
+    setTimeout(() => posthog.capture('desktop_layout_changed', { layout, button }), 0);
   };
 
   const handleViewMapClick = (): void => {
@@ -156,8 +176,8 @@ export default function MapaCalendarMapClient({
 
   const hasServerMarkers = markers.length > 0;
 
-  const showListPanel = isDesktopMap || mobileView === 'list';
-  const showMapPanel = isDesktopMap || mobileView === 'map';
+  const showListPanel = isDesktopMap ? desktopLayout !== 'map' : mobileView === 'list';
+  const showMapPanel = isDesktopMap ? desktopLayout !== 'list' : mobileView === 'map';
 
   const showMobileMapFab = !isDesktopMap && hasServerMarkers;
 
@@ -169,19 +189,22 @@ export default function MapaCalendarMapClient({
     <>
       <section className="w-full min-w-0 pb-6 lg:pb-8">
         <div className="max-w-4xl mx-auto min-w-0 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
-          <div className={`${isControlVariant ? 'flex' : 'hidden sm:flex'} justify-center mb-3`}>
-            <MonthFilter
-              initialSelectedMonth={selectedMonth}
+          <div className={`${isControlVariant ? 'flex' : 'hidden sm:flex'} items-center gap-4`}>
+            <FilterBar
+              selectedMonth={selectedMonth}
+              selectedProvince={selectedProvince}
+              selectedDistance={selectedDistance}
               onMonthSelect={handleMonthSelect}
+              onProvinceSelect={handleProvinceSelect}
+              onDistanceSelect={handleDistanceSelect}
+              onClearFilters={handleClearFilters}
+              showProvinceFilter={showProvinceFilter}
+              showDistanceFilter={showDistanceFilter}
             />
-          </div>
-          {showProvinceFilter && (
-            <div className={`${isControlVariant ? 'flex' : 'hidden sm:flex'} justify-center gap-2`}>
-              <ProvinceFilter
-                selectedProvince={selectedProvince}
-                onProvinceSelect={handleProvinceSelect} />
+            <div className="ml-auto hidden lg:block">
+              <LayoutToggle value={desktopLayout} onChange={handleDesktopLayoutChange} />
             </div>
-          )}
+          </div>
         </div>
       </section>
 
@@ -192,8 +215,7 @@ export default function MapaCalendarMapClient({
               <div className="flex min-w-0 flex-col gap-6 lg:flex-row lg:items-start lg:gap-8">
                 {showListPanel && (
                   <div
-                    className={`min-w-0 w-full min-h-0 lg:w-1/2 lg:max-h-[calc(100vh-12rem)] lg:overflow-y-auto lg:pr-1 ${showMobileMapFab && mobileView === 'list' ? 'pb-20' : ''
-                      }`}
+                    className={`min-w-0 w-full min-h-0 ${desktopLayout === 'both' ? 'lg:w-1/2 lg:max-h-[calc(100vh-12rem)] lg:overflow-y-auto lg:pr-1' : 'lg:w-full'} ${showMobileMapFab && mobileView === 'list' ? 'pb-20' : ''}`}
                   >
                     <div className="grid min-h-[200px] min-w-0 grid-cols-1 gap-4">
                       {filteredRaces.length === 0 ? (
@@ -295,7 +317,7 @@ export default function MapaCalendarMapClient({
                 )}
 
                 {showMapPanel && (
-                  <div className="min-w-0 w-full min-h-0 shrink-0 lg:w-1/2 lg:self-start">
+                  <div className={`min-w-0 w-full min-h-0 shrink-0 ${desktopLayout === 'both' ? 'lg:w-1/2' : 'lg:w-full'} lg:self-start`}>
                     {!hasServerMarkers ? (
                       <p className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-6 text-center text-sm text-gray-600">
                         {tMap('empty')}
@@ -333,6 +355,7 @@ export default function MapaCalendarMapClient({
           onClear={handleClearFilters}
           initialMonth={selectedMonth}
           initialProvince={selectedProvince}
+          initialDistance={selectedDistance}
         />
       )}
 

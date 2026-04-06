@@ -18,6 +18,8 @@ interface CategoryMapPageProps {
   heroBody: string;
   breadcrumbItems: BreadcrumbItem[];
   labels: MapPageLabels;
+  showProvinceFilter?: boolean;
+  showDistanceFilter?: boolean;
 }
 
 export default function CategoryMapPage({
@@ -29,6 +31,8 @@ export default function CategoryMapPage({
   heroBody,
   breadcrumbItems,
   labels,
+  showProvinceFilter = true,
+  showDistanceFilter = false,
 }: CategoryMapPageProps) {
   return (
     <>
@@ -47,7 +51,8 @@ export default function CategoryMapPage({
           markers={markers}
           locale={locale}
           labels={labels}
-          showProvinceFilter={false}
+          showProvinceFilter={showProvinceFilter}
+          showDistanceFilter={showDistanceFilter}
         />
       </div>
     </>
