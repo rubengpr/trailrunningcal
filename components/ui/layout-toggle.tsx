@@ -4,9 +4,11 @@ import { useTranslations } from 'next-intl';
 
 export type DesktopLayout = 'list' | 'both' | 'map';
 
+export type LayoutToggleButton = 'list' | 'map';
+
 interface LayoutToggleProps {
   value: DesktopLayout;
-  onChange: (layout: DesktopLayout) => void;
+  onChange: (layout: DesktopLayout, button: LayoutToggleButton) => void;
 }
 
 function ListIcon() {
@@ -37,12 +39,12 @@ export function LayoutToggle({ value, onChange }: LayoutToggleProps) {
 
   const handleListClick = () => {
     if (!mapActive) return;
-    onChange(listActive ? 'map' : 'both');
+    onChange(listActive ? 'map' : 'both', 'list');
   };
 
   const handleMapClick = () => {
     if (!listActive) return;
-    onChange(mapActive ? 'list' : 'both');
+    onChange(mapActive ? 'list' : 'both', 'map');
   };
 
   return (

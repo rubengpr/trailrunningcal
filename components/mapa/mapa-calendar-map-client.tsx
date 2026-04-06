@@ -16,7 +16,7 @@ import { SearchError } from '@/components/ui/error-message';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Button } from '@/components/ui/button';
 import { LayoutToggle } from '@/components/ui/layout-toggle';
-import type { DesktopLayout } from '@/components/ui/layout-toggle';
+import type { DesktopLayout, LayoutToggleButton } from '@/components/ui/layout-toggle';
 import RacesMap from '@/components/races-map/races-map';
 import { useMinWidthLg } from '@/hooks/use-min-width-lg';
 import { useMobileFilters } from '@/components/providers/mobile-filters-provider';
@@ -136,9 +136,9 @@ export default function MapaCalendarMapClient({
     closeFiltersModal();
   };
 
-  const handleDesktopLayoutChange = (layout: DesktopLayout): void => {
+  const handleDesktopLayoutChange = (layout: DesktopLayout, button: LayoutToggleButton): void => {
     setDesktopLayout(layout);
-    setTimeout(() => posthog.capture('desktop_layout_changed', { layout }), 0);
+    setTimeout(() => posthog.capture('desktop_layout_changed', { layout, button }), 0);
   };
 
   const handleViewMapClick = (): void => {
