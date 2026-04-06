@@ -8,12 +8,11 @@ import { useFeatureFlagVariantKey } from 'posthog-js/react';
 import type { TrailRace } from '@/types/race.types';
 import type { Locale } from '@/i18n';
 import type { MapPageLabels, RaceMapMarker } from '@/types/map.types';
-import MonthFilter from '@/components/filters/month-filter';
+import FilterBar from '@/components/filters/filter-bar';
 import MobileFiltersModal from '@/components/filters/mobile-filters-modal';
 import TrailRaceCard from '@/components/race/trail-race-card';
 import ErrorBoundary from '@/components/ui/error-boundary';
 import { SearchError } from '@/components/ui/error-message';
-import ProvinceFilter from '@/components/filters/province-filter';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Button } from '@/components/ui/button';
 import RacesMap from '@/components/races-map/races-map';
@@ -30,6 +29,7 @@ interface MapaCalendarMapClientProps {
   locale: Locale;
   labels: MapPageLabels;
   showProvinceFilter?: boolean;
+  showDistanceFilter?: boolean;
 }
 
 export default function MapaCalendarMapClient({
@@ -38,6 +38,7 @@ export default function MapaCalendarMapClient({
   locale,
   labels,
   showProvinceFilter = true,
+  showDistanceFilter = true,
 }: MapaCalendarMapClientProps) {
   const tResults = useTranslations('results');
   const tFilters = useTranslations('filters');
@@ -46,6 +47,7 @@ export default function MapaCalendarMapClient({
 
   const [selectedMonth, setSelectedMonth] = useState<string>('');
   const [selectedProvince, setSelectedProvince] = useState<string>('');
+  const [selectedDistance, setSelectedDistance] = useState<string>('');
   const [focusRaceId, setFocusRaceId] = useState<string | null>(null);
   const [focusRaceNonce, setFocusRaceNonce] = useState(0);
   const [mobileView, setMobileView] = useState<MobileView>('list');
@@ -67,12 +69,12 @@ export default function MapaCalendarMapClient({
   }, [isControlVariant, register, unregister]);
 
   useEffect(() => {
-    updateFilterCount((selectedMonth ? 1 : 0) + (selectedProvince ? 1 : 0));
-  }, [selectedMonth, selectedProvince, updateFilterCount]);
+    updateFilterCount((selectedMonth ? 1 : 0) + (selectedProvince ? 1 : 0) + (selectedDistance ? 1 : 0));
+  }, [selectedMonth, selectedProvince, selectedDistance, updateFilterCount]);
 
   const filteredRaces = useMemo(
-    () => filterHomeRaces(races, selectedMonth, selectedProvince),
-    [races, selectedMonth, selectedProvince],
+    () => filterHomeRaces(races, selectedMonth, selectedProvince, selectedDistance),
+    [races, selectedMonth, selectedProvince, selectedDistance],
   );
 
   const filteredMarkers = useMemo(() => {
@@ -96,6 +98,11 @@ export default function MapaCalendarMapClient({
     }, 0);
   };
 
+  const handleDistanceSelect = (distance: string) => {
+    setSelectedDistance(distance);
+    setTimeout(() => posthog.capture('race_distance_filter_applied', { distance }), 0);
+  };
+
   const handleRetry = () => {
     setSelectedMonth('');
     setSelectedProvince('');
@@ -105,10 +112,11 @@ export default function MapaCalendarMapClient({
   const handleClearFilters = () => {
     setSelectedMonth('');
     setSelectedProvince('');
+    setSelectedDistance('');
     setTimeout(() => posthog.capture('race_filters_cleared'), 0);
   };
 
-  const handleFiltersApply = (month: string, province: string) => {
+  const handleFiltersApply = (month: string, province: string, distance: string) => {
     if (month !== selectedMonth) {
       setSelectedMonth(month);
       setTimeout(() => posthog.capture('race_month_filter_applied', { month }), 0);
@@ -116,6 +124,10 @@ export default function MapaCalendarMapClient({
     if (province !== selectedProvince) {
       setSelectedProvince(province);
       setTimeout(() => posthog.capture('race_province_filter_applied', { province }), 0);
+    }
+    if (distance !== selectedDistance) {
+      setSelectedDistance(distance);
+      setTimeout(() => posthog.capture('race_distance_filter_applied', { distance }), 0);
     }
     setTimeout(() => posthog.capture('filters_applied', { variant: filterVariant }), 0);
     closeFiltersModal();
@@ -169,19 +181,19 @@ export default function MapaCalendarMapClient({
     <>
       <section className="w-full min-w-0 pb-6 lg:pb-8">
         <div className="max-w-4xl mx-auto min-w-0 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
-          <div className={`${isControlVariant ? 'flex' : 'hidden sm:flex'} justify-center mb-3`}>
-            <MonthFilter
-              initialSelectedMonth={selectedMonth}
+          <div className={`${isControlVariant ? 'flex' : 'hidden sm:flex'} justify-center`}>
+            <FilterBar
+              selectedMonth={selectedMonth}
+              selectedProvince={selectedProvince}
+              selectedDistance={selectedDistance}
               onMonthSelect={handleMonthSelect}
+              onProvinceSelect={handleProvinceSelect}
+              onDistanceSelect={handleDistanceSelect}
+              onClearFilters={handleClearFilters}
+              showProvinceFilter={showProvinceFilter}
+              showDistanceFilter={showDistanceFilter}
             />
           </div>
-          {showProvinceFilter && (
-            <div className={`${isControlVariant ? 'flex' : 'hidden sm:flex'} justify-center gap-2`}>
-              <ProvinceFilter
-                selectedProvince={selectedProvince}
-                onProvinceSelect={handleProvinceSelect} />
-            </div>
-          )}
         </div>
       </section>
 
@@ -333,6 +345,7 @@ export default function MapaCalendarMapClient({
           onClear={handleClearFilters}
           initialMonth={selectedMonth}
           initialProvince={selectedProvince}
+          initialDistance={selectedDistance}
         />
       )}
 

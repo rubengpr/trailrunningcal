@@ -4,15 +4,17 @@ import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import MonthFilter from '@/components/filters/month-filter';
 import ProvinceFilter from '@/components/filters/province-filter';
+import { DISTANCE_GROUPS } from '@/components/filters/filter-bar';
 import { Button } from '@/components/ui/button';
 
 interface MobileFiltersModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onApply: (month: string, province: string) => void;
+  onApply: (month: string, province: string, distance: string) => void;
   onClear: () => void;
   initialMonth: string;
   initialProvince: string;
+  initialDistance: string;
 }
 
 export default function MobileFiltersModal({
@@ -22,11 +24,14 @@ export default function MobileFiltersModal({
   onClear,
   initialMonth,
   initialProvince,
+  initialDistance,
 }: MobileFiltersModalProps) {
   const tFilters = useTranslations('filters');
+  const tDistanceGroups = useTranslations('distanceGroups');
 
   const [draftMonth, setDraftMonth] = useState<string>(initialMonth);
   const [draftProvince, setDraftProvince] = useState<string>(initialProvince);
+  const [draftDistance, setDraftDistance] = useState<string>(initialDistance);
   const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
 
   if (prevIsOpen !== isOpen) {
@@ -34,6 +39,7 @@ export default function MobileFiltersModal({
     if (isOpen) {
       setDraftMonth(initialMonth);
       setDraftProvince(initialProvince);
+      setDraftDistance(initialDistance);
     }
   }
 
@@ -47,16 +53,17 @@ export default function MobileFiltersModal({
   }, [isOpen, onClose]);
 
   const handleApply = () => {
-    onApply(draftMonth, draftProvince);
+    onApply(draftMonth, draftProvince, draftDistance);
   };
 
   const handleClearAll = () => {
     setDraftMonth('');
     setDraftProvince('');
+    setDraftDistance('');
     onClear();
   };
 
-  const hasActiveFilters = draftMonth !== '' || draftProvince !== '';
+  const hasActiveFilters = draftMonth !== '' || draftProvince !== '' || draftDistance !== '';
 
   if (!isOpen) return null;
 
@@ -107,6 +114,24 @@ export default function MobileFiltersModal({
             selectedProvince={draftProvince}
             onProvinceSelect={setDraftProvince}
           />
+        </div>
+        <div>
+          <p className="mb-3 text-sm font-semibold text-gray-700 tracking-wide">
+            {tFilters('distanceLabel')}
+          </p>
+          <div className="flex flex-wrap gap-1.5 sm:gap-2 justify-center">
+            {DISTANCE_GROUPS.map((group) => (
+              <button
+                key={group}
+                onClick={() => setDraftDistance(draftDistance === group ? '' : group)}
+                className={`px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-md text-xs sm:text-sm font-medium transition-all duration-200
+                  border border-gray-300 hover:border-gray-400 cursor-pointer focus:outline-none
+                  ${draftDistance === group ? 'bg-black text-white border-black shadow-md' : 'bg-white text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}
+              >
+                {tDistanceGroups(group)}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 

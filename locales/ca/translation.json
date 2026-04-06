@@ -23,7 +23,8 @@
     "filtersLabel": "Filtrar",
     "apply": "Aplicar filtres",
     "monthLabel": "Mes",
-    "provinceLabel": "Província"
+    "provinceLabel": "Província",
+    "distanceLabel": "Distància"
   },
   "months": {
     "0": "Gen",
@@ -92,7 +93,7 @@
       "successMessage": "Cursa reclamada correctament"
     },
     "provincia": {
-"racePageLinkText": "Veure totes les curses a {province}"
+      "racePageLinkText": "Veure totes les curses a {province}"
     },
     "share": {
       "label": "Compartir",
@@ -602,5 +603,27 @@
     "title": "Playground",
     "inputPlaceholder": "Escriu un missatge...",
     "send": "Enviar"
+  },
+  "monthsFull": {
+    "0": "Gener",
+    "1": "Febrer",
+    "2": "Març",
+    "3": "Abril",
+    "4": "Maig",
+    "5": "Juny",
+    "6": "Juliol",
+    "7": "Agost",
+    "8": "Setembre",
+    "9": "Octubre",
+    "10": "Novembre",
+    "11": "Desembre"
+  },
+  "distanceGroups": {
+    "0-10": "0–10 km",
+    "10-20": "10–20 km",
+    "20-30": "20–30 km",
+    "30-40": "30–40 km",
+    "40-50": "40–50 km",
+    "50+": "+50 km"
   }
 }
