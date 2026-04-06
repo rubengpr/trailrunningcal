@@ -57,6 +57,8 @@ const nextConfig: NextConfig = {
               `connect-src 'self' ${supabaseHost} https://tile.openstreetmap.org`,
               // MapLibre GL loads its worker from a blob URL by default.
               "worker-src 'self' blob:",
+              // Wikiloc embedded trail maps.
+              "frame-src https://es.wikiloc.com",
               "frame-ancestors 'none'",
               "object-src 'none'",
               "base-uri 'self'",
