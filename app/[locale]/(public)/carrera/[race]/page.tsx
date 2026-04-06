@@ -327,30 +327,6 @@ export default async function RacePage({
             ></iframe>
           )}
 
-          {/*{Array.isArray(raceData.priceEur) && (
-          <PriceTiersTable
-            tiers={raceData.priceEur}
-            locale={locale as Locale}
-          />
-        )}*/}
-
-          {/*{raceData.organizerId &&
-          raceData.services &&
-          raceData.services.length > 0 && (
-            <RaceServicesList
-              services={raceData.services}
-              locale={locale as Locale}
-            />
-          )}*/}
-
-          {/*{raceData.organizerId &&
-          raceData.resultsUrls &&
-          raceData.resultsUrls.length > 0 && (
-            <RaceResultsUrls
-              resultsUrls={raceData.resultsUrls}
-              locale={locale as Locale}
-            />
-          )}*/}
 
           {provinceSlug && (
             <div className="flex flex-col gap-3 mt-12">
