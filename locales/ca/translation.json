@@ -92,8 +92,7 @@
       "successMessage": "Cursa reclamada correctament"
     },
     "provincia": {
-      "racePageLabel": "Més curses de trail running a {province}",
-      "racePageLinkText": "Curses a {province}"
+"racePageLinkText": "Veure totes les curses a {province}"
     },
     "share": {
       "label": "Compartir",

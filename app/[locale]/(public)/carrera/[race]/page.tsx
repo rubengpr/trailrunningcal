@@ -23,7 +23,6 @@ import { RaceFavoriteButton } from '@/components/race/race-favorite-button';
 import { buildRaceJsonLd } from '@/lib/seo/race-json-ld';
 import { buildBreadcrumbJsonLd } from '@/lib/seo/breadcrumb-json-ld';
 import { Breadcrumb } from '@/components/layout/breadcrumb';
-import ImageLinkCard from '@/components/home/image-link-card';
 import TrailRaceCard from '@/components/race/trail-race-card';
 import { getRaceImageUrlWithFilename } from '@/lib/race-image-url';
 import { TrackedLink } from '@/components/ui/tracked-link';
@@ -35,12 +34,6 @@ const PROVINCE_SLUGS: Record<string, string> = {
   Tarragona: 'tarragona',
 };
 
-const PROVINCE_IMAGES: Record<string, string> = {
-  Barcelona: 'https://ppmdbmyxgtqvmvtbptmg.supabase.co/storage/v1/object/public/stock/provinces/barcelona.jpg',
-  Girona: 'https://ppmdbmyxgtqvmvtbptmg.supabase.co/storage/v1/object/public/stock/provinces/girona.jpg',
-  Lleida: 'https://ppmdbmyxgtqvmvtbptmg.supabase.co/storage/v1/object/public/stock/provinces/lleida.jpg',
-  Tarragona: 'https://ppmdbmyxgtqvmvtbptmg.supabase.co/storage/v1/object/public/stock/provinces/tarragona.jpg',
-};
 
 export const revalidate = 86400; // 24 hours (on-demand revalidation handles mutations)
 
@@ -360,11 +353,18 @@ export default async function RacePage({
           )}*/}
 
           {provinceSlug && (
-            <div className="flex flex-col gap-3 mt-6">
-              <hr className="border-t border-gray-200" />
-              <p className="text-sm sm:text-base font-bold">
-                {tRace('provincia.racePageLabel', { province: raceData.province })}
-              </p>
+            <div className="flex flex-col gap-3 mt-12">
+              <TrackedLink
+                href={`/${locale}/provincia/${provinceSlug}`}
+                eventName="race_province_link_clicked"
+                eventProperties={{ race_id: raceData.id, race_slug: race }}
+                className="flex items-center justify-between w-full border border-gray-200 rounded-lg px-4 py-3 hover:border-gray-300 transition-colors"
+              >
+                <span className="text-sm font-medium text-gray-900">
+                  {tRace('provincia.racePageLinkText', { province: raceData.province })}
+                </span>
+                <span className="text-gray-400 font-semibold">↗</span>
+              </TrackedLink>
               {recommended.length > 0 && (
                 <div className="flex flex-col gap-2">
                   {recommended.map((r) => (
@@ -382,13 +382,6 @@ export default async function RacePage({
                   ))}
                 </div>
               )}
-              <ImageLinkCard
-                href={`/${locale}/provincia/${provinceSlug}`}
-                label={tRace('provincia.racePageLinkText', { province: raceData.province })}
-                imageSrc={PROVINCE_IMAGES[raceData.province]}
-                captureEvent="race_province_link_clicked"
-                captureProperties={{ race_id: raceData.id, race_slug: race }}
-              />
             </div>
           )}
           {!raceData.organizerId && (

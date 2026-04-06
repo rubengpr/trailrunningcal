@@ -92,8 +92,7 @@
       "successMessage": "Carrera reclamada correctamente"
     },
     "provincia": {
-      "racePageLabel": "Más carreras de trail running en {province}",
-      "racePageLinkText": "Carreras en {province}"
+"racePageLinkText": "Ver todas las carreras en {province}"
     },
     "share": {
       "label": "Compartir",
