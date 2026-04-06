@@ -136,6 +136,11 @@ export default function MapaCalendarMapClient({
     closeFiltersModal();
   };
 
+  const handleDesktopLayoutChange = (layout: DesktopLayout): void => {
+    setDesktopLayout(layout);
+    setTimeout(() => posthog.capture('desktop_layout_changed', { layout }), 0);
+  };
+
   const handleViewMapClick = (): void => {
     setMobileView('map');
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -197,7 +202,7 @@ export default function MapaCalendarMapClient({
               showDistanceFilter={showDistanceFilter}
             />
             <div className="ml-auto hidden lg:block">
-              <LayoutToggle value={desktopLayout} onChange={setDesktopLayout} />
+              <LayoutToggle value={desktopLayout} onChange={handleDesktopLayoutChange} />
             </div>
           </div>
         </div>
