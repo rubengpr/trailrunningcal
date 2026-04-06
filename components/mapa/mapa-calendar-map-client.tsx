@@ -15,6 +15,8 @@ import ErrorBoundary from '@/components/ui/error-boundary';
 import { SearchError } from '@/components/ui/error-message';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Button } from '@/components/ui/button';
+import { LayoutToggle } from '@/components/ui/layout-toggle';
+import type { DesktopLayout } from '@/components/ui/layout-toggle';
 import RacesMap from '@/components/races-map/races-map';
 import { useMinWidthLg } from '@/hooks/use-min-width-lg';
 import { useMobileFilters } from '@/components/providers/mobile-filters-provider';
@@ -51,6 +53,7 @@ export default function MapaCalendarMapClient({
   const [focusRaceId, setFocusRaceId] = useState<string | null>(null);
   const [focusRaceNonce, setFocusRaceNonce] = useState(0);
   const [mobileView, setMobileView] = useState<MobileView>('list');
+  const [desktopLayout, setDesktopLayout] = useState<DesktopLayout>('both');
 
   const router = useRouter();
   const isDesktopMap = useMinWidthLg();
@@ -168,8 +171,8 @@ export default function MapaCalendarMapClient({
 
   const hasServerMarkers = markers.length > 0;
 
-  const showListPanel = isDesktopMap || mobileView === 'list';
-  const showMapPanel = isDesktopMap || mobileView === 'map';
+  const showListPanel = isDesktopMap ? desktopLayout !== 'map' : mobileView === 'list';
+  const showMapPanel = isDesktopMap ? desktopLayout !== 'list' : mobileView === 'map';
 
   const showMobileMapFab = !isDesktopMap && hasServerMarkers;
 
@@ -181,7 +184,7 @@ export default function MapaCalendarMapClient({
     <>
       <section className="w-full min-w-0 pb-6 lg:pb-8">
         <div className="max-w-4xl mx-auto min-w-0 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
-          <div className={`${isControlVariant ? 'flex' : 'hidden sm:flex'} justify-center`}>
+          <div className={`${isControlVariant ? 'flex' : 'hidden sm:flex'} items-center gap-4`}>
             <FilterBar
               selectedMonth={selectedMonth}
               selectedProvince={selectedProvince}
@@ -193,6 +196,9 @@ export default function MapaCalendarMapClient({
               showProvinceFilter={showProvinceFilter}
               showDistanceFilter={showDistanceFilter}
             />
+            <div className="ml-auto hidden lg:block">
+              <LayoutToggle value={desktopLayout} onChange={setDesktopLayout} />
+            </div>
           </div>
         </div>
       </section>
@@ -204,8 +210,7 @@ export default function MapaCalendarMapClient({
               <div className="flex min-w-0 flex-col gap-6 lg:flex-row lg:items-start lg:gap-8">
                 {showListPanel && (
                   <div
-                    className={`min-w-0 w-full min-h-0 lg:w-1/2 lg:max-h-[calc(100vh-12rem)] lg:overflow-y-auto lg:pr-1 ${showMobileMapFab && mobileView === 'list' ? 'pb-20' : ''
-                      }`}
+                    className={`min-w-0 w-full min-h-0 ${desktopLayout === 'both' ? 'lg:w-1/2 lg:max-h-[calc(100vh-12rem)] lg:overflow-y-auto lg:pr-1' : 'lg:w-full'} ${showMobileMapFab && mobileView === 'list' ? 'pb-20' : ''}`}
                   >
                     <div className="grid min-h-[200px] min-w-0 grid-cols-1 gap-4">
                       {filteredRaces.length === 0 ? (
@@ -307,7 +312,7 @@ export default function MapaCalendarMapClient({
                 )}
 
                 {showMapPanel && (
-                  <div className="min-w-0 w-full min-h-0 shrink-0 lg:w-1/2 lg:self-start">
+                  <div className={`min-w-0 w-full min-h-0 shrink-0 ${desktopLayout === 'both' ? 'lg:w-1/2' : 'lg:w-full'} lg:self-start`}>
                     {!hasServerMarkers ? (
                       <p className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-6 text-center text-sm text-gray-600">
                         {tMap('empty')}
