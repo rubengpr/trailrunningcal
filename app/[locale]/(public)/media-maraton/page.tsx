@@ -1,17 +1,14 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import type { Locale } from '@/i18n';
-import { getRaces } from '@/lib/db/races';
 import { generateMetadataFromOptions } from '@/seo/meta-config';
 import { buildMediaMaratonAlternateLinks } from '@/lib/alternate-links';
 import { BASE_URL } from '@/lib/config';
 import { buildBreadcrumbJsonLd } from '@/lib/seo/breadcrumb-json-ld';
-import CategoryHeroSection from '@/components/layout/category-hero-section';
-import MapaCalendarMapClient from '@/components/mapa/mapa-calendar-map-client';
-import { getRacesMapData } from '@/lib/db/races-map';
-import type { MapPageLabels } from '@/types/map.types';
+import CategoryMapPage from '@/components/layout/category-map-page';
+import { getCategoryPageData } from '@/lib/category-page';
 
-export const revalidate = 300; // 5 minutes
+export const revalidate = 300;
 
 const DISTANCE_MIN = 20;
 const DISTANCE_MAX = 24;
@@ -22,17 +19,13 @@ export async function generateMetadata({
   params: Promise<{ locale: Locale }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-
   const t = await getTranslations({ locale, namespace: 'mediaMaraton' });
   const year = new Date().getFullYear();
-  const title = t('pageTitle', { year });
-  const description = t('pageDescription', { year });
-  const canonicalUrl = `${BASE_URL}/${locale}/media-maraton`;
 
   return generateMetadataFromOptions({
-    title,
-    description,
-    canonicalUrl,
+    title: t('pageTitle', { year }),
+    description: t('pageDescription', { year }),
+    canonicalUrl: `${BASE_URL}/${locale}/media-maraton`,
     locale,
     ogImageUrl: `${BASE_URL}/og-image.png`,
     ogType: 'website',
@@ -46,52 +39,29 @@ export default async function MediaMaratonPage({
   params: Promise<{ locale: Locale }>;
 }) {
   const { locale } = await params;
-
+  const { allRaces, markers, labels, calendarLabel, year } = await getCategoryPageData(locale);
   const t = await getTranslations({ locale, namespace: 'mediaMaraton' });
-  const tNav = await getTranslations({ locale, namespace: 'navigation' });
-  const tCommon = await getTranslations({ locale });
-  const year = new Date().getFullYear();
 
-  const labels: MapPageLabels = {
-    previousRace: tCommon('map.previousRace'),
-    nextRace: tCommon('map.nextRace'),
-    racePageLink: tCommon('map.racePageLink'),
-    notAvailable: tCommon('race.notAvailable'),
-  };
-
-  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
-    { name: tNav('calendar'), url: `${BASE_URL}/${locale}` },
-    { name: t('breadcrumb'), url: `${BASE_URL}/${locale}/media-maraton` },
-  ]);
-
-  const [allRaces, { markers }] = await Promise.all([getRaces(), getRacesMapData()]);
-  const halfMarathonRaces = allRaces.filter(
+  const races = allRaces.filter(
     (race) => race.distanceKm >= DISTANCE_MIN && race.distanceKm <= DISTANCE_MAX,
   );
 
   return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
-      />
-      <CategoryHeroSection
-        title={t('pageTitle', { year })}
-        body={t('pageBody')}
-        breadcrumbItems={[
-          { name: tNav('calendar'), href: `/${locale}` },
-          { name: t('breadcrumb') },
-        ]}
-      />
-      <div className="mx-auto w-full pt-6 pb-16 sm:pt-10 lg:pt-4">
-        <MapaCalendarMapClient
-          races={halfMarathonRaces}
-          markers={markers}
-          locale={locale}
-          labels={labels}
-          showProvinceFilter={false}
-        />
-      </div>
-    </>
+    <CategoryMapPage
+      locale={locale}
+      races={races}
+      markers={markers}
+      breadcrumbJsonLd={buildBreadcrumbJsonLd([
+        { name: calendarLabel, url: `${BASE_URL}/${locale}` },
+        { name: t('breadcrumb'), url: `${BASE_URL}/${locale}/media-maraton` },
+      ])}
+      heroTitle={t('pageTitle', { year })}
+      heroBody={t('pageBody')}
+      breadcrumbItems={[
+        { name: calendarLabel, href: `/${locale}` },
+        { name: t('breadcrumb') },
+      ]}
+      labels={labels}
+    />
   );
 }

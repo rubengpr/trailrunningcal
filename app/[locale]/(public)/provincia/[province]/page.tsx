@@ -2,17 +2,14 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import type { Locale } from '@/i18n';
-import { getRaces } from '@/lib/db/races';
 import { generateMetadataFromOptions } from '@/seo/meta-config';
 import { buildProvinceAlternateLinks } from '@/lib/alternate-links';
 import { BASE_URL } from '@/lib/config';
 import { buildBreadcrumbJsonLd } from '@/lib/seo/breadcrumb-json-ld';
-import CategoryHeroSection from '@/components/layout/category-hero-section';
-import MapaCalendarMapClient from '@/components/mapa/mapa-calendar-map-client';
-import { getRacesMapData } from '@/lib/db/races-map';
-import type { MapPageLabels } from '@/types/map.types';
+import CategoryMapPage from '@/components/layout/category-map-page';
+import { getCategoryPageData } from '@/lib/category-page';
 
-export const revalidate = 300; // 5 minutes
+export const revalidate = 300;
 
 const PROVINCE_SLUGS = ['barcelona', 'girona', 'lleida', 'tarragona'] as const;
 type ProvinceSlug = (typeof PROVINCE_SLUGS)[number];
@@ -42,14 +39,11 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: 'provincia' });
   const provinceName = t(`names.${province}`);
   const year = new Date().getFullYear();
-  const title = t('pageTitle', { province: provinceName, year });
-  const description = t('pageDescription', { province: provinceName, year });
-  const canonicalUrl = `${BASE_URL}/${locale}/provincia/${province}`;
 
   return generateMetadataFromOptions({
-    title,
-    description,
-    canonicalUrl,
+    title: t('pageTitle', { province: provinceName, year }),
+    description: t('pageDescription', { province: provinceName, year }),
+    canonicalUrl: `${BASE_URL}/${locale}/provincia/${province}`,
     locale,
     ogImageUrl: `${BASE_URL}/og-image.png`,
     ogType: 'website',
@@ -68,52 +62,30 @@ export default async function ProvincePage({
     notFound();
   }
 
+  const { allRaces, markers, labels, calendarLabel, year } = await getCategoryPageData(locale);
   const t = await getTranslations({ locale, namespace: 'provincia' });
-  const tNav = await getTranslations({ locale, namespace: 'navigation' });
-  const tCommon = await getTranslations({ locale });
   const provinceName = t(`names.${province}`);
-  const year = new Date().getFullYear();
 
-  const labels: MapPageLabels = {
-    previousRace: tCommon('map.previousRace'),
-    nextRace: tCommon('map.nextRace'),
-    racePageLink: tCommon('map.racePageLink'),
-    notAvailable: tCommon('race.notAvailable'),
-  };
-
-  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
-    { name: tNav('calendar'), url: `${BASE_URL}/${locale}` },
-    { name: provinceName, url: `${BASE_URL}/${locale}/provincia/${province}` },
-  ]);
-
-  const [allRaces, { markers }] = await Promise.all([getRaces(), getRacesMapData()]);
-  const provinceRaces = allRaces.filter(
+  const races = allRaces.filter(
     (race) => race.province === PROVINCE_DB_NAMES[province],
   );
 
   return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
-      />
-      <CategoryHeroSection
-        title={t('pageTitle', { province: provinceName, year })}
-        body={t('pageBody', { province: provinceName })}
-        breadcrumbItems={[
-          { name: tNav('calendar'), href: `/${locale}` },
-          { name: provinceName },
-        ]}
-      />
-      <div className="mx-auto w-full pt-6 pb-16 sm:pt-10 lg:pt-4">
-        <MapaCalendarMapClient
-          races={provinceRaces}
-          markers={markers}
-          locale={locale}
-          labels={labels}
-          showProvinceFilter={false}
-        />
-      </div>
-    </>
+    <CategoryMapPage
+      locale={locale}
+      races={races}
+      markers={markers}
+      breadcrumbJsonLd={buildBreadcrumbJsonLd([
+        { name: calendarLabel, url: `${BASE_URL}/${locale}` },
+        { name: provinceName, url: `${BASE_URL}/${locale}/provincia/${province}` },
+      ])}
+      heroTitle={t('pageTitle', { province: provinceName, year })}
+      heroBody={t('pageBody', { province: provinceName })}
+      breadcrumbItems={[
+        { name: calendarLabel, href: `/${locale}` },
+        { name: provinceName },
+      ]}
+      labels={labels}
+    />
   );
 }
