@@ -23,7 +23,8 @@ import { RaceFavoriteButton } from '@/components/race/race-favorite-button';
 import { buildRaceJsonLd } from '@/lib/seo/race-json-ld';
 import { buildBreadcrumbJsonLd } from '@/lib/seo/breadcrumb-json-ld';
 import { Breadcrumb } from '@/components/layout/breadcrumb';
-import ProvinceLink from '@/components/filters/province-link';
+import ImageLinkCard from '@/components/home/image-link-card';
+import TrailRaceCard from '@/components/race/trail-race-card';
 import { getRaceImageUrlWithFilename } from '@/lib/race-image-url';
 import { TrackedLink } from '@/components/ui/tracked-link';
 
@@ -33,15 +34,6 @@ const PROVINCE_SLUGS: Record<string, string> = {
   Lleida: 'lleida',
   Tarragona: 'tarragona',
 };
-
-const STOCK_IMAGES_COUNT = 21;
-const STOCK_IMAGE_BASE_URL = 'https://ppmdbmyxgtqvmvtbptmg.supabase.co/storage/v1/object/public/stock/images';
-
-function stockImageUrlForRace(raceId: string): string {
-  const hash = [...raceId].reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  const index = (hash % STOCK_IMAGES_COUNT) + 1;
-  return `${STOCK_IMAGE_BASE_URL}/image-${index}.jpg`;
-}
 
 const PROVINCE_IMAGES: Record<string, string> = {
   Barcelona: 'https://ppmdbmyxgtqvmvtbptmg.supabase.co/storage/v1/object/public/stock/provinces/barcelona.jpg',
@@ -200,11 +192,6 @@ export default async function RacePage({
     raceData.date,
     3,
   );
-  const recommendedRaces = recommended.map((r) => ({
-    href: `/${locale}/carrera/${generateRaceSlug(r.name)}`,
-    label: r.name,
-    imageSrc: stockImageUrlForRace(r.id),
-  }));
 
   return (
     <>
@@ -373,14 +360,36 @@ export default async function RacePage({
           )}*/}
 
           {provinceSlug && (
-            <ProvinceLink
-              label={tRace('provincia.racePageLabel', { province: raceData.province })}
-              linkText={tRace('provincia.racePageLinkText', { province: raceData.province })}
-              href={`/${locale}/provincia/${provinceSlug}`}
-              imageSrc={PROVINCE_IMAGES[raceData.province]}
-              additionalCards={recommendedRaces}
-              captureContext={{ race_id: raceData.id, race_slug: race }}
-            />
+            <div className="flex flex-col gap-3 mt-6">
+              <hr className="border-t border-gray-200" />
+              <p className="text-sm sm:text-base font-bold">
+                {tRace('provincia.racePageLabel', { province: raceData.province })}
+              </p>
+              {recommended.length > 0 && (
+                <div className="flex flex-col gap-2">
+                  {recommended.map((r) => (
+                    <TrailRaceCard
+                      key={r.id}
+                      date={r.date}
+                      name={r.name}
+                      distanceKm={r.distanceKm}
+                      elevationGainM={r.elevationGainM}
+                      city={r.city}
+                      province={r.province}
+                      raceSlug={generateRaceSlug(r.name)}
+                      organizerId={r.organizerId}
+                    />
+                  ))}
+                </div>
+              )}
+              <ImageLinkCard
+                href={`/${locale}/provincia/${provinceSlug}`}
+                label={tRace('provincia.racePageLinkText', { province: raceData.province })}
+                imageSrc={PROVINCE_IMAGES[raceData.province]}
+                captureEvent="race_province_link_clicked"
+                captureProperties={{ race_id: raceData.id, race_slug: race }}
+              />
+            </div>
           )}
           {!raceData.organizerId && (
             <div className="mt-10">
