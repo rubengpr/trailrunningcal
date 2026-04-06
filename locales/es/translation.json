@@ -26,6 +26,10 @@
     "provinceLabel": "Provincia",
     "distanceLabel": "Distancia"
   },
+  "layoutToggle": {
+    "list": "Solo lista",
+    "map": "Solo mapa"
+  },
   "months": {
     "0": "Ene",
     "1": "Feb",
