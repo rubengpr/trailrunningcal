@@ -86,6 +86,8 @@ export default async function ProvincePage({
         { name: provinceName },
       ]}
       labels={labels}
+      showProvinceFilter={false}
+      showDistanceFilter={true}
     />
   );
 }
