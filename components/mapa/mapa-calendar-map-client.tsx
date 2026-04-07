@@ -148,6 +148,12 @@ export default function MapaCalendarMapClient({
     setTimeout(() => posthog.capture('calendar_view_map_clicked', { locale }), 0);
   };
 
+  const handleViewListClick = (): void => {
+    setMobileView('list');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    setTimeout(() => posthog.capture('map_view_list_clicked', { locale }), 0);
+  };
+
   const focusRaceOnMap = useCallback((raceId: string) => {
     setFocusRaceId(raceId);
     setFocusRaceNonce((n) => n + 1);
@@ -366,7 +372,7 @@ export default function MapaCalendarMapClient({
             view={mobileView === 'list' ? 'map' : 'list'}
             label={mobileView === 'list' ? tMap('viewMap') : tMap('viewList')}
             className={mapToggleFabClassName}
-            onClick={mobileView === 'list' ? handleViewMapClick : () => setMobileView('list')}
+            onClick={mobileView === 'list' ? handleViewMapClick : handleViewListClick}
           />
         </div>
       )}
