@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import MonthFilter from '@/components/filters/month-filter';
 import ProvinceFilter from '@/components/filters/province-filter';
-import { DISTANCE_GROUPS } from '@/components/filters/filter-bar';
+import { DISTANCE_GROUPS } from '@/lib/constants';
 import { RACE_TYPES } from '@/lib/home-race-filters';
 import { Button } from '@/components/ui/button';
 

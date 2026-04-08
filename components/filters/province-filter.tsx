@@ -1,11 +1,11 @@
 'use client';
 
+import { PROVINCES } from '@/lib/constants';
+
 interface ProvinceFilterProps {
   selectedProvince: string;
   onProvinceSelect: (province: string) => void;
 }
-
-const PROVINCES = ['Barcelona', 'Girona', 'Lleida', 'Tarragona'];
 
 export default function ProvinceFilter({
   selectedProvince,

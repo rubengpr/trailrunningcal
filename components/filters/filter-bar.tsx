@@ -2,12 +2,8 @@
 
 import { useTranslations } from 'next-intl';
 import { FilterSelect } from '@/components/ui/filter-select';
+import { PROVINCES, DISTANCE_GROUPS, MONTH_INDICES } from '@/lib/constants';
 import { RACE_TYPES } from '@/lib/home-race-filters';
-
-const MONTH_INDICES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
-const PROVINCES = ['Barcelona', 'Girona', 'Lleida', 'Tarragona'];
-export const DISTANCE_GROUPS = ['0-10', '10-20', '20-30', '30-40', '40-50', '50+'] as const;
-export type DistanceGroup = (typeof DISTANCE_GROUPS)[number];
 
 const RACE_TYPE_CATEGORY_KEYS: Record<string, string> = {
   'ultra-trail': 'ultra',
