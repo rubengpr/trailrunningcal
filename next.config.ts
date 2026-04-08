@@ -58,7 +58,7 @@ const nextConfig: NextConfig = {
               // MapLibre GL loads its worker from a blob URL by default.
               "worker-src 'self' blob:",
               // Wikiloc embedded trail maps.
-              "frame-src https://es.wikiloc.com",
+              "frame-src https://*.wikiloc.com",
               "frame-ancestors 'none'",
               "object-src 'none'",
               "base-uri 'self'",
