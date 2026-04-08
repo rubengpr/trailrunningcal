@@ -24,7 +24,8 @@
     "apply": "Aplicar filtros",
     "monthLabel": "Mes",
     "provinceLabel": "Provincia",
-    "distanceLabel": "Distancia"
+    "distanceLabel": "Distancia",
+    "raceTypeLabel": "Tipo"
   },
   "layoutToggle": {
     "list": "Solo lista",

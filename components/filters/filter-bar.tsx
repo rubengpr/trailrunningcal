@@ -2,19 +2,31 @@
 
 import { useTranslations } from 'next-intl';
 import { FilterSelect } from '@/components/ui/filter-select';
+import { RACE_TYPES } from '@/lib/home-race-filters';
 
 const MONTH_INDICES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 const PROVINCES = ['Barcelona', 'Girona', 'Lleida', 'Tarragona'];
 export const DISTANCE_GROUPS = ['0-10', '10-20', '20-30', '30-40', '40-50', '50+'] as const;
 export type DistanceGroup = (typeof DISTANCE_GROUPS)[number];
 
+const RACE_TYPE_CATEGORY_KEYS: Record<string, string> = {
+  'ultra-trail': 'ultra',
+  'maraton': 'maraton',
+  'media-maraton': 'media',
+  'marcha': 'marcha',
+  'km-vertical': 'vk',
+  'backyard': 'backyard',
+};
+
 interface FilterBarProps {
   selectedMonth: string;
   selectedProvince: string;
   selectedDistance: string;
+  selectedRaceType: string;
   onMonthSelect: (month: string) => void;
   onProvinceSelect: (province: string) => void;
   onDistanceSelect: (distance: string) => void;
+  onRaceTypeSelect: (raceType: string) => void;
   onClearFilters: () => void;
   showProvinceFilter?: boolean;
   showDistanceFilter?: boolean;
@@ -24,9 +36,11 @@ export default function FilterBar({
   selectedMonth,
   selectedProvince,
   selectedDistance,
+  selectedRaceType,
   onMonthSelect,
   onProvinceSelect,
   onDistanceSelect,
+  onRaceTypeSelect,
   onClearFilters,
   showProvinceFilter = true,
   showDistanceFilter = true,
@@ -34,13 +48,15 @@ export default function FilterBar({
   const tFilters = useTranslations('filters');
   const tMonthsFull = useTranslations('monthsFull');
   const tDistanceGroups = useTranslations('distanceGroups');
+  const tCategory = useTranslations('category');
 
   const months = MONTH_INDICES.map((index) => ({
     key: index.toString(),
     label: tMonthsFull(index.toString()),
   }));
 
-  const hasActiveFilters = selectedMonth !== '' || selectedProvince !== '' || selectedDistance !== '';
+  const hasActiveFilters =
+    selectedMonth !== '' || selectedProvince !== '' || selectedDistance !== '' || selectedRaceType !== '';
 
   return (
     <div className="flex items-center gap-3 flex-wrap">
@@ -68,6 +84,13 @@ export default function FilterBar({
           ))}
         </FilterSelect>
       )}
+
+      <FilterSelect value={selectedRaceType} onChange={(e) => onRaceTypeSelect(e.target.value)}>
+        <option value="">{tFilters('raceTypeLabel')}</option>
+        {RACE_TYPES.map((type) => (
+          <option key={type} value={type}>{tCategory(RACE_TYPE_CATEGORY_KEYS[type])}</option>
+        ))}
+      </FilterSelect>
 
       {hasActiveFilters && (
         <button
