@@ -24,6 +24,15 @@ import { useMobileFilters } from '@/components/providers/mobile-filters-provider
 import { filterHomeRaces, filterMapMarkersByRaceIds } from '@/lib/home-race-filters';
 import { generateRaceSlug } from '@/lib/race-utils';
 
+const RACE_TYPE_CATEGORY_KEYS: Record<string, string> = {
+  'ultra-trail': 'ultra',
+  'maraton': 'maraton',
+  'media-maraton': 'media',
+  'marcha': 'marcha',
+  'km-vertical': 'vk',
+  'backyard': 'backyard',
+};
+
 const FILTER_STORAGE_KEYS = {
   month: 'filter_month',
   province: 'filter_province',
@@ -59,6 +68,9 @@ export default function MapaCalendarMapClient({
   const tFilters = useTranslations('filters');
   const tErrors = useTranslations('errors');
   const tMap = useTranslations('map');
+  const tMonthsFull = useTranslations('monthsFull');
+  const tDistanceGroups = useTranslations('distanceGroups');
+  const tCategory = useTranslations('category');
 
   const [selectedMonth, setSelectedMonth] = useState<string>(() => readFilterStorage(FILTER_STORAGE_KEYS.month));
   const [selectedProvince, setSelectedProvince] = useState<string>(() => readFilterStorage(FILTER_STORAGE_KEYS.province));
@@ -73,7 +85,14 @@ export default function MapaCalendarMapClient({
   const isDesktopMap = useMinWidthLg();
   const filterVariant = useFeatureFlagVariantKey('filter-flag');
   const isControlVariant = filterVariant === 'control';
-  const { isOpen: isFiltersModalOpen, open: openFiltersModal, close: closeFiltersModal, register, unregister, updateFilterCount, updateFilterVariant } = useMobileFilters();
+  const isInlineTextVariant = filterVariant === 'inline-text';
+  const activeFilterLabels: string[] = [
+    ...(selectedMonth !== '' ? [tMonthsFull(selectedMonth)] : []),
+    ...(selectedProvince !== '' ? [selectedProvince] : []),
+    ...(selectedDistance !== '' ? [tDistanceGroups(selectedDistance)] : []),
+    ...(selectedRaceType !== '' ? [tCategory(RACE_TYPE_CATEGORY_KEYS[selectedRaceType])] : []),
+  ];
+  const { isOpen: isFiltersModalOpen, open: openFiltersModal, close: closeFiltersModal, register, unregister, updateFilterCount, updateFilterVariant, filterCount } = useMobileFilters();
 
   useEffect(() => {
     updateFilterVariant(filterVariant);
@@ -251,6 +270,31 @@ export default function MapaCalendarMapClient({
           </div>
         </div>
       </section>
+
+      {isInlineTextVariant && (
+        <section className="sm:hidden sticky top-16 z-30 w-full min-w-0 py-2 px-3 flex justify-center pointer-events-none">
+          <div className="pointer-events-auto w-full">
+            <button
+              onClick={() => {
+                openFiltersModal();
+                setTimeout(() => posthog.capture('navbar_filter_icon_clicked', { filter_count: filterCount, variant: filterVariant }), 0);
+              }}
+              className="w-full flex items-center justify-center py-2.5 text-sm font-medium text-gray-900 bg-white border border-gray-400 rounded-xl hover:bg-gray-50 transition-colors"
+            >
+              {tFilters('filterRacesButton')}
+            </button>
+            {activeFilterLabels.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mt-2">
+                {activeFilterLabels.map((label) => (
+                  <span key={label} className="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded-sm font-medium">
+                    {label}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       <main className="min-w-0">
         <ErrorBoundary fallback={<SearchError onRetry={handleRetry} />}>

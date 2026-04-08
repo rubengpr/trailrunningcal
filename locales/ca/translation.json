@@ -21,6 +21,7 @@
   "filters": {
     "clearFilters": "Netejar filtres",
     "filtersLabel": "Filtrar",
+    "filterRacesButton": "Filtrar curses",
     "apply": "Aplicar filtres",
     "monthLabel": "Mes",
     "provinceLabel": "Província",

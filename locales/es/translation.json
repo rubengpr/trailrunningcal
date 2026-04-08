@@ -21,6 +21,7 @@
   "filters": {
     "clearFilters": "Limpiar filtros",
     "filtersLabel": "Filtrar",
+    "filterRacesButton": "Filtrar carreras",
     "apply": "Aplicar filtros",
     "monthLabel": "Mes",
     "provinceLabel": "Provincia",
