@@ -24,6 +24,18 @@ import { useMobileFilters } from '@/components/providers/mobile-filters-provider
 import { filterHomeRaces, filterMapMarkersByRaceIds } from '@/lib/home-race-filters';
 import { generateRaceSlug } from '@/lib/race-utils';
 
+const FILTER_STORAGE_KEYS = {
+  month: 'filter_month',
+  province: 'filter_province',
+  distance: 'filter_distance',
+  type: 'filter_type',
+} as const;
+
+const readFilterStorage = (key: string): string => {
+  if (typeof window === 'undefined') return '';
+  return sessionStorage.getItem(key) ?? '';
+};
+
 type MobileView = 'list' | 'map';
 
 interface MapaCalendarMapClientProps {
@@ -48,10 +60,10 @@ export default function MapaCalendarMapClient({
   const tErrors = useTranslations('errors');
   const tMap = useTranslations('map');
 
-  const [selectedMonth, setSelectedMonth] = useState<string>('');
-  const [selectedProvince, setSelectedProvince] = useState<string>('');
-  const [selectedDistance, setSelectedDistance] = useState<string>('');
-  const [selectedRaceType, setSelectedRaceType] = useState<string>('');
+  const [selectedMonth, setSelectedMonth] = useState<string>(() => readFilterStorage(FILTER_STORAGE_KEYS.month));
+  const [selectedProvince, setSelectedProvince] = useState<string>(() => readFilterStorage(FILTER_STORAGE_KEYS.province));
+  const [selectedDistance, setSelectedDistance] = useState<string>(() => readFilterStorage(FILTER_STORAGE_KEYS.distance));
+  const [selectedRaceType, setSelectedRaceType] = useState<string>(() => readFilterStorage(FILTER_STORAGE_KEYS.type));
   const [focusRaceId, setFocusRaceId] = useState<string | null>(null);
   const [focusRaceNonce, setFocusRaceNonce] = useState(0);
   const [mobileView, setMobileView] = useState<MobileView>('list');
@@ -81,6 +93,13 @@ export default function MapaCalendarMapClient({
       (selectedRaceType ? 1 : 0),
     );
   }, [selectedMonth, selectedProvince, selectedDistance, selectedRaceType, updateFilterCount]);
+
+  useEffect(() => {
+    sessionStorage.setItem(FILTER_STORAGE_KEYS.month, selectedMonth);
+    sessionStorage.setItem(FILTER_STORAGE_KEYS.province, selectedProvince);
+    sessionStorage.setItem(FILTER_STORAGE_KEYS.distance, selectedDistance);
+    sessionStorage.setItem(FILTER_STORAGE_KEYS.type, selectedRaceType);
+  }, [selectedMonth, selectedProvince, selectedDistance, selectedRaceType]);
 
   const filteredRaces = useMemo(
     () => filterHomeRaces(races, selectedMonth, selectedProvince, selectedDistance, selectedRaceType),
