@@ -5,16 +5,27 @@ import { useTranslations } from 'next-intl';
 import MonthFilter from '@/components/filters/month-filter';
 import ProvinceFilter from '@/components/filters/province-filter';
 import { DISTANCE_GROUPS } from '@/components/filters/filter-bar';
+import { RACE_TYPES } from '@/lib/home-race-filters';
 import { Button } from '@/components/ui/button';
+
+const RACE_TYPE_CATEGORY_KEYS: Record<string, string> = {
+  'ultra-trail': 'ultra',
+  'maraton': 'maraton',
+  'media-maraton': 'media',
+  'marcha': 'marcha',
+  'km-vertical': 'vk',
+  'backyard': 'backyard',
+};
 
 interface MobileFiltersModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onApply: (month: string, province: string, distance: string) => void;
+  onApply: (month: string, province: string, distance: string, raceType: string) => void;
   onClear: () => void;
   initialMonth: string;
   initialProvince: string;
   initialDistance: string;
+  initialRaceType: string;
 }
 
 export default function MobileFiltersModal({
@@ -25,13 +36,16 @@ export default function MobileFiltersModal({
   initialMonth,
   initialProvince,
   initialDistance,
+  initialRaceType,
 }: MobileFiltersModalProps) {
   const tFilters = useTranslations('filters');
   const tDistanceGroups = useTranslations('distanceGroups');
+  const tCategory = useTranslations('category');
 
   const [draftMonth, setDraftMonth] = useState<string>(initialMonth);
   const [draftProvince, setDraftProvince] = useState<string>(initialProvince);
   const [draftDistance, setDraftDistance] = useState<string>(initialDistance);
+  const [draftRaceType, setDraftRaceType] = useState<string>(initialRaceType);
   const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
 
   if (prevIsOpen !== isOpen) {
@@ -40,6 +54,7 @@ export default function MobileFiltersModal({
       setDraftMonth(initialMonth);
       setDraftProvince(initialProvince);
       setDraftDistance(initialDistance);
+      setDraftRaceType(initialRaceType);
     }
   }
 
@@ -53,17 +68,19 @@ export default function MobileFiltersModal({
   }, [isOpen, onClose]);
 
   const handleApply = () => {
-    onApply(draftMonth, draftProvince, draftDistance);
+    onApply(draftMonth, draftProvince, draftDistance, draftRaceType);
   };
 
   const handleClearAll = () => {
     setDraftMonth('');
     setDraftProvince('');
     setDraftDistance('');
+    setDraftRaceType('');
     onClear();
   };
 
-  const hasActiveFilters = draftMonth !== '' || draftProvince !== '' || draftDistance !== '';
+  const hasActiveFilters =
+    draftMonth !== '' || draftProvince !== '' || draftDistance !== '' || draftRaceType !== '';
 
   if (!isOpen) return null;
 
@@ -129,6 +146,24 @@ export default function MobileFiltersModal({
                   ${draftDistance === group ? 'bg-black text-white border-black shadow-md' : 'bg-white text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}
               >
                 {tDistanceGroups(group)}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <p className="mb-3 text-sm font-semibold text-gray-700 tracking-wide">
+            {tFilters('raceTypeLabel')}
+          </p>
+          <div className="flex flex-wrap gap-1.5 sm:gap-2 justify-center">
+            {RACE_TYPES.map((type) => (
+              <button
+                key={type}
+                onClick={() => setDraftRaceType(draftRaceType === type ? '' : type)}
+                className={`px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-md text-xs sm:text-sm font-medium transition-all duration-200
+                  border border-gray-300 hover:border-gray-400 cursor-pointer focus:outline-none
+                  ${draftRaceType === type ? 'bg-black text-white border-black shadow-md' : 'bg-white text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}
+              >
+                {tCategory(RACE_TYPE_CATEGORY_KEYS[type])}
               </button>
             ))}
           </div>

@@ -51,6 +51,7 @@ export default function MapaCalendarMapClient({
   const [selectedMonth, setSelectedMonth] = useState<string>('');
   const [selectedProvince, setSelectedProvince] = useState<string>('');
   const [selectedDistance, setSelectedDistance] = useState<string>('');
+  const [selectedRaceType, setSelectedRaceType] = useState<string>('');
   const [focusRaceId, setFocusRaceId] = useState<string | null>(null);
   const [focusRaceNonce, setFocusRaceNonce] = useState(0);
   const [mobileView, setMobileView] = useState<MobileView>('list');
@@ -73,12 +74,17 @@ export default function MapaCalendarMapClient({
   }, [isControlVariant, register, unregister]);
 
   useEffect(() => {
-    updateFilterCount((selectedMonth ? 1 : 0) + (selectedProvince ? 1 : 0) + (selectedDistance ? 1 : 0));
-  }, [selectedMonth, selectedProvince, selectedDistance, updateFilterCount]);
+    updateFilterCount(
+      (selectedMonth ? 1 : 0) +
+      (selectedProvince ? 1 : 0) +
+      (selectedDistance ? 1 : 0) +
+      (selectedRaceType ? 1 : 0),
+    );
+  }, [selectedMonth, selectedProvince, selectedDistance, selectedRaceType, updateFilterCount]);
 
   const filteredRaces = useMemo(
-    () => filterHomeRaces(races, selectedMonth, selectedProvince, selectedDistance),
-    [races, selectedMonth, selectedProvince, selectedDistance],
+    () => filterHomeRaces(races, selectedMonth, selectedProvince, selectedDistance, selectedRaceType),
+    [races, selectedMonth, selectedProvince, selectedDistance, selectedRaceType],
   );
 
   const filteredMarkers = useMemo(() => {
@@ -107,6 +113,11 @@ export default function MapaCalendarMapClient({
     setTimeout(() => posthog.capture('race_distance_filter_applied', { distance }), 0);
   };
 
+  const handleRaceTypeSelect = (raceType: string) => {
+    setSelectedRaceType(raceType);
+    setTimeout(() => posthog.capture('race_type_filter_applied', { raceType }), 0);
+  };
+
   const handleRetry = () => {
     setSelectedMonth('');
     setSelectedProvince('');
@@ -117,10 +128,11 @@ export default function MapaCalendarMapClient({
     setSelectedMonth('');
     setSelectedProvince('');
     setSelectedDistance('');
+    setSelectedRaceType('');
     setTimeout(() => posthog.capture('race_filters_cleared'), 0);
   };
 
-  const handleFiltersApply = (month: string, province: string, distance: string) => {
+  const handleFiltersApply = (month: string, province: string, distance: string, raceType: string) => {
     if (month !== selectedMonth) {
       setSelectedMonth(month);
       setTimeout(() => posthog.capture('race_month_filter_applied', { month }), 0);
@@ -132,6 +144,10 @@ export default function MapaCalendarMapClient({
     if (distance !== selectedDistance) {
       setSelectedDistance(distance);
       setTimeout(() => posthog.capture('race_distance_filter_applied', { distance }), 0);
+    }
+    if (raceType !== selectedRaceType) {
+      setSelectedRaceType(raceType);
+      setTimeout(() => posthog.capture('race_type_filter_applied', { raceType }), 0);
     }
     setTimeout(() => posthog.capture('filters_applied', { variant: filterVariant }), 0);
     closeFiltersModal();
@@ -201,9 +217,11 @@ export default function MapaCalendarMapClient({
               selectedMonth={selectedMonth}
               selectedProvince={selectedProvince}
               selectedDistance={selectedDistance}
+              selectedRaceType={selectedRaceType}
               onMonthSelect={handleMonthSelect}
               onProvinceSelect={handleProvinceSelect}
               onDistanceSelect={handleDistanceSelect}
+              onRaceTypeSelect={handleRaceTypeSelect}
               onClearFilters={handleClearFilters}
               showProvinceFilter={showProvinceFilter}
               showDistanceFilter={showDistanceFilter}
@@ -363,6 +381,7 @@ export default function MapaCalendarMapClient({
           initialMonth={selectedMonth}
           initialProvince={selectedProvince}
           initialDistance={selectedDistance}
+          initialRaceType={selectedRaceType}
         />
       )}
 

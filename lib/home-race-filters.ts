@@ -10,14 +10,47 @@ const DISTANCE_RANGES: Record<string, [number, number]> = {
   '50+':   [50, Infinity],
 };
 
+export const RACE_TYPES = ['ultra-trail', 'maraton', 'media-maraton', 'marcha', 'km-vertical', 'backyard'] as const;
+export type RaceType = (typeof RACE_TYPES)[number];
+
+const VK_KEYWORDS = ['kilómetro vertical', 'quilòmetre vertical', 'km vertical'];
+const MARCHA_KEYWORDS = ['marcha', 'marxa', 'caminada'];
+
+export function matchesRaceType(race: TrailRace, type: RaceType): boolean {
+  const lowerName = race.name.toLowerCase();
+  switch (type) {
+    case 'backyard':
+      return lowerName.includes('backyard');
+    case 'km-vertical': {
+      const hasKeyword =
+        VK_KEYWORDS.some((kw) => lowerName.includes(kw)) ||
+        lowerName.includes(' kv ') ||
+        lowerName.startsWith('kv ') ||
+        lowerName.endsWith(' kv');
+      const hasRatio =
+        race.distanceKm < 4 && race.elevationGainM !== null && race.elevationGainM >= 600;
+      return hasKeyword || hasRatio;
+    }
+    case 'marcha':
+      return MARCHA_KEYWORDS.some((kw) => lowerName.includes(kw));
+    case 'ultra-trail':
+      return race.distanceKm >= 50;
+    case 'maraton':
+      return race.distanceKm >= 40 && race.distanceKm < 50;
+    case 'media-maraton':
+      return race.distanceKm >= 20 && race.distanceKm <= 24;
+  }
+}
+
 /**
- * Same rules as the home calendar: future dated races only, optional month, province, and distance filter.
+ * Same rules as the home calendar: future dated races only, optional month, province, distance, and race type filter.
  */
 export function filterHomeRaces(
   races: TrailRace[],
   selectedMonth: string,
   selectedProvince: string,
   selectedDistance: string = '',
+  selectedRaceType: string = '',
 ): TrailRace[] {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -43,6 +76,10 @@ export function filterHomeRaces(
       if (km === null || km === undefined) return false;
       const [min, max] = distanceRange;
       return km >= min && km < max;
+    })
+    .filter(({ race }) => {
+      if (!selectedRaceType) return true;
+      return matchesRaceType(race, selectedRaceType as RaceType);
     })
     .map(({ race }) => race);
 }
