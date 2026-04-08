@@ -3,6 +3,7 @@
 import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useFeatureFlagVariantKey } from 'posthog-js/react';
 import VerifiedBadgeWithTooltip from '@/components/badges/verified-badge-with-tooltip';
 import { getDisplayPrice } from '@/lib/race-utils';
 import { TEST_VERIFIED_RACES_NAME } from '@/lib/constants';
@@ -111,6 +112,8 @@ export default function TrailRaceCard({
   const t = useTranslations();
   const locale = useLocale();
   const router = useRouter();
+  const webButtonVariant = useFeatureFlagVariantKey('web-button-experiment');
+  const showWebButton = webButtonVariant !== 'no-web-button';
   const { day, month, dayOfWeek } = formatDate(date, t);
   const elevationRatio = calculateElevationRatio(elevationGainM, distanceKm);
   const raceCategory = getRaceCategory(distanceKm, name, elevationGainM);
@@ -215,7 +218,7 @@ export default function TrailRaceCard({
                   {elevationRatio !== null ? `${elevationRatio} m/km` : '—'}
                 </span>
 
-                {!displayOnly && raceSlug && (
+                {!displayOnly && raceSlug && showWebButton && (
                   <Link
                     href={`/${locale}/carrera/${raceSlug}`}
                     className="sm:hidden inline-flex shrink-0 items-center pointer-events-auto bg-black text-white px-2 py-0.5 rounded-sm text-xs font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
@@ -238,7 +241,7 @@ export default function TrailRaceCard({
             >
               {displayPrice ? `${displayPrice}€` : '—'}
             </div>
-            {!displayOnly && raceSlug && (
+            {!displayOnly && raceSlug && showWebButton && (
               <Link
                 href={`/${locale}/carrera/${raceSlug}`}
                 className="hidden sm:inline-flex items-center bg-black text-white rounded-sm px-3 py-1 text-xs font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
