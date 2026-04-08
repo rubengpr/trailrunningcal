@@ -4,8 +4,7 @@ import { createClient, createAdminClient } from '@/lib/supabase/server';
 import { getOrganizerRaceContext } from '@/lib/auth-organizer';
 import { isAdminEmail } from '@/lib/auth-admin';
 import { generateRaceSlug } from '@/lib/race-utils';
-
-const LOCALES = ['es', 'ca'] as const;
+import { locales } from '@/i18n';
 
 export async function PATCH(request: NextRequest) {
   try {
@@ -60,7 +59,7 @@ export async function PATCH(request: NextRequest) {
       .single();
 
     const slug = race?.name ? generateRaceSlug(race.name) : null;
-    for (const locale of LOCALES) {
+    for (const locale of locales) {
       revalidatePath(`/${locale}`, 'page');
       if (slug) {
         revalidatePath(`/${locale}/carrera/${slug}`, 'page');

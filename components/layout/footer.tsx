@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { getPostsForLocale } from '@/lib/blog-utils';
 import type { Locale } from '@/i18n';
+import { PROVINCE_SLUGS } from '@/lib/constants';
 
 const CATEGORY_SLUGS = [
   { slug: 'ultra-trail', key: 'ultraTrail' },
@@ -12,8 +13,6 @@ const CATEGORY_SLUGS = [
   { slug: 'km-vertical', key: 'kmVertical' },
   { slug: 'backyard', key: 'backyard' },
 ] as const;
-
-const PROVINCE_SLUGS = ['barcelona', 'girona', 'lleida', 'tarragona'] as const;
 
 const MAX_FOOTER_POSTS = 5;
 

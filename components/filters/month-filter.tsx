@@ -2,13 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
+import { MONTH_INDICES } from '@/lib/constants';
 
 interface MonthFilterProps {
   initialSelectedMonth?: string;
   onMonthSelect: (month: string) => void;
 }
-
-const MONTH_INDICES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 
 export default function MonthFilter({
   initialSelectedMonth = '',

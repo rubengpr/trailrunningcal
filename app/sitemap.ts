@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next';
 import { BASE_URL } from '@/lib/config';
 import { locales, type Locale } from '@/i18n';
+import { PROVINCE_SLUGS } from '@/lib/constants';
 import { getAllBlogPosts } from '@/lib/blog-utils';
 import { generateRaceSlug } from '@/lib/race-utils';
 import { getRaces } from '@/lib/db/races';
@@ -18,8 +19,6 @@ import {
   buildKmVerticalAlternateLinks,
   buildBackyardAlternateLinks,
 } from '@/lib/alternate-links';
-
-const PROVINCE_SLUGS = ['barcelona', 'girona', 'lleida', 'tarragona'] as const;
 
 const CONTACT_PATHS: Record<Locale, string> = {
   es: 'contacto',

@@ -1,8 +1,7 @@
-import { BASE_URL } from '@/lib/config';
+import { BASE_URL, CONTACT_EMAIL } from '@/lib/config';
 import { SITE_NAME } from '@/seo/meta-config';
 
 const LOGO_URL = 'https://ppmdbmyxgtqvmvtbptmg.supabase.co/storage/v1/object/public/brand/logos/trc-logo.svg';
-const CONTACT_EMAIL = 'info@trailrunningcal.com';
 
 export function buildWebsiteJsonLd(): Record<string, unknown> {
   return {

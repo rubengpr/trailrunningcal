@@ -4,18 +4,17 @@ import { revalidatePath } from 'next/cache';
 import { getOrganizerRaceContext } from '@/lib/auth-organizer';
 import { isAdminEmail } from '@/lib/auth-admin';
 import { generateRaceSlug } from '@/lib/race-utils';
-
-const LOCALES = ['es', 'ca'] as const;
+import { locales } from '@/i18n';
 
 function revalidateHomepages() {
-  for (const locale of LOCALES) {
+  for (const locale of locales) {
     revalidatePath(`/${locale}`, 'page');
   }
 }
 
 function revalidateRacePages(raceName: string) {
   const slug = generateRaceSlug(raceName);
-  for (const locale of LOCALES) {
+  for (const locale of locales) {
     revalidatePath(`/${locale}/carrera/${slug}`, 'page');
   }
 }

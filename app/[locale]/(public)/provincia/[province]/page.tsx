@@ -8,11 +8,9 @@ import { BASE_URL } from '@/lib/config';
 import { buildBreadcrumbJsonLd } from '@/lib/seo/breadcrumb-json-ld';
 import CategoryMapPage from '@/components/layout/category-map-page';
 import { getCategoryPageData } from '@/lib/category-page';
+import { PROVINCE_SLUGS, type ProvinceSlug } from '@/lib/constants';
 
 export const revalidate = 300;
-
-const PROVINCE_SLUGS = ['barcelona', 'girona', 'lleida', 'tarragona'] as const;
-type ProvinceSlug = (typeof PROVINCE_SLUGS)[number];
 
 const PROVINCE_DB_NAMES: Record<ProvinceSlug, string> = {
   barcelona: 'Barcelona',
