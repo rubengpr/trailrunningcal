@@ -448,7 +448,7 @@ export default function RacesMap({
         el.removeEventListener('click', fn);
       }
       for (const root of roots) {
-        root.unmount();
+        setTimeout(() => root.unmount(), 0);
       }
       markerRegistryRef.current = [];
       mapRef.current = null;
