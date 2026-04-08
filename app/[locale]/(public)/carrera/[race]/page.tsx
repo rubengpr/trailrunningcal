@@ -183,7 +183,7 @@ export default async function RacePage({
     raceData.province,
     raceData.id,
     raceData.date,
-    3,
+    7,
   );
 
   return (
