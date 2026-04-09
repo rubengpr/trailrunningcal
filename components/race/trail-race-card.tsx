@@ -184,7 +184,7 @@ export default function TrailRaceCard({
                     href={`/${locale}/carrera/${raceSlug}`}
                     className={`min-w-0 hover:underline sm:hover:no-underline ${
                       useStretchedLink
-                        ? 'after:absolute after:inset-0'
+                        ? 'after:content-[\'\'] after:absolute after:inset-0'
                         : 'pointer-events-auto relative z-10'
                     }`}
                     onClick={useClickHandler ? (e) => e.stopPropagation() : undefined}
