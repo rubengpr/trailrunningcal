@@ -165,7 +165,10 @@ export default function TrailRaceCard({
           : 'sm:hover:shadow-md transition-shadow cursor-pointer'
         }`}
     >
-      <div className={`w-full ${innerPadding}`}>
+      {useStretchedLink && (
+        <Link href={`/${locale}/carrera/${raceSlug}`} className="absolute inset-0 z-0" tabIndex={-1} />
+      )}
+      <div className={`relative z-10 w-full ${innerPadding}`}>
         <div className="flex min-w-0 items-start sm:justify-between mb-1">
           <div className={`flex min-w-0 flex-1 ${mainGap}`}>
             <div className={dateBlockClass}>
@@ -182,11 +185,7 @@ export default function TrailRaceCard({
                 {!displayOnly && raceSlug ? (
                   <Link
                     href={`/${locale}/carrera/${raceSlug}`}
-                    className={`min-w-0 hover:underline sm:hover:no-underline ${
-                      useStretchedLink
-                        ? 'after:content-[\'\'] after:absolute after:inset-0'
-                        : 'pointer-events-auto relative z-10'
-                    }`}
+                    className="pointer-events-auto relative z-10 min-w-0 hover:underline sm:hover:no-underline"
                     onClick={useClickHandler ? (e) => e.stopPropagation() : undefined}
                   >
                     <h2 className={`${titleClass} line-clamp-2`}>
