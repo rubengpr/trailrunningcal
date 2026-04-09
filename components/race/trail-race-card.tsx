@@ -134,6 +134,13 @@ export default function TrailRaceCard({
 
   const isTestRace = TEST_VERIFIED_RACES_NAME.includes(name);
 
+  // Stretched link: the race name <a> tag's ::after pseudo-element covers the entire card,
+  // making the whole surface clickable via a real anchor (SEO-safe, no JS navigation needed).
+  // Only used when there is a slug and no custom click handler overrides navigation.
+  const useStretchedLink = !displayOnly && !!raceSlug && !onCardClick;
+  // JS click handler: used when a custom callback overrides navigation (e.g. map view).
+  const useClickHandler = !displayOnly && !!onCardClick;
+
   const isCompact = variant === 'compact';
   const innerPadding = isCompact
     ? 'px-3 py-3 sm:px-4 sm:py-3'
@@ -150,10 +157,12 @@ export default function TrailRaceCard({
 
   return (
     <article
-      onClick={displayOnly ? undefined : handleCardClick}
-      className={`w-full min-w-0 max-w-full bg-white rounded-lg shadow ${displayOnly
+      onClick={useClickHandler ? handleCardClick : undefined}
+      className={`relative w-full min-w-0 max-w-full bg-white rounded-lg shadow ${displayOnly
         ? ''
-        : 'sm:hover:shadow-md transition-shadow sm:cursor-pointer pointer-events-none sm:pointer-events-auto'
+        : useClickHandler
+          ? 'sm:hover:shadow-md transition-shadow sm:cursor-pointer pointer-events-none sm:pointer-events-auto'
+          : 'sm:hover:shadow-md transition-shadow cursor-pointer'
         }`}
     >
       <div className={`w-full ${innerPadding}`}>
@@ -173,8 +182,12 @@ export default function TrailRaceCard({
                 {!displayOnly && raceSlug ? (
                   <Link
                     href={`/${locale}/carrera/${raceSlug}`}
-                    className="pointer-events-auto hover:underline sm:hover:no-underline min-w-0"
-                    onClick={(e) => e.stopPropagation()}
+                    className={`min-w-0 hover:underline sm:hover:no-underline ${
+                      useStretchedLink
+                        ? 'after:absolute after:inset-0'
+                        : 'pointer-events-auto relative z-10'
+                    }`}
+                    onClick={useClickHandler ? (e) => e.stopPropagation() : undefined}
                   >
                     <h2 className={`${titleClass} line-clamp-2`}>
                       {name}
@@ -187,7 +200,7 @@ export default function TrailRaceCard({
                 )}
                 <VerifiedBadgeWithTooltip
                   size="sm"
-                  className={`shrink-0 ${(organizerId || isTestRace) ? 'visible' : 'invisible'}`}
+                  className={`relative z-10 shrink-0 ${(organizerId || isTestRace) ? 'visible' : 'invisible'}`}
                 />
               </div>
               <div className={metaRowClass}>
@@ -202,7 +215,7 @@ export default function TrailRaceCard({
                 {categorySlug ? (
                   <Link
                     href={`/${locale}/${categorySlug}`}
-                    className="pointer-events-auto min-w-0 max-w-full wrap-break-word px-2 py-0.5 text-xs font-medium rounded-sm bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors sm:max-w-none"
+                    className="relative z-10 pointer-events-auto min-w-0 max-w-full wrap-break-word px-2 py-0.5 text-xs font-medium rounded-sm bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors sm:max-w-none"
                     onClick={(e) => e.stopPropagation()}
                   >
                     {t('category.' + raceCategory)}
@@ -221,7 +234,7 @@ export default function TrailRaceCard({
                 {!displayOnly && raceSlug && showWebButton && (
                   <Link
                     href={`/${locale}/carrera/${raceSlug}`}
-                    className="sm:hidden inline-flex shrink-0 items-center pointer-events-auto bg-black text-white px-2 py-0.5 rounded-sm text-xs font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+                    className="relative z-10 sm:hidden inline-flex shrink-0 items-center pointer-events-auto bg-black text-white px-2 py-0.5 rounded-sm text-xs font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
                     onClick={(e) => {
                       e.stopPropagation();
                     }}
@@ -244,7 +257,7 @@ export default function TrailRaceCard({
             {!displayOnly && raceSlug && showWebButton && (
               <Link
                 href={`/${locale}/carrera/${raceSlug}`}
-                className="hidden sm:inline-flex items-center bg-black text-white rounded-sm px-3 py-1 text-xs font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+                className="relative z-10 hidden sm:inline-flex items-center bg-black text-white rounded-sm px-3 py-1 text-xs font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
                 onClick={(e) => {
                   e.stopPropagation();
                 }}
