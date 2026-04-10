@@ -272,7 +272,7 @@ export default function MapaCalendarMapClient({
       </section>
 
       {isInlineTextVariant && (
-        <section className="sm:hidden sticky top-16 z-30 w-full min-w-0 py-2 px-3 flex justify-center pointer-events-none">
+        <section className="sm:hidden sticky top-16 z-30 w-full min-w-0 py-1 px-3 flex justify-center pointer-events-none">
           <div className="pointer-events-auto w-full">
             <button
               onClick={() => {
