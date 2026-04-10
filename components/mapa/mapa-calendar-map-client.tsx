@@ -281,7 +281,16 @@ export default function MapaCalendarMapClient({
               }}
               className="w-full flex items-center justify-center py-2.5 text-sm font-medium text-gray-900 bg-white border border-gray-400 rounded-xl hover:bg-gray-50 transition-colors"
             >
-              {tFilters('filterRacesButton')}
+              {filterCount > 0 ? (
+                <>
+                  {tFilters('filtersLabel')}
+                  <span className="ml-1.5 inline-flex items-center justify-center w-4 h-4 text-[10px] font-semibold text-white bg-gray-900 rounded-full">
+                    {filterCount}
+                  </span>
+                </>
+              ) : (
+                tFilters('filterRacesButton')
+              )}
             </button>
             {activeFilterLabels.length > 0 && (
               <div className="flex flex-wrap gap-1.5 mt-2">
