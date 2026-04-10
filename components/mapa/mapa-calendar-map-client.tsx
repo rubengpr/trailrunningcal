@@ -292,15 +292,6 @@ export default function MapaCalendarMapClient({
                 tFilters('filterRacesButton')
               )}
             </button>
-            {activeFilterLabels.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mt-2">
-                {activeFilterLabels.map((label) => (
-                  <span key={label} className="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded-sm font-medium">
-                    {label}
-                  </span>
-                ))}
-              </div>
-            )}
           </div>
         </section>
       )}
