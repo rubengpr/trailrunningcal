@@ -33,7 +33,7 @@ import type { CrawlPageStats } from '@/types/races-scrape-api.types';
 import type { TrailRaceAgentRaceRow } from '@/types/trail-race-agent.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 
-type ScrapeWorkflow = 'crawlMdOnly' | 'llmFromMd' | 'crawlAndLlm' | 'llmFromImages';
+type ScrapeWorkflow = 'crawlMdOnly' | 'llmFromFile' | 'crawlAndLlm';
 
 type ScrapePhase = 'idle' | 'crawling' | 'llm';
 
@@ -162,6 +162,11 @@ export function ScrapePageContent() {
     const [jsonEditorValue, setJsonEditorValue] = useState('');
     const [jsonEditorError, setJsonEditorError] = useState<string | null>(null);
 
+    const uploadKind: 'markdown' | 'images' | null =
+        uploadedMarkdown !== null ? 'markdown' :
+        uploadedImages.length > 0 ? 'images' :
+        null;
+
     const isValidUrl = (url: string): boolean => {
         const trimmed = url.trim();
         if (!trimmed) return false;
@@ -177,7 +182,7 @@ export function ScrapePageContent() {
         !isScraping &&
         (workflow === 'crawlMdOnly' || workflow === 'crawlAndLlm'
             ? isValidUrl(websiteUrl)
-            : workflow === 'llmFromImages'
+            : uploadKind === 'images'
               ? uploadedImages.length > 0
               : Boolean(uploadedMarkdown && uploadedMarkdown.length > 0));
 
@@ -194,15 +199,13 @@ export function ScrapePageContent() {
             clearFullPipelineStepRefs();
         }
         setWorkflow(next);
-        if (next !== 'llmFromMd') {
+        if (next !== 'llmFromFile') {
             setUploadedMarkdown(null);
             setUploadedFileName(null);
+            setUploadedImages([]);
             if (markdownFileInputRef.current) {
                 markdownFileInputRef.current.value = '';
             }
-        }
-        if (next !== 'llmFromImages') {
-            setUploadedImages([]);
             if (imageFileInputRef.current) {
                 imageFileInputRef.current.value = '';
             }
@@ -241,9 +244,10 @@ export function ScrapePageContent() {
         }
     };
 
-    const handleClearMarkdownFile = (): void => {
+    const handleClearUpload = (): void => {
         setUploadedMarkdown(null);
         setUploadedFileName(null);
+        setUploadedImages([]);
         setScrapeMarkdown(null);
         setRawModelOutput(null);
         setScrapeUsage(null);
@@ -255,6 +259,9 @@ export function ScrapePageContent() {
         setRejectedIndexes(new Set());
         if (markdownFileInputRef.current) {
             markdownFileInputRef.current.value = '';
+        }
+        if (imageFileInputRef.current) {
+            imageFileInputRef.current.value = '';
         }
     };
 
@@ -348,21 +355,6 @@ export function ScrapePageContent() {
         setUploadedImages(prev => prev.filter((_, i) => i !== index));
     };
 
-    const handleClearImages = (): void => {
-        setUploadedImages([]);
-        setScrapeMarkdown(null);
-        setRawModelOutput(null);
-        setScrapeUsage(null);
-        setCrawlPageStats(null);
-        setHasScraped(false);
-        setScrapeError(null);
-        setScrapedRaces([]);
-        setAcceptedIndexes(new Set());
-        setRejectedIndexes(new Set());
-        if (imageFileInputRef.current) {
-            imageFileInputRef.current.value = '';
-        }
-    };
 
     useEffect(() => {
         if (!isScraping || runStartedAtRef.current === null) {
@@ -425,32 +417,34 @@ export function ScrapePageContent() {
                 return;
             }
 
-            if (workflow === 'llmFromImages') {
-                if (uploadedImages.length === 0) {
-                    return;
+            if (workflow === 'llmFromFile') {
+                if (uploadKind === 'images') {
+                    if (uploadedImages.length === 0) {
+                        return;
+                    }
+                    const data = await scrapeRaces({
+                        mode: 'llmFromImages',
+                        images: uploadedImages.map(img => img.dataUrl),
+                        model: selectedVisionModelId,
+                    });
+                    setScrapedRaces(data.races);
+                    setRawModelOutput(data.rawModelOutput);
+                    setScrapeUsage(data.usage);
+                } else {
+                    const markdownBody = uploadedMarkdown;
+                    if (!markdownBody) {
+                        return;
+                    }
+                    const data = await scrapeRaces({
+                        mode: 'llmFromMarkdown',
+                        markdown: markdownBody,
+                        model: selectedModelId,
+                    });
+                    setScrapedRaces(data.races);
+                    setScrapeMarkdown(data.markdown);
+                    setRawModelOutput(data.rawModelOutput);
+                    setScrapeUsage(data.usage);
                 }
-                const data = await scrapeRaces({
-                    mode: 'llmFromImages',
-                    images: uploadedImages.map(img => img.dataUrl),
-                    model: selectedVisionModelId,
-                });
-                setScrapedRaces(data.races);
-                setRawModelOutput(data.rawModelOutput);
-                setScrapeUsage(data.usage);
-            } else if (workflow === 'llmFromMd') {
-                const markdownBody = uploadedMarkdown;
-                if (!markdownBody) {
-                    return;
-                }
-                const data = await scrapeRaces({
-                    mode: 'llmFromMarkdown',
-                    markdown: markdownBody,
-                    model: selectedModelId,
-                });
-                setScrapedRaces(data.races);
-                setScrapeMarkdown(data.markdown);
-                setRawModelOutput(data.rawModelOutput);
-                setScrapeUsage(data.usage);
             } else {
                 const normalizedUrl = normalizeUrl(websiteUrl.trim());
                 let crawlData;
@@ -585,7 +579,7 @@ export function ScrapePageContent() {
             return;
         }
 
-        if (workflow === 'llmFromMd') {
+        if (workflow === 'llmFromFile') {
             setCrawlPageStats(null);
         } else {
             setCrawlPageStats({ ...DUMMY_CRAWL_PAGE_STATS });
@@ -638,7 +632,7 @@ export function ScrapePageContent() {
     const handleDownloadMarkdown = () => {
         if (!scrapeMarkdown) return;
         let downloadName: string;
-        if (workflow === 'llmFromMd' && uploadedFileName) {
+        if (workflow === 'llmFromFile' && uploadKind === 'markdown' && uploadedFileName) {
             downloadName = uploadedFileName;
         } else {
             const hostname = new URL(normalizeUrl(websiteUrl.trim())).hostname.replace(/^www\./, '');
@@ -686,7 +680,7 @@ export function ScrapePageContent() {
 
     /** Parse: estimate from upload; hidden once scrapeMarkdown exists (same row as post-scrape estimate below buttons). */
     const parseUploadTokenEstimate = useMemo((): number | null => {
-        if (workflow !== 'llmFromMd') {
+        if (workflow !== 'llmFromFile' || uploadKind !== 'markdown') {
             return null;
         }
         if (uploadedMarkdown === null || uploadedMarkdown === '') {
@@ -696,7 +690,7 @@ export function ScrapePageContent() {
             return null;
         }
         return estimateMarkdownTokensHeuristic(uploadedMarkdown);
-    }, [workflow, uploadedMarkdown, scrapeMarkdown]);
+    }, [workflow, uploadKind, uploadedMarkdown, scrapeMarkdown]);
 
     const showMarkdownEstimateLine =
         showLlmMetricsUi &&
@@ -833,25 +827,14 @@ export function ScrapePageContent() {
                         </button>
                         <button
                             type="button"
-                            onClick={() => handleWorkflowChange('llmFromMd')}
+                            onClick={() => handleWorkflowChange('llmFromFile')}
                             disabled={isScraping}
-                            className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${workflow === 'llmFromMd'
+                            className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${workflow === 'llmFromFile'
                                 ? 'bg-white text-gray-900 shadow-sm'
                                 : 'text-gray-600 hover:text-gray-900'
                                 }`}
                         >
-                            {t('workflowLlmFromMd')}
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => handleWorkflowChange('llmFromImages')}
-                            disabled={isScraping}
-                            className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${workflow === 'llmFromImages'
-                                ? 'bg-white text-gray-900 shadow-sm'
-                                : 'text-gray-600 hover:text-gray-900'
-                                }`}
-                        >
-                            {t('workflowLlmFromImages')}
+                            {t('workflowLlmFromFile')}
                         </button>
                     </div>
 
@@ -891,44 +874,112 @@ export function ScrapePageContent() {
                         </div>
                     )}
 
-                    {workflow === 'llmFromMd' && (
+                    {workflow === 'llmFromFile' && (
                         <>
                             <div className="grid gap-2 w-full">
-                                <label htmlFor="markdownFile" className="text-sm font-medium leading-none text-gray-900">
-                                    {t('fileUploadLabel')}
+                                <label className="text-sm font-medium leading-none text-gray-900">
+                                    {t('uploadTypeLabel')}
                                 </label>
-                                <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+                                <div className="flex items-center gap-2">
                                     <input
                                         ref={markdownFileInputRef}
-                                        id="markdownFile"
+                                        id="uploadMarkdownFile"
                                         type="file"
                                         accept=".md,.json,text/markdown,text/plain,application/json"
                                         className="sr-only"
                                         onChange={handleMarkdownFileChange}
                                         disabled={isScraping}
                                     />
-                                    <label
-                                        htmlFor="markdownFile"
-                                        className="inline-flex h-10 cursor-pointer items-center justify-center rounded-md border border-gray-200 bg-white px-4 text-sm font-medium text-gray-900 shadow-sm transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-200/80 has-disabled:cursor-not-allowed has-disabled:opacity-50"
+                                    <input
+                                        ref={imageFileInputRef}
+                                        id="uploadImageFiles"
+                                        type="file"
+                                        accept="image/*"
+                                        multiple
+                                        className="sr-only"
+                                        onChange={handleImageFilesChange}
+                                        disabled={isScraping}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => markdownFileInputRef.current?.click()}
+                                        disabled={isScraping || uploadKind === 'images'}
+                                        title={t('uploadMarkdownButtonTitle')}
+                                        className={`inline-flex h-9 w-9 items-center justify-center rounded-md border shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+                                            uploadKind === 'markdown'
+                                                ? 'border-gray-900 bg-gray-50 text-gray-900'
+                                                : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                        }`}
                                     >
-                                        {t('selectMarkdownFile')}
-                                    </label>
-                                    {uploadedFileName && (
-                                        <>
-                                            <span className="text-sm text-gray-600 truncate max-w-full sm:max-w-md">
-                                                {uploadedFileName}
-                                            </span>
-                                            <Button
-                                                type="button"
-                                                variant="secondary"
-                                                onClick={handleClearMarkdownFile}
-                                                disabled={isScraping}
-                                            >
-                                                {t('clearFile')}
-                                            </Button>
-                                        </>
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                                            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                                            <polyline points="14 2 14 8 20 8" />
+                                        </svg>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => imageFileInputRef.current?.click()}
+                                        disabled={isScraping || uploadKind === 'markdown'}
+                                        title={t('uploadImagesButtonTitle')}
+                                        className={`inline-flex h-9 w-9 items-center justify-center rounded-md border shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+                                            uploadKind === 'images'
+                                                ? 'border-gray-900 bg-gray-50 text-gray-900'
+                                                : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                        }`}
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                                            <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+                                            <circle cx="9" cy="9" r="2" />
+                                            <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                                        </svg>
+                                    </button>
+                                    {uploadKind !== null && (
+                                        <button
+                                            type="button"
+                                            onClick={handleClearUpload}
+                                            disabled={isScraping}
+                                            title={t('clearUpload')}
+                                            className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-gray-200 bg-white text-gray-400 shadow-sm transition-colors hover:bg-gray-50 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                                                <path d="M18 6 6 18M6 6l12 12" />
+                                            </svg>
+                                        </button>
                                     )}
                                 </div>
+                                {uploadKind === 'markdown' && uploadedFileName && (
+                                    <span className="text-sm text-gray-600 truncate max-w-full sm:max-w-md">
+                                        {uploadedFileName}
+                                    </span>
+                                )}
+                                {uploadKind === 'images' && uploadedImages.length > 0 && (
+                                    <>
+                                        <span className="text-xs text-gray-500">
+                                            {t('imageCount', { count: uploadedImages.length })}
+                                        </span>
+                                        <div className="flex flex-wrap gap-2">
+                                            {uploadedImages.map((img, idx) => (
+                                                <div key={idx} className="relative flex items-center gap-1.5 rounded-md border border-gray-200 bg-gray-50 px-2 py-1.5">
+                                                    <img
+                                                        src={img.dataUrl}
+                                                        alt={img.name}
+                                                        className="h-8 w-8 rounded object-cover"
+                                                    />
+                                                    <span className="max-w-[120px] truncate text-xs text-gray-600">{img.name}</span>
+                                                    {!isScraping && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleRemoveImage(idx)}
+                                                            className="ml-1 text-gray-400 hover:text-gray-700"
+                                                        >
+                                                            ×
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </>
+                                )}
                             </div>
                             <FormInput
                                 id="websiteUrlForAccept"
@@ -943,84 +994,7 @@ export function ScrapePageContent() {
                         </>
                     )}
 
-                    {/* IMAGE UPLOAD - shown for llmFromImages workflow */}
-                    {workflow === 'llmFromImages' && (
-                        <>
-                            <div className="grid gap-2 w-full">
-                                <label htmlFor="imageFiles" className="text-sm font-medium leading-none text-gray-900">
-                                    {t('imageUploadLabel')}
-                                </label>
-                                <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
-                                    <input
-                                        ref={imageFileInputRef}
-                                        id="imageFiles"
-                                        type="file"
-                                        accept="image/*"
-                                        multiple
-                                        className="sr-only"
-                                        onChange={handleImageFilesChange}
-                                        disabled={isScraping}
-                                    />
-                                    <label
-                                        htmlFor="imageFiles"
-                                        className="inline-flex h-10 cursor-pointer items-center justify-center rounded-md border border-gray-200 bg-white px-4 text-sm font-medium text-gray-900 shadow-sm transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-200/80 has-disabled:cursor-not-allowed has-disabled:opacity-50"
-                                    >
-                                        {t('selectImageFiles')}
-                                    </label>
-                                    {uploadedImages.length > 0 && (
-                                        <>
-                                            <span className="text-sm text-gray-600">
-                                                {t('imageCount', { count: uploadedImages.length })}
-                                            </span>
-                                            <Button
-                                                type="button"
-                                                variant="secondary"
-                                                onClick={handleClearImages}
-                                                disabled={isScraping}
-                                            >
-                                                {t('clearImages')}
-                                            </Button>
-                                        </>
-                                    )}
-                                </div>
-                                {uploadedImages.length > 0 && (
-                                    <div className="flex flex-wrap gap-2 mt-1">
-                                        {uploadedImages.map((img, idx) => (
-                                            <div key={idx} className="relative flex items-center gap-1.5 rounded-md border border-gray-200 bg-gray-50 px-2 py-1.5">
-                                                <img
-                                                    src={img.dataUrl}
-                                                    alt={img.name}
-                                                    className="h-8 w-8 rounded object-cover"
-                                                />
-                                                <span className="max-w-[120px] truncate text-xs text-gray-600">{img.name}</span>
-                                                {!isScraping && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleRemoveImage(idx)}
-                                                        className="ml-1 text-gray-400 hover:text-gray-700"
-                                                    >
-                                                        ×
-                                                    </button>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                            <FormInput
-                                id="websiteUrlForImagesAccept"
-                                label={t('eventUrlForAcceptLabel')}
-                                helperText={t('urlForAcceptHint')}
-                                type="url"
-                                value={websiteUrl}
-                                placeholder={t('websiteUrlPlaceholder')}
-                                onChange={(e) => setWebsiteUrl(e.target.value)}
-                                disabled={isScraping}
-                            />
-                        </>
-                    )}
-
-                    {(workflow === 'llmFromMd' || workflow === 'crawlAndLlm') && (
+                    {(workflow === 'crawlAndLlm' || (workflow === 'llmFromFile' && uploadKind !== 'images')) && (
                         <FormSelect
                             id="openrouterModel"
                             label={t('modelLabel')}
@@ -1038,7 +1012,7 @@ export function ScrapePageContent() {
                         </FormSelect>
                     )}
 
-                    {workflow === 'llmFromImages' && (
+                    {workflow === 'llmFromFile' && uploadKind === 'images' && (
                         <FormSelect
                             id="openrouterVisionModel"
                             label={t('modelLabel')}
