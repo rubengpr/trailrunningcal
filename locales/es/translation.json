@@ -162,7 +162,6 @@
   "landing": {
     "titleStart": "Explora carreras de trail running en",
     "titlePlace": "Cataluña",
-    "eyebrow": "Trail Running · Cataluña",
     "subtitle": "Descubre carreras de montaña cerca de ti. Explora el calendario de carreras de trail running en Cataluña y encuentra toda la información de carreras espectaculares en todo el territorio.",
     "cta": "Calendario"
   },
@@ -307,7 +306,6 @@
     "pageDescription": "Encuentra todas las carreras de trail running en {province}: ultras, maratones de montaña, trails cortos y pruebas para todos los niveles. Actualizado para {year}.",
     "pageBody": "Descubre todas las carreras de trail running en la provincia de {province}: senderos, montañas y rutas de todo tipo de distancia y dificultad. El trail running en {province} combina paisajes únicos con una creciente comunidad de corredores de montaña activa durante todo el año.",
     "heroTitleStart": "Explora carreras de trail running en",
-    "heroSubtitle": "Descubre todas las carreras de montaña disponibles en {province}. Consulta fechas, distancias y toda la información que necesitas para tu próxima aventura de montaña.",
     "heroSubtitles": {
       "barcelona": "Explora las carreras de montaña por el Montseny, Montserrat y el Garraf. Fechas, distancias e información completa para tu próxima aventura.",
       "girona": "Explora las carreras de montaña por los Pirineos, la Garrotxa y la Serra de l'Albera. Fechas, distancias e información completa para tu próxima aventura.",
