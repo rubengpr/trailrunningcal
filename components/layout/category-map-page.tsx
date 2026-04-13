@@ -16,6 +16,9 @@ interface CategoryMapPageProps {
   breadcrumbJsonLd: object;
   heroTitle: string;
   heroBody: string;
+  heroTitleStart?: string;
+  heroTitlePlace?: string;
+  heroSubtitle?: string;
   breadcrumbItems: BreadcrumbItem[];
   labels: MapPageLabels;
   showProvinceFilter?: boolean;
@@ -29,6 +32,9 @@ export default function CategoryMapPage({
   breadcrumbJsonLd,
   heroTitle,
   heroBody,
+  heroTitleStart,
+  heroTitlePlace,
+  heroSubtitle,
   breadcrumbItems,
   labels,
   showProvinceFilter = true,
@@ -42,10 +48,14 @@ export default function CategoryMapPage({
       />
       <CategoryHeroSection
         title={heroTitle}
+        titleStart={heroTitleStart}
+        titlePlace={heroTitlePlace}
         body={heroBody}
+        subtitle={heroSubtitle}
         breadcrumbItems={breadcrumbItems}
+        locale={locale}
       />
-      <div className="mx-auto w-full pt-6 pb-16 sm:pt-10 lg:pt-4">
+      <div id="calendar" className="mx-auto w-full pt-6 pb-16 sm:pt-10 lg:pt-4 scroll-mt-18 sm:scroll-mt-20">
         <MapaCalendarMapClient
           races={races}
           markers={markers}

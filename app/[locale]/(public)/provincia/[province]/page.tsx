@@ -79,6 +79,9 @@ export default async function ProvincePage({
       ])}
       heroTitle={t('pageTitle', { province: provinceName, year })}
       heroBody={t('pageBody', { province: provinceName })}
+      heroTitleStart={t('heroTitleStart')}
+      heroTitlePlace={provinceName}
+      heroSubtitle={t(`heroSubtitles.${province}`)}
       breadcrumbItems={[
         { name: calendarLabel, href: `/${locale}` },
         { name: provinceName },

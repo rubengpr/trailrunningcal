@@ -1,4 +1,7 @@
+import { getTranslations } from 'next-intl/server';
+import type { Locale } from '@/i18n';
 import { Breadcrumb } from '@/components/layout/breadcrumb';
+import HeroSection from '@/components/layout/hero-section';
 
 interface BreadcrumbItem {
   name: string;
@@ -7,15 +10,37 @@ interface BreadcrumbItem {
 
 interface CategoryHeroSectionProps {
   title: string;
-  breadcrumbItems: BreadcrumbItem[];
+  titleStart?: string;
+  titlePlace?: string;
   body?: string;
+  subtitle?: string;
+  breadcrumbItems: BreadcrumbItem[];
+  locale: Locale;
 }
 
-export default function CategoryHeroSection({
+export default async function CategoryHeroSection({
   title,
+  titleStart,
+  titlePlace,
   body,
+  subtitle,
   breadcrumbItems,
+  locale,
 }: CategoryHeroSectionProps) {
+  if (titleStart && titlePlace) {
+    const t = await getTranslations({ locale, namespace: 'landing' });
+
+    return (
+      <HeroSection
+        titleStart={titleStart}
+        titlePlace={titlePlace}
+        subtitle={subtitle ?? body ?? ''}
+        ctaLabel={t('cta')}
+        breadcrumbItems={breadcrumbItems}
+      />
+    );
+  }
+
   return (
     <section className="bg-gray-50 border-b border-gray-100">
       <div className="max-w-5xl mx-auto px-6 sm:px-8 py-14 sm:py-20">
