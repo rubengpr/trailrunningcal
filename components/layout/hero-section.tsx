@@ -58,7 +58,7 @@ export default function HeroSection({
       <div className="absolute bottom-0 left-0 right-0 h-[140px] bg-gradient-to-t from-white to-transparent pointer-events-none" />
 
       {/* Content */}
-      <div className="relative h-full flex flex-col items-center justify-center px-6 text-center pb-16 lg:items-start lg:text-left lg:px-16 xl:px-24">
+      <div className="relative h-full flex flex-col items-center justify-center px-6 text-center pt-16 pb-16 lg:pt-0 lg:items-start lg:text-left lg:px-16 xl:px-24">
 
         {breadcrumbItems && (
           <div className="absolute top-8 sm:top-10 left-6 lg:left-16 xl:left-24">
