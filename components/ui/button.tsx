@@ -34,7 +34,7 @@ export function Button({
   const variantClasses = {
     primary: 'rounded-xl bg-black text-white hover:bg-gray-800',
     secondary: 'rounded-xl bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2',
-    pill: 'rounded-full py-3 bg-black text-white hover:bg-gray-800',
+    pill: 'rounded-full py-4 sm:py-3 bg-black text-white hover:bg-gray-800',
   };
 
   const widthClass = fullWidth ? 'w-full' : '';
