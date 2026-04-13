@@ -46,9 +46,24 @@ export default function FilterBar({
   const tDistanceGroups = useTranslations('distanceGroups');
   const tCategory = useTranslations('category');
 
-  const months = MONTH_INDICES.map((index) => ({
-    key: index.toString(),
+  const monthOptions = MONTH_INDICES.map((index) => ({
+    value: index.toString(),
     label: tMonthsFull(index.toString()),
+  }));
+
+  const provinceOptions = PROVINCES.map((province) => ({
+    value: province,
+    label: province,
+  }));
+
+  const distanceOptions = DISTANCE_GROUPS.map((group) => ({
+    value: group,
+    label: tDistanceGroups(group),
+  }));
+
+  const raceTypeOptions = RACE_TYPES.map((type) => ({
+    value: type,
+    label: tCategory(RACE_TYPE_CATEGORY_KEYS[type]),
   }));
 
   const hasActiveFilters =
@@ -56,37 +71,37 @@ export default function FilterBar({
 
   return (
     <div className="flex items-center gap-3 flex-wrap">
-      <FilterSelect value={selectedMonth} onChange={(e) => onMonthSelect(e.target.value)}>
-        <option value="">{tFilters('monthLabel')}</option>
-        {months.map((month) => (
-          <option key={month.key} value={month.key}>{month.label}</option>
-        ))}
-      </FilterSelect>
+      <FilterSelect
+        value={selectedMonth}
+        onValueChange={onMonthSelect}
+        placeholder={tFilters('monthLabel')}
+        options={monthOptions}
+      />
 
       {showProvinceFilter && (
-        <FilterSelect value={selectedProvince} onChange={(e) => onProvinceSelect(e.target.value)}>
-          <option value="">{tFilters('provinceLabel')}</option>
-          {PROVINCES.map((province) => (
-            <option key={province} value={province}>{province}</option>
-          ))}
-        </FilterSelect>
+        <FilterSelect
+          value={selectedProvince}
+          onValueChange={onProvinceSelect}
+          placeholder={tFilters('provinceLabel')}
+          options={provinceOptions}
+        />
       )}
 
       {showDistanceFilter && (
-        <FilterSelect value={selectedDistance} onChange={(e) => onDistanceSelect(e.target.value)}>
-          <option value="">{tFilters('distanceLabel')}</option>
-          {DISTANCE_GROUPS.map((group) => (
-            <option key={group} value={group}>{tDistanceGroups(group)}</option>
-          ))}
-        </FilterSelect>
+        <FilterSelect
+          value={selectedDistance}
+          onValueChange={onDistanceSelect}
+          placeholder={tFilters('distanceLabel')}
+          options={distanceOptions}
+        />
       )}
 
-      <FilterSelect value={selectedRaceType} onChange={(e) => onRaceTypeSelect(e.target.value)}>
-        <option value="">{tFilters('raceTypeLabel')}</option>
-        {RACE_TYPES.map((type) => (
-          <option key={type} value={type}>{tCategory(RACE_TYPE_CATEGORY_KEYS[type])}</option>
-        ))}
-      </FilterSelect>
+      <FilterSelect
+        value={selectedRaceType}
+        onValueChange={onRaceTypeSelect}
+        placeholder={tFilters('raceTypeLabel')}
+        options={raceTypeOptions}
+      />
 
       {hasActiveFilters && (
         <button
