@@ -87,7 +87,7 @@ export default function Navbar() {
     }), 0);
 
   return (
-    <header className="sticky top-0 z-30 w-full h-16 sm:h-20 bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8 flex items-center">
+    <header className="sticky top-0 z-30 w-full h-18 sm:h-20 bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8 flex items-center">
       <div className="w-full flex items-center justify-between relative">
 
         {/* LEFT: hamburger (mobile) / logo (desktop) */}
@@ -109,34 +109,49 @@ export default function Navbar() {
           </button>
           <Link
             href={`/${locale}`}
-            className="hidden sm:flex items-center gap-3"
+            className="hidden sm:flex items-center gap-2"
             onClick={logoClickHandler}
           >
             <Image
-              src="/logo.svg"
-              width={40}
-              height={40}
-              className="w-10 h-10"
+              src="/assets/web-app-manifest-192x192.png"
+              width={28}
+              height={28}
+              className="w-7 h-7"
               alt="Trail Running Calendar logo"
+              priority
+            />
+            <Image
+              src="/logo.svg"
+              width={48}
+              height={20}
+              className="h-5 w-auto"
+              alt="TRC"
               unoptimized
               priority
             />
-            <span className="font-semibold text-lg">{t('appName')}</span>
           </Link>
         </div>
 
         {/* CENTER: logo (mobile only, absolutely positioned) */}
         <Link
           href={`/${locale}`}
-          className="sm:hidden absolute left-1/2 -translate-x-1/2"
+          className="sm:hidden absolute left-1/2 -translate-x-1/2 flex items-center gap-2"
           onClick={logoClickHandler}
         >
           <Image
+            src="/assets/web-app-manifest-192x192.png"
+            width={24}
+            height={24}
+            className="w-6 h-6"
+            alt="Trail Running Calendar logo"
+            priority
+          />
+          <Image
             src="/logo.svg"
             width={40}
-            height={40}
-            className="w-10 h-10"
-            alt="Trail Running Calendar logo"
+            height={17}
+            className="h-4 w-auto"
+            alt="TRC"
             unoptimized
             priority
           />
