@@ -1,4 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap');
+
 @import 'tailwindcss';
+
+html {
+  scroll-behavior: smooth;
+}
+
+@keyframes hero-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-animate {
+  animation: hero-fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes filter-select-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-filter-select-in {
+  animation: filter-select-in 0.12s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
 
 @keyframes pipeline-loading-dot-pulse {
   0%,
@@ -22,6 +58,7 @@
     opacity: 0.55;
   }
 }
+
 
 /* Hide number input spinners */
 input[type='number']::-webkit-inner-spin-button,

@@ -160,8 +160,11 @@
     "backToCalendar": "Veure calendari complet"
   },
   "landing": {
-    "title": "Calendari curses Trail Running Catalunya",
-    "subtitle": "Troba les millors curses de muntanya de Catalunya"
+    "titleStart": "Explora curses de trail running a",
+    "titlePlace": "Catalunya",
+    "eyebrow": "Trail Running · Catalunya",
+    "subtitle": "Descobreix curses de muntanya a prop teu. Explora el calendari de curses de trail running a Catalunya i troba tota la informació de curses espectaculars arreu del territori.",
+    "cta": "Calendari"
   },
   "contact": {
     "title": "Contacta amb Trail Running Calendar",
@@ -306,6 +309,14 @@
     "pageTitle": "Trail running a {province} - Curses de muntanya {year}",
     "pageDescription": "Troba totes les curses de trail running a {province}: ultres, maratons de muntanya, trails curts i proves per a tots els nivells. Actualitzat per al {year}.",
     "pageBody": "Descobreix totes les curses de trail running a la província de {province}: senders, muntanyes i rutes de tota mena de distància i dificultat. El trail running a {province} combina paisatges únics amb una creixent comunitat de corredors de muntanya activa durant tot l'any.",
+    "heroTitleStart": "Explora curses de trail running a",
+    "heroSubtitle": "Descobreix totes les curses de muntanya disponibles a {province}. Consulta dates, distàncies i tota la informació que necessites per a la teva propera aventura de muntanya.",
+    "heroSubtitles": {
+      "barcelona": "Explora les curses de muntanya pel Montseny, Montserrat i el Garraf. Dates, distàncies i informació completa per a la teva propera aventura.",
+      "girona": "Explora les curses de muntanya pels Pirineus, la Garrotxa i la Serra de l'Albera. Dates, distàncies i informació completa per a la teva propera aventura.",
+      "lleida": "Explora les curses de muntanya pels Pirineus del Pallars, el Montsec i l'Alta Ribagorça. Dates, distàncies i informació per a la teva propera aventura.",
+      "tarragona": "Descobreix les curses de muntanya per la Serra de Prades, els Ports de Beseit i la Serra de Llaberia. Dates, distàncies i informació per a la teva propera aventura."
+    },
     "breadcrumb": "Trail Running · Catalunya",
     "names": {
       "barcelona": "Barcelona",

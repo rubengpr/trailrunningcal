@@ -87,8 +87,13 @@ export default async function HomePage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
-      <HeroSection />
-      <div className="mx-auto w-full min-w-0 pt-6 pb-16 sm:pt-10 lg:pt-4">
+      <HeroSection
+        titleStart={t('landing.titleStart')}
+        titlePlace={t('landing.titlePlace')}
+        subtitle={t('landing.subtitle')}
+        ctaLabel={t('landing.cta')}
+      />
+      <div id="calendar" className="mx-auto w-full min-w-0 pt-6 pb-16 sm:pt-10 lg:pt-4 scroll-mt-18 sm:scroll-mt-20">
         <MapaCalendarMapClient
           races={races}
           markers={markers}
