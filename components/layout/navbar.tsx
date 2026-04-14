@@ -189,7 +189,7 @@ export default function Navbar() {
                 </svg>
               </button>
               {isCategoriesOpen && (
-                <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[320px] p-3 flex gap-6">
+                <div className="absolute top-full right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[320px] p-3 flex gap-6">
                   <div className="flex-1">
                     <p className="px-2 pb-1 text-xs font-semibold text-gray-400 uppercase tracking-wide">{t('categoriesHeading')}</p>
                     <Link href={`/${locale}/ultra-trail`} className="block px-2 py-1.5 text-sm rounded hover:bg-gray-50 transition-colors" onClick={() => { setIsCategoriesOpen(false); setTimeout(() => posthog.capture('navbar_link_clicked', { link_text: 'ultra_trail', link_href: `/${locale}/ultra-trail`, locale }), 0); }}>{t('ultraTrail')}</Link>
