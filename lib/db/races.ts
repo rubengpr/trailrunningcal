@@ -1,5 +1,5 @@
 import { cache } from 'react';
-import { createClient, createStaticClient } from '@/lib/supabase/server';
+import { createStaticClient } from '@/lib/supabase/server';
 import type { TrailRace, RaceRow } from '@/types/race.types';
 import { generateRaceSlug } from '@/lib/race-utils';
 
@@ -28,19 +28,14 @@ export function raceRowToTrailRace(row: RaceRow): TrailRace {
 let racesCache: TrailRace[] | null = null;
 
 /**
- * Fetches all races from the database
- * @param useStaticClient - If true, uses the static client and in-memory cache (for build-time e.g. sitemap).
- *                          If false or undefined, uses the regular client with cookies and no cache; each call gets fresh data from the database.
+ * Fetches all races from the database using the static client (no cookies).
+ * Safe for use in all public pages and ISR — does not force dynamic rendering.
  * @returns Array of TrailRace objects
  */
-export const getRaces = cache(async function getRaces(
-  useStaticClient?: boolean,
-): Promise<TrailRace[]> {
-  if (useStaticClient && racesCache) return racesCache;
+export const getRaces = cache(async function getRaces(): Promise<TrailRace[]> {
+  if (racesCache) return racesCache;
 
-  const supabase = useStaticClient
-    ? createStaticClient()
-    : await createClient();
+  const supabase = createStaticClient();
 
   const { data, error } = await supabase
     .from('races')
@@ -66,14 +61,13 @@ export const getRaces = cache(async function getRaces(
 
   if (error) {
     console.error('Failed to fetch races:', error);
-    if (useStaticClient) racesCache = [];
+    racesCache = [];
     return [];
   }
 
   const rows = (data ?? []) as RaceRow[];
-  const result = rows.map(raceRowToTrailRace);
-  if (useStaticClient) racesCache = result;
-  return result;
+  racesCache = rows.map(raceRowToTrailRace);
+  return racesCache;
 });
 
 const RACE_SELECT = `
@@ -91,7 +85,7 @@ const RACE_SELECT = `
 export const getRaceBySlug = cache(async function getRaceBySlug(
   slug: string,
 ): Promise<TrailRace | null> {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
 
   const { data: nameRows, error: nameError } = await supabase
     .from('races')
@@ -132,7 +126,7 @@ export const getRecommendedRaces = cache(async function getRecommendedRaces(
   afterDate: string | null,
   limit: number = 3,
 ): Promise<TrailRace[]> {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
 
   let query = supabase
     .from('races')

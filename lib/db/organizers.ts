@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createStaticClient } from '@/lib/supabase/server';
 import type { OrganizerPublic } from '@/types/organizer.types';
 
 type OrganizerRow = {
@@ -24,7 +24,7 @@ export function organizerRowToPublic(row: OrganizerRow): OrganizerPublic {
 export async function getOrganizerById(
   organizerId: string,
 ): Promise<OrganizerPublic | null> {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
 
   const { data, error } = await supabase
     .from('organizers')

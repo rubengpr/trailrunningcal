@@ -29,7 +29,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const currentDate = new Date();
 
   // Use static client for static generation (sitemap is always generated at build time)
-  const races = await getRaces(true);
+  const races = await getRaces();
 
   const urls: MetadataRoute.Sitemap = [];
 

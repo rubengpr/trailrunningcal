@@ -1,5 +1,5 @@
 import { cache } from 'react';
-import { createClient } from '@/lib/supabase/server';
+import { createStaticClient } from '@/lib/supabase/server';
 import { generateRaceSlug } from '@/lib/race-utils';
 import type { RaceMapMarker, RaceMapPinRace, RacesMapResponse } from '@/types/map.types';
 
@@ -31,7 +31,7 @@ type GroupValue = {
  * Upcoming dated races grouped by city/province, with coordinates from city_locations.
  */
 export const getRacesMapData = cache(async function getRacesMapData(): Promise<RacesMapResponse> {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
 
   const { data: locationRows, error: locError } = await supabase
     .from('city_locations')
