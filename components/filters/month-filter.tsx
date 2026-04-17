@@ -5,21 +5,19 @@ import { useTranslations } from 'next-intl';
 import { MONTH_INDICES } from '@/lib/constants';
 
 interface MonthFilterProps {
-  initialSelectedMonth?: string;
-  onMonthSelect: (month: string) => void;
+  initialSelectedMonth?: string[];
+  onMonthSelect: (months: string[]) => void;
 }
 
 export default function MonthFilter({
-  initialSelectedMonth = '',
+  initialSelectedMonth = [],
   onMonthSelect,
 }: MonthFilterProps) {
   const tMonths = useTranslations('months');
-  const [selectedMonth, setSelectedMonth] =
-    useState<string>(initialSelectedMonth);
+  const [selectedMonths, setSelectedMonths] = useState<string[]>(initialSelectedMonth);
 
-  // Sync internal state with prop changes (if parent needs to reset it)
   useEffect(() => {
-    setSelectedMonth(initialSelectedMonth);
+    setSelectedMonths(initialSelectedMonth);
   }, [initialSelectedMonth]);
 
   const months = MONTH_INDICES.map((index) => ({
@@ -28,9 +26,11 @@ export default function MonthFilter({
   }));
 
   const handleMonthClick = (monthKey: string) => {
-    const newSelectedMonth = selectedMonth === monthKey ? '' : monthKey;
-    setSelectedMonth(newSelectedMonth);
-    onMonthSelect(newSelectedMonth);
+    const next = selectedMonths.includes(monthKey)
+      ? selectedMonths.filter((m) => m !== monthKey)
+      : [...selectedMonths, monthKey];
+    setSelectedMonths(next);
+    onMonthSelect(next);
   };
 
   return (
@@ -44,7 +44,7 @@ export default function MonthFilter({
             border border-gray-300 hover:border-gray-400 cursor-pointer
             focus:outline-none
             ${
-              selectedMonth === month.key
+              selectedMonths.includes(month.key)
                 ? 'bg-black text-white border-black shadow-md'
                 : 'bg-white text-gray-700 hover:bg-gray-100 hover:text-gray-900'
             }

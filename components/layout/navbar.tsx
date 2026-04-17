@@ -250,14 +250,11 @@ export default function Navbar() {
           )}
 
           {/* Mobile: filter icon */}
-          {isFilterAvailable && filterVariant !== 'inline-text' && (
+          {isFilterAvailable && filterVariant === 'control' && (
             <button
               className="relative flex sm:hidden items-center gap-1 p-1 text-gray-400"
               onClick={() => { openFilters(); setTimeout(() => posthog.capture('navbar_filter_icon_clicked', { filter_count: filterCount, variant: filterVariant }), 0); }}
             >
-              {filterVariant === 'icon-text' && (
-                <span className="text-xs font-medium text-gray-600">{tFilters('filtersLabel')}</span>
-              )}
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                 <path d="M10 5H3" />
                 <path d="M12 19H3" />

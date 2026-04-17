@@ -11,6 +11,15 @@ const DISTANCE_RANGES: Record<string, [number, number]> = {
 };
 
 export const RACE_TYPES = ['ultra-trail', 'maraton', 'media-maraton', 'marcha', 'km-vertical', 'backyard'] as const;
+
+export const RACE_TYPE_CATEGORY_KEYS: Record<string, string> = {
+  'ultra-trail': 'ultra',
+  'maraton': 'maraton',
+  'media-maraton': 'media',
+  'marcha': 'marcha',
+  'km-vertical': 'vk',
+  'backyard': 'backyard',
+};
 export type RaceType = (typeof RACE_TYPES)[number];
 
 const VK_KEYWORDS = ['kilómetro vertical', 'quilòmetre vertical', 'km vertical'];
@@ -42,20 +51,15 @@ export function matchesRaceType(race: TrailRace, type: RaceType): boolean {
   }
 }
 
-/**
- * Same rules as the home calendar: future dated races only, optional month, province, distance, and race type filter.
- */
 export function filterHomeRaces(
   races: TrailRace[],
-  selectedMonth: string,
-  selectedProvince: string,
-  selectedDistance: string = '',
-  selectedRaceType: string = '',
+  selectedMonth: string[],
+  selectedProvince: string[],
+  selectedDistance: string[] = [],
+  selectedRaceType: string[] = [],
 ): TrailRace[] {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const monthNumber = selectedMonth ? parseInt(selectedMonth, 10) : null;
-  const distanceRange = selectedDistance ? DISTANCE_RANGES[selectedDistance] ?? null : null;
 
   const racesWithDates = races.map((race) => {
     if (!race.date) return { race, parsedDate: null as Date | null };
@@ -66,27 +70,31 @@ export function filterHomeRaces(
 
   return racesWithDates
     .filter(({ parsedDate }) => parsedDate !== null && parsedDate > today)
-    .filter(({ parsedDate }) =>
-      monthNumber === null ? true : parsedDate !== null && parsedDate.getMonth() === monthNumber,
-    )
-    .filter(({ race }) => !selectedProvince || race.province === selectedProvince)
+    .filter(({ parsedDate }) => {
+      if (selectedMonth.length === 0) return true;
+      if (!parsedDate) return false;
+      const month = parsedDate.getMonth();
+      return selectedMonth.some((m) => parseInt(m, 10) === month);
+    })
+    .filter(({ race }) => selectedProvince.length === 0 || selectedProvince.includes(race.province))
     .filter(({ race }) => {
-      if (!distanceRange) return true;
+      if (selectedDistance.length === 0) return true;
       const km = race.distanceKm;
       if (km === null || km === undefined) return false;
-      const [min, max] = distanceRange;
-      return km >= min && km < max;
+      return selectedDistance.some((d) => {
+        const range = DISTANCE_RANGES[d];
+        if (!range) return false;
+        const [min, max] = range;
+        return km >= min && km < max;
+      });
     })
     .filter(({ race }) => {
-      if (!selectedRaceType) return true;
-      return matchesRaceType(race, selectedRaceType as RaceType);
+      if (selectedRaceType.length === 0) return true;
+      return selectedRaceType.some((type) => matchesRaceType(race, type as RaceType));
     })
     .map(({ race }) => race);
 }
 
-/**
- * Keeps only pin races present in the filtered calendar set; drops empty markers.
- */
 export function filterMapMarkersByRaceIds(
   markers: RaceMapMarker[],
   raceIds: ReadonlySet<string>,

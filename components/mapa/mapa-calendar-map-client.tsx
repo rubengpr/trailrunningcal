@@ -8,7 +8,7 @@ import { useFeatureFlagVariantKey } from 'posthog-js/react';
 import type { TrailRace } from '@/types/race.types';
 import type { Locale } from '@/i18n';
 import type { MapPageLabels, RaceMapMarker } from '@/types/map.types';
-import FilterBar from '@/components/filters/filter-bar';
+import FilterBar, { FilterBadgeBar } from '@/components/filters/filter-bar';
 import MobileFiltersModal from '@/components/filters/mobile-filters-modal';
 import TrailRaceCard from '@/components/race/trail-race-card';
 import ErrorBoundary from '@/components/ui/error-boundary';
@@ -21,17 +21,8 @@ import RacesMap from '@/components/races-map/races-map';
 import { MapToggleFab } from '@/components/mapa/map-toggle-fab';
 import { useMinWidthLg } from '@/hooks/use-min-width-lg';
 import { useMobileFilters } from '@/components/providers/mobile-filters-provider';
-import { filterHomeRaces, filterMapMarkersByRaceIds } from '@/lib/home-race-filters';
+import { filterHomeRaces, filterMapMarkersByRaceIds, RACE_TYPE_CATEGORY_KEYS } from '@/lib/home-race-filters';
 import { generateRaceSlug } from '@/lib/race-utils';
-
-const RACE_TYPE_CATEGORY_KEYS: Record<string, string> = {
-  'ultra-trail': 'ultra',
-  'maraton': 'maraton',
-  'media-maraton': 'media',
-  'marcha': 'marcha',
-  'km-vertical': 'vk',
-  'backyard': 'backyard',
-};
 
 const FILTER_STORAGE_KEYS = {
   month: 'filter_month',
@@ -40,9 +31,14 @@ const FILTER_STORAGE_KEYS = {
   type: 'filter_type',
 } as const;
 
-const readFilterStorage = (key: string): string => {
-  if (typeof window === 'undefined') return '';
-  return sessionStorage.getItem(key) ?? '';
+const readFilterStorage = (key: string): string[] => {
+  if (typeof window === 'undefined') return [];
+  try {
+    const stored = sessionStorage.getItem(key);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
 };
 
 type MobileView = 'list' | 'map';
@@ -72,10 +68,10 @@ export default function MapaCalendarMapClient({
   const tDistanceGroups = useTranslations('distanceGroups');
   const tCategory = useTranslations('category');
 
-  const [selectedMonth, setSelectedMonth] = useState<string>(() => readFilterStorage(FILTER_STORAGE_KEYS.month));
-  const [selectedProvince, setSelectedProvince] = useState<string>(() => readFilterStorage(FILTER_STORAGE_KEYS.province));
-  const [selectedDistance, setSelectedDistance] = useState<string>(() => readFilterStorage(FILTER_STORAGE_KEYS.distance));
-  const [selectedRaceType, setSelectedRaceType] = useState<string>(() => readFilterStorage(FILTER_STORAGE_KEYS.type));
+  const [selectedMonth, setSelectedMonth] = useState<string[]>(() => readFilterStorage(FILTER_STORAGE_KEYS.month));
+  const [selectedProvince, setSelectedProvince] = useState<string[]>(() => readFilterStorage(FILTER_STORAGE_KEYS.province));
+  const [selectedDistance, setSelectedDistance] = useState<string[]>(() => readFilterStorage(FILTER_STORAGE_KEYS.distance));
+  const [selectedRaceType, setSelectedRaceType] = useState<string[]>(() => readFilterStorage(FILTER_STORAGE_KEYS.type));
   const [focusRaceId, setFocusRaceId] = useState<string | null>(null);
   const [focusRaceNonce, setFocusRaceNonce] = useState(0);
   const [mobileView, setMobileView] = useState<MobileView>('list');
@@ -86,11 +82,12 @@ export default function MapaCalendarMapClient({
   const filterVariant = useFeatureFlagVariantKey('filter-flag');
   const isControlVariant = filterVariant === 'control';
   const isInlineTextVariant = filterVariant === 'inline-text';
+  const isPillVariant = filterVariant === 'pill';
   const activeFilterLabels: string[] = [
-    ...(selectedMonth !== '' ? [tMonthsFull(selectedMonth)] : []),
-    ...(selectedProvince !== '' ? [selectedProvince] : []),
-    ...(selectedDistance !== '' ? [tDistanceGroups(selectedDistance)] : []),
-    ...(selectedRaceType !== '' ? [tCategory(RACE_TYPE_CATEGORY_KEYS[selectedRaceType])] : []),
+    ...selectedMonth.map((m) => tMonthsFull(m)),
+    ...selectedProvince,
+    ...selectedDistance.map((d) => tDistanceGroups(d)),
+    ...selectedRaceType.map((r) => tCategory(RACE_TYPE_CATEGORY_KEYS[r])),
   ];
   const { isOpen: isFiltersModalOpen, open: openFiltersModal, close: closeFiltersModal, register, unregister, updateFilterCount, updateFilterVariant, filterCount } = useMobileFilters();
 
@@ -99,25 +96,25 @@ export default function MapaCalendarMapClient({
   }, [filterVariant, updateFilterVariant]);
 
   useEffect(() => {
-    if (isControlVariant) return;
+    if (isControlVariant || isPillVariant) return;
     register();
     return () => unregister();
-  }, [isControlVariant, register, unregister]);
+  }, [isControlVariant, isPillVariant, register, unregister]);
 
   useEffect(() => {
     updateFilterCount(
-      (selectedMonth ? 1 : 0) +
-      (selectedProvince ? 1 : 0) +
-      (selectedDistance ? 1 : 0) +
-      (selectedRaceType ? 1 : 0),
+      selectedMonth.length +
+      selectedProvince.length +
+      selectedDistance.length +
+      selectedRaceType.length,
     );
   }, [selectedMonth, selectedProvince, selectedDistance, selectedRaceType, updateFilterCount]);
 
   useEffect(() => {
-    sessionStorage.setItem(FILTER_STORAGE_KEYS.month, selectedMonth);
-    sessionStorage.setItem(FILTER_STORAGE_KEYS.province, selectedProvince);
-    sessionStorage.setItem(FILTER_STORAGE_KEYS.distance, selectedDistance);
-    sessionStorage.setItem(FILTER_STORAGE_KEYS.type, selectedRaceType);
+    sessionStorage.setItem(FILTER_STORAGE_KEYS.month, JSON.stringify(selectedMonth));
+    sessionStorage.setItem(FILTER_STORAGE_KEYS.province, JSON.stringify(selectedProvince));
+    sessionStorage.setItem(FILTER_STORAGE_KEYS.distance, JSON.stringify(selectedDistance));
+    sessionStorage.setItem(FILTER_STORAGE_KEYS.type, JSON.stringify(selectedRaceType));
   }, [selectedMonth, selectedProvince, selectedDistance, selectedRaceType]);
 
   const filteredRaces = useMemo(
@@ -130,7 +127,7 @@ export default function MapaCalendarMapClient({
     return filterMapMarkersByRaceIds(markers, ids);
   }, [markers, filteredRaces]);
 
-  const handleMonthSelect = (month: string) => {
+  const handleMonthSelect = (month: string[]) => {
     setSelectedMonth(month);
     setTimeout(() => {
       posthog.capture('race_month_filter_applied', { month });
@@ -138,7 +135,7 @@ export default function MapaCalendarMapClient({
     }, 0);
   };
 
-  const handleProvinceSelect = (province: string) => {
+  const handleProvinceSelect = (province: string[]) => {
     setSelectedProvince(province);
     setTimeout(() => {
       posthog.capture('race_province_filter_applied', { province });
@@ -146,48 +143,36 @@ export default function MapaCalendarMapClient({
     }, 0);
   };
 
-  const handleDistanceSelect = (distance: string) => {
+  const handleDistanceSelect = (distance: string[]) => {
     setSelectedDistance(distance);
     setTimeout(() => posthog.capture('race_distance_filter_applied', { distance }), 0);
   };
 
-  const handleRaceTypeSelect = (raceType: string) => {
+  const handleRaceTypeSelect = (raceType: string[]) => {
     setSelectedRaceType(raceType);
     setTimeout(() => posthog.capture('race_type_filter_applied', { raceType }), 0);
   };
 
   const handleRetry = () => {
-    setSelectedMonth('');
-    setSelectedProvince('');
+    setSelectedMonth([]);
+    setSelectedProvince([]);
     window.location.reload();
   };
 
   const handleClearFilters = () => {
-    setSelectedMonth('');
-    setSelectedProvince('');
-    setSelectedDistance('');
-    setSelectedRaceType('');
+    setSelectedMonth([]);
+    setSelectedProvince([]);
+    setSelectedDistance([]);
+    setSelectedRaceType([]);
     setTimeout(() => posthog.capture('race_filters_cleared'), 0);
   };
 
-  const handleFiltersApply = (month: string, province: string, distance: string, raceType: string) => {
-    if (month !== selectedMonth) {
-      setSelectedMonth(month);
-      setTimeout(() => posthog.capture('race_month_filter_applied', { month }), 0);
-    }
-    if (province !== selectedProvince) {
-      setSelectedProvince(province);
-      setTimeout(() => posthog.capture('race_province_filter_applied', { province }), 0);
-    }
-    if (distance !== selectedDistance) {
-      setSelectedDistance(distance);
-      setTimeout(() => posthog.capture('race_distance_filter_applied', { distance }), 0);
-    }
-    if (raceType !== selectedRaceType) {
-      setSelectedRaceType(raceType);
-      setTimeout(() => posthog.capture('race_type_filter_applied', { raceType }), 0);
-    }
-    setTimeout(() => posthog.capture('filters_applied', { variant: filterVariant }), 0);
+  const handleFiltersApply = (month: string[], province: string[], distance: string[], raceType: string[]) => {
+    setSelectedMonth(month);
+    setSelectedProvince(province);
+    setSelectedDistance(distance);
+    setSelectedRaceType(raceType);
+    setTimeout(() => posthog.capture('filters_applied', { variant: filterVariant, month, province, distance, raceType }), 0);
     closeFiltersModal();
   };
 
@@ -250,20 +235,36 @@ export default function MapaCalendarMapClient({
     <>
       <section className="w-full min-w-0 pb-6 lg:pb-8">
         <div className="max-w-4xl mx-auto min-w-0 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
-          <div className={`${isControlVariant ? 'flex' : 'hidden sm:flex'} items-center gap-4`}>
-            <FilterBar
-              selectedMonth={selectedMonth}
-              selectedProvince={selectedProvince}
-              selectedDistance={selectedDistance}
-              selectedRaceType={selectedRaceType}
-              onMonthSelect={handleMonthSelect}
-              onProvinceSelect={handleProvinceSelect}
-              onDistanceSelect={handleDistanceSelect}
-              onRaceTypeSelect={handleRaceTypeSelect}
-              onClearFilters={handleClearFilters}
-              showProvinceFilter={showProvinceFilter}
-              showDistanceFilter={showDistanceFilter}
-            />
+          <div className={`${isControlVariant || isPillVariant ? 'flex' : 'hidden sm:flex'} items-center gap-4`}>
+            {isPillVariant ? (
+              <FilterBadgeBar
+                selectedMonth={selectedMonth}
+                selectedProvince={selectedProvince}
+                selectedDistance={selectedDistance}
+                selectedRaceType={selectedRaceType}
+                onMonthSelect={handleMonthSelect}
+                onProvinceSelect={handleProvinceSelect}
+                onDistanceSelect={handleDistanceSelect}
+                onRaceTypeSelect={handleRaceTypeSelect}
+                onClearFilters={handleClearFilters}
+                showProvinceFilter={showProvinceFilter}
+                showDistanceFilter={showDistanceFilter}
+              />
+            ) : (
+              <FilterBar
+                selectedMonth={selectedMonth}
+                selectedProvince={selectedProvince}
+                selectedDistance={selectedDistance}
+                selectedRaceType={selectedRaceType}
+                onMonthSelect={handleMonthSelect}
+                onProvinceSelect={handleProvinceSelect}
+                onDistanceSelect={handleDistanceSelect}
+                onRaceTypeSelect={handleRaceTypeSelect}
+                onClearFilters={handleClearFilters}
+                showProvinceFilter={showProvinceFilter}
+                showDistanceFilter={showDistanceFilter}
+              />
+            )}
             <div className="ml-auto hidden lg:block">
               <LayoutToggle value={desktopLayout} onChange={handleDesktopLayoutChange} />
             </div>

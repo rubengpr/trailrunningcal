@@ -3,29 +3,25 @@
 import { useTranslations } from 'next-intl';
 import { FilterSelect } from '@/components/ui/filter-select';
 import { PROVINCES, DISTANCE_GROUPS, MONTH_INDICES } from '@/lib/constants';
-import { RACE_TYPES } from '@/lib/home-race-filters';
-
-const RACE_TYPE_CATEGORY_KEYS: Record<string, string> = {
-  'ultra-trail': 'ultra',
-  'maraton': 'maraton',
-  'media-maraton': 'media',
-  'marcha': 'marcha',
-  'km-vertical': 'vk',
-  'backyard': 'backyard',
-};
+import { RACE_TYPES, RACE_TYPE_CATEGORY_KEYS } from '@/lib/home-race-filters';
 
 interface FilterBarProps {
-  selectedMonth: string;
-  selectedProvince: string;
-  selectedDistance: string;
-  selectedRaceType: string;
-  onMonthSelect: (month: string) => void;
-  onProvinceSelect: (province: string) => void;
-  onDistanceSelect: (distance: string) => void;
-  onRaceTypeSelect: (raceType: string) => void;
+  selectedMonth: string[];
+  selectedProvince: string[];
+  selectedDistance: string[];
+  selectedRaceType: string[];
+  onMonthSelect: (month: string[]) => void;
+  onProvinceSelect: (province: string[]) => void;
+  onDistanceSelect: (distance: string[]) => void;
+  onRaceTypeSelect: (raceType: string[]) => void;
   onClearFilters: () => void;
   showProvinceFilter?: boolean;
   showDistanceFilter?: boolean;
+  variant?: 'select' | 'pill';
+}
+
+export function FilterBadgeBar(props: Omit<FilterBarProps, 'variant'>) {
+  return <FilterBar {...props} variant="pill" />;
 }
 
 export default function FilterBar({
@@ -40,6 +36,7 @@ export default function FilterBar({
   onClearFilters,
   showProvinceFilter = true,
   showDistanceFilter = true,
+  variant = 'select',
 }: FilterBarProps) {
   const tFilters = useTranslations('filters');
   const tMonthsFull = useTranslations('monthsFull');
@@ -67,15 +64,19 @@ export default function FilterBar({
   }));
 
   const hasActiveFilters =
-    selectedMonth !== '' || selectedProvince !== '' || selectedDistance !== '' || selectedRaceType !== '';
+    selectedMonth.length > 0 ||
+    selectedProvince.length > 0 ||
+    selectedDistance.length > 0 ||
+    selectedRaceType.length > 0;
 
   return (
-    <div className="flex items-center gap-3 flex-wrap">
+    <div className={`flex items-center flex-wrap ${variant === 'pill' ? 'gap-2' : 'gap-3'}`}>
       <FilterSelect
         value={selectedMonth}
         onValueChange={onMonthSelect}
         placeholder={tFilters('monthLabel')}
         options={monthOptions}
+        variant={variant}
       />
 
       {showProvinceFilter && (
@@ -84,6 +85,7 @@ export default function FilterBar({
           onValueChange={onProvinceSelect}
           placeholder={tFilters('provinceLabel')}
           options={provinceOptions}
+          variant={variant}
         />
       )}
 
@@ -93,6 +95,7 @@ export default function FilterBar({
           onValueChange={onDistanceSelect}
           placeholder={tFilters('distanceLabel')}
           options={distanceOptions}
+          variant={variant}
         />
       )}
 
@@ -101,6 +104,7 @@ export default function FilterBar({
         onValueChange={onRaceTypeSelect}
         placeholder={tFilters('raceTypeLabel')}
         options={raceTypeOptions}
+        variant={variant}
       />
 
       {hasActiveFilters && (
