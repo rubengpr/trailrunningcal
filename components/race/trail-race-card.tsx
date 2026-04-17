@@ -189,12 +189,12 @@ export default function TrailRaceCard({
                     }`}
                     onClick={useClickHandler ? (e) => e.stopPropagation() : undefined}
                   >
-                    <h2 className={`${titleClass} line-clamp-2`}>
+                    <h2 className={`${titleClass} truncate`}>
                       {name}
                     </h2>
                   </Link>
                 ) : (
-                  <h2 className={`${titleClass} line-clamp-2`}>
+                  <h2 className={`${titleClass} truncate`}>
                     {name}
                   </h2>
                 )}
