@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import posthog from 'posthog-js';
@@ -9,6 +9,7 @@ import type { TrailRace } from '@/types/race.types';
 import type { Locale } from '@/i18n';
 import type { MapPageLabels, RaceMapMarker } from '@/types/map.types';
 import FilterBar, { FilterBadgeBar } from '@/components/filters/filter-bar';
+import MobileFiltersButton from '@/components/filters/mobile-filters-button';
 import MobileFiltersModal from '@/components/filters/mobile-filters-modal';
 import TrailRaceCard from '@/components/race/trail-race-card';
 import ErrorBoundary from '@/components/ui/error-boundary';
@@ -76,13 +77,33 @@ export default function MapaCalendarMapClient({
   const [focusRaceNonce, setFocusRaceNonce] = useState(0);
   const [mobileView, setMobileView] = useState<MobileView>('list');
   const [desktopLayout, setDesktopLayout] = useState<DesktopLayout>('both');
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+  const pillsScrollRef = useRef<HTMLDivElement>(null);
 
   const router = useRouter();
   const isDesktopMap = useMinWidthLg();
-  const filterVariant = useFeatureFlagVariantKey('filter-flag');
+  //const filterVariant = useFeatureFlagVariantKey('filter-flag');
+  const filterVariant = 'pill' as string; // try: 'control', 'sticky-button', 'pill'
   const isControlVariant = filterVariant === 'control';
-  const isInlineTextVariant = filterVariant === 'inline-text';
+  const isInlineTextVariant = filterVariant === 'sticky-button';
   const isPillVariant = filterVariant === 'pill';
+
+  useEffect(() => {
+    const el = pillsScrollRef.current;
+    if (!el) return;
+    const update = () => {
+      setCanScrollLeft(el.scrollLeft > 0);
+      setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
+    };
+    update();
+    el.addEventListener('scroll', update);
+    return () => el.removeEventListener('scroll', update);
+  }, [isPillVariant]);
+
+  const colorVariant = useFeatureFlagVariantKey('filter-color-flag');
+  //const filterColor = colorVariant?.endsWith('-black') ? 'black' : 'white';                    
+  const filterColor: 'white' | 'black' = 'white'; // try: 'white', 'black' 
   const activeFilterLabels: string[] = [
     ...selectedMonth.map((m) => tMonthsFull(m)),
     ...selectedProvince,
@@ -233,23 +254,32 @@ export default function MapaCalendarMapClient({
 
   return (
     <>
-      <section className="w-full min-w-0 pb-6 lg:pb-8">
-        <div className="max-w-4xl mx-auto min-w-0 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
+      <section className={`w-full min-w-0 ${isPillVariant ? 'sticky top-[4.5rem] z-20 bg-white py-3 border-b border-gray-200 sm:static sm:z-auto sm:py-0 sm:pb-6 sm:border-none' : 'pb-6 lg:pb-8'}`}>
+        <div className="relative max-w-4xl mx-auto min-w-0 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
+          {isPillVariant && <>
+            {canScrollLeft && <div className="pointer-events-none absolute inset-y-0 left-4 w-6 bg-gradient-to-r from-white/70 to-transparent z-10 sm:hidden" />}
+            {canScrollRight && <div className="pointer-events-none absolute inset-y-0 right-4 w-6 bg-gradient-to-l from-white/70 to-transparent z-10 sm:hidden" />}
+          </>}
           <div className={`${isControlVariant || isPillVariant ? 'flex' : 'hidden sm:flex'} items-center gap-4`}>
             {isPillVariant ? (
-              <FilterBadgeBar
-                selectedMonth={selectedMonth}
-                selectedProvince={selectedProvince}
-                selectedDistance={selectedDistance}
-                selectedRaceType={selectedRaceType}
-                onMonthSelect={handleMonthSelect}
-                onProvinceSelect={handleProvinceSelect}
-                onDistanceSelect={handleDistanceSelect}
-                onRaceTypeSelect={handleRaceTypeSelect}
-                onClearFilters={handleClearFilters}
-                showProvinceFilter={showProvinceFilter}
-                showDistanceFilter={showDistanceFilter}
-              />
+              <div className="w-full min-w-0">
+                <FilterBadgeBar
+                  selectedMonth={selectedMonth}
+                  selectedProvince={selectedProvince}
+                  selectedDistance={selectedDistance}
+                  selectedRaceType={selectedRaceType}
+                  onMonthSelect={handleMonthSelect}
+                  onProvinceSelect={handleProvinceSelect}
+                  onDistanceSelect={handleDistanceSelect}
+                  onRaceTypeSelect={handleRaceTypeSelect}
+                  onClearFilters={handleClearFilters}
+                  showProvinceFilter={showProvinceFilter}
+                  showDistanceFilter={showDistanceFilter}
+                  color={filterColor}
+                  size="sm"
+                  scrollContainerRef={pillsScrollRef}
+                />
+              </div>
             ) : (
               <FilterBar
                 selectedMonth={selectedMonth}
@@ -263,6 +293,7 @@ export default function MapaCalendarMapClient({
                 onClearFilters={handleClearFilters}
                 showProvinceFilter={showProvinceFilter}
                 showDistanceFilter={showDistanceFilter}
+                color={filterColor}
               />
             )}
             <div className="ml-auto hidden lg:block">
@@ -273,28 +304,14 @@ export default function MapaCalendarMapClient({
       </section>
 
       {isInlineTextVariant && (
-        <section className="sm:hidden sticky top-16 z-30 w-full min-w-0 py-1 px-3 flex justify-center pointer-events-none">
-          <div className="pointer-events-auto w-full">
-            <button
-              onClick={() => {
-                openFiltersModal();
-                setTimeout(() => posthog.capture('navbar_filter_icon_clicked', { filter_count: filterCount, variant: filterVariant }), 0);
-              }}
-              className="w-full flex items-center justify-center py-2.5 text-sm font-medium text-gray-900 bg-white border border-gray-400 rounded-xl hover:bg-gray-50 transition-colors"
-            >
-              {filterCount > 0 ? (
-                <>
-                  {tFilters('filtersLabel')}
-                  <span className="ml-1.5 inline-flex items-center justify-center w-4 h-4 text-[10px] font-semibold text-white bg-gray-900 rounded-full">
-                    {filterCount}
-                  </span>
-                </>
-              ) : (
-                tFilters('filterRacesButton')
-              )}
-            </button>
-          </div>
-        </section>
+        <MobileFiltersButton
+          filterCount={filterCount}
+          color={filterColor}
+          onClick={() => {
+            openFiltersModal();
+            setTimeout(() => posthog.capture('navbar_filter_icon_clicked', { filter_count: filterCount, variant: filterVariant }), 0);
+          }}
+        />
       )}
 
       <main className="min-w-0">
