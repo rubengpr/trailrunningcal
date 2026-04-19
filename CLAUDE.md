@@ -1,5 +1,9 @@
 # Project Conventions
 
+## Pre-push checklist
+
+Always run `pnpm tsc --noEmit` before pushing. Vercel runs a full TypeScript check on every build — failures there mean a broken deployment.
+
 ## Code Style (Always Applied)
 
 - Use camelCase with descriptive names for functions and variables

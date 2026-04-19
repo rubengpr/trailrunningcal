@@ -30,6 +30,10 @@ Be the default discovery layer for trail racing in Spain—strong SEO and struct
 
 The product is geographically scoped to Catalonia and focused on trail/mountain events, not road-running calendars or worldwide coverage.
 
+## Pre-push checklist
+
+Always run `pnpm tsc --noEmit` before pushing to catch TypeScript errors locally. Vercel runs a full type check on every build — failures there mean a broken deployment.
+
 ## Essential tech stack
 
 Next.js App Router, React, TypeScript, Tailwind. next-intl for es/ca locale URLs. Supabase for DB, auth, and storage. MapLibre for maps. MDX for blog. PostHog + Resend; Vitest for tests. Admin flows may use OpenAI / OpenRouter. Prod site: trailrunningcal.com
