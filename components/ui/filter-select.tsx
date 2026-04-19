@@ -32,16 +32,17 @@ export function FilterSelect({ value, onValueChange, placeholder, options, varia
       const insideDropdown = dropdownRef.current?.contains(target);
       if (!insideContainer && !insideDropdown) setOpen(false);
     }
-    if (open) document.addEventListener('mousedown', handleOutsideClick);
-    return () => document.removeEventListener('mousedown', handleOutsideClick);
-  }, [open]);
-
-  useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape') setOpen(false);
     }
-    if (open) document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    if (open) {
+      document.addEventListener('mousedown', handleOutsideClick);
+      document.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
   }, [open]);
 
   function handleToggle(optionValue: string) {
@@ -73,10 +74,33 @@ export function FilterSelect({ value, onValueChange, placeholder, options, varia
     setOpen((prev) => !prev);
   }
 
-  const isBadge = variant === 'pill';
+  const isPill = variant === 'pill';
   const isActive = value.length > 0;
   const firstLabel = isActive ? options.find((o) => o.value === value[0])?.label ?? null : null;
   const selectLabel = !isActive ? null : value.length === 1 ? firstLabel : `${firstLabel} +${value.length - 1}`;
+
+  const pillCn = [
+    'inline-flex items-center gap-1.5 rounded-full border cursor-pointer transition-all duration-150 focus:outline-none',
+    size === 'sm' ? 'px-4 py-2 text-xs' : 'px-4 py-1.5 text-sm',
+    color === 'black'
+      ? 'bg-black text-white border-black hover:bg-neutral-900 hover:border-neutral-900'
+      : isActive
+        ? 'border-gray-900 bg-gray-900 text-white hover:bg-gray-800 hover:border-gray-800'
+        : open
+          ? 'border-gray-400 bg-white text-gray-700'
+          : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400 hover:text-gray-800',
+  ].join(' ');
+
+  const controlCn = [
+    'flex items-center justify-between gap-2 min-w-40 rounded-lg border px-3 py-2 text-sm cursor-pointer transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-gray-400',
+    color === 'black' ? 'font-semibold' : '',
+    color === 'black'
+      ? 'bg-black text-white border-black hover:bg-neutral-900 hover:border-neutral-900'
+      : open
+        ? 'border-gray-400 bg-white shadow-sm'
+        : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm',
+    color === 'black' ? '' : selectLabel ? 'text-gray-900' : 'text-gray-400',
+  ].join(' ');
 
   const dropdown = open && (
     <div
@@ -134,27 +158,9 @@ export function FilterSelect({ value, onValueChange, placeholder, options, varia
         ref={buttonRef}
         type="button"
         onClick={handleButtonClick}
-        className={
-          isBadge
-            ? `inline-flex items-center gap-1.5 rounded-full border cursor-pointer transition-all duration-150 focus:outline-none ${size === 'sm' ? 'px-4 py-2 text-xs' : 'px-4 py-1.5 text-sm'} ${
-                color === 'black'
-                  ? 'bg-black text-white border-black hover:bg-neutral-900 hover:border-neutral-900'
-                  : isActive
-                    ? 'border-gray-900 bg-gray-900 text-white hover:bg-gray-800 hover:border-gray-800'
-                    : open
-                      ? 'border-gray-400 bg-white text-gray-700'
-                      : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400 hover:text-gray-800'
-              }`
-            : `flex items-center justify-between gap-2 min-w-40 rounded-lg border px-3 py-2 text-sm cursor-pointer transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-gray-400 ${
-                color === 'black'
-                  ? 'bg-black text-white border-black hover:bg-neutral-900 hover:border-neutral-900'
-                  : open
-                    ? 'border-gray-400 bg-white shadow-sm'
-                    : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm'
-              } ${color === 'black' ? '' : selectLabel ? 'text-gray-900' : 'text-gray-400'}`
-        }
+        className={isPill ? pillCn : controlCn}
       >
-        {isBadge ? (
+        {isPill ? (
           <>
             <span className="font-medium">{placeholder}</span>
             {isActive && (
