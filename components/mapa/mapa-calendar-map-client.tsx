@@ -23,7 +23,7 @@ import { MapToggleFab } from '@/components/mapa/map-toggle-fab';
 import { useMinWidthLg } from '@/hooks/use-min-width-lg';
 import { useScrollEdges } from '@/hooks/use-scroll-edges';
 import { useMobileFilters } from '@/components/providers/mobile-filters-provider';
-import { filterHomeRaces, filterMapMarkersByRaceIds, RACE_TYPE_CATEGORY_KEYS } from '@/lib/home-race-filters';
+import { filterHomeRaces, filterMapMarkersByRaceIds } from '@/lib/home-race-filters';
 import { generateRaceSlug } from '@/lib/race-utils';
 
 const FILTER_STORAGE_KEYS = {
@@ -66,10 +66,6 @@ export default function MapaCalendarMapClient({
   const tFilters = useTranslations('filters');
   const tErrors = useTranslations('errors');
   const tMap = useTranslations('map');
-  const tMonthsFull = useTranslations('monthsFull');
-  const tDistanceGroups = useTranslations('distanceGroups');
-  const tCategory = useTranslations('category');
-
   const [selectedMonth, setSelectedMonth] = useState<string[]>(() => readFilterStorage(FILTER_STORAGE_KEYS.month));
   const [selectedProvince, setSelectedProvince] = useState<string[]>(() => readFilterStorage(FILTER_STORAGE_KEYS.province));
   const [selectedDistance, setSelectedDistance] = useState<string[]>(() => readFilterStorage(FILTER_STORAGE_KEYS.distance));
@@ -91,12 +87,6 @@ export default function MapaCalendarMapClient({
   const isPillVariant = filterLayout === 'pill';
 
   const { canScrollLeft, canScrollRight } = useScrollEdges(pillsScrollRef, isPillVariant);
-  const activeFilterLabels: string[] = [
-    ...selectedMonth.map((m) => tMonthsFull(m)),
-    ...selectedProvince,
-    ...selectedDistance.map((d) => tDistanceGroups(d)),
-    ...selectedRaceType.map((r) => tCategory(RACE_TYPE_CATEGORY_KEYS[r])),
-  ];
   const { isOpen: isFiltersModalOpen, open: openFiltersModal, close: closeFiltersModal, register, unregister, updateFilterCount, updateFilterVariant, filterCount } = useMobileFilters();
 
   useEffect(() => {
@@ -241,11 +231,11 @@ export default function MapaCalendarMapClient({
 
   return (
     <>
-      <section className={`w-full min-w-0 ${isPillVariant ? 'sticky top-[4.5rem] z-20 bg-white py-3 border-b border-gray-200 sm:static sm:z-auto sm:py-0 sm:pb-6 sm:border-none' : 'pb-6 lg:pb-8'}`}>
+      <section className={`w-full min-w-0 ${isPillVariant ? 'sticky top-18 z-20 bg-white py-3 border-b border-gray-200 sm:static sm:z-auto sm:py-0 sm:pb-6 sm:border-none' : 'pb-6 lg:pb-8'}`}>
         <div className="relative max-w-4xl mx-auto min-w-0 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
           {isPillVariant && <>
-            {canScrollLeft && <div className="pointer-events-none absolute inset-y-0 left-4 w-6 bg-gradient-to-r from-white/70 to-transparent z-10 sm:hidden" />}
-            {canScrollRight && <div className="pointer-events-none absolute inset-y-0 right-4 w-6 bg-gradient-to-l from-white/70 to-transparent z-10 sm:hidden" />}
+            {canScrollLeft && <div className="pointer-events-none absolute inset-y-0 left-4 w-6 bg-linear-to-r from-white/70 to-transparent z-10 sm:hidden" />}
+            {canScrollRight && <div className="pointer-events-none absolute inset-y-0 right-4 w-6 bg-linear-to-l from-white/70 to-transparent z-10 sm:hidden" />}
           </>}
           <div className={`${isControlVariant || isPillVariant ? 'flex' : 'hidden sm:flex'} items-center gap-4`}>
             {isPillVariant ? (
