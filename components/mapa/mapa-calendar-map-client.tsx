@@ -21,6 +21,7 @@ import type { DesktopLayout, LayoutToggleButton } from '@/components/ui/layout-t
 import RacesMap from '@/components/races-map/races-map';
 import { MapToggleFab } from '@/components/mapa/map-toggle-fab';
 import { useMinWidthLg } from '@/hooks/use-min-width-lg';
+import { useScrollEdges } from '@/hooks/use-scroll-edges';
 import { useMobileFilters } from '@/components/providers/mobile-filters-provider';
 import { filterHomeRaces, filterMapMarkersByRaceIds, RACE_TYPE_CATEGORY_KEYS } from '@/lib/home-race-filters';
 import { generateRaceSlug } from '@/lib/race-utils';
@@ -77,33 +78,19 @@ export default function MapaCalendarMapClient({
   const [focusRaceNonce, setFocusRaceNonce] = useState(0);
   const [mobileView, setMobileView] = useState<MobileView>('list');
   const [desktopLayout, setDesktopLayout] = useState<DesktopLayout>('both');
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
   const pillsScrollRef = useRef<HTMLDivElement>(null);
 
   const router = useRouter();
   const isDesktopMap = useMinWidthLg();
-  //const filterVariant = useFeatureFlagVariantKey('filter-flag');
-  const filterVariant = 'pill' as string; // try: 'control', 'sticky-button', 'pill'
+  const filterVariant = useFeatureFlagVariantKey('filter-flag');
   const isControlVariant = filterVariant === 'control';
   const isInlineTextVariant = filterVariant === 'sticky-button';
   const isPillVariant = filterVariant === 'pill';
 
-  useEffect(() => {
-    const el = pillsScrollRef.current;
-    if (!el) return;
-    const update = () => {
-      setCanScrollLeft(el.scrollLeft > 0);
-      setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
-    };
-    update();
-    el.addEventListener('scroll', update);
-    return () => el.removeEventListener('scroll', update);
-  }, [isPillVariant]);
+  const { canScrollLeft, canScrollRight } = useScrollEdges(pillsScrollRef, isPillVariant);
 
   const colorVariant = useFeatureFlagVariantKey('filter-color-flag');
-  //const filterColor = colorVariant?.endsWith('-black') ? 'black' : 'white';                    
-  const filterColor: 'white' | 'black' = 'white'; // try: 'white', 'black' 
+  const filterColor: 'white' | 'black' = colorVariant?.endsWith('-black') ? 'black' : 'white';
   const activeFilterLabels: string[] = [
     ...selectedMonth.map((m) => tMonthsFull(m)),
     ...selectedProvince,
