@@ -84,7 +84,7 @@ export default function MapaCalendarMapClient({
   const isDesktopMap = useMinWidthLg();
   const v2Variant = useFeatureFlagVariantKey('filter-flag-v2');
   const v2VariantStr = typeof v2Variant === 'string' ? v2Variant : null;
-  const filterLayout = v2VariantStr ? v2VariantStr.slice(0, v2VariantStr.lastIndexOf('-')) : 'control';
+  const filterLayout = v2VariantStr?.includes('-') ? v2VariantStr.slice(0, v2VariantStr.lastIndexOf('-')) : (v2VariantStr ?? 'control');
   const filterColor: 'white' | 'black' = v2VariantStr?.endsWith('-black') ? 'black' : 'white';
   const isControlVariant = filterLayout === 'control';
   const isInlineTextVariant = filterLayout === 'sticky-button';
