@@ -1,5 +1,6 @@
 'use client';
 
+import type { RefObject } from 'react';
 import { useTranslations } from 'next-intl';
 import { FilterSelect } from '@/components/ui/filter-select';
 import { PROVINCES, DISTANCE_GROUPS, MONTH_INDICES } from '@/lib/constants';
@@ -17,7 +18,10 @@ interface FilterBarProps {
   onClearFilters: () => void;
   showProvinceFilter?: boolean;
   showDistanceFilter?: boolean;
-  variant?: 'select' | 'pill';
+  variant?: 'control' | 'pill';
+  color?: 'white' | 'black';
+  size?: 'sm' | 'md';
+  scrollContainerRef?: RefObject<HTMLDivElement>;
 }
 
 export function FilterBadgeBar(props: Omit<FilterBarProps, 'variant'>) {
@@ -36,7 +40,10 @@ export default function FilterBar({
   onClearFilters,
   showProvinceFilter = true,
   showDistanceFilter = true,
-  variant = 'select',
+  variant = 'control',
+  color = 'white',
+  size = 'md',
+  scrollContainerRef,
 }: FilterBarProps) {
   const tFilters = useTranslations('filters');
   const tMonthsFull = useTranslations('monthsFull');
@@ -70,13 +77,27 @@ export default function FilterBar({
     selectedRaceType.length > 0;
 
   return (
-    <div className={`flex items-center flex-wrap ${variant === 'pill' ? 'gap-2' : 'gap-3'}`}>
+    <div ref={scrollContainerRef} className={`flex items-center ${variant === 'pill' ? 'gap-2 flex-nowrap overflow-x-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none]' : 'gap-3 flex-wrap'}`}>
+      {hasActiveFilters && (
+        <button
+          onClick={onClearFilters}
+          className="flex items-center justify-center py-2 px-2 shrink-0 rounded-lg border border-gray-300 text-gray-500 hover:text-gray-800 hover:border-gray-400 transition-colors cursor-pointer"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+            <path d="M3 6h18" />
+            <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+          </svg>
+        </button>
+      )}
       <FilterSelect
         value={selectedMonth}
         onValueChange={onMonthSelect}
         placeholder={tFilters('monthLabel')}
         options={monthOptions}
         variant={variant}
+        color={color}
+        size={size}
       />
 
       {showProvinceFilter && (
@@ -86,6 +107,8 @@ export default function FilterBar({
           placeholder={tFilters('provinceLabel')}
           options={provinceOptions}
           variant={variant}
+        color={color}
+        size={size}
         />
       )}
 
@@ -96,6 +119,8 @@ export default function FilterBar({
           placeholder={tFilters('distanceLabel')}
           options={distanceOptions}
           variant={variant}
+        color={color}
+        size={size}
         />
       )}
 
@@ -105,16 +130,10 @@ export default function FilterBar({
         placeholder={tFilters('raceTypeLabel')}
         options={raceTypeOptions}
         variant={variant}
+        color={color}
+        size={size}
       />
 
-      {hasActiveFilters && (
-        <button
-          onClick={onClearFilters}
-          className="text-xs text-gray-400 hover:text-gray-700 transition-colors cursor-pointer"
-        >
-          {tFilters('clearFilters')}
-        </button>
-      )}
     </div>
   );
 }
