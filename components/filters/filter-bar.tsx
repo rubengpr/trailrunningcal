@@ -21,7 +21,7 @@ interface FilterBarProps {
   variant?: 'control' | 'pill';
   color?: 'white' | 'black';
   size?: 'sm' | 'md';
-  scrollContainerRef?: RefObject<HTMLDivElement>;
+  scrollContainerRef?: RefObject<HTMLDivElement | null>;
 }
 
 export function FilterBadgeBar(props: Omit<FilterBarProps, 'variant'>) {
