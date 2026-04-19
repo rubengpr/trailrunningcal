@@ -82,15 +82,14 @@ export default function MapaCalendarMapClient({
 
   const router = useRouter();
   const isDesktopMap = useMinWidthLg();
-  const filterVariant = useFeatureFlagVariantKey('filter-flag');
-  const isControlVariant = filterVariant === 'control';
-  const isInlineTextVariant = filterVariant === 'sticky-button';
-  const isPillVariant = filterVariant === 'pill';
+  const v2Variant = useFeatureFlagVariantKey('filter-flag-v2');
+  const filterLayout = v2Variant ? v2Variant.slice(0, v2Variant.lastIndexOf('-')) : 'control';
+  const filterColor: 'white' | 'black' = v2Variant?.endsWith('-black') ? 'black' : 'white';
+  const isControlVariant = filterLayout === 'control';
+  const isInlineTextVariant = filterLayout === 'sticky-button';
+  const isPillVariant = filterLayout === 'pill';
 
   const { canScrollLeft, canScrollRight } = useScrollEdges(pillsScrollRef, isPillVariant);
-
-  const colorVariant = useFeatureFlagVariantKey('filter-color-flag');
-  const filterColor: 'white' | 'black' = colorVariant?.endsWith('-black') ? 'black' : 'white';
   const activeFilterLabels: string[] = [
     ...selectedMonth.map((m) => tMonthsFull(m)),
     ...selectedProvince,
@@ -100,8 +99,8 @@ export default function MapaCalendarMapClient({
   const { isOpen: isFiltersModalOpen, open: openFiltersModal, close: closeFiltersModal, register, unregister, updateFilterCount, updateFilterVariant, filterCount } = useMobileFilters();
 
   useEffect(() => {
-    updateFilterVariant(filterVariant);
-  }, [filterVariant, updateFilterVariant]);
+    updateFilterVariant(filterLayout);
+  }, [filterLayout, updateFilterVariant]);
 
   useEffect(() => {
     if (isControlVariant || isPillVariant) return;
@@ -180,7 +179,7 @@ export default function MapaCalendarMapClient({
     setSelectedProvince(province);
     setSelectedDistance(distance);
     setSelectedRaceType(raceType);
-    setTimeout(() => posthog.capture('filters_applied', { variant: filterVariant, month, province, distance, raceType }), 0);
+    setTimeout(() => posthog.capture('filters_applied', { variant: filterLayout, month, province, distance, raceType }), 0);
     closeFiltersModal();
   };
 
@@ -296,7 +295,7 @@ export default function MapaCalendarMapClient({
           color={filterColor}
           onClick={() => {
             openFiltersModal();
-            setTimeout(() => posthog.capture('navbar_filter_icon_clicked', { filter_count: filterCount, variant: filterVariant }), 0);
+            setTimeout(() => posthog.capture('navbar_filter_icon_clicked', { filter_count: filterCount, variant: filterLayout }), 0);
           }}
         />
       )}
