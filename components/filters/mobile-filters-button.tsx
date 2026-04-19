@@ -21,7 +21,7 @@ export default function MobileFiltersButton({ filterCount, onClick, color = 'whi
           {filterCount > 0 ? (
             <>
               {tFilters('filtersLabel')}
-              <span className="ml-1.5 inline-flex items-center justify-center w-4 h-4 text-[10px] font-semibold text-white bg-gray-900 rounded-full">
+              <span className={`ml-1.5 inline-flex items-center justify-center w-4 h-4 text-[10px] font-semibold rounded-full ${color === 'black' ? 'bg-white text-black' : 'bg-gray-900 text-white'}`}>
                 {filterCount}
               </span>
             </>

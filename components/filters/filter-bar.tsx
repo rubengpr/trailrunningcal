@@ -107,8 +107,8 @@ export default function FilterBar({
           placeholder={tFilters('provinceLabel')}
           options={provinceOptions}
           variant={variant}
-        color={color}
-        size={size}
+          color={color}
+          size={size}
         />
       )}
 
@@ -119,8 +119,8 @@ export default function FilterBar({
           placeholder={tFilters('distanceLabel')}
           options={distanceOptions}
           variant={variant}
-        color={color}
-        size={size}
+          color={color}
+          size={size}
         />
       )}
 
