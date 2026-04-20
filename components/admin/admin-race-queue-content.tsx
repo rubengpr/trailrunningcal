@@ -107,8 +107,7 @@ export function AdminRaceQueueContent({ entries }: AdminRaceQueueContentProps) {
                             id="queueUrl"
                             type="url"
                             value={url}
-                            placeholder={t('urlPlaceholder')}
-                            onChange={(e) => setUrl(e.target.value)}
+onChange={(e) => setUrl(e.target.value)}
                             disabled={isSubmitting}
                             className="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 pr-10 text-sm placeholder:text-gray-500 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                         />
