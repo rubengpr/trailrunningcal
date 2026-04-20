@@ -34,7 +34,7 @@ export function FormSelect({
         <select
           id={id}
           disabled={disabled}
-          className={`flex h-10 w-full cursor-pointer appearance-none rounded-md border border-gray-200 bg-white py-2 pl-3 pr-10 text-xs font-mono text-gray-900 shadow-sm transition-colors focus-visible:border-gray-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-200/80 disabled:cursor-not-allowed disabled:opacity-50${className ? ` ${className}` : ''}`}
+          className={`flex h-10 w-full cursor-pointer appearance-none rounded-md border border-gray-200 bg-white py-2 pl-3 pr-10 text-xs font-mono text-gray-900 transition-colors focus-visible:border-gray-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-200/80 disabled:cursor-not-allowed disabled:opacity-50${className ? ` ${className}` : ''}`}
           {...props}
         >
           {children}
