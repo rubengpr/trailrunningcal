@@ -14,7 +14,7 @@ export default async function AdminLoginPage({
   const { data: { user }, error } = await supabase.auth.getUser();
 
   if (!error && user && isAdminEmail(user.email)) {
-    redirect(`/${locale}/admin/carreras`);
+    redirect(`/${locale}/admin/carreras/activas`);
   }
 
   return (

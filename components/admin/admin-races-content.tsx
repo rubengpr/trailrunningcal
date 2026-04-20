@@ -51,9 +51,6 @@ export function AdminRacesContent({ races }: AdminRacesContentProps) {
                 }
                 action={
                     <div className="flex gap-2">
-                        <Button variant="secondary" onClick={() => router.push(`/${locale}/admin/carreras/cola`)}>
-                            {t('queueButton')}
-                        </Button>
                         <Button variant="secondary" onClick={() => router.push(`/${locale}/admin/carreras/scrape`)}>
                             {t('scrapeButton')}
                         </Button>

@@ -1,11 +1,10 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import { AdminLayout } from '@/components/admin/admin-layout';
-import { AdminRaceQueueContent } from '@/components/admin/admin-race-queue-content';
-import { getRaceQueue } from '@/lib/db/race-queue';
+import { AdminRacesContent } from '@/components/admin/admin-races-content';
+import { getRaces } from '@/lib/db/races';
 import { isAdminEmail } from '@/lib/auth-admin';
 
-export default async function AdminRaceQueuePage({
+export default async function AdminRacesActivasPage({
     params,
 }: {
     params: Promise<{ locale: string }>;
@@ -23,11 +22,7 @@ export default async function AdminRaceQueuePage({
         redirect(`/${locale}/admin/login`);
     }
 
-    const entries = await getRaceQueue();
+    const races = await getRaces();
 
-    return (
-        <AdminLayout>
-            <AdminRaceQueueContent entries={entries} />
-        </AdminLayout>
-    );
+    return <AdminRacesContent races={races} />;
 }

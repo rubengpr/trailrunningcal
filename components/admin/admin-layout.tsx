@@ -34,7 +34,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             ),
         },
         {
-            href: `/${locale}/admin/carreras`,
+            href: `/${locale}/admin/carreras/activas`,
             label: locale === 'ca' ? 'Curses' : 'Carreras',
             icon: (
                 <svg

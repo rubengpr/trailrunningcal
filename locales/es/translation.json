@@ -522,6 +522,10 @@
         "scrapeButton": "Extraer carreras",
         "queueButton": "Cola"
       },
+      "tabs": {
+        "activas": "Activas",
+        "pendientes": "Pendientes"
+      },
       "queue": {
         "title": "Cola de URLs",
         "entryCount": "{count} URLs",

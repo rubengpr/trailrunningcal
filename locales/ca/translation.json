@@ -525,6 +525,10 @@
         "scrapeButton": "Extreure curses",
         "queueButton": "Cua"
       },
+      "tabs": {
+        "activas": "Actives",
+        "pendientes": "Pendents"
+      },
       "queue": {
         "title": "Cua d'URLs",
         "entryCount": "{count} URLs",
