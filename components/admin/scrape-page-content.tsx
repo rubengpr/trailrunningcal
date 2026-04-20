@@ -5,6 +5,8 @@ import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
 import { FormInput } from '@/components/ui/form-input';
 import { FormSelect } from '@/components/ui/form-select';
+import { Combobox } from '@/components/ui/combobox';
+import type { ComboboxOption } from '@/components/ui/combobox';
 import { Button } from '@/components/ui/button';
 import { SectionHeader } from '@/components/ui/section-header';
 import { DUMMY_SCRAPED_RACES, ScrapedRacesPreview } from '@/components/race/scraped-races-preview';
@@ -32,6 +34,7 @@ import { normalizeUrl } from '@/lib/validation';
 import type { CrawlPageStats } from '@/types/races-scrape-api.types';
 import type { TrailRaceAgentRaceRow } from '@/types/trail-race-agent.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
+import type { RaceQueueEntry } from '@/types/race-queue.types';
 
 type ScrapeWorkflow = 'crawlMdOnly' | 'llmFromFile' | 'crawlAndLlm';
 
@@ -116,8 +119,17 @@ function triggerMarkdownFileDownload(markdown: string, downloadName: string): vo
     URL.revokeObjectURL(objectUrl);
 }
 
-export function ScrapePageContent() {
+interface ScrapePageContentProps {
+    pendingEntries: RaceQueueEntry[];
+}
+
+export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
     const t = useTranslations('admin.races.scrape');
+
+    const pendingUrlOptions: ComboboxOption[] = pendingEntries.map((e) => ({
+        value: e.url,
+        label: e.url.replace(/^https?:\/\/(www\.)?/, ''),
+    }));
 
     const markdownFileInputRef = useRef<HTMLInputElement>(null);
     const imageFileInputRef = useRef<HTMLInputElement>(null);
@@ -840,17 +852,14 @@ export function ScrapePageContent() {
 
                     {(workflow === 'crawlMdOnly' || workflow === 'crawlAndLlm') && (
                         <div className="grid gap-2 w-full">
-                            <label htmlFor="websiteUrl" className="text-sm font-medium leading-none">
-                                {t('websiteUrlLabel')}
-                            </label>
-                            <input
+                            <Combobox
                                 id="websiteUrl"
-                                type="url"
+                                label={t('websiteUrlLabel')}
                                 value={websiteUrl}
+                                onChange={setWebsiteUrl}
+                                options={pendingUrlOptions}
                                 placeholder={t('websiteUrlPlaceholder')}
-                                onChange={(e) => setWebsiteUrl(e.target.value)}
                                 disabled={isScraping}
-                                className="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-500 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                             />
                             <label className="flex items-center gap-1.5 cursor-pointer w-fit">
                                 <div className="relative h-3 w-3 shrink-0">
@@ -981,14 +990,14 @@ export function ScrapePageContent() {
                                     </>
                                 )}
                             </div>
-                            <FormInput
+                            <Combobox
                                 id="websiteUrlForAccept"
                                 label={t('eventUrlForAcceptLabel')}
-                                helperText={t('urlForAcceptHint')}
-                                type="url"
                                 value={websiteUrl}
+                                onChange={setWebsiteUrl}
+                                options={pendingUrlOptions}
                                 placeholder={t('websiteUrlPlaceholder')}
-                                onChange={(e) => setWebsiteUrl(e.target.value)}
+                                helperText={t('urlForAcceptHint')}
                                 disabled={isScraping}
                             />
                         </>

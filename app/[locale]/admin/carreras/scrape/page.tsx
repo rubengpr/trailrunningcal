@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { AdminLayout } from '@/components/admin/admin-layout';
 import { ScrapePageContent } from '@/components/admin/scrape-page-content';
+import { getRaceQueue } from '@/lib/db/race-queue';
 import { isAdminEmail } from '@/lib/auth-admin';
 
 export default async function AdminScrapePage({
@@ -22,9 +23,12 @@ export default async function AdminScrapePage({
         redirect(`/${locale}/admin/login`);
     }
 
+    const queueEntries = await getRaceQueue();
+    const pendingEntries = queueEntries.filter((e) => e.status === 'pending');
+
     return (
         <AdminLayout>
-            <ScrapePageContent />
+            <ScrapePageContent pendingEntries={pendingEntries} />
         </AdminLayout>
     );
 }
