@@ -6,9 +6,10 @@ import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/button';
 import { SectionHeader } from '@/components/ui/section-header';
 import { BaseModal } from '@/components/ui/base-modal';
-import { addRaceToQueue, deleteRaceFromQueue } from '@/lib/api/race-queue';
+import { addRacesToQueue, deleteRaceFromQueue } from '@/lib/api/race-queue';
 import { formatDateToSpanish, formatDateToCatalan } from '@/lib/date-utils';
 import type { RaceQueueEntry } from '@/types/race-queue.types';
+import type { SkippedQueueEntry } from '@/lib/api/race-queue';
 
 interface AdminRaceQueueContentProps {
     entries: RaceQueueEntry[];
@@ -18,9 +19,10 @@ export function AdminRaceQueueContent({ entries }: AdminRaceQueueContentProps) {
     const t = useTranslations('admin.races.queue');
     const locale = useLocale();
 
-    const [url, setUrl] = useState('');
+    const [urlsText, setUrlsText] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [queueEntries, setQueueEntries] = useState<RaceQueueEntry[]>(entries);
+    const [skippedEntries, setSkippedEntries] = useState<SkippedQueueEntry[]>([]);
     const [entryToDelete, setEntryToDelete] = useState<RaceQueueEntry | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
@@ -28,20 +30,6 @@ export function AdminRaceQueueContent({ entries }: AdminRaceQueueContentProps) {
         locale === 'ca'
             ? formatDateToCatalan(dateString)
             : formatDateToSpanish(dateString);
-
-    const translateApiError = (err: unknown): string => {
-        const code = err instanceof Error ? err.message : '';
-        const knownCodes = [
-            'urlRequired',
-            'invalidUrlFormat',
-            'urlAlreadyInRaces',
-            'urlAlreadyInQueue',
-        ];
-        if (knownCodes.includes(code)) {
-            return t(`errors.${code}`);
-        }
-        return t('addError');
-    };
 
     const handleDeleteConfirm = async () => {
         if (!entryToDelete || isDeleting) return;
@@ -61,17 +49,31 @@ export function AdminRaceQueueContent({ entries }: AdminRaceQueueContentProps) {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const trimmed = url.trim();
-        if (!trimmed || isSubmitting) return;
+        const urls = urlsText
+            .split('\n')
+            .map((line) => line.trim())
+            .filter(Boolean);
+        if (urls.length === 0 || isSubmitting) return;
 
         setIsSubmitting(true);
+        setSkippedEntries([]);
         try {
-            const newEntry = await addRaceToQueue(trimmed);
-            setQueueEntries((prev) => [newEntry, ...prev]);
-            setUrl('');
-            toast.success(t('addSuccess'));
-        } catch (err) {
-            toast.error(translateApiError(err));
+            const result = await addRacesToQueue(urls);
+            if (result.added.length > 0) {
+                setQueueEntries((prev) => [...result.added, ...prev]);
+                setUrlsText('');
+                const message = result.skipped.length > 0
+                    ? t('addPartialSuccess', { added: result.added.length, skipped: result.skipped.length })
+                    : t('addSuccess', { count: result.added.length });
+                toast.success(message);
+            } else {
+                toast.error(t('addNoneAdded'));
+            }
+            if (result.skipped.length > 0) {
+                setSkippedEntries(result.skipped);
+            }
+        } catch {
+            toast.error(t('addError'));
         } finally {
             setIsSubmitting(false);
         }
@@ -97,19 +99,19 @@ export function AdminRaceQueueContent({ entries }: AdminRaceQueueContentProps) {
                         {t('urlLabel')}
                     </label>
                     <div className="relative">
-                        <input
+                        <textarea
                             id="queueUrl"
-                            type="url"
-                            value={url}
-onChange={(e) => setUrl(e.target.value)}
+                            rows={4}
+                            value={urlsText}
+                            onChange={(e) => setUrlsText(e.target.value)}
                             disabled={isSubmitting}
-                            className="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 pr-10 text-sm placeholder:text-gray-500 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                            className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 pb-8 text-sm placeholder:text-gray-500 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 resize-y"
                         />
                         <button
                             type="submit"
-                            disabled={!url.trim() || isSubmitting}
+                            disabled={!urlsText.trim() || isSubmitting}
                             title={t('addButton')}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center rounded p-1 text-gray-400 transition-colors hover:text-gray-700 disabled:pointer-events-none disabled:opacity-50 cursor-pointer"
+                            className="absolute bottom-2 right-2 flex items-center justify-center rounded p-1 text-gray-400 transition-colors hover:text-gray-700 disabled:pointer-events-none disabled:opacity-50 cursor-pointer"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M20 4v7a4 4 0 0 1-4 4H4"/>
@@ -117,8 +119,41 @@ onChange={(e) => setUrl(e.target.value)}
                             </svg>
                         </button>
                     </div>
+                    <p className="text-xs text-gray-400">
+                        {urlsText.split('\n').map((l) => l.trim()).filter(Boolean).length} URLs
+                    </p>
                 </div>
             </form>
+
+            {skippedEntries.length > 0 && (
+                <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+                    <details className="group">
+                        <summary className="flex cursor-pointer items-center gap-1.5 text-sm text-gray-700 marker:content-none list-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-open:rotate-90 shrink-0 text-gray-400">
+                                <path d="m9 18 6-6-6-6"/>
+                            </svg>
+                            {t('skipped.title', { count: skippedEntries.length })}
+                        </summary>
+                        <ul className="mt-4 flex flex-col gap-3 pl-5">
+                            {Object.entries(
+                                skippedEntries.reduce<Record<string, string[]>>((acc, entry) => {
+                                    (acc[entry.reason] ??= []).push(entry.url);
+                                    return acc;
+                                }, {}),
+                            ).map(([reason, urls]) => (
+                                <li key={reason}>
+                                    <p className="text-xs font-medium text-gray-500">{t(`skipped.reasons.${reason}`)}</p>
+                                    <ul className="mt-1 flex flex-col gap-0.5 pl-3">
+                                        {urls.map((url) => (
+                                            <li key={url} className="text-xs font-mono text-gray-400 break-all">{url}</li>
+                                        ))}
+                                    </ul>
+                                </li>
+                            ))}
+                        </ul>
+                    </details>
+                </div>
+            )}
 
             {queueEntries.length === 0 ? (
                 <div className="max-w-3xl rounded-2xl border border-gray-100 bg-white p-6 text-sm text-gray-500 shadow-sm sm:p-8">

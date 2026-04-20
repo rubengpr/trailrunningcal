@@ -533,12 +533,24 @@
         "title": "Cua d'URLs",
         "entryCount": "{count} URLs",
         "entryCountOne": "1 URL",
-        "urlLabel": "Afegir cursa",
+        "urlLabel": "Afegir curses",
         "urlPlaceholder": "https://exemple.com/esdeveniment",
         "addButton": "Afegir",
         "adding": "Afegint...",
-        "addSuccess": "URL afegida a la cua",
-        "addError": "Error en afegir l'URL",
+        "addSuccess": "{count} afegida(es) a la cua",
+        "addPartialSuccess": "{added} afegides, {skipped} omeses",
+        "addNoneAdded": "No s'han afegit URLs noves",
+        "addError": "Error en afegir les URLs",
+        "skipped": {
+          "title": "{count} URL(s) omesa(es)",
+          "reasons": {
+            "invalidUrl": "Format d'URL no vàlid",
+            "alreadyInRaces": "Ja existeix com a cursa",
+            "alreadyInQueue": "Ja és a la cua",
+            "lookupFailed": "Error en verificar",
+            "insertFailed": "Error en inserir"
+          }
+        },
         "errors": {
           "urlRequired": "L'URL és obligatori",
           "invalidUrlFormat": "Format d'URL no vàlid",

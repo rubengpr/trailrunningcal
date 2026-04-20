@@ -1,19 +1,29 @@
 import type { RaceQueueEntry } from '@/types/race-queue.types';
 
-export async function addRaceToQueue(url: string): Promise<RaceQueueEntry> {
+export interface SkippedQueueEntry {
+  url: string;
+  reason: string;
+}
+
+export interface AddRacesToQueueResult {
+  added: RaceQueueEntry[];
+  skipped: SkippedQueueEntry[];
+}
+
+export async function addRacesToQueue(urls: string[]): Promise<AddRacesToQueueResult> {
   const response = await fetch('/api/admin/race-queue', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ url }),
+    body: JSON.stringify({ urls }),
   });
 
   const responseData = await response.json();
 
   if (!response.ok) {
-    throw new Error(responseData.error || 'Failed to add URL to queue');
+    throw new Error(responseData.error || 'Failed to add URLs to queue');
   }
 
-  return responseData.data as RaceQueueEntry;
+  return responseData.data as AddRacesToQueueResult;
 }
 
 export async function deleteRaceFromQueue(id: string): Promise<void> {

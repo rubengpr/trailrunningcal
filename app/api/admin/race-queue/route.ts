@@ -3,7 +3,7 @@ import { createClient, createAdminClient } from '@/lib/supabase/server';
 import { isAdminEmail } from '@/lib/auth-admin';
 import { normalizeUrl } from '@/lib/validation';
 import { raceQueueRowToEntry } from '@/types/race-queue.types';
-import type { RaceQueueRow } from '@/types/race-queue.types';
+import type { RaceQueueRow, RaceQueueEntry } from '@/types/race-queue.types';
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,58 +15,72 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { url } = body;
+    const { urls } = body;
 
-    if (!url || typeof url !== 'string' || url.trim().length === 0) {
-      return NextResponse.json({ error: 'urlRequired' }, { status: 400 });
+    if (!urls || !Array.isArray(urls) || urls.length === 0) {
+      return NextResponse.json({ error: 'urlsRequired' }, { status: 400 });
     }
 
-    const normalizedUrl = normalizeUrl(url);
-
-    try {
-      new URL(normalizedUrl);
-    } catch {
-      return NextResponse.json({ error: 'invalidUrlFormat' }, { status: 400 });
+    if (urls.length > 100) {
+      return NextResponse.json({ error: 'tooManyUrls' }, { status: 400 });
     }
 
     const admin = createAdminClient();
+    const added: RaceQueueEntry[] = [];
+    const skipped: { url: string; reason: string }[] = [];
 
-    const [raceLookup, queueLookup] = await Promise.all([
-      admin.from('races').select('id').eq('website_url', normalizedUrl).maybeSingle(),
-      admin.from('race_queue').select('id').eq('url', normalizedUrl).maybeSingle(),
-    ]);
+    for (const rawUrl of urls) {
+      if (typeof rawUrl !== 'string' || rawUrl.trim().length === 0) {
+        continue;
+      }
 
-    if (raceLookup.error) {
-      console.error('Race lookup error:', raceLookup.error);
-      return NextResponse.json({ error: 'internalServerError' }, { status: 500 });
-    }
+      const normalizedUrl = normalizeUrl(rawUrl.trim());
 
-    if (queueLookup.error) {
-      console.error('Queue lookup error:', queueLookup.error);
-      return NextResponse.json({ error: 'internalServerError' }, { status: 500 });
-    }
+      try {
+        new URL(normalizedUrl);
+      } catch {
+        skipped.push({ url: rawUrl.trim(), reason: 'invalidUrl' });
+        continue;
+      }
 
-    if (raceLookup.data) {
-      return NextResponse.json({ error: 'urlAlreadyInRaces' }, { status: 409 });
-    }
+      const [raceLookup, queueLookup] = await Promise.all([
+        admin.from('races').select('id').eq('website_url', normalizedUrl).maybeSingle(),
+        admin.from('race_queue').select('id').eq('url', normalizedUrl).maybeSingle(),
+      ]);
 
-    if (queueLookup.data) {
-      return NextResponse.json({ error: 'urlAlreadyInQueue' }, { status: 409 });
-    }
+      if (raceLookup.error || queueLookup.error) {
+        console.error('Lookup error:', raceLookup.error ?? queueLookup.error);
+        skipped.push({ url: normalizedUrl, reason: 'lookupFailed' });
+        continue;
+      }
 
-    const { data: inserted, error: insertError } = await admin
-      .from('race_queue')
-      .insert({ url: normalizedUrl })
-      .select('id, url, status, created_at, updated_at')
-      .single();
+      if (raceLookup.data) {
+        skipped.push({ url: normalizedUrl, reason: 'alreadyInRaces' });
+        continue;
+      }
 
-    if (insertError || !inserted) {
-      console.error('Race queue insert error:', insertError);
-      return NextResponse.json({ error: 'failedToAddUrlToQueue' }, { status: 500 });
+      if (queueLookup.data) {
+        skipped.push({ url: normalizedUrl, reason: 'alreadyInQueue' });
+        continue;
+      }
+
+      const { data: inserted, error: insertError } = await admin
+        .from('race_queue')
+        .insert({ url: normalizedUrl })
+        .select('id, url, status, created_at, updated_at')
+        .single();
+
+      if (insertError || !inserted) {
+        console.error('Race queue insert error:', insertError);
+        skipped.push({ url: normalizedUrl, reason: 'insertFailed' });
+        continue;
+      }
+
+      added.push(raceQueueRowToEntry(inserted as RaceQueueRow));
     }
 
     return NextResponse.json(
-      { success: true, data: raceQueueRowToEntry(inserted as RaceQueueRow) },
+      { success: true, data: { added, skipped } },
       { status: 201 },
     );
   } catch (error) {

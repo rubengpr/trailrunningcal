@@ -530,12 +530,24 @@
         "title": "Cola de URLs",
         "entryCount": "{count} URLs",
         "entryCountOne": "1 URL",
-        "urlLabel": "Añadir carrera",
+        "urlLabel": "Añadir carreras",
         "urlPlaceholder": "https://ejemplo.com/evento",
         "addButton": "Añadir",
         "adding": "Añadiendo...",
-        "addSuccess": "URL añadida a la cola",
-        "addError": "Error al añadir la URL",
+        "addSuccess": "{count} añadida(s) a la cola",
+        "addPartialSuccess": "{added} añadidas, {skipped} omitidas",
+        "addNoneAdded": "No se han añadido URLs nuevas",
+        "addError": "Error al añadir las URLs",
+        "skipped": {
+          "title": "{count} URL(s) omitidas",
+          "reasons": {
+            "invalidUrl": "Formato de URL inválido",
+            "alreadyInRaces": "Ya existe como carrera",
+            "alreadyInQueue": "Ya está en la cola",
+            "lookupFailed": "Error al verificar",
+            "insertFailed": "Error al insertar"
+          }
+        },
         "errors": {
           "urlRequired": "La URL es obligatoria",
           "invalidUrlFormat": "Formato de URL no válido",
