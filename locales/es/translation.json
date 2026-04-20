@@ -519,7 +519,36 @@
         "distance": "Distancia",
         "price": "Precio",
         "newRaceButton": "Nueva carrera",
-        "scrapeButton": "Extraer carreras"
+        "scrapeButton": "Extraer carreras",
+        "queueButton": "Cola"
+      },
+      "queue": {
+        "title": "Cola de URLs",
+        "entryCount": "{count} URLs",
+        "entryCountOne": "1 URL",
+        "urlLabel": "URL de la carrera",
+        "urlPlaceholder": "https://ejemplo.com/evento",
+        "addButton": "Añadir",
+        "adding": "Añadiendo...",
+        "addSuccess": "URL añadida a la cola",
+        "addError": "Error al añadir la URL",
+        "errors": {
+          "urlRequired": "La URL es obligatoria",
+          "invalidUrlFormat": "Formato de URL no válido",
+          "urlAlreadyInRaces": "Esta URL ya está asociada a una carrera existente",
+          "urlAlreadyInQueue": "Esta URL ya está en la cola"
+        },
+        "empty": "Aún no hay URLs en la cola.",
+        "status": {
+          "pending": "Pendiente",
+          "done": "Hecho",
+          "skipped": "Descartado"
+        },
+        "table": {
+          "url": "URL",
+          "status": "Estado",
+          "addedAt": "Añadida"
+        }
       },
       "scrape": {
         "title": "Extraer carreras de una web",

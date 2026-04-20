@@ -522,7 +522,36 @@
         "distance": "Distància",
         "price": "Preu",
         "newRaceButton": "Nova cursa",
-        "scrapeButton": "Extreure curses"
+        "scrapeButton": "Extreure curses",
+        "queueButton": "Cua"
+      },
+      "queue": {
+        "title": "Cua d'URLs",
+        "entryCount": "{count} URLs",
+        "entryCountOne": "1 URL",
+        "urlLabel": "URL de la cursa",
+        "urlPlaceholder": "https://exemple.com/esdeveniment",
+        "addButton": "Afegir",
+        "adding": "Afegint...",
+        "addSuccess": "URL afegida a la cua",
+        "addError": "Error en afegir l'URL",
+        "errors": {
+          "urlRequired": "L'URL és obligatori",
+          "invalidUrlFormat": "Format d'URL no vàlid",
+          "urlAlreadyInRaces": "Aquest URL ja està associat a una cursa existent",
+          "urlAlreadyInQueue": "Aquest URL ja és a la cua"
+        },
+        "empty": "Encara no hi ha URLs a la cua.",
+        "status": {
+          "pending": "Pendent",
+          "done": "Fet",
+          "skipped": "Descartat"
+        },
+        "table": {
+          "url": "URL",
+          "status": "Estat",
+          "addedAt": "Afegida"
+        }
       },
       "scrape": {
         "title": "Extreure curses d'una web",
