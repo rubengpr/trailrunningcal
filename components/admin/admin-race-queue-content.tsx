@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/button';
-import { FormInput } from '@/components/ui/form-input';
 import { SectionHeader } from '@/components/ui/section-header';
 import { BaseModal } from '@/components/ui/base-modal';
 import { addRaceToQueue, deleteRaceFromQueue } from '@/lib/api/race-queue';
@@ -97,26 +96,34 @@ export function AdminRaceQueueContent({ entries }: AdminRaceQueueContentProps) {
 
             <form
                 onSubmit={handleSubmit}
-                className="max-w-3xl rounded-2xl border border-gray-100 bg-white p-6 shadow-sm sm:p-8"
+                className="max-w-3xl"
             >
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
-                    <FormInput
-                        id="queueUrl"
-                        type="url"
-                        label={t('urlLabel')}
-                        value={url}
-                        placeholder={t('urlPlaceholder')}
-                        onChange={(e) => setUrl(e.target.value)}
-                        disabled={isSubmitting}
-                    />
-                    <Button
-                        type="submit"
-                        disabled={!url.trim() || isSubmitting}
-                        isLoading={isSubmitting}
-                        loadingText={t('adding')}
-                    >
-                        {t('addButton')}
-                    </Button>
+                <div className="grid gap-2 max-w-md">
+                    <label htmlFor="queueUrl" className="text-sm font-medium leading-none">
+                        {t('urlLabel')}
+                    </label>
+                    <div className="relative">
+                        <input
+                            id="queueUrl"
+                            type="url"
+                            value={url}
+                            placeholder={t('urlPlaceholder')}
+                            onChange={(e) => setUrl(e.target.value)}
+                            disabled={isSubmitting}
+                            className="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 pr-10 text-sm placeholder:text-gray-500 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                        />
+                        <button
+                            type="submit"
+                            disabled={!url.trim() || isSubmitting}
+                            title={t('addButton')}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center rounded p-1 text-gray-400 transition-colors hover:text-gray-700 disabled:pointer-events-none disabled:opacity-50 cursor-pointer"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M20 4v7a4 4 0 0 1-4 4H4"/>
+                                <path d="m9 10-5 5 5 5"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </form>
 
