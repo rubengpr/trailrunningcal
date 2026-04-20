@@ -551,6 +551,16 @@
           "url": "URL",
           "status": "Estat",
           "addedAt": "Afegida"
+        },
+        "delete": {
+          "button": "Eliminar",
+          "confirmTitle": "Eliminar URL de la cua",
+          "confirmDescription": "Segur que vols eliminar aquest URL de la cua? Aquesta acció no es pot desfer.",
+          "confirmButton": "Eliminar",
+          "cancelButton": "Cancel·lar",
+          "deleting": "Eliminant...",
+          "success": "URL eliminada de la cua",
+          "error": "Error en eliminar l'URL"
         }
       },
       "scrape": {

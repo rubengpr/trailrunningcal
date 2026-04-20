@@ -15,3 +15,17 @@ export async function addRaceToQueue(url: string): Promise<RaceQueueEntry> {
 
   return responseData.data as RaceQueueEntry;
 }
+
+export async function deleteRaceFromQueue(id: string): Promise<void> {
+  const response = await fetch('/api/admin/race-queue', {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id }),
+  });
+
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(responseData.error || 'Failed to delete entry from queue');
+  }
+}

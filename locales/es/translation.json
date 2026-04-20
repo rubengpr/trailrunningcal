@@ -548,6 +548,16 @@
           "url": "URL",
           "status": "Estado",
           "addedAt": "Añadida"
+        },
+        "delete": {
+          "button": "Eliminar",
+          "confirmTitle": "Eliminar URL de la cola",
+          "confirmDescription": "¿Seguro que quieres eliminar esta URL de la cola? Esta acción no se puede deshacer.",
+          "confirmButton": "Eliminar",
+          "cancelButton": "Cancelar",
+          "deleting": "Eliminando...",
+          "success": "URL eliminada de la cola",
+          "error": "Error al eliminar la URL"
         }
       },
       "scrape": {
