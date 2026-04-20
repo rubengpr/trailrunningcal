@@ -533,7 +533,7 @@
         "title": "Cua d'URLs",
         "entryCount": "{count} URLs",
         "entryCountOne": "1 URL",
-        "urlLabel": "URL de la cursa",
+        "urlLabel": "Afegir cursa",
         "urlPlaceholder": "https://exemple.com/esdeveniment",
         "addButton": "Afegir",
         "adding": "Afegint...",

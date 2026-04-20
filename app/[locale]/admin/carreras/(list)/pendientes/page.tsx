@@ -22,7 +22,8 @@ export default async function AdminCarrerasPendientesPage({
         redirect(`/${locale}/admin/login`);
     }
 
-    const entries = await getRaceQueue();
+    const allEntries = await getRaceQueue();
+    const entries = allEntries.filter((e) => e.status === 'pending');
 
     return <AdminRaceQueueContent entries={entries} />;
 }

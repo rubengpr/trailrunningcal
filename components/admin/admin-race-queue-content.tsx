@@ -8,17 +8,11 @@ import { SectionHeader } from '@/components/ui/section-header';
 import { BaseModal } from '@/components/ui/base-modal';
 import { addRaceToQueue, deleteRaceFromQueue } from '@/lib/api/race-queue';
 import { formatDateToSpanish, formatDateToCatalan } from '@/lib/date-utils';
-import type { RaceQueueEntry, RaceQueueStatus } from '@/types/race-queue.types';
+import type { RaceQueueEntry } from '@/types/race-queue.types';
 
 interface AdminRaceQueueContentProps {
     entries: RaceQueueEntry[];
 }
-
-const STATUS_STYLES: Record<RaceQueueStatus, string> = {
-    pending: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-    done: 'bg-green-100 text-green-800 border-green-200',
-    skipped: 'bg-gray-100 text-gray-700 border-gray-200',
-};
 
 export function AdminRaceQueueContent({ entries }: AdminRaceQueueContentProps) {
     const t = useTranslations('admin.races.queue');
@@ -140,9 +134,6 @@ onChange={(e) => setUrl(e.target.value)}
                                         {t('table.url')}
                                     </th>
                                     <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                                        {t('table.status')}
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                                         {t('table.addedAt')}
                                     </th>
                                     <th className="px-6 py-4" />
@@ -160,13 +151,6 @@ onChange={(e) => setUrl(e.target.value)}
                                             >
                                                 {entry.url}
                                             </a>
-                                        </td>
-                                        <td className="px-6 py-5 whitespace-nowrap">
-                                            <span
-                                                className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLES[entry.status]}`}
-                                            >
-                                                {t(`status.${entry.status}`)}
-                                            </span>
                                         </td>
                                         <td className="px-6 py-5 whitespace-nowrap">
                                             <div className="text-sm text-gray-700">
