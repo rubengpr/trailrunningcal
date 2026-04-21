@@ -10,7 +10,6 @@ import type { ComboboxOption } from '@/components/ui/combobox';
 import { Button } from '@/components/ui/button';
 import { SectionHeader } from '@/components/ui/section-header';
 import { DUMMY_SCRAPED_RACES, ScrapedRacesPreview } from '@/components/race/scraped-races-preview';
-import { BulkProcessTable } from '@/components/admin/bulk-process-table';
 import {
     DUMMY_CRAWL_PAGE_STATS,
     DUMMY_LAST_RUN_DURATION_MS,
@@ -1295,7 +1294,6 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                     onSave={handleSave}
                 />
             )}
-            <BulkProcessTable />
             {jsonView && hasScraped && !isScraping && scrapeError === null && (
                 <div className="max-w-3xl flex flex-col gap-3">
                     <textarea

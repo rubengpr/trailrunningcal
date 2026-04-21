@@ -632,19 +632,6 @@
         "restart": "Reiniciar",
         "usageReasoningTokens": "reasoning",
         "usageTotalTokens": "total",
-        "bulk": {
-          "columns": {
-            "url": "URL",
-            "scrape": "Scrape",
-            "parsing": "Parsing",
-            "state": "Estado"
-          },
-          "state": {
-            "completed": "Completada",
-            "processing": "En proceso",
-            "failed": "Fallida"
-          }
-        },
         "results": {
           "title": "Carreras encontradas",
           "loading": "Buscando carreras en la web... Esto puede tardar hasta 30 segundos.",

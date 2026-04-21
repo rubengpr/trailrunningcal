@@ -635,19 +635,6 @@
         "restart": "Recomençar",
         "usageReasoningTokens": "reasoning",
         "usageTotalTokens": "total",
-        "bulk": {
-          "columns": {
-            "url": "URL",
-            "scrape": "Scrape",
-            "parsing": "Parsing",
-            "state": "Estat"
-          },
-          "state": {
-            "completed": "Completada",
-            "processing": "En procés",
-            "failed": "Fallida"
-          }
-        },
         "results": {
           "title": "Curses trobades",
           "loading": "Cercant curses a la web... Això pot trigar fins a 30 segons.",
