@@ -4,13 +4,7 @@ import { isAdminEmail } from '@/lib/auth-admin';
 import { runTrailRaceMarkdownAgentOpenRouter, runTrailRaceImagesAgentOpenRouter } from '@/lib/agents/trail-race-openrouter';
 import { createOpenRouterClient } from '@/lib/openrouter/openrouter-client';
 import { isOpenRouterScrapeModelId, isOpenRouterVisionModelId } from '@/lib/openrouter/scrape-models';
-import {
-  spiderCloudCrawl,
-  spiderCloudScrape,
-  summarizeSpiderCrawlHttpStatus,
-} from '@/lib/agents/spider-crawl';
-import { joinSpiderCrawlPagesToMarkdown } from '@/lib/agents/spider-crawl-join-markdown';
-import { normalizeUrl } from '@/lib/validation';
+import { scrapeUrlToMarkdown, crawlUrlToMarkdown } from '@/lib/agents/spider-pipeline';
 import { MAX_SCRAPE_MARKDOWN_BYTES } from '@/lib/scrape-markdown-limits';
 import {
   isScrapePipelineMode,
@@ -50,35 +44,6 @@ const EMPTY_CRAWL_PAGE_STATS: CrawlPageStats = {
   errorCount: 0,
 };
 
-async function scrapeUrlToMarkdown(
-  urlStr: string,
-): Promise<{ markdown: string; crawlPageStats: CrawlPageStats }> {
-  const normalizedUrl = normalizeUrl(urlStr);
-  try {
-    new URL(normalizedUrl);
-  } catch {
-    throw new Error('INVALID_URL');
-  }
-  const pages = await spiderCloudScrape(normalizedUrl);
-  const crawlPageStats = summarizeSpiderCrawlHttpStatus(pages);
-  const markdown = joinSpiderCrawlPagesToMarkdown(normalizedUrl, pages);
-  return { markdown, crawlPageStats };
-}
-
-async function crawlUrlToMarkdown(
-  urlStr: string,
-): Promise<{ markdown: string; crawlPageStats: CrawlPageStats }> {
-  const normalizedUrl = normalizeUrl(urlStr);
-  try {
-    new URL(normalizedUrl);
-  } catch {
-    throw new Error('INVALID_URL');
-  }
-  const pages = await spiderCloudCrawl(normalizedUrl);
-  const crawlPageStats = summarizeSpiderCrawlHttpStatus(pages);
-  const markdown = joinSpiderCrawlPagesToMarkdown(normalizedUrl, pages);
-  return { markdown, crawlPageStats };
-}
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {

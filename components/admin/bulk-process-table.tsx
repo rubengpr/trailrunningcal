@@ -3,41 +3,25 @@
 import { useTranslations } from 'next-intl';
 import { formatDurationMs } from '@/lib/format-duration';
 
-type BulkProcessState = 'completed' | 'processing' | 'failed';
+export type BulkProcessState = 'completed' | 'processing' | 'empty' | 'failed';
 
-interface BulkProcessRow {
+export interface BulkProcessTableRow {
     url: string;
     scrapeMs: number | null;
     parseMs: number | null;
     state: BulkProcessState;
 }
 
-const FIXTURE_ROWS: BulkProcessRow[] = [
-    {
-        url: 'https://ultratrailcollserola.cat/inscripcions',
-        scrapeMs: 4200,
-        parseMs: 6800,
-        state: 'completed',
-    },
-    {
-        url: 'https://cursamontserrat.cat/2026',
-        scrapeMs: 3100,
-        parseMs: null,
-        state: 'processing',
-    },
-    {
-        url: 'https://trailpallars.cat/event',
-        scrapeMs: 5300,
-        parseMs: null,
-        state: 'failed',
-    },
-];
+interface BulkProcessTableProps {
+    rows: BulkProcessTableRow[];
+}
 
 function StateBadge({ state }: { state: BulkProcessState }) {
     const t = useTranslations('admin.races.scrape.bulk');
     const dotColor: Record<BulkProcessState, string> = {
         completed: 'bg-green-500',
         processing: 'bg-purple-500',
+        empty: 'bg-amber-400',
         failed: 'bg-red-500',
     };
     return (
@@ -55,8 +39,12 @@ function TimeCell({ ms }: { ms: number | null }) {
     return <span className="tabular-nums text-gray-700">{formatDurationMs(ms)}</span>;
 }
 
-export function BulkProcessTable() {
+export function BulkProcessTable({ rows }: BulkProcessTableProps) {
     const t = useTranslations('admin.races.scrape.bulk');
+
+    if (rows.length === 0) {
+        return null;
+    }
 
     return (
         <div className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-2 shadow-sm">
@@ -71,11 +59,8 @@ export function BulkProcessTable() {
                         </tr>
                     </thead>
                     <tbody>
-                        {FIXTURE_ROWS.map((row, index) => (
-                            <tr
-                                key={index}
-                                className="border-b border-gray-50 last:border-b-0"
-                            >
+                        {rows.map((row, index) => (
+                            <tr key={index} className="border-b border-gray-50 last:border-b-0">
                                 <td className="max-w-[260px] truncate py-2.5 pr-3 text-gray-700">
                                     {row.url.replace(/^https?:\/\/(www\.)?/, '')}
                                 </td>

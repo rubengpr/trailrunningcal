@@ -582,6 +582,7 @@
         "workflowCrawlMdOnly": "Scrap",
         "workflowLlmFromFile": "Parse",
         "workflowCrawlAndLlm": "Full",
+        "workflowAutopilot": "Auto",
         "crawlMdButton": "Scrap",
         "crawlingMarkdown": "Rastreando...",
         "uploadTypeLabel": "Tipo de archivo",
@@ -614,11 +615,14 @@
         "scrapePageError": "Error al obtener la página",
         "llmError": "Error al procesar con el modelo",
         "spiderModeScrape": "Scrapping",
-        "fullPipelineCrawlingWebsite": "Rastreando la web",
+        "fullPipelineCrawlingWebsite": "Crawleando...",
         "fullPipelineWaitingForCrawl": "Esperando el contenido rastreado",
-        "fullPipelineCrawlSuccess": "Sitio rastreado correctamente",
+        "fullPipelineCrawlSuccess": "Sitio crawleado",
         "fullPipelineParsingWithLlm": "Analizando el contenido con el modelo",
         "fullPipelineParseSuccess": "Parsing completado",
+        "autopilotProcessing": "Scrapeando...",
+        "autopilotScrapeSuccess": "Sitio scrappeado",
+        "autopilotParseEmptyFallback": "Parsing completo y sin carreras",
         "fullPipelineStepDuration": "{duration}",
         "runDurationRunning": "Tiempo: {duration}",
         "runDurationComplete": "Tiempo total: {duration}",
@@ -633,6 +637,11 @@
         "usageReasoningTokens": "reasoning",
         "usageTotalTokens": "total",
         "bulk": {
+          "urlLabel": "URL del sitio web",
+          "modelLabel": "Modelo",
+          "runButton": "Ejecutar",
+          "running": "Ejecutando...",
+          "runError": "Error al ejecutar el proceso automático",
           "columns": {
             "url": "URL",
             "scrape": "Scrape",
@@ -642,6 +651,7 @@
           "state": {
             "completed": "Completada",
             "processing": "En proceso",
+            "empty": "Sin carreras",
             "failed": "Fallida"
           }
         },

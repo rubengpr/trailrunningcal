@@ -585,6 +585,7 @@
         "workflowCrawlMdOnly": "Scrap",
         "workflowLlmFromFile": "Parse",
         "workflowCrawlAndLlm": "Full",
+        "workflowAutopilot": "Auto",
         "crawlMdButton": "Scrap",
         "crawlingMarkdown": "Rastrejant...",
         "uploadTypeLabel": "Tipus d'arxiu",
@@ -617,11 +618,14 @@
         "scrapePageError": "Error en obtenir la pàgina",
         "llmError": "Error en processar amb el model",
         "spiderModeScrape": "Scrapping",
-        "fullPipelineCrawlingWebsite": "Rastrejant la web",
+        "fullPipelineCrawlingWebsite": "Crawlejant...",
         "fullPipelineWaitingForCrawl": "Esperant el contingut rastrejat",
-        "fullPipelineCrawlSuccess": "Lloc rastrejat correctament",
+        "fullPipelineCrawlSuccess": "Lloc crawlejat",
         "fullPipelineParsingWithLlm": "Processant el contingut amb el model",
         "fullPipelineParseSuccess": "Processament completat",
+        "autopilotProcessing": "Scrapeant...",
+        "autopilotScrapeSuccess": "Lloc scrappejat",
+        "autopilotParseEmptyFallback": "Parsing complet i sense curses",
         "fullPipelineStepDuration": "{duration}",
         "runDurationRunning": "Temps: {duration}",
         "runDurationComplete": "Temps total: {duration}",
@@ -636,6 +640,11 @@
         "usageReasoningTokens": "reasoning",
         "usageTotalTokens": "total",
         "bulk": {
+          "urlLabel": "URL del lloc web",
+          "modelLabel": "Model",
+          "runButton": "Executar",
+          "running": "Executant...",
+          "runError": "Error en executar el procés automàtic",
           "columns": {
             "url": "URL",
             "scrape": "Scrape",
@@ -645,6 +654,7 @@
           "state": {
             "completed": "Completada",
             "processing": "En procés",
+            "empty": "Sense curses",
             "failed": "Fallida"
           }
         },

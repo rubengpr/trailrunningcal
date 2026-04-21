@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { SectionHeader } from '@/components/ui/section-header';
 import { DUMMY_SCRAPED_RACES, ScrapedRacesPreview } from '@/components/race/scraped-races-preview';
 import { BulkProcessTable } from '@/components/admin/bulk-process-table';
+import type { BulkProcessTableRow } from '@/components/admin/bulk-process-table';
 import {
     DUMMY_CRAWL_PAGE_STATS,
     DUMMY_LAST_RUN_DURATION_MS,
@@ -37,7 +38,7 @@ import type { TrailRaceAgentRaceRow } from '@/types/trail-race-agent.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 import type { RaceQueueEntry } from '@/types/race-queue.types';
 
-type ScrapeWorkflow = 'crawlMdOnly' | 'llmFromFile' | 'crawlAndLlm';
+type ScrapeWorkflow = 'crawlMdOnly' | 'llmFromFile' | 'crawlAndLlm' | 'autopilot';
 
 type ScrapePhase = 'idle' | 'crawling' | 'llm';
 
@@ -48,6 +49,16 @@ interface FullPipelineRowConfig {
     /** Translation key for title line (omit when kind is pending). */
     titleKey?: string;
     errorDetail?: string | null;
+}
+
+interface PersistedPipelineRow {
+    kind: FullPipelineRowKind;
+    titleKey?: string;
+    errorDetail?: string | null;
+    durationMs: number | null;
+    crawlPageStats?: CrawlPageStats | null;
+    markdownTokenEstimate?: number | null;
+    markdownCharCount?: number | null;
 }
 
 function FullPipelineRowIcon({ kind }: { kind: FullPipelineRowKind }): React.ReactElement {
@@ -140,7 +151,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
     const fullPipelineLlmStartedAtRef = useRef<number | null>(null);
     const fullPipelineLlmEndedAtRef = useRef<number | null>(null);
 
-    const [workflow, setWorkflow] = useState<ScrapeWorkflow>('crawlAndLlm');
+    const [workflow, setWorkflow] = useState<ScrapeWorkflow>('autopilot');
     const [isSinglePageScrape, setIsSinglePageScrape] = useState(false);
     const [websiteUrl, setWebsiteUrl] = useState('');
     const [uploadedMarkdown, setUploadedMarkdown] = useState<string | null>(null);
@@ -174,6 +185,9 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
     const [jsonView, setJsonView] = useState(false);
     const [jsonEditorValue, setJsonEditorValue] = useState('');
     const [jsonEditorError, setJsonEditorError] = useState<string | null>(null);
+    const [bulkRows, setBulkRows] = useState<BulkProcessTableRow[]>([]);
+    const [autopilotFallbackUsed, setAutopilotFallbackUsed] = useState<boolean | null>(null);
+    const [persistedPipelineRows, setPersistedPipelineRows] = useState<PersistedPipelineRow[]>([]);
 
     const uploadKind: 'markdown' | 'images' | null =
         uploadedMarkdown !== null ? 'markdown' :
@@ -193,7 +207,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
 
     const canRunScrape =
         !isScraping &&
-        (workflow === 'crawlMdOnly' || workflow === 'crawlAndLlm'
+        (workflow === 'crawlMdOnly' || workflow === 'crawlAndLlm' || workflow === 'autopilot'
             ? isValidUrl(websiteUrl)
             : uploadKind === 'images'
               ? uploadedImages.length > 0
@@ -415,12 +429,154 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
         setJsonView(false);
         setJsonEditorValue('');
         setJsonEditorError(null);
+        setPersistedPipelineRows([]);
 
         const fetchPageFn = isSinglePageScrape
             ? scrapeEventPageMarkdown
             : crawlEventWebsiteMarkdown;
 
         try {
+            if (workflow === 'autopilot') {
+                const normalizedUrl = normalizeUrl(websiteUrl.trim());
+                setFullPipelineUiActive(true);
+                setAutopilotFallbackUsed(false);
+                setScrapePhase('crawling');
+                fullPipelineCrawlStartedAtRef.current = performance.now();
+
+                const todayStr = new Date().toISOString().split('T')[0];
+
+                // Attempt 1: single-page scrape
+                let scrapeData;
+                try {
+                    scrapeData = await scrapeEventPageMarkdown(normalizedUrl);
+                } catch (scrapeErr) {
+                    fullPipelineCrawlEndedAtRef.current = performance.now();
+                    const errorMessage = scrapeErr instanceof Error ? scrapeErr.message : t('scrapePageError');
+                    setScrapeError(errorMessage);
+                    setHasScraped(true);
+                    toast.error(t('scrapePageError'));
+                    return;
+                }
+                const scrapeEndedAt = performance.now();
+                fullPipelineCrawlEndedAtRef.current = scrapeEndedAt;
+                fullPipelineLlmStartedAtRef.current = scrapeEndedAt;
+                setScrapeMarkdown(scrapeData.markdown);
+                setCrawlPageStats(scrapeData.crawlPageStats);
+                setScrapePhase('llm');
+
+                let llmData1;
+                try {
+                    llmData1 = await scrapeRaces({
+                        mode: 'llmFromMarkdown',
+                        markdown: scrapeData.markdown,
+                        model: selectedModelId,
+                    });
+                } catch (llmErr) {
+                    fullPipelineLlmEndedAtRef.current = performance.now();
+                    const errorMessage = llmErr instanceof Error ? llmErr.message : t('llmError');
+                    setScrapeError(errorMessage);
+                    setHasScraped(true);
+                    toast.error(t('llmError'));
+                    return;
+                }
+
+                const futureRaces1 = llmData1.races.filter((r) => r.date >= todayStr);
+                if (futureRaces1.length > 0) {
+                    fullPipelineLlmEndedAtRef.current = performance.now();
+                    setScrapedRaces(futureRaces1);
+                    setRawModelOutput(llmData1.rawModelOutput);
+                    setScrapeUsage(llmData1.usage);
+                    setHasScraped(true);
+                    return;
+                }
+
+                // Snapshot attempt 1 rows before resetting for the fallback.
+                const attempt1ScrapeMs =
+                    fullPipelineCrawlStartedAtRef.current !== null &&
+                    fullPipelineCrawlEndedAtRef.current !== null
+                        ? Math.round(
+                              fullPipelineCrawlEndedAtRef.current -
+                                  fullPipelineCrawlStartedAtRef.current,
+                          )
+                        : null;
+                const attempt1ParseEndedAt = performance.now();
+                const attempt1ParseMs =
+                    fullPipelineLlmStartedAtRef.current !== null
+                        ? Math.round(
+                              attempt1ParseEndedAt - fullPipelineLlmStartedAtRef.current,
+                          )
+                        : null;
+                setPersistedPipelineRows([
+                    {
+                        kind: 'success',
+                        titleKey: 'autopilotScrapeSuccess',
+                        durationMs: attempt1ScrapeMs,
+                        crawlPageStats: scrapeData.crawlPageStats,
+                        markdownTokenEstimate: estimateMarkdownTokensHeuristic(scrapeData.markdown),
+                        markdownCharCount: markdownTrimmedCharCount(scrapeData.markdown),
+                    },
+                    {
+                        kind: 'success',
+                        titleKey: 'autopilotParseEmptyFallback',
+                        durationMs: attempt1ParseMs,
+                    },
+                ]);
+
+                // Attempt 2: full crawl fallback
+                setAutopilotFallbackUsed(true);
+                setScrapePhase('crawling');
+                fullPipelineCrawlStartedAtRef.current = performance.now();
+                fullPipelineCrawlEndedAtRef.current = null;
+                fullPipelineLlmStartedAtRef.current = null;
+                fullPipelineLlmEndedAtRef.current = null;
+                setCrawlPageStats(null);
+                setScrapeMarkdown(null);
+                setScrapeUsage(null);
+                setRawModelOutput(null);
+
+                let crawlData;
+                try {
+                    crawlData = await crawlEventWebsiteMarkdown(normalizedUrl);
+                } catch (crawlErr) {
+                    fullPipelineCrawlEndedAtRef.current = performance.now();
+                    const errorMessage = crawlErr instanceof Error ? crawlErr.message : t('crawlError');
+                    setScrapeError(errorMessage);
+                    setHasScraped(true);
+                    toast.error(t('crawlError'));
+                    return;
+                }
+                const crawlEndedAt = performance.now();
+                fullPipelineCrawlEndedAtRef.current = crawlEndedAt;
+                fullPipelineLlmStartedAtRef.current = crawlEndedAt;
+                setScrapeMarkdown(crawlData.markdown);
+                setCrawlPageStats(crawlData.crawlPageStats);
+                setScrapePhase('llm');
+
+                let llmData2;
+                try {
+                    llmData2 = await scrapeRaces({
+                        mode: 'llmFromMarkdown',
+                        markdown: crawlData.markdown,
+                        model: selectedModelId,
+                    });
+                } catch (llmErr) {
+                    fullPipelineLlmEndedAtRef.current = performance.now();
+                    const errorMessage = llmErr instanceof Error ? llmErr.message : t('llmError');
+                    setScrapeError(errorMessage);
+                    setHasScraped(true);
+                    toast.error(t('llmError'));
+                    return;
+                }
+
+                fullPipelineLlmEndedAtRef.current = performance.now();
+                const futureRaces2 = llmData2.races.filter((r) => r.date >= todayStr);
+                setScrapedRaces(futureRaces2);
+                setRawModelOutput(llmData2.rawModelOutput);
+                setScrapeUsage(llmData2.usage);
+                setHasScraped(true);
+                return;
+            }
+
             if (workflow === 'crawlMdOnly') {
                 const normalizedUrl = normalizeUrl(websiteUrl.trim());
                 const data = await fetchPageFn(normalizedUrl);
@@ -637,6 +793,8 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
         setScrapePhase('idle');
         setFullPipelineUiActive(false);
         clearFullPipelineStepRefs();
+        setAutopilotFallbackUsed(null);
+        setPersistedPipelineRows([]);
         if (markdownFileInputRef.current) {
             markdownFileInputRef.current.value = '';
         }
@@ -673,14 +831,18 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
             : hasScraped && scrapeError !== null;
 
     const primaryButtonLabel =
-        workflow === 'crawlMdOnly' ? t('crawlMdButton') : t('scrapeButton');
+        workflow === 'crawlMdOnly' ? t('crawlMdButton') :
+        workflow === 'autopilot' ? t('bulk.runButton') :
+        t('scrapeButton');
 
     const primaryLoadingLabel =
         workflow === 'crawlMdOnly'
             ? t('crawlingMarkdown')
-            : workflow === 'crawlAndLlm' && scrapePhase === 'crawling'
-                ? t('crawlingMarkdown')
-                : t('scraping');
+            : workflow === 'autopilot'
+                ? t('bulk.running')
+                : workflow === 'crawlAndLlm' && scrapePhase === 'crawling'
+                    ? t('crawlingMarkdown')
+                    : t('scraping');
 
     const showLlmMetricsUi = workflow !== 'crawlMdOnly';
 
@@ -714,7 +876,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
         row1: FullPipelineRowConfig;
         row2: FullPipelineRowConfig;
     } | null => {
-        if (workflow !== 'crawlAndLlm' || !fullPipelineUiActive) {
+        if ((workflow !== 'crawlAndLlm' && workflow !== 'autopilot') || !fullPipelineUiActive) {
             return null;
         }
         if (!isScraping && !hasScraped) {
@@ -722,7 +884,8 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
         }
         let row1: FullPipelineRowConfig;
         if (isScraping && scrapePhase === 'crawling') {
-            row1 = { kind: 'loading', titleKey: 'fullPipelineCrawlingWebsite' };
+            const autopilotLoadingKey = autopilotFallbackUsed ? 'fullPipelineCrawlingWebsite' : 'autopilotProcessing';
+            row1 = { kind: 'loading', titleKey: workflow === 'autopilot' ? autopilotLoadingKey : 'fullPipelineCrawlingWebsite' };
         } else if (isScraping && scrapePhase === 'llm') {
             row1 = { kind: 'success', titleKey: 'fullPipelineCrawlSuccess' };
         } else if (!isScraping && hasScraped && scrapeError && !scrapeMarkdown) {
@@ -730,7 +893,10 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
         } else if (!isScraping && hasScraped && scrapeError && scrapeMarkdown) {
             row1 = { kind: 'success', titleKey: 'fullPipelineCrawlSuccess' };
         } else if (!isScraping && hasScraped && !scrapeError) {
-            row1 = { kind: 'success', titleKey: 'fullPipelineCrawlSuccess' };
+            const successKey = workflow === 'autopilot' && autopilotFallbackUsed === false
+                ? 'autopilotScrapeSuccess'
+                : 'fullPipelineCrawlSuccess';
+            row1 = { kind: 'success', titleKey: successKey };
         } else if (isScraping) {
             row1 = { kind: 'loading', titleKey: 'fullPipelineCrawlingWebsite' };
         } else {
@@ -763,16 +929,17 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
         scrapePhase,
         scrapeError,
         scrapeMarkdown,
+        autopilotFallbackUsed,
     ]);
 
     const showMarkdownEstimateBesideCrawlPageStats =
-        workflow === 'crawlAndLlm' &&
+        (workflow === 'crawlAndLlm' || workflow === 'autopilot') &&
         fullPipelineSteps !== null &&
         crawlPageStats !== null &&
         showMarkdownEstimateLine;
 
     const fullPipelineCrawlStepMs = useMemo((): number | null => {
-        if (workflow !== 'crawlAndLlm' || !fullPipelineUiActive) {
+        if ((workflow !== 'crawlAndLlm' && workflow !== 'autopilot') || !fullPipelineUiActive) {
             return null;
         }
         if (fullPipelineCrawlStartedAtRef.current === null) {
@@ -790,7 +957,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
     }, [workflow, fullPipelineUiActive, isScraping, scrapePhase, liveElapsedMs]);
 
     const fullPipelineLlmStepMs = useMemo((): number | null => {
-        if (workflow !== 'crawlAndLlm' || !fullPipelineUiActive) {
+        if ((workflow !== 'crawlAndLlm' && workflow !== 'autopilot') || !fullPipelineUiActive) {
             return null;
         }
         if (fullPipelineLlmStartedAtRef.current === null) {
@@ -816,6 +983,22 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
             <div className="max-w-3xl rounded-2xl border border-gray-100 bg-white p-6 shadow-sm sm:p-8">
                 <div className="space-y-6">
                     <div className="inline-flex rounded-lg border border-gray-200 bg-gray-50/80 p-1">
+                        <button
+                            type="button"
+                            onClick={() => handleWorkflowChange('autopilot')}
+                            disabled={isScraping}
+                            className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${workflow === 'autopilot'
+                                ? 'bg-white text-gray-900 shadow-sm'
+                                : 'text-gray-600 hover:text-gray-900'
+                                }`}
+                        >
+                            <span className="inline-flex items-center gap-1.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
+                                </svg>
+                                {t('workflowAutopilot')}
+                            </span>
+                        </button>
                         <button
                             type="button"
                             onClick={() => handleWorkflowChange('crawlAndLlm')}
@@ -851,7 +1034,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                         </button>
                     </div>
 
-                    {(workflow === 'crawlMdOnly' || workflow === 'crawlAndLlm') && (
+                    {(workflow === 'crawlMdOnly' || workflow === 'crawlAndLlm' || workflow === 'autopilot') && (
                         <div className="grid gap-2 w-full">
                             <Combobox
                                 id="websiteUrl"
@@ -862,7 +1045,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                                 placeholder={t('websiteUrlPlaceholder')}
                                 disabled={isScraping}
                             />
-                            <label className="flex items-center gap-1.5 cursor-pointer w-fit">
+                            {workflow !== 'autopilot' && <label className="flex items-center gap-1.5 cursor-pointer w-fit">
                                 <div className="relative h-3 w-3 shrink-0">
                                     <input
                                         type="checkbox"
@@ -880,7 +1063,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                                     </svg>
                                 </div>
                                 <span className="text-xs text-gray-500">{t('spiderModeScrape')}</span>
-                            </label>
+                            </label>}
                         </div>
                     )}
 
@@ -1004,7 +1187,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                         </>
                     )}
 
-                    {(workflow === 'crawlAndLlm' || (workflow === 'llmFromFile' && uploadKind !== 'images')) && (
+                    {(workflow === 'crawlAndLlm' || workflow === 'autopilot' || (workflow === 'llmFromFile' && uploadKind !== 'images')) && (
                         <FormSelect
                             id="openrouterModel"
                             label={t('modelLabel')}
@@ -1086,8 +1269,78 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                             <RestartIcon className="h-5 w-5" />
                         </Button>
                     </div>
-                    {fullPipelineSteps !== null && (
+                    {(fullPipelineSteps !== null || persistedPipelineRows.length > 0) && (
                         <div className="space-y-3 border-t border-gray-100 pt-4">
+                            {persistedPipelineRows.map((row, idx) => (
+                                <div key={`persisted-${idx}`} className="flex items-start gap-3">
+                                    <div className="flex h-5 w-4 shrink-0 flex-col items-center justify-center">
+                                        <FullPipelineRowIcon kind={row.kind} />
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                        {row.titleKey !== undefined && (
+                                            <>
+                                                <p
+                                                    className={`flex flex-wrap items-center gap-x-2 text-sm font-medium leading-5 ${row.kind === 'error'
+                                                        ? 'text-red-700'
+                                                        : 'text-gray-900'
+                                                        }`}
+                                                >
+                                                    <span>{t(row.titleKey)}</span>
+                                                    {row.durationMs !== null && (
+                                                        <span className="text-xs font-normal text-gray-500 tabular-nums">
+                                                            {t('fullPipelineStepDuration', {
+                                                                duration: formatDurationMs(row.durationMs),
+                                                            })}
+                                                        </span>
+                                                    )}
+                                                    {row.crawlPageStats && (
+                                                        <span className="inline-flex flex-wrap items-center gap-1.5">
+                                                            <span className="inline-flex items-center rounded-full border border-gray-200/80 bg-gray-100 px-2 text-[11px] font-medium text-gray-800 tabular-nums">
+                                                                {t('crawledPagesTotal', {
+                                                                    scrapedPages: row.crawlPageStats.total,
+                                                                })}
+                                                            </span>
+                                                            <span className="inline-flex items-center rounded-full border border-green-200/80 bg-green-100 px-2 text-[11px] font-medium text-green-800 tabular-nums">
+                                                                {t('crawledPagesHttpSuccess', {
+                                                                    successPages: row.crawlPageStats.successCount,
+                                                                })}
+                                                            </span>
+                                                            <span className="inline-flex items-center rounded-full border border-red-200/80 bg-red-100 px-2 text-[11px] font-medium text-red-800 tabular-nums">
+                                                                {t('crawledPagesHttpError', {
+                                                                    errorPages: row.crawlPageStats.errorCount,
+                                                                })}
+                                                            </span>
+                                                            {row.markdownTokenEstimate !== null &&
+                                                                row.markdownTokenEstimate !== undefined &&
+                                                                row.markdownCharCount !== null &&
+                                                                row.markdownCharCount !== undefined && (
+                                                                    <span className="text-xs font-normal text-gray-500 tabular-nums">
+                                                                        <span className="font-bold text-gray-700">
+                                                                            {row.markdownTokenEstimate}
+                                                                        </span>{' '}
+                                                                        {t('markdownStatTokensLabel')}
+                                                                        {' · '}
+                                                                        <span className="font-bold text-gray-700">
+                                                                            {row.markdownCharCount}
+                                                                        </span>{' '}
+                                                                        {t('markdownStatCharactersLabel')}
+                                                                    </span>
+                                                                )}
+                                                        </span>
+                                                    )}
+                                                </p>
+                                                {row.errorDetail && (
+                                                    <p className="mt-0.5 text-xs text-red-600">
+                                                        {row.errorDetail}
+                                                    </p>
+                                                )}
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                            {fullPipelineSteps !== null && (
+                            <>
                             <div className="flex items-start gap-3">
                                 <div className="flex h-5 w-4 shrink-0 flex-col items-center justify-center">
                                     <FullPipelineRowIcon kind={fullPipelineSteps.row1.kind} />
@@ -1109,7 +1362,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                                                         })}
                                                     </span>
                                                 )}
-                                                {workflow === 'crawlAndLlm' && crawlPageStats !== null && (
+                                                {(workflow === 'crawlAndLlm' || workflow === 'autopilot') && crawlPageStats !== null && (
                                                     <span className="inline-flex flex-wrap items-center gap-1.5">
                                                         <span className="inline-flex items-center rounded-full border border-gray-200/80 bg-gray-100 px-2 text-[11px] font-medium text-gray-800 tabular-nums">
                                                             {t('crawledPagesTotal', {
@@ -1190,6 +1443,8 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                                     )}
                                 </div>
                             </div>
+                            </>
+                            )}
                         </div>
                     )}
                     {workflow === 'crawlMdOnly' && crawlPageStats !== null && (
@@ -1295,7 +1550,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                     onSave={handleSave}
                 />
             )}
-            <BulkProcessTable />
+            <BulkProcessTable rows={bulkRows} />
             {jsonView && hasScraped && !isScraping && scrapeError === null && (
                 <div className="max-w-3xl flex flex-col gap-3">
                     <textarea
