@@ -124,39 +124,27 @@ export async function POST(request: NextRequest) {
 
     const dbClient = isAdmin ? createAdminClient() : supabase;
 
-    const { data: newRace, error: insertError } = await dbClient
-      .from('races')
-      .insert({
-        name: name.trim(),
-        date,
-        distance_km: distanceKm,
-        elevation_gain_m: elevationGainM,
-        website_url: websiteUrl,
-        city: city.trim(),
-        province: province.trim(),
-        description: descResult.value,
-        organizer_id: organizerId,
-      })
-      .select('id')
-      .single();
+    const { data: newRaceId, error: createRaceError } = await dbClient.rpc('create_race_with_tier', {
+      p_name: name.trim(),
+      p_date: date,
+      p_distance_km: distanceKm,
+      p_elevation_gain_m: elevationGainM,
+      p_website_url: websiteUrl,
+      p_city: city.trim(),
+      p_province: province.trim(),
+      p_description: descResult.value,
+      p_organizer_id: organizerId,
+      p_price_eur: priceEur,
+    });
 
-    if (insertError || !newRace) {
-      console.error('Insert error:', insertError);
+    if (createRaceError || !newRaceId) {
+      console.error('Create race transaction error:', createRaceError);
       return NextResponse.json({ error: 'Failed to create race' }, { status: 500 });
-    }
-
-    const { error: tierError } = await dbClient
-      .from('race_tiers')
-      .insert({ race_id: newRace.id, price_eur: priceEur });
-
-    if (tierError) {
-      console.error('Race tier insert error:', tierError);
-      return NextResponse.json({ error: 'Failed to create race price' }, { status: 500 });
     }
 
     revalidateHomepages();
 
-    return NextResponse.json({ success: true, data: { id: newRace.id } }, { status: 201 });
+    return NextResponse.json({ success: true, data: { id: newRaceId } }, { status: 201 });
   } catch (error) {
     console.error('API error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
