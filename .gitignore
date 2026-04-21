@@ -25,6 +25,9 @@
 .DS_Store
 *.pem
 
+# Claude Code local worktrees (not part of this repo)
+.claude/worktrees/
+
 # geocode script cache (Nominatim — do not commit)
 scripts/.cache/
 
