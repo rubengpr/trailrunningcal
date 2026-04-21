@@ -34,6 +34,49 @@ The product is geographically scoped to Catalonia and focused on trail/mountain 
 
 Always run `pnpm tsc --noEmit` before pushing to catch TypeScript errors locally. Vercel runs a full type check on every build — failures there mean a broken deployment.
 
+## Cross-agent engineering conventions
+
+These rules are canonical for all coding agents working in this repo.
+
+### API contract
+
+- API responses should follow:
+  - Success: `{ success: true, data }`
+  - Error: `{ error: string }`
+- Use appropriate HTTP status codes (`400`, `401`, `403`, `404`, `429`, `500`).
+
+### Auth and authorization
+
+- For protected API routes, call `supabase.auth.getUser()` early and return `401` if missing/invalid.
+- Enforce role/ownership checks before any mutation.
+
+### Validation and sanitization
+
+- Validate and sanitize all server-side inputs before DB or external calls.
+- Do not rely on client-side validation for integrity or security.
+
+### Database transaction convention
+
+- Multi-table writes must be atomic.
+- Do not orchestrate split multi-table writes directly in route handlers.
+- Use Postgres functions (`plpgsql`) called via `supabase.rpc(...)` for transactional workflows.
+- Prefer `SECURITY INVOKER` and explicit `GRANT EXECUTE` to required roles.
+
+### Error handling
+
+- Wrap API handler logic in `try/catch`.
+- Log internal errors server-side (`console.error`) and return safe, generic error responses.
+
+### i18n and user-facing copy
+
+- Do not hardcode user-facing strings in UI flows; define them in locale translation files.
+
+### Secrets and env vars
+
+- Never commit secrets.
+- Use environment variables for credentials and keys.
+- Only expose client-safe values through `NEXT_PUBLIC_*`.
+
 ## Essential tech stack
 
 Next.js App Router, React, TypeScript, Tailwind. next-intl for es/ca locale URLs. Supabase for DB, auth, and storage. MapLibre for maps. MDX for blog. PostHog + Resend; Vitest for tests. Admin flows may use OpenAI / OpenRouter. Prod site: trailrunningcal.com
