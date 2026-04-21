@@ -2,37 +2,28 @@
 
 Product and positioning reference for AI agents. For code style and engineering conventions, see `CLAUDE.md` and `.cursor/rules/`.
 
-## What it is
+## Product context (compact)
 
-Trail Running Cal (**Trail Running Calendar** in SEO/schema) is a bilingual (Spanish + Catalan) web product at [https://www.trailrunningcal.com](https://www.trailrunningcal.com) that helps people discover and plan trail and mountain races in Catalonia, Spain.
+- Trail Running Cal (**Trail Running Calendar** in SEO/schema) is a bilingual (es/ca) trail-race discovery platform focused on Catalonia, Spain.
+- Core value: curated, up-to-date race calendar with filters (month, province, distance, type, difficulty) plus map/list discovery.
+- Primary audience: runners discovering, comparing, saving, and sharing races.
+- Surface area: public race pages + blog + authenticated organizer/admin workflows for curation.
+- Positioning: regional authority for Catalonia trail racing; not a global or road-running event directory.
+- Strategic direction: become the default discovery layer for Spain through SEO, data quality, and local trust.
 
-## Core user promise
+## Main metrics (March 2026)
 
-A single, maintained calendar of races across all Catalan provinces (Barcelona, Girona, Lleida, Tarragona), from popular races to ultras, with search and filters (e.g. month, province, distance, race type, difficulty) and a map + list experience so runners can find their next event.
+| Metric | Value |
+| --- | --- |
+| Monthly visits | ~3,000 |
+| Listed events | ~600 |
+| MoM visits growth | 100% |
+| Mobile share | 67% |
+| Organic traffic (Google Search) | 85% |
 
-## Audience
+## Essential tech stack
 
-Main user: runners looking for races, saving favorites, and sharing race pages.
-
-## Product surface (high level)
-
-Public calendar and race detail pages, category/programmatic-style exploration (distance/type verticals), blog (trail content around Catalonia: training, nutrition, performance), contact, and authenticated areas implied by the stack (e.g. profile, admin-style tooling in the codebase for curation).
-
-## Current positioning
-
-Regional authority: “reference platform” / “most complete calendar” for trail running in Catalonia, not a generic global race DB.
-
-## Vision / ambition (inferred from positioning)
-
-Be the default discovery layer for trail racing in Spain—strong SEO and structured data, local language, and trust via curation, organizer relationships, and up-to-date listings.
-
-## Non-goals (implicit)
-
-The product is geographically scoped to Catalonia and focused on trail/mountain events, not road-running calendars or worldwide coverage.
-
-## Pre-push checklist
-
-Always run `pnpm tsc --noEmit` before pushing to catch TypeScript errors locally. Vercel runs a full type check on every build — failures there mean a broken deployment.
+Next.js App Router, React, TypeScript, Tailwind. next-intl for es/ca locale URLs. Supabase for DB, auth, and storage. MapLibre for maps. MDX for blog. PostHog + Resend; Vitest for tests. Admin scrape flows currently run via OpenRouter (using the OpenAI SDK-compatible client). Prod site: trailrunningcal.com
 
 ## Cross-agent engineering conventions
 
@@ -77,20 +68,19 @@ These rules are canonical for all coding agents working in this repo.
 - Use environment variables for credentials and keys.
 - Only expose client-safe values through `NEXT_PUBLIC_*`.
 
-## Essential tech stack
+### Code style
 
-Next.js App Router, React, TypeScript, Tailwind. next-intl for es/ca locale URLs. Supabase for DB, auth, and storage. MapLibre for maps. MDX for blog. PostHog + Resend; Vitest for tests. Admin flows may use OpenAI / OpenRouter. Prod site: trailrunningcal.com
+- Use camelCase with descriptive names for functions and variables.
+- Use descriptive error variable names with context.
+- Use kebab-case with file type/purpose in name.
+- Use UPPER_SNAKE_CASE for constants.
+- Organize assets by type/purpose, use kebab-case naming.
+- Generate internal URLs, paths, and links without trailing slashes.
+- Accessibility ARIA attributes or references are not needed.
+- Never hardcode user-facing strings. Define text in translation files.
+- Never use native error messages for inputs.
+- Use Supabase query builder methods (`from`, `select`, `insert`, `update`, `delete`) for database operations.
 
-## Main metrics (March 2026)
+## Pre-push checklist
 
-| Metric | Value |
-| --- | --- |
-| Monthly visits | ~3,000 |
-| Listed events | ~600 |
-| MoM visits growth | 100% |
-| Mobile share | 67% |
-| Organic traffic (Google Search) | 85% |
-
-## Analytics note (implementation)
-
-Product usage is instrumented via PostHog (proxied `/ingest`), Vercel Analytics, and possibly Cloudflare Web Analytics; headline numbers above are business snapshots and may not live in the repo.
+Always run `pnpm tsc --noEmit` before pushing to catch TypeScript errors locally. Vercel runs a full type check on every build — failures there mean a broken deployment.
