@@ -143,12 +143,18 @@ export default function MapaCalendarMapClient({
 
   const handleDistanceSelect = (distance: string[]) => {
     setSelectedDistance(distance);
-    setTimeout(() => posthog.capture('race_distance_filter_applied', { distance }), 0);
+    setTimeout(() => {
+      posthog.capture('race_distance_filter_applied', { distance });
+      if (isControlVariant) posthog.capture('filters_applied', { variant: 'control' });
+    }, 0);
   };
 
   const handleRaceTypeSelect = (raceType: string[]) => {
     setSelectedRaceType(raceType);
-    setTimeout(() => posthog.capture('race_type_filter_applied', { raceType }), 0);
+    setTimeout(() => {
+      posthog.capture('race_type_filter_applied', { raceType });
+      if (isControlVariant) posthog.capture('filters_applied', { variant: 'control' });
+    }, 0);
   };
 
   const handleRetry = () => {
