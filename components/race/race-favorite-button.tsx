@@ -1,10 +1,11 @@
 'use client';
 
 import toast from 'react-hot-toast';
-import posthog from 'posthog-js';
 import { useTranslations } from 'next-intl';
 import { useFavorites } from '@/hooks/use-favorites';
 import { FavoriteButton } from './favorite-button';
+import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
+import { track } from '@/lib/analytics/track';
 
 interface RaceFavoriteButtonProps {
   raceId: string;
@@ -27,7 +28,7 @@ export function RaceFavoriteButton({ raceId, saveLabel, removeLabel, iconOnly, c
 
   const handleToggle = () => {
     const wasFavorited = favorited;
-    posthog.capture('race_favorite_clicked', {
+    track(ANALYTICS_EVENTS.RACE_FAVORITE_CLICKED, {
       race_id: raceId,
       action: wasFavorited ? 'remove' : 'save',
     });

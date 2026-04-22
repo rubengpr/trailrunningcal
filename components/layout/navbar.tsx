@@ -9,6 +9,8 @@ import posthog from 'posthog-js';
 import { createClient } from '@/lib/supabase/client';
 import { useFavorites } from '@/hooks/use-favorites';
 import { useMobileFilters } from '@/components/providers/mobile-filters-provider';
+import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
+import { track } from '@/lib/analytics/track';
 
 export default function Navbar() {
   const t = useTranslations('navigation');
@@ -80,7 +82,7 @@ export default function Navbar() {
   };
 
   const logoClickHandler = () =>
-    setTimeout(() => posthog.capture('navbar_link_clicked', {
+    setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, {
       link_text: 'home_logo',
       link_href: `/${locale}`,
       locale,
@@ -164,7 +166,7 @@ export default function Navbar() {
               href={`/${locale}/mis-carreras`}
               className="relative p-1 hover:text-gray-900 transition-colors"
               onClick={() =>
-                setTimeout(() => posthog.capture('navbar_link_clicked', {
+                setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, {
                   link_text: 'my_races',
                   link_href: `/${locale}/mis-carreras`,
                   locale,
@@ -192,11 +194,11 @@ export default function Navbar() {
                 <div className="absolute top-full right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[320px] p-3 flex gap-6">
                   <div className="flex-1">
                     <p className="px-2 pb-1 text-xs font-semibold text-gray-400 uppercase tracking-wide">{t('categoriesHeading')}</p>
-                    <Link href={`/${locale}/ultra-trail`} className="block px-2 py-1.5 text-sm rounded hover:bg-gray-50 transition-colors" onClick={() => { setIsCategoriesOpen(false); setTimeout(() => posthog.capture('navbar_link_clicked', { link_text: 'ultra_trail', link_href: `/${locale}/ultra-trail`, locale }), 0); }}>{t('ultraTrail')}</Link>
-                    <Link href={`/${locale}/maraton`} className="block px-2 py-1.5 text-sm rounded hover:bg-gray-50 transition-colors" onClick={() => { setIsCategoriesOpen(false); setTimeout(() => posthog.capture('navbar_link_clicked', { link_text: 'maraton', link_href: `/${locale}/maraton`, locale }), 0); }}>{t('maraton')}</Link>
-                    <Link href={`/${locale}/media-maraton`} className="block px-2 py-1.5 text-sm rounded hover:bg-gray-50 transition-colors" onClick={() => { setIsCategoriesOpen(false); setTimeout(() => posthog.capture('navbar_link_clicked', { link_text: 'media_maraton', link_href: `/${locale}/media-maraton`, locale }), 0); }}>{t('mediaMaraton')}</Link>
-                    <Link href={`/${locale}/marcha`} className="block px-2 py-1.5 text-sm rounded hover:bg-gray-50 transition-colors" onClick={() => { setIsCategoriesOpen(false); setTimeout(() => posthog.capture('navbar_link_clicked', { link_text: 'marcha', link_href: `/${locale}/marcha`, locale }), 0); }}>{t('marcha')}</Link>
-                    <Link href={`/${locale}/km-vertical`} className="block px-2 py-1.5 text-sm rounded hover:bg-gray-50 transition-colors" onClick={() => { setIsCategoriesOpen(false); setTimeout(() => posthog.capture('navbar_link_clicked', { link_text: 'km_vertical', link_href: `/${locale}/km-vertical`, locale }), 0); }}>{t('kmVertical')}</Link>
+                    <Link href={`/${locale}/ultra-trail`} className="block px-2 py-1.5 text-sm rounded hover:bg-gray-50 transition-colors" onClick={() => { setIsCategoriesOpen(false); setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'ultra_trail', link_href: `/${locale}/ultra-trail`, locale }), 0); }}>{t('ultraTrail')}</Link>
+                    <Link href={`/${locale}/maraton`} className="block px-2 py-1.5 text-sm rounded hover:bg-gray-50 transition-colors" onClick={() => { setIsCategoriesOpen(false); setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'maraton', link_href: `/${locale}/maraton`, locale }), 0); }}>{t('maraton')}</Link>
+                    <Link href={`/${locale}/media-maraton`} className="block px-2 py-1.5 text-sm rounded hover:bg-gray-50 transition-colors" onClick={() => { setIsCategoriesOpen(false); setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'media_maraton', link_href: `/${locale}/media-maraton`, locale }), 0); }}>{t('mediaMaraton')}</Link>
+                    <Link href={`/${locale}/marcha`} className="block px-2 py-1.5 text-sm rounded hover:bg-gray-50 transition-colors" onClick={() => { setIsCategoriesOpen(false); setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'marcha', link_href: `/${locale}/marcha`, locale }), 0); }}>{t('marcha')}</Link>
+                    <Link href={`/${locale}/km-vertical`} className="block px-2 py-1.5 text-sm rounded hover:bg-gray-50 transition-colors" onClick={() => { setIsCategoriesOpen(false); setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'km_vertical', link_href: `/${locale}/km-vertical`, locale }), 0); }}>{t('kmVertical')}</Link>
                   </div>
                   <div className="w-px bg-gray-100" />
                   <div className="flex-1">
@@ -206,7 +208,7 @@ export default function Navbar() {
                         key={province}
                         href={`/${locale}/provincia/${province}`}
                         className="block px-2 py-1.5 text-sm rounded hover:bg-gray-50 transition-colors"
-                        onClick={() => { setIsCategoriesOpen(false); setTimeout(() => posthog.capture('navbar_link_clicked', { link_text: province, link_href: `/${locale}/provincia/${province}`, locale }), 0); }}
+                        onClick={() => { setIsCategoriesOpen(false); setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: province, link_href: `/${locale}/provincia/${province}`, locale }), 0); }}
                       >
                         {t(province)}
                       </Link>
@@ -215,10 +217,10 @@ export default function Navbar() {
                 </div>
               )}
             </div>
-            <Link href={`/${locale}/blog`} className="hover:text-gray-900 transition-colors" onClick={() => setTimeout(() => posthog.capture('navbar_link_clicked', { link_text: 'blog', link_href: `/${locale}/blog`, locale }), 0)}>{t('blog')}</Link>
-            <Link href={`/${locale}/${locale === 'ca' ? 'contacte' : 'contacto'}`} className="hover:text-gray-900 transition-colors" onClick={() => setTimeout(() => posthog.capture('navbar_link_clicked', { link_text: 'contact', link_href: `/${locale}/${locale === 'ca' ? 'contacte' : 'contacto'}`, locale }), 0)}>{t('contact')}</Link>
+            <Link href={`/${locale}/blog`} className="hover:text-gray-900 transition-colors" onClick={() => setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'blog', link_href: `/${locale}/blog`, locale }), 0)}>{t('blog')}</Link>
+            <Link href={`/${locale}/${locale === 'ca' ? 'contacte' : 'contacto'}`} className="hover:text-gray-900 transition-colors" onClick={() => setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'contact', link_href: `/${locale}/${locale === 'ca' ? 'contacte' : 'contacto'}`, locale }), 0)}>{t('contact')}</Link>
             {isAuthenticated && (
-              <Link href={`/${locale}/org/perfil`} className="p-2 rounded-lg hover:bg-gray-100 transition-colors" onClick={() => setTimeout(() => posthog.capture('navbar_link_clicked', { link_text: 'profile', link_href: `/${locale}/org/perfil`, locale }), 0)}>
+              <Link href={`/${locale}/org/perfil`} className="p-2 rounded-lg hover:bg-gray-100 transition-colors" onClick={() => setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'profile', link_href: `/${locale}/org/perfil`, locale }), 0)}>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5 text-gray-700">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                 </svg>
@@ -233,7 +235,7 @@ export default function Navbar() {
               className="relative flex sm:hidden p-1 text-gray-400"
               title={t('myRaces')}
               onClick={() =>
-                setTimeout(() => posthog.capture('navbar_link_clicked', {
+                setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, {
                   link_text: 'my_races',
                   link_href: `/${locale}/mis-carreras`,
                   locale,
@@ -253,7 +255,7 @@ export default function Navbar() {
           {isFilterAvailable && filterVariant === 'control' && (
             <button
               className="relative flex sm:hidden items-center gap-1 p-1 text-gray-400"
-              onClick={() => { openFilters(); setTimeout(() => posthog.capture('navbar_filter_icon_clicked', { filter_count: filterCount, variant: filterVariant }), 0); }}
+              onClick={() => { openFilters(); setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_FILTER_ICON_CLICKED, { filter_count: filterCount, variant: filterVariant }), 0); }}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                 <path d="M10 5H3" />
@@ -276,12 +278,12 @@ export default function Navbar() {
 
           {isMenuOpen && (
             <div className="fixed text-black inset-0 top-16 bg-white z-40 flex flex-col items-center justify-start pt-8 gap-6 font-semibold text-lg">
-              <Link href={`/${locale}`} onClick={() => { setIsMenuOpen(false); setTimeout(() => posthog.capture('navbar_link_clicked', { link_text: 'home', link_href: `/${locale}`, locale }), 0); }}>{t('calendar')}</Link>
-              <Link href={`/${locale}/mis-carreras`} onClick={() => { setIsMenuOpen(false); setTimeout(() => posthog.capture('navbar_link_clicked', { link_text: 'my_races', link_href: `/${locale}/mis-carreras`, locale }), 0); }}>{t('myRaces')}</Link>
-              <Link href={`/${locale}/${locale === 'ca' ? 'contacte' : 'contacto'}`} onClick={() => { setIsMenuOpen(false); setTimeout(() => posthog.capture('navbar_link_clicked', { link_text: 'contact', link_href: `/${locale}/${locale === 'ca' ? 'contacte' : 'contacto'}`, locale }), 0); }}>{t('contact')}</Link>
-              <Link href={`/${locale}/blog`} onClick={() => { setIsMenuOpen(false); setTimeout(() => posthog.capture('navbar_link_clicked', { link_text: 'blog', link_href: `/${locale}/blog`, locale }), 0); }}>{t('blog')}</Link>
+              <Link href={`/${locale}`} onClick={() => { setIsMenuOpen(false); setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'home', link_href: `/${locale}`, locale }), 0); }}>{t('calendar')}</Link>
+              <Link href={`/${locale}/mis-carreras`} onClick={() => { setIsMenuOpen(false); setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'my_races', link_href: `/${locale}/mis-carreras`, locale }), 0); }}>{t('myRaces')}</Link>
+              <Link href={`/${locale}/${locale === 'ca' ? 'contacte' : 'contacto'}`} onClick={() => { setIsMenuOpen(false); setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'contact', link_href: `/${locale}/${locale === 'ca' ? 'contacte' : 'contacto'}`, locale }), 0); }}>{t('contact')}</Link>
+              <Link href={`/${locale}/blog`} onClick={() => { setIsMenuOpen(false); setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'blog', link_href: `/${locale}/blog`, locale }), 0); }}>{t('blog')}</Link>
               {isAuthenticated && (
-                <Link href={`/${locale}/org/perfil`} onClick={() => { setIsMenuOpen(false); setTimeout(() => posthog.capture('navbar_link_clicked', { link_text: 'profile', link_href: `/${locale}/org/perfil`, locale }), 0); }}>{t('profile')}</Link>
+                <Link href={`/${locale}/org/perfil`} onClick={() => { setIsMenuOpen(false); setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'profile', link_href: `/${locale}/org/perfil`, locale }), 0); }}>{t('profile')}</Link>
               )}
             </div>
           )}
