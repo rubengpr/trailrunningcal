@@ -13,11 +13,6 @@
     "zoomIn": "Acercar",
     "zoomOut": "Alejar"
   },
-  "search": {
-    "placeholder": "Buscar por nombre, ciudad o provincia...",
-    "clear": "Limpiar búsqueda",
-    "section": "Búsqueda y filtros"
-  },
   "filters": {
     "clearFilters": "Limpiar filtros",
     "filtersLabel": "Filtrar",
