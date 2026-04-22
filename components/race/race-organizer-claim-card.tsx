@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import posthog from 'posthog-js';
 import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase/client';
 import { ClaimOrganizerModal } from '@/components/organizer/claim-organizer-modal';
 import { ConfirmationModal } from '@/components/modals/confirmation-modal';
+import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
+import { track } from '@/lib/analytics/track';
 
 interface RaceOrganizerClaimCardProps {
     claimButton: string;
@@ -44,7 +45,7 @@ export function RaceOrganizerClaimCard({
     }, []);
 
     const handleButtonClick = () => {
-        posthog.capture('race_organizer_claim_clicked', { race_name: raceName });
+        track(ANALYTICS_EVENTS.RACE_ORGANIZER_CLAIM_CLICKED, { race_name: raceName });
         if (user) {
             setIsConfirmationModalOpen(true);
         } else {

@@ -1,8 +1,9 @@
 'use client';
 
-import posthog from 'posthog-js';
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
+import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
+import { track } from '@/lib/analytics/track';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -26,7 +27,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    posthog.capture('error_boundary_caught_error', {
+    track(ANALYTICS_EVENTS.ERROR_BOUNDARY_CAUGHT_ERROR, {
       error_message: error.message,
       error_stack: error.stack,
       component_stack: errorInfo.componentStack,
@@ -81,7 +82,7 @@ function DefaultErrorFallback({ error }: DefaultErrorFallbackProps) {
         <p className="text-gray-600 mb-4">{t('generalMessage')}</p>
         <button
           onClick={() => {
-            posthog.capture('error_fallback_retry_clicked', {
+            track(ANALYTICS_EVENTS.ERROR_FALLBACK_RETRY_CLICKED, {
               error_message: error?.message,
             });
             window.location.reload();

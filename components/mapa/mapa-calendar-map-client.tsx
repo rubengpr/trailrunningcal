@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import posthog from 'posthog-js';
 import { useFeatureFlagVariantKey } from 'posthog-js/react';
 import type { TrailRace } from '@/types/race.types';
 import type { Locale } from '@/i18n';
@@ -25,6 +24,8 @@ import { useScrollEdges } from '@/hooks/use-scroll-edges';
 import { useMobileFilters } from '@/components/providers/mobile-filters-provider';
 import { filterHomeRaces, filterMapMarkersByRaceIds } from '@/lib/home-race-filters';
 import { generateRaceSlug } from '@/lib/race-utils';
+import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
+import { track } from '@/lib/analytics/track';
 
 const FILTER_STORAGE_KEYS = {
   month: 'filter_month',
@@ -128,32 +129,32 @@ export default function MapaCalendarMapClient({
   const handleMonthSelect = (month: string[]) => {
     setSelectedMonth(month);
     setTimeout(() => {
-      posthog.capture('race_month_filter_applied', { month });
-      if (isControlVariant) posthog.capture('filters_applied', { variant: 'control' });
+      track(ANALYTICS_EVENTS.RACE_MONTH_FILTER_APPLIED, { month });
+      if (isControlVariant) track(ANALYTICS_EVENTS.FILTERS_APPLIED, { variant: 'control' });
     }, 0);
   };
 
   const handleProvinceSelect = (province: string[]) => {
     setSelectedProvince(province);
     setTimeout(() => {
-      posthog.capture('race_province_filter_applied', { province });
-      if (isControlVariant) posthog.capture('filters_applied', { variant: 'control' });
+      track(ANALYTICS_EVENTS.RACE_PROVINCE_FILTER_APPLIED, { province });
+      if (isControlVariant) track(ANALYTICS_EVENTS.FILTERS_APPLIED, { variant: 'control' });
     }, 0);
   };
 
   const handleDistanceSelect = (distance: string[]) => {
     setSelectedDistance(distance);
     setTimeout(() => {
-      posthog.capture('race_distance_filter_applied', { distance });
-      if (isControlVariant) posthog.capture('filters_applied', { variant: 'control' });
+      track(ANALYTICS_EVENTS.RACE_DISTANCE_FILTER_APPLIED, { distance });
+      if (isControlVariant) track(ANALYTICS_EVENTS.FILTERS_APPLIED, { variant: 'control' });
     }, 0);
   };
 
   const handleRaceTypeSelect = (raceType: string[]) => {
     setSelectedRaceType(raceType);
     setTimeout(() => {
-      posthog.capture('race_type_filter_applied', { raceType });
-      if (isControlVariant) posthog.capture('filters_applied', { variant: 'control' });
+      track(ANALYTICS_EVENTS.RACE_TYPE_FILTER_APPLIED, { raceType });
+      if (isControlVariant) track(ANALYTICS_EVENTS.FILTERS_APPLIED, { variant: 'control' });
     }, 0);
   };
 
@@ -168,7 +169,7 @@ export default function MapaCalendarMapClient({
     setSelectedProvince([]);
     setSelectedDistance([]);
     setSelectedRaceType([]);
-    setTimeout(() => posthog.capture('race_filters_cleared'), 0);
+    setTimeout(() => track(ANALYTICS_EVENTS.RACE_FILTERS_CLEARED), 0);
   };
 
   const handleFiltersApply = (month: string[], province: string[], distance: string[], raceType: string[]) => {
@@ -176,25 +177,25 @@ export default function MapaCalendarMapClient({
     setSelectedProvince(province);
     setSelectedDistance(distance);
     setSelectedRaceType(raceType);
-    setTimeout(() => posthog.capture('filters_applied', { variant: filterLayout, month, province, distance, raceType }), 0);
+    setTimeout(() => track(ANALYTICS_EVENTS.FILTERS_APPLIED, { variant: filterLayout, month, province, distance, raceType }), 0);
     closeFiltersModal();
   };
 
   const handleDesktopLayoutChange = (layout: DesktopLayout, button: LayoutToggleButton): void => {
     setDesktopLayout(layout);
-    setTimeout(() => posthog.capture('desktop_layout_changed', { layout, button }), 0);
+    setTimeout(() => track(ANALYTICS_EVENTS.DESKTOP_LAYOUT_CHANGED, { layout, button }), 0);
   };
 
   const handleViewMapClick = (): void => {
     setMobileView('map');
     window.scrollTo({ top: 0, behavior: 'instant' });
-    setTimeout(() => posthog.capture('calendar_view_map_clicked', { locale }), 0);
+    setTimeout(() => track(ANALYTICS_EVENTS.CALENDAR_VIEW_MAP_CLICKED, { locale }), 0);
   };
 
   const handleViewListClick = (): void => {
     setMobileView('list');
     window.scrollTo({ top: 0, behavior: 'instant' });
-    setTimeout(() => posthog.capture('map_view_list_clicked', { locale }), 0);
+    setTimeout(() => track(ANALYTICS_EVENTS.MAP_VIEW_LIST_CLICKED, { locale }), 0);
   };
 
   const focusRaceOnMap = useCallback((raceId: string) => {
@@ -292,7 +293,7 @@ export default function MapaCalendarMapClient({
           color={filterColor}
           onClick={() => {
             openFiltersModal();
-            setTimeout(() => posthog.capture('navbar_filter_icon_clicked', { filter_count: filterCount, variant: filterLayout }), 0);
+            setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_FILTER_ICON_CLICKED, { filter_count: filterCount, variant: filterLayout }), 0);
           }}
         />
       )}

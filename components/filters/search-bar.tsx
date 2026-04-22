@@ -1,8 +1,9 @@
 'use client';
 
-import posthog from 'posthog-js';
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
+import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
+import { track } from '@/lib/analytics/track';
 
 interface SearchBarProps {
   initialSearchTerm?: string;
@@ -27,11 +28,11 @@ export default function SearchBar({
     const newValue = event.target.value;
     setSearchTerm(newValue);
     onSearchChange(newValue);
-    posthog.capture('search-input-changed', { search_term_length: newValue.length });
+    track(ANALYTICS_EVENTS.SEARCH_INPUT_CHANGED, { search_term_length: newValue.length });
   };
 
   const handleClear = () => {
-    posthog.capture('search-cleared', { cleared_term_length: searchTerm.length });
+    track(ANALYTICS_EVENTS.SEARCH_CLEARED, { cleared_term_length: searchTerm.length });
     setSearchTerm('');
     onSearchChange('');
   };
