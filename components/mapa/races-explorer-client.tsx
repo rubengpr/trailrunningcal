@@ -1,13 +1,13 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useFeatureFlagVariantKey } from 'posthog-js/react';
 import type { TrailRace } from '@/types/race.types';
 import type { Locale } from '@/i18n';
 import type { MapPageLabels, RaceMapMarker } from '@/types/map.types';
-import FilterBar, { FilterBadgeBar } from '@/components/filters/filter-bar';
+import RacesExplorerFiltersSection from '@/components/mapa/races-explorer-filters-section';
 import MobileFiltersButton from '@/components/filters/mobile-filters-button';
 import MobileFiltersModal from '@/components/filters/mobile-filters-modal';
 import TrailRaceCard from '@/components/race/trail-race-card';
@@ -15,34 +15,16 @@ import ErrorBoundary from '@/components/ui/error-boundary';
 import { SearchError } from '@/components/ui/error-message';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Button } from '@/components/ui/button';
-import { LayoutToggle } from '@/components/ui/layout-toggle';
 import type { DesktopLayout, LayoutToggleButton } from '@/components/ui/layout-toggle';
 import RacesMap from '@/components/races-map/races-map';
 import { MapToggleFab } from '@/components/mapa/map-toggle-fab';
 import { useMinWidthLg } from '@/hooks/use-min-width-lg';
 import { useScrollEdges } from '@/hooks/use-scroll-edges';
 import { useMobileFilters } from '@/components/providers/mobile-filters-provider';
-import { filterHomeRaces, filterMapMarkersByRaceIds } from '@/lib/home-race-filters';
+import { useRacesFiltersState } from '@/hooks/use-races-filters-state';
 import { generateRaceSlug } from '@/lib/race-utils';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { track } from '@/lib/analytics/track';
-
-const FILTER_STORAGE_KEYS = {
-  month: 'filter_month',
-  province: 'filter_province',
-  distance: 'filter_distance',
-  type: 'filter_type',
-} as const;
-
-const readFilterStorage = (key: string): string[] => {
-  if (typeof window === 'undefined') return [];
-  try {
-    const stored = sessionStorage.getItem(key);
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
-};
 
 type MobileView = 'list' | 'map';
 
@@ -67,10 +49,6 @@ export default function RacesExplorerClient({
   const tFilters = useTranslations('filters');
   const tErrors = useTranslations('errors');
   const tMap = useTranslations('map');
-  const [selectedMonth, setSelectedMonth] = useState<string[]>(() => readFilterStorage(FILTER_STORAGE_KEYS.month));
-  const [selectedProvince, setSelectedProvince] = useState<string[]>(() => readFilterStorage(FILTER_STORAGE_KEYS.province));
-  const [selectedDistance, setSelectedDistance] = useState<string[]>(() => readFilterStorage(FILTER_STORAGE_KEYS.distance));
-  const [selectedRaceType, setSelectedRaceType] = useState<string[]>(() => readFilterStorage(FILTER_STORAGE_KEYS.type));
   const [focusRaceId, setFocusRaceId] = useState<string | null>(null);
   const [focusRaceNonce, setFocusRaceNonce] = useState(0);
   const [mobileView, setMobileView] = useState<MobileView>('list');
@@ -87,6 +65,65 @@ export default function RacesExplorerClient({
   const isInlineTextVariant = filterLayout === 'sticky-button';
   const isPillVariant = filterLayout === 'pill';
 
+  const {
+    selectedMonth,
+    selectedProvince,
+    selectedDistance,
+    selectedRaceType,
+    setSelectedMonth,
+    setSelectedProvince,
+    activeFiltersCount,
+    filteredRaces,
+    filteredMarkers,
+    handleMonthSelect,
+    handleProvinceSelect,
+    handleDistanceSelect,
+    handleRaceTypeSelect,
+    handleClearFilters,
+    handleFiltersApply,
+  } = useRacesFiltersState({
+    races,
+    markers,
+    analytics: {
+      onMonthSelect: (month) => {
+        setTimeout(() => {
+          track(ANALYTICS_EVENTS.RACE_MONTH_FILTER_APPLIED, { month });
+          if (isControlVariant) track(ANALYTICS_EVENTS.FILTERS_APPLIED, { variant: 'control' });
+        }, 0);
+      },
+      onProvinceSelect: (province) => {
+        setTimeout(() => {
+          track(ANALYTICS_EVENTS.RACE_PROVINCE_FILTER_APPLIED, { province });
+          if (isControlVariant) track(ANALYTICS_EVENTS.FILTERS_APPLIED, { variant: 'control' });
+        }, 0);
+      },
+      onDistanceSelect: (distance) => {
+        setTimeout(() => {
+          track(ANALYTICS_EVENTS.RACE_DISTANCE_FILTER_APPLIED, { distance });
+          if (isControlVariant) track(ANALYTICS_EVENTS.FILTERS_APPLIED, { variant: 'control' });
+        }, 0);
+      },
+      onRaceTypeSelect: (raceType) => {
+        setTimeout(() => {
+          track(ANALYTICS_EVENTS.RACE_TYPE_FILTER_APPLIED, { raceType });
+          if (isControlVariant) track(ANALYTICS_EVENTS.FILTERS_APPLIED, { variant: 'control' });
+        }, 0);
+      },
+      onClearFilters: () => {
+        setTimeout(() => track(ANALYTICS_EVENTS.RACE_FILTERS_CLEARED), 0);
+      },
+      onApplyFilters: ({ month, province, distance, raceType }) => {
+        setTimeout(() => track(ANALYTICS_EVENTS.FILTERS_APPLIED, {
+          variant: filterLayout,
+          month,
+          province,
+          distance,
+          raceType,
+        }), 0);
+      },
+    },
+  });
+
   const { canScrollLeft, canScrollRight } = useScrollEdges(pillsScrollRef, isPillVariant);
   const { isOpen: isFiltersModalOpen, open: openFiltersModal, close: closeFiltersModal, register, unregister, updateFilterCount, updateFilterVariant, filterCount } = useMobileFilters();
 
@@ -101,62 +138,8 @@ export default function RacesExplorerClient({
   }, [isControlVariant, isPillVariant, register, unregister]);
 
   useEffect(() => {
-    updateFilterCount(
-      selectedMonth.length +
-      selectedProvince.length +
-      selectedDistance.length +
-      selectedRaceType.length,
-    );
-  }, [selectedMonth, selectedProvince, selectedDistance, selectedRaceType, updateFilterCount]);
-
-  useEffect(() => {
-    sessionStorage.setItem(FILTER_STORAGE_KEYS.month, JSON.stringify(selectedMonth));
-    sessionStorage.setItem(FILTER_STORAGE_KEYS.province, JSON.stringify(selectedProvince));
-    sessionStorage.setItem(FILTER_STORAGE_KEYS.distance, JSON.stringify(selectedDistance));
-    sessionStorage.setItem(FILTER_STORAGE_KEYS.type, JSON.stringify(selectedRaceType));
-  }, [selectedMonth, selectedProvince, selectedDistance, selectedRaceType]);
-
-  const filteredRaces = useMemo(
-    () => filterHomeRaces(races, selectedMonth, selectedProvince, selectedDistance, selectedRaceType),
-    [races, selectedMonth, selectedProvince, selectedDistance, selectedRaceType],
-  );
-
-  const filteredMarkers = useMemo(() => {
-    const ids = new Set(filteredRaces.map((r) => r.id));
-    return filterMapMarkersByRaceIds(markers, ids);
-  }, [markers, filteredRaces]);
-
-  const handleMonthSelect = (month: string[]) => {
-    setSelectedMonth(month);
-    setTimeout(() => {
-      track(ANALYTICS_EVENTS.RACE_MONTH_FILTER_APPLIED, { month });
-      if (isControlVariant) track(ANALYTICS_EVENTS.FILTERS_APPLIED, { variant: 'control' });
-    }, 0);
-  };
-
-  const handleProvinceSelect = (province: string[]) => {
-    setSelectedProvince(province);
-    setTimeout(() => {
-      track(ANALYTICS_EVENTS.RACE_PROVINCE_FILTER_APPLIED, { province });
-      if (isControlVariant) track(ANALYTICS_EVENTS.FILTERS_APPLIED, { variant: 'control' });
-    }, 0);
-  };
-
-  const handleDistanceSelect = (distance: string[]) => {
-    setSelectedDistance(distance);
-    setTimeout(() => {
-      track(ANALYTICS_EVENTS.RACE_DISTANCE_FILTER_APPLIED, { distance });
-      if (isControlVariant) track(ANALYTICS_EVENTS.FILTERS_APPLIED, { variant: 'control' });
-    }, 0);
-  };
-
-  const handleRaceTypeSelect = (raceType: string[]) => {
-    setSelectedRaceType(raceType);
-    setTimeout(() => {
-      track(ANALYTICS_EVENTS.RACE_TYPE_FILTER_APPLIED, { raceType });
-      if (isControlVariant) track(ANALYTICS_EVENTS.FILTERS_APPLIED, { variant: 'control' });
-    }, 0);
-  };
+    updateFilterCount(activeFiltersCount);
+  }, [activeFiltersCount, updateFilterCount]);
 
   const handleRetry = () => {
     setSelectedMonth([]);
@@ -164,20 +147,8 @@ export default function RacesExplorerClient({
     window.location.reload();
   };
 
-  const handleClearFilters = () => {
-    setSelectedMonth([]);
-    setSelectedProvince([]);
-    setSelectedDistance([]);
-    setSelectedRaceType([]);
-    setTimeout(() => track(ANALYTICS_EVENTS.RACE_FILTERS_CLEARED), 0);
-  };
-
-  const handleFiltersApply = (month: string[], province: string[], distance: string[], raceType: string[]) => {
-    setSelectedMonth(month);
-    setSelectedProvince(province);
-    setSelectedDistance(distance);
-    setSelectedRaceType(raceType);
-    setTimeout(() => track(ANALYTICS_EVENTS.FILTERS_APPLIED, { variant: filterLayout, month, province, distance, raceType }), 0);
+  const handleFiltersApplyAndClose = (month: string[], province: string[], distance: string[], raceType: string[]) => {
+    handleFiltersApply(month, province, distance, raceType);
     closeFiltersModal();
   };
 
@@ -238,54 +209,26 @@ export default function RacesExplorerClient({
 
   return (
     <>
-      <section className={`w-full min-w-0 ${isPillVariant ? 'sticky top-18 z-20 bg-white py-3 border-b border-gray-200 sm:static sm:z-auto sm:py-0 sm:pb-6 sm:border-none' : 'pb-6 lg:pb-8'}`}>
-        <div className="relative max-w-4xl mx-auto min-w-0 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
-          {isPillVariant && <>
-            {canScrollLeft && <div className="pointer-events-none absolute inset-y-0 left-4 w-6 bg-linear-to-r from-white/70 to-transparent z-10 sm:hidden" />}
-            {canScrollRight && <div className="pointer-events-none absolute inset-y-0 right-4 w-6 bg-linear-to-l from-white/70 to-transparent z-10 sm:hidden" />}
-          </>}
-          <div className={`${isControlVariant || isPillVariant ? 'flex' : 'hidden sm:flex'} items-center gap-4`}>
-            {isPillVariant ? (
-              <div className="w-full min-w-0">
-                <FilterBadgeBar
-                  selectedMonth={selectedMonth}
-                  selectedProvince={selectedProvince}
-                  selectedDistance={selectedDistance}
-                  selectedRaceType={selectedRaceType}
-                  onMonthSelect={handleMonthSelect}
-                  onProvinceSelect={handleProvinceSelect}
-                  onDistanceSelect={handleDistanceSelect}
-                  onRaceTypeSelect={handleRaceTypeSelect}
-                  onClearFilters={handleClearFilters}
-                  showProvinceFilter={showProvinceFilter}
-                  showDistanceFilter={showDistanceFilter}
-                  color={filterColor}
-                  size="sm"
-                  scrollContainerRef={pillsScrollRef}
-                />
-              </div>
-            ) : (
-              <FilterBar
-                selectedMonth={selectedMonth}
-                selectedProvince={selectedProvince}
-                selectedDistance={selectedDistance}
-                selectedRaceType={selectedRaceType}
-                onMonthSelect={handleMonthSelect}
-                onProvinceSelect={handleProvinceSelect}
-                onDistanceSelect={handleDistanceSelect}
-                onRaceTypeSelect={handleRaceTypeSelect}
-                onClearFilters={handleClearFilters}
-                showProvinceFilter={showProvinceFilter}
-                showDistanceFilter={showDistanceFilter}
-                color={filterColor}
-              />
-            )}
-            <div className="ml-auto hidden lg:block">
-              <LayoutToggle value={desktopLayout} onChange={handleDesktopLayoutChange} />
-            </div>
-          </div>
-        </div>
-      </section>
+      <RacesExplorerFiltersSection
+        filterLayout={filterLayout}
+        canScrollLeft={canScrollLeft}
+        canScrollRight={canScrollRight}
+        selectedMonth={selectedMonth}
+        selectedProvince={selectedProvince}
+        selectedDistance={selectedDistance}
+        selectedRaceType={selectedRaceType}
+        onMonthSelect={handleMonthSelect}
+        onProvinceSelect={handleProvinceSelect}
+        onDistanceSelect={handleDistanceSelect}
+        onRaceTypeSelect={handleRaceTypeSelect}
+        onClearFilters={handleClearFilters}
+        showProvinceFilter={showProvinceFilter}
+        showDistanceFilter={showDistanceFilter}
+        filterColor={filterColor}
+        desktopLayout={desktopLayout}
+        onDesktopLayoutChange={handleDesktopLayoutChange}
+        pillsScrollRef={pillsScrollRef}
+      />
 
       {isInlineTextVariant && (
         <MobileFiltersButton
@@ -441,7 +384,7 @@ export default function RacesExplorerClient({
         <MobileFiltersModal
           isOpen={isFiltersModalOpen}
           onClose={closeFiltersModal}
-          onApply={handleFiltersApply}
+          onApply={handleFiltersApplyAndClose}
           onClear={handleClearFilters}
           initialMonth={selectedMonth}
           initialProvince={selectedProvince}
