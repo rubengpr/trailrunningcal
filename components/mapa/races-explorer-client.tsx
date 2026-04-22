@@ -46,7 +46,7 @@ const readFilterStorage = (key: string): string[] => {
 
 type MobileView = 'list' | 'map';
 
-interface MapaCalendarMapClientProps {
+interface RacesExplorerClientProps {
   races: TrailRace[];
   markers: RaceMapMarker[];
   locale: Locale;
@@ -55,14 +55,14 @@ interface MapaCalendarMapClientProps {
   showDistanceFilter?: boolean;
 }
 
-export default function MapaCalendarMapClient({
+export default function RacesExplorerClient({
   races,
   markers,
   locale,
   labels,
   showProvinceFilter = true,
   showDistanceFilter = true,
-}: MapaCalendarMapClientProps) {
+}: RacesExplorerClientProps) {
   const tResults = useTranslations('results');
   const tFilters = useTranslations('filters');
   const tErrors = useTranslations('errors');

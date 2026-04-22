@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import HeroSection from '@/components/layout/hero-section';
-import MapaCalendarMapClient from '@/components/mapa/mapa-calendar-map-client';
+import RacesExplorerClient from '@/components/mapa/races-explorer-client';
 import {
   getSeoMetaConfig,
   generateMetadataFromOptions,
@@ -94,7 +94,7 @@ export default async function HomePage({
         ctaLabel={t('landing.cta')}
       />
       <div id="calendar" className="mx-auto w-full min-w-0 pt-6 pb-16 sm:pt-10 lg:pt-4 scroll-mt-18 sm:scroll-mt-20">
-        <MapaCalendarMapClient
+        <RacesExplorerClient
           races={races}
           markers={markers}
           locale={locale}

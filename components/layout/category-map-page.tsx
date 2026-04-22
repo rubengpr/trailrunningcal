@@ -2,7 +2,7 @@ import type { Locale } from '@/i18n';
 import type { TrailRace } from '@/types/race.types';
 import type { RaceMapMarker, MapPageLabels } from '@/types/map.types';
 import CategoryHeroSection from '@/components/layout/category-hero-section';
-import MapaCalendarMapClient from '@/components/mapa/mapa-calendar-map-client';
+import RacesExplorerClient from '@/components/mapa/races-explorer-client';
 
 interface BreadcrumbItem {
   name: string;
@@ -56,7 +56,7 @@ export default function CategoryMapPage({
         locale={locale}
       />
       <div id="calendar" className="mx-auto w-full pt-6 pb-16 sm:pt-10 lg:pt-4 scroll-mt-18 sm:scroll-mt-20">
-        <MapaCalendarMapClient
+        <RacesExplorerClient
           races={races}
           markers={markers}
           locale={locale}
