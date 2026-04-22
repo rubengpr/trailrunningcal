@@ -21,8 +21,6 @@ export const ANALYTICS_EVENTS = {
   RACE_PROVINCE_FILTER_APPLIED: 'race_province_filter_applied',
   RACE_SHARE_CLICKED: 'race_share_clicked',
   RACE_TYPE_FILTER_APPLIED: 'race_type_filter_applied',
-  SEARCH_CLEARED: 'search-cleared',
-  SEARCH_INPUT_CHANGED: 'search-input-changed',
 } as const;
 
 export type AnalyticsEventName =
@@ -114,11 +112,5 @@ export interface AnalyticsEventProperties {
   };
   [ANALYTICS_EVENTS.RACE_TYPE_FILTER_APPLIED]: {
     raceType: string[];
-  };
-  [ANALYTICS_EVENTS.SEARCH_CLEARED]: {
-    cleared_term_length: number;
-  };
-  [ANALYTICS_EVENTS.SEARCH_INPUT_CHANGED]: {
-    search_term_length: number;
   };
 }
