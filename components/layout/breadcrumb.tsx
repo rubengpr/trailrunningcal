@@ -2,7 +2,8 @@
 
 import type { ReactElement } from 'react';
 import Link from 'next/link';
-import posthog from 'posthog-js';
+import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
+import { track } from '@/lib/analytics/track';
 
 interface BreadcrumbItem {
   name: string;
@@ -35,7 +36,7 @@ function BreadcrumbChevron(): ReactElement {
 export function Breadcrumb({ items, captureContext }: BreadcrumbProps) {
   const handleLinkClick = (item: BreadcrumbItem) => {
     if (item.href) {
-      posthog.capture('breadcrumb_link_clicked', {
+      track(ANALYTICS_EVENTS.BREADCRUMB_LINK_CLICKED, {
         link_name: item.name,
         href: item.href,
         ...captureContext,

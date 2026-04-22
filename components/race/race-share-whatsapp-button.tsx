@@ -1,6 +1,7 @@
 'use client';
 
-import posthog from 'posthog-js';
+import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
+import { track } from '@/lib/analytics/track';
 
 interface RaceShareWhatsappButtonProps {
   message: string;
@@ -22,7 +23,7 @@ export default function RaceShareWhatsappButton({
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
 
   const handleClick = () => {
-    posthog.capture('race_share_clicked', {
+    track(ANALYTICS_EVENTS.RACE_SHARE_CLICKED, {
       ...(raceId && { race_id: raceId }),
       ...(raceSlug && { race_slug: raceSlug }),
     });

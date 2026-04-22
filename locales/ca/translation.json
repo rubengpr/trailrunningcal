@@ -13,11 +13,6 @@
     "zoomIn": "Apropar",
     "zoomOut": "Allunyar"
   },
-  "search": {
-    "placeholder": "Cercar per nom, ciutat o província...",
-    "clear": "Netejar cerca",
-    "section": "Cerca i filtres"
-  },
   "filters": {
     "clearFilters": "Netejar filtres",
     "filtersLabel": "Filtrar",

@@ -1,27 +1,28 @@
 'use client';
 
 import Link from 'next/link';
-import posthog from 'posthog-js';
+import type { AnalyticsEventName, AnalyticsEventProperties } from '@/lib/analytics/events';
+import { track } from '@/lib/analytics/track';
 
-interface TrackedLinkProps {
+interface TrackedLinkProps<EventName extends AnalyticsEventName = AnalyticsEventName> {
   href: string;
   children: React.ReactNode;
-  eventName: string;
-  eventProperties?: Record<string, unknown>;
+  eventName: EventName;
+  eventProperties?: AnalyticsEventProperties[EventName];
   className?: string;
   external?: boolean;
 }
 
-export function TrackedLink({
+export function TrackedLink<EventName extends AnalyticsEventName>({
   href,
   children,
   eventName,
   eventProperties,
   className,
   external = false,
-}: TrackedLinkProps) {
+}: TrackedLinkProps<EventName>) {
   const handleClick = () => {
-    posthog.capture(eventName, eventProperties ?? {});
+    track(eventName, eventProperties);
   };
 
   if (external) {

@@ -2,28 +2,37 @@
 
 Product and positioning reference for AI agents. For code style and engineering conventions, see `CLAUDE.md` and `.cursor/rules/`.
 
-## Product context (compact)
+## What it is
 
-- Trail Running Cal (**Trail Running Calendar** in SEO/schema) is a bilingual (es/ca) trail-race discovery platform focused on Catalonia, Spain.
-- Core value: curated, up-to-date race calendar with filters (month, province, distance, type, difficulty) plus map/list discovery.
-- Primary audience: runners discovering, comparing, saving, and sharing races.
-- Surface area: public race pages + blog + authenticated organizer/admin workflows for curation.
-- Positioning: regional authority for Catalonia trail racing; not a global or road-running event directory.
-- Strategic direction: become the default discovery layer for Spain through SEO, data quality, and local trust.
+Trail Running Cal (**Trail Running Calendar** in SEO/schema) is a bilingual (Spanish + Catalan) web product at [https://www.trailrunningcal.com](https://www.trailrunningcal.com) that helps people discover and plan trail and mountain races in Catalonia, Spain.
 
-## Main metrics (March 2026)
+## Core user promise
 
-| Metric | Value |
-| --- | --- |
-| Monthly visits | ~3,000 |
-| Listed events | ~600 |
-| MoM visits growth | 100% |
-| Mobile share | 67% |
-| Organic traffic (Google Search) | 85% |
+A single, maintained calendar of races across all Catalan provinces (Barcelona, Girona, Lleida, Tarragona), from popular races to ultras, with search and filters (e.g. month, province, distance, race type, difficulty) and a map + list experience so runners can find their next event.
 
-## Essential tech stack
+## Audience
 
-Next.js App Router, React, TypeScript, Tailwind. next-intl for es/ca locale URLs. Supabase for DB, auth, and storage. MapLibre for maps. MDX for blog. PostHog + Resend; Vitest for tests. Admin scrape flows currently run via OpenRouter (using the OpenAI SDK-compatible client). Prod site: trailrunningcal.com
+Main user: runners looking for races, saving favorites, and sharing race pages.
+
+## Product surface (high level)
+
+Public calendar and race detail pages, category/programmatic-style exploration (distance/type verticals), blog (trail content around Catalonia: training, nutrition, performance), contact, and authenticated areas implied by the stack (e.g. profile, admin-style tooling in the codebase for curation).
+
+## Current positioning
+
+Regional authority: “reference platform” / “most complete calendar” for trail running in Catalonia, not a generic global race DB.
+
+## Vision / ambition (inferred from positioning)
+
+Be the default discovery layer for trail racing in Spain—strong SEO and structured data, local language, and trust via curation, organizer relationships, and up-to-date listings.
+
+## Non-goals (implicit)
+
+The product is geographically scoped to Catalonia and focused on trail/mountain events, not road-running calendars or worldwide coverage.
+
+## Pre-push checklist
+
+Always run `pnpm tsc --noEmit` before pushing to catch TypeScript errors locally. Vercel runs a full type check on every build — failures there mean a broken deployment.
 
 ## Cross-agent engineering conventions
 
@@ -39,14 +48,12 @@ These rules are canonical for all coding agents working in this repo.
 ### Auth and authorization
 
 - For protected API routes, call `supabase.auth.getUser()` early and return `401` if missing/invalid.
-- For protected pages, require `supabase.auth.getUser()` and redirect to login if missing.
 - Enforce role/ownership checks before any mutation.
 
 ### Validation and sanitization
 
 - Validate and sanitize all server-side inputs before DB or external calls.
 - Do not rely on client-side validation for integrity or security.
-- Never use `dangerouslySetInnerHTML` with unsanitized user input.
 
 ### Database transaction convention
 
@@ -59,11 +66,6 @@ These rules are canonical for all coding agents working in this repo.
 
 - Wrap API handler logic in `try/catch`.
 - Log internal errors server-side (`console.error`) and return safe, generic error responses.
-- Never expose stack traces or internal details in client-facing error responses.
-
-### Rate limiting
-
-- For public `POST` endpoints, call `checkRateLimit(request)` early and return `429` when the limit is exceeded.
 
 ### i18n and user-facing copy
 
@@ -75,40 +77,20 @@ These rules are canonical for all coding agents working in this repo.
 - Use environment variables for credentials and keys.
 - Only expose client-safe values through `NEXT_PUBLIC_*`.
 
-### Code style
+## Essential tech stack
 
-- Use camelCase with descriptive names for functions and variables.
-- Use descriptive error variable names with context.
-- Use kebab-case with file type/purpose in name.
-- Use UPPER_SNAKE_CASE for constants.
-- Organize assets by type/purpose, use kebab-case naming.
-- Generate internal URLs, paths, and links without trailing slashes.
-- Accessibility ARIA attributes or references are not needed.
-- Never hardcode user-facing strings. Define text in translation files.
-- Never use native error messages for inputs.
-- Use Supabase query builder methods (`from`, `select`, `insert`, `update`, `delete`) for database operations.
+Next.js App Router, React, TypeScript, Tailwind. next-intl for es/ca locale URLs. Supabase for DB, auth, and storage. MapLibre for maps. MDX for blog. PostHog + Resend; Vitest for tests. Admin flows may use OpenAI / OpenRouter. Prod site: trailrunningcal.com
 
-### React conventions
+## Main metrics (March 2026)
 
-- Prefer Server Components by default; add `'use client'` only for hooks, event handlers, or browser APIs.
-- Use typed props with `ComponentNameProps` and functional components.
-- Use named exports for reusable components and default exports for page-level/single-use components.
-- Use `handle*` for internal handlers and `on*` for event-handler props.
-- For i18n with `next-intl`: use `useTranslations(namespace)` in client components and `getTranslations({ locale, namespace })` in async server components.
-- Keep UI mobile-first with Tailwind breakpoints (`sm:`, `lg:`).
-- For async client actions, use clear loading/error state and user-facing error components.
+| Metric | Value |
+| --- | --- |
+| Monthly visits | ~3,000 |
+| Listed events | ~600 |
+| MoM visits growth | 100% |
+| Mobile share | 67% |
+| Organic traffic (Google Search) | 85% |
 
-### TypeScript conventions
+## Analytics note (implementation)
 
-- Prefer strict typing; avoid `any`.
-- Use explicit parameter and return types in functions.
-- Keep domain types in `types/` and use union types for controlled values.
-- Use `import type` for type-only imports.
-- Prefer `async/await` over Promise chains.
-- Use utility types (`Omit`, `Pick`, `Partial`) for derived types.
-- Use `ComponentNameProps` interfaces and avoid `React.FC`.
-- Use type guards for runtime narrowing when input can be unknown.
-
-## Pre-push checklist
-
-Always run `pnpm tsc --noEmit` before pushing to catch TypeScript errors locally. Vercel runs a full type check on every build — failures there mean a broken deployment.
+Product usage is instrumented via PostHog (proxied `/ingest`), Vercel Analytics, and possibly Cloudflare Web Analytics; headline numbers above are business snapshots and may not live in the repo.

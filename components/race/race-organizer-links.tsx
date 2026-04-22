@@ -1,7 +1,8 @@
 'use client';
 
-import posthog from 'posthog-js';
 import type { OrganizerPublic } from '@/types/organizer.types';
+import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
+import { track } from '@/lib/analytics/track';
 
 type SocialKey = 'facebook' | 'instagram' | 'youtube' | 'tiktok';
 
@@ -70,7 +71,7 @@ export default function RaceOrganizerLinks({
   }
 
   const handleSocialClick = (platform: SocialKey) => {
-    posthog.capture('race_organizer_social_clicked', {
+    track(ANALYTICS_EVENTS.RACE_ORGANIZER_SOCIAL_CLICKED, {
       platform,
       ...(organizer.name && { organizer_name: organizer.name }),
       ...(raceId && { race_id: raceId }),
