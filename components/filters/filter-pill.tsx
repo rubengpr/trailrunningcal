@@ -1,5 +1,6 @@
 'use client';
 
+import { createPortal } from 'react-dom';
 import MultiSelectOptionsMenu, { type MultiSelectOptionItem } from '@/components/ui/multi-select-options-menu';
 import { useMultiSelectMenuState } from '@/hooks/use-multi-select-menu-state';
 
@@ -22,7 +23,19 @@ export default function FilterPill({
   color,
   size,
 }: FilterPillProps) {
-  const { open, containerRef, triggerRef, dropdownRef, toggleOpen, closeMenu } = useMultiSelectMenuState();
+  const {
+    open,
+    containerRef,
+    triggerRef,
+    dropdownRef,
+    dropdownStyle,
+    toggleOpen,
+    closeMenu,
+  } = useMultiSelectMenuState({
+    usePortalPosition: true,
+    minWidth: 160,
+    offset: 4,
+  });
   const isSelected = selectedValues.length > 0;
 
   const pillClasses = [
@@ -36,6 +49,27 @@ export default function FilterPill({
           ? 'border-gray-400 bg-white text-gray-700'
           : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400 hover:text-gray-800',
   ].join(' ');
+
+  const dropdown = open && (
+    <MultiSelectOptionsMenu
+      options={options}
+      selectedValues={selectedValues}
+      placeholder={label}
+      onToggleOption={onToggleOption}
+      onClear={() => {
+        onClear();
+        closeMenu();
+      }}
+      dropdownRef={dropdownRef}
+      style={{
+        position: 'absolute',
+        top: dropdownStyle.top,
+        left: dropdownStyle.left,
+        minWidth: dropdownStyle.minWidth,
+        zIndex: 9999,
+      }}
+    />
+  );
 
   return (
     <div ref={containerRef} className="relative inline-flex shrink-0">
@@ -58,22 +92,7 @@ export default function FilterPill({
           </span>
         )}
       </button>
-
-      {open && (
-        <div className="absolute left-0 top-[calc(100%+4px)] z-50 min-w-[160px]">
-          <MultiSelectOptionsMenu
-            options={options}
-            selectedValues={selectedValues}
-            placeholder={label}
-            onToggleOption={onToggleOption}
-            onClear={() => {
-              onClear();
-              closeMenu();
-            }}
-            dropdownRef={dropdownRef}
-          />
-        </div>
-      )}
+      {typeof document !== 'undefined' && createPortal(dropdown, document.body)}
     </div>
   );
 }
