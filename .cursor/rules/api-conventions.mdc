@@ -57,6 +57,13 @@ try { new URL(raceWebsite); } catch {
 }
 ```
 
+## Transactional Mutations
+
+- Multi-table writes must be atomic.
+- Do not perform split multi-table writes in route handlers.
+- Use Postgres functions (`plpgsql`) + `supabase.rpc(...)` for transactional workflows.
+- Prefer `SECURITY INVOKER` with explicit `GRANT EXECUTE`.
+
 ## Data Layer
 
 - Reads: Server Components call `lib/db/*` directly (e.g. `getRaces()`)
