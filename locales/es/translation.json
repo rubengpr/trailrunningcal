@@ -683,6 +683,9 @@
   },
   "playground": {
     "title": "Playground",
+    "devOnlyNotice": "Entorno de pruebas visuales. Disponible solo en desarrollo.",
+    "filtersDemoLink": "Demo de filtros",
+    "filtersDemoDescription": "Prueba visual e interacción de componentes de filtros.",
     "inputPlaceholder": "Escribe un mensaje...",
     "send": "Enviar"
   },

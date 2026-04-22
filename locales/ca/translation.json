@@ -686,6 +686,9 @@
   },
   "playground": {
     "title": "Playground",
+    "devOnlyNotice": "Entorn de proves visuals. Disponible només en desenvolupament.",
+    "filtersDemoLink": "Demo de filtres",
+    "filtersDemoDescription": "Prova visual i d'interacció dels components de filtres.",
     "inputPlaceholder": "Escriu un missatge...",
     "send": "Enviar"
   },
