@@ -25,7 +25,7 @@ export default function Tooltip({
     <div className={`group relative ${className}`}>
       {children}
       <div
-        className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 ${padding} bg-white text-black ${textSize} rounded-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10 shadow-lg`}
+        className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 ${padding} bg-white text-black ${textSize} rounded-md whitespace-nowrap hidden group-hover:block pointer-events-none z-10 shadow-lg`}
       >
         {text}
         <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-white"></div>
