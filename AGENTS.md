@@ -12,6 +12,11 @@ For business context, metrics, positioning, and audience — invoke the `/produc
 - **i18n:** locales are `es` and `ca` only — no `en` or other languages. No hardcoded user-facing strings; define them in locale translation files.
 - **Env vars:** only expose client-safe values through `NEXT_PUBLIC_*`.
 
+- **File naming:** kebab-case with file type/purpose (e.g. `race-card.tsx`, `use-auth.ts`)
+- **URLs:** no trailing slashes on internal URLs, paths, or links
+- **Forms:** never use native browser error messages for inputs — use custom validation messages via translation files
+- **Accessibility:** ARIA attributes are not required
+
 ## Workflow
 
 - Run `pnpm tsc --noEmit` before pushing — Vercel type-checks on every build and failures break the deployment.
