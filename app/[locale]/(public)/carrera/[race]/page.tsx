@@ -342,19 +342,20 @@ export default async function RacePage({
                 <span className="text-gray-400 font-semibold">↗</span>
               </TrackedLink>
               {recommended.length > 0 && (
-                <div className="flex flex-col gap-2">
+                <div className="grid grid-cols-1 gap-2">
                   {recommended.map((r) => (
-                    <TrailRaceCard
-                      key={r.id}
-                      date={r.date}
-                      name={r.name}
-                      distanceKm={r.distanceKm}
-                      elevationGainM={r.elevationGainM}
-                      city={r.city}
-                      province={r.province}
-                      raceSlug={generateRaceSlug(r.name)}
-                      organizerId={r.organizerId}
-                    />
+                    <div key={r.id} className="min-w-0">
+                      <TrailRaceCard
+                        date={r.date}
+                        name={r.name}
+                        distanceKm={r.distanceKm}
+                        elevationGainM={r.elevationGainM}
+                        city={r.city}
+                        province={r.province}
+                        raceSlug={generateRaceSlug(r.name)}
+                        organizerId={r.organizerId}
+                      />
+                    </div>
                   ))}
                 </div>
               )}

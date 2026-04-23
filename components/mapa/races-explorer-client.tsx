@@ -325,7 +325,6 @@ export default function RacesExplorerClient({
                                 }
                               >
                                 <TrailRaceCard
-                                  variant="compact"
                                   date={race.date}
                                   name={race.name}
                                   distanceKm={race.distanceKm}

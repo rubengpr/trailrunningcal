@@ -58,20 +58,21 @@ export default function FavoritesClient({ races }: FavoritesClientProps) {
   }
 
   return (
-    <div className="grid gap-4">
+    <div className="grid grid-cols-1 gap-4 min-w-0">
       {favoriteRaces.map((race) => (
-        <TrailRaceCard
-          key={race.id}
-          date={race.date}
-          name={race.name}
-          distanceKm={race.distanceKm}
-          elevationGainM={race.elevationGainM}
-          priceEur={race.priceEur ?? null}
-          city={race.city}
-          province={race.province}
-          raceSlug={generateRaceSlug(race.name)}
-          organizerId={race.organizerId}
-        />
+        <div key={race.id} className="min-w-0">
+          <TrailRaceCard
+            date={race.date}
+            name={race.name}
+            distanceKm={race.distanceKm}
+            elevationGainM={race.elevationGainM}
+            priceEur={race.priceEur ?? null}
+            city={race.city}
+            province={race.province}
+            raceSlug={generateRaceSlug(race.name)}
+            organizerId={race.organizerId}
+          />
+        </div>
       ))}
     </div>
   );

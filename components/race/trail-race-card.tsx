@@ -19,8 +19,6 @@ interface TrailRaceCardProps {
   raceSlug?: string;
   organizerId: string | null;
   displayOnly?: boolean;
-  /** Tighter layout for narrow columns (e.g. home list beside map). */
-  variant?: 'default' | 'compact';
   /** When set, called on card click instead of navigating to the race page. */
   onCardClick?: () => void;
 }
@@ -106,7 +104,6 @@ export default function TrailRaceCard({
   raceSlug,
   organizerId,
   displayOnly = false,
-  variant = 'default',
   onCardClick,
 }: TrailRaceCardProps) {
   const t = useTranslations();
@@ -141,19 +138,12 @@ export default function TrailRaceCard({
   // JS click handler: used when a custom callback overrides navigation (e.g. map view).
   const useClickHandler = !displayOnly && !!onCardClick;
 
-  const isCompact = variant === 'compact';
-  const innerPadding = isCompact
-    ? 'px-3 py-3 sm:px-4 sm:py-3'
-    : 'px-2 py-3 sm:px-4 sm:py-5';
-  const dateBlockClass = isCompact
-    ? 'flex flex-col items-center justify-center min-w-[44px] px-2 py-1.5 bg-amber-50 text-gray-800 rounded-sm'
-    : 'flex flex-col items-center justify-center min-w-[50px] px-3 py-2 bg-amber-50 text-gray-800 rounded-sm';
-  const titleClass = isCompact
-    ? 'text-xs sm:text-sm font-bold text-gray-900'
-    : 'text-xs sm:text-lg font-bold text-gray-900';
-  const dayNumClass = isCompact ? 'text-sm sm:text-base font-bold' : 'text-base sm:text-lg font-bold';
-  const metaRowClass = isCompact ? 'flex gap-2 text-[11px] sm:text-xs text-gray-600 mb-1.5' : 'flex gap-3 text-xs sm:text-sm text-gray-600 mb-2';
-  const mainGap = isCompact ? 'gap-3' : 'gap-4';
+  const innerPadding = 'px-2 py-2.5 sm:px-4 sm:py-4';
+  const dateBlockClass = 'flex flex-col items-center justify-center min-w-[50px] px-3 py-2 bg-amber-50 text-gray-800 rounded-sm';
+  const titleClass = 'text-xs sm:text-lg font-bold text-gray-900';
+  const dayNumClass = 'text-base sm:text-lg font-bold';
+  const metaRowClass = 'flex min-w-0 overflow-hidden gap-3 text-xs sm:text-sm text-gray-600 mb-1.5';
+  const mainGap = 'gap-4';
 
   return (
     <article
@@ -182,11 +172,10 @@ export default function TrailRaceCard({
                 {!displayOnly && raceSlug ? (
                   <Link
                     href={`/${locale}/carrera/${raceSlug}`}
-                    className={`min-w-0 hover:underline sm:hover:no-underline ${
-                      useStretchedLink
+                    className={`min-w-0 hover:underline sm:hover:no-underline ${useStretchedLink
                         ? 'after:absolute after:inset-0'
                         : 'pointer-events-auto relative z-10'
-                    }`}
+                      }`}
                     onClick={useClickHandler ? (e) => e.stopPropagation() : undefined}
                   >
                     <h2 className={`${titleClass} truncate`}>
@@ -204,9 +193,9 @@ export default function TrailRaceCard({
                 />
               </div>
               <div className={metaRowClass}>
-                <span>{distanceKm}km</span>
-                <span>{elevationGainM ? `${elevationGainM}m+` : '-'}</span>
-                <span className="truncate min-w-0">
+                <span className="shrink-0">{distanceKm}km</span>
+                <span className="shrink-0">{elevationGainM ? `${elevationGainM}m+` : '-'}</span>
+                <span className="truncate min-w-0 flex-1">
                   {city},{' '}
                   {province}
                 </span>
@@ -250,7 +239,7 @@ export default function TrailRaceCard({
           </div>
           <div className="hidden sm:flex flex-col items-end gap-2 shrink-0">
             <div
-              className={`font-semibold text-gray-900 ${isCompact ? 'text-xs sm:text-sm' : 'text-xs sm:text-lg'}`}
+              className="font-semibold text-gray-900 text-xs sm:text-lg"
             >
               {displayPrice ? `${displayPrice}€` : '—'}
             </div>

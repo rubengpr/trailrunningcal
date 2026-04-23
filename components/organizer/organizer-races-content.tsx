@@ -128,7 +128,7 @@ export function OrganizerRacesContent({ races }: OrganizerRacesContentProps) {
                         <div
                             key={index}
                             onClick={hasRealRaces && race.id ? () => handleRaceClick(race.id) : undefined}
-                            className={hasRealRaces ? 'cursor-pointer' : ''}
+                            className={hasRealRaces ? 'cursor-pointer min-w-0' : 'min-w-0'}
                         >
                             <TrailRaceCard
                                 date={race.date}

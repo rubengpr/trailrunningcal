@@ -67,7 +67,7 @@ export function AdminRacesContent({ races }: AdminRacesContentProps) {
                     <div
                         key={race.id}
                         onClick={() => handleRaceClick(race.id)}
-                        className='cursor-pointer'
+                        className='cursor-pointer min-w-0'
                     >
                         <TrailRaceCard
                             date={race.date}
