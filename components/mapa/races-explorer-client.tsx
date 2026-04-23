@@ -27,6 +27,14 @@ import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { track } from '@/lib/analytics/track';
 
 type MobileView = 'list' | 'map';
+type FiltersAppliedVariant =
+  | 'control'
+  | 'control-black'
+  | 'sticky-button-white'
+  | 'sticky-button-black'
+  | 'pill-white'
+  | 'pill-black';
+type FilterType = 'month' | 'province' | 'distance' | 'race_type' | 'apply';
 
 interface RacesExplorerClientProps {
   races: TrailRace[];
@@ -64,6 +72,15 @@ export default function RacesExplorerClient({
   const isControlVariant = filterLayout === 'control';
   const isInlineTextVariant = filterLayout === 'sticky-button';
   const isPillVariant = filterLayout === 'pill';
+  const analyticsFilterVariant: FiltersAppliedVariant =
+    (v2VariantStr ?? 'control') as FiltersAppliedVariant;
+
+  const trackFiltersApplied = useCallback((filterType: FilterType) => {
+    track(ANALYTICS_EVENTS.FILTERS_APPLIED, {
+      variant: analyticsFilterVariant,
+      filter_type: filterType,
+    });
+  }, [analyticsFilterVariant]);
 
   const {
     selectedMonth,
@@ -85,41 +102,23 @@ export default function RacesExplorerClient({
     races,
     markers,
     analytics: {
-      onMonthSelect: (month) => {
-        setTimeout(() => {
-          track(ANALYTICS_EVENTS.RACE_MONTH_FILTER_APPLIED, { month });
-          if (isControlVariant) track(ANALYTICS_EVENTS.FILTERS_APPLIED, { variant: 'control' });
-        }, 0);
+      onMonthSelect: () => {
+        trackFiltersApplied('month');
       },
-      onProvinceSelect: (province) => {
-        setTimeout(() => {
-          track(ANALYTICS_EVENTS.RACE_PROVINCE_FILTER_APPLIED, { province });
-          if (isControlVariant) track(ANALYTICS_EVENTS.FILTERS_APPLIED, { variant: 'control' });
-        }, 0);
+      onProvinceSelect: () => {
+        trackFiltersApplied('province');
       },
-      onDistanceSelect: (distance) => {
-        setTimeout(() => {
-          track(ANALYTICS_EVENTS.RACE_DISTANCE_FILTER_APPLIED, { distance });
-          if (isControlVariant) track(ANALYTICS_EVENTS.FILTERS_APPLIED, { variant: 'control' });
-        }, 0);
+      onDistanceSelect: () => {
+        trackFiltersApplied('distance');
       },
-      onRaceTypeSelect: (raceType) => {
-        setTimeout(() => {
-          track(ANALYTICS_EVENTS.RACE_TYPE_FILTER_APPLIED, { raceType });
-          if (isControlVariant) track(ANALYTICS_EVENTS.FILTERS_APPLIED, { variant: 'control' });
-        }, 0);
+      onRaceTypeSelect: () => {
+        trackFiltersApplied('race_type');
       },
       onClearFilters: () => {
-        setTimeout(() => track(ANALYTICS_EVENTS.RACE_FILTERS_CLEARED), 0);
+        track(ANALYTICS_EVENTS.RACE_FILTERS_CLEARED);
       },
-      onApplyFilters: ({ month, province, distance, raceType }) => {
-        setTimeout(() => track(ANALYTICS_EVENTS.FILTERS_APPLIED, {
-          variant: filterLayout,
-          month,
-          province,
-          distance,
-          raceType,
-        }), 0);
+      onApplyFilters: () => {
+        trackFiltersApplied('apply');
       },
     },
   });

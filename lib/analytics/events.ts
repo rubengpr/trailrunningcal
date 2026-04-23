@@ -8,19 +8,15 @@ export const ANALYTICS_EVENTS = {
   MAP_VIEW_LIST_CLICKED: 'map_view_list_clicked',
   NAVBAR_FILTER_ICON_CLICKED: 'navbar_filter_icon_clicked',
   NAVBAR_LINK_CLICKED: 'navbar_link_clicked',
-  RACE_DISTANCE_FILTER_APPLIED: 'race_distance_filter_applied',
   RACE_FAVORITE_CLICKED: 'race_favorite_clicked',
   RACE_FILTERS_CLEARED: 'race_filters_cleared',
-  RACE_MONTH_FILTER_APPLIED: 'race_month_filter_applied',
   RACE_ORGANIZER_CLAIM_CLICKED: 'race_organizer_claim_clicked',
   RACE_ORGANIZER_SOCIAL_CLICKED: 'race_organizer_social_clicked',
   RACE_OFFICIAL_WEBSITE_CLICKED: 'race_official_website_clicked',
   RACE_CATEGORY_LINK_CLICKED: 'race_category_link_clicked',
   RACE_PROVINCE_INLINE_CLICKED: 'race_province_inline_clicked',
   RACE_PROVINCE_LINK_CLICKED: 'race_province_link_clicked',
-  RACE_PROVINCE_FILTER_APPLIED: 'race_province_filter_applied',
   RACE_SHARE_CLICKED: 'race_share_clicked',
-  RACE_TYPE_FILTER_APPLIED: 'race_type_filter_applied',
 } as const;
 
 export type AnalyticsEventName =
@@ -47,11 +43,14 @@ export interface AnalyticsEventProperties {
     error_message?: string;
   };
   [ANALYTICS_EVENTS.FILTERS_APPLIED]: {
-    variant: string;
-    month?: string[];
-    province?: string[];
-    distance?: string[];
-    raceType?: string[];
+    variant:
+      | 'control'
+      | 'control-black'
+      | 'sticky-button-white'
+      | 'sticky-button-black'
+      | 'pill-white'
+      | 'pill-black';
+    filter_type: 'month' | 'province' | 'distance' | 'race_type' | 'apply';
   };
   [ANALYTICS_EVENTS.MAP_VIEW_LIST_CLICKED]: {
     locale: string;
@@ -65,17 +64,11 @@ export interface AnalyticsEventProperties {
     link_href: string;
     locale: string;
   };
-  [ANALYTICS_EVENTS.RACE_DISTANCE_FILTER_APPLIED]: {
-    distance: string[];
-  };
   [ANALYTICS_EVENTS.RACE_FAVORITE_CLICKED]: {
     race_id: string;
     action: 'save' | 'remove';
   };
   [ANALYTICS_EVENTS.RACE_FILTERS_CLEARED]: undefined;
-  [ANALYTICS_EVENTS.RACE_MONTH_FILTER_APPLIED]: {
-    month: string[];
-  };
   [ANALYTICS_EVENTS.RACE_ORGANIZER_CLAIM_CLICKED]: {
     race_name: string;
   };
@@ -103,14 +96,8 @@ export interface AnalyticsEventProperties {
     race_id: string;
     race_slug: string;
   };
-  [ANALYTICS_EVENTS.RACE_PROVINCE_FILTER_APPLIED]: {
-    province: string[];
-  };
   [ANALYTICS_EVENTS.RACE_SHARE_CLICKED]: {
     race_id?: string;
     race_slug?: string;
-  };
-  [ANALYTICS_EVENTS.RACE_TYPE_FILTER_APPLIED]: {
-    raceType: string[];
   };
 }
