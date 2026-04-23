@@ -6,27 +6,32 @@ For business context, metrics, positioning, and audience — invoke the `/produc
 ## Code style
 
 - **HTTP:** always use appropriate HTTP status codes for both success and error cases.
-- **Authorization:** always verify identity and ownership before accessing or mutating protected resources.
 - **API responses:** `{ success: true, data }` on success, `{ error: string }` on error.
-- **DB transactions:** multi-table writes must be atomic. Use Postgres functions (`plpgsql`) via `supabase.rpc(...)` — do not orchestrate split writes in route handlers. Prefer `SECURITY INVOKER` and explicit `GRANT EXECUTE`.
-- **i18n:** locales are `es` and `ca` only — no `en` or other languages. No hardcoded user-facing strings; define them in locale translation files.
-- **Env vars:** only expose client-safe values through `NEXT_PUBLIC_*`.
-
 - **File naming:** kebab-case with file type/purpose (e.g. `race-card.tsx`, `use-auth.ts`)
 - **URLs:** no trailing slashes on internal URLs, paths, or links
 - **Forms:** never use native browser error messages for inputs — use custom validation messages via translation files
 - **Accessibility:** ARIA attributes are not required
+- **i18n:** locales are `es` and `ca` only — no `en` or other languages. No hardcoded user-facing strings; define them in locale translation files.
+
+## Architecture
+
+- **Env vars:** only expose client-safe values through `NEXT_PUBLIC_*`.
+- **DB transactions:** multi-table writes must be atomic. Use Postgres functions (`plpgsql`) via `supabase.rpc(...)` — do not orchestrate split writes in route handlers. Prefer `SECURITY INVOKER` and explicit `GRANT EXECUTE`.
 - **Data layer:** Server Components read directly via `lib/db/*`; Client Components mutate via API routes + `lib/api/*` wrappers — never fetch server-available data from the client
 - **API file structure:** one `route.ts` per resource under `app/api/[resource]/`; dynamic segments at `app/api/[resource]/[id]/route.ts`
+
+## Components
+
 - **Server Components:** prefer Server Components by default; add `'use client'` only for components using hooks, event handlers, or browser APIs
 - **Exports:** named exports for reusable/shared components; default exports for page-level or single-use components
+- **Components:** avoid `React.FC`; use direct function declarations
 - **Error UI:** use `ErrorMessage` or project variants (`SearchError`, `RaceCardError`) for user-facing errors — no inline custom error UI
 - **Types:** define domain types in `types/`; avoid `any`
 - **Imports:** use `@/` alias for internal modules; use `import type` for type-only imports
-- **Components:** avoid `React.FC`; use direct function declarations
 
 ## Security
 
+- **Authorization:** always verify identity and ownership before accessing or mutating protected resources.
 - **Input validation:** validate and sanitize all user inputs server-side before DB or external calls
 - **XSS:** never use `dangerouslySetInnerHTML` with unsanitized input
 - **API errors:** return generic messages only (`"Internal server error"`, `"Unauthorized"`) — never expose stack traces or internal details
