@@ -18,6 +18,9 @@ For business context, metrics, positioning, and audience — invoke the `/produc
 - **Accessibility:** ARIA attributes are not required
 - **Data layer:** Server Components read directly via `lib/db/*`; Client Components mutate via API routes + `lib/api/*` wrappers — never fetch server-available data from the client
 - **API file structure:** one `route.ts` per resource under `app/api/[resource]/`; dynamic segments at `app/api/[resource]/[id]/route.ts`
+- **Server Components:** prefer Server Components by default; add `'use client'` only for components using hooks, event handlers, or browser APIs
+- **Exports:** named exports for reusable/shared components; default exports for page-level or single-use components
+- **Error UI:** use `ErrorMessage` or project variants (`SearchError`, `RaceCardError`) for user-facing errors — no inline custom error UI
 
 ## Workflow
 
