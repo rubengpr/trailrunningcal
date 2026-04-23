@@ -15,10 +15,9 @@ For business context, metrics, positioning, and audience — invoke the `/produc
 
 ## Architecture
 
-- **Env vars:** only expose client-safe values through `NEXT_PUBLIC_*`.
-- **DB transactions:** multi-table writes must be atomic. Use Postgres functions (`plpgsql`) via `supabase.rpc(...)` — do not orchestrate split writes in route handlers. Prefer `SECURITY INVOKER` and explicit `GRANT EXECUTE`.
-- **Data layer:** Server Components read directly via `lib/db/*`; Client Components mutate via API routes + `lib/api/*` wrappers — never fetch server-available data from the client
 - **API file structure:** one `route.ts` per resource under `app/api/[resource]/`; dynamic segments at `app/api/[resource]/[id]/route.ts`
+- **Data layer:** Server Components read directly via `lib/db/*`; Client Components mutate via API routes + `lib/api/*` wrappers — never fetch server-available data from the client
+- **DB transactions:** multi-table writes must be atomic. Use Postgres functions (`plpgsql`) via `supabase.rpc(...)` — do not orchestrate split writes in route handlers. Prefer `SECURITY INVOKER` and explicit `GRANT EXECUTE`.
 
 ## Components
 
@@ -31,7 +30,9 @@ For business context, metrics, positioning, and audience — invoke the `/produc
 
 ## Security
 
+- **Env vars:** only expose client-safe values through `NEXT_PUBLIC_*`.
 - **Authorization:** always verify identity and ownership before accessing or mutating protected resources.
+- **Ownership:** after auth, verify the resource belongs to the user before any mutation — query the DB to confirm, never trust client-supplied ownership claims
 - **Input validation:** validate and sanitize all user inputs server-side before DB or external calls
 - **XSS:** never use `dangerouslySetInnerHTML` with unsanitized input
 - **API errors:** return generic messages only (`"Internal server error"`, `"Unauthorized"`) — never expose stack traces or internal details
