@@ -21,6 +21,9 @@ For business context, metrics, positioning, and audience — invoke the `/produc
 - **Server Components:** prefer Server Components by default; add `'use client'` only for components using hooks, event handlers, or browser APIs
 - **Exports:** named exports for reusable/shared components; default exports for page-level or single-use components
 - **Error UI:** use `ErrorMessage` or project variants (`SearchError`, `RaceCardError`) for user-facing errors — no inline custom error UI
+- **Types:** define domain types in `types/`; avoid `any`
+- **Imports:** use `@/` alias for internal modules; use `import type` for type-only imports
+- **Components:** avoid `React.FC`; use direct function declarations
 
 ## Security
 
