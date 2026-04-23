@@ -16,6 +16,8 @@ For business context, metrics, positioning, and audience — invoke the `/produc
 - **URLs:** no trailing slashes on internal URLs, paths, or links
 - **Forms:** never use native browser error messages for inputs — use custom validation messages via translation files
 - **Accessibility:** ARIA attributes are not required
+- **Data layer:** Server Components read directly via `lib/db/*`; Client Components mutate via API routes + `lib/api/*` wrappers — never fetch server-available data from the client
+- **API file structure:** one `route.ts` per resource under `app/api/[resource]/`; dynamic segments at `app/api/[resource]/[id]/route.ts`
 
 ## Workflow
 
