@@ -177,7 +177,7 @@ export default function TrailRaceCard({
                 {month}
               </span>
             </div>
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 overflow-hidden">
               <div className="flex flex-row items-center gap-1.5 mb-1">
                 {!displayOnly && raceSlug ? (
                   <Link
