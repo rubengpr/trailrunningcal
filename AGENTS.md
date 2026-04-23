@@ -22,6 +22,13 @@ For business context, metrics, positioning, and audience — invoke the `/produc
 - **Exports:** named exports for reusable/shared components; default exports for page-level or single-use components
 - **Error UI:** use `ErrorMessage` or project variants (`SearchError`, `RaceCardError`) for user-facing errors — no inline custom error UI
 
+## Security
+
+- **Input validation:** validate and sanitize all user inputs server-side before DB or external calls
+- **XSS:** never use `dangerouslySetInnerHTML` with unsanitized input
+- **API errors:** return generic messages only (`"Internal server error"`, `"Unauthorized"`) — never expose stack traces or internal details
+- **Auth — pages:** check `supabase.auth.getUser()` and redirect to `/{locale}/login` if user is missing
+
 ## Workflow
 
 - Run `pnpm tsc --noEmit` before pushing — Vercel type-checks on every build and failures break the deployment.
