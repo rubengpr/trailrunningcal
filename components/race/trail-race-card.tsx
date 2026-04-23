@@ -206,7 +206,7 @@ export default function TrailRaceCard({
               <div className={metaRowClass}>
                 <span>{distanceKm}km</span>
                 <span>{elevationGainM ? `${elevationGainM}m+` : '-'}</span>
-                <span className="truncate">
+                <span className="truncate min-w-0">
                   {city},{' '}
                   {province}
                 </span>
