@@ -105,7 +105,8 @@
       "save": "Guardar carrera",
       "remove": "Eliminar de favoritos",
       "savedToast": "Carrera añadida a favoritos"
-    }
+    },
+    "verifiedOrganizer": "Organizador verificado"
   },
   "difficulty": {
     "fácil": "Fácil",

@@ -4,7 +4,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useFeatureFlagVariantKey } from 'posthog-js/react';
-import VerifiedBadgeWithTooltip from '@/components/icons/verified-badge-with-tooltip';
+import VerifiedBadge from '@/components/icons/verified-badge';
 import { getDisplayPrice } from '@/lib/race-utils';
 import { TEST_VERIFIED_RACES_NAME } from '@/lib/constants';
 
@@ -187,10 +187,13 @@ export default function TrailRaceCard({
                     {name}
                   </h2>
                 )}
-                <VerifiedBadgeWithTooltip
-                  size="sm"
-                  className={`relative z-10 shrink-0 ${(organizerId || isTestRace) ? 'visible' : 'invisible'}`}
-                />
+                {(organizerId || isTestRace) && (
+                  <VerifiedBadge
+                    tooltip={t('race.verifiedOrganizer')}
+                    size="sm"
+                    className="relative z-10 shrink-0"
+                  />
+                )}
               </div>
               <div className={metaRowClass}>
                 <span className="shrink-0">{distanceKm}km</span>

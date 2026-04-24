@@ -105,7 +105,8 @@
       "save": "Desa cursa",
       "remove": "Elimina dels favorits",
       "savedToast": "Cursa afegida a favorits"
-    }
+    },
+    "verifiedOrganizer": "Organitzador verificat"
   },
   "difficulty": {
     "fácil": "Fàcil",

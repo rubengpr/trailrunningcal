@@ -1,6 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import { ConfirmedDateBadge } from '@/components/race/confirmed-date-badge';
-import VerifiedBadgeWithTooltip from '@/components/icons/verified-badge-with-tooltip';
+import VerifiedBadge from '@/components/icons/verified-badge';
 import RaceOrganizerLinks from '@/components/race/race-organizer-links';
 import RaceShareWhatsappButton from '@/components/race/race-share-whatsapp-button';
 import { RaceFavoriteButton } from '@/components/race/race-favorite-button';
@@ -47,7 +47,7 @@ export async function RaceDetailHeader({
             {race.name}
           </h1>
           {isVerified && (
-            <VerifiedBadgeWithTooltip size="md" className="shrink-0" />
+            <VerifiedBadge tooltip={tRace('verifiedOrganizer')} size="md" className="shrink-0" />
           )}
         </div>
         <div className="flex flex-row flex-wrap items-center gap-2">
