@@ -7,6 +7,7 @@ import ProvinceFilter from '@/components/filters/province-filter';
 import { DISTANCE_GROUPS } from '@/lib/constants';
 import { RACE_TYPES, RACE_TYPE_CATEGORY_KEYS } from '@/lib/home-race-filters';
 import { Button } from '@/components/ui/button';
+import { X, Trash2 } from 'lucide-react';
 
 interface MobileFiltersModalProps {
   isOpen: boolean;
@@ -98,19 +99,7 @@ export default function MobileFiltersModal({
           onClick={onClose}
           className="flex h-8 w-8 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors cursor-pointer"
         >
-          <svg
-            className="h-5 w-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
+          <X className="h-5 w-5" strokeWidth={2} />
         </button>
         <span className="text-base font-semibold text-gray-900">
           {tFilters('filtersLabel')}
@@ -183,20 +172,7 @@ export default function MobileFiltersModal({
             onClick={handleClearAll}
             className="flex items-center justify-center h-[52px] w-[52px] shrink-0 rounded-xl border border-gray-300 text-gray-500 hover:text-gray-800 hover:border-gray-400 transition-colors cursor-pointer"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
-              <path d="M3 6h18" />
-              <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-            </svg>
+            <Trash2 className="h-5 w-5" strokeWidth={2} />
           </button>
         )}
         <Button variant="primary" fullWidth onClick={handleApply} className="py-4">

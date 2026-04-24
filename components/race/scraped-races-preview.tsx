@@ -1,33 +1,22 @@
 'use client';
 
 import { useState } from 'react';
+import { X, CheckCircle2, Pencil } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { TrailRaceAgentRaceRow } from '@/types/trail-race-agent.types';
 
 export { DUMMY_SCRAPED_RACES } from '@/lib/fixtures/dummy-scraped-races';
 
 function RejectIcon({ className = 'h-6 w-6' }: { className?: string }) {
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-        </svg>
-    );
+    return <X className={className} strokeWidth={1.5} />;
 }
 
 function AcceptIcon({ className = 'h-6 w-6' }: { className?: string }) {
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-        </svg>
-    );
+    return <CheckCircle2 className={className} strokeWidth={1.5} />;
 }
 
 function EditIcon({ className = 'h-5 w-5' }: { className?: string }) {
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125" />
-        </svg>
-    );
+    return <Pencil className={className} strokeWidth={1.5} />;
 }
 
 interface ScrapedRacesPreviewProps {

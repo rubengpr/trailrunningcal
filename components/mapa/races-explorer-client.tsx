@@ -18,6 +18,7 @@ import { Button } from '@/components/ui/button';
 import type { DesktopLayout, LayoutToggleButton } from '@/components/ui/layout-toggle';
 import RacesMap from '@/components/races-map/races-map';
 import { MapToggleFab } from '@/components/mapa/map-toggle-fab';
+import { Search, RefreshCw, TriangleAlert } from 'lucide-react';
 import { useMinWidthLg } from '@/hooks/use-min-width-lg';
 import { useScrollEdges } from '@/hooks/use-scroll-edges';
 import { useMobileFilters } from '@/components/providers/mobile-filters-provider';
@@ -253,39 +254,13 @@ export default function RacesExplorerClient({
                       {filteredRaces.length === 0 ? (
                         <EmptyState
                           icon={
-                            <svg
-                              className="mx-auto h-16 w-16 text-gray-400"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={1.5}
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                              />
-                            </svg>
+                            <Search className="mx-auto h-16 w-16 text-gray-400" strokeWidth={1.5} />
                           }
                           title={tResults('noRacesFound')}
                           description={tResults('noRacesMessage')}
                           action={
                             <Button onClick={handleClearFilters}>
-                              <svg
-                                className="w-4 h-4 mr-2"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                                />
-                              </svg>
+                              <RefreshCw className="w-4 h-4 mr-2" strokeWidth={2} />
                               {tFilters('clearFilters')}
                             </Button>
                           }
@@ -300,19 +275,7 @@ export default function RacesExplorerClient({
                                   <div className="bg-white rounded-lg shadow-sm border border-red-200 p-6">
                                     <div className="text-center">
                                       <div className="mb-2">
-                                        <svg
-                                          className="mx-auto h-8 w-8 text-red-500"
-                                          fill="none"
-                                          stroke="currentColor"
-                                          viewBox="0 0 24 24"
-                                        >
-                                          <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
-                                          />
-                                        </svg>
+                                        <TriangleAlert className="mx-auto h-8 w-8 text-red-500" strokeWidth={2} />
                                       </div>
                                       <h4 className="text-sm font-semibold text-gray-900 mb-1">
                                         {tErrors('raceLoadError')}

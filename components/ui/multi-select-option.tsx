@@ -1,5 +1,7 @@
 'use client';
 
+import { Check } from 'lucide-react';
+
 interface MultiSelectOptionProps {
   label: string;
   selected: boolean;
@@ -21,9 +23,7 @@ export default function MultiSelectOption({
     >
       <span className={`w-3.5 h-3.5 shrink-0 rounded-sm border flex items-center justify-center transition-colors ${selected ? 'bg-gray-900 border-gray-900' : 'border-gray-300'}`}>
         {selected && (
-          <svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M20 6 9 17l-5-5" />
-          </svg>
+          <Check size={9} strokeWidth={3} stroke="white" />
         )}
       </span>
       {label}

@@ -7,6 +7,7 @@ import type { TrailRace } from '@/types/race.types';
 import TrailRaceCard from '@/components/race/trail-race-card';
 import { useFavorites } from '@/hooks/use-favorites';
 import { generateRaceSlug } from '@/lib/race-utils';
+import { Heart } from 'lucide-react';
 
 interface FavoritesClientProps {
   races: TrailRace[];
@@ -31,20 +32,7 @@ export default function FavoritesClient({ races }: FavoritesClientProps) {
   if (favoriteRaces.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="w-16 h-16 text-gray-300"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
-          />
-        </svg>
+        <Heart className="w-16 h-16 text-gray-300" strokeWidth={1.5} />
         <h2 className="text-xl font-semibold text-gray-700">{t('empty')}</h2>
         <p className="text-gray-500 max-w-sm">{t('emptyMessage')}</p>
         <Link

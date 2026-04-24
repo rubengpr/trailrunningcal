@@ -2,6 +2,7 @@
 
 import type { RefObject } from 'react';
 import { useTranslations } from 'next-intl';
+import { Trash2 } from 'lucide-react';
 import { FilterSelect } from '@/components/filters/filter-select';
 import FilterPill from '@/components/filters/filter-pill';
 import { PROVINCES, DISTANCE_GROUPS, MONTH_INDICES } from '@/lib/constants';
@@ -92,11 +93,7 @@ export default function FilterBar({
           onClick={onClearFilters}
           className="flex items-center justify-center py-2 px-2 shrink-0 rounded-lg border border-gray-300 text-gray-500 hover:text-gray-800 hover:border-gray-400 transition-colors cursor-pointer"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
-            <path d="M3 6h18" />
-            <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-          </svg>
+          <Trash2 className="h-3.5 w-3.5" strokeWidth={2} />
         </button>
       )}
       {variant === 'pill' ? (

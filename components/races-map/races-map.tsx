@@ -10,6 +10,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import type { Locale } from '@/i18n';
 import { formatDateToCatalan, formatDateToSpanish } from '@/lib/date-utils';
 import type { MapPageLabels, RaceMapMarker } from '@/types/map.types';
+import { ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react';
 
 /** OpenStreetMap Standard (raster) — attribution shown via MapLibre AttributionControl. */
 const OSM_STANDARD_STYLE: StyleSpecification = {
@@ -65,51 +66,15 @@ function createRaceMapMarkerElement(): HTMLDivElement {
 }
 
 function ChevronLeftIcon({ className }: { className?: string }): ReactElement {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M15 18l-6-6 6-6" />
-    </svg>
-  );
+  return <ChevronLeft className={className} strokeWidth={2} />;
 }
 
 function ChevronRightIcon({ className }: { className?: string }): ReactElement {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M9 18l6-6-6-6" />
-    </svg>
-  );
+  return <ChevronRight className={className} strokeWidth={2} />;
 }
 
 function ArrowUpRightIcon({ className }: { className?: string }): ReactElement {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M7 17L17 7M7 7h10v10" />
-    </svg>
-  );
+  return <ArrowUpRight className={className} strokeWidth={2} />;
 }
 
 function addSpainBoundaryLayers(map: maplibregl.Map): void {

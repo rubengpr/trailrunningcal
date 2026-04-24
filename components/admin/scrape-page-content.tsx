@@ -37,6 +37,7 @@ import type { CrawlPageStats } from '@/types/races-scrape-api.types';
 import type { TrailRaceAgentRaceRow } from '@/types/trail-race-agent.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 import type { RaceQueueEntry } from '@/types/race-queue.types';
+import { XCircle, RefreshCw, Sparkles, FileText, ImageIcon, X } from 'lucide-react';
 
 type ScrapeWorkflow = 'crawlMdOnly' | 'llmFromFile' | 'crawlAndLlm' | 'autopilot';
 
@@ -80,20 +81,7 @@ function FullPipelineRowIcon({ kind }: { kind: FullPipelineRowKind }): React.Rea
     }
     if (kind === 'error') {
         return (
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-4 w-4 shrink-0 text-red-600"
-                aria-hidden
-            >
-                <circle cx="12" cy="12" r="10" />
-                <path d="m15 9-6 6M9 9l6 6" />
-            </svg>
+            <XCircle className="h-4 w-4 shrink-0 text-red-600" strokeWidth={2} aria-hidden />
         );
     }
     return (
@@ -104,21 +92,7 @@ function FullPipelineRowIcon({ kind }: { kind: FullPipelineRowKind }): React.Rea
 }
 
 function RestartIcon({ className = 'h-5 w-5' }: { className?: string }): React.ReactElement {
-    return (
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className={className}
-        >
-            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-            <path d="M3 3v5h5" />
-        </svg>
-    );
+    return <RefreshCw className={className} strokeWidth={2} />;
 }
 
 function triggerMarkdownFileDownload(markdown: string, downloadName: string): void {
@@ -993,9 +967,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                                 }`}
                         >
                             <span className="inline-flex items-center gap-1.5">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-4">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
-                                </svg>
+                                <Sparkles className="size-4" strokeWidth={1.5} />
                                 {t('workflowAutopilot')}
                             </span>
                         </button>
@@ -1104,10 +1076,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                                                 : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                                         }`}
                                     >
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
-                                            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-                                            <polyline points="14 2 14 8 20 8" />
-                                        </svg>
+                                        <FileText className="h-4 w-4" strokeWidth={2} />
                                     </button>
                                     <button
                                         type="button"
@@ -1120,11 +1089,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                                                 : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                                         }`}
                                     >
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
-                                            <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
-                                            <circle cx="9" cy="9" r="2" />
-                                            <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
-                                        </svg>
+                                        <ImageIcon className="h-4 w-4" strokeWidth={2} />
                                     </button>
                                     {uploadKind !== null && (
                                         <button
@@ -1134,9 +1099,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                                             title={t('clearUpload')}
                                             className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-gray-200 bg-white text-gray-400 shadow-sm transition-colors hover:bg-gray-50 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
                                         >
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
-                                                <path d="M18 6 6 18M6 6l12 12" />
-                                            </svg>
+                                            <X className="h-4 w-4" strokeWidth={2} />
                                         </button>
                                     )}
                                 </div>

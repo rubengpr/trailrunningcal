@@ -1,6 +1,7 @@
 'use client';
 
 import type { ReactElement } from 'react';
+import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { track } from '@/lib/analytics/track';
@@ -18,17 +19,7 @@ interface BreadcrumbProps {
 function BreadcrumbChevron(): ReactElement {
   return (
     <span className="inline-flex h-[1em] shrink-0 items-center justify-center text-gray-400">
-      <svg
-        className="block h-[0.85em] w-[0.85em] shrink-0"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={2.5}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M9 18l6-6-6-6" />
-      </svg>
+      <ChevronRight className="block h-[0.85em] w-[0.85em] shrink-0" strokeWidth={2.5} />
     </span>
   );
 }

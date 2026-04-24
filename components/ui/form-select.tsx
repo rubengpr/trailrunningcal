@@ -1,6 +1,7 @@
 'use client';
 
 import type { ReactNode, SelectHTMLAttributes } from 'react';
+import { ChevronDown } from 'lucide-react';
 
 interface FormSelectProps
   extends Omit<
@@ -43,20 +44,7 @@ export function FormSelect({
           className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
           aria-hidden
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="size-4"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="m19.5 8.25-7.5 7.5-7.5-7.5"
-            />
-          </svg>
+          <ChevronDown size={16} />
         </span>
       </div>
       <div className="h-5">

@@ -7,6 +7,7 @@ import {
 } from '@/seo/meta-config';
 import type { Locale } from '@/i18n';
 import { CONTACT_EMAIL } from '@/lib/config';
+import { Mail, MapPin } from 'lucide-react';
 import { buildContactAlternateLinks } from '@/lib/alternate-links';
 
 export async function generateMetadata({
@@ -58,19 +59,7 @@ export default async function ContactPage({
             <div className="bg-white rounded-lg p-6 shadow-sm">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2 bg-gray-100 rounded-lg">
-                  <svg
-                    className="h-6 w-6 text-gray-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                    />
-                  </svg>
+                  <Mail className="h-6 w-6 text-gray-600" strokeWidth={2} />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900">
                   {t('contact.email')}
@@ -90,25 +79,7 @@ export default async function ContactPage({
             <div className="bg-white rounded-lg p-6 shadow-sm">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2 bg-gray-100 rounded-lg">
-                  <svg
-                    className="h-6 w-6 text-gray-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                  </svg>
+                  <MapPin className="h-6 w-6 text-gray-600" strokeWidth={2} />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900">
                   {t('contact.location')}

@@ -11,6 +11,7 @@ import { useFavorites } from '@/hooks/use-favorites';
 import { useMobileFilters } from '@/components/providers/mobile-filters-provider';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { track } from '@/lib/analytics/track';
+import { Menu, Heart, ChevronDown, CircleUser, SlidersHorizontal } from 'lucide-react';
 
 export default function Navbar() {
   const t = useTranslations('navigation');
@@ -99,15 +100,7 @@ export default function Navbar() {
             onClick={handleMenuClick}
             title={t('openMenu')}
           >
-            <svg
-              className="h-5 w-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
+            <Menu className="h-5 w-5" strokeWidth={1.5} />
           </button>
           <Link
             href={`/${locale}`}
@@ -173,9 +166,7 @@ export default function Navbar() {
                 }), 0)
               }
             >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-gray-700">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
-              </svg>
+              <Heart className="w-5 h-5 text-gray-700" strokeWidth={1.5} />
               {favorites.size > 0 && (
                 <span className="absolute top-0 right-0 block w-2 h-2 rounded-full bg-red-500" />
               )}
@@ -186,9 +177,7 @@ export default function Navbar() {
                 onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}
               >
                 {t('explore')}
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="m6 9 6 6 6-6" />
-                </svg>
+                <ChevronDown size={16} />
               </button>
               {isCategoriesOpen && (
                 <div className="absolute top-full right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[320px] p-3 flex gap-6">
@@ -221,9 +210,7 @@ export default function Navbar() {
             <Link href={`/${locale}/${locale === 'ca' ? 'contacte' : 'contacto'}`} className="hover:text-gray-900 transition-colors" onClick={() => setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'contact', link_href: `/${locale}/${locale === 'ca' ? 'contacte' : 'contacto'}`, locale }), 0)}>{t('contact')}</Link>
             {isAuthenticated && (
               <Link href={`/${locale}/org/perfil`} className="p-2 rounded-lg hover:bg-gray-100 transition-colors" onClick={() => setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'profile', link_href: `/${locale}/org/perfil`, locale }), 0)}>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5 text-gray-700">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                </svg>
+                <CircleUser className="w-5 h-5 text-gray-700" strokeWidth={1.5} />
               </Link>
             )}
           </div>
@@ -242,9 +229,7 @@ export default function Navbar() {
                 }), 0)
               }
             >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
-              </svg>
+              <Heart className="h-5 w-5" strokeWidth={1.5} />
               {favorites.size > 0 && (
                 <span className="absolute top-0 right-0 block w-2 h-2 rounded-full bg-red-500" />
               )}
@@ -257,17 +242,7 @@ export default function Navbar() {
               className="relative flex sm:hidden items-center gap-1 p-1 text-gray-400"
               onClick={() => { openFilters(); setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_FILTER_ICON_CLICKED, { filter_count: filterCount, variant: filterVariant }), 0); }}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                <path d="M10 5H3" />
-                <path d="M12 19H3" />
-                <path d="M14 3v4" />
-                <path d="M16 17v4" />
-                <path d="M21 12h-9" />
-                <path d="M21 19h-5" />
-                <path d="M21 5h-7" />
-                <path d="M8 10v4" />
-                <path d="M8 12H3" />
-              </svg>
+              <SlidersHorizontal className="h-5 w-5" strokeWidth={2} />
               {filterCount > 0 && (
                 <span className="absolute top-0 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-black text-[9px] font-semibold text-white">
                   {filterCount}
