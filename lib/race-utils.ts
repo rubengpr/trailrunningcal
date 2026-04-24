@@ -51,3 +51,18 @@ export function getDisplayPrice(
   }
   return priceEur[0].price_eur;
 }
+
+export function formatDisplayPrice(
+  priceEur: TrailRace['priceEur'] | number | null | undefined,
+): string {
+  if (priceEur === null || priceEur === undefined) {
+    return '-';
+  }
+
+  if (typeof priceEur === 'number') {
+    return `${priceEur}€`;
+  }
+
+  const displayPrice = getDisplayPrice(priceEur);
+  return displayPrice === null ? '-' : `${displayPrice}€`;
+}

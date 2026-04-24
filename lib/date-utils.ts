@@ -46,3 +46,16 @@ export const formatDateToCatalan = (date: Date | string): string => {
     year: 'numeric',
   }).format(dateObj);
 };
+
+export const formatDateByLocale = (
+  date: Date | string | null,
+  locale: string,
+): string => {
+  if (!date) {
+    return 'N/D';
+  }
+
+  return locale === 'ca'
+    ? formatDateToCatalan(date)
+    : formatDateToSpanish(date);
+};

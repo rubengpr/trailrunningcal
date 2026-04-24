@@ -5,11 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { InfoBanner } from '@/components/ui/info-banner';
-import { SectionHeader } from '@/components/ui/section-header';
-import TrailRaceCard from '@/components/race/trail-race-card';
+import { RaceManagementList } from '@/components/race/race-management-list';
 import type { TrailRace } from '@/types/race.types';
-import { formatDateToSpanish, formatDateToCatalan } from '@/lib/date-utils';
-import { generateRaceSlug } from '@/lib/race-utils';
 
 const MAX_RACES = 5;
 
@@ -67,37 +64,27 @@ export function OrganizerRacesContent({ races }: OrganizerRacesContentProps) {
         router.push(`/${locale}/org/carreras/${raceId}`);
     };
 
-    const formatDate = (dateString: string | null) => {
-        if (!dateString) return 'N/D';
-        return locale === 'ca'
-            ? formatDateToCatalan(dateString)
-            : formatDateToSpanish(dateString);
-    };
-
-    const formatPrice = (price: TrailRace['priceEur']): string => {
-        if (price === null) return '-';
-        if (typeof price === 'number') return `${price}€`;
-        if (Array.isArray(price) && price.length > 0) {
-            const priceValue = price[0].price_eur;
-            if (priceValue === null || priceValue === undefined) return '-';
-            return `${priceValue}€`;
-        }
-        return '-';
-    };
-
     return (
         <>
             <div className='flex flex-col gap-8'>
-                <SectionHeader
-                    title={tTable('title')}
-                    subtitle={
+                <RaceManagementList
+                    races={displayRaces}
+                    onRaceClick={handleRaceClick}
+                    labels={{
+                        name: tTable('name'),
+                        date: tTable('date'),
+                        distance: tTable('distance'),
+                        price: tTable('price'),
+                    }}
+                    headerTitle={tTable('title')}
+                    headerSubtitle={
                         hasRealRaces
                             ? displayRaces.length === 1
                                 ? tTable('raceCountOne')
                                 : tTable('raceCount', { count: displayRaces.length })
                             : tTable('raceCount', { count: displayRaces.length })
                     }
-                    action={
+                    headerAction={
                         <span title={isAtLimit ? tTable('raceLimitReached') : undefined}>
                             <Button
                                 onClick={() => router.push(`/${locale}/org/carreras/new`)}
@@ -107,6 +94,7 @@ export function OrganizerRacesContent({ races }: OrganizerRacesContentProps) {
                             </Button>
                         </span>
                     }
+                    placeholderMode={!hasRealRaces}
                 />
 
                 {/* Banner for placeholder data */}
@@ -122,92 +110,6 @@ export function OrganizerRacesContent({ races }: OrganizerRacesContentProps) {
                     </InfoBanner>
                 )}
 
-                {/* Cards - Mobile only */}
-                <div className='w-full sm:hidden space-y-4'>
-                    {displayRaces.map((race, index) => (
-                        <div
-                            key={index}
-                            onClick={hasRealRaces && race.id ? () => handleRaceClick(race.id) : undefined}
-                            className={hasRealRaces ? 'cursor-pointer min-w-0' : 'min-w-0'}
-                        >
-                            <TrailRaceCard
-                                date={race.date}
-                                name={race.name}
-                                distanceKm={race.distanceKm}
-                                elevationGainM={race.elevationGainM}
-                                priceEur={race.priceEur ?? null}
-                                city={race.city}
-                                province={race.province}
-                                raceSlug={generateRaceSlug(race.name)}
-                                organizerId={race.organizerId}
-                                displayOnly={true}
-                            />
-                        </div>
-                    ))}
-                </div>
-
-                {/* Table - Desktop only */}
-                <div className='hidden sm:block w-full bg-white rounded-2xl shadow-sm border border-gray-50 overflow-hidden'>
-                    <div className='overflow-x-auto'>
-                        <table className='w-full'>
-                            <thead>
-                                <tr className='border-b border-gray-100'>
-                                    <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider sticky left-0 bg-white z-10 ${!hasRealRaces ? 'text-gray-300' : 'text-gray-500'
-                                        }`}>
-                                        {tTable('name')}
-                                    </th>
-                                    <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider ${!hasRealRaces ? 'text-gray-300' : 'text-gray-500'
-                                        }`}>
-                                        {tTable('date')}
-                                    </th>
-                                    <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider ${!hasRealRaces ? 'text-gray-300' : 'text-gray-500'
-                                        }`}>
-                                        {tTable('distance')}
-                                    </th>
-                                    <th className={`px-6 py-4 text-right text-xs font-medium uppercase tracking-wider ${!hasRealRaces ? 'text-gray-300' : 'text-gray-500'
-                                        }`}>
-                                        {tTable('price')}
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className='bg-white divide-y divide-gray-50'>
-                                {displayRaces.map((race, index) => (
-                                    <tr
-                                        key={index}
-                                        onClick={hasRealRaces && race.id ? () => handleRaceClick(race.id) : undefined}
-                                        className={hasRealRaces ? 'hover:bg-gray-50/50 transition-colors duration-150 group cursor-pointer' : ''}
-                                    >
-                                        <td className={`px-6 py-5 whitespace-nowrap sticky left-0 bg-white z-10 ${hasRealRaces ? 'group-hover:bg-gray-50/50' : ''
-                                            }`}>
-                                            <div className={`text-sm font-medium ${!hasRealRaces ? 'text-gray-300' : 'text-gray-900'
-                                                }`}>
-                                                {race.name}
-                                            </div>
-                                        </td>
-                                        <td className='px-6 py-5 whitespace-nowrap'>
-                                            <div className={`text-sm ${!hasRealRaces ? 'text-gray-300' : 'text-gray-700'
-                                                }`}>
-                                                {formatDate(race.date)}
-                                            </div>
-                                        </td>
-                                        <td className='px-6 py-5 whitespace-nowrap'>
-                                            <div className={`text-sm ${!hasRealRaces ? 'text-gray-300' : 'text-gray-700'
-                                                }`}>
-                                                {race.distanceKm} km
-                                            </div>
-                                        </td>
-                                        <td className='px-6 py-5 whitespace-nowrap text-right'>
-                                            <div className={`text-sm font-medium ${!hasRealRaces ? 'text-gray-300' : 'text-gray-900'
-                                                }`}>
-                                                {formatPrice(race.priceEur)}
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
             </div>
         </>
     );
