@@ -1,0 +1,23 @@
+{
+  "skill_name": "component-audit",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Can you audit the codebase and tell me if there are any good opportunities to extract React components? I want to keep the code clean and avoid duplication.",
+      "expected_output": "A numbered list of concrete component extraction opportunities (or a clear statement that none were found), each with: what the pattern is, where it lives (file + approx line), a suggested component name, and a rough props interface.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I've been adding features lately and I'm worried the pages are getting bloated. Can you look through app/ and components/ and find any JSX that's repeated or should be its own component?",
+      "expected_output": "Focused findings about specific repeated or extractable JSX, with file paths. Should not invent issues if the code is clean.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Run a component audit on this repo",
+      "expected_output": "A structured list of opportunities (or zero-result explanation), each with component name, location, and props sketch.",
+      "files": []
+    }
+  ]
+}
