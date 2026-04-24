@@ -188,11 +188,7 @@ export default function TrailRaceCard({
                   </h2>
                 )}
                 {(organizerId || isTestRace) && (
-                  <VerifiedBadge
-                    tooltip={t('race.verifiedOrganizer')}
-                    size="sm"
-                    className="relative z-10 shrink-0"
-                  />
+                  <VerifiedBadge size="sm" className="relative z-10 shrink-0" />
                 )}
               </div>
               <div className={metaRowClass}>

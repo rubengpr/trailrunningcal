@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Tooltip from '@/components/ui/tooltip';
 
 interface VerifiedBadgeProps {
-  tooltip: string;
+  tooltip?: string;
   size?: 'sm' | 'md' | 'lg';
   className?: string;
 }
@@ -15,16 +15,22 @@ export default function VerifiedBadge({ tooltip, size = 'md', className = '' }: 
   };
   const { width, height, classes } = sizeMap[size];
 
+  const image = (
+    <Image
+      src="/assets/verified.png"
+      alt={tooltip ?? 'Verified'}
+      width={width}
+      height={height}
+      className={classes}
+      unoptimized
+    />
+  );
+
+  if (!tooltip) return <div className={className}>{image}</div>;
+
   return (
     <Tooltip text={tooltip} size={size} className={className}>
-      <Image
-        src="/assets/verified.png"
-        alt={tooltip}
-        width={width}
-        height={height}
-        className={classes}
-        unoptimized
-      />
+      {image}
     </Tooltip>
   );
 }
