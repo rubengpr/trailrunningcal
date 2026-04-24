@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase/client';
 import { ClaimOrganizerModal } from '@/components/organizer/claim-organizer-modal';
-import { ConfirmationModal } from '@/components/modals/confirmation-modal';
+import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { track } from '@/lib/analytics/track';
 

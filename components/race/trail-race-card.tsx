@@ -4,7 +4,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useFeatureFlagVariantKey } from 'posthog-js/react';
-import VerifiedBadgeWithTooltip from '@/components/badges/verified-badge-with-tooltip';
+import VerifiedBadgeWithTooltip from '@/components/icons/verified-badge-with-tooltip';
 import { getDisplayPrice } from '@/lib/race-utils';
 import { TEST_VERIFIED_RACES_NAME } from '@/lib/constants';
 

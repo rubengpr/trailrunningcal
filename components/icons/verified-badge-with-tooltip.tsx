@@ -1,4 +1,4 @@
-import VerifiedBadge from './verified-badge';
+import VerifiedBadge from '@/components/icons/verified-badge';
 import Tooltip from '@/components/ui/tooltip';
 
 interface VerifiedBadgeWithTooltipProps {

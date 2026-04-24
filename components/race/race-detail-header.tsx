@@ -1,6 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import { ConfirmedDateBadge } from '@/components/race/confirmed-date-badge';
-import VerifiedBadgeWithTooltip from '@/components/badges/verified-badge-with-tooltip';
+import VerifiedBadgeWithTooltip from '@/components/icons/verified-badge-with-tooltip';
 import RaceOrganizerLinks from '@/components/race/race-organizer-links';
 import RaceShareWhatsappButton from '@/components/race/race-share-whatsapp-button';
 import { RaceFavoriteButton } from '@/components/race/race-favorite-button';
