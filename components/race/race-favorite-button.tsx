@@ -35,7 +35,7 @@ export function RaceFavoriteButton({ raceId, saveLabel, removeLabel, iconOnly, c
       if (isMobile) {
         toast.custom((toastState) => (
           <div
-            className="fixed bottom-0 left-0 right-0 z-[9999] flex items-center gap-3 bg-white border-t border-gray-200 px-5 py-4 text-sm font-medium text-gray-800"
+            className="fixed bottom-0 left-0 right-0 z-9999 flex items-center gap-3 bg-white border-t border-gray-200 px-5 py-4 text-sm font-medium text-gray-800"
             style={{
               transform: toastState.visible ? 'translateY(0)' : 'translateY(100%)',
               transition: 'transform 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
