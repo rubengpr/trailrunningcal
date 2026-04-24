@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 
-export function AdminCarrerasTabs() {
+export function AdminRacesTabs() {
     const t = useTranslations('admin.races.tabs');
     const locale = useLocale();
     const pathname = usePathname();

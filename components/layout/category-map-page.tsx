@@ -2,7 +2,7 @@ import type { Locale } from '@/i18n';
 import type { TrailRace } from '@/types/race.types';
 import type { RaceMapMarker, MapPageLabels } from '@/types/map.types';
 import CategoryHeroSection from '@/components/layout/category-hero-section';
-import RacesExplorerClient from '@/components/mapa/races-explorer-client';
+import RacesExplorerClient from '@/components/map/races-explorer-client';
 
 interface BreadcrumbItem {
   name: string;
