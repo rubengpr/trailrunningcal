@@ -8,24 +8,19 @@ import type { Metadata } from 'next';
 import { generateMetadataFromOptions } from '@/seo/meta-config';
 import { BASE_URL } from '@/lib/config';
 import { buildRaceAlternateLinks } from '@/lib/alternate-links';
-import VerifiedBadgeWithTooltip from '@/components/badges/verified-badge-with-tooltip';
-import { ConfirmedDateBadge } from '@/components/race/confirmed-date-badge';
 import Sponsors from '@/components/home/sponsors';
 import { RaceHeroImage } from '@/components/race/race-hero-image';
 import { RaceOrganizerClaimCard } from '@/components/race/race-organizer-claim-card';
-import { TEST_VERIFIED_RACES_NAME } from '@/lib/constants';
 import { getRaceBySlug, getRecommendedRaces } from '@/lib/db/races';
 import { getOrganizerById } from '@/lib/db/organizers';
 import { getDisplayPrice } from '@/lib/race-utils';
-import RaceOrganizerLinks from '@/components/race/race-organizer-links';
-import RaceShareWhatsappButton from '@/components/race/race-share-whatsapp-button';
-import { RaceFavoriteButton } from '@/components/race/race-favorite-button';
 import { buildRaceJsonLd } from '@/lib/seo/race-json-ld';
 import { buildBreadcrumbJsonLd } from '@/lib/seo/breadcrumb-json-ld';
 import { Breadcrumb } from '@/components/layout/breadcrumb';
 import TrailRaceCard from '@/components/race/trail-race-card';
 import { getRaceImageUrlWithFilename } from '@/lib/race-image-url';
 import { TrackedLink } from '@/components/ui/tracked-link';
+import { RaceDetailHeader } from '@/components/race/race-detail-header';
 
 const PROVINCE_SLUGS: Record<string, string> = {
   Barcelona: 'barcelona',
@@ -112,8 +107,6 @@ export async function generateMetadata({
   });
 }
 
-const isTestRace = (raceName: string) => TEST_VERIFIED_RACES_NAME.includes(raceName)
-
 export default async function RacePage({
   params,
 }: {
@@ -135,7 +128,6 @@ export default async function RacePage({
   const tRace = await getTranslations({ locale, namespace: 'race' });
   const tNav = await getTranslations({ locale, namespace: 'navigation' });
   const tProvincia = await getTranslations({ locale, namespace: 'provincia' });
-  const tCategory = await getTranslations({ locale, namespace: 'category' });
 
   const organizer = raceData.organizerId
     ? await getOrganizerById(raceData.organizerId)
@@ -208,101 +200,17 @@ export default async function RacePage({
             ]}
             captureContext={{ page: 'race', race_id: raceData.id, race_slug: race }}
           />
-          <div className="mt-3 sm:mt-4 flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6">
-            <div className="flex flex-col flex-1 gap-1.5 sm:gap-1">
-              <div className="flex flex-row items-center gap-2">
-                <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold">
-                  {raceData.name}
-                </h1>
-                {(raceData.organizerId || isTestRace(raceData.name)) && (
-                  <VerifiedBadgeWithTooltip size="md" className="shrink-0" />
-                )}
-              </div>
-              <div className="flex flex-row flex-wrap items-center gap-2">
-                <span className="text-sm sm:text-base lg:text-lg font-semibold text-black whitespace-nowrap">
-                  {formattedDate}
-                </span>
-                {raceData.date && <ConfirmedDateBadge locale={locale} />}
-                {categorySlug && raceCategory && (
-                  <TrackedLink
-                    href={`/${locale}/${categorySlug}`}
-                    eventName="race_category_link_clicked"
-                    eventProperties={{ race_id: raceData.id, race_slug: race, category: raceCategory }}
-                    className="shrink-0 px-2 py-0.5 text-xs font-medium rounded-sm bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors"
-                  >
-                    {tCategory(raceCategory)}
-                  </TrackedLink>
-                )}
-              </div>
-              <div className="flex flex-row flex-wrap gap-x-3 gap-y-1 text-sm lg:text-base text-gray-600">
-                <div className="flex flex-row gap-1">
-                  <span className="whitespace-nowrap">{raceData.city},</span>
-                  {provinceSlug ? (
-                    <TrackedLink
-                      href={`/${locale}/provincia/${provinceSlug}`}
-                      eventName="race_province_inline_clicked"
-                      eventProperties={{ race_id: raceData.id, race_slug: race, province: raceData.province }}
-                      className="whitespace-nowrap hover:underline"
-                    >
-                      {raceData.province}
-                    </TrackedLink>
-                  ) : (
-                    <span className="whitespace-nowrap">{raceData.province}</span>
-                  )}
-                </div>
-                <div className="flex flex-row gap-2">
-                  <span className="whitespace-nowrap">{raceData.distanceKm}km</span>
-                  {raceData.elevationGainM !== null && (
-                    <span className="whitespace-nowrap">+{raceData.elevationGainM}m</span>
-                  )}
-                  {displayPrice && (
-                    <span className="whitespace-nowrap">· {displayPrice}€</span>
-                  )}
-                </div>
-              </div>
-              {organizer && (
-                <div className="mt-1">
-                  <RaceOrganizerLinks
-                    organizer={organizer}
-                    raceId={raceData.id}
-                    raceSlug={race}
-                  />
-                </div>
-              )}
-            </div>
-            <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto sm:items-end">
-              <div className="flex w-full flex-col gap-2">
-                {raceData.websiteUrl && (
-                  <TrackedLink
-                    href={raceData.websiteUrl}
-                    eventName="race_official_website_clicked"
-                    eventProperties={{ race_id: raceData.id, race_slug: race }}
-                    external
-                    className="w-full bg-gray-900 text-white px-4 py-2 rounded-md font-medium hover:bg-gray-600 focus:outline-none transition-colors cursor-pointer text-center whitespace-nowrap"
-                  >
-                    {tRace('officialWebsite')}
-                  </TrackedLink>
-                )}
-                <div className="flex flex-row gap-2">
-                  <RaceShareWhatsappButton
-                    message={tRace('share.message', { raceName: raceData.name, url: `${BASE_URL}/${locale}/carrera/${race}` })}
-                    label={tRace('share.label')}
-                    iconOnly
-                    className="flex-1"
-                    raceId={raceData.id}
-                    raceSlug={race}
-                  />
-                  <RaceFavoriteButton
-                    raceId={raceData.id}
-                    saveLabel={tRace('favorite.save')}
-                    removeLabel={tRace('favorite.remove')}
-                    iconOnly
-                    className="flex-1"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
+          <RaceDetailHeader
+            race={raceData}
+            raceSlug={race}
+            locale={locale}
+            organizer={organizer}
+            formattedDate={formattedDate}
+            provinceSlug={provinceSlug}
+            categorySlug={categorySlug}
+            raceCategory={raceCategory}
+            displayPrice={displayPrice}
+          />
           {heroImageUrl && (
             <RaceHeroImage imageUrl={heroImageUrl} alt={raceData.name} />
           )}
