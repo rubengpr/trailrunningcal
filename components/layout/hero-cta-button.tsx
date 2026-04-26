@@ -20,7 +20,7 @@ export default function HeroCtaButton({ label }: HeroCtaButtonProps) {
   return (
     <Button
       href="#calendar"
-      variant="pill"
+      shape="pill"
       className="hero-animate gap-2.5 [animation-delay:240ms] group relative overflow-hidden"
       onMouseMove={handleMouseMove}
       onMouseEnter={() => { if (window.matchMedia('(hover: hover)').matches) setVisible(true); }}
