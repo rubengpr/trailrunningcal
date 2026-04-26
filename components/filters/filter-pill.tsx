@@ -2,7 +2,7 @@
 
 import { createPortal } from 'react-dom';
 import MultiSelectOptionsMenu, { type MultiSelectOptionItem } from '@/components/ui/multi-select-options-menu';
-import { useMultiSelectMenuState } from '@/hooks/use-multi-select-menu-state';
+import { useMultiSelectMenu } from '@/hooks/use-multi-select-menu';
 
 interface FilterPillProps {
   label: string;
@@ -31,7 +31,7 @@ export default function FilterPill({
     dropdownStyle,
     toggleOpen,
     closeMenu,
-  } = useMultiSelectMenuState({
+  } = useMultiSelectMenu({
     usePortalPosition: true,
     minWidth: 160,
     offset: 4,

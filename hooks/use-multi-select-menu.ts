@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-interface UseMultiSelectMenuStateOptions {
+interface UseMultiSelectMenuOptions {
   usePortalPosition?: boolean;
   minWidth?: number;
   offset?: number;
@@ -20,11 +20,11 @@ const DEFAULT_DROPDOWN_STYLE: DropdownStyle = {
   minWidth: 0,
 };
 
-export function useMultiSelectMenuState({
+export function useMultiSelectMenu({
   usePortalPosition = false,
   minWidth = 160,
   offset = 4,
-}: UseMultiSelectMenuStateOptions = {}) {
+}: UseMultiSelectMenuOptions = {}) {
   const [open, setOpen] = useState(false);
   const [dropdownStyle, setDropdownStyle] = useState<DropdownStyle>(DEFAULT_DROPDOWN_STYLE);
   const containerRef = useRef<HTMLDivElement>(null);

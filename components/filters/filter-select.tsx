@@ -2,7 +2,7 @@
 
 import { createPortal } from 'react-dom';
 import { ChevronDown } from 'lucide-react';
-import { useMultiSelectMenuState } from '@/hooks/use-multi-select-menu-state';
+import { useMultiSelectMenu } from '@/hooks/use-multi-select-menu';
 import MultiSelectOptionsMenu from '@/components/ui/multi-select-options-menu';
 
 export interface FilterSelectOption {
@@ -19,7 +19,7 @@ interface FilterSelectProps {
 }
 
 export function FilterSelect({ value, onValueChange, placeholder, options, color = 'white' }: FilterSelectProps) {
-  const { open, containerRef, triggerRef, dropdownRef, dropdownStyle, toggleOpen, closeMenu } = useMultiSelectMenuState({
+  const { open, containerRef, triggerRef, dropdownRef, dropdownStyle, toggleOpen, closeMenu } = useMultiSelectMenu({
     usePortalPosition: true,
     minWidth: 160,
     offset: 4,
