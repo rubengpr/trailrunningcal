@@ -1,21 +1,12 @@
 import { createClient, createAdminClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
-import { getOrganizerRaceContext } from '@/lib/auth-organizer';
 import { isAdminEmail } from '@/lib/auth-admin';
-import { generateRaceSlug } from '@/lib/race-utils';
 import { locales } from '@/i18n';
 
 function revalidateHomepages() {
   for (const locale of locales) {
     revalidatePath(`/${locale}`, 'page');
-  }
-}
-
-function revalidateRacePages(raceName: string) {
-  const slug = generateRaceSlug(raceName);
-  for (const locale of locales) {
-    revalidatePath(`/${locale}/carrera/${slug}`, 'page');
   }
 }
 
@@ -151,86 +142,3 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function PATCH(request: NextRequest) {
-  try {
-    const supabase = await createClient();
-
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { raceId, date, name, distanceKm, elevationGainM, websiteUrl, city, province, description } =
-      await request.json();
-
-    const isAdmin = isAdminEmail(user.email);
-
-    if (!isAdmin) {
-      const context = await getOrganizerRaceContext(supabase, raceId);
-      if (!context) {
-        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-      }
-    }
-
-    const descResult = sanitizeDescription(description);
-    if (descResult.error) {
-      return NextResponse.json({ error: descResult.error }, { status: 400 });
-    }
-
-    const updateFields: Record<string, unknown> = {
-      id: raceId,
-      date,
-      name,
-      distance_km: distanceKm,
-      elevation_gain_m: elevationGainM,
-      website_url: websiteUrl,
-      description: descResult.value,
-    };
-
-    if (city !== undefined) updateFields.city = city;
-    if (province !== undefined) updateFields.province = province;
-
-    const dbClient = isAdmin ? createAdminClient() : supabase;
-
-    const { data: existingRace } = await dbClient
-      .from('races')
-      .select('name')
-      .eq('id', raceId)
-      .single();
-
-    const { data, error } = await dbClient
-      .from('races')
-      .update(updateFields)
-      .eq('id', raceId)
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Database error:', error);
-      return NextResponse.json(
-        { error: 'Failed to update race' },
-        { status: 500 },
-      );
-    }
-
-    revalidateHomepages();
-    if (existingRace?.name) {
-      revalidateRacePages(existingRace.name);
-    }
-
-    return NextResponse.json({
-      success: true,
-      data,
-    });
-  } catch (error) {
-    console.error('API error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 },
-    );
-  }
-}

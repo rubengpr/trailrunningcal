@@ -58,11 +58,10 @@ export async function updateRace(
   province: string,
   description: string,
 ) {
-  const response = await fetch('/api/races', {
+  const response = await fetch(`/api/races/${raceId}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      raceId,
       date,
       name,
       distanceKm: Number(distanceKm),
