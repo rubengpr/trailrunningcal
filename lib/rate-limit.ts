@@ -33,6 +33,33 @@ function getRateLimitKey(request: NextRequest): string {
   return 'unknown';
 }
 
+function applyRateLimit(key: string): {
+  success: boolean;
+  limit: number;
+  remaining: number;
+  reset: number;
+} {
+  const now = Date.now();
+  const record = requestCounts.get(key);
+
+  if (!record || now > record.resetTime) {
+    const resetTime = now + WINDOW_MS;
+    requestCounts.set(key, { count: 1, resetTime });
+    return { success: true, limit: RATE_LIMIT, remaining: RATE_LIMIT - 1, reset: resetTime };
+  }
+
+  if (record.count >= RATE_LIMIT) {
+    return { success: false, limit: RATE_LIMIT, remaining: 0, reset: record.resetTime };
+  }
+
+  record.count++;
+  return { success: true, limit: RATE_LIMIT, remaining: RATE_LIMIT - record.count, reset: record.resetTime };
+}
+
+export function checkRateLimitByIp(ip: string): { success: boolean; limit: number; remaining: number; reset: number } {
+  return applyRateLimit(ip);
+}
+
 /**
  * Checks if the request should be rate limited
  * Returns an object with success status and rate limit information
@@ -45,38 +72,5 @@ export function checkRateLimit(
   remaining: number;
   reset: number;
 } {
-  const key = getRateLimitKey(request);
-  const now = Date.now();
-  const record = requestCounts.get(key);
-
-  // If no record exists or window has expired, create/reset
-  if (!record || now > record.resetTime) {
-    const resetTime = now + WINDOW_MS;
-    requestCounts.set(key, { count: 1, resetTime });
-    return {
-      success: true,
-      limit: RATE_LIMIT,
-      remaining: RATE_LIMIT - 1,
-      reset: resetTime,
-    };
-  }
-
-  // Check if limit exceeded
-  if (record.count >= RATE_LIMIT) {
-    return {
-      success: false,
-      limit: RATE_LIMIT,
-      remaining: 0,
-      reset: record.resetTime,
-    };
-  }
-
-  // Increment count
-  record.count++;
-  return {
-    success: true,
-    limit: RATE_LIMIT,
-    remaining: RATE_LIMIT - record.count,
-    reset: record.resetTime,
-  };
+  return applyRateLimit(getRateLimitKey(request));
 }

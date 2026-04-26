@@ -8,6 +8,7 @@ import { ClaimOrganizerModal } from '@/components/organizer/claim-organizer-moda
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { track } from '@/lib/analytics/track';
+import { claimOrganizer } from '@/app/actions/claim-organizer';
 
 interface RaceOrganizerClaimCardProps {
     claimButton: string;
@@ -61,20 +62,7 @@ export function RaceOrganizerClaimCard({
 
         setIsSubmitting(true);
         try {
-            const response = await fetch('/api/claim-organizer', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ raceName }),
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.error || 'Failed to send claim request');
-            }
-
+            await claimOrganizer(raceName);
             toast.success(t('successMessage'));
             setIsConfirmationModalOpen(false);
         } catch (error) {
