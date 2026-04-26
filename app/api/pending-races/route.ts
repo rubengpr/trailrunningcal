@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient, createAdminClient } from '@/lib/supabase/server';
 import { isAdminEmail } from '@/lib/auth-admin';
 import { normalizeUrl } from '@/lib/validation';
-import { raceQueueRowToEntry } from '@/types/race-queue.types';
-import type { RaceQueueRow, RaceQueueEntry } from '@/types/race-queue.types';
+import { pendingRaceRowToEntry } from '@/types/pending-race.types';
+import type { PendingRaceRow, PendingRaceEntry } from '@/types/pending-race.types';
 
 export async function POST(request: NextRequest) {
   try {
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     }
 
     const admin = createAdminClient();
-    const added: RaceQueueEntry[] = [];
+    const added: PendingRaceEntry[] = [];
     const skipped: { url: string; reason: string }[] = [];
 
     for (const rawUrl of urls) {
@@ -43,13 +43,13 @@ export async function POST(request: NextRequest) {
         continue;
       }
 
-      const [raceLookup, queueLookup] = await Promise.all([
+      const [raceLookup, pendingLookup] = await Promise.all([
         admin.from('races').select('id').eq('website_url', normalizedUrl).maybeSingle(),
-        admin.from('race_queue').select('id').eq('url', normalizedUrl).maybeSingle(),
+        admin.from('pending_races').select('id').eq('url', normalizedUrl).maybeSingle(),
       ]);
 
-      if (raceLookup.error || queueLookup.error) {
-        console.error('Lookup error:', raceLookup.error ?? queueLookup.error);
+      if (raceLookup.error || pendingLookup.error) {
+        console.error('Lookup error:', raceLookup.error ?? pendingLookup.error);
         skipped.push({ url: normalizedUrl, reason: 'lookupFailed' });
         continue;
       }
@@ -59,24 +59,24 @@ export async function POST(request: NextRequest) {
         continue;
       }
 
-      if (queueLookup.data) {
+      if (pendingLookup.data) {
         skipped.push({ url: normalizedUrl, reason: 'alreadyInQueue' });
         continue;
       }
 
       const { data: inserted, error: insertError } = await admin
-        .from('race_queue')
+        .from('pending_races')
         .insert({ url: normalizedUrl })
         .select('id, url, status, created_at, updated_at')
         .single();
 
       if (insertError || !inserted) {
-        console.error('Race queue insert error:', insertError);
+        console.error('Pending race insert error:', insertError);
         skipped.push({ url: normalizedUrl, reason: 'insertFailed' });
         continue;
       }
 
-      added.push(raceQueueRowToEntry(inserted as RaceQueueRow));
+      added.push(pendingRaceRowToEntry(inserted as PendingRaceRow));
     }
 
     return NextResponse.json(

@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import { AdminRaceQueueContent } from '@/components/admin/admin-race-queue-content';
-import { getRaceQueue } from '@/lib/db/race-queue';
+import { AdminPendingRacesContent } from '@/components/admin/admin-pending-races-content';
+import { getPendingRaces } from '@/lib/db/pending-races';
 import { isAdminEmail } from '@/lib/auth-admin';
 
 export default async function AdminCarrerasPendientesPage({
@@ -22,8 +22,8 @@ export default async function AdminCarrerasPendientesPage({
         redirect(`/${locale}/admin/login`);
     }
 
-    const allEntries = await getRaceQueue();
+    const allEntries = await getPendingRaces();
     const entries = allEntries.filter((e) => e.status === 'pending');
 
-    return <AdminRaceQueueContent entries={entries} />;
+    return <AdminPendingRacesContent entries={entries} />;
 }

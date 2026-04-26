@@ -6,25 +6,25 @@ import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/button';
 import { SectionHeader } from '@/components/ui/section-header';
 import { BaseModal } from '@/components/ui/base-modal';
-import { addRacesToQueue, deleteRaceFromQueue } from '@/lib/api/race-queue';
+import { addPendingRaces, deletePendingRace } from '@/lib/api/pending-races';
 import { formatDateToSpanish, formatDateToCatalan } from '@/lib/date-utils';
 import { CornerDownLeft, ChevronRight, Trash2 } from 'lucide-react';
-import type { RaceQueueEntry } from '@/types/race-queue.types';
-import type { SkippedQueueEntry } from '@/lib/api/race-queue';
+import type { PendingRaceEntry } from '@/types/pending-race.types';
+import type { SkippedPendingRace } from '@/lib/api/pending-races';
 
-interface AdminRaceQueueContentProps {
-    entries: RaceQueueEntry[];
+interface AdminPendingRacesContentProps {
+    entries: PendingRaceEntry[];
 }
 
-export function AdminRaceQueueContent({ entries }: AdminRaceQueueContentProps) {
+export function AdminPendingRacesContent({ entries }: AdminPendingRacesContentProps) {
     const t = useTranslations('admin.races.queue');
     const locale = useLocale();
 
     const [urlsText, setUrlsText] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [queueEntries, setQueueEntries] = useState<RaceQueueEntry[]>(entries);
-    const [skippedEntries, setSkippedEntries] = useState<SkippedQueueEntry[]>([]);
-    const [entryToDelete, setEntryToDelete] = useState<RaceQueueEntry | null>(null);
+    const [pendingEntries, setPendingEntries] = useState<PendingRaceEntry[]>(entries);
+    const [skippedEntries, setSkippedEntries] = useState<SkippedPendingRace[]>([]);
+    const [entryToDelete, setEntryToDelete] = useState<PendingRaceEntry | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
     const formatDate = (dateString: string): string =>
@@ -37,8 +37,8 @@ export function AdminRaceQueueContent({ entries }: AdminRaceQueueContentProps) {
 
         setIsDeleting(true);
         try {
-            await deleteRaceFromQueue(entryToDelete.id);
-            setQueueEntries((prev) => prev.filter((e) => e.id !== entryToDelete.id));
+            await deletePendingRace(entryToDelete.id);
+            setPendingEntries((prev) => prev.filter((e) => e.id !== entryToDelete.id));
             setEntryToDelete(null);
             toast.success(t('delete.success'));
         } catch {
@@ -59,9 +59,9 @@ export function AdminRaceQueueContent({ entries }: AdminRaceQueueContentProps) {
         setIsSubmitting(true);
         setSkippedEntries([]);
         try {
-            const result = await addRacesToQueue(urls);
+            const result = await addPendingRaces(urls);
             if (result.added.length > 0) {
-                setQueueEntries((prev) => [...result.added, ...prev]);
+                setPendingEntries((prev) => [...result.added, ...prev]);
                 setUrlsText('');
                 const message = result.skipped.length > 0
                     ? t('addPartialSuccess', { added: result.added.length, skipped: result.skipped.length })
@@ -85,9 +85,9 @@ export function AdminRaceQueueContent({ entries }: AdminRaceQueueContentProps) {
             <SectionHeader
                 title={t('title')}
                 subtitle={
-                    queueEntries.length === 1
+                    pendingEntries.length === 1
                         ? t('entryCountOne')
-                        : t('entryCount', { count: queueEntries.length })
+                        : t('entryCount', { count: pendingEntries.length })
                 }
             />
 
@@ -151,7 +151,7 @@ export function AdminRaceQueueContent({ entries }: AdminRaceQueueContentProps) {
                 </div>
             )}
 
-            {queueEntries.length === 0 ? (
+            {pendingEntries.length === 0 ? (
                 <div className="max-w-3xl rounded-2xl border border-gray-100 bg-white p-6 text-sm text-gray-500 shadow-sm sm:p-8">
                     {t('empty')}
                 </div>
@@ -171,7 +171,7 @@ export function AdminRaceQueueContent({ entries }: AdminRaceQueueContentProps) {
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-50">
-                                {queueEntries.map((entry) => (
+                                {pendingEntries.map((entry) => (
                                     <tr key={entry.id} className="hover:bg-gray-50/50 transition-colors duration-150">
                                         <td className="px-6 py-5">
                                             <a

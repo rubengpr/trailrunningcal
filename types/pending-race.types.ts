@@ -1,22 +1,22 @@
-export type RaceQueueStatus = 'pending' | 'done' | 'skipped';
+export type PendingRaceStatus = 'pending' | 'done' | 'skipped';
 
-export interface RaceQueueEntry {
+export interface PendingRaceEntry {
   id: string;
   url: string;
-  status: RaceQueueStatus;
+  status: PendingRaceStatus;
   createdAt: string;
   updatedAt: string;
 }
 
-export type RaceQueueRow = {
+export type PendingRaceRow = {
   id: string;
   url: string;
-  status: RaceQueueStatus;
+  status: PendingRaceStatus;
   created_at: string;
   updated_at: string;
 };
 
-export function raceQueueRowToEntry(row: RaceQueueRow): RaceQueueEntry {
+export function pendingRaceRowToEntry(row: PendingRaceRow): PendingRaceEntry {
   return {
     id: row.id,
     url: row.url,

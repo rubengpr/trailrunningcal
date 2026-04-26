@@ -36,7 +36,7 @@ import { normalizeUrl } from '@/lib/validation';
 import type { CrawlPageStats } from '@/types/races-scrape-api.types';
 import type { TrailRaceAgentRaceRow } from '@/types/trail-race-agent.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
-import type { RaceQueueEntry } from '@/types/race-queue.types';
+import type { PendingRaceEntry } from '@/types/pending-race.types';
 import { XCircle, RefreshCw, Sparkles, FileText, ImageIcon, X } from 'lucide-react';
 
 type ScrapeWorkflow = 'crawlMdOnly' | 'llmFromFile' | 'crawlAndLlm' | 'autopilot';
@@ -106,7 +106,7 @@ function triggerMarkdownFileDownload(markdown: string, downloadName: string): vo
 }
 
 interface ScrapePageContentProps {
-    pendingEntries: RaceQueueEntry[];
+    pendingEntries: PendingRaceEntry[];
 }
 
 export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {

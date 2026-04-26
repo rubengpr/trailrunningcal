@@ -18,12 +18,12 @@ export async function DELETE(
     const admin = createAdminClient();
 
     const { error: deleteError } = await admin
-      .from('race_queue')
+      .from('pending_races')
       .delete()
       .eq('id', id);
 
     if (deleteError) {
-      console.error('Race queue delete error:', deleteError);
+      console.error('Pending race delete error:', deleteError);
       return NextResponse.json({ error: 'failedToDeleteEntry' }, { status: 500 });
     }
 
