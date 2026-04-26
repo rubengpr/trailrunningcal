@@ -1,6 +1,48 @@
-import type { OpenRouterScrapeModelId, OpenRouterVisionModelId } from '@/lib/openrouter/scrape-models';
+import type {
+  OpenRouterScrapeModelId,
+  OpenRouterVisionModelId,
+} from '@/lib/openrouter/scrape-models';
 import type { CrawlPageStats } from '@/types/races-scrape-api.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
+
+/**
+ * Creates a new race via the API. Safe to call from client components.
+ */
+export async function createRace(fields: {
+  date: string;
+  name: string;
+  distanceKm: string;
+  elevationGainM: string;
+  priceEur: string;
+  websiteUrl: string;
+  city: string;
+  province: string;
+  description: string;
+}): Promise<{ id: string }> {
+  const response = await fetch('/api/races', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      date: fields.date,
+      name: fields.name,
+      distanceKm: Number(fields.distanceKm),
+      elevationGainM: Number(fields.elevationGainM),
+      priceEur: parseInt(fields.priceEur, 10),
+      websiteUrl: fields.websiteUrl,
+      city: fields.city,
+      province: fields.province,
+      description: fields.description,
+    }),
+  });
+
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(responseData.error || 'Failed to create race');
+  }
+
+  return responseData.data;
+}
 
 /**
  * Updates a race via the API. Safe to call from client components.
@@ -66,7 +108,11 @@ export interface ScrapeRacesResult {
 
 export type ScrapeRacesOptions =
   | { mode: 'crawlAndLlm'; model: OpenRouterScrapeModelId; websiteUrl: string }
-  | { mode: 'llmFromMarkdown'; model: OpenRouterScrapeModelId; markdown: string }
+  | {
+      mode: 'llmFromMarkdown';
+      model: OpenRouterScrapeModelId;
+      markdown: string;
+    }
   | { mode: 'llmFromImages'; model: OpenRouterVisionModelId; images: string[] };
 
 /**
@@ -184,45 +230,6 @@ export async function acceptScrapedRace(
 
   if (!response.ok) {
     throw new Error(responseData.error || 'Failed to accept race');
-  }
-
-  return responseData.data;
-}
-
-/**
- * Creates a new race via the API. Safe to call from client components.
- */
-export async function createRace(fields: {
-  date: string;
-  name: string;
-  distanceKm: string;
-  elevationGainM: string;
-  priceEur: string;
-  websiteUrl: string;
-  city: string;
-  province: string;
-  description: string;
-}): Promise<{ id: string }> {
-  const response = await fetch('/api/races', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      date: fields.date,
-      name: fields.name,
-      distanceKm: Number(fields.distanceKm),
-      elevationGainM: Number(fields.elevationGainM),
-      priceEur: parseInt(fields.priceEur, 10),
-      websiteUrl: fields.websiteUrl,
-      city: fields.city,
-      province: fields.province,
-      description: fields.description,
-    }),
-  });
-
-  const responseData = await response.json();
-
-  if (!response.ok) {
-    throw new Error(responseData.error || 'Failed to create race');
   }
 
   return responseData.data;
