@@ -88,38 +88,3 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'internalServerError' }, { status: 500 });
   }
 }
-
-export async function DELETE(request: NextRequest) {
-  try {
-    const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user || !isAdminEmail(user.email)) {
-      return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
-    }
-
-    const body = await request.json();
-    const { id } = body;
-
-    if (!id || typeof id !== 'string') {
-      return NextResponse.json({ error: 'idRequired' }, { status: 400 });
-    }
-
-    const admin = createAdminClient();
-
-    const { error: deleteError } = await admin
-      .from('race_queue')
-      .delete()
-      .eq('id', id);
-
-    if (deleteError) {
-      console.error('Race queue delete error:', deleteError);
-      return NextResponse.json({ error: 'failedToDeleteEntry' }, { status: 500 });
-    }
-
-    return NextResponse.json({ success: true }, { status: 200 });
-  } catch (error) {
-    console.error('API error:', error);
-    return NextResponse.json({ error: 'internalServerError' }, { status: 500 });
-  }
-}

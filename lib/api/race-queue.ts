@@ -11,7 +11,7 @@ export interface AddRacesToQueueResult {
 }
 
 export async function addRacesToQueue(urls: string[]): Promise<AddRacesToQueueResult> {
-  const response = await fetch('/api/admin/race-queue', {
+  const response = await fetch('/api/race-queue', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ urls }),
@@ -27,10 +27,8 @@ export async function addRacesToQueue(urls: string[]): Promise<AddRacesToQueueRe
 }
 
 export async function deleteRaceFromQueue(id: string): Promise<void> {
-  const response = await fetch('/api/admin/race-queue', {
+  const response = await fetch(`/api/race-queue/${id}`, {
     method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id }),
   });
 
   const responseData = await response.json();
