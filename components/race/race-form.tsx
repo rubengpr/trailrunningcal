@@ -9,7 +9,7 @@ import { FormTextarea } from '@/components/ui/form-textarea';
 import { FormImageInput } from '@/components/ui/form-image-input';
 import type { TrailRace } from '@/types/race.types';
 import { updateRace, createRace, deleteRace } from '@/lib/api/races';
-import { updatePrice } from '@/lib/api/race_tiers';
+import { updatePrice } from '@/lib/api/race-tiers';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { useModal } from '@/hooks/use-modal';
 import { uploadRaceImage, checkRaceImage, removeRaceImage, type RaceImageStatus } from '@/lib/api/race-image';

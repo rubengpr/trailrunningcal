@@ -6,14 +6,16 @@ import { isAdminEmail } from '@/lib/auth-admin';
 import { generateRaceSlug } from '@/lib/race-utils';
 import { locales } from '@/i18n';
 
-export async function PATCH(request: NextRequest) {
+export async function PATCH(
+  request: NextRequest,
+  context: { params: Promise<{ raceId: string }> },
+) {
   try {
+    const { raceId } = await context.params;
     const supabase = await createClient();
-    const { raceId, priceEur } = await request.json();
 
-    if (!raceId || typeof raceId !== 'string') {
-      return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
-    }
+    const { priceEur } = await request.json();
+
     if (typeof priceEur !== 'number' || priceEur < 0 || priceEur > 9999) {
       return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
     }
@@ -66,10 +68,7 @@ export async function PATCH(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({
-      success: true,
-      data,
-    });
+    return NextResponse.json({ success: true, data });
   } catch (error) {
     console.error('API error:', error);
     return NextResponse.json(
