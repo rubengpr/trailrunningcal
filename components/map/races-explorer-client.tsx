@@ -22,7 +22,7 @@ import { Search, RefreshCw, TriangleAlert } from 'lucide-react';
 import { useMinWidthLg } from '@/hooks/use-min-width-lg';
 import { useScrollEdges } from '@/hooks/use-scroll-edges';
 import { useMobileFilters } from '@/components/providers/mobile-filters-provider';
-import { useRacesFiltersState } from '@/hooks/use-races-filters-state';
+import { useRaceFilters } from '@/hooks/use-race-filters';
 import { generateRaceSlug } from '@/lib/race-utils';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { track } from '@/lib/analytics/track';
@@ -99,7 +99,7 @@ export default function RacesExplorerClient({
     handleRaceTypeSelect,
     handleClearFilters,
     handleFiltersApply,
-  } = useRacesFiltersState({
+  } = useRaceFilters({
     races,
     markers,
     analytics: {
