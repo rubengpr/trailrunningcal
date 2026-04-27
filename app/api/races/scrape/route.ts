@@ -1,42 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { isAdminEmail } from '@/lib/auth-admin';
-import { runTrailRaceMarkdownAgentOpenRouter, runTrailRaceImagesAgentOpenRouter } from '@/lib/agents/trail-race-openrouter';
-import { createOpenRouterClient } from '@/lib/openrouter/openrouter-client';
-import { isOpenRouterScrapeModelId, isOpenRouterVisionModelId } from '@/lib/openrouter/scrape-models';
-import { scrapeUrlToMarkdown, crawlUrlToMarkdown } from '@/lib/agents/spider-pipeline';
-import { MAX_SCRAPE_MARKDOWN_BYTES } from '@/lib/scrape-markdown-limits';
-import {
-  isScrapePipelineMode,
-  type CrawlPageStats,
-  type ScrapePipelineMode,
-} from '@/types/races-scrape-api.types';
+import { assertAdmin, parseInput, ValidationError } from './validate-input';
+import { crawlSite, scrapePage } from '@/lib/agents/spider-service';
+import { extractFromMarkdown, extractFromImages } from './extract';
+import type { CrawlPageStats } from '@/types/races-scrape-api.types';
 
 export const maxDuration = 60;
-
-function utf8ByteLength(value: string): number {
-  return new TextEncoder().encode(value).length;
-}
-
-function resolveMode(
-  bodyMode: unknown,
-  hasUrl: boolean,
-  hasMarkdown: boolean,
-): ScrapePipelineMode | null {
-  if (bodyMode !== undefined && bodyMode !== null && bodyMode !== '') {
-    if (!isScrapePipelineMode(bodyMode)) {
-      return null;
-    }
-    return bodyMode;
-  }
-  if (hasMarkdown) {
-    return 'llmFromMarkdown';
-  }
-  if (hasUrl) {
-    return 'crawlAndLlm';
-  }
-  return null;
-}
 
 const EMPTY_CRAWL_PAGE_STATS: CrawlPageStats = {
   total: 0,
@@ -44,170 +12,35 @@ const EMPTY_CRAWL_PAGE_STATS: CrawlPageStats = {
   errorCount: 0,
 };
 
-
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
-    const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    if (!isAdminEmail(user.email)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    await assertAdmin();
 
     const body = await request.json();
-    const { websiteUrl, markdown, model, mode: bodyMode, images } = body;
+    const input = parseInput(body);
 
-    const urlStr =
-      typeof websiteUrl === 'string' ? websiteUrl.trim() : '';
-    const markdownStr =
-      typeof markdown === 'string' ? markdown.trim() : '';
-
-    const hasUrl = urlStr.length > 0;
-    const hasMarkdown = markdownStr.length > 0;
-
-    if (hasUrl && hasMarkdown) {
-      return NextResponse.json(
-        { error: 'Provide either a website URL or markdown, not both' },
-        { status: 400 },
-      );
+    if (input.mode === 'scrapeOnly') {
+      const { markdown, crawlPageStats } = await scrapePage(input.url);
+      return NextResponse.json({
+        success: true,
+        data: { markdown, crawlPageStats },
+      });
     }
 
-    const mode = resolveMode(bodyMode, hasUrl, hasMarkdown);
-
-    if (mode === null) {
-      if (
-        bodyMode !== undefined &&
-        bodyMode !== null &&
-        bodyMode !== '' &&
-        !isScrapePipelineMode(bodyMode)
-      ) {
-        return NextResponse.json({ error: 'Invalid mode' }, { status: 400 });
-      }
-      return NextResponse.json(
-        { error: 'Website URL or markdown is required' },
-        { status: 400 },
-      );
+    if (input.mode === 'crawlOnly') {
+      const { markdown, crawlPageStats } = await crawlSite(input.url);
+      return NextResponse.json({
+        success: true,
+        data: { markdown, crawlPageStats },
+      });
     }
 
-    if (mode === 'crawlOnly') {
-      if (hasMarkdown) {
-        return NextResponse.json(
-          { error: 'Crawl-only mode does not accept markdown' },
-          { status: 400 },
-        );
-      }
-      if (!hasUrl) {
-        return NextResponse.json(
-          { error: 'Website URL is required for crawl-only mode' },
-          { status: 400 },
-        );
-      }
-      try {
-        const { markdown, crawlPageStats } = await crawlUrlToMarkdown(urlStr);
-        return NextResponse.json({
-          success: true,
-          data: { markdown, crawlPageStats },
-        });
-      } catch (crawlError) {
-        if (crawlError instanceof Error && crawlError.message === 'INVALID_URL') {
-          return NextResponse.json({ error: 'Invalid URL format' }, { status: 400 });
-        }
-        throw crawlError;
-      }
-    }
-
-    if (mode === 'scrapeOnly') {
-      if (hasMarkdown) {
-        return NextResponse.json(
-          { error: 'Scrape-only mode does not accept markdown' },
-          { status: 400 },
-        );
-      }
-      if (!hasUrl) {
-        return NextResponse.json(
-          { error: 'Website URL is required for scrape-only mode' },
-          { status: 400 },
-        );
-      }
-      try {
-        const { markdown, crawlPageStats } = await scrapeUrlToMarkdown(urlStr);
-        return NextResponse.json({
-          success: true,
-          data: { markdown, crawlPageStats },
-        });
-      } catch (scrapeError) {
-        if (scrapeError instanceof Error && scrapeError.message === 'INVALID_URL') {
-          return NextResponse.json({ error: 'Invalid URL format' }, { status: 400 });
-        }
-        throw scrapeError;
-      }
-    }
-
-    if (mode === 'llmFromMarkdown') {
-      if (hasUrl) {
-        return NextResponse.json(
-          { error: 'Markdown mode does not accept a website URL' },
-          { status: 400 },
-        );
-      }
-      if (!hasMarkdown) {
-        return NextResponse.json(
-          { error: 'Markdown is required for this mode' },
-          { status: 400 },
-        );
-      }
-    }
-
-    if (mode === 'crawlAndLlm') {
-      if (hasMarkdown) {
-        return NextResponse.json(
-          { error: 'Full pipeline mode does not accept markdown; use a URL' },
-          { status: 400 },
-        );
-      }
-      if (!hasUrl) {
-        return NextResponse.json(
-          { error: 'Website URL is required for this mode' },
-          { status: 400 },
-        );
-      }
-    }
-
-    const MAX_IMAGES = 5;
-
-    if (mode === 'llmFromImages') {
-      if (!Array.isArray(images) || images.length === 0) {
-        return NextResponse.json({ error: 'At least one image is required' }, { status: 400 });
-      }
-      if (images.length > MAX_IMAGES) {
-        return NextResponse.json(
-          { error: `Maximum ${MAX_IMAGES} images per request` },
-          { status: 400 },
-        );
-      }
-      for (const img of images) {
-        if (typeof img !== 'string' || !img.startsWith('data:image/')) {
-          return NextResponse.json({ error: 'Invalid image format' }, { status: 400 });
-        }
-      }
-      if (model === undefined || model === null || model === '') {
-        return NextResponse.json({ error: 'Model is required' }, { status: 400 });
-      }
-      if (!isOpenRouterVisionModelId(model)) {
-        return NextResponse.json({ error: 'Invalid vision model' }, { status: 400 });
-      }
-      const client = createOpenRouterClient();
-      const result = await runTrailRaceImagesAgentOpenRouter(client, images, model);
-      const todayStr = new Date().toISOString().split('T')[0];
-      const futureRaces = result.races.filter((race) => race.date >= todayStr);
+    if (input.mode === 'llmFromImages') {
+      const result = await extractFromImages(input.images, input.model);
       return NextResponse.json({
         success: true,
         data: {
-          races: futureRaces,
+          races: result.races,
           markdown: '',
           rawModelOutput: result.rawModelOutput,
           usage: result.usage,
@@ -216,57 +49,39 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       });
     }
 
-    if (model === undefined || model === null || model === '') {
-      return NextResponse.json({ error: 'Model is required' }, { status: 400 });
-    }
+    const { markdown, crawlPageStats } =
+      input.mode === 'llmFromMarkdown'
+        ? { markdown: input.markdown, crawlPageStats: EMPTY_CRAWL_PAGE_STATS }
+        : await crawlSite(input.url);
 
-    if (!isOpenRouterScrapeModelId(model)) {
-      return NextResponse.json({ error: 'Invalid model' }, { status: 400 });
-    }
-
-    if (hasMarkdown && utf8ByteLength(markdownStr) > MAX_SCRAPE_MARKDOWN_BYTES) {
-      return NextResponse.json({ error: 'Markdown content is too large' }, { status: 400 });
-    }
-
-    let markdownContent: string;
-    let crawlPageStats: CrawlPageStats = EMPTY_CRAWL_PAGE_STATS;
-
-    if (mode === 'llmFromMarkdown') {
-      markdownContent = markdownStr;
-    } else {
-      try {
-        const crawled = await crawlUrlToMarkdown(urlStr);
-        markdownContent = crawled.markdown;
-        crawlPageStats = crawled.crawlPageStats;
-      } catch (crawlError) {
-        if (crawlError instanceof Error && crawlError.message === 'INVALID_URL') {
-          return NextResponse.json({ error: 'Invalid URL format' }, { status: 400 });
-        }
-        throw crawlError;
-      }
-    }
-
-    const client = createOpenRouterClient();
-    const result = await runTrailRaceMarkdownAgentOpenRouter(
-      client,
-      markdownContent,
-      model,
-    );
-
-    const todayStr = new Date().toISOString().split('T')[0];
-    const futureRaces = result.races.filter((race) => race.date >= todayStr);
+    const result = await extractFromMarkdown(markdown, input.model);
     return NextResponse.json({
       success: true,
       data: {
-        races: futureRaces,
-        markdown: markdownContent,
+        races: result.races,
+        markdown,
         rawModelOutput: result.rawModelOutput,
         usage: result.usage,
         crawlPageStats,
       },
     });
   } catch (error) {
+    if (error instanceof ValidationError) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status },
+      );
+    }
+    if (error instanceof Error && error.message === 'INVALID_URL') {
+      return NextResponse.json(
+        { error: 'Invalid URL format' },
+        { status: 400 },
+      );
+    }
     console.error('Scrape API error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 },
+    );
   }
 }

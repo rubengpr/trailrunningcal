@@ -1,7 +1,7 @@
 import type { CrawlPageStats } from '@/types/races-scrape-api.types';
 
-const SPIDER_CRAWL_ENDPOINT = 'https://api.spider.cloud/crawl';
 const SPIDER_SCRAPE_ENDPOINT = 'https://api.spider.cloud/scrape';
+const SPIDER_CRAWL_ENDPOINT = 'https://api.spider.cloud/crawl';
 
 /**
  * URL patterns (regex strings) that are irrelevant to trail race data extraction.
