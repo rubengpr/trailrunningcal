@@ -9,16 +9,17 @@ import { Combobox } from '@/components/ui/combobox';
 import type { ComboboxOption } from '@/components/ui/combobox';
 import { Button } from '@/components/ui/button';
 import { SectionHeader } from '@/components/ui/section-header';
-import { DUMMY_SCRAPED_RACES, ScrapedRacesPreview } from '@/components/race/scraped-races-preview';
-import { BulkProcessTable } from '@/components/admin/bulk-process-table';
-import type { BulkProcessTableRow } from '@/components/admin/bulk-process-table';
+import { SuggestedRacesPreview } from '@/components/race/suggested-races-preview';
 import {
     DUMMY_CRAWL_PAGE_STATS,
     DUMMY_LAST_RUN_DURATION_MS,
     DUMMY_RAW_MODEL_OUTPUT,
     DUMMY_SCRAPE_MARKDOWN,
     DUMMY_SCRAPE_USAGE,
-} from '@/lib/fixtures/dummy-scrape-preview';
+    DUMMY_SCRAPED_RACES,
+} from '@/components/admin/scrape-preview.mock';
+import { BulkProcessTable } from '@/components/admin/bulk-process-table';
+import type { BulkProcessTableRow } from '@/components/admin/bulk-process-table';
 import {
     crawlEventWebsiteMarkdown,
     scrapeEventPageMarkdown,
@@ -799,7 +800,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
         URL.revokeObjectURL(objectUrl);
     };
 
-    const showScrapedRacesPreview =
+    const showSuggestedRacesPreview =
         workflow !== 'crawlMdOnly'
             ? isScraping || hasScraped
             : hasScraped && scrapeError !== null;
@@ -1500,8 +1501,8 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                     </button>
                 </div>
             )}
-            {showScrapedRacesPreview && !jsonView && (
-                <ScrapedRacesPreview
+            {showSuggestedRacesPreview && !jsonView && (
+                <SuggestedRacesPreview
                     races={scrapedRaces}
                     isLoading={isScraping}
                     error={scrapeError}

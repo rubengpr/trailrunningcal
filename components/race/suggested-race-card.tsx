@@ -5,8 +5,6 @@ import { X, CheckCircle2, Pencil } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { TrailRaceAgentRaceRow } from '@/types/trail-race-agent.types';
 
-export { DUMMY_SCRAPED_RACES } from '@/lib/fixtures/dummy-scraped-races';
-
 function RejectIcon({ className = 'h-6 w-6' }: { className?: string }) {
     return <X className={className} strokeWidth={1.5} />;
 }
@@ -19,86 +17,7 @@ function EditIcon({ className = 'h-5 w-5' }: { className?: string }) {
     return <Pencil className={className} strokeWidth={1.5} />;
 }
 
-interface ScrapedRacesPreviewProps {
-    races: TrailRaceAgentRaceRow[];
-    isLoading: boolean;
-    error: string | null;
-    onAccept: (index: number) => Promise<void>;
-    acceptedIndexes: Set<number>;
-    acceptingIndex: number | null;
-    onReject: (index: number) => void;
-    rejectedIndexes: Set<number>;
-    onSave: (index: number, race: TrailRaceAgentRaceRow) => void;
-}
-
-export function ScrapedRacesPreview({ races, isLoading, error, onAccept, acceptedIndexes, acceptingIndex, onReject, rejectedIndexes, onSave }: ScrapedRacesPreviewProps) {
-    const t = useTranslations('admin.races.scrape.results');
-
-    if (isLoading) {
-        return (
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
-                <div className="pipeline-loading-dot inline-block h-4 w-4 rounded-full bg-gray-300 mb-3" />
-                <p className="text-sm text-gray-600">{t('loading')}</p>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-                <p className="text-sm font-medium text-red-800">{t('errorTitle')}</p>
-                <p className="text-sm text-red-600 mt-1">{error}</p>
-            </div>
-        );
-    }
-
-    if (races.length === 0) {
-        return (
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
-                <p className="text-sm text-gray-600">{t('noResults')}</p>
-            </div>
-        );
-    }
-
-    const visibleRaces = races
-        .map((race, index) => ({ race, index }))
-        .filter(({ index }) => !rejectedIndexes.has(index));
-
-    if (visibleRaces.length === 0) {
-        return (
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
-                <p className="text-sm text-gray-600">{t('noResults')}</p>
-            </div>
-        );
-    }
-
-    return (
-        <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-2">
-                <h2 className="text-lg font-semibold text-gray-900">{t('title')}</h2>
-                <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">
-                    {visibleRaces.length}
-                </span>
-            </div>
-            <div className="flex flex-col gap-4">
-                {visibleRaces.map(({ race, index }) => (
-                    <ScrapedRaceCard
-                        key={`${race.name}-${index}`}
-                        race={race}
-                        onAccept={() => onAccept(index)}
-                        isAccepted={acceptedIndexes.has(index)}
-                        isAccepting={acceptingIndex === index}
-                        isDisabled={acceptingIndex !== null && acceptingIndex !== index}
-                        onReject={() => onReject(index)}
-                        onSave={(updatedRace) => onSave(index, updatedRace)}
-                    />
-                ))}
-            </div>
-        </div>
-    );
-}
-
-interface ScrapedRaceCardProps {
+interface SuggestedRaceCardProps {
     race: TrailRaceAgentRaceRow;
     onAccept: () => Promise<void>;
     isAccepted: boolean;
@@ -108,7 +27,7 @@ interface ScrapedRaceCardProps {
     onSave: (race: TrailRaceAgentRaceRow) => void;
 }
 
-function ScrapedRaceCard({ race, onAccept, isAccepted, isAccepting, isDisabled, onReject, onSave }: ScrapedRaceCardProps) {
+export function SuggestedRaceCard({ race, onAccept, isAccepted, isAccepting, isDisabled, onReject, onSave }: SuggestedRaceCardProps) {
     const t = useTranslations('admin.races.scrape.results');
 
     const [isEditing, setIsEditing] = useState(false);

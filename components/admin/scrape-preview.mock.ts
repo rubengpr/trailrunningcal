@@ -1,8 +1,7 @@
 import type { TrailRaceAgentRaceRow } from '@/types/trail-race-agent.types';
+import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
+import type { CrawlPageStats } from '@/lib/spider-cloud/client';
 
-/**
- * Static rows for testing the scraped-races preview without invoking the scraper or AI.
- */
 export const DUMMY_SCRAPED_RACES: TrailRaceAgentRaceRow[] = [
     {
         name: 'Trail dels Bastiments (prova)',
@@ -21,7 +20,7 @@ export const DUMMY_SCRAPED_RACES: TrailRaceAgentRaceRow[] = [
         city: 'Ripoll',
         province: 'Girona',
         description:
-            'Recorregut curt i tècnic pensat per provar el flux d’acceptació al panell.\n\n' +
+            "Recorregut curt i tècnic pensat per provar el flux d'acceptació al panell.\n\n" +
             'Sense desnivell reportat a la font (cas null).',
         distanceKm: 10.5,
         elevationGainM: null,
@@ -38,3 +37,29 @@ export const DUMMY_SCRAPED_RACES: TrailRaceAgentRaceRow[] = [
         elevationGainM: 1950,
     },
 ];
+
+export const DUMMY_SCRAPE_MARKDOWN =
+    '# Event dummy — vista previa\n\n' +
+    'Aquest contingut és fictici per provar el layout, les mides i els botons de descàrrega.\n\n' +
+    '## Secció de prova\n\n' +
+    '- Línia 1\n' +
+    '- Línia 2\n';
+
+export const DUMMY_SCRAPE_USAGE: OpenRouterScrapeUsage = {
+    promptTokens: 12_400,
+    completionTokens: 890,
+    totalTokens: 13_290,
+    reasoningTokens: 0,
+};
+
+export const DUMMY_RAW_MODEL_OUTPUT = JSON.stringify({ races: DUMMY_SCRAPED_RACES }, null, 2);
+
+/** Milliseconds shown as "last run" duration after loading dummy data. */
+export const DUMMY_LAST_RUN_DURATION_MS = 1_420;
+
+/** Crawl HTTP stats for mock preview (success + error === total). */
+export const DUMMY_CRAWL_PAGE_STATS: CrawlPageStats = {
+    total: 7,
+    successCount: 6,
+    errorCount: 1,
+};
