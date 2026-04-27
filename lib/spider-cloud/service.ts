@@ -1,6 +1,6 @@
 import { normalizeUrl } from '@/lib/validation';
-import { spiderCloudScrape, spiderCloudCrawl, summarizeSpiderCrawlHttpStatus } from '@/lib/spider/client';
-import { mergePages } from '@/lib/spider/join-markdown';
+import { spiderCloudScrape, spiderCloudCrawl, summarizeSpiderCrawlHttpStatus } from '@/lib/spider-cloud/client';
+import { mergePages } from '@/lib/spider-cloud/join-markdown';
 import type { CrawlPageStats } from '@/types/races-scrape-api.types';
 
 export interface SpiderServiceResult {

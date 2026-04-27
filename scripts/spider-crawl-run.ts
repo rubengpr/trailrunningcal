@@ -1,10 +1,10 @@
 import { writeFile } from 'node:fs/promises';
 
-import { mergePages } from '../lib/spider/join-markdown';
+import { mergePages } from '../lib/spider-cloud/join-markdown';
 import {
   spiderCloudCrawl,
   type SpiderCloudCrawlOptions,
-} from '../lib/spider/client';
+} from '../lib/spider-cloud/client';
 import {
   RACE_DATA_FORMAT_VERSION,
   raceDataMarkdownFileRepoRelativePath,
