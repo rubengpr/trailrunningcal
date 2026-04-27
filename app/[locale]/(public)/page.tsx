@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import HeroSection from '@/components/layout/hero-section';
-import RacesExplorerClient from '@/components/map/races-explorer-client';
+import RacesExplorerClient from '@/components/races-map/races-explorer-client';
 import {
   getSeoMetaConfig,
   generateMetadataFromOptions,
