@@ -16,6 +16,7 @@ For business context, metrics, positioning, and audience — invoke the `/produc
 ## Architecture
 
 - **API file structure:** one `route.ts` per resource under `app/api/[resource]/`; dynamic segments at `app/api/[resource]/[id]/route.ts`
+- **External provider structure:** each provider lives under `lib/{provider}/` with `client.ts` (HTTP calls, auth, raw shapes), `service.ts` (orchestration, added when needed), and named helpers as they emerge (e.g. `lib/spider-cloud/`, `lib/openrouter/`)
 - **Data layer:** Server Components read directly via `lib/db/*`; Client Components mutate via API routes + `lib/api/*` wrappers — never fetch server-available data from the client
 - **DB transactions:** multi-table writes must be atomic. Use Postgres functions (`plpgsql`) via `supabase.rpc(...)` — do not orchestrate split writes in route handlers. Prefer `SECURITY INVOKER` and explicit `GRANT EXECUTE`.
 
