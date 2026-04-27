@@ -1,5 +1,7 @@
 import type { CrawlPageStats } from '@/types/races-scrape-api.types';
 
+// --- Constants ---
+
 const SCRAPE_ENDPOINT = 'https://api.spider.cloud/scrape';
 const CRAWL_ENDPOINT = 'https://api.spider.cloud/crawl';
 
@@ -90,6 +92,8 @@ export const BLACKLIST: readonly string[] = [
   'rss',
 ];
 
+// --- Interfaces ---
+
 export interface SpiderCrawlCosts {
   file_cost?: number;
   ai_cost?: number;
@@ -111,6 +115,55 @@ export interface SpiderCrawlPageItem {
    */
   generatedAt?: string;
 }
+
+export interface SpiderCloudScrapeOptions {
+  request?: 'http' | 'chrome' | 'smart';
+  returnFormat?: 'markdown' | 'raw' | 'text' | string;
+  waitFor?: Record<string, unknown>;
+  executionScripts?: Record<string, string>;
+  requestTimeout?: number;
+  blacklist?: string[];
+}
+
+export interface SpiderCloudCrawlOptions {
+  limit?: number;
+  depth?: number;
+  request?: 'http' | 'chrome' | 'smart';
+  returnFormat?: 'markdown' | 'raw' | 'text' | string;
+  /**
+   * Spider `wait_for`: conditions before serializing the page (network idle, delay, selector, etc.).
+   * Use when critical content is filled by client-side JS after load (e.g. animated counters).
+   *
+   * Example — wait ~6s so distance/elevation counters finish (see Spider `delay` shape):
+   * `{ delay: { secs: 6, nanos: 0 } }`
+   *
+   * Prefer `request: 'chrome'` (or `'smart'`) so the page runs in a browser.
+   * @see https://spider.cloud/docs/api — section `wait_for`
+   */
+  waitFor?: Record<string, unknown>;
+  /**
+   * Spider `execution_scripts`: path/URL → JavaScript run in the page before capture.
+   * Requires `request: 'chrome'` or `'smart'`. Alternative to a long `wait_for.delay`.
+   *
+   * Example:
+   * `{ "https://rocanegra.cat/classica/": "await new Promise(r => setTimeout(r, 6000))" }`
+   */
+  executionScripts?: Record<string, string>;
+  /**
+   * Spider `request_timeout` (seconds per page, typically 5–255). Default 60s per
+   * [efficient scraping](https://spider.cloud/docs/core/efficient-scraping). Increase if you add long `wait_for` delays.
+   */
+  requestTimeout?: number;
+  /**
+   * Spider `blacklist`: regex patterns matched against discovered URLs.
+   * Any URL containing a match is skipped entirely (not fetched or counted against the limit).
+   * Defaults to `BLACKLIST`. Pass `[]` to disable.
+   * @see https://spider.cloud/docs/api — parameter `blacklist`
+   */
+  blacklist?: string[];
+}
+
+// --- Private helpers ---
 
 function pickOptionalIsoTimestamp(
   raw: Record<string, unknown>,
@@ -160,10 +213,8 @@ function normalizeSpiderCrawlPageItem(raw: unknown): SpiderCrawlPageItem {
   return item;
 }
 
-/**
- * Groups crawl results by HTTP status: 2xx → success, everything else → error.
- * Guarantees successCount + errorCount === pages.length.
- */
+// --- Public functions ---
+
 export function summarizeSpiderCrawlHttpStatus(
   pages: SpiderCrawlPageItem[],
 ): CrawlPageStats {
@@ -176,53 +227,6 @@ export function summarizeSpiderCrawlHttpStatus(
   }
   const errorCount = total - successCount;
   return { total, successCount, errorCount };
-}
-
-export interface SpiderCloudCrawlOptions {
-  limit?: number;
-  depth?: number;
-  request?: 'http' | 'chrome' | 'smart';
-  returnFormat?: 'markdown' | 'raw' | 'text' | string;
-  /**
-   * Spider `wait_for`: conditions before serializing the page (network idle, delay, selector, etc.).
-   * Use when critical content is filled by client-side JS after load (e.g. animated counters).
-   *
-   * Example — wait ~6s so distance/elevation counters finish (see Spider `delay` shape):
-   * `{ delay: { secs: 6, nanos: 0 } }`
-   *
-   * Prefer `request: 'chrome'` (or `'smart'`) so the page runs in a browser.
-   * @see https://spider.cloud/docs/api — section `wait_for`
-   */
-  waitFor?: Record<string, unknown>;
-  /**
-   * Spider `execution_scripts`: path/URL → JavaScript run in the page before capture.
-   * Requires `request: 'chrome'` or `'smart'`. Alternative to a long `wait_for.delay`.
-   *
-   * Example:
-   * `{ "https://rocanegra.cat/classica/": "await new Promise(r => setTimeout(r, 6000))" }`
-   */
-  executionScripts?: Record<string, string>;
-  /**
-   * Spider `request_timeout` (seconds per page, typically 5–255). Default 60s per
-   * [efficient scraping](https://spider.cloud/docs/core/efficient-scraping). Increase if you add long `wait_for` delays.
-   */
-  requestTimeout?: number;
-  /**
-   * Spider `blacklist`: regex patterns matched against discovered URLs.
-   * Any URL containing a match is skipped entirely (not fetched or counted against the limit).
-   * Defaults to `BLACKLIST`. Pass `[]` to disable.
-   * @see https://spider.cloud/docs/api — parameter `blacklist`
-   */
-  blacklist?: string[];
-}
-
-export interface SpiderCloudScrapeOptions {
-  request?: 'http' | 'chrome' | 'smart';
-  returnFormat?: 'markdown' | 'raw' | 'text' | string;
-  waitFor?: Record<string, unknown>;
-  executionScripts?: Record<string, string>;
-  requestTimeout?: number;
-  blacklist?: string[];
 }
 
 export async function spiderCloudScrape(
