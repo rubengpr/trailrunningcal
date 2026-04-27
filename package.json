@@ -11,7 +11,6 @@
     "migrate:races": "tsx scripts/migrate-races.ts",
     "migrate:price-eur": "tsx scripts/migrate-price-eur.ts",
     "migrate:price-eur:dry": "tsx scripts/migrate-price-eur.ts --dry-run",
-    "spider:crawl": "tsx scripts/spider-crawl-run.ts",
     "geocode:city-locations": "tsx scripts/geocode-city-locations.ts"
   },
   "dependencies": {

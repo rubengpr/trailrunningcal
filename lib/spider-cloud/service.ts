@@ -1,5 +1,5 @@
 import { normalizeUrl } from '@/lib/validation';
-import { spiderCloudScrape, spiderCloudCrawl, summarizeSpiderCrawlHttpStatus } from '@/lib/spider-cloud/client';
+import { scrape, crawl, summarizeCrawlStats } from '@/lib/spider-cloud/client';
 import type { CrawlPageStats } from '@/lib/spider-cloud/client';
 import { mergePages } from '@/lib/spider-cloud/join-markdown';
 
@@ -15,8 +15,8 @@ export async function scrapePage(urlStr: string): Promise<SpiderServiceResult> {
   } catch {
     throw new Error('INVALID_URL');
   }
-  const pages = await spiderCloudScrape(normalizedUrl);
-  const crawlPageStats = summarizeSpiderCrawlHttpStatus(pages);
+  const pages = await scrape(normalizedUrl);
+  const crawlPageStats = summarizeCrawlStats(pages);
   const markdown = mergePages(normalizedUrl, pages);
   return { markdown, crawlPageStats };
 }
@@ -28,8 +28,8 @@ export async function crawlSite(urlStr: string): Promise<SpiderServiceResult> {
   } catch {
     throw new Error('INVALID_URL');
   }
-  const pages = await spiderCloudCrawl(normalizedUrl);
-  const crawlPageStats = summarizeSpiderCrawlHttpStatus(pages);
+  const pages = await crawl(normalizedUrl);
+  const crawlPageStats = summarizeCrawlStats(pages);
   const markdown = mergePages(normalizedUrl, pages);
   return { markdown, crawlPageStats };
 }

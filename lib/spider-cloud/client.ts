@@ -2,6 +2,8 @@
 
 const SCRAPE_ENDPOINT = 'https://api.spider.cloud/scrape';
 const CRAWL_ENDPOINT = 'https://api.spider.cloud/crawl';
+const REQUEST_MODE = 'smart';
+const RETURN_FORMAT = 'markdown';
 
 // Regex patterns passed to Spider.cloud `blacklist` — matched URLs are skipped entirely.
 export const BLACKLIST: readonly string[] = [
@@ -91,7 +93,7 @@ export interface CrawlPageStats {
   errorCount: number;
 }
 
-export interface SpiderCrawlCosts {
+export interface CrawlCosts {
   file_cost?: number;
   ai_cost?: number;
   compute_cost?: number;
@@ -100,63 +102,29 @@ export interface SpiderCrawlCosts {
   bytes_transferred_cost?: number;
 }
 
-export interface SpiderCrawlPageItem {
+export interface CrawlPage {
   url: string;
   content: string;
   status: number;
   error: string | null;
-  costs: SpiderCrawlCosts;
-  /**
-   * When the Spider API returns a per-page timestamp, it is preserved (ISO 8601).
-   * Otherwise join-markdown fills this from the document run time.
-   */
+  costs: CrawlCosts;
+  // Falls back to join-markdown run time if Spider doesn't return a timestamp
   generatedAt?: string;
 }
 
-export interface SpiderCloudScrapeOptions {
-  request?: 'http' | 'chrome' | 'smart';
-  returnFormat?: 'markdown' | 'raw' | 'text' | string;
+export interface ScrapeOptions {
+  // Shape: `{ delay: { secs: 6, nanos: 0 } }`
   waitFor?: Record<string, unknown>;
-  executionScripts?: Record<string, string>;
-  requestTimeout?: number;
+  // Defaults to `BLACKLIST`; pass `[]` to disable
   blacklist?: string[];
 }
 
-export interface SpiderCloudCrawlOptions {
+export interface CrawlOptions {
   limit?: number;
   depth?: number;
-  request?: 'http' | 'chrome' | 'smart';
-  returnFormat?: 'markdown' | 'raw' | 'text' | string;
-  /**
-   * Spider `wait_for`: conditions before serializing the page (network idle, delay, selector, etc.).
-   * Use when critical content is filled by client-side JS after load (e.g. animated counters).
-   *
-   * Example — wait ~6s so distance/elevation counters finish (see Spider `delay` shape):
-   * `{ delay: { secs: 6, nanos: 0 } }`
-   *
-   * Prefer `request: 'chrome'` (or `'smart'`) so the page runs in a browser.
-   * @see https://spider.cloud/docs/api — section `wait_for`
-   */
+  // Shape: `{ delay: { secs: 6, nanos: 0 } }`
   waitFor?: Record<string, unknown>;
-  /**
-   * Spider `execution_scripts`: path/URL → JavaScript run in the page before capture.
-   * Requires `request: 'chrome'` or `'smart'`. Alternative to a long `wait_for.delay`.
-   *
-   * Example:
-   * `{ "https://rocanegra.cat/classica/": "await new Promise(r => setTimeout(r, 6000))" }`
-   */
-  executionScripts?: Record<string, string>;
-  /**
-   * Spider `request_timeout` (seconds per page, typically 5–255). Default 60s per
-   * [efficient scraping](https://spider.cloud/docs/core/efficient-scraping). Increase if you add long `wait_for` delays.
-   */
-  requestTimeout?: number;
-  /**
-   * Spider `blacklist`: regex patterns matched against discovered URLs.
-   * Any URL containing a match is skipped entirely (not fetched or counted against the limit).
-   * Defaults to `BLACKLIST`. Pass `[]` to disable.
-   * @see https://spider.cloud/docs/api — parameter `blacklist`
-   */
+  // Defaults to `BLACKLIST`; pass `[]` to disable
   blacklist?: string[];
 }
 
@@ -184,17 +152,17 @@ function pickOptionalIsoTimestamp(
   return undefined;
 }
 
-function normalizeSpiderCrawlPageItem(raw: unknown): SpiderCrawlPageItem {
+function normalizeCrawlPage(raw: unknown): CrawlPage {
   if (typeof raw !== 'object' || raw === null) {
     throw new Error('Invalid Spider crawl page item');
   }
   const record = raw as Record<string, unknown>;
   const costs =
     typeof record.costs === 'object' && record.costs !== null
-      ? (record.costs as SpiderCrawlCosts)
+      ? (record.costs as CrawlCosts)
       : {};
   const generatedAt = pickOptionalIsoTimestamp(record);
-  const item: SpiderCrawlPageItem = {
+  const item: CrawlPage = {
     url: String(record.url ?? ''),
     content: String(record.content ?? ''),
     status: Number(record.status ?? 0),
@@ -220,8 +188,8 @@ export function requireApiKey(): string {
   return apiKey;
 }
 
-export function summarizeSpiderCrawlHttpStatus(
-  pages: SpiderCrawlPageItem[],
+export function summarizeCrawlStats(
+  pages: CrawlPage[],
 ): CrawlPageStats {
   const total = pages.length;
   let successCount = 0;
@@ -234,47 +202,20 @@ export function summarizeSpiderCrawlHttpStatus(
   return { total, successCount, errorCount };
 }
 
-export async function spiderCloudScrape(
+async function postAndParse(
+  endpoint: string,
   url: string,
-  options?: SpiderCloudScrapeOptions,
-): Promise<SpiderCrawlPageItem[]> {
+  body: Record<string, unknown>,
+): Promise<CrawlPage[]> {
   try {
     new URL(url);
   } catch {
-    throw new Error('Invalid seed URL');
+    throw new Error('Invalid URL');
   }
 
   const apiKey = requireApiKey();
 
-  const {
-    request = 'smart',
-    returnFormat = 'markdown',
-    waitFor,
-    executionScripts,
-    requestTimeout,
-    blacklist = [...BLACKLIST],
-  } = options ?? {};
-
-  const body: Record<string, unknown> = {
-    url,
-    request,
-    return_format: returnFormat,
-  };
-
-  if (requestTimeout !== undefined) {
-    body.request_timeout = requestTimeout;
-  }
-  if (blacklist.length > 0) {
-    body.blacklist = blacklist;
-  }
-  if (waitFor !== undefined) {
-    body.wait_for = waitFor;
-  }
-  if (executionScripts !== undefined) {
-    body.execution_scripts = executionScripts;
-  }
-
-  const response = await fetch(SCRAPE_ENDPOINT, {
+  const response = await fetch(endpoint, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${apiKey}`,
@@ -288,94 +229,45 @@ export async function spiderCloudScrape(
   try {
     parsed = JSON.parse(responseText) as unknown;
   } catch {
-    console.error('Spider scrape non-JSON response:', responseText);
-    throw new Error('Spider scrape returned non-JSON body');
+    console.error('Spider non-JSON response:', responseText);
+    throw new Error('Spider returned non-JSON body');
   }
 
   if (!response.ok) {
-    console.error('Spider scrape failed:', response.status, parsed);
-    throw new Error(`Spider scrape failed: ${response.status}`);
+    console.error('Spider request failed:', response.status, parsed);
+    throw new Error(`Spider request failed: ${response.status}`);
   }
 
   if (!Array.isArray(parsed)) {
-    console.error('Unexpected Spider scrape response shape:', parsed);
-    throw new Error('Unexpected Spider scrape response shape');
+    console.error('Unexpected Spider response shape:', parsed);
+    throw new Error('Unexpected Spider response shape');
   }
 
-  return parsed.map((entry) => normalizeSpiderCrawlPageItem(entry));
+  return parsed.map((entry) => normalizeCrawlPage(entry));
 }
 
-export async function spiderCloudCrawl(
-  seedUrl: string,
-  options?: SpiderCloudCrawlOptions,
-): Promise<SpiderCrawlPageItem[]> {
-  try {
-    new URL(seedUrl);
-  } catch {
-    throw new Error('Invalid seed URL');
-  }
+export async function scrape(
+  url: string,
+  options?: ScrapeOptions,
+): Promise<CrawlPage[]> {
+  const { waitFor, blacklist = [...BLACKLIST] } = options ?? {};
 
-  const apiKey = requireApiKey();
+  const body: Record<string, unknown> = { url, request: REQUEST_MODE, return_format: RETURN_FORMAT };
+  if (blacklist.length > 0) body.blacklist = blacklist;
+  if (waitFor !== undefined) body.wait_for = waitFor;
 
-  const {
-    limit = 25,
-    depth = 2,
-    request = 'smart',
-    returnFormat = 'markdown',
-    waitFor,
-    executionScripts,
-    requestTimeout,
-    blacklist = [...BLACKLIST],
-  } = options ?? {};
+  return postAndParse(SCRAPE_ENDPOINT, url, body);
+}
 
-  const body: Record<string, unknown> = {
-    url: seedUrl,
-    limit,
-    depth,
-    request,
-    return_format: returnFormat,
-  };
+export async function crawl(
+  url: string,
+  options?: CrawlOptions,
+): Promise<CrawlPage[]> {
+  const { limit = 25, depth = 2, waitFor, blacklist = [...BLACKLIST] } = options ?? {};
 
-  if (requestTimeout !== undefined) {
-    body.request_timeout = requestTimeout;
-  }
-  if (blacklist.length > 0) {
-    body.blacklist = blacklist;
-  }
-  if (waitFor !== undefined) {
-    body.wait_for = waitFor;
-  }
-  if (executionScripts !== undefined) {
-    body.execution_scripts = executionScripts;
-  }
+  const body: Record<string, unknown> = { url, limit, depth, request: REQUEST_MODE, return_format: RETURN_FORMAT };
+  if (blacklist.length > 0) body.blacklist = blacklist;
+  if (waitFor !== undefined) body.wait_for = waitFor;
 
-  const response = await fetch(CRAWL_ENDPOINT, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  });
-
-  const responseText = await response.text();
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(responseText) as unknown;
-  } catch {
-    console.error('Spider crawl non-JSON response:', responseText);
-    throw new Error('Spider crawl returned non-JSON body');
-  }
-
-  if (!response.ok) {
-    console.error('Spider crawl failed:', response.status, parsed);
-    throw new Error(`Spider crawl failed: ${response.status}`);
-  }
-
-  if (!Array.isArray(parsed)) {
-    console.error('Unexpected Spider crawl response shape:', parsed);
-    throw new Error('Unexpected Spider crawl response shape');
-  }
-
-  return parsed.map((entry) => normalizeSpiderCrawlPageItem(entry));
+  return postAndParse(CRAWL_ENDPOINT, url, body);
 }
