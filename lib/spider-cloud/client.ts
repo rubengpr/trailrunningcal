@@ -1,17 +1,10 @@
 import type { CrawlPageStats } from '@/types/races-scrape-api.types';
 
-const SPIDER_SCRAPE_ENDPOINT = 'https://api.spider.cloud/scrape';
-const SPIDER_CRAWL_ENDPOINT = 'https://api.spider.cloud/crawl';
+const SCRAPE_ENDPOINT = 'https://api.spider.cloud/scrape';
+const CRAWL_ENDPOINT = 'https://api.spider.cloud/crawl';
 
-/**
- * URL patterns (regex strings) that are irrelevant to trail race data extraction.
- * Applied by default on every crawl to avoid wasting credits on media, past results,
- * legal pages, shop pages, and other non-race-info content.
- *
- * Spider.cloud matches these against each discovered URL before fetching it.
- * @see https://spider.cloud/docs/api — parameter `blacklist`
- */
-export const SPIDER_CRAWL_URL_BLACKLIST: readonly string[] = [
+// Regex patterns passed to Spider.cloud `blacklist` — matched URLs are skipped entirely.
+export const BLACKLIST: readonly string[] = [
   // Media & gallery
   'galeria',
   'gallery',
@@ -217,13 +210,11 @@ export interface SpiderCloudCrawlOptions {
   /**
    * Spider `blacklist`: regex patterns matched against discovered URLs.
    * Any URL containing a match is skipped entirely (not fetched or counted against the limit).
-   * Defaults to `SPIDER_CRAWL_URL_BLACKLIST`. Pass `[]` to disable.
+   * Defaults to `BLACKLIST`. Pass `[]` to disable.
    * @see https://spider.cloud/docs/api — parameter `blacklist`
    */
   blacklist?: string[];
 }
-
-const DEFAULT_SPIDER_REQUEST_TIMEOUT_SEC = 60;
 
 export interface SpiderCloudScrapeOptions {
   request?: 'http' | 'chrome' | 'smart';
@@ -251,17 +242,19 @@ export async function spiderCloudScrape(
     returnFormat = 'markdown',
     waitFor,
     executionScripts,
-    requestTimeout = DEFAULT_SPIDER_REQUEST_TIMEOUT_SEC,
-    blacklist = [...SPIDER_CRAWL_URL_BLACKLIST],
+    requestTimeout,
+    blacklist = [...BLACKLIST],
   } = options ?? {};
 
   const body: Record<string, unknown> = {
     url,
     request,
     return_format: returnFormat,
-    request_timeout: requestTimeout,
   };
 
+  if (requestTimeout !== undefined) {
+    body.request_timeout = requestTimeout;
+  }
   if (blacklist.length > 0) {
     body.blacklist = blacklist;
   }
@@ -272,7 +265,7 @@ export async function spiderCloudScrape(
     body.execution_scripts = executionScripts;
   }
 
-  const response = await fetch(SPIDER_SCRAPE_ENDPOINT, {
+  const response = await fetch(SCRAPE_ENDPOINT, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${apiKey}`,
@@ -322,8 +315,8 @@ export async function spiderCloudCrawl(
     returnFormat = 'markdown',
     waitFor,
     executionScripts,
-    requestTimeout = DEFAULT_SPIDER_REQUEST_TIMEOUT_SEC,
-    blacklist = [...SPIDER_CRAWL_URL_BLACKLIST],
+    requestTimeout,
+    blacklist = [...BLACKLIST],
   } = options ?? {};
 
   const body: Record<string, unknown> = {
@@ -332,9 +325,11 @@ export async function spiderCloudCrawl(
     depth,
     request,
     return_format: returnFormat,
-    request_timeout: requestTimeout,
   };
 
+  if (requestTimeout !== undefined) {
+    body.request_timeout = requestTimeout;
+  }
   if (blacklist.length > 0) {
     body.blacklist = blacklist;
   }
@@ -345,7 +340,7 @@ export async function spiderCloudCrawl(
     body.execution_scripts = executionScripts;
   }
 
-  const response = await fetch(SPIDER_CRAWL_ENDPOINT, {
+  const response = await fetch(CRAWL_ENDPOINT, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${apiKey}`,
