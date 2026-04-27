@@ -163,41 +163,41 @@ export async function scrapeEventPageMarkdown(
 }
 
 /**
- * Runs the trail race agent on a crawled URL or on uploaded markdown. Admin-only.
+ * Runs the trail race agent on a crawled URL or on uploaded markdown/images. Admin-only.
+ * Routes to /api/races/scrape (URL-based) or /api/races/extract (content-based).
  */
 export async function scrapeRaces(
   options: ScrapeRacesOptions,
 ): Promise<ScrapeRacesResult> {
-  const body =
-    options.mode === 'llmFromMarkdown'
-      ? {
-          mode: options.mode,
-          markdown: options.markdown,
-          model: options.model,
-        }
-      : options.mode === 'llmFromImages'
-        ? {
-            mode: options.mode,
-            images: options.images,
-            model: options.model,
-          }
-        : {
-            mode: options.mode,
-            websiteUrl: options.websiteUrl,
-            model: options.model,
-          };
+  if (options.mode === 'llmFromMarkdown' || options.mode === 'llmFromImages') {
+    const body =
+      options.mode === 'llmFromMarkdown'
+        ? { markdown: options.markdown, model: options.model }
+        : { images: options.images, model: options.model };
+
+    const response = await fetch('/api/races/extract', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+
+    const responseData = await response.json();
+    if (!response.ok) throw new Error(responseData.error || 'Failed to extract races');
+
+    return {
+      ...responseData.data,
+      markdown: options.mode === 'llmFromMarkdown' ? options.markdown : '',
+    };
+  }
 
   const response = await fetch('/api/races/scrape', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
+    body: JSON.stringify({ mode: options.mode, websiteUrl: options.websiteUrl, model: options.model }),
   });
 
   const responseData = await response.json();
-
-  if (!response.ok) {
-    throw new Error(responseData.error || 'Failed to scrape races');
-  }
+  if (!response.ok) throw new Error(responseData.error || 'Failed to scrape races');
 
   return responseData.data;
 }

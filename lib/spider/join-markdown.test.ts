@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import type { SpiderCrawlPageItem } from './spider-crawl';
+import type { SpiderCrawlPageItem } from './client';
 import {
   dedupeSpiderPages,
   joinSpiderCrawlPagesToMarkdown,
   normalizeSpiderCrawlUrl,
   sortSpiderPagesForJoin,
-} from './spider-crawl-join-markdown';
+} from './join-markdown';
 
 function page(overrides: Partial<SpiderCrawlPageItem>): SpiderCrawlPageItem {
   return {

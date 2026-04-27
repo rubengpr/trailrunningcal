@@ -1,0 +1,43 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { assertAdmin } from '@/lib/auth-admin';
+import { parseInput, ValidationError } from './validate-input';
+import { extractFromMarkdown, extractFromImages } from '@/lib/agents/race-extractor';
+import type { CrawlPageStats } from '@/types/races-scrape-api.types';
+
+export const maxDuration = 60;
+
+const EMPTY_CRAWL_PAGE_STATS: CrawlPageStats = {
+  total: 0,
+  successCount: 0,
+  errorCount: 0,
+};
+
+export async function POST(request: NextRequest): Promise<NextResponse> {
+  try {
+    await assertAdmin();
+
+    const body = await request.json();
+    const input = parseInput(body);
+
+    const result =
+      input.mode === 'llmFromImages'
+        ? await extractFromImages(input.images, input.model)
+        : await extractFromMarkdown(input.markdown, input.model);
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        races: result.races,
+        rawModelOutput: result.rawModelOutput,
+        usage: result.usage,
+        crawlPageStats: EMPTY_CRAWL_PAGE_STATS,
+      },
+    });
+  } catch (error) {
+    if (error instanceof ValidationError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
+    console.error('Extract API error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}

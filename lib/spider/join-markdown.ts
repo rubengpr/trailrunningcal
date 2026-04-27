@@ -1,4 +1,4 @@
-import type { SpiderCrawlPageItem } from './spider-crawl';
+import type { SpiderCrawlPageItem } from './client';
 
 export interface JoinSpiderCrawlMarkdownOptions {
   generatedAt?: Date;
