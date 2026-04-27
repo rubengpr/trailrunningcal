@@ -3,6 +3,14 @@ import type { CrawlPageStats } from '@/types/races-scrape-api.types';
 const SCRAPE_ENDPOINT = 'https://api.spider.cloud/scrape';
 const CRAWL_ENDPOINT = 'https://api.spider.cloud/crawl';
 
+export function requireApiKey(): string {
+  const apiKey = process.env.SPIDER_API_KEY;
+  if (!apiKey) {
+    throw new Error('Missing SPIDER_API_KEY');
+  }
+  return apiKey;
+}
+
 // Regex patterns passed to Spider.cloud `blacklist` — matched URLs are skipped entirely.
 export const BLACKLIST: readonly string[] = [
   // Media & gallery
@@ -170,14 +178,6 @@ export function summarizeSpiderCrawlHttpStatus(
   return { total, successCount, errorCount };
 }
 
-export function requireSpiderApiKey(): string {
-  const apiKey = process.env.SPIDER_API_KEY;
-  if (!apiKey) {
-    throw new Error('Missing SPIDER_API_KEY');
-  }
-  return apiKey;
-}
-
 export interface SpiderCloudCrawlOptions {
   limit?: number;
   depth?: number;
@@ -235,7 +235,7 @@ export async function spiderCloudScrape(
     throw new Error('Invalid seed URL');
   }
 
-  const apiKey = requireSpiderApiKey();
+  const apiKey = requireApiKey();
 
   const {
     request = 'smart',
@@ -306,7 +306,7 @@ export async function spiderCloudCrawl(
     throw new Error('Invalid seed URL');
   }
 
-  const apiKey = requireSpiderApiKey();
+  const apiKey = requireApiKey();
 
   const {
     limit = 25,
