@@ -1,6 +1,6 @@
 import { normalizeUrl } from '@/lib/validation';
 import { spiderCloudScrape, spiderCloudCrawl, summarizeSpiderCrawlHttpStatus } from '@/lib/spider/client';
-import { joinSpiderCrawlPagesToMarkdown } from '@/lib/spider/join-markdown';
+import { mergePages } from '@/lib/spider/join-markdown';
 import type { CrawlPageStats } from '@/types/races-scrape-api.types';
 
 export interface SpiderServiceResult {
@@ -17,7 +17,7 @@ export async function scrapePage(urlStr: string): Promise<SpiderServiceResult> {
   }
   const pages = await spiderCloudScrape(normalizedUrl);
   const crawlPageStats = summarizeSpiderCrawlHttpStatus(pages);
-  const markdown = joinSpiderCrawlPagesToMarkdown(normalizedUrl, pages);
+  const markdown = mergePages(normalizedUrl, pages);
   return { markdown, crawlPageStats };
 }
 
@@ -30,6 +30,6 @@ export async function crawlSite(urlStr: string): Promise<SpiderServiceResult> {
   }
   const pages = await spiderCloudCrawl(normalizedUrl);
   const crawlPageStats = summarizeSpiderCrawlHttpStatus(pages);
-  const markdown = joinSpiderCrawlPagesToMarkdown(normalizedUrl, pages);
+  const markdown = mergePages(normalizedUrl, pages);
   return { markdown, crawlPageStats };
 }

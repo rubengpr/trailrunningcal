@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import type { SpiderCrawlPageItem } from './client';
 import {
   dedupeSpiderPages,
-  joinSpiderCrawlPagesToMarkdown,
+  mergePages,
   normalizeSpiderCrawlUrl,
   sortSpiderPagesForJoin,
 } from './join-markdown';
@@ -101,7 +101,7 @@ describe('sortSpiderPagesForJoin', () => {
   });
 });
 
-describe('joinSpiderCrawlPagesToMarkdown', () => {
+describe('mergePages', () => {
   it('includes front matter, seed section first, and each source body', () => {
     const seedUrl = 'https://a.com/';
     const pages = [
@@ -109,7 +109,7 @@ describe('joinSpiderCrawlPagesToMarkdown', () => {
       page({ url: 'https://a.com/', content: '# Alpha' }),
     ];
     const generatedAt = new Date('2026-01-15T12:00:00.000Z');
-    const markdown = joinSpiderCrawlPagesToMarkdown(seedUrl, pages, {
+    const markdown = mergePages(seedUrl, pages, {
       generatedAt,
     });
     expect(markdown.startsWith('---\n')).toBe(true);
@@ -138,7 +138,7 @@ describe('joinSpiderCrawlPagesToMarkdown', () => {
         error: 'timeout',
       }),
     ];
-    const markdown = joinSpiderCrawlPagesToMarkdown(seedUrl, pages, {
+    const markdown = mergePages(seedUrl, pages, {
       generatedAt: new Date('2026-01-15T12:00:00.000Z'),
     });
     expect(markdown).toContain('**Status:** 500');
@@ -155,7 +155,7 @@ describe('joinSpiderCrawlPagesToMarkdown', () => {
       }),
       page({ url: 'https://b.com/', content: '# B' }),
     ];
-    const markdown = joinSpiderCrawlPagesToMarkdown(seedUrl, pages, {
+    const markdown = mergePages(seedUrl, pages, {
       generatedAt: new Date('2026-01-15T12:00:00.000Z'),
     });
     expect(markdown).toMatch(

@@ -144,7 +144,7 @@ function buildSourceSection(page: SpiderCrawlPageItem): string {
 /**
  * Merge crawl page markdown into one document with YAML front matter and per-source sections.
  */
-export function joinSpiderCrawlPagesToMarkdown(
+export function mergePages(
   seedUrl: string,
   pages: SpiderCrawlPageItem[],
   options?: JoinSpiderCrawlMarkdownOptions,

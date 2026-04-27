@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { assertAdmin } from '@/lib/auth-admin';
 import { parseInput, ValidationError } from './validate-input';
 import { crawlSite, scrapePage } from '@/lib/spider/service';
-import { extractFromMarkdown } from '@/lib/agents/race-extractor';
+import { extractFromMarkdown } from '@/lib/openrouter/service';
 
 export const maxDuration = 60;
 

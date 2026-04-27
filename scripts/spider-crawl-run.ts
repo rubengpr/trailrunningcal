@@ -1,10 +1,10 @@
 import { writeFile } from 'node:fs/promises';
 
-import { joinSpiderCrawlPagesToMarkdown } from '../lib/agents/spider-crawl-join-markdown';
+import { mergePages } from '../lib/spider/join-markdown';
 import {
   spiderCloudCrawl,
   type SpiderCloudCrawlOptions,
-} from '../lib/agents/spider-crawl';
+} from '../lib/spider/client';
 import {
   RACE_DATA_FORMAT_VERSION,
   raceDataMarkdownFileRepoRelativePath,
@@ -134,7 +134,7 @@ async function main(): Promise<void> {
       console.log(JSON.stringify(pages, null, 2));
       return;
     }
-    const markdown = joinSpiderCrawlPagesToMarkdown(seedUrl, pages);
+    const markdown = mergePages(seedUrl, pages);
     if (outputPath !== undefined) {
       await writeFile(outputPath, markdown, 'utf8');
       return;

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { assertAdmin } from '@/lib/auth-admin';
 import { parseInput, ValidationError } from './validate-input';
-import { extractFromMarkdown, extractFromImages } from '@/lib/agents/race-extractor';
+import { extractFromMarkdown, extractFromImages } from '@/lib/openrouter/service';
 import type { CrawlPageStats } from '@/types/races-scrape-api.types';
 
 export const maxDuration = 60;
