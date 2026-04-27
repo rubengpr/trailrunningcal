@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { assertAdmin } from '@/lib/auth-admin';
 import { parseInput, ValidationError } from './validate-input';
 import { extractFromMarkdown, extractFromImages } from '@/lib/openrouter/service';
-import type { CrawlPageStats } from '@/types/races-scrape-api.types';
+import type { CrawlPageStats } from '@/lib/spider-cloud/client';
 
 export const maxDuration = 60;
 

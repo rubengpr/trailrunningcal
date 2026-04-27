@@ -1,5 +1,3 @@
-import type { CrawlPageStats } from '@/types/races-scrape-api.types';
-
 // --- Constants ---
 
 const SCRAPE_ENDPOINT = 'https://api.spider.cloud/scrape';
@@ -85,6 +83,13 @@ export const BLACKLIST: readonly string[] = [
 ];
 
 // --- Interfaces ---
+
+/** Per-page HTTP outcome after Spider crawl; success + error === total always. */
+export interface CrawlPageStats {
+  total: number;
+  successCount: number;
+  errorCount: number;
+}
 
 export interface SpiderCrawlCosts {
   file_cost?: number;

@@ -1,5 +1,5 @@
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
-import type { CrawlPageStats } from '@/types/races-scrape-api.types';
+import type { CrawlPageStats } from '@/lib/spider-cloud/client';
 
 import { DUMMY_SCRAPED_RACES } from '@/lib/fixtures/dummy-scraped-races';
 

@@ -1,10 +1,3 @@
-/** Per-page HTTP outcome after Spider crawl; success + error === total always. */
-export interface CrawlPageStats {
-  total: number;
-  successCount: number;
-  errorCount: number;
-}
-
 export const SCRAPE_PIPELINE_MODES = [
   'crawlOnly',
   'scrapeOnly',
