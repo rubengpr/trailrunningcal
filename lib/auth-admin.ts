@@ -11,7 +11,7 @@ export function isAdminEmail(email: string | undefined): boolean {
   return ADMIN_EMAILS.includes(email.trim().toLowerCase());
 }
 
-export async function assertAdmin(): Promise<void> {
+export async function requireAdmin(): Promise<void> {
   const supabase = await createClient();
   const {
     data: { user },

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { assertAdmin } from '@/lib/auth-admin';
+import { requireAdmin } from '@/lib/auth-admin';
 import { parseInput, ValidationError } from './validate-input';
 import { extractFromMarkdown, extractFromImages } from '@/lib/openrouter/service';
 import type { CrawlPageStats } from '@/lib/spider-cloud/client';
@@ -14,7 +14,7 @@ const EMPTY_CRAWL_PAGE_STATS: CrawlPageStats = {
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
-    await assertAdmin();
+    await requireAdmin();
 
     const body = await request.json();
     const input = parseInput(body);
