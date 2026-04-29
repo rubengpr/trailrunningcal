@@ -97,7 +97,7 @@ export async function deleteRace(raceId: string): Promise<void> {
   }
 }
 
-export interface ScrapeRacesResult {
+export interface TrailRaceAgentRunResult {
   races: import('@/types/trail-race-agent.types').TrailRaceAgentRaceRow[];
   markdown: string;
   rawModelOutput: string;
@@ -105,7 +105,7 @@ export interface ScrapeRacesResult {
   crawlPageStats: CrawlPageStats;
 }
 
-export type ScrapeRacesOptions =
+export type TrailRaceAgentRunOptions =
   | { mode: 'crawlSiteExtract'; model: OpenRouterScrapeModelId; websiteUrl: string }
   | {
       mode: 'markdown';
@@ -166,9 +166,9 @@ export async function scrapeEventPageMarkdown(
  * Runs the trail race agent on a crawled URL or on uploaded markdown/images. Admin-only.
  * Routes to /api/races/scrape (URL-based) or /api/races/extract (content-based).
  */
-export async function scrapeRaces(
-  options: ScrapeRacesOptions,
-): Promise<ScrapeRacesResult> {
+export async function runTrailRaceAgent(
+  options: TrailRaceAgentRunOptions,
+): Promise<TrailRaceAgentRunResult> {
   if (options.mode === 'markdown' || options.mode === 'images') {
     const body =
       options.mode === 'markdown'
@@ -197,7 +197,7 @@ export async function scrapeRaces(
   });
 
   const responseData = await response.json();
-  if (!response.ok) throw new Error(responseData.error || 'Failed to scrape races');
+  if (!response.ok) throw new Error(responseData.error || 'Failed to run trail race agent');
 
   return responseData.data;
 }

@@ -23,7 +23,7 @@ import type { BulkProcessTableRow } from '@/components/admin/bulk-process-table'
 import {
     crawlEventWebsiteMarkdown,
     scrapeEventPageMarkdown,
-    scrapeRaces,
+    runTrailRaceAgent,
     acceptScrapedRace,
 } from '@/lib/api/races';
 import { OPENROUTER_SCRAPE_MODEL_IDS, OPENROUTER_VISION_MODEL_IDS } from '@/lib/openrouter/scrape-models';
@@ -166,8 +166,8 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
 
     const uploadKind: 'markdown' | 'images' | null =
         uploadedMarkdown !== null ? 'markdown' :
-        uploadedImages.length > 0 ? 'images' :
-        null;
+            uploadedImages.length > 0 ? 'images' :
+                null;
 
     const isValidUrl = (url: string): boolean => {
         const trimmed = url.trim();
@@ -185,8 +185,8 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
         (workflow === 'crawlMdOnly' || workflow === 'crawlSiteExtract' || workflow === 'autopilot'
             ? isValidUrl(websiteUrl)
             : uploadKind === 'images'
-              ? uploadedImages.length > 0
-              : Boolean(uploadedMarkdown && uploadedMarkdown.length > 0));
+                ? uploadedImages.length > 0
+                : Boolean(uploadedMarkdown && uploadedMarkdown.length > 0));
 
     const clearFullPipelineStepRefs = (): void => {
         fullPipelineCrawlStartedAtRef.current = null;
@@ -374,7 +374,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
         };
     }, [isScraping]);
 
-    const handleScrape = async () => {
+    const handleRunWorkflow = async () => {
         runStartedAtRef.current = performance.now();
         setLiveElapsedMs(0);
         setLastRunDurationMs(null);
@@ -439,9 +439,9 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 setCrawlPageStats(scrapeData.crawlPageStats);
                 setScrapePhase('llm');
 
-                let llmData1;
+                let pageScrapeAgentResult;
                 try {
-                    llmData1 = await scrapeRaces({
+                    pageScrapeAgentResult = await runTrailRaceAgent({
                         mode: 'markdown',
                         markdown: scrapeData.markdown,
                         model: selectedModelId,
@@ -455,12 +455,14 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                     return;
                 }
 
-                const futureRaces1 = llmData1.races.filter((r) => r.date >= todayStr);
-                if (futureRaces1.length > 0) {
+                const futureRacesFromPageScrape = pageScrapeAgentResult.races.filter(
+                    (r) => r.date >= todayStr,
+                );
+                if (futureRacesFromPageScrape.length > 0) {
                     fullPipelineLlmEndedAtRef.current = performance.now();
-                    setScrapedRaces(futureRaces1);
-                    setRawModelOutput(llmData1.rawModelOutput);
-                    setScrapeUsage(llmData1.usage);
+                    setScrapedRaces(futureRacesFromPageScrape);
+                    setRawModelOutput(pageScrapeAgentResult.rawModelOutput);
+                    setScrapeUsage(pageScrapeAgentResult.usage);
                     setHasScraped(true);
                     return;
                 }
@@ -468,18 +470,18 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 // Snapshot attempt 1 rows before resetting for the fallback.
                 const attempt1ScrapeMs =
                     fullPipelineCrawlStartedAtRef.current !== null &&
-                    fullPipelineCrawlEndedAtRef.current !== null
+                        fullPipelineCrawlEndedAtRef.current !== null
                         ? Math.round(
-                              fullPipelineCrawlEndedAtRef.current -
-                                  fullPipelineCrawlStartedAtRef.current,
-                          )
+                            fullPipelineCrawlEndedAtRef.current -
+                            fullPipelineCrawlStartedAtRef.current,
+                        )
                         : null;
                 const attempt1ParseEndedAt = performance.now();
                 const attempt1ParseMs =
                     fullPipelineLlmStartedAtRef.current !== null
                         ? Math.round(
-                              attempt1ParseEndedAt - fullPipelineLlmStartedAtRef.current,
-                          )
+                            attempt1ParseEndedAt - fullPipelineLlmStartedAtRef.current,
+                        )
                         : null;
                 setPersistedPipelineRows([
                     {
@@ -527,9 +529,9 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 setCrawlPageStats(crawlData.crawlPageStats);
                 setScrapePhase('llm');
 
-                let llmData2;
+                let siteCrawlAgentResult;
                 try {
-                    llmData2 = await scrapeRaces({
+                    siteCrawlAgentResult = await runTrailRaceAgent({
                         mode: 'markdown',
                         markdown: crawlData.markdown,
                         model: selectedModelId,
@@ -544,10 +546,12 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 }
 
                 fullPipelineLlmEndedAtRef.current = performance.now();
-                const futureRaces2 = llmData2.races.filter((r) => r.date >= todayStr);
-                setScrapedRaces(futureRaces2);
-                setRawModelOutput(llmData2.rawModelOutput);
-                setScrapeUsage(llmData2.usage);
+                const futureRacesFromSiteCrawl = siteCrawlAgentResult.races.filter(
+                    (r) => r.date >= todayStr,
+                );
+                setScrapedRaces(futureRacesFromSiteCrawl);
+                setRawModelOutput(siteCrawlAgentResult.rawModelOutput);
+                setScrapeUsage(siteCrawlAgentResult.usage);
                 setHasScraped(true);
                 return;
             }
@@ -566,7 +570,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                     if (uploadedImages.length === 0) {
                         return;
                     }
-                    const data = await scrapeRaces({
+                    const data = await runTrailRaceAgent({
                         mode: 'images',
                         images: uploadedImages.map(img => img.dataUrl),
                         model: selectedVisionModelId,
@@ -579,7 +583,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                     if (!markdownBody) {
                         return;
                     }
-                    const data = await scrapeRaces({
+                    const data = await runTrailRaceAgent({
                         mode: 'markdown',
                         markdown: markdownBody,
                         model: selectedModelId,
@@ -611,7 +615,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 setScrapePhase('llm');
                 let llmData;
                 try {
-                    llmData = await scrapeRaces({
+                    llmData = await runTrailRaceAgent({
                         mode: 'markdown',
                         markdown: crawlData.markdown,
                         model: selectedModelId,
@@ -807,8 +811,8 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
 
     const primaryButtonLabel =
         workflow === 'crawlMdOnly' ? t('crawlMdButton') :
-        workflow === 'autopilot' ? t('bulk.runButton') :
-        t('scrapeButton');
+            workflow === 'autopilot' ? t('bulk.runButton') :
+                t('scrapeButton');
 
     const primaryLoadingLabel =
         workflow === 'crawlMdOnly'
@@ -1071,11 +1075,10 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                                         onClick={() => markdownFileInputRef.current?.click()}
                                         disabled={isScraping || uploadKind === 'images'}
                                         title={t('uploadMarkdownButtonTitle')}
-                                        className={`inline-flex h-9 w-9 items-center justify-center rounded-md border shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
-                                            uploadKind === 'markdown'
+                                        className={`inline-flex h-9 w-9 items-center justify-center rounded-md border shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${uploadKind === 'markdown'
                                                 ? 'border-gray-900 bg-gray-50 text-gray-900'
                                                 : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                        }`}
+                                            }`}
                                     >
                                         <FileText className="h-4 w-4" strokeWidth={2} />
                                     </button>
@@ -1084,11 +1087,10 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                                         onClick={() => imageFileInputRef.current?.click()}
                                         disabled={isScraping || uploadKind === 'markdown'}
                                         title={t('uploadImagesButtonTitle')}
-                                        className={`inline-flex h-9 w-9 items-center justify-center rounded-md border shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
-                                            uploadKind === 'images'
+                                        className={`inline-flex h-9 w-9 items-center justify-center rounded-md border shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${uploadKind === 'images'
                                                 ? 'border-gray-900 bg-gray-50 text-gray-900'
                                                 : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                        }`}
+                                            }`}
                                     >
                                         <ImageIcon className="h-4 w-4" strokeWidth={2} />
                                     </button>
@@ -1189,7 +1191,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                     <div className="flex flex-col gap-3 border-t border-gray-100 pt-6 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2">
                         <Button
                             type="button"
-                            onClick={handleScrape}
+                            onClick={handleRunWorkflow}
                             disabled={!canRunScrape}
                             isLoading={isScraping}
                             loadingText={primaryLoadingLabel}
@@ -1304,110 +1306,110 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                                 </div>
                             ))}
                             {fullPipelineSteps !== null && (
-                            <>
-                            <div className="flex items-start gap-3">
-                                <div className="flex h-5 w-4 shrink-0 flex-col items-center justify-center">
-                                    <FullPipelineRowIcon kind={fullPipelineSteps.row1.kind} />
-                                </div>
-                                <div className="min-w-0 flex-1">
-                                    {fullPipelineSteps.row1.titleKey !== undefined && (
-                                        <>
-                                            <p
-                                                className={`flex flex-wrap items-center gap-x-2 text-sm font-medium leading-5 ${fullPipelineSteps.row1.kind === 'error'
-                                                    ? 'text-red-700'
-                                                    : 'text-gray-900'
-                                                    }`}
-                                            >
-                                                <span>{t(fullPipelineSteps.row1.titleKey)}</span>
-                                                {fullPipelineCrawlStepMs !== null && (
-                                                    <span className="text-xs font-normal text-gray-500 tabular-nums">
-                                                        {t('fullPipelineStepDuration', {
-                                                            duration: formatDurationMs(fullPipelineCrawlStepMs),
-                                                        })}
-                                                    </span>
-                                                )}
-                                                {(workflow === 'crawlSiteExtract' || workflow === 'autopilot') && crawlPageStats !== null && (
-                                                    <span className="inline-flex flex-wrap items-center gap-1.5">
-                                                        <span className="inline-flex items-center rounded-full border border-gray-200/80 bg-gray-100 px-2 text-[11px] font-medium text-gray-800 tabular-nums">
-                                                            {t('crawledPagesTotal', {
-                                                                scrapedPages: crawlPageStats.total,
-                                                            })}
-                                                        </span>
-                                                        <span className="inline-flex items-center rounded-full border border-green-200/80 bg-green-100 px-2 text-[11px] font-medium text-green-800 tabular-nums">
-                                                            {t('crawledPagesHttpSuccess', {
-                                                                successPages: crawlPageStats.successCount,
-                                                            })}
-                                                        </span>
-                                                        <span className="inline-flex items-center rounded-full border border-red-200/80 bg-red-100 px-2 text-[11px] font-medium text-red-800 tabular-nums">
-                                                            {t('crawledPagesHttpError', {
-                                                                errorPages: crawlPageStats.errorCount,
-                                                            })}
-                                                        </span>
-                                                        {showMarkdownEstimateBesideCrawlPageStats && (
+                                <>
+                                    <div className="flex items-start gap-3">
+                                        <div className="flex h-5 w-4 shrink-0 flex-col items-center justify-center">
+                                            <FullPipelineRowIcon kind={fullPipelineSteps.row1.kind} />
+                                        </div>
+                                        <div className="min-w-0 flex-1">
+                                            {fullPipelineSteps.row1.titleKey !== undefined && (
+                                                <>
+                                                    <p
+                                                        className={`flex flex-wrap items-center gap-x-2 text-sm font-medium leading-5 ${fullPipelineSteps.row1.kind === 'error'
+                                                            ? 'text-red-700'
+                                                            : 'text-gray-900'
+                                                            }`}
+                                                    >
+                                                        <span>{t(fullPipelineSteps.row1.titleKey)}</span>
+                                                        {fullPipelineCrawlStepMs !== null && (
                                                             <span className="text-xs font-normal text-gray-500 tabular-nums">
-                                                                <span className="font-bold text-gray-700">
-                                                                    {parseUploadTokenEstimate !== null
-                                                                        ? parseUploadTokenEstimate
-                                                                        : markdownTokenEstimate!}
-                                                                </span>{' '}
-                                                                {t('markdownStatTokensLabel')}
-                                                                {' · '}
-                                                                <span className="font-bold text-gray-700">
-                                                                    {parseUploadTokenEstimate !== null
-                                                                        ? markdownTrimmedCharCount(uploadedMarkdown!)
-                                                                        : markdownTrimmedCharCount(scrapeMarkdown!)}
-                                                                </span>{' '}
-                                                                {t('markdownStatCharactersLabel')}
+                                                                {t('fullPipelineStepDuration', {
+                                                                    duration: formatDurationMs(fullPipelineCrawlStepMs),
+                                                                })}
                                                             </span>
                                                         )}
-                                                    </span>
-                                                )}
-                                            </p>
-                                            {fullPipelineSteps.row1.errorDetail !== undefined &&
-                                                fullPipelineSteps.row1.errorDetail !== null &&
-                                                fullPipelineSteps.row1.errorDetail !== '' && (
-                                                    <p className="mt-0.5 text-xs text-red-600">
-                                                        {fullPipelineSteps.row1.errorDetail}
+                                                        {(workflow === 'crawlSiteExtract' || workflow === 'autopilot') && crawlPageStats !== null && (
+                                                            <span className="inline-flex flex-wrap items-center gap-1.5">
+                                                                <span className="inline-flex items-center rounded-full border border-gray-200/80 bg-gray-100 px-2 text-[11px] font-medium text-gray-800 tabular-nums">
+                                                                    {t('crawledPagesTotal', {
+                                                                        scrapedPages: crawlPageStats.total,
+                                                                    })}
+                                                                </span>
+                                                                <span className="inline-flex items-center rounded-full border border-green-200/80 bg-green-100 px-2 text-[11px] font-medium text-green-800 tabular-nums">
+                                                                    {t('crawledPagesHttpSuccess', {
+                                                                        successPages: crawlPageStats.successCount,
+                                                                    })}
+                                                                </span>
+                                                                <span className="inline-flex items-center rounded-full border border-red-200/80 bg-red-100 px-2 text-[11px] font-medium text-red-800 tabular-nums">
+                                                                    {t('crawledPagesHttpError', {
+                                                                        errorPages: crawlPageStats.errorCount,
+                                                                    })}
+                                                                </span>
+                                                                {showMarkdownEstimateBesideCrawlPageStats && (
+                                                                    <span className="text-xs font-normal text-gray-500 tabular-nums">
+                                                                        <span className="font-bold text-gray-700">
+                                                                            {parseUploadTokenEstimate !== null
+                                                                                ? parseUploadTokenEstimate
+                                                                                : markdownTokenEstimate!}
+                                                                        </span>{' '}
+                                                                        {t('markdownStatTokensLabel')}
+                                                                        {' · '}
+                                                                        <span className="font-bold text-gray-700">
+                                                                            {parseUploadTokenEstimate !== null
+                                                                                ? markdownTrimmedCharCount(uploadedMarkdown!)
+                                                                                : markdownTrimmedCharCount(scrapeMarkdown!)}
+                                                                        </span>{' '}
+                                                                        {t('markdownStatCharactersLabel')}
+                                                                    </span>
+                                                                )}
+                                                            </span>
+                                                        )}
                                                     </p>
-                                                )}
-                                        </>
-                                    )}
-                                </div>
-                            </div>
-                            <div className="flex items-start gap-3">
-                                <div className="flex h-5 w-4 shrink-0 flex-col items-center justify-center">
-                                    <FullPipelineRowIcon kind={fullPipelineSteps.row2.kind} />
-                                </div>
-                                <div className="min-w-0 flex-1">
-                                    {fullPipelineSteps.row2.titleKey !== undefined && (
-                                        <>
-                                            <p
-                                                className={`flex flex-wrap items-center gap-x-2 text-sm font-medium leading-5 ${fullPipelineSteps.row2.kind === 'error'
-                                                    ? 'text-red-700'
-                                                    : 'text-gray-900'
-                                                    }`}
-                                            >
-                                                <span>{t(fullPipelineSteps.row2.titleKey)}</span>
-                                                {fullPipelineLlmStepMs !== null && (
-                                                    <span className="text-xs font-normal text-gray-500 tabular-nums">
-                                                        {t('fullPipelineStepDuration', {
-                                                            duration: formatDurationMs(fullPipelineLlmStepMs),
-                                                        })}
-                                                    </span>
-                                                )}
-                                            </p>
-                                            {fullPipelineSteps.row2.errorDetail !== undefined &&
-                                                fullPipelineSteps.row2.errorDetail !== null &&
-                                                fullPipelineSteps.row2.errorDetail !== '' && (
-                                                    <p className="mt-0.5 text-xs text-red-600">
-                                                        {fullPipelineSteps.row2.errorDetail}
+                                                    {fullPipelineSteps.row1.errorDetail !== undefined &&
+                                                        fullPipelineSteps.row1.errorDetail !== null &&
+                                                        fullPipelineSteps.row1.errorDetail !== '' && (
+                                                            <p className="mt-0.5 text-xs text-red-600">
+                                                                {fullPipelineSteps.row1.errorDetail}
+                                                            </p>
+                                                        )}
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="flex items-start gap-3">
+                                        <div className="flex h-5 w-4 shrink-0 flex-col items-center justify-center">
+                                            <FullPipelineRowIcon kind={fullPipelineSteps.row2.kind} />
+                                        </div>
+                                        <div className="min-w-0 flex-1">
+                                            {fullPipelineSteps.row2.titleKey !== undefined && (
+                                                <>
+                                                    <p
+                                                        className={`flex flex-wrap items-center gap-x-2 text-sm font-medium leading-5 ${fullPipelineSteps.row2.kind === 'error'
+                                                            ? 'text-red-700'
+                                                            : 'text-gray-900'
+                                                            }`}
+                                                    >
+                                                        <span>{t(fullPipelineSteps.row2.titleKey)}</span>
+                                                        {fullPipelineLlmStepMs !== null && (
+                                                            <span className="text-xs font-normal text-gray-500 tabular-nums">
+                                                                {t('fullPipelineStepDuration', {
+                                                                    duration: formatDurationMs(fullPipelineLlmStepMs),
+                                                                })}
+                                                            </span>
+                                                        )}
                                                     </p>
-                                                )}
-                                        </>
-                                    )}
-                                </div>
-                            </div>
-                            </>
+                                                    {fullPipelineSteps.row2.errorDetail !== undefined &&
+                                                        fullPipelineSteps.row2.errorDetail !== null &&
+                                                        fullPipelineSteps.row2.errorDetail !== '' && (
+                                                            <p className="mt-0.5 text-xs text-red-600">
+                                                                {fullPipelineSteps.row2.errorDetail}
+                                                            </p>
+                                                        )}
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+                                </>
                             )}
                         </div>
                     )}
