@@ -106,7 +106,7 @@ export interface ScrapeRacesResult {
 }
 
 export type ScrapeRacesOptions =
-  | { mode: 'crawlAndLlm'; model: OpenRouterScrapeModelId; websiteUrl: string }
+  | { mode: 'crawlSiteExtract'; model: OpenRouterScrapeModelId; websiteUrl: string }
   | {
       mode: 'markdown';
       model: OpenRouterScrapeModelId;
@@ -124,7 +124,7 @@ export async function crawlEventWebsiteMarkdown(
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      mode: 'crawlOnly',
+      mode: 'crawlSite',
       websiteUrl,
     }),
   });
@@ -148,7 +148,7 @@ export async function scrapeEventPageMarkdown(
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      mode: 'scrapeOnly',
+      mode: 'scrapePage',
       websiteUrl,
     }),
   });

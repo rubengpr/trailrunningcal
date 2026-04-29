@@ -13,17 +13,17 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const body = await request.json();
     const input = parseInput(body);
 
-    if (input.mode === 'scrapeOnly') {
+    if (input.mode === 'scrapePage') {
       const { markdown, crawlPageStats } = await scrapePage(input.url);
       return NextResponse.json({ success: true, data: { markdown, crawlPageStats } });
     }
 
-    if (input.mode === 'crawlOnly') {
+    if (input.mode === 'crawlSite') {
       const { markdown, crawlPageStats } = await crawlSite(input.url);
       return NextResponse.json({ success: true, data: { markdown, crawlPageStats } });
     }
 
-    // crawlAndLlm
+    // crawlSiteExtract
     const { markdown, crawlPageStats } = await crawlSite(input.url);
     const result = await extractFromMarkdown(markdown, input.model);
     return NextResponse.json({

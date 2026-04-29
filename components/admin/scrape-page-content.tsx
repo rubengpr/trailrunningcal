@@ -40,7 +40,7 @@ import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.type
 import type { PendingRace } from '@/types/pending-race.types';
 import { XCircle, RefreshCw, Sparkles, FileText, ImageIcon, X } from 'lucide-react';
 
-type ScrapeWorkflow = 'crawlMdOnly' | 'llmFromFile' | 'crawlAndLlm' | 'autopilot';
+type ScrapeWorkflow = 'crawlMdOnly' | 'llmFromFile' | 'crawlSiteExtract' | 'autopilot';
 
 type ScrapePhase = 'idle' | 'crawling' | 'llm';
 
@@ -182,7 +182,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
 
     const canRunScrape =
         !isScraping &&
-        (workflow === 'crawlMdOnly' || workflow === 'crawlAndLlm' || workflow === 'autopilot'
+        (workflow === 'crawlMdOnly' || workflow === 'crawlSiteExtract' || workflow === 'autopilot'
             ? isValidUrl(websiteUrl)
             : uploadKind === 'images'
               ? uploadedImages.length > 0
@@ -196,7 +196,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
     };
 
     const handleWorkflowChange = (next: ScrapeWorkflow): void => {
-        if (next !== 'crawlAndLlm') {
+        if (next !== 'crawlSiteExtract') {
             setFullPipelineUiActive(false);
             clearFullPipelineStepRefs();
         }
@@ -379,7 +379,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
         setLiveElapsedMs(0);
         setLastRunDurationMs(null);
         setIsScraping(true);
-        if (workflow === 'crawlAndLlm') {
+        if (workflow === 'crawlSiteExtract') {
             setFullPipelineUiActive(true);
             setScrapePhase('crawling');
             fullPipelineCrawlStartedAtRef.current = performance.now();
@@ -733,7 +733,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
         setScrapeMarkdown(DUMMY_SCRAPE_MARKDOWN);
         setRawModelOutput(DUMMY_RAW_MODEL_OUTPUT);
         setScrapeUsage({ ...DUMMY_SCRAPE_USAGE });
-        if (workflow === 'crawlAndLlm') {
+        if (workflow === 'crawlSiteExtract') {
             setFullPipelineUiActive(true);
         }
     };
@@ -815,7 +815,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
             ? t('crawlingMarkdown')
             : workflow === 'autopilot'
                 ? t('bulk.running')
-                : workflow === 'crawlAndLlm' && scrapePhase === 'crawling'
+                : workflow === 'crawlSiteExtract' && scrapePhase === 'crawling'
                     ? t('crawlingMarkdown')
                     : t('scraping');
 
@@ -851,7 +851,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
         row1: FullPipelineRowConfig;
         row2: FullPipelineRowConfig;
     } | null => {
-        if ((workflow !== 'crawlAndLlm' && workflow !== 'autopilot') || !fullPipelineUiActive) {
+        if ((workflow !== 'crawlSiteExtract' && workflow !== 'autopilot') || !fullPipelineUiActive) {
             return null;
         }
         if (!isScraping && !hasScraped) {
@@ -908,13 +908,13 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
     ]);
 
     const showMarkdownEstimateBesideCrawlPageStats =
-        (workflow === 'crawlAndLlm' || workflow === 'autopilot') &&
+        (workflow === 'crawlSiteExtract' || workflow === 'autopilot') &&
         fullPipelineSteps !== null &&
         crawlPageStats !== null &&
         showMarkdownEstimateLine;
 
     const fullPipelineCrawlStepMs = useMemo((): number | null => {
-        if ((workflow !== 'crawlAndLlm' && workflow !== 'autopilot') || !fullPipelineUiActive) {
+        if ((workflow !== 'crawlSiteExtract' && workflow !== 'autopilot') || !fullPipelineUiActive) {
             return null;
         }
         if (fullPipelineCrawlStartedAtRef.current === null) {
@@ -932,7 +932,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
     }, [workflow, fullPipelineUiActive, isScraping, scrapePhase, liveElapsedMs]);
 
     const fullPipelineLlmStepMs = useMemo((): number | null => {
-        if ((workflow !== 'crawlAndLlm' && workflow !== 'autopilot') || !fullPipelineUiActive) {
+        if ((workflow !== 'crawlSiteExtract' && workflow !== 'autopilot') || !fullPipelineUiActive) {
             return null;
         }
         if (fullPipelineLlmStartedAtRef.current === null) {
@@ -974,9 +974,9 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                         </button>
                         <button
                             type="button"
-                            onClick={() => handleWorkflowChange('crawlAndLlm')}
+                            onClick={() => handleWorkflowChange('crawlSiteExtract')}
                             disabled={isScraping}
-                            className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${workflow === 'crawlAndLlm'
+                            className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${workflow === 'crawlSiteExtract'
                                 ? 'bg-white text-gray-900 shadow-sm'
                                 : 'text-gray-600 hover:text-gray-900'
                                 }`}
@@ -1007,7 +1007,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                         </button>
                     </div>
 
-                    {(workflow === 'crawlMdOnly' || workflow === 'crawlAndLlm' || workflow === 'autopilot') && (
+                    {(workflow === 'crawlMdOnly' || workflow === 'crawlSiteExtract' || workflow === 'autopilot') && (
                         <div className="grid gap-2 w-full">
                             <Combobox
                                 id="websiteUrl"
@@ -1151,7 +1151,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                         </>
                     )}
 
-                    {(workflow === 'crawlAndLlm' || workflow === 'autopilot' || (workflow === 'llmFromFile' && uploadKind !== 'images')) && (
+                    {(workflow === 'crawlSiteExtract' || workflow === 'autopilot' || (workflow === 'llmFromFile' && uploadKind !== 'images')) && (
                         <FormSelect
                             id="openrouterModel"
                             label={t('modelLabel')}
@@ -1326,7 +1326,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                                                         })}
                                                     </span>
                                                 )}
-                                                {(workflow === 'crawlAndLlm' || workflow === 'autopilot') && crawlPageStats !== null && (
+                                                {(workflow === 'crawlSiteExtract' || workflow === 'autopilot') && crawlPageStats !== null && (
                                                     <span className="inline-flex flex-wrap items-center gap-1.5">
                                                         <span className="inline-flex items-center rounded-full border border-gray-200/80 bg-gray-100 px-2 text-[11px] font-medium text-gray-800 tabular-nums">
                                                             {t('crawledPagesTotal', {
