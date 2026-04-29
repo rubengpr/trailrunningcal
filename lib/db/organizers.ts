@@ -1,5 +1,5 @@
 import { createStaticClient } from '@/lib/supabase/server';
-import type { OrganizerPublic } from '@/types/organizer.types';
+import type { Organizer } from '@/types/organizer.types';
 
 type OrganizerRow = {
   name: string | null;
@@ -10,7 +10,7 @@ type OrganizerRow = {
   tiktok_url: string | null;
 };
 
-export function organizerRowToPublic(row: OrganizerRow): OrganizerPublic {
+export function toOrganizer(row: OrganizerRow): Organizer {
   return {
     name: row.name ?? null,
     website: row.website ?? null,
@@ -23,7 +23,7 @@ export function organizerRowToPublic(row: OrganizerRow): OrganizerPublic {
 
 export async function getOrganizerById(
   organizerId: string,
-): Promise<OrganizerPublic | null> {
+): Promise<Organizer | null> {
   const supabase = createStaticClient();
 
   const { data, error } = await supabase
@@ -36,5 +36,5 @@ export async function getOrganizerById(
     return null;
   }
 
-  return organizerRowToPublic(data as OrganizerRow);
+  return toOrganizer(data as OrganizerRow);
 }

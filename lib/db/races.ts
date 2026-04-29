@@ -3,7 +3,7 @@ import { createStaticClient } from '@/lib/supabase/server';
 import type { TrailRace, RaceRow } from '@/types/race.types';
 import { generateRaceSlug } from '@/lib/race-utils';
 
-export function raceRowToTrailRace(row: RaceRow): TrailRace {
+export function toTrailRace(row: RaceRow): TrailRace {
   return {
     id: row.id,
     name: row.name,
@@ -66,7 +66,7 @@ export const getRaces = cache(async function getRaces(): Promise<TrailRace[]> {
   }
 
   const rows = (data ?? []) as RaceRow[];
-  racesCache = rows.map(raceRowToTrailRace);
+  racesCache = rows.map(toTrailRace);
   return racesCache;
 });
 
@@ -113,7 +113,7 @@ export const getRaceBySlug = cache(async function getRaceBySlug(
     return null;
   }
 
-  return raceRowToTrailRace(data as RaceRow);
+  return toTrailRace(data as RaceRow);
 });
 
 /**
@@ -148,5 +148,5 @@ export const getRecommendedRaces = cache(async function getRecommendedRaces(
     return [];
   }
 
-  return (data as RaceRow[]).map(raceRowToTrailRace);
+  return (data as RaceRow[]).map(toTrailRace);
 });

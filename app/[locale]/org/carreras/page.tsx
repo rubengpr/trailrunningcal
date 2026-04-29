@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { OrganizerLayout } from '@/components/organizer/organizer-layout';
 import { OrganizerRacesContent } from '@/components/organizer/organizer-races-content';
-import { raceRowToTrailRace } from '@/lib/db/races';
+import { toTrailRace } from '@/lib/db/races';
 import type { TrailRace, RaceRow } from '@/types/race.types';
 
 export default async function OrganizerRacesPage({
@@ -60,7 +60,7 @@ export default async function OrganizerRacesPage({
             } else {
                 const rows = (racesData ?? []) as RaceRow[];
 
-                organizerRaces = rows.map(raceRowToTrailRace);
+                organizerRaces = rows.map(toTrailRace);
             }
         }
     } catch (error) {

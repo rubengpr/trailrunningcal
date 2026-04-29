@@ -15,13 +15,3 @@ export type PendingRaceRow = {
   created_at: string;
   updated_at: string;
 };
-
-export function pendingRaceRowToEntry(row: PendingRaceRow): PendingRaceEntry {
-  return {
-    id: row.id,
-    url: row.url,
-    status: row.status,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-  };
-}

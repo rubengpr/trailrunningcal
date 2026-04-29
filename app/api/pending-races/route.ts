@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { isAdminEmail } from '@/lib/auth-admin';
-import { addPendingRaces } from '@/lib/pending-races/service';
+import { createPendingRaces } from '@/lib/services/pending-races';
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'tooManyUrls' }, { status: 400 });
     }
 
-    const result = await addPendingRaces(urls);
+    const result = await createPendingRaces(urls);
 
     return NextResponse.json({ success: true, data: result }, { status: 201 });
   } catch (error) {

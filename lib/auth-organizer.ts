@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { TrailRace } from '@/types/race.types';
-import { raceRowToTrailRace } from '@/lib/db/races';
+import { toTrailRace } from '@/lib/db/races';
 import type { RaceRow } from '@/types/race.types';
 
 export interface OrganizerRaceContext {
@@ -52,6 +52,6 @@ export async function getOrganizerRaceContext(
 
   return {
     organizerId: organizer.id,
-    race: raceRowToTrailRace(row),
+    race: toTrailRace(row),
   };
 }

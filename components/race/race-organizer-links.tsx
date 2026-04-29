@@ -1,6 +1,6 @@
 'use client';
 
-import type { OrganizerPublic } from '@/types/organizer.types';
+import type { Organizer } from '@/types/organizer.types';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { track } from '@/lib/analytics/track';
 import { FacebookIcon, InstagramIcon, YouTubeIcon, TikTokIcon } from '@/components/icons/brand-icons';
@@ -15,12 +15,12 @@ const SOCIAL_ICONS: Record<SocialKey, (className: string) => React.ReactNode> = 
 };
 
 interface RaceOrganizerLinksProps {
-  organizer: OrganizerPublic;
+  organizer: Organizer;
   raceId?: string;
   raceSlug?: string;
 }
 
-function hasAnySocialUrl(organizer: OrganizerPublic): boolean {
+function hasAnySocialUrl(organizer: Organizer): boolean {
   return !!(
     organizer.facebookUrl?.trim() ||
     organizer.instagramUrl?.trim() ||

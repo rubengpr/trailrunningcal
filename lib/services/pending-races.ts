@@ -8,7 +8,7 @@ export type AddPendingRacesResult = {
   skipped: { url: string; reason: string }[];
 };
 
-export async function addPendingRaces(rawUrls: string[]): Promise<AddPendingRacesResult> {
+export async function createPendingRaces(rawUrls: string[]): Promise<AddPendingRacesResult> {
   const supabase = createAdminClient();
   const added: PendingRaceEntry[] = [];
   const skipped: { url: string; reason: string }[] = [];

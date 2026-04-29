@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { raceRowToTrailRace } from './races';
+import { toTrailRace } from './races';
 import type { RaceRow } from '@/types/race.types';
 
-describe('raceRowToTrailRace', () => {
+describe('toTrailRace', () => {
   describe('complete transformation', () => {
     it('should transform all fields from RaceRow to TrailRace', () => {
       const row: RaceRow = {
@@ -27,7 +27,7 @@ describe('raceRowToTrailRace', () => {
         website_url: 'https://example.com',
       };
 
-      const result = raceRowToTrailRace(row);
+      const result = toTrailRace(row);
 
       expect(result).toEqual({
         id: 'race-123',
@@ -69,7 +69,7 @@ describe('raceRowToTrailRace', () => {
         organizer_id: null,
       };
 
-      const result = raceRowToTrailRace(row);
+      const result = toTrailRace(row);
       expect(result.distanceKm).toBe(50);
       expect(result).not.toHaveProperty('distance_km');
     });
@@ -88,7 +88,7 @@ describe('raceRowToTrailRace', () => {
         organizer_id: null,
       };
 
-      const result = raceRowToTrailRace(row);
+      const result = toTrailRace(row);
       expect(result.elevationGainM).toBe(2500);
       expect(result).not.toHaveProperty('elevation_gain_m');
     });
@@ -107,7 +107,7 @@ describe('raceRowToTrailRace', () => {
         organizer_id: null,
       };
 
-      const result = raceRowToTrailRace(row);
+      const result = toTrailRace(row);
       expect(result.priceEur).toEqual([{ price_eur: 60 }]);
       expect(result).not.toHaveProperty('race_tiers');
     });
@@ -127,7 +127,7 @@ describe('raceRowToTrailRace', () => {
         organizer_id: null,
       };
 
-      const result = raceRowToTrailRace(row);
+      const result = toTrailRace(row);
       expect(result.mapUrl).toBe('https://example.com/map');
       expect(result).not.toHaveProperty('map_url');
     });
@@ -147,7 +147,7 @@ describe('raceRowToTrailRace', () => {
         organizer_id: null,
       };
 
-      const result = raceRowToTrailRace(row);
+      const result = toTrailRace(row);
       expect(result.imagePath).toBe('/images/race.jpg');
       expect(result).not.toHaveProperty('image_path');
     });
@@ -167,7 +167,7 @@ describe('raceRowToTrailRace', () => {
         organizer_id: null,
       };
 
-      const result = raceRowToTrailRace(row);
+      const result = toTrailRace(row);
       expect(result.resultsUrls).toEqual([
         { year: 2024, url: 'https://example.com' },
       ]);
@@ -188,7 +188,7 @@ describe('raceRowToTrailRace', () => {
         organizer_id: 'org-123',
       };
 
-      const result = raceRowToTrailRace(row);
+      const result = toTrailRace(row);
       expect(result.organizerId).toBe('org-123');
       expect(result).not.toHaveProperty('organizer_id');
     });
@@ -208,7 +208,7 @@ describe('raceRowToTrailRace', () => {
         website_url: 'https://example.com',
       };
 
-      const result = raceRowToTrailRace(row);
+      const result = toTrailRace(row);
       expect(result.websiteUrl).toBe('https://example.com');
       expect(result).not.toHaveProperty('website_url');
     });
@@ -229,7 +229,7 @@ describe('raceRowToTrailRace', () => {
         organizer_id: null,
       };
 
-      const result = raceRowToTrailRace(row);
+      const result = toTrailRace(row);
       expect(result.date).toBeNull();
     });
 
@@ -247,7 +247,7 @@ describe('raceRowToTrailRace', () => {
         organizer_id: null,
       };
 
-      const result = raceRowToTrailRace(row);
+      const result = toTrailRace(row);
       expect(result.elevationGainM).toBeNull();
     });
 
@@ -271,7 +271,7 @@ describe('raceRowToTrailRace', () => {
         website_url: null,
       };
 
-      const result = raceRowToTrailRace(row);
+      const result = toTrailRace(row);
       expect(result.date).toBeNull();
       expect(result.elevationGainM).toBeNull();
       expect(result.priceEur).toBeNull();
@@ -302,7 +302,7 @@ describe('raceRowToTrailRace', () => {
         organizer_id: null,
       };
 
-      const result = raceRowToTrailRace(row);
+      const result = toTrailRace(row);
       expect(result.services).toEqual([]);
     });
 
@@ -321,7 +321,7 @@ describe('raceRowToTrailRace', () => {
         organizer_id: null,
       };
 
-      const result = raceRowToTrailRace(row);
+      const result = toTrailRace(row);
       expect(result.services).toEqual([
         'parking',
         'showers',
@@ -345,7 +345,7 @@ describe('raceRowToTrailRace', () => {
         organizer_id: null,
       };
 
-      const result = raceRowToTrailRace(row);
+      const result = toTrailRace(row);
       expect(result.sponsors).toEqual(['Sponsor A', 'Sponsor B', 'Sponsor C']);
     });
 
@@ -368,7 +368,7 @@ describe('raceRowToTrailRace', () => {
         organizer_id: null,
       };
 
-      const result = raceRowToTrailRace(row);
+      const result = toTrailRace(row);
       expect(result.resultsUrls).toHaveLength(3);
       expect(result.resultsUrls?.[0]).toEqual({
         year: 2022,
@@ -392,7 +392,7 @@ describe('raceRowToTrailRace', () => {
         organizer_id: 'org-456',
       };
 
-      const result = raceRowToTrailRace(row);
+      const result = toTrailRace(row);
       expect(typeof result.id).toBe('string');
       expect(typeof result.name).toBe('string');
       expect(typeof result.date).toBe('string');
@@ -416,7 +416,7 @@ describe('raceRowToTrailRace', () => {
         organizer_id: null,
       };
 
-      const result = raceRowToTrailRace(row);
+      const result = toTrailRace(row);
       expect(typeof result.distanceKm).toBe('number');
       expect(typeof result.elevationGainM).toBe('number');
     });
@@ -437,7 +437,7 @@ describe('raceRowToTrailRace', () => {
         organizer_id: null,
       };
 
-      const result = raceRowToTrailRace(row);
+      const result = toTrailRace(row);
       expect(Array.isArray(result.priceEur)).toBe(true);
       expect(Array.isArray(result.services)).toBe(true);
       expect(Array.isArray(result.sponsors)).toBe(true);
@@ -459,7 +459,7 @@ describe('raceRowToTrailRace', () => {
         organizer_id: null,
       };
 
-      const result = raceRowToTrailRace(row);
+      const result = toTrailRace(row);
       expect(result.distanceKm).toBe(0);
       expect(result.elevationGainM).toBe(0);
       expect(result.priceEur?.[0].price_eur).toBe(0);
@@ -480,7 +480,7 @@ describe('raceRowToTrailRace', () => {
         organizer_id: null,
       };
 
-      const result = raceRowToTrailRace(row);
+      const result = toTrailRace(row);
       expect(result.description).toBe(longDescription);
       expect(result.description?.length).toBe(10000);
     });
@@ -499,7 +499,7 @@ describe('raceRowToTrailRace', () => {
         organizer_id: null,
       };
 
-      const result = raceRowToTrailRace(row);
+      const result = toTrailRace(row);
       expect(result.name).toBe('Trail & Run™ 2024!');
       expect(result.description).toBe('Race with special chars: <>&"\'');
     });
@@ -518,7 +518,7 @@ describe('raceRowToTrailRace', () => {
         organizer_id: null,
       };
 
-      const result = raceRowToTrailRace(row);
+      const result = toTrailRace(row);
       expect(result.distanceKm).toBe(42.195);
     });
   });
@@ -539,7 +539,7 @@ describe('raceRowToTrailRace', () => {
       };
 
       const originalRow = { ...row };
-      raceRowToTrailRace(row);
+      toTrailRace(row);
 
       expect(row).toEqual(originalRow);
     });
@@ -558,7 +558,7 @@ describe('raceRowToTrailRace', () => {
         organizer_id: null,
       };
 
-      const result = raceRowToTrailRace(row);
+      const result = toTrailRace(row);
       expect(result).not.toBe(row);
     });
   });

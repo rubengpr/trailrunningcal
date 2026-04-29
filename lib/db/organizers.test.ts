@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { organizerRowToPublic } from './organizers';
+import { toOrganizer } from './organizers';
 
-describe('organizerRowToPublic', () => {
+describe('toOrganizer', () => {
   describe('full row with all fields populated', () => {
     it('should map all snake_case fields to camelCase', () => {
       const row = {
@@ -13,7 +13,7 @@ describe('organizerRowToPublic', () => {
         tiktok_url: 'https://tiktok.com/@trail',
       };
 
-      const result = organizerRowToPublic(row);
+      const result = toOrganizer(row);
 
       expect(result).toEqual({
         name: 'Trail Runners Club',
@@ -37,7 +37,7 @@ describe('organizerRowToPublic', () => {
         tiktok_url: null,
       };
 
-      const result = organizerRowToPublic(row);
+      const result = toOrganizer(row);
 
       expect(result.facebookUrl).toBeNull();
       expect(result.instagramUrl).toBeNull();
@@ -57,7 +57,7 @@ describe('organizerRowToPublic', () => {
         tiktok_url: null,
       };
 
-      const result = organizerRowToPublic(row);
+      const result = toOrganizer(row);
 
       expect(result.name).toBeNull();
       expect(result.website).toBeNull();
@@ -75,7 +75,7 @@ describe('organizerRowToPublic', () => {
         tiktok_url: null,
       };
 
-      const result = organizerRowToPublic(row);
+      const result = toOrganizer(row);
 
       expect(result).toEqual({
         name: null,

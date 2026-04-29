@@ -8,13 +8,13 @@ import { TrackedLink } from '@/components/ui/tracked-link';
 import { BASE_URL } from '@/lib/config';
 import { TEST_VERIFIED_RACES_NAME } from '@/lib/constants';
 import type { TrailRace } from '@/types/race.types';
-import type { OrganizerPublic } from '@/types/organizer.types';
+import type { Organizer } from '@/types/organizer.types';
 
 interface RaceDetailHeaderProps {
   race: TrailRace;
   raceSlug: string;
   locale: string;
-  organizer: OrganizerPublic | null;
+  organizer: Organizer | null;
   formattedDate: string;
   provinceSlug: string | null;
   categorySlug: string | null;

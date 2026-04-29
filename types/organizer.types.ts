@@ -1,4 +1,4 @@
-export interface OrganizerPublic {
+export interface Organizer {
   name?: string | null;
   website?: string | null;
   facebookUrl?: string | null;

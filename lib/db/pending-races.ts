@@ -1,6 +1,15 @@
 import { createAdminClient } from '@/lib/supabase/server';
 import type { PendingRaceEntry, PendingRaceRow } from '@/types/pending-race.types';
-import { pendingRaceRowToEntry } from '@/types/pending-race.types';
+
+function toEntry(row: PendingRaceRow): PendingRaceEntry {
+  return {
+    id: row.id,
+    url: row.url,
+    status: row.status,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
 
 type AdminClient = ReturnType<typeof createAdminClient>;
 
@@ -17,7 +26,7 @@ export async function getPendingRaces(): Promise<PendingRaceEntry[]> {
     return [];
   }
 
-  return ((data ?? []) as PendingRaceRow[]).map(pendingRaceRowToEntry);
+  return ((data ?? []) as PendingRaceRow[]).map(toEntry);
 }
 
 export async function isUrlInRaces(supabase: AdminClient, url: string): Promise<boolean> {
@@ -44,5 +53,5 @@ export async function insertPendingRace(supabase: AdminClient, url: string): Pro
     return null;
   }
 
-  return pendingRaceRowToEntry(data as PendingRaceRow);
+  return toEntry(data as PendingRaceRow);
 }

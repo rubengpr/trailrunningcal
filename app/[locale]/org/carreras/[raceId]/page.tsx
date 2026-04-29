@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { OrganizerLayout } from '@/components/organizer/organizer-layout';
 import { RaceForm } from '@/components/race/race-form';
-import { raceRowToTrailRace } from '@/lib/db/races';
+import { toTrailRace } from '@/lib/db/races';
 import type { RaceRow } from '@/types/race.types';
 
 async function getRaceById(raceId: string) {
@@ -21,7 +21,7 @@ async function getRaceById(raceId: string) {
     const row = data?.[0] as RaceRow | undefined;
     if (!row) return null;
 
-    return raceRowToTrailRace(row);
+    return toTrailRace(row);
 }
 
 async function getRacePrice(raceId: string) {
