@@ -1,4 +1,4 @@
-import type { PendingRaceEntry } from '@/types/pending-race.types';
+import type { PendingRace } from '@/types/pending-race.types';
 
 export interface SkippedPendingRace {
   url: string;
@@ -6,7 +6,7 @@ export interface SkippedPendingRace {
 }
 
 export interface AddPendingRacesResult {
-  added: PendingRaceEntry[];
+  added: PendingRace[];
   skipped: SkippedPendingRace[];
 }
 

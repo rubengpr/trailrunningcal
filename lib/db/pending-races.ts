@@ -1,7 +1,7 @@
 import { createAdminClient } from '@/lib/supabase/server';
-import type { PendingRaceEntry, PendingRaceRow } from '@/types/pending-race.types';
+import type { PendingRace, PendingRaceRow } from '@/types/pending-race.types';
 
-function toEntry(row: PendingRaceRow): PendingRaceEntry {
+function toPendingRace(row: PendingRaceRow): PendingRace {
   return {
     id: row.id,
     url: row.url,
@@ -13,7 +13,7 @@ function toEntry(row: PendingRaceRow): PendingRaceEntry {
 
 type AdminClient = ReturnType<typeof createAdminClient>;
 
-export async function getPendingRaces(): Promise<PendingRaceEntry[]> {
+export async function getPendingRaces(): Promise<PendingRace[]> {
   const supabase = createAdminClient();
 
   const { data, error } = await supabase
@@ -26,7 +26,7 @@ export async function getPendingRaces(): Promise<PendingRaceEntry[]> {
     return [];
   }
 
-  return ((data ?? []) as PendingRaceRow[]).map(toEntry);
+  return ((data ?? []) as PendingRaceRow[]).map(toPendingRace);
 }
 
 export async function isUrlInRaces(supabase: AdminClient, url: string): Promise<boolean> {
@@ -41,7 +41,7 @@ export async function isUrlInPendingRaces(supabase: AdminClient, url: string): P
   return data !== null;
 }
 
-export async function insertPendingRace(supabase: AdminClient, url: string): Promise<PendingRaceEntry | null> {
+export async function insertPendingRace(supabase: AdminClient, url: string): Promise<PendingRace | null> {
   const { data, error } = await supabase
     .from('pending_races')
     .insert({ url })
@@ -53,5 +53,5 @@ export async function insertPendingRace(supabase: AdminClient, url: string): Pro
     return null;
   }
 
-  return toEntry(data as PendingRaceRow);
+  return toPendingRace(data as PendingRaceRow);
 }

@@ -1,16 +1,16 @@
 import { createAdminClient } from '@/lib/supabase/server';
 import { normalizeUrl } from '@/lib/validation';
 import { isUrlInRaces, isUrlInPendingRaces, insertPendingRace } from '@/lib/db/pending-races';
-import type { PendingRaceEntry } from '@/types/pending-race.types';
+import type { PendingRace } from '@/types/pending-race.types';
 
 export type AddPendingRacesResult = {
-  added: PendingRaceEntry[];
+  added: PendingRace[];
   skipped: { url: string; reason: string }[];
 };
 
 export async function createPendingRaces(rawUrls: string[]): Promise<AddPendingRacesResult> {
   const supabase = createAdminClient();
-  const added: PendingRaceEntry[] = [];
+  const added: PendingRace[] = [];
   const skipped: { url: string; reason: string }[] = [];
 
   for (const rawUrl of rawUrls) {

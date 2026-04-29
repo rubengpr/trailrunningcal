@@ -1,6 +1,6 @@
 export type PendingRaceStatus = 'pending' | 'done' | 'skipped';
 
-export interface PendingRaceEntry {
+export interface PendingRace {
   id: string;
   url: string;
   status: PendingRaceStatus;

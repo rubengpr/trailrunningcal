@@ -37,7 +37,7 @@ import { normalizeUrl } from '@/lib/validation';
 import type { CrawlPageStats } from '@/lib/spider-cloud/client';
 import type { TrailRaceAgentRaceRow } from '@/types/trail-race-agent.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
-import type { PendingRaceEntry } from '@/types/pending-race.types';
+import type { PendingRace } from '@/types/pending-race.types';
 import { XCircle, RefreshCw, Sparkles, FileText, ImageIcon, X } from 'lucide-react';
 
 type ScrapeWorkflow = 'crawlMdOnly' | 'llmFromFile' | 'crawlAndLlm' | 'autopilot';
@@ -107,7 +107,7 @@ function triggerMarkdownFileDownload(markdown: string, downloadName: string): vo
 }
 
 interface ScrapePageContentProps {
-    pendingEntries: PendingRaceEntry[];
+    pendingEntries: PendingRace[];
 }
 
 export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {

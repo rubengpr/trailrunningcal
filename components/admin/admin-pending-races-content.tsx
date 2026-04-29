@@ -9,11 +9,11 @@ import { BaseModal } from '@/components/ui/base-modal';
 import { addPendingRaces, deletePendingRace } from '@/lib/api/pending-races';
 import { formatDateToSpanish, formatDateToCatalan } from '@/lib/date-utils';
 import { CornerDownLeft, ChevronRight, Trash2 } from 'lucide-react';
-import type { PendingRaceEntry } from '@/types/pending-race.types';
+import type { PendingRace } from '@/types/pending-race.types';
 import type { SkippedPendingRace } from '@/lib/api/pending-races';
 
 interface AdminPendingRacesContentProps {
-    entries: PendingRaceEntry[];
+    entries: PendingRace[];
 }
 
 export function AdminPendingRacesContent({ entries }: AdminPendingRacesContentProps) {
@@ -22,9 +22,9 @@ export function AdminPendingRacesContent({ entries }: AdminPendingRacesContentPr
 
     const [urlsText, setUrlsText] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [pendingEntries, setPendingEntries] = useState<PendingRaceEntry[]>(entries);
+    const [pendingEntries, setPendingEntries] = useState<PendingRace[]>(entries);
     const [skippedEntries, setSkippedEntries] = useState<SkippedPendingRace[]>([]);
-    const [entryToDelete, setEntryToDelete] = useState<PendingRaceEntry | null>(null);
+    const [entryToDelete, setEntryToDelete] = useState<PendingRace | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
     const formatDate = (dateString: string): string =>
