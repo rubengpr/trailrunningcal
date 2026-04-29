@@ -442,7 +442,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 let llmData1;
                 try {
                     llmData1 = await scrapeRaces({
-                        mode: 'llmFromMarkdown',
+                        mode: 'markdown',
                         markdown: scrapeData.markdown,
                         model: selectedModelId,
                     });
@@ -530,7 +530,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 let llmData2;
                 try {
                     llmData2 = await scrapeRaces({
-                        mode: 'llmFromMarkdown',
+                        mode: 'markdown',
                         markdown: crawlData.markdown,
                         model: selectedModelId,
                     });
@@ -567,7 +567,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                         return;
                     }
                     const data = await scrapeRaces({
-                        mode: 'llmFromImages',
+                        mode: 'images',
                         images: uploadedImages.map(img => img.dataUrl),
                         model: selectedVisionModelId,
                     });
@@ -580,7 +580,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                         return;
                     }
                     const data = await scrapeRaces({
-                        mode: 'llmFromMarkdown',
+                        mode: 'markdown',
                         markdown: markdownBody,
                         model: selectedModelId,
                     });
@@ -612,7 +612,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 let llmData;
                 try {
                     llmData = await scrapeRaces({
-                        mode: 'llmFromMarkdown',
+                        mode: 'markdown',
                         markdown: crawlData.markdown,
                         model: selectedModelId,
                     });

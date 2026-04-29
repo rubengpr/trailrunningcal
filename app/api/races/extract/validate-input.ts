@@ -5,8 +5,8 @@ import { ValidationError } from '@/lib/errors';
 export { ValidationError };
 
 export type ParsedInput =
-  | { mode: 'llmFromMarkdown'; markdown: string; model: OpenRouterScrapeModelId }
-  | { mode: 'llmFromImages'; images: string[]; model: OpenRouterVisionModelId };
+  | { mode: 'markdown'; markdown: string; model: OpenRouterScrapeModelId }
+  | { mode: 'images'; images: string[]; model: OpenRouterVisionModelId };
 
 const MAX_IMAGES = 5;
 
@@ -33,7 +33,7 @@ export function parseInput(body: unknown): ParsedInput {
     if (isModelMissing || !isOpenRouterVisionModelId(model)) {
       throw new ValidationError(isModelMissing ? 'Model is required' : 'Invalid vision model', 400);
     }
-    return { mode: 'llmFromImages', images: images as string[], model };
+    return { mode: 'images', images: images as string[], model };
   }
 
   const markdownStr = typeof markdown === 'string' ? markdown.trim() : '';
@@ -45,5 +45,5 @@ export function parseInput(body: unknown): ParsedInput {
   if (isModelMissing || !isOpenRouterScrapeModelId(model)) {
     throw new ValidationError(isModelMissing ? 'Model is required' : 'Invalid model', 400);
   }
-  return { mode: 'llmFromMarkdown', markdown: markdownStr, model };
+  return { mode: 'markdown', markdown: markdownStr, model };
 }

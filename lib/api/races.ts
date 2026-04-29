@@ -108,11 +108,11 @@ export interface ScrapeRacesResult {
 export type ScrapeRacesOptions =
   | { mode: 'crawlAndLlm'; model: OpenRouterScrapeModelId; websiteUrl: string }
   | {
-      mode: 'llmFromMarkdown';
+      mode: 'markdown';
       model: OpenRouterScrapeModelId;
       markdown: string;
     }
-  | { mode: 'llmFromImages'; model: OpenRouterVisionModelId; images: string[] };
+  | { mode: 'images'; model: OpenRouterVisionModelId; images: string[] };
 
 /**
  * Crawls an event website and returns joined markdown only (no LLM). Admin-only.
@@ -169,9 +169,9 @@ export async function scrapeEventPageMarkdown(
 export async function scrapeRaces(
   options: ScrapeRacesOptions,
 ): Promise<ScrapeRacesResult> {
-  if (options.mode === 'llmFromMarkdown' || options.mode === 'llmFromImages') {
+  if (options.mode === 'markdown' || options.mode === 'images') {
     const body =
-      options.mode === 'llmFromMarkdown'
+      options.mode === 'markdown'
         ? { markdown: options.markdown, model: options.model }
         : { images: options.images, model: options.model };
 
@@ -186,7 +186,7 @@ export async function scrapeRaces(
 
     return {
       ...responseData.data,
-      markdown: options.mode === 'llmFromMarkdown' ? options.markdown : '',
+      markdown: options.mode === 'markdown' ? options.markdown : '',
     };
   }
 

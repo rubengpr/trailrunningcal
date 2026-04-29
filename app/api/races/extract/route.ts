@@ -20,7 +20,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const input = parseInput(body);
 
     const result =
-      input.mode === 'llmFromImages'
+      input.mode === 'images'
         ? await extractFromImages(input.images, input.model)
         : await extractFromMarkdown(input.markdown, input.model);
 
