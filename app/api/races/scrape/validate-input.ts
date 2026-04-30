@@ -1,5 +1,5 @@
-import { isOpenRouterScrapeModelId } from '@/lib/openrouter/scrape-models';
-import type { OpenRouterScrapeModelId } from '@/lib/openrouter/scrape-models';
+import { isOpenRouterScrapeModelId } from '@/lib/providers/openrouter/scrape-models';
+import type { OpenRouterScrapeModelId } from '@/lib/providers/openrouter/scrape-models';
 import { ValidationError } from '@/lib/errors';
 export { ValidationError };
 

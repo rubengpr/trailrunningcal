@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth-admin';
 import { parseInput, ValidationError } from './validate-input';
-import { crawlSite, scrapePage } from '@/lib/spider-cloud/service';
-import { extractFromMarkdown } from '@/lib/openrouter/service';
+import { crawlSite, scrapePage } from '@/lib/providers/spider-cloud/service';
+import { extractFromMarkdown } from '@/lib/providers/openrouter/service';
 
 export const maxDuration = 60;
 

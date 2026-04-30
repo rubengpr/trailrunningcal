@@ -1,6 +1,6 @@
 import { normalizeUrl } from '@/lib/validation';
-import { scrape, crawl } from '@/lib/spider-cloud/client';
-import type { CrawlPage } from '@/lib/spider-cloud/client';
+import { scrape, crawl } from '@/lib/providers/spider-cloud/client';
+import type { CrawlPage } from '@/lib/providers/spider-cloud/client';
 
 /** Per-page HTTP outcome after Spider crawl; success + error === total always. */
 export interface CrawlPageStats {
@@ -20,7 +20,7 @@ export function summarizeCrawlStats(pages: CrawlPage[]): CrawlPageStats {
   const errorCount = total - successCount;
   return { total, successCount, errorCount };
 }
-import { mergePages } from '@/lib/spider-cloud/join-markdown';
+import { mergePages } from '@/lib/providers/spider-cloud/join-markdown';
 
 export interface SpiderServiceResult {
   markdown: string;

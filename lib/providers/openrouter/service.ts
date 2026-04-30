@@ -1,10 +1,10 @@
-import { createOpenRouterClient } from '@/lib/openrouter/openrouter-client';
+import { createOpenRouterClient } from '@/lib/providers/openrouter/openrouter-client';
 import {
   runTrailRaceMarkdownAgentOpenRouter,
   runTrailRaceImagesAgentOpenRouter,
 } from '@/lib/agents/trail-race-openrouter';
 import type { TrailRaceOpenRouterAgentResult } from '@/lib/agents/trail-race-openrouter';
-import type { OpenRouterScrapeModelId, OpenRouterVisionModelId } from '@/lib/openrouter/scrape-models';
+import type { OpenRouterScrapeModelId, OpenRouterVisionModelId } from '@/lib/providers/openrouter/scrape-models';
 
 function filterFutureRaces(result: TrailRaceOpenRouterAgentResult): TrailRaceOpenRouterAgentResult {
   const todayStr = new Date().toISOString().split('T')[0];
