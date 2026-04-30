@@ -20,11 +20,15 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       });
     }
 
-    const { markdown, crawlPageStats } = await crawlSite(input.url);
-    return NextResponse.json({
-      success: true,
-      data: { markdown, crawlPageStats },
-    });
+    if (input.mode === 'crawlSite') {
+      const { markdown, crawlPageStats } = await crawlSite(input.url);
+      return NextResponse.json({
+        success: true,
+        data: { markdown, crawlPageStats },
+      });
+    }
+
+    return NextResponse.json({ error: 'Invalid mode' }, { status: 400 });
   } catch (error) {
     if (error instanceof ValidationError) {
       return NextResponse.json(
