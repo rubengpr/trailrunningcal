@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import type { CrawlPage } from './client';
+import type { Page } from './client';
 import {
   dedupeSpiderPages,
   mergePages,
@@ -8,7 +8,7 @@ import {
   sortSpiderPagesForJoin,
 } from './join-markdown';
 
-function page(overrides: Partial<CrawlPage>): CrawlPage {
+function page(overrides: Partial<Page>): Page {
   return {
     url: 'https://example.com/',
     content: 'body',

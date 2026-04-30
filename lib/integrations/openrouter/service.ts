@@ -1,4 +1,4 @@
-import { createOpenRouterClient } from '@/lib/integrations/openrouter/openrouter-client';
+import { createOpenRouterClient } from '@/lib/integrations/openrouter/client';
 import {
   runTrailRaceMarkdownAgentOpenRouter,
   runTrailRaceImagesAgentOpenRouter,

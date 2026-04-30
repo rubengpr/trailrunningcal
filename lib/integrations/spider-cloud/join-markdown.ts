@@ -1,4 +1,4 @@
-import type { CrawlPage } from './client';
+import type { Page } from './client';
 
 export interface JoinSpiderCrawlMarkdownOptions {
   generatedAt?: Date;
@@ -26,9 +26,9 @@ export function normalizeSpiderCrawlUrl(urlString: string): string {
 }
 
 function pickBetterPage(
-  existing: CrawlPage,
-  candidate: CrawlPage,
-): CrawlPage {
+  existing: Page,
+  candidate: Page,
+): Page {
   const existingOk = existing.status === 200;
   const candidateOk = candidate.status === 200;
   if (existingOk !== candidateOk) {
@@ -43,9 +43,9 @@ function pickBetterPage(
 }
 
 export function dedupeSpiderPages(
-  pages: CrawlPage[],
-): CrawlPage[] {
-  const byNormalized = new Map<string, CrawlPage>();
+  pages: Page[],
+): Page[] {
+  const byNormalized = new Map<string, Page>();
   for (const page of pages) {
     const key = normalizeSpiderCrawlUrl(page.url);
     const current = byNormalized.get(key);
@@ -59,7 +59,7 @@ export function dedupeSpiderPages(
 }
 
 function effectiveSourceGeneratedAtIso(
-  item: CrawlPage,
+  item: Page,
   fallbackGeneratedAtIso: string,
 ): string {
   return item.generatedAt ?? fallbackGeneratedAtIso;
@@ -76,9 +76,9 @@ function parseGeneratedAtMs(iso: string): number {
  */
 export function sortSpiderPagesForJoin(
   seedUrl: string,
-  pages: CrawlPage[],
+  pages: Page[],
   fallbackGeneratedAtIso: string,
-): CrawlPage[] {
+): Page[] {
   const seedNorm = normalizeSpiderCrawlUrl(seedUrl);
   return [...pages].sort((a, b) => {
     const timeA = parseGeneratedAtMs(
@@ -108,7 +108,7 @@ function escapeYamlDoubleQuoted(value: string): string {
 function buildYamlFrontMatter(
   seedUrl: string,
   generatedAtIso: string,
-  prepared: CrawlPage[],
+  prepared: Page[],
 ): string {
   const lines: string[] = [
     '---',
@@ -129,7 +129,7 @@ function buildYamlFrontMatter(
   return lines.join('\n');
 }
 
-function buildSourceSection(page: CrawlPage): string {
+function buildSourceSection(page: Page): string {
   const metaLines: string[] = ['## Source', '', `**URL:** ${page.url}`];
   if (page.status !== 200) {
     metaLines.push(`**Status:** ${page.status}`);
@@ -146,7 +146,7 @@ function buildSourceSection(page: CrawlPage): string {
  */
 export function mergePages(
   seedUrl: string,
-  pages: CrawlPage[],
+  pages: Page[],
   options?: JoinSpiderCrawlMarkdownOptions,
 ): string {
   const generatedAt = options?.generatedAt ?? new Date();

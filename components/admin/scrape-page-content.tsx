@@ -34,7 +34,7 @@ import {
     markdownTrimmedCharCount,
 } from '@/lib/scrape-markdown-token-estimate';
 import { normalizeUrl } from '@/lib/validation';
-import type { CrawlPageStats } from '@/lib/integrations/spider-cloud/service';
+import type { PageStats } from '@/lib/integrations/spider-cloud/service';
 import type { TrailRaceAgentRaceRow } from '@/types/trail-race-agent.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 import type { PendingRace } from '@/types/pending-race.types';
@@ -58,7 +58,7 @@ interface PersistedPipelineRow {
     titleKey?: string;
     errorDetail?: string | null;
     durationMs: number | null;
-    crawlPageStats?: CrawlPageStats | null;
+    crawlPageStats?: PageStats | null;
     markdownTokenEstimate?: number | null;
     markdownCharCount?: number | null;
 }
@@ -151,7 +151,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
     const [scrapeMarkdown, setScrapeMarkdown] = useState<string | null>(null);
     const [rawModelOutput, setRawModelOutput] = useState<string | null>(null);
     const [scrapeUsage, setScrapeUsage] = useState<OpenRouterScrapeUsage | null>(null);
-    const [crawlPageStats, setCrawlPageStats] = useState<CrawlPageStats | null>(null);
+    const [crawlPageStats, setPageStats] = useState<PageStats | null>(null);
 
     const [acceptedIndexes, setAcceptedIndexes] = useState<Set<number>>(new Set());
     const [acceptingIndex, setAcceptingIndex] = useState<number | null>(null);
@@ -234,7 +234,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
             setScrapeMarkdown(null);
             setRawModelOutput(null);
             setScrapeUsage(null);
-            setCrawlPageStats(null);
+            setPageStats(null);
             setHasScraped(false);
             setScrapeError(null);
             setScrapedRaces([]);
@@ -253,7 +253,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
         setScrapeMarkdown(null);
         setRawModelOutput(null);
         setScrapeUsage(null);
-        setCrawlPageStats(null);
+        setPageStats(null);
         setHasScraped(false);
         setScrapeError(null);
         setScrapedRaces([]);
@@ -340,7 +340,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
             setScrapeMarkdown(null);
             setRawModelOutput(null);
             setScrapeUsage(null);
-            setCrawlPageStats(null);
+            setPageStats(null);
             setHasScraped(false);
             setScrapeError(null);
             setScrapedRaces([]);
@@ -397,7 +397,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
         setScrapeMarkdown(null);
         setRawModelOutput(null);
         setScrapeUsage(null);
-        setCrawlPageStats(null);
+        setPageStats(null);
         setAcceptedIndexes(new Set());
         setAcceptingIndex(null);
         setRejectedIndexes(new Set());
@@ -436,7 +436,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 fullPipelineCrawlEndedAtRef.current = scrapeEndedAt;
                 fullPipelineLlmStartedAtRef.current = scrapeEndedAt;
                 setScrapeMarkdown(scrapeData.markdown);
-                setCrawlPageStats(scrapeData.crawlPageStats);
+                setPageStats(scrapeData.crawlPageStats);
                 setScrapePhase('llm');
 
                 let pageScrapeAgentResult;
@@ -506,7 +506,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 fullPipelineCrawlEndedAtRef.current = null;
                 fullPipelineLlmStartedAtRef.current = null;
                 fullPipelineLlmEndedAtRef.current = null;
-                setCrawlPageStats(null);
+                setPageStats(null);
                 setScrapeMarkdown(null);
                 setScrapeUsage(null);
                 setRawModelOutput(null);
@@ -526,7 +526,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 fullPipelineCrawlEndedAtRef.current = crawlEndedAt;
                 fullPipelineLlmStartedAtRef.current = crawlEndedAt;
                 setScrapeMarkdown(crawlData.markdown);
-                setCrawlPageStats(crawlData.crawlPageStats);
+                setPageStats(crawlData.crawlPageStats);
                 setScrapePhase('llm');
 
                 let siteCrawlAgentResult;
@@ -560,7 +560,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 const normalizedUrl = normalizeUrl(websiteUrl.trim());
                 const data = await fetchPageFn(normalizedUrl);
                 setScrapeMarkdown(data.markdown);
-                setCrawlPageStats(data.crawlPageStats);
+                setPageStats(data.crawlPageStats);
                 setHasScraped(true);
                 return;
             }
@@ -611,7 +611,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 fullPipelineCrawlEndedAtRef.current = crawlEndedAt;
                 fullPipelineLlmStartedAtRef.current = crawlEndedAt;
                 setScrapeMarkdown(crawlData.markdown);
-                setCrawlPageStats(crawlData.crawlPageStats);
+                setPageStats(crawlData.crawlPageStats);
                 setScrapePhase('llm');
                 let llmData;
                 try {
@@ -723,14 +723,14 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
             setScrapeMarkdown(DUMMY_SCRAPE_MARKDOWN);
             setRawModelOutput(null);
             setScrapeUsage(null);
-            setCrawlPageStats({ ...DUMMY_CRAWL_PAGE_STATS });
+            setPageStats({ ...DUMMY_CRAWL_PAGE_STATS });
             return;
         }
 
         if (workflow === 'llmFromFile') {
-            setCrawlPageStats(null);
+            setPageStats(null);
         } else {
-            setCrawlPageStats({ ...DUMMY_CRAWL_PAGE_STATS });
+            setPageStats({ ...DUMMY_CRAWL_PAGE_STATS });
         }
 
         setScrapedRaces([...DUMMY_SCRAPED_RACES]);
@@ -761,7 +761,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
         setScrapeMarkdown(null);
         setRawModelOutput(null);
         setScrapeUsage(null);
-        setCrawlPageStats(null);
+        setPageStats(null);
         setAcceptedIndexes(new Set());
         setAcceptingIndex(null);
         setRejectedIndexes(new Set());
@@ -911,7 +911,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
         autopilotFallbackUsed,
     ]);
 
-    const showMarkdownEstimateBesideCrawlPageStats =
+    const showMarkdownEstimateBesidePageStats =
         (workflow === 'crawlSiteExtract' || workflow === 'autopilot') &&
         fullPipelineSteps !== null &&
         crawlPageStats !== null &&
@@ -1345,7 +1345,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                                                                         errorPages: crawlPageStats.errorCount,
                                                                     })}
                                                                 </span>
-                                                                {showMarkdownEstimateBesideCrawlPageStats && (
+                                                                {showMarkdownEstimateBesidePageStats && (
                                                                     <span className="text-xs font-normal text-gray-500 tabular-nums">
                                                                         <span className="font-bold text-gray-700">
                                                                             {parseUploadTokenEstimate !== null
@@ -1432,7 +1432,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                             </span>
                         </div>
                     )}
-                    {showMarkdownEstimateLine && !showMarkdownEstimateBesideCrawlPageStats && (
+                    {showMarkdownEstimateLine && !showMarkdownEstimateBesidePageStats && (
                         <p className="text-xs text-gray-500 tabular-nums">
                             <span className="font-bold">
                                 {parseUploadTokenEstimate !== null

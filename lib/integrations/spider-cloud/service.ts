@@ -1,15 +1,15 @@
 import { normalizeUrl } from '@/lib/validation';
 import { scrape, crawl } from '@/lib/integrations/spider-cloud/client';
-import type { CrawlPage } from '@/lib/integrations/spider-cloud/client';
+import type { Page } from '@/lib/integrations/spider-cloud/client';
 
 /** Per-page HTTP outcome after Spider crawl; success + error === total always. */
-export interface CrawlPageStats {
+export interface PageStats {
   total: number;
   successCount: number;
   errorCount: number;
 }
 
-export function summarizeCrawlStats(pages: CrawlPage[]): CrawlPageStats {
+export function summarizeCrawlStats(pages: Page[]): PageStats {
   const total = pages.length;
   let successCount = 0;
   for (const page of pages) {
@@ -24,7 +24,7 @@ import { mergePages } from '@/lib/integrations/spider-cloud/join-markdown';
 
 export interface SpiderServiceResult {
   markdown: string;
-  crawlPageStats: CrawlPageStats;
+  crawlPageStats: PageStats;
 }
 
 export async function scrapePage(urlStr: string): Promise<SpiderServiceResult> {

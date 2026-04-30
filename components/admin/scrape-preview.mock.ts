@@ -1,6 +1,6 @@
 import type { TrailRaceAgentRaceRow } from '@/types/trail-race-agent.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
-import type { CrawlPageStats } from '@/lib/integrations/spider-cloud/service';
+import type { PageStats } from '@/lib/integrations/spider-cloud/service';
 
 export const DUMMY_SCRAPED_RACES: TrailRaceAgentRaceRow[] = [
     {
@@ -58,7 +58,7 @@ export const DUMMY_RAW_MODEL_OUTPUT = JSON.stringify({ races: DUMMY_SCRAPED_RACE
 export const DUMMY_LAST_RUN_DURATION_MS = 1_420;
 
 /** Crawl HTTP stats for mock preview (success + error === total). */
-export const DUMMY_CRAWL_PAGE_STATS: CrawlPageStats = {
+export const DUMMY_CRAWL_PAGE_STATS: PageStats = {
     total: 7,
     successCount: 6,
     errorCount: 1,

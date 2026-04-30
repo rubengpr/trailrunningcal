@@ -86,7 +86,7 @@ export const BLACKLIST: readonly string[] = [
 
 // --- Interfaces ---
 
-export interface CrawlCosts {
+export interface Costs {
   file_cost?: number;
   ai_cost?: number;
   compute_cost?: number;
@@ -95,17 +95,17 @@ export interface CrawlCosts {
   bytes_transferred_cost?: number;
 }
 
-export interface CrawlPage {
+export interface Page {
   url: string;
   content: string;
   status: number;
   error: string | null;
-  costs: CrawlCosts;
+  costs: Costs;
   // Falls back to join-markdown run time if Spider doesn't return a timestamp
   generatedAt?: string;
 }
 
-export interface CrawlOptions {
+export interface Options {
   limit?: number;
   depth?: number;
 }
@@ -134,17 +134,17 @@ function pickOptionalIsoTimestamp(
   return undefined;
 }
 
-function normalizeCrawlPage(raw: unknown): CrawlPage {
+function normalizePage(raw: unknown): Page {
   if (typeof raw !== 'object' || raw === null) {
     throw new Error('Invalid Spider crawl page item');
   }
   const record = raw as Record<string, unknown>;
   const costs =
     typeof record.costs === 'object' && record.costs !== null
-      ? (record.costs as CrawlCosts)
+      ? (record.costs as Costs)
       : {};
   const generatedAt = pickOptionalIsoTimestamp(record);
-  const item: CrawlPage = {
+  const item: Page = {
     url: String(record.url ?? ''),
     content: String(record.content ?? ''),
     status: Number(record.status ?? 0),
@@ -174,7 +174,7 @@ async function postAndParse(
   endpoint: string,
   url: string,
   body: Record<string, unknown>,
-): Promise<CrawlPage[]> {
+): Promise<Page[]> {
   try {
     new URL(url);
   } catch {
@@ -211,10 +211,10 @@ async function postAndParse(
     throw new Error('Unexpected Spider response shape');
   }
 
-  return parsed.map((entry) => normalizeCrawlPage(entry));
+  return parsed.map((entry) => normalizePage(entry));
 }
 
-export async function scrape(url: string): Promise<CrawlPage[]> {
+export async function scrape(url: string): Promise<Page[]> {
   const body = {
     url,
     request: REQUEST_MODE,
@@ -227,8 +227,8 @@ export async function scrape(url: string): Promise<CrawlPage[]> {
 
 export async function crawl(
   url: string,
-  options?: CrawlOptions,
-): Promise<CrawlPage[]> {
+  options?: Options,
+): Promise<Page[]> {
   const { limit = 25, depth = 2 } = options ?? {};
 
   const body = {

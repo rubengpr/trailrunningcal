@@ -2,7 +2,7 @@ import type {
   OpenRouterScrapeModelId,
   OpenRouterVisionModelId,
 } from '@/lib/integrations/openrouter/scrape-models';
-import type { CrawlPageStats } from '@/lib/integrations/spider-cloud/service';
+import type { PageStats } from '@/lib/integrations/spider-cloud/service';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 
 /**
@@ -102,7 +102,7 @@ export interface TrailRaceAgentRunResult {
   markdown: string;
   rawModelOutput: string;
   usage: OpenRouterScrapeUsage | null;
-  crawlPageStats: CrawlPageStats;
+  crawlPageStats: PageStats;
 }
 
 export type TrailRaceAgentRunOptions =
@@ -114,7 +114,7 @@ export type TrailRaceAgentRunOptions =
  */
 export async function crawlEventWebsiteMarkdown(
   websiteUrl: string,
-): Promise<{ markdown: string; crawlPageStats: CrawlPageStats }> {
+): Promise<{ markdown: string; crawlPageStats: PageStats }> {
   const response = await fetch('/api/races/scrape', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -138,7 +138,7 @@ export async function crawlEventWebsiteMarkdown(
  */
 export async function scrapeEventPageMarkdown(
   websiteUrl: string,
-): Promise<{ markdown: string; crawlPageStats: CrawlPageStats }> {
+): Promise<{ markdown: string; crawlPageStats: PageStats }> {
   const response = await fetch('/api/races/scrape', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
