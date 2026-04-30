@@ -177,9 +177,7 @@ export function requireApiKey(): string {
   return apiKey;
 }
 
-export function summarizeCrawlStats(
-  pages: CrawlPage[],
-): CrawlPageStats {
+export function summarizeCrawlStats(pages: CrawlPage[]): CrawlPageStats {
   const total = pages.length;
   let successCount = 0;
   for (const page of pages) {
@@ -236,12 +234,30 @@ async function postAndParse(
 }
 
 export async function scrape(url: string): Promise<CrawlPage[]> {
-  const body = { url, request: REQUEST_MODE, return_format: RETURN_FORMAT, blacklist: BLACKLIST };
+  const body = {
+    url,
+    request: REQUEST_MODE,
+    return_format: RETURN_FORMAT,
+    blacklist: BLACKLIST,
+  };
+
   return postAndParse(SCRAPE_ENDPOINT, url, body);
 }
 
-export async function crawl(url: string, options?: CrawlOptions): Promise<CrawlPage[]> {
+export async function crawl(
+  url: string,
+  options?: CrawlOptions,
+): Promise<CrawlPage[]> {
   const { limit = 25, depth = 2 } = options ?? {};
-  const body = { url, limit, depth, request: REQUEST_MODE, return_format: RETURN_FORMAT, blacklist: BLACKLIST };
+
+  const body = {
+    url,
+    limit,
+    depth,
+    request: REQUEST_MODE,
+    return_format: RETURN_FORMAT,
+    blacklist: BLACKLIST,
+  };
+
   return postAndParse(CRAWL_ENDPOINT, url, body);
 }
