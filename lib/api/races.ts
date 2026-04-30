@@ -2,7 +2,7 @@ import type {
   OpenRouterScrapeModelId,
   OpenRouterVisionModelId,
 } from '@/lib/openrouter/scrape-models';
-import type { CrawlPageStats } from '@/lib/spider-cloud/client';
+import type { CrawlPageStats } from '@/lib/spider-cloud/service';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 
 /**

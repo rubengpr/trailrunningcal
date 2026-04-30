@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth-admin';
 import { parseInput, ValidationError } from './validate-input';
 import { extractFromMarkdown, extractFromImages } from '@/lib/openrouter/service';
-import type { CrawlPageStats } from '@/lib/spider-cloud/client';
+import type { CrawlPageStats } from '@/lib/spider-cloud/service';
 
 export const maxDuration = 60;
 

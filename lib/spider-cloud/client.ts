@@ -86,13 +86,6 @@ export const BLACKLIST: readonly string[] = [
 
 // --- Interfaces ---
 
-/** Per-page HTTP outcome after Spider crawl; success + error === total always. */
-export interface CrawlPageStats {
-  total: number;
-  successCount: number;
-  errorCount: number;
-}
-
 export interface CrawlCosts {
   file_cost?: number;
   ai_cost?: number;
@@ -175,18 +168,6 @@ export function requireApiKey(): string {
     throw new Error('Missing SPIDER_API_KEY');
   }
   return apiKey;
-}
-
-export function summarizeCrawlStats(pages: CrawlPage[]): CrawlPageStats {
-  const total = pages.length;
-  let successCount = 0;
-  for (const page of pages) {
-    if (page.status >= 200 && page.status < 300) {
-      successCount += 1;
-    }
-  }
-  const errorCount = total - successCount;
-  return { total, successCount, errorCount };
 }
 
 async function postAndParse(

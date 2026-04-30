@@ -34,7 +34,7 @@ import {
     markdownTrimmedCharCount,
 } from '@/lib/scrape-markdown-token-estimate';
 import { normalizeUrl } from '@/lib/validation';
-import type { CrawlPageStats } from '@/lib/spider-cloud/client';
+import type { CrawlPageStats } from '@/lib/spider-cloud/service';
 import type { TrailRaceAgentRaceRow } from '@/types/trail-race-agent.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 import type { PendingRace } from '@/types/pending-race.types';
