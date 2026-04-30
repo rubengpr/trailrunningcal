@@ -2,87 +2,6 @@
 
 const SCRAPE_ENDPOINT = 'https://api.spider.cloud/scrape';
 const CRAWL_ENDPOINT = 'https://api.spider.cloud/crawl';
-const REQUEST_MODE = 'smart';
-const RETURN_FORMAT = 'markdown';
-
-// Regex patterns passed to Spider.cloud `blacklist` — matched URLs are skipped entirely.
-export const BLACKLIST: readonly string[] = [
-  // Media & gallery
-  'galeria',
-  'gallery',
-  'foto',
-  'photo',
-  'video',
-  'imatge',
-  'imagen',
-  'album',
-  // Past results & rankings
-  'classificaci',
-  'clasificacion',
-  'resultats',
-  'resultados',
-  'results',
-  'premis',
-  'podis',
-  // Past editions (year-based)
-  'edicions-anteriors',
-  'edicio-20',
-  'edicion-20',
-  '2010',
-  '2011',
-  '2012',
-  '2013',
-  '2014',
-  '2015',
-  '2016',
-  '2017',
-  '2018',
-  '2019',
-  '2020',
-  '2021',
-  '2022',
-  '2023',
-  '2024',
-  // Legal & privacy
-  'legal',
-  'privacy',
-  'privacidad',
-  'privacitat',
-  'cookies',
-  'policy',
-  'politica',
-  // Shop & products
-  'botiga',
-  'tienda',
-  'product-page',
-  // Social sharing
-  'xarxes',
-  'sharer',
-  'intent',
-  // Accommodation
-  'allotjaments',
-  'alojamientos',
-  // Kids races
-  'kids',
-  'infantil',
-  'correxics',
-  // Portfolio (unrelated website sections)
-  'portfolio',
-  // News & comments
-  'noticies',
-  'noticias',
-  'news',
-  'comentarios',
-  'comentaris',
-  // Platform / technical artifacts
-  'ad_campaign',
-  'settings',
-  'elementor',
-  'allactivity',
-  '\\/help\\/',
-  'pages\\/create',
-  'rss',
-];
 
 // --- Interfaces ---
 
@@ -108,6 +27,9 @@ export interface Page {
 export interface Options {
   limit?: number;
   depth?: number;
+  requestMode?: string;
+  returnFormat?: string;
+  blacklist?: readonly string[];
 }
 
 // --- Private helpers ---
@@ -214,30 +136,34 @@ async function postAndParse(
   return parsed.map((entry) => normalizePage(entry));
 }
 
-export async function scrape(url: string): Promise<Page[]> {
-  const body = {
+export async function scrape(url: string, options?: Options): Promise<Page[]> {
+  const { requestMode = 'smart', returnFormat = 'markdown', blacklist } =
+    options ?? {};
+  const body: Record<string, unknown> = {
     url,
-    request: REQUEST_MODE,
-    return_format: RETURN_FORMAT,
-    blacklist: BLACKLIST,
+    request: requestMode,
+    return_format: returnFormat,
+    blacklist,
   };
 
   return postAndParse(SCRAPE_ENDPOINT, url, body);
 }
 
-export async function crawl(
-  url: string,
-  options?: Options,
-): Promise<Page[]> {
-  const { limit = 25, depth = 2 } = options ?? {};
-
-  const body = {
+export async function crawl(url: string, options?: Options): Promise<Page[]> {
+  const {
+    limit = 25,
+    depth = 2,
+    requestMode = 'smart',
+    returnFormat = 'markdown',
+    blacklist,
+  } = options ?? {};
+  const body: Record<string, unknown> = {
     url,
     limit,
     depth,
-    request: REQUEST_MODE,
-    return_format: RETURN_FORMAT,
-    blacklist: BLACKLIST,
+    request: requestMode,
+    return_format: returnFormat,
+    blacklist,
   };
 
   return postAndParse(CRAWL_ENDPOINT, url, body);
