@@ -1,6 +1,6 @@
 import type OpenAI from 'openai';
 import { TRAIL_RACE_AGENT_JSON_SCHEMA } from '@/lib/agents/trail-race-agent-schema';
-import type { OpenRouterScrapeModelId, OpenRouterVisionModelId } from '@/lib/providers/openrouter/scrape-models';
+import type { OpenRouterScrapeModelId, OpenRouterVisionModelId } from '@/lib/integrations/openrouter/scrape-models';
 import type {
   TrailRaceAgentParsed,
   TrailRaceAgentRaceRow,

@@ -26,15 +26,15 @@ import {
     runTrailRaceAgent,
     acceptScrapedRace,
 } from '@/lib/api/races';
-import { OPENROUTER_SCRAPE_MODEL_IDS, OPENROUTER_VISION_MODEL_IDS } from '@/lib/providers/openrouter/scrape-models';
-import type { OpenRouterScrapeModelId, OpenRouterVisionModelId } from '@/lib/providers/openrouter/scrape-models';
+import { OPENROUTER_SCRAPE_MODEL_IDS, OPENROUTER_VISION_MODEL_IDS } from '@/lib/integrations/openrouter/scrape-models';
+import type { OpenRouterScrapeModelId, OpenRouterVisionModelId } from '@/lib/integrations/openrouter/scrape-models';
 import { formatDurationMs } from '@/lib/format-duration';
 import {
     estimateMarkdownTokensHeuristic,
     markdownTrimmedCharCount,
 } from '@/lib/scrape-markdown-token-estimate';
 import { normalizeUrl } from '@/lib/validation';
-import type { CrawlPageStats } from '@/lib/providers/spider-cloud/service';
+import type { CrawlPageStats } from '@/lib/integrations/spider-cloud/service';
 import type { TrailRaceAgentRaceRow } from '@/types/trail-race-agent.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 import type { PendingRace } from '@/types/pending-race.types';

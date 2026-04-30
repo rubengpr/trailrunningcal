@@ -1,5 +1,5 @@
-import { isOpenRouterScrapeModelId, isOpenRouterVisionModelId } from '@/lib/providers/openrouter/scrape-models';
-import type { OpenRouterScrapeModelId, OpenRouterVisionModelId } from '@/lib/providers/openrouter/scrape-models';
+import { isOpenRouterScrapeModelId, isOpenRouterVisionModelId } from '@/lib/integrations/openrouter/scrape-models';
+import type { OpenRouterScrapeModelId, OpenRouterVisionModelId } from '@/lib/integrations/openrouter/scrape-models';
 import { MAX_SCRAPE_MARKDOWN_BYTES } from '@/lib/scrape-markdown-limits';
 import { ValidationError } from '@/lib/errors';
 export { ValidationError };

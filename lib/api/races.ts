@@ -1,8 +1,8 @@
 import type {
   OpenRouterScrapeModelId,
   OpenRouterVisionModelId,
-} from '@/lib/providers/openrouter/scrape-models';
-import type { CrawlPageStats } from '@/lib/providers/spider-cloud/service';
+} from '@/lib/integrations/openrouter/scrape-models';
+import type { CrawlPageStats } from '@/lib/integrations/spider-cloud/service';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 
 /**
