@@ -115,8 +115,6 @@ export interface CrawlPage {
 export interface ScrapeOptions {
   // Shape: `{ delay: { secs: 6, nanos: 0 } }`
   waitFor?: Record<string, unknown>;
-  // Defaults to `BLACKLIST`; pass `[]` to disable
-  blacklist?: string[];
 }
 
 export interface CrawlOptions {
@@ -124,8 +122,6 @@ export interface CrawlOptions {
   depth?: number;
   // Shape: `{ delay: { secs: 6, nanos: 0 } }`
   waitFor?: Record<string, unknown>;
-  // Defaults to `BLACKLIST`; pass `[]` to disable
-  blacklist?: string[];
 }
 
 // --- Private helpers ---
@@ -250,10 +246,9 @@ export async function scrape(
   url: string,
   options?: ScrapeOptions,
 ): Promise<CrawlPage[]> {
-  const { waitFor, blacklist = [...BLACKLIST] } = options ?? {};
+  const { waitFor } = options ?? {};
 
-  const body: Record<string, unknown> = { url, request: REQUEST_MODE, return_format: RETURN_FORMAT };
-  if (blacklist.length > 0) body.blacklist = blacklist;
+  const body: Record<string, unknown> = { url, request: REQUEST_MODE, return_format: RETURN_FORMAT, blacklist: BLACKLIST };
   if (waitFor !== undefined) body.wait_for = waitFor;
 
   return postAndParse(SCRAPE_ENDPOINT, url, body);
@@ -263,10 +258,9 @@ export async function crawl(
   url: string,
   options?: CrawlOptions,
 ): Promise<CrawlPage[]> {
-  const { limit = 25, depth = 2, waitFor, blacklist = [...BLACKLIST] } = options ?? {};
+  const { limit = 25, depth = 2, waitFor } = options ?? {};
 
-  const body: Record<string, unknown> = { url, limit, depth, request: REQUEST_MODE, return_format: RETURN_FORMAT };
-  if (blacklist.length > 0) body.blacklist = blacklist;
+  const body: Record<string, unknown> = { url, limit, depth, request: REQUEST_MODE, return_format: RETURN_FORMAT, blacklist: BLACKLIST };
   if (waitFor !== undefined) body.wait_for = waitFor;
 
   return postAndParse(CRAWL_ENDPOINT, url, body);
