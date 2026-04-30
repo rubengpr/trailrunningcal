@@ -68,6 +68,38 @@ function openRouterProviderErrorMessage(
   return null;
 }
 
+function extractResult(
+  completion: OpenAI.Chat.ChatCompletion,
+  model: string,
+): TrailRaceOpenRouterAgentResult {
+  const choices = completion.choices;
+  if (choices === undefined || choices.length === 0) {
+    const completionRecord = completion as unknown as Record<string, unknown>;
+    const providerMessage = openRouterProviderErrorMessage(completionRecord);
+    if (providerMessage) {
+      console.error('OpenRouter API error', { model, message: providerMessage });
+      throw new Error(providerMessage);
+    }
+    console.error('OpenRouter completion has no usable choices', {
+      model,
+      choicesMissing: choices === undefined,
+      choiceCount: choices?.length ?? 0,
+      completionId: completionRecord.id,
+      topLevelKeys: Object.keys(completionRecord),
+      error: completionRecord.error,
+    });
+    throw new Error('OpenRouter returned no completion choices');
+  }
+
+  const messageContent = choices[0].message?.content;
+  const rawModelOutput = typeof messageContent === 'string' ? messageContent : '';
+  const parsed = parseJsonOutputText(rawModelOutput);
+  const races = Array.isArray(parsed?.races) ? parsed.races : [];
+  const usage = mapCompletionUsageToScrapeUsage(completion.usage);
+
+  return { parsed, races, rawModelOutput, usage };
+}
+
 export async function runTrailRaceImagesAgentOpenRouter(
   client: OpenAI,
   images: string[],
@@ -98,35 +130,7 @@ export async function runTrailRaceImagesAgentOpenRouter(
     },
   });
 
-  const choices = completion.choices;
-  if (choices === undefined || choices.length === 0) {
-    const completionRecord = completion as unknown as Record<string, unknown>;
-    const providerMessage = openRouterProviderErrorMessage(completionRecord);
-    if (providerMessage) {
-      console.error('OpenRouter API error', { model, message: providerMessage });
-      throw new Error(providerMessage);
-    }
-    console.error('OpenRouter completion has no usable choices', {
-      model,
-      choicesMissing: choices === undefined,
-      choiceCount: choices?.length ?? 0,
-      completionId: completionRecord.id,
-      topLevelKeys: Object.keys(completionRecord),
-      error: completionRecord.error,
-    });
-    throw new Error('OpenRouter returned no completion choices');
-  }
-
-  const messageContent = choices[0].message?.content;
-  const rawModelOutput =
-    typeof messageContent === 'string' ? messageContent : '';
-
-  const parsed = parseJsonOutputText(rawModelOutput);
-  const races = Array.isArray(parsed?.races) ? parsed.races : [];
-
-  const usage = mapCompletionUsageToScrapeUsage(completion.usage);
-
-  return { parsed, races, rawModelOutput, usage };
+  return extractResult(completion, model);
 }
 
 export async function runTrailRaceMarkdownAgentOpenRouter(
@@ -153,33 +157,5 @@ export async function runTrailRaceMarkdownAgentOpenRouter(
     },
   });
 
-  const choices = completion.choices;
-  if (choices === undefined || choices.length === 0) {
-    const completionRecord = completion as unknown as Record<string, unknown>;
-    const providerMessage = openRouterProviderErrorMessage(completionRecord);
-    if (providerMessage) {
-      console.error('OpenRouter API error', { model, message: providerMessage });
-      throw new Error(providerMessage);
-    }
-    console.error('OpenRouter completion has no usable choices', {
-      model,
-      choicesMissing: choices === undefined,
-      choiceCount: choices?.length ?? 0,
-      completionId: completionRecord.id,
-      topLevelKeys: Object.keys(completionRecord),
-      error: completionRecord.error,
-    });
-    throw new Error('OpenRouter returned no completion choices');
-  }
-
-  const messageContent = choices[0].message?.content;
-  const rawModelOutput =
-    typeof messageContent === 'string' ? messageContent : '';
-
-  const parsed = parseJsonOutputText(rawModelOutput);
-  const races = Array.isArray(parsed?.races) ? parsed.races : [];
-
-  const usage = mapCompletionUsageToScrapeUsage(completion.usage);
-
-  return { parsed, races, rawModelOutput, usage };
+  return extractResult(completion, model);
 }
