@@ -106,12 +106,7 @@ export interface TrailRaceAgentRunResult {
 }
 
 export type TrailRaceAgentRunOptions =
-  | { mode: 'crawlSiteExtract'; model: OpenRouterScrapeModelId; websiteUrl: string }
-  | {
-      mode: 'markdown';
-      model: OpenRouterScrapeModelId;
-      markdown: string;
-    }
+  | { mode: 'markdown'; model: OpenRouterScrapeModelId; markdown: string }
   | { mode: 'images'; model: OpenRouterVisionModelId; images: string[] };
 
 /**
@@ -169,37 +164,24 @@ export async function scrapeEventPageMarkdown(
 export async function runTrailRaceAgent(
   options: TrailRaceAgentRunOptions,
 ): Promise<TrailRaceAgentRunResult> {
-  if (options.mode === 'markdown' || options.mode === 'images') {
-    const body =
-      options.mode === 'markdown'
-        ? { markdown: options.markdown, model: options.model }
-        : { images: options.images, model: options.model };
+  const body =
+    options.mode === 'markdown'
+      ? { markdown: options.markdown, model: options.model }
+      : { images: options.images, model: options.model };
 
-    const response = await fetch('/api/races/extract', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
-
-    const responseData = await response.json();
-    if (!response.ok) throw new Error(responseData.error || 'Failed to extract races');
-
-    return {
-      ...responseData.data,
-      markdown: options.mode === 'markdown' ? options.markdown : '',
-    };
-  }
-
-  const response = await fetch('/api/races/scrape', {
+  const response = await fetch('/api/races/extract', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ mode: options.mode, websiteUrl: options.websiteUrl, model: options.model }),
+    body: JSON.stringify(body),
   });
 
   const responseData = await response.json();
-  if (!response.ok) throw new Error(responseData.error || 'Failed to run trail race agent');
+  if (!response.ok) throw new Error(responseData.error || 'Failed to extract races');
 
-  return responseData.data;
+  return {
+    ...responseData.data,
+    markdown: options.mode === 'markdown' ? options.markdown : '',
+  };
 }
 
 /**

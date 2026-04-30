@@ -2,7 +2,6 @@ export const SCRAPE_PIPELINE_MODES = [
   'crawlSite',
   'scrapePage',
   'markdown',
-  'crawlSiteExtract',
   'images',
 ] as const;
 
