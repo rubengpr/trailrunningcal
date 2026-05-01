@@ -157,10 +157,6 @@ export async function scrapeEventPageMarkdown(
   return responseData.data;
 }
 
-/**
- * Runs the trail race agent on a crawled URL or on uploaded markdown/images. Admin-only.
- * Routes to /api/races/scrape (URL-based) or /api/races/extract (content-based).
- */
 export async function runTrailRaceAgent(
   options: TrailRaceAgentRunOptions,
 ): Promise<TrailRaceAgentRunResult> {
@@ -176,7 +172,8 @@ export async function runTrailRaceAgent(
   });
 
   const responseData = await response.json();
-  if (!response.ok) throw new Error(responseData.error || 'Failed to extract races');
+  if (!response.ok)
+    throw new Error(responseData.error || 'Failed to extract races');
 
   return {
     ...responseData.data,
