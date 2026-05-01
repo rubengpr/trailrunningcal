@@ -1,6 +1,7 @@
 import { normalizeUrl } from '@/lib/validation';
 import { scrape, crawl } from '@/lib/integrations/spider-cloud/client';
 import type { Page } from '@/lib/integrations/spider-cloud/client';
+import { mergePages } from '@/lib/integrations/spider-cloud/join-markdown';
 
 const BLACKLIST: readonly string[] = [
   // Media & gallery
@@ -98,7 +99,6 @@ export function summarizeCrawlStats(pages: Page[]): PageStats {
   const errorCount = total - successCount;
   return { total, successCount, errorCount };
 }
-import { mergePages } from '@/lib/integrations/spider-cloud/join-markdown';
 
 export interface SpiderServiceResult {
   markdown: string;
