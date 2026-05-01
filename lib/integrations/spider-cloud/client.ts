@@ -1,3 +1,5 @@
+import { requireApiKey } from '@/lib/integrations/utils';
+
 // --- Constants ---
 
 const SCRAPE_ENDPOINT = 'https://api.spider.cloud/scrape';
@@ -84,14 +86,6 @@ function normalizePage(raw: unknown): Page {
 
 // --- Public functions ---
 
-export function requireApiKey(): string {
-  const apiKey = process.env.SPIDER_API_KEY;
-  if (!apiKey) {
-    throw new Error('Missing SPIDER_API_KEY');
-  }
-  return apiKey;
-}
-
 async function postAndParse(
   endpoint: string,
   url: string,
@@ -103,7 +97,7 @@ async function postAndParse(
     throw new Error('Invalid URL');
   }
 
-  const apiKey = requireApiKey();
+  const apiKey = requireApiKey('SPIDER_API_KEY');
 
   const response = await fetch(endpoint, {
     method: 'POST',

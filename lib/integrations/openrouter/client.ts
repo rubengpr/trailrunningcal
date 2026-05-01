@@ -1,14 +1,7 @@
 import OpenAI from 'openai';
+import { requireApiKey } from '@/lib/integrations/utils';
 
 const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1';
-
-export function requireOpenRouterApiKey(): string {
-  const apiKey = process.env.OPENROUTER_API_KEY;
-  if (!apiKey) {
-    throw new Error('Missing OPENROUTER_API_KEY');
-  }
-  return apiKey;
-}
 
 /**
  * Optional OpenRouter app-attribution headers (see https://openrouter.ai/docs/app-attribution).
@@ -46,7 +39,7 @@ function optionalOpenRouterHeaders(): Record<string, string> | undefined {
 }
 
 export function createOpenRouterClient(
-  apiKey: string = requireOpenRouterApiKey(),
+  apiKey: string = requireApiKey('OPENROUTER_API_KEY'),
 ): OpenAI {
   const defaultHeaders = optionalOpenRouterHeaders();
   return new OpenAI({
