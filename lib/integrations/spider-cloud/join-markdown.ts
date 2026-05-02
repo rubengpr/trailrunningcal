@@ -1,8 +1,5 @@
 import type { Page } from './client';
 
-export interface JoinSpiderCrawlMarkdownOptions {
-  generatedAt?: Date;
-}
 
 function stripMeaninglessSearch(url: URL): void {
   const inner = url.search.replace(/^\?/, '');
@@ -42,7 +39,7 @@ function pickBetterPage(
   return existing;
 }
 
-export function dedupeSpiderPages(
+export function dedupePages(
   pages: Page[],
 ): Page[] {
   const byNormalized = new Map<string, Page>();
@@ -58,7 +55,7 @@ export function dedupeSpiderPages(
   return [...byNormalized.values()];
 }
 
-function effectiveSourceGeneratedAtIso(
+function resolveGeneratedAt(
   item: Page,
   fallbackGeneratedAtIso: string,
 ): string {
@@ -74,55 +71,55 @@ function parseGeneratedAtMs(iso: string): number {
  * Orders pages by ascending effective `generatedAt` (per-item or fallback), then seed URL,
  * then normalized URL for stable ties.
  */
-export function sortSpiderPagesForJoin(
+export function sortPages(
   seedUrl: string,
   pages: Page[],
   fallbackGeneratedAtIso: string,
 ): Page[] {
-  const seedNorm = normalizeSpiderCrawlUrl(seedUrl);
+  const normalizedSeedUrl = normalizeSpiderCrawlUrl(seedUrl);
   return [...pages].sort((a, b) => {
-    const timeA = parseGeneratedAtMs(
-      effectiveSourceGeneratedAtIso(a, fallbackGeneratedAtIso),
+    const timestampA = parseGeneratedAtMs(
+      resolveGeneratedAt(a, fallbackGeneratedAtIso),
     );
-    const timeB = parseGeneratedAtMs(
-      effectiveSourceGeneratedAtIso(b, fallbackGeneratedAtIso),
+    const timestampB = parseGeneratedAtMs(
+      resolveGeneratedAt(b, fallbackGeneratedAtIso),
     );
-    if (timeA !== timeB) {
-      return timeA - timeB;
+    if (timestampA !== timestampB) {
+      return timestampA - timestampB;
     }
-    const normA = normalizeSpiderCrawlUrl(a.url);
-    const normB = normalizeSpiderCrawlUrl(b.url);
-    const aIsSeed = normA === seedNorm;
-    const bIsSeed = normB === seedNorm;
+    const normalizedUrlA = normalizeSpiderCrawlUrl(a.url);
+    const normalizedUrlB = normalizeSpiderCrawlUrl(b.url);
+    const aIsSeed = normalizedUrlA === normalizedSeedUrl;
+    const bIsSeed = normalizedUrlB === normalizedSeedUrl;
     if (aIsSeed !== bIsSeed) {
       return aIsSeed ? -1 : 1;
     }
-    return normA.localeCompare(normB);
+    return normalizedUrlA.localeCompare(normalizedUrlB);
   });
 }
 
-function escapeYamlDoubleQuoted(value: string): string {
+function escapeString(value: string): string {
   return `"${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
 }
 
-function buildYamlFrontMatter(
+function buildFrontMatter(
   seedUrl: string,
   generatedAtIso: string,
-  prepared: Page[],
+  pages: Page[],
 ): string {
   const lines: string[] = [
     '---',
-    `seedUrl: ${escapeYamlDoubleQuoted(seedUrl)}`,
-    `generatedAt: ${escapeYamlDoubleQuoted(generatedAtIso)}`,
+    `seedUrl: ${escapeString(seedUrl)}`,
+    `generatedAt: ${escapeString(generatedAtIso)}`,
     'sources:',
   ];
-  for (const item of prepared) {
+  for (const item of pages) {
     const sourceGeneratedAt = item.generatedAt ?? generatedAtIso;
-    lines.push(`  - url: ${escapeYamlDoubleQuoted(item.url)}`);
-    lines.push(`    generatedAt: ${escapeYamlDoubleQuoted(sourceGeneratedAt)}`);
+    lines.push(`  - url: ${escapeString(item.url)}`);
+    lines.push(`    generatedAt: ${escapeString(sourceGeneratedAt)}`);
     lines.push(`    status: ${item.status}`);
     lines.push(
-      `    error: ${item.error === null ? 'null' : escapeYamlDoubleQuoted(item.error)}`,
+      `    error: ${item.error === null ? 'null' : escapeString(item.error)}`,
     );
   }
   lines.push('---', '');
@@ -147,17 +144,16 @@ function buildSourceSection(page: Page): string {
 export function mergePages(
   seedUrl: string,
   pages: Page[],
-  options?: JoinSpiderCrawlMarkdownOptions,
 ): string {
-  const generatedAt = options?.generatedAt ?? new Date();
+  const generatedAt = new Date();
   const generatedAtIso = generatedAt.toISOString();
-  const prepared = sortSpiderPagesForJoin(
+  const sortedPages = sortPages(
     seedUrl,
-    dedupeSpiderPages(pages),
+    dedupePages(pages),
     generatedAtIso,
   );
-  const front = buildYamlFrontMatter(seedUrl, generatedAtIso, prepared);
-  const sections = prepared.map((page) => buildSourceSection(page));
+  const frontMatter = buildFrontMatter(seedUrl, generatedAtIso, sortedPages);
+  const sections = sortedPages.map((page) => buildSourceSection(page));
   const body = sections.join('\n\n---\n\n');
-  return `${front}${body}\n`;
+  return `${frontMatter}${body}\n`;
 }
