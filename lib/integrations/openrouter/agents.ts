@@ -100,7 +100,7 @@ function extractResult(
   return { parsed, races, rawModelOutput, usage };
 }
 
-export async function runTrailRaceImagesAgentOpenRouter(
+export async function runImagesAgent(
   client: OpenAI,
   images: string[],
   model: OpenRouterVisionModelId,
@@ -133,7 +133,7 @@ export async function runTrailRaceImagesAgentOpenRouter(
   return extractResult(completion, model);
 }
 
-export async function runTrailRaceMarkdownAgentOpenRouter(
+export async function runMarkdownAgent(
   client: OpenAI,
   markdown: string,
   model: OpenRouterScrapeModelId,

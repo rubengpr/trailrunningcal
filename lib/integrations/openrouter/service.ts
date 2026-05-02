@@ -1,9 +1,9 @@
 import { createOpenRouterClient } from '@/lib/integrations/openrouter/client';
 import {
-  runTrailRaceMarkdownAgentOpenRouter,
-  runTrailRaceImagesAgentOpenRouter,
-} from '@/lib/agents/trail-race-openrouter';
-import type { TrailRaceOpenRouterAgentResult } from '@/lib/agents/trail-race-openrouter';
+  runMarkdownAgent,
+  runImagesAgent,
+} from '@/lib/integrations/openrouter/agents';
+import type { TrailRaceOpenRouterAgentResult } from '@/lib/integrations/openrouter/agents';
 import type { OpenRouterScrapeModelId, OpenRouterVisionModelId } from '@/lib/integrations/openrouter/scrape-models';
 
 function filterFutureRaces(result: TrailRaceOpenRouterAgentResult): TrailRaceOpenRouterAgentResult {
@@ -16,7 +16,7 @@ export async function extractFromMarkdown(
   model: OpenRouterScrapeModelId,
 ): Promise<TrailRaceOpenRouterAgentResult> {
   const client = createOpenRouterClient();
-  const result = await runTrailRaceMarkdownAgentOpenRouter(client, markdown, model);
+  const result = await runMarkdownAgent(client, markdown, model);
   return filterFutureRaces(result);
 }
 
@@ -25,6 +25,6 @@ export async function extractFromImages(
   model: OpenRouterVisionModelId,
 ): Promise<TrailRaceOpenRouterAgentResult> {
   const client = createOpenRouterClient();
-  const result = await runTrailRaceImagesAgentOpenRouter(client, images, model);
+  const result = await runImagesAgent(client, images, model);
   return filterFutureRaces(result);
 }
