@@ -35,7 +35,7 @@ import {
 } from '@/lib/scrape-markdown-token-estimate';
 import { normalizeUrl } from '@/lib/validation';
 import type { PageStats } from '@/types/races-scrape-api.types';
-import type { TrailRaceAgentRaceRow } from '@/types/trail-race-agent.types';
+import type { TrailRace } from '@/types/trail-race-agent.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 import type { PendingRace } from '@/types/pending-race.types';
 import { XCircle, RefreshCw, Sparkles, FileText, ImageIcon, X } from 'lucide-react';
@@ -144,7 +144,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
     const [fullPipelineUiActive, setFullPipelineUiActive] = useState(false);
     const [liveElapsedMs, setLiveElapsedMs] = useState(0);
     const [lastRunDurationMs, setLastRunDurationMs] = useState<number | null>(null);
-    const [scrapedRaces, setScrapedRaces] = useState<TrailRaceAgentRaceRow[]>([]);
+    const [scrapedRaces, setScrapedRaces] = useState<TrailRace[]>([]);
     const [scrapeError, setScrapeError] = useState<string | null>(null);
     const [hasScraped, setHasScraped] = useState(false);
 
@@ -439,9 +439,9 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 setPageStats(scrapeData.pageStats);
                 setScrapePhase('llm');
 
-                let pageScrapeAgentResult;
+                let singlePageResult;
                 try {
-                    pageScrapeAgentResult = await runTrailRaceAgent({
+                    singlePageResult = await runTrailRaceAgent({
                         mode: 'markdown',
                         markdown: scrapeData.markdown,
                         model: selectedModelId,
@@ -455,14 +455,14 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                     return;
                 }
 
-                const futureRacesFromPageScrape = pageScrapeAgentResult.races.filter(
+                const singlePageRaces = singlePageResult.races.filter(
                     (r) => r.date >= todayStr,
                 );
-                if (futureRacesFromPageScrape.length > 0) {
+                if (singlePageRaces.length > 0) {
                     fullPipelineLlmEndedAtRef.current = performance.now();
-                    setScrapedRaces(futureRacesFromPageScrape);
-                    setRawModelOutput(pageScrapeAgentResult.rawModelOutput);
-                    setScrapeUsage(pageScrapeAgentResult.usage);
+                    setScrapedRaces(singlePageRaces);
+                    setRawModelOutput(singlePageResult.rawModelOutput);
+                    setScrapeUsage(singlePageResult.usage);
                     setHasScraped(true);
                     return;
                 }
@@ -529,9 +529,9 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 setPageStats(crawlData.pageStats);
                 setScrapePhase('llm');
 
-                let siteCrawlAgentResult;
+                let fullCrawlResult;
                 try {
-                    siteCrawlAgentResult = await runTrailRaceAgent({
+                    fullCrawlResult = await runTrailRaceAgent({
                         mode: 'markdown',
                         markdown: crawlData.markdown,
                         model: selectedModelId,
@@ -546,12 +546,12 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 }
 
                 fullPipelineLlmEndedAtRef.current = performance.now();
-                const futureRacesFromSiteCrawl = siteCrawlAgentResult.races.filter(
+                const fullCrawlRaces = fullCrawlResult.races.filter(
                     (r) => r.date >= todayStr,
                 );
-                setScrapedRaces(futureRacesFromSiteCrawl);
-                setRawModelOutput(siteCrawlAgentResult.rawModelOutput);
-                setScrapeUsage(siteCrawlAgentResult.usage);
+                setScrapedRaces(fullCrawlRaces);
+                setRawModelOutput(fullCrawlResult.rawModelOutput);
+                setScrapeUsage(fullCrawlResult.usage);
                 setHasScraped(true);
                 return;
             }
@@ -678,7 +678,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
         toast.success(t('results.rejectSuccess'));
     };
 
-    const handleSave = (index: number, updatedRace: TrailRaceAgentRaceRow) => {
+    const handleSave = (index: number, updatedRace: TrailRace) => {
         setScrapedRaces(prev => prev.map((r, i) => i === index ? updatedRace : r));
     };
 
@@ -695,7 +695,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 setJsonEditorError(t('jsonNotArrayError'));
                 return;
             }
-            setScrapedRaces(parsed as TrailRaceAgentRaceRow[]);
+            setScrapedRaces(parsed as TrailRace[]);
             setAcceptedIndexes(new Set());
             setRejectedIndexes(new Set());
             setJsonEditorError(null);
