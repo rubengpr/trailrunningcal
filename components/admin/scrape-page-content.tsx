@@ -30,6 +30,7 @@ import { OPENROUTER_SCRAPE_MODEL_IDS, OPENROUTER_VISION_MODEL_IDS } from '@/lib/
 import type { OpenRouterScrapeModelId, OpenRouterVisionModelId } from '@/lib/integrations/openrouter/scrape-models';
 import { formatDurationMs } from '@/lib/format-duration';
 import { useLiveTimer } from '@/hooks/use-live-timer';
+import { useFileUpload } from '@/hooks/use-file-upload';
 import {
     estimateMarkdownTokensHeuristic,
     markdownTrimmedCharCount,
@@ -107,10 +108,6 @@ function triggerMarkdownFileDownload(markdown: string, downloadName: string): vo
     URL.revokeObjectURL(objectUrl);
 }
 
-const MAX_IMAGES_PER_REQUEST = 5;
-const MAX_IMAGE_RAW_BYTES = 20 * 1024 * 1024;
-const MAX_TOTAL_PAYLOAD_CHARS = 4 * 1024 * 1024;
-
 function isValidUrl(url: string): boolean {
     const trimmed = url.trim();
     if (!trimmed) return false;
@@ -120,37 +117,6 @@ function isValidUrl(url: string): boolean {
     } catch {
         return false;
     }
-}
-
-function compressImageToDataUrl(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onerror = reject;
-        reader.onload = () => {
-            const srcDataUrl = reader.result as string;
-            const img = new Image();
-            img.onerror = reject;
-            img.onload = () => {
-                const MAX_W = 1920;
-                const MAX_H = 1920;
-                let { width, height } = img;
-                if (width > MAX_W || height > MAX_H) {
-                    const ratio = Math.min(MAX_W / width, MAX_H / height);
-                    width = Math.round(width * ratio);
-                    height = Math.round(height * ratio);
-                }
-                const canvas = document.createElement('canvas');
-                canvas.width = width;
-                canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                if (!ctx) { reject(new Error('Canvas unavailable')); return; }
-                ctx.drawImage(img, 0, 0, width, height);
-                resolve(canvas.toDataURL('image/jpeg', 0.82));
-            };
-            img.src = srcDataUrl;
-        };
-        reader.readAsDataURL(file);
-    });
 }
 
 interface ScrapePageContentProps {
@@ -165,8 +131,6 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
         label: e.url.replace(/^https?:\/\/(www\.)?/, ''),
     }));
 
-    const markdownFileInputRef = useRef<HTMLInputElement>(null);
-    const imageFileInputRef = useRef<HTMLInputElement>(null);
     const fullPipelineCrawlStartedAtRef = useRef<number | null>(null);
     const fullPipelineCrawlEndedAtRef = useRef<number | null>(null);
     const fullPipelineLlmStartedAtRef = useRef<number | null>(null);
@@ -175,8 +139,6 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
     const [workflow, setWorkflow] = useState<ScrapeWorkflow>('autopilot');
     const [isSinglePageScrape, setIsSinglePageScrape] = useState(false);
     const [websiteUrl, setWebsiteUrl] = useState('');
-    const [uploadedMarkdown, setUploadedMarkdown] = useState<string | null>(null);
-    const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
 
     const [selectedModelId, setSelectedModelId] = useState<OpenRouterScrapeModelId>(
         OPENROUTER_SCRAPE_MODEL_IDS[0],
@@ -184,7 +146,6 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
     const [selectedVisionModelId, setSelectedVisionModelId] = useState<OpenRouterVisionModelId>(
         OPENROUTER_VISION_MODEL_IDS[0],
     );
-    const [uploadedImages, setUploadedImages] = useState<{ dataUrl: string; name: string }[]>([]);
     const [isScraping, setIsScraping] = useState(false);
     const { elapsedMs: liveElapsedMs, startedAtRef: runStartedAtRef } = useLiveTimer(isScraping);
     const [scrapePhase, setScrapePhase] = useState<ScrapePhase>('idle');
@@ -210,10 +171,30 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
     const [autopilotFallbackUsed, setAutopilotFallbackUsed] = useState<boolean | null>(null);
     const [persistedPipelineRows, setPersistedPipelineRows] = useState<PersistedPipelineRow[]>([]);
 
-    const uploadKind: 'markdown' | 'images' | null =
-        uploadedMarkdown !== null ? 'markdown' :
-            uploadedImages.length > 0 ? 'images' :
-                null;
+    const resetScrapeResults = (): void => {
+        setScrapeMarkdown(null);
+        setRawModelOutput(null);
+        setScrapeUsage(null);
+        setPageStats(null);
+        setHasScraped(false);
+        setScrapeError(null);
+        setScrapedRaces([]);
+        setAcceptedIndexes(new Set());
+        setRejectedIndexes(new Set());
+    };
+
+    const fileUpload = useFileUpload({ onUploadChange: resetScrapeResults });
+    const {
+        markdownFileInputRef,
+        imageFileInputRef,
+        uploadedMarkdown,
+        uploadedFileName,
+        uploadedImages,
+        uploadKind,
+        handleMarkdownFileChange,
+        handleImageFilesChange,
+        handleRemoveImage,
+    } = fileUpload;
 
     const canRunScrape =
         !isScraping &&
@@ -237,125 +218,13 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
         }
         setWorkflow(next);
         if (next !== 'llmFromFile') {
-            setUploadedMarkdown(null);
-            setUploadedFileName(null);
-            setUploadedImages([]);
-            if (markdownFileInputRef.current) {
-                markdownFileInputRef.current.value = '';
-            }
-            if (imageFileInputRef.current) {
-                imageFileInputRef.current.value = '';
-            }
-        }
-    };
-
-    const handleMarkdownFileChange = async (
-        event: React.ChangeEvent<HTMLInputElement>,
-    ): Promise<void> => {
-        const file = event.target.files?.[0];
-        if (!file) {
-            return;
-        }
-        const lowerName = file.name.toLowerCase();
-        if (!lowerName.endsWith('.md') && !lowerName.endsWith('.json')) {
-            toast.error(t('fileTypeErrorMd'));
-            event.target.value = '';
-            return;
-        }
-        try {
-            const text = await file.text();
-            setUploadedMarkdown(text);
-            setUploadedFileName(file.name);
-            setScrapeMarkdown(null);
-            setRawModelOutput(null);
-            setScrapeUsage(null);
-            setPageStats(null);
-            setHasScraped(false);
-            setScrapeError(null);
-            setScrapedRaces([]);
-            setAcceptedIndexes(new Set());
-            setRejectedIndexes(new Set());
-        } catch {
-            toast.error(t('scrapeError'));
-            event.target.value = '';
+            fileUpload.clearUpload();
         }
     };
 
     const handleClearUpload = (): void => {
-        setUploadedMarkdown(null);
-        setUploadedFileName(null);
-        setUploadedImages([]);
-        setScrapeMarkdown(null);
-        setRawModelOutput(null);
-        setScrapeUsage(null);
-        setPageStats(null);
-        setHasScraped(false);
-        setScrapeError(null);
-        setScrapedRaces([]);
-        setAcceptedIndexes(new Set());
-        setRejectedIndexes(new Set());
-        if (markdownFileInputRef.current) {
-            markdownFileInputRef.current.value = '';
-        }
-        if (imageFileInputRef.current) {
-            imageFileInputRef.current.value = '';
-        }
-    };
-
-    const handleImageFilesChange = async (
-        event: React.ChangeEvent<HTMLInputElement>,
-    ): Promise<void> => {
-        const files = Array.from(event.target.files ?? []);
-        if (files.length === 0) return;
-
-        try {
-            const combined = [...uploadedImages];
-            for (const file of files) {
-                if (!file.type.startsWith('image/')) {
-                    toast.error(t('fileTypeErrorImage'));
-                    event.target.value = '';
-                    return;
-                }
-                if (file.size > MAX_IMAGE_RAW_BYTES) {
-                    toast.error(t('imageSizeError'));
-                    event.target.value = '';
-                    return;
-                }
-                if (combined.length >= MAX_IMAGES_PER_REQUEST) {
-                    toast.error(t('imageLimitError'));
-                    event.target.value = '';
-                    return;
-                }
-                const dataUrl = await compressImageToDataUrl(file);
-                combined.push({ dataUrl, name: file.name });
-            }
-
-            const totalChars = combined.reduce((sum, img) => sum + img.dataUrl.length, 0);
-            if (totalChars > MAX_TOTAL_PAYLOAD_CHARS) {
-                toast.error(t('imageSizeError'));
-                event.target.value = '';
-                return;
-            }
-
-            setUploadedImages(combined);
-            setScrapeMarkdown(null);
-            setRawModelOutput(null);
-            setScrapeUsage(null);
-            setPageStats(null);
-            setHasScraped(false);
-            setScrapeError(null);
-            setScrapedRaces([]);
-            setAcceptedIndexes(new Set());
-            setRejectedIndexes(new Set());
-        } catch {
-            toast.error(t('scrapeError'));
-        } finally {
-            event.target.value = '';
-        }
-    };
-
-    const handleRemoveImage = (index: number): void => {
-        setUploadedImages(prev => prev.filter((_, i) => i !== index));
+        fileUpload.clearUpload();
+        resetScrapeResults();
     };
 
 
@@ -725,16 +594,9 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
     };
 
     const handleRestart = (): void => {
-        if (isScraping) {
-            return;
-        }
+        if (isScraping) return;
         setWebsiteUrl('');
-        setUploadedMarkdown(null);
-        setUploadedFileName(null);
-        setUploadedImages([]);
-        if (imageFileInputRef.current) {
-            imageFileInputRef.current.value = '';
-        }
+        fileUpload.clearUpload();
         setLastRunDurationMs(null);
         setScrapedRaces([]);
         setScrapeError(null);
@@ -755,9 +617,6 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
         clearFullPipelineStepRefs();
         setAutopilotFallbackUsed(null);
         setPersistedPipelineRows([]);
-        if (markdownFileInputRef.current) {
-            markdownFileInputRef.current.value = '';
-        }
     };
 
     const handleDownloadMarkdown = () => {
