@@ -1,5 +1,3 @@
-'use client';
-
 import { useState, useEffect, useCallback } from 'react';
 
 const STORAGE_KEY = 'favRaces';
@@ -44,7 +42,10 @@ export function useFavorites(): UseFavoritesReturn {
     });
   }, []);
 
-  const isFavorite = useCallback((id: string) => favorites.has(id), [favorites]);
+  const isFavorite = useCallback(
+    (id: string) => favorites.has(id),
+    [favorites],
+  );
 
   return { favorites, toggleFavorite, isFavorite };
 }
