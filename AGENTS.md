@@ -8,6 +8,7 @@ For business context, metrics, positioning, and audience — invoke the `/produc
 - **HTTP:** always use appropriate HTTP status codes for both success and error cases.
 - **API responses:** `{ success: true, data }` on success, `{ error: string }` on error.
 - **File naming:** kebab-case with file type/purpose (e.g. `race-card.tsx`, `use-auth.ts`)
+- **Naming:** don't leak provider or format names into internal identifiers (e.g. avoid `Spider`, `Yaml`, `OpenRouter` inside integration-specific files)
 - **URLs:** no trailing slashes on internal URLs, paths, or links
 - **Forms:** never use native browser error messages for inputs — use custom validation messages via translation files
 - **Accessibility:** ARIA attributes are not required
