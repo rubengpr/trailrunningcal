@@ -1,3 +1,9 @@
+export interface PageStats {
+  total: number;
+  successCount: number;
+  errorCount: number;
+}
+
 export const SCRAPE_PIPELINE_MODES = [
   'crawlSite',
   'scrapePage',

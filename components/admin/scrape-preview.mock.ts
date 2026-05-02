@@ -1,6 +1,6 @@
 import type { TrailRaceAgentRaceRow } from '@/types/trail-race-agent.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
-import type { PageStats } from '@/lib/integrations/spider-cloud/service';
+import type { PageStats } from '@/types/races-scrape-api.types';
 
 export const DUMMY_SCRAPED_RACES: TrailRaceAgentRaceRow[] = [
     {

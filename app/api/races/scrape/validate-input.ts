@@ -1,4 +1,5 @@
 import { ValidationError } from '@/lib/errors';
+import { normalizeUrl } from '@/lib/validation';
 export { ValidationError };
 
 export type ParsedInput =
@@ -12,8 +13,16 @@ export function parseInput(body: unknown): ParsedInput {
 
   const { websiteUrl, mode } = body as Record<string, unknown>;
 
-  const url = typeof websiteUrl === 'string' ? websiteUrl.trim() : '';
-  if (!url) throw new ValidationError('Website URL is required', 400);
+  const rawUrl = typeof websiteUrl === 'string' ? websiteUrl.trim() : '';
+  if (!rawUrl) throw new ValidationError('Website URL is required', 400);
+
+  const url = normalizeUrl(rawUrl);
+
+  try {
+    new URL(url);
+  } catch {
+    throw new ValidationError('Invalid URL format', 400);
+  }
 
   if (mode === 'crawlSite') return { mode, url };
   if (mode === 'scrapePage') return { mode, url };

@@ -1,7 +1,12 @@
-import { normalizeUrl } from '@/lib/validation';
 import { scrape, crawl } from '@/lib/integrations/spider-cloud/client';
 import type { Page } from '@/lib/integrations/spider-cloud/client';
 import { mergePages } from '@/lib/integrations/spider-cloud/join-markdown';
+import type { PageStats } from '@/types/races-scrape-api.types';
+
+export interface SpiderServiceResult {
+  markdown: string;
+  pageStats: PageStats;
+}
 
 const BLACKLIST: readonly string[] = [
   // Media & gallery
@@ -81,14 +86,7 @@ const BLACKLIST: readonly string[] = [
   'rss',
 ];
 
-/** Per-page HTTP outcome after Spider crawl; success + error === total always. */
-export interface PageStats {
-  total: number;
-  successCount: number;
-  errorCount: number;
-}
-
-export function summarizeCrawlStats(pages: Page[]): PageStats {
+function summarizeStats(pages: Page[]): PageStats {
   const total = pages.length;
   let successCount = 0;
   for (const page of pages) {
@@ -100,33 +98,16 @@ export function summarizeCrawlStats(pages: Page[]): PageStats {
   return { total, successCount, errorCount };
 }
 
-export interface SpiderServiceResult {
-  markdown: string;
-  crawlPageStats: PageStats;
+export async function scrapePage(url: string): Promise<SpiderServiceResult> {
+  const pages = await scrape(url, { blacklist: BLACKLIST });
+  const pageStats = summarizeStats(pages);
+  const markdown = mergePages(url, pages);
+  return { markdown, pageStats };
 }
 
-export async function scrapePage(urlStr: string): Promise<SpiderServiceResult> {
-  const normalizedUrl = normalizeUrl(urlStr);
-  try {
-    new URL(normalizedUrl);
-  } catch {
-    throw new Error('INVALID_URL');
-  }
-  const pages = await scrape(normalizedUrl, { blacklist: BLACKLIST });
-  const crawlPageStats = summarizeCrawlStats(pages);
-  const markdown = mergePages(normalizedUrl, pages);
-  return { markdown, crawlPageStats };
-}
-
-export async function crawlSite(urlStr: string): Promise<SpiderServiceResult> {
-  const normalizedUrl = normalizeUrl(urlStr);
-  try {
-    new URL(normalizedUrl);
-  } catch {
-    throw new Error('INVALID_URL');
-  }
-  const pages = await crawl(normalizedUrl, { blacklist: BLACKLIST });
-  const crawlPageStats = summarizeCrawlStats(pages);
-  const markdown = mergePages(normalizedUrl, pages);
-  return { markdown, crawlPageStats };
+export async function crawlSite(url: string): Promise<SpiderServiceResult> {
+  const pages = await crawl(url, { blacklist: BLACKLIST });
+  const pageStats = summarizeStats(pages);
+  const markdown = mergePages(url, pages);
+  return { markdown, pageStats };
 }

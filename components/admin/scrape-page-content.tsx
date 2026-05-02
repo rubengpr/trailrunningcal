@@ -34,7 +34,7 @@ import {
     markdownTrimmedCharCount,
 } from '@/lib/scrape-markdown-token-estimate';
 import { normalizeUrl } from '@/lib/validation';
-import type { PageStats } from '@/lib/integrations/spider-cloud/service';
+import type { PageStats } from '@/types/races-scrape-api.types';
 import type { TrailRaceAgentRaceRow } from '@/types/trail-race-agent.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 import type { PendingRace } from '@/types/pending-race.types';
@@ -58,7 +58,7 @@ interface PersistedPipelineRow {
     titleKey?: string;
     errorDetail?: string | null;
     durationMs: number | null;
-    crawlPageStats?: PageStats | null;
+    pageStats?: PageStats | null;
     markdownTokenEstimate?: number | null;
     markdownCharCount?: number | null;
 }
@@ -151,7 +151,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
     const [scrapeMarkdown, setScrapeMarkdown] = useState<string | null>(null);
     const [rawModelOutput, setRawModelOutput] = useState<string | null>(null);
     const [scrapeUsage, setScrapeUsage] = useState<OpenRouterScrapeUsage | null>(null);
-    const [crawlPageStats, setPageStats] = useState<PageStats | null>(null);
+    const [pageStats, setPageStats] = useState<PageStats | null>(null);
 
     const [acceptedIndexes, setAcceptedIndexes] = useState<Set<number>>(new Set());
     const [acceptingIndex, setAcceptingIndex] = useState<number | null>(null);
@@ -436,7 +436,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 fullPipelineCrawlEndedAtRef.current = scrapeEndedAt;
                 fullPipelineLlmStartedAtRef.current = scrapeEndedAt;
                 setScrapeMarkdown(scrapeData.markdown);
-                setPageStats(scrapeData.crawlPageStats);
+                setPageStats(scrapeData.pageStats);
                 setScrapePhase('llm');
 
                 let pageScrapeAgentResult;
@@ -488,7 +488,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                         kind: 'success',
                         titleKey: 'autopilotScrapeSuccess',
                         durationMs: attempt1ScrapeMs,
-                        crawlPageStats: scrapeData.crawlPageStats,
+                        pageStats: scrapeData.pageStats,
                         markdownTokenEstimate: estimateMarkdownTokensHeuristic(scrapeData.markdown),
                         markdownCharCount: markdownTrimmedCharCount(scrapeData.markdown),
                     },
@@ -526,7 +526,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 fullPipelineCrawlEndedAtRef.current = crawlEndedAt;
                 fullPipelineLlmStartedAtRef.current = crawlEndedAt;
                 setScrapeMarkdown(crawlData.markdown);
-                setPageStats(crawlData.crawlPageStats);
+                setPageStats(crawlData.pageStats);
                 setScrapePhase('llm');
 
                 let siteCrawlAgentResult;
@@ -560,7 +560,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 const normalizedUrl = normalizeUrl(websiteUrl.trim());
                 const data = await fetchPageFn(normalizedUrl);
                 setScrapeMarkdown(data.markdown);
-                setPageStats(data.crawlPageStats);
+                setPageStats(data.pageStats);
                 setHasScraped(true);
                 return;
             }
@@ -611,7 +611,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 fullPipelineCrawlEndedAtRef.current = crawlEndedAt;
                 fullPipelineLlmStartedAtRef.current = crawlEndedAt;
                 setScrapeMarkdown(crawlData.markdown);
-                setPageStats(crawlData.crawlPageStats);
+                setPageStats(crawlData.pageStats);
                 setScrapePhase('llm');
                 let llmData;
                 try {
@@ -914,7 +914,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
     const showMarkdownEstimateBesidePageStats =
         (workflow === 'crawlSiteExtract' || workflow === 'autopilot') &&
         fullPipelineSteps !== null &&
-        crawlPageStats !== null &&
+        pageStats !== null &&
         showMarkdownEstimateLine;
 
     const fullPipelineCrawlStepMs = useMemo((): number | null => {
@@ -1259,21 +1259,21 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                                                             })}
                                                         </span>
                                                     )}
-                                                    {row.crawlPageStats && (
+                                                    {row.pageStats && (
                                                         <span className="inline-flex flex-wrap items-center gap-1.5">
                                                             <span className="inline-flex items-center rounded-full border border-gray-200/80 bg-gray-100 px-2 text-[11px] font-medium text-gray-800 tabular-nums">
                                                                 {t('crawledPagesTotal', {
-                                                                    scrapedPages: row.crawlPageStats.total,
+                                                                    scrapedPages: row.pageStats.total,
                                                                 })}
                                                             </span>
                                                             <span className="inline-flex items-center rounded-full border border-green-200/80 bg-green-100 px-2 text-[11px] font-medium text-green-800 tabular-nums">
                                                                 {t('crawledPagesHttpSuccess', {
-                                                                    successPages: row.crawlPageStats.successCount,
+                                                                    successPages: row.pageStats.successCount,
                                                                 })}
                                                             </span>
                                                             <span className="inline-flex items-center rounded-full border border-red-200/80 bg-red-100 px-2 text-[11px] font-medium text-red-800 tabular-nums">
                                                                 {t('crawledPagesHttpError', {
-                                                                    errorPages: row.crawlPageStats.errorCount,
+                                                                    errorPages: row.pageStats.errorCount,
                                                                 })}
                                                             </span>
                                                             {row.markdownTokenEstimate !== null &&
@@ -1328,21 +1328,21 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                                                                 })}
                                                             </span>
                                                         )}
-                                                        {(workflow === 'crawlSiteExtract' || workflow === 'autopilot') && crawlPageStats !== null && (
+                                                        {(workflow === 'crawlSiteExtract' || workflow === 'autopilot') && pageStats !== null && (
                                                             <span className="inline-flex flex-wrap items-center gap-1.5">
                                                                 <span className="inline-flex items-center rounded-full border border-gray-200/80 bg-gray-100 px-2 text-[11px] font-medium text-gray-800 tabular-nums">
                                                                     {t('crawledPagesTotal', {
-                                                                        scrapedPages: crawlPageStats.total,
+                                                                        scrapedPages: pageStats.total,
                                                                     })}
                                                                 </span>
                                                                 <span className="inline-flex items-center rounded-full border border-green-200/80 bg-green-100 px-2 text-[11px] font-medium text-green-800 tabular-nums">
                                                                     {t('crawledPagesHttpSuccess', {
-                                                                        successPages: crawlPageStats.successCount,
+                                                                        successPages: pageStats.successCount,
                                                                     })}
                                                                 </span>
                                                                 <span className="inline-flex items-center rounded-full border border-red-200/80 bg-red-100 px-2 text-[11px] font-medium text-red-800 tabular-nums">
                                                                     {t('crawledPagesHttpError', {
-                                                                        errorPages: crawlPageStats.errorCount,
+                                                                        errorPages: pageStats.errorCount,
                                                                     })}
                                                                 </span>
                                                                 {showMarkdownEstimateBesidePageStats && (
@@ -1413,21 +1413,21 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                             )}
                         </div>
                     )}
-                    {workflow === 'crawlMdOnly' && crawlPageStats !== null && (
+                    {workflow === 'crawlMdOnly' && pageStats !== null && (
                         <div className="flex flex-wrap items-center gap-2">
                             <span className="inline-flex items-center rounded-full border border-gray-200/80 bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-800 tabular-nums">
                                 {t('crawledPagesTotal', {
-                                    scrapedPages: crawlPageStats.total,
+                                    scrapedPages: pageStats.total,
                                 })}
                             </span>
                             <span className="inline-flex items-center rounded-full border border-green-200/80 bg-green-100 px-2.5 py-1 text-xs font-medium text-green-800 tabular-nums">
                                 {t('crawledPagesHttpSuccess', {
-                                    successPages: crawlPageStats.successCount,
+                                    successPages: pageStats.successCount,
                                 })}
                             </span>
                             <span className="inline-flex items-center rounded-full border border-red-200/80 bg-red-100 px-2.5 py-1 text-xs font-medium text-red-800 tabular-nums">
                                 {t('crawledPagesHttpError', {
-                                    errorPages: crawlPageStats.errorCount,
+                                    errorPages: pageStats.errorCount,
                                 })}
                             </span>
                         </div>

@@ -13,18 +13,18 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const input = parseInput(body);
 
     if (input.mode === 'scrapePage') {
-      const { markdown, crawlPageStats } = await scrapePage(input.url);
+      const { markdown, pageStats } = await scrapePage(input.url);
       return NextResponse.json({
         success: true,
-        data: { markdown, crawlPageStats },
+        data: { markdown, pageStats },
       });
     }
 
     if (input.mode === 'crawlSite') {
-      const { markdown, crawlPageStats } = await crawlSite(input.url);
+      const { markdown, pageStats } = await crawlSite(input.url);
       return NextResponse.json({
         success: true,
-        data: { markdown, crawlPageStats },
+        data: { markdown, pageStats },
       });
     }
 
@@ -34,12 +34,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       return NextResponse.json(
         { error: error.message },
         { status: error.status },
-      );
-    }
-    if (error instanceof Error && error.message === 'INVALID_URL') {
-      return NextResponse.json(
-        { error: 'Invalid URL format' },
-        { status: 400 },
       );
     }
     console.error('Scrape API error:', error);

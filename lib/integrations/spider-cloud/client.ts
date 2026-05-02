@@ -91,12 +91,6 @@ async function postAndParse(
   url: string,
   body: Record<string, unknown>,
 ): Promise<Page[]> {
-  try {
-    new URL(url);
-  } catch {
-    throw new Error('Invalid URL');
-  }
-
   const apiKey = requireApiKey('SPIDER_API_KEY');
 
   const response = await fetch(endpoint, {

@@ -2,11 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth-admin';
 import { parseInput, ValidationError } from './validate-input';
 import { extractFromMarkdown, extractFromImages } from '@/lib/integrations/openrouter/service';
-import type { PageStats } from '@/lib/integrations/spider-cloud/service';
+import type { PageStats } from '@/types/races-scrape-api.types';
 
 export const maxDuration = 60;
 
-const EMPTY_CRAWL_PAGE_STATS: PageStats = {
+const EMPTY_PAGE_STATS: PageStats = {
   total: 0,
   successCount: 0,
   errorCount: 0,
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         races: result.races,
         rawModelOutput: result.rawModelOutput,
         usage: result.usage,
-        crawlPageStats: EMPTY_CRAWL_PAGE_STATS,
+        pageStats: EMPTY_PAGE_STATS,
       },
     });
   } catch (error) {
