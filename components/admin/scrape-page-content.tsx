@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
 import { FormInput } from '@/components/ui/form-input';
@@ -29,6 +29,7 @@ import {
 import { OPENROUTER_SCRAPE_MODEL_IDS, OPENROUTER_VISION_MODEL_IDS } from '@/lib/integrations/openrouter/scrape-models';
 import type { OpenRouterScrapeModelId, OpenRouterVisionModelId } from '@/lib/integrations/openrouter/scrape-models';
 import { formatDurationMs } from '@/lib/format-duration';
+import { useLiveTimer } from '@/hooks/use-live-timer';
 import {
     estimateMarkdownTokensHeuristic,
     markdownTrimmedCharCount,
@@ -106,6 +107,52 @@ function triggerMarkdownFileDownload(markdown: string, downloadName: string): vo
     URL.revokeObjectURL(objectUrl);
 }
 
+const MAX_IMAGES_PER_REQUEST = 5;
+const MAX_IMAGE_RAW_BYTES = 20 * 1024 * 1024;
+const MAX_TOTAL_PAYLOAD_CHARS = 4 * 1024 * 1024;
+
+function isValidUrl(url: string): boolean {
+    const trimmed = url.trim();
+    if (!trimmed) return false;
+    try {
+        new URL(normalizeUrl(trimmed));
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+function compressImageToDataUrl(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = reject;
+        reader.onload = () => {
+            const srcDataUrl = reader.result as string;
+            const img = new Image();
+            img.onerror = reject;
+            img.onload = () => {
+                const MAX_W = 1920;
+                const MAX_H = 1920;
+                let { width, height } = img;
+                if (width > MAX_W || height > MAX_H) {
+                    const ratio = Math.min(MAX_W / width, MAX_H / height);
+                    width = Math.round(width * ratio);
+                    height = Math.round(height * ratio);
+                }
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                if (!ctx) { reject(new Error('Canvas unavailable')); return; }
+                ctx.drawImage(img, 0, 0, width, height);
+                resolve(canvas.toDataURL('image/jpeg', 0.82));
+            };
+            img.src = srcDataUrl;
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
 interface ScrapePageContentProps {
     pendingEntries: PendingRace[];
 }
@@ -120,7 +167,6 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
 
     const markdownFileInputRef = useRef<HTMLInputElement>(null);
     const imageFileInputRef = useRef<HTMLInputElement>(null);
-    const runStartedAtRef = useRef<number | null>(null);
     const fullPipelineCrawlStartedAtRef = useRef<number | null>(null);
     const fullPipelineCrawlEndedAtRef = useRef<number | null>(null);
     const fullPipelineLlmStartedAtRef = useRef<number | null>(null);
@@ -140,9 +186,9 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
     );
     const [uploadedImages, setUploadedImages] = useState<{ dataUrl: string; name: string }[]>([]);
     const [isScraping, setIsScraping] = useState(false);
+    const { elapsedMs: liveElapsedMs, startedAtRef: runStartedAtRef } = useLiveTimer(isScraping);
     const [scrapePhase, setScrapePhase] = useState<ScrapePhase>('idle');
     const [fullPipelineUiActive, setFullPipelineUiActive] = useState(false);
-    const [liveElapsedMs, setLiveElapsedMs] = useState(0);
     const [lastRunDurationMs, setLastRunDurationMs] = useState<number | null>(null);
     const [scrapedRaces, setScrapedRaces] = useState<TrailRace[]>([]);
     const [scrapeError, setScrapeError] = useState<string | null>(null);
@@ -168,17 +214,6 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
         uploadedMarkdown !== null ? 'markdown' :
             uploadedImages.length > 0 ? 'images' :
                 null;
-
-    const isValidUrl = (url: string): boolean => {
-        const trimmed = url.trim();
-        if (!trimmed) return false;
-        try {
-            new URL(normalizeUrl(trimmed));
-            return true;
-        } catch {
-            return false;
-        }
-    };
 
     const canRunScrape =
         !isScraping &&
@@ -267,40 +302,6 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
         }
     };
 
-    const MAX_IMAGES_PER_REQUEST = 5;
-    const MAX_IMAGE_RAW_BYTES = 20 * 1024 * 1024;
-    const MAX_TOTAL_PAYLOAD_CHARS = 4 * 1024 * 1024;
-
-    const compressImageToDataUrl = (file: File): Promise<string> =>
-        new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onerror = reject;
-            reader.onload = () => {
-                const srcDataUrl = reader.result as string;
-                const img = new Image();
-                img.onerror = reject;
-                img.onload = () => {
-                    const MAX_W = 1920;
-                    const MAX_H = 1920;
-                    let { width, height } = img;
-                    if (width > MAX_W || height > MAX_H) {
-                        const ratio = Math.min(MAX_W / width, MAX_H / height);
-                        width = Math.round(width * ratio);
-                        height = Math.round(height * ratio);
-                    }
-                    const canvas = document.createElement('canvas');
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    if (!ctx) { reject(new Error('Canvas unavailable')); return; }
-                    ctx.drawImage(img, 0, 0, width, height);
-                    resolve(canvas.toDataURL('image/jpeg', 0.82));
-                };
-                img.src = srcDataUrl;
-            };
-            reader.readAsDataURL(file);
-        });
-
     const handleImageFilesChange = async (
         event: React.ChangeEvent<HTMLInputElement>,
     ): Promise<void> => {
@@ -358,25 +359,8 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
     };
 
 
-    useEffect(() => {
-        if (!isScraping || runStartedAtRef.current === null) {
-            return;
-        }
-        const tick = (): void => {
-            setLiveElapsedMs(
-                Math.round(performance.now() - runStartedAtRef.current!),
-            );
-        };
-        tick();
-        const intervalId = window.setInterval(tick, 100);
-        return () => {
-            window.clearInterval(intervalId);
-        };
-    }, [isScraping]);
-
     const handleRunWorkflow = async () => {
         runStartedAtRef.current = performance.now();
-        setLiveElapsedMs(0);
         setLastRunDurationMs(null);
         setIsScraping(true);
         if (workflow === 'crawlSiteExtract') {
@@ -652,7 +636,6 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 startedAt !== null ? Math.round(performance.now() - startedAt) : 0;
             setLastRunDurationMs(durationMs);
             runStartedAtRef.current = null;
-            setLiveElapsedMs(0);
             setScrapePhase('idle');
             setIsScraping(false);
         }
@@ -714,7 +697,6 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
         setAcceptedIndexes(new Set());
         setAcceptingIndex(null);
         setRejectedIndexes(new Set());
-        setLiveElapsedMs(0);
         setLastRunDurationMs(DUMMY_LAST_RUN_DURATION_MS);
         runStartedAtRef.current = null;
 
@@ -753,7 +735,6 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
         if (imageFileInputRef.current) {
             imageFileInputRef.current.value = '';
         }
-        setLiveElapsedMs(0);
         setLastRunDurationMs(null);
         setScrapedRaces([]);
         setScrapeError(null);
