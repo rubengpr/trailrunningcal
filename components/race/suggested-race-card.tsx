@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { X, CheckCircle2, Pencil } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import type { TrailRaceAgentRaceRow } from '@/types/trail-race-agent.types';
+import type { TrailRace } from '@/types/trail-race-agent.types';
 
 function RejectIcon({ className = 'h-6 w-6' }: { className?: string }) {
     return <X className={className} strokeWidth={1.5} />;
@@ -18,20 +18,20 @@ function EditIcon({ className = 'h-5 w-5' }: { className?: string }) {
 }
 
 interface SuggestedRaceCardProps {
-    race: TrailRaceAgentRaceRow;
+    race: TrailRace;
     onAccept: () => Promise<void>;
     isAccepted: boolean;
     isAccepting: boolean;
     isDisabled: boolean;
     onReject: () => void;
-    onSave: (race: TrailRaceAgentRaceRow) => void;
+    onSave: (race: TrailRace) => void;
 }
 
 export function SuggestedRaceCard({ race, onAccept, isAccepted, isAccepting, isDisabled, onReject, onSave }: SuggestedRaceCardProps) {
     const t = useTranslations('admin.races.scrape.results');
 
     const [isEditing, setIsEditing] = useState(false);
-    const [draft, setDraft] = useState<TrailRaceAgentRaceRow>(race);
+    const [draft, setDraft] = useState<TrailRace>(race);
 
     const formatDate = (dateStr: string): string => {
         try {

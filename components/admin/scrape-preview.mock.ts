@@ -1,8 +1,8 @@
-import type { TrailRaceAgentRaceRow } from '@/types/trail-race-agent.types';
+import type { TrailRace } from '@/types/trail-race-agent.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 import type { PageStats } from '@/types/races-scrape-api.types';
 
-export const DUMMY_SCRAPED_RACES: TrailRaceAgentRaceRow[] = [
+export const DUMMY_SCRAPED_RACES: TrailRace[] = [
     {
         name: 'Trail dels Bastiments (prova)',
         date: '2025-09-14',

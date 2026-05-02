@@ -3,10 +3,10 @@ import {
   runMarkdownAgent,
   runImagesAgent,
 } from '@/lib/integrations/openrouter/agents';
-import type { TrailRaceOpenRouterAgentResult } from '@/lib/integrations/openrouter/agents';
+import type { OpenRouterServiceResult } from '@/lib/integrations/openrouter/agents';
 import type { OpenRouterScrapeModelId, OpenRouterVisionModelId } from '@/lib/integrations/openrouter/scrape-models';
 
-function filterFutureRaces(result: TrailRaceOpenRouterAgentResult): TrailRaceOpenRouterAgentResult {
+function filterFutureRaces(result: OpenRouterServiceResult): OpenRouterServiceResult {
   const todayStr = new Date().toISOString().split('T')[0];
   return { ...result, races: result.races.filter((race) => race.date >= todayStr) };
 }
@@ -14,17 +14,19 @@ function filterFutureRaces(result: TrailRaceOpenRouterAgentResult): TrailRaceOpe
 export async function extractFromMarkdown(
   markdown: string,
   model: OpenRouterScrapeModelId,
-): Promise<TrailRaceOpenRouterAgentResult> {
+): Promise<OpenRouterServiceResult> {
   const client = createOpenRouterClient();
   const result = await runMarkdownAgent(client, markdown, model);
-  return filterFutureRaces(result);
+  const filtered = filterFutureRaces(result);
+  return filtered;
 }
 
 export async function extractFromImages(
   images: string[],
   model: OpenRouterVisionModelId,
-): Promise<TrailRaceOpenRouterAgentResult> {
+): Promise<OpenRouterServiceResult> {
   const client = createOpenRouterClient();
   const result = await runImagesAgent(client, images, model);
-  return filterFutureRaces(result);
+  const filtered = filterFutureRaces(result);
+  return filtered;
 }

@@ -1,18 +1,16 @@
 import type OpenAI from 'openai';
 import { TRAIL_RACE_AGENT_JSON_SCHEMA } from '@/lib/agents/trail-race-agent-schema';
-import type { OpenRouterScrapeModelId, OpenRouterVisionModelId } from '@/lib/integrations/openrouter/scrape-models';
 import type {
-  TrailRaceAgentParsed,
-  TrailRaceAgentRaceRow,
-} from '@/types/trail-race-agent.types';
+  OpenRouterScrapeModelId,
+  OpenRouterVisionModelId,
+} from '@/lib/integrations/openrouter/scrape-models';
+import type { TrailRace } from '@/types/trail-race-agent.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 import { TRAIL_RACE_AGENT_INSTRUCTIONS } from '@/lib/prompts';
 import { parseJsonOutputText } from '@/lib/agents/trail-race-scraper';
 
-export interface TrailRaceOpenRouterAgentResult {
-  parsed: TrailRaceAgentParsed | null;
-  races: TrailRaceAgentRaceRow[];
-  /** Raw `message.content` from the model before JSON parse (debug). */
+export interface OpenRouterServiceResult {
+  races: TrailRace[];
   rawModelOutput: string;
   usage: OpenRouterScrapeUsage | null;
 }
@@ -37,7 +35,11 @@ function mapCompletionUsageToScrapeUsage(
 
   const details = record.completion_tokens_details;
   let reasoningTokens: number | null = null;
-  if (details !== null && details !== undefined && typeof details === 'object') {
+  if (
+    details !== null &&
+    details !== undefined &&
+    typeof details === 'object'
+  ) {
     const reasoning = (details as Record<string, unknown>).reasoning_tokens;
     if (typeof reasoning === 'number') {
       reasoningTokens = reasoning;
@@ -71,13 +73,16 @@ function openRouterProviderErrorMessage(
 function extractResult(
   completion: OpenAI.Chat.ChatCompletion,
   model: string,
-): TrailRaceOpenRouterAgentResult {
+): OpenRouterServiceResult {
   const choices = completion.choices;
   if (choices === undefined || choices.length === 0) {
     const completionRecord = completion as unknown as Record<string, unknown>;
     const providerMessage = openRouterProviderErrorMessage(completionRecord);
     if (providerMessage) {
-      console.error('OpenRouter API error', { model, message: providerMessage });
+      console.error('OpenRouter API error', {
+        model,
+        message: providerMessage,
+      });
       throw new Error(providerMessage);
     }
     console.error('OpenRouter completion has no usable choices', {
@@ -92,19 +97,20 @@ function extractResult(
   }
 
   const messageContent = choices[0].message?.content;
-  const rawModelOutput = typeof messageContent === 'string' ? messageContent : '';
+  const rawModelOutput =
+    typeof messageContent === 'string' ? messageContent : '';
   const parsed = parseJsonOutputText(rawModelOutput);
   const races = Array.isArray(parsed?.races) ? parsed.races : [];
   const usage = mapCompletionUsageToScrapeUsage(completion.usage);
 
-  return { parsed, races, rawModelOutput, usage };
+  return { races, rawModelOutput, usage };
 }
 
 export async function runImagesAgent(
   client: OpenAI,
   images: string[],
   model: OpenRouterVisionModelId,
-): Promise<TrailRaceOpenRouterAgentResult> {
+): Promise<OpenRouterServiceResult> {
   const completion = await client.chat.completions.create({
     model,
     messages: [
@@ -137,7 +143,7 @@ export async function runMarkdownAgent(
   client: OpenAI,
   markdown: string,
   model: OpenRouterScrapeModelId,
-): Promise<TrailRaceOpenRouterAgentResult> {
+): Promise<OpenRouterServiceResult> {
   const completion = await client.chat.completions.create({
     model,
     messages: [

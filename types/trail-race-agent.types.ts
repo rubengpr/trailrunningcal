@@ -1,4 +1,4 @@
-export interface TrailRaceAgentRaceRow {
+export interface TrailRace {
   name: string;
   date: string;
   city: string;
@@ -9,5 +9,5 @@ export interface TrailRaceAgentRaceRow {
 }
 
 export interface TrailRaceAgentParsed {
-  races: TrailRaceAgentRaceRow[];
+  races: TrailRace[];
 }

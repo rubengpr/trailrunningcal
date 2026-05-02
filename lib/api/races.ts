@@ -98,7 +98,7 @@ export async function deleteRace(raceId: string): Promise<void> {
 }
 
 export interface TrailRaceAgentRunResult {
-  races: import('@/types/trail-race-agent.types').TrailRaceAgentRaceRow[];
+  races: import('@/types/trail-race-agent.types').TrailRace[];
   markdown: string;
   rawModelOutput: string;
   usage: OpenRouterScrapeUsage | null;
@@ -185,7 +185,7 @@ export async function runTrailRaceAgent(
  * Accepts a scraped race by creating it in the database. Admin-only.
  */
 export async function acceptScrapedRace(
-  race: import('@/types/trail-race-agent.types').TrailRaceAgentRaceRow,
+  race: import('@/types/trail-race-agent.types').TrailRace,
   websiteUrl: string,
 ): Promise<{ id: string }> {
   const response = await fetch('/api/races', {

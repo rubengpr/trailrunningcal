@@ -5,7 +5,7 @@ import type {
 } from 'openai/resources/responses/responses';
 import type {
   TrailRaceAgentParsed,
-  TrailRaceAgentRaceRow,
+  TrailRace,
 } from '@/types/trail-race-agent.types';
 import { TRAIL_RACE_AGENT_JSON_SCHEMA } from '@/lib/agents/trail-race-agent-schema';
 import { TRAIL_RACE_AGENT_INSTRUCTIONS } from '@/lib/prompts';
@@ -110,7 +110,7 @@ export interface RunTrailRaceDomainAgentOptions {
 export interface TrailRaceDomainAgentResult {
   response: Response;
   parsed: TrailRaceAgentParsed | null;
-  races: TrailRaceAgentRaceRow[];
+  races: TrailRace[];
 }
 
 /**

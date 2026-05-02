@@ -1,11 +1,11 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import type { TrailRaceAgentRaceRow } from '@/types/trail-race-agent.types';
+import type { TrailRace } from '@/types/trail-race-agent.types';
 import { SuggestedRaceCard } from '@/components/race/suggested-race-card';
 
 interface SuggestedRacesPreviewProps {
-    races: TrailRaceAgentRaceRow[];
+    races: TrailRace[];
     isLoading: boolean;
     error: string | null;
     onAccept: (index: number) => Promise<void>;
@@ -13,7 +13,7 @@ interface SuggestedRacesPreviewProps {
     acceptingIndex: number | null;
     onReject: (index: number) => void;
     rejectedIndexes: Set<number>;
-    onSave: (index: number, race: TrailRaceAgentRaceRow) => void;
+    onSave: (index: number, race: TrailRace) => void;
 }
 
 export function SuggestedRacesPreview({ races, isLoading, error, onAccept, acceptedIndexes, acceptingIndex, onReject, rejectedIndexes, onSave }: SuggestedRacesPreviewProps) {
