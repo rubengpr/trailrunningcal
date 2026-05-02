@@ -27,6 +27,7 @@ For business context, metrics, positioning, and audience — invoke the `/produc
 ## Components
 
 - **Server Components:** prefer Server Components by default; add `'use client'` only for components using hooks, event handlers, or browser APIs
+- **Custom hooks:** extract into `hooks/use-*.ts` when a `useState` + `useEffect` pair has a single clear purpose, when stateful logic is shared across components, or when state and its handlers belong together conceptually but have no UI
 - **Exports:** named exports for reusable/shared components; default exports for page-level or single-use components
 - **Components:** avoid `React.FC`; use direct function declarations
 - **Error UI:** use `ErrorMessage` or project variants (`SearchError`, `RaceCardError`) for user-facing errors — no inline custom error UI
