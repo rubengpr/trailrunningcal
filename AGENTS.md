@@ -17,6 +17,7 @@ For business context, metrics, positioning, and audience — invoke the `/produc
 
 - **API file structure:** one `route.ts` per resource under `app/api/[resource]/`; dynamic segments at `app/api/[resource]/[id]/route.ts`
 - **Route handlers:** auth, input validation, service delegation, HTTP response. Extract long input validation to `validate-input.ts`
+- **Service layer inputs:** services receive already-validated and normalized data — never validate or normalize inside a service
 - **Service layer:** business logic lives in `lib/services/{feature}.ts`. DB access lives in `lib/db/`.
 - **External provider structure:** each provider lives under `lib/integrations/{provider}/` with `client.ts` (HTTP calls, auth, raw shapes), `service.ts` (orchestration, added when needed), and named helpers as they emerge (e.g. `lib/integrations/spider-cloud/`, `lib/integrations/openrouter/`)
 - **Data layer:** Server Components read directly via `lib/db/*`; Client Components mutate via API routes + `lib/api/*` wrappers — never fetch server-available data from the client
