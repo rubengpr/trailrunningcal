@@ -418,6 +418,25 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
     }
 }
 
+interface MarkdownStatLineProps {
+    tokenEstimate: number;
+    charCount: number;
+    as?: 'span' | 'p';
+}
+
+function MarkdownStatLine({ tokenEstimate, charCount, as: Tag = 'span' }: MarkdownStatLineProps) {
+    const t = useTranslations('admin.races.import');
+    return (
+        <Tag className="text-xs font-normal text-gray-500 tabular-nums">
+            <span className="font-bold text-gray-700">{tokenEstimate}</span>{' '}
+            {t('markdownStatTokensLabel')}
+            {' · '}
+            <span className="font-bold text-gray-700">{charCount}</span>{' '}
+            {t('markdownStatCharactersLabel')}
+        </Tag>
+    );
+}
+
 interface RaceImporterProps {
     pendingEntries: PendingRace[];
 }
@@ -1249,13 +1268,10 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                                         <span className="inline-flex flex-wrap items-center gap-1.5">
                                             <PageStatsBadges pageStats={row.pageStats} />
                                             {row.markdownTokenEstimate != null && row.markdownCharCount != null && (
-                                                <span className="text-xs font-normal text-gray-500 tabular-nums">
-                                                    <span className="font-bold text-gray-700">{row.markdownTokenEstimate}</span>{' '}
-                                                    {t('markdownStatTokensLabel')}
-                                                    {' · '}
-                                                    <span className="font-bold text-gray-700">{row.markdownCharCount}</span>{' '}
-                                                    {t('markdownStatCharactersLabel')}
-                                                </span>
+                                                <MarkdownStatLine
+                                                    tokenEstimate={row.markdownTokenEstimate}
+                                                    charCount={row.markdownCharCount}
+                                                />
                                             )}
                                         </span>
                                     )}
@@ -1273,19 +1289,14 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                                             <span className="inline-flex flex-wrap items-center gap-1.5">
                                                 <PageStatsBadges pageStats={pageStats} />
                                                 {showMarkdownEstimateBesidePageStats && (
-                                                    <span className="text-xs font-normal text-gray-500 tabular-nums">
-                                                        <span className="font-bold text-gray-700">
-                                                            {parseUploadTokenEstimate !== null ? parseUploadTokenEstimate : markdownTokenEstimate!}
-                                                        </span>{' '}
-                                                        {t('markdownStatTokensLabel')}
-                                                        {' · '}
-                                                        <span className="font-bold text-gray-700">
-                                                            {parseUploadTokenEstimate !== null
+                                                    <MarkdownStatLine
+                                                        tokenEstimate={parseUploadTokenEstimate ?? markdownTokenEstimate!}
+                                                        charCount={
+                                                            parseUploadTokenEstimate !== null
                                                                 ? markdownTrimmedCharCount(uploadedMarkdown!)
-                                                                : markdownTrimmedCharCount(scrapeMarkdown!)}
-                                                        </span>{' '}
-                                                        {t('markdownStatCharactersLabel')}
-                                                    </span>
+                                                                : markdownTrimmedCharCount(scrapeMarkdown!)
+                                                        }
+                                                    />
                                                 )}
                                             </span>
                                         )}
@@ -1306,21 +1317,15 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                         </div>
                     )}
                     {showMarkdownEstimateLine && !showMarkdownEstimateBesidePageStats && (
-                        <p className="text-xs text-gray-500 tabular-nums">
-                            <span className="font-bold">
-                                {parseUploadTokenEstimate !== null
-                                    ? parseUploadTokenEstimate
-                                    : markdownTokenEstimate!}
-                            </span>{' '}
-                            {t('markdownStatTokensLabel')}
-                            {' · '}
-                            <span className="font-bold">
-                                {parseUploadTokenEstimate !== null
+                        <MarkdownStatLine
+                            as="p"
+                            tokenEstimate={parseUploadTokenEstimate ?? markdownTokenEstimate!}
+                            charCount={
+                                parseUploadTokenEstimate !== null
                                     ? markdownTrimmedCharCount(uploadedMarkdown!)
-                                    : markdownTrimmedCharCount(scrapeMarkdown!)}
-                            </span>{' '}
-                            {t('markdownStatCharactersLabel')}
-                        </p>
+                                    : markdownTrimmedCharCount(scrapeMarkdown!)
+                            }
+                        />
                     )}
                     {isScraping && (
                         <p className="text-xs text-gray-500 tabular-nums">
