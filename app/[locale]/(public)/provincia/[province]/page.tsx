@@ -40,7 +40,7 @@ export async function generateMetadata({
 
   return generateMetadataFromOptions({
     title: t('pageTitle', { province: provinceName, year }),
-    description: t('pageDescription', { province: provinceName, year }),
+    description: t(`pageDescriptions.${province}`, { year }),
     canonicalUrl: `${BASE_URL}/${locale}/provincia/${province}`,
     locale,
     ogImageUrl: `${BASE_URL}/og-image.png`,

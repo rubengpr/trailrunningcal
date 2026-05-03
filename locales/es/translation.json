@@ -300,6 +300,12 @@
   "provincia": {
     "pageTitle": "Trail running en {province} - Carreras de montaña {year}",
     "pageDescription": "Encuentra todas las carreras de trail running en {province}: ultras, maratones de montaña, trails cortos y pruebas para todos los niveles. Actualizado para {year}.",
+    "pageDescriptions": {
+      "barcelona": "Carreras de trail running en Barcelona: Montseny, Montserrat, Garraf y Sant Llorenç. Fechas, distancias y desniveles para {year}.",
+      "girona": "Carreras de trail running en Girona: Pirineos, Garrotxa y Serra de l'Albera. Fechas, distancias y desniveles para {year}.",
+      "lleida": "Carreras de trail running en Lleida: Pirineos del Pallars, Montsec y Alta Ribagorça. Fechas, distancias y desniveles para {year}.",
+      "tarragona": "Carreras de trail running en Tarragona: Serra de Prades, Ports de Beseit y Serra de Llaberia. Fechas, distancias y desniveles para {year}."
+    },
     "pageBody": "Descubre todas las carreras de trail running en la provincia de {province}: senderos, montañas y rutas de todo tipo de distancia y dificultad. El trail running en {province} combina paisajes únicos con una creciente comunidad de corredores de montaña activa durante todo el año.",
     "heroTitleStart": "Explora carreras de trail running en",
     "heroSubtitles": {
