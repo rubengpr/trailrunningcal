@@ -143,28 +143,34 @@ interface ScrapeState {
 }
 
 type ScrapeAction =
+    // Workflow start
     | { type: 'SCRAPE_START' }
     | { type: 'CRAWL_SITE_EXTRACT_START' }
-    | { type: 'PIPELINE_HIDDEN' }
-    | { type: 'MARKDOWN_UPDATE'; markdown: string; pageStats: PageStats }
+    | { type: 'AUTOPILOT_START' }
+    | { type: 'AUTOPILOT_FALLBACK_START'; persistedRows: PersistedPipelineRow[] }
+    // Mid-run progress
+    | { type: 'CRAWL_SUCCEEDED'; markdown: string; pageStats: PageStats }
     | { type: 'CRAWL_ONLY_SUCCESS'; markdown: string; pageStats: PageStats }
+    // Run completion
     | { type: 'AGENT_SUCCESS'; races: TrailRace[]; rawModelOutput: string; usage: OpenRouterScrapeUsage | null; markdown?: string }
     | { type: 'SCRAPE_ERROR'; error: string }
     | { type: 'SCRAPE_COMPLETE'; durationMs: number }
-    | { type: 'AUTOPILOT_START' }
-    | { type: 'AUTOPILOT_FALLBACK_START'; persistedRows: PersistedPipelineRow[] }
-    | { type: 'RESULTS_RESET' }
+    // UI / reset
+    | { type: 'PIPELINE_HIDDEN' }
+    | { type: 'RESULTS_CLEARED' }
+    | { type: 'PREVIEW_LOADED'; scrapedRaces: TrailRace[]; markdown: string; rawModelOutput: string | null; usage: OpenRouterScrapeUsage | null; pageStats: PageStats | null; showPipeline: boolean; durationMs: number }
+    | { type: 'WORKFLOW_RESET' }
+    // Race review
     | { type: 'ACCEPTING_INDEX'; index: number | null }
     | { type: 'RACE_ACCEPT'; index: number }
     | { type: 'RACE_REJECT'; index: number }
-    | { type: 'RACE_SAVE'; index: number; race: TrailRace }
-    | { type: 'JSON_VIEW_OPEN'; value: string }
-    | { type: 'JSON_VIEW_CLOSE' }
-    | { type: 'JSON_EDITOR_VALUE'; value: string }
-    | { type: 'JSON_APPLY'; races: TrailRace[] }
-    | { type: 'JSON_ERROR'; error: string | null }
-    | { type: 'DUMMY_LOAD'; scrapedRaces: TrailRace[]; markdown: string; rawModelOutput: string | null; usage: OpenRouterScrapeUsage | null; pageStats: PageStats | null; showPipeline: boolean; durationMs: number }
-    | { type: 'RESET' };
+    | { type: 'RACE_EDITED'; index: number; race: TrailRace }
+    // JSON editor
+    | { type: 'JSON_TAB_OPENED'; value: string }
+    | { type: 'JSON_TAB_CLOSED' }
+    | { type: 'JSON_EDITED'; value: string }
+    | { type: 'JSON_IMPORTED'; races: TrailRace[] }
+    | { type: 'JSON_PARSE_FAILED'; error: string | null };
 
 const initialScrapeState: ScrapeState = {
     isScraping: false,
@@ -191,6 +197,7 @@ const initialScrapeState: ScrapeState = {
 
 function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
     switch (action.type) {
+        // Workflow start
         case 'SCRAPE_START':
             return {
                 ...state,
@@ -233,25 +240,6 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
                 fullPipelineUiActive: true,
                 scrapePhase: 'crawling',
             };
-        case 'PIPELINE_HIDDEN':
-            return { ...state, fullPipelineUiActive: false };
-        case 'MARKDOWN_UPDATE':
-            return { ...state, scrapeMarkdown: action.markdown, pageStats: action.pageStats, scrapePhase: 'llm' };
-        case 'CRAWL_ONLY_SUCCESS':
-            return { ...state, scrapeMarkdown: action.markdown, pageStats: action.pageStats, hasScraped: true };
-        case 'AGENT_SUCCESS':
-            return {
-                ...state,
-                scrapedRaces: action.races,
-                rawModelOutput: action.rawModelOutput,
-                scrapeUsage: action.usage,
-                hasScraped: true,
-                ...(action.markdown !== undefined ? { scrapeMarkdown: action.markdown } : {}),
-            };
-        case 'SCRAPE_ERROR':
-            return { ...state, scrapeError: action.error, hasScraped: true };
-        case 'SCRAPE_COMPLETE':
-            return { ...state, isScraping: false, scrapePhase: 'idle', lastRunDurationMs: action.durationMs };
         case 'AUTOPILOT_START':
             return {
                 ...state,
@@ -286,7 +274,29 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
                 rawModelOutput: null,
                 persistedPipelineRows: action.persistedRows,
             };
-        case 'RESULTS_RESET':
+        // Mid-run progress
+        case 'CRAWL_SUCCEEDED':
+            return { ...state, scrapeMarkdown: action.markdown, pageStats: action.pageStats, scrapePhase: 'llm' };
+        case 'CRAWL_ONLY_SUCCESS':
+            return { ...state, scrapeMarkdown: action.markdown, pageStats: action.pageStats, hasScraped: true };
+        // Run completion
+        case 'AGENT_SUCCESS':
+            return {
+                ...state,
+                scrapedRaces: action.races,
+                rawModelOutput: action.rawModelOutput,
+                scrapeUsage: action.usage,
+                hasScraped: true,
+                ...(action.markdown !== undefined ? { scrapeMarkdown: action.markdown } : {}),
+            };
+        case 'SCRAPE_ERROR':
+            return { ...state, scrapeError: action.error, hasScraped: true };
+        case 'SCRAPE_COMPLETE':
+            return { ...state, isScraping: false, scrapePhase: 'idle', lastRunDurationMs: action.durationMs };
+        // UI / reset
+        case 'PIPELINE_HIDDEN':
+            return { ...state, fullPipelineUiActive: false };
+        case 'RESULTS_CLEARED':
             return {
                 ...state,
                 scrapeMarkdown: null,
@@ -299,35 +309,7 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
                 acceptedIndexes: new Set(),
                 rejectedIndexes: new Set(),
             };
-        case 'ACCEPTING_INDEX':
-            return { ...state, acceptingIndex: action.index };
-        case 'RACE_ACCEPT':
-            return { ...state, acceptedIndexes: new Set(state.acceptedIndexes).add(action.index) };
-        case 'RACE_REJECT':
-            return { ...state, rejectedIndexes: new Set(state.rejectedIndexes).add(action.index) };
-        case 'RACE_SAVE':
-            return {
-                ...state,
-                scrapedRaces: state.scrapedRaces.map((r, i) => i === action.index ? action.race : r),
-            };
-        case 'JSON_VIEW_OPEN':
-            return { ...state, jsonView: true, jsonEditorValue: action.value, jsonEditorError: null };
-        case 'JSON_VIEW_CLOSE':
-            return { ...state, jsonView: false, jsonEditorError: null };
-        case 'JSON_EDITOR_VALUE':
-            return { ...state, jsonEditorValue: action.value };
-        case 'JSON_APPLY':
-            return {
-                ...state,
-                scrapedRaces: action.races,
-                acceptedIndexes: new Set(),
-                rejectedIndexes: new Set(),
-                jsonEditorError: null,
-                jsonView: false,
-            };
-        case 'JSON_ERROR':
-            return { ...state, jsonEditorError: action.error };
-        case 'DUMMY_LOAD':
+        case 'PREVIEW_LOADED':
             return {
                 ...state,
                 isScraping: false,
@@ -345,8 +327,38 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
                 pageStats: action.pageStats,
                 fullPipelineUiActive: action.showPipeline,
             };
-        case 'RESET':
+        case 'WORKFLOW_RESET':
             return { ...initialScrapeState };
+        // Race review
+        case 'ACCEPTING_INDEX':
+            return { ...state, acceptingIndex: action.index };
+        case 'RACE_ACCEPT':
+            return { ...state, acceptedIndexes: new Set(state.acceptedIndexes).add(action.index) };
+        case 'RACE_REJECT':
+            return { ...state, rejectedIndexes: new Set(state.rejectedIndexes).add(action.index) };
+        case 'RACE_EDITED':
+            return {
+                ...state,
+                scrapedRaces: state.scrapedRaces.map((r, i) => i === action.index ? action.race : r),
+            };
+        // JSON editor
+        case 'JSON_TAB_OPENED':
+            return { ...state, jsonView: true, jsonEditorValue: action.value, jsonEditorError: null };
+        case 'JSON_TAB_CLOSED':
+            return { ...state, jsonView: false, jsonEditorError: null };
+        case 'JSON_EDITED':
+            return { ...state, jsonEditorValue: action.value };
+        case 'JSON_IMPORTED':
+            return {
+                ...state,
+                scrapedRaces: action.races,
+                acceptedIndexes: new Set(),
+                rejectedIndexes: new Set(),
+                jsonEditorError: null,
+                jsonView: false,
+            };
+        case 'JSON_PARSE_FAILED':
+            return { ...state, jsonEditorError: action.error };
         default:
             return state;
     }
@@ -406,7 +418,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
     const { elapsedMs: liveElapsedMs, startedAtRef: runStartedAtRef } = useLiveTimer(isScraping);
 
     const resetScrapeResults = (): void => {
-        dispatch({ type: 'RESULTS_RESET' });
+        dispatch({ type: 'RESULTS_CLEARED' });
     };
 
     const fileUpload = useFileUpload({ onUploadChange: resetScrapeResults });
@@ -495,7 +507,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 const scrapeEndedAt = performance.now();
                 fullPipelineCrawlEndedAtRef.current = scrapeEndedAt;
                 fullPipelineLlmStartedAtRef.current = scrapeEndedAt;
-                dispatch({ type: 'MARKDOWN_UPDATE', markdown: scrapeData.markdown, pageStats: scrapeData.pageStats });
+                dispatch({ type: 'CRAWL_SUCCEEDED', markdown: scrapeData.markdown, pageStats: scrapeData.pageStats });
 
                 let singlePageResult;
                 try {
@@ -575,7 +587,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 const crawlEndedAt = performance.now();
                 fullPipelineCrawlEndedAtRef.current = crawlEndedAt;
                 fullPipelineLlmStartedAtRef.current = crawlEndedAt;
-                dispatch({ type: 'MARKDOWN_UPDATE', markdown: crawlData.markdown, pageStats: crawlData.pageStats });
+                dispatch({ type: 'CRAWL_SUCCEEDED', markdown: crawlData.markdown, pageStats: crawlData.pageStats });
 
                 let fullCrawlResult;
                 try {
@@ -641,7 +653,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 const crawlEndedAt = performance.now();
                 fullPipelineCrawlEndedAtRef.current = crawlEndedAt;
                 fullPipelineLlmStartedAtRef.current = crawlEndedAt;
-                dispatch({ type: 'MARKDOWN_UPDATE', markdown: crawlData.markdown, pageStats: crawlData.pageStats });
+                dispatch({ type: 'CRAWL_SUCCEEDED', markdown: crawlData.markdown, pageStats: crawlData.pageStats });
                 let llmData;
                 try {
                     llmData = await runTrailRaceAgent({
@@ -698,23 +710,23 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
     };
 
     const handleSave = (index: number, updatedRace: TrailRace) => {
-        dispatch({ type: 'RACE_SAVE', index, race: updatedRace });
+        dispatch({ type: 'RACE_EDITED', index, race: updatedRace });
     };
 
     const handleSwitchToJsonView = (): void => {
-        dispatch({ type: 'JSON_VIEW_OPEN', value: JSON.stringify(scrapedRaces, null, 2) });
+        dispatch({ type: 'JSON_TAB_OPENED', value: JSON.stringify(scrapedRaces, null, 2) });
     };
 
     const handleApplyJson = (): void => {
         try {
             const parsed = JSON.parse(jsonEditorValue);
             if (!Array.isArray(parsed)) {
-                dispatch({ type: 'JSON_ERROR', error: t('jsonNotArrayError') });
+                dispatch({ type: 'JSON_PARSE_FAILED', error: t('jsonNotArrayError') });
                 return;
             }
-            dispatch({ type: 'JSON_APPLY', races: parsed as TrailRace[] });
+            dispatch({ type: 'JSON_IMPORTED', races: parsed as TrailRace[] });
         } catch (err) {
-            dispatch({ type: 'JSON_ERROR', error: err instanceof Error ? err.message : t('jsonParseError') });
+            dispatch({ type: 'JSON_PARSE_FAILED', error: err instanceof Error ? err.message : t('jsonParseError') });
         }
     };
 
@@ -723,7 +735,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
         runStartedAtRef.current = null;
         const isCrawlMdOnly = workflow === 'crawlMdOnly';
         dispatch({
-            type: 'DUMMY_LOAD',
+            type: 'PREVIEW_LOADED',
             durationMs: DUMMY_LAST_RUN_DURATION_MS,
             scrapedRaces: isCrawlMdOnly ? [] : [...DUMMY_SCRAPED_RACES],
             markdown: DUMMY_SCRAPE_MARKDOWN,
@@ -740,7 +752,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
         fileUpload.clearUpload();
         runStartedAtRef.current = null;
         clearFullPipelineStepRefs();
-        dispatch({ type: 'RESET' });
+        dispatch({ type: 'WORKFLOW_RESET' });
     };
 
     const handleDownloadMarkdown = () => {
@@ -1453,7 +1465,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 <div className="inline-flex rounded-lg border border-gray-200 bg-gray-50/80 p-1 self-start">
                     <button
                         type="button"
-                        onClick={() => dispatch({ type: 'JSON_VIEW_CLOSE' })}
+                        onClick={() => dispatch({ type: 'JSON_TAB_CLOSED' })}
                         className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${!jsonView ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}
                     >
                         {t('racesTab')}
@@ -1485,7 +1497,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 <div className="max-w-3xl flex flex-col gap-3">
                     <textarea
                         value={jsonEditorValue}
-                        onChange={(e) => dispatch({ type: 'JSON_EDITOR_VALUE', value: e.target.value })}
+                        onChange={(e) => dispatch({ type: 'JSON_EDITED', value: e.target.value })}
                         className="w-full rounded-xl border border-gray-200 bg-white p-4 font-mono text-xs text-gray-800 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-200/80 resize-y"
                         rows={30}
                         spellCheck={false}
@@ -1497,7 +1509,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                         <Button type="button" onClick={handleApplyJson}>
                             {t('applyJson')}
                         </Button>
-                        <Button type="button" variant="secondary" onClick={() => dispatch({ type: 'JSON_VIEW_CLOSE' })}>
+                        <Button type="button" variant="secondary" onClick={() => dispatch({ type: 'JSON_TAB_CLOSED' })}>
                             {t('cancelJson')}
                         </Button>
                     </div>
