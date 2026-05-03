@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useReducer, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
 import { FormInput } from '@/components/ui/form-input';
@@ -119,6 +119,239 @@ function isValidUrl(url: string): boolean {
     }
 }
 
+interface ScrapeState {
+    isScraping: boolean;
+    scrapePhase: ScrapePhase;
+    fullPipelineUiActive: boolean;
+    lastRunDurationMs: number | null;
+    scrapedRaces: TrailRace[];
+    scrapeError: string | null;
+    hasScraped: boolean;
+    scrapeMarkdown: string | null;
+    rawModelOutput: string | null;
+    scrapeUsage: OpenRouterScrapeUsage | null;
+    pageStats: PageStats | null;
+    acceptedIndexes: Set<number>;
+    acceptingIndex: number | null;
+    rejectedIndexes: Set<number>;
+    jsonView: boolean;
+    jsonEditorValue: string;
+    jsonEditorError: string | null;
+    bulkRows: BulkProcessTableRow[];
+    autopilotFallbackUsed: boolean | null;
+    persistedPipelineRows: PersistedPipelineRow[];
+}
+
+type ScrapeAction =
+    | { type: 'SCRAPE_START' }
+    | { type: 'CRAWL_SITE_EXTRACT_START' }
+    | { type: 'PIPELINE_HIDDEN' }
+    | { type: 'MARKDOWN_UPDATE'; markdown: string; pageStats: PageStats }
+    | { type: 'CRAWL_ONLY_SUCCESS'; markdown: string; pageStats: PageStats }
+    | { type: 'AGENT_SUCCESS'; races: TrailRace[]; rawModelOutput: string; usage: OpenRouterScrapeUsage | null; markdown?: string }
+    | { type: 'SCRAPE_ERROR'; error: string }
+    | { type: 'SCRAPE_COMPLETE'; durationMs: number }
+    | { type: 'AUTOPILOT_START' }
+    | { type: 'AUTOPILOT_FALLBACK_START'; persistedRows: PersistedPipelineRow[] }
+    | { type: 'RESULTS_RESET' }
+    | { type: 'ACCEPTING_INDEX'; index: number | null }
+    | { type: 'RACE_ACCEPT'; index: number }
+    | { type: 'RACE_REJECT'; index: number }
+    | { type: 'RACE_SAVE'; index: number; race: TrailRace }
+    | { type: 'JSON_VIEW_OPEN'; value: string }
+    | { type: 'JSON_VIEW_CLOSE' }
+    | { type: 'JSON_EDITOR_VALUE'; value: string }
+    | { type: 'JSON_APPLY'; races: TrailRace[] }
+    | { type: 'JSON_ERROR'; error: string | null }
+    | { type: 'DUMMY_LOAD'; scrapedRaces: TrailRace[]; markdown: string; rawModelOutput: string | null; usage: OpenRouterScrapeUsage | null; pageStats: PageStats | null; showPipeline: boolean; durationMs: number }
+    | { type: 'RESET' };
+
+const initialScrapeState: ScrapeState = {
+    isScraping: false,
+    scrapePhase: 'idle',
+    fullPipelineUiActive: false,
+    lastRunDurationMs: null,
+    scrapedRaces: [],
+    scrapeError: null,
+    hasScraped: false,
+    scrapeMarkdown: null,
+    rawModelOutput: null,
+    scrapeUsage: null,
+    pageStats: null,
+    acceptedIndexes: new Set(),
+    acceptingIndex: null,
+    rejectedIndexes: new Set(),
+    jsonView: false,
+    jsonEditorValue: '',
+    jsonEditorError: null,
+    bulkRows: [],
+    autopilotFallbackUsed: null,
+    persistedPipelineRows: [],
+};
+
+function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
+    switch (action.type) {
+        case 'SCRAPE_START':
+            return {
+                ...state,
+                isScraping: true,
+                lastRunDurationMs: null,
+                scrapeError: null,
+                scrapedRaces: [],
+                hasScraped: false,
+                scrapeMarkdown: null,
+                rawModelOutput: null,
+                scrapeUsage: null,
+                pageStats: null,
+                acceptedIndexes: new Set(),
+                acceptingIndex: null,
+                rejectedIndexes: new Set(),
+                jsonView: false,
+                jsonEditorValue: '',
+                jsonEditorError: null,
+                persistedPipelineRows: [],
+            };
+        case 'CRAWL_SITE_EXTRACT_START':
+            return {
+                ...state,
+                isScraping: true,
+                lastRunDurationMs: null,
+                scrapeError: null,
+                scrapedRaces: [],
+                hasScraped: false,
+                scrapeMarkdown: null,
+                rawModelOutput: null,
+                scrapeUsage: null,
+                pageStats: null,
+                acceptedIndexes: new Set(),
+                acceptingIndex: null,
+                rejectedIndexes: new Set(),
+                jsonView: false,
+                jsonEditorValue: '',
+                jsonEditorError: null,
+                persistedPipelineRows: [],
+                fullPipelineUiActive: true,
+                scrapePhase: 'crawling',
+            };
+        case 'PIPELINE_HIDDEN':
+            return { ...state, fullPipelineUiActive: false };
+        case 'MARKDOWN_UPDATE':
+            return { ...state, scrapeMarkdown: action.markdown, pageStats: action.pageStats, scrapePhase: 'llm' };
+        case 'CRAWL_ONLY_SUCCESS':
+            return { ...state, scrapeMarkdown: action.markdown, pageStats: action.pageStats, hasScraped: true };
+        case 'AGENT_SUCCESS':
+            return {
+                ...state,
+                scrapedRaces: action.races,
+                rawModelOutput: action.rawModelOutput,
+                scrapeUsage: action.usage,
+                hasScraped: true,
+                ...(action.markdown !== undefined ? { scrapeMarkdown: action.markdown } : {}),
+            };
+        case 'SCRAPE_ERROR':
+            return { ...state, scrapeError: action.error, hasScraped: true };
+        case 'SCRAPE_COMPLETE':
+            return { ...state, isScraping: false, scrapePhase: 'idle', lastRunDurationMs: action.durationMs };
+        case 'AUTOPILOT_START':
+            return {
+                ...state,
+                isScraping: true,
+                lastRunDurationMs: null,
+                scrapeError: null,
+                scrapedRaces: [],
+                hasScraped: false,
+                scrapeMarkdown: null,
+                rawModelOutput: null,
+                scrapeUsage: null,
+                pageStats: null,
+                acceptedIndexes: new Set(),
+                acceptingIndex: null,
+                rejectedIndexes: new Set(),
+                jsonView: false,
+                jsonEditorValue: '',
+                jsonEditorError: null,
+                persistedPipelineRows: [],
+                fullPipelineUiActive: true,
+                autopilotFallbackUsed: false,
+                scrapePhase: 'crawling',
+            };
+        case 'AUTOPILOT_FALLBACK_START':
+            return {
+                ...state,
+                autopilotFallbackUsed: true,
+                scrapePhase: 'crawling',
+                pageStats: null,
+                scrapeMarkdown: null,
+                scrapeUsage: null,
+                rawModelOutput: null,
+                persistedPipelineRows: action.persistedRows,
+            };
+        case 'RESULTS_RESET':
+            return {
+                ...state,
+                scrapeMarkdown: null,
+                rawModelOutput: null,
+                scrapeUsage: null,
+                pageStats: null,
+                hasScraped: false,
+                scrapeError: null,
+                scrapedRaces: [],
+                acceptedIndexes: new Set(),
+                rejectedIndexes: new Set(),
+            };
+        case 'ACCEPTING_INDEX':
+            return { ...state, acceptingIndex: action.index };
+        case 'RACE_ACCEPT':
+            return { ...state, acceptedIndexes: new Set(state.acceptedIndexes).add(action.index) };
+        case 'RACE_REJECT':
+            return { ...state, rejectedIndexes: new Set(state.rejectedIndexes).add(action.index) };
+        case 'RACE_SAVE':
+            return {
+                ...state,
+                scrapedRaces: state.scrapedRaces.map((r, i) => i === action.index ? action.race : r),
+            };
+        case 'JSON_VIEW_OPEN':
+            return { ...state, jsonView: true, jsonEditorValue: action.value, jsonEditorError: null };
+        case 'JSON_VIEW_CLOSE':
+            return { ...state, jsonView: false, jsonEditorError: null };
+        case 'JSON_EDITOR_VALUE':
+            return { ...state, jsonEditorValue: action.value };
+        case 'JSON_APPLY':
+            return {
+                ...state,
+                scrapedRaces: action.races,
+                acceptedIndexes: new Set(),
+                rejectedIndexes: new Set(),
+                jsonEditorError: null,
+                jsonView: false,
+            };
+        case 'JSON_ERROR':
+            return { ...state, jsonEditorError: action.error };
+        case 'DUMMY_LOAD':
+            return {
+                ...state,
+                isScraping: false,
+                scrapePhase: 'idle',
+                scrapeError: null,
+                hasScraped: true,
+                acceptedIndexes: new Set(),
+                acceptingIndex: null,
+                rejectedIndexes: new Set(),
+                lastRunDurationMs: action.durationMs,
+                scrapedRaces: action.scrapedRaces,
+                scrapeMarkdown: action.markdown,
+                rawModelOutput: action.rawModelOutput,
+                scrapeUsage: action.usage,
+                pageStats: action.pageStats,
+                fullPipelineUiActive: action.showPipeline,
+            };
+        case 'RESET':
+            return { ...initialScrapeState };
+        default:
+            return state;
+    }
+}
+
 interface ScrapePageContentProps {
     pendingEntries: PendingRace[];
 }
@@ -139,48 +372,41 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
     const [workflow, setWorkflow] = useState<ScrapeWorkflow>('autopilot');
     const [isSinglePageScrape, setIsSinglePageScrape] = useState(false);
     const [websiteUrl, setWebsiteUrl] = useState('');
-
     const [selectedModelId, setSelectedModelId] = useState<OpenRouterScrapeModelId>(
         OPENROUTER_SCRAPE_MODEL_IDS[0],
     );
     const [selectedVisionModelId, setSelectedVisionModelId] = useState<OpenRouterVisionModelId>(
         OPENROUTER_VISION_MODEL_IDS[0],
     );
-    const [isScraping, setIsScraping] = useState(false);
+
+    const [state, dispatch] = useReducer(scrapeReducer, initialScrapeState);
+    const {
+        isScraping,
+        scrapePhase,
+        fullPipelineUiActive,
+        lastRunDurationMs,
+        scrapedRaces,
+        scrapeError,
+        hasScraped,
+        scrapeMarkdown,
+        rawModelOutput,
+        scrapeUsage,
+        pageStats,
+        acceptedIndexes,
+        acceptingIndex,
+        rejectedIndexes,
+        jsonView,
+        jsonEditorValue,
+        jsonEditorError,
+        bulkRows,
+        autopilotFallbackUsed,
+        persistedPipelineRows,
+    } = state;
+
     const { elapsedMs: liveElapsedMs, startedAtRef: runStartedAtRef } = useLiveTimer(isScraping);
-    const [scrapePhase, setScrapePhase] = useState<ScrapePhase>('idle');
-    const [fullPipelineUiActive, setFullPipelineUiActive] = useState(false);
-    const [lastRunDurationMs, setLastRunDurationMs] = useState<number | null>(null);
-    const [scrapedRaces, setScrapedRaces] = useState<TrailRace[]>([]);
-    const [scrapeError, setScrapeError] = useState<string | null>(null);
-    const [hasScraped, setHasScraped] = useState(false);
-
-    const [scrapeMarkdown, setScrapeMarkdown] = useState<string | null>(null);
-    const [rawModelOutput, setRawModelOutput] = useState<string | null>(null);
-    const [scrapeUsage, setScrapeUsage] = useState<OpenRouterScrapeUsage | null>(null);
-    const [pageStats, setPageStats] = useState<PageStats | null>(null);
-
-    const [acceptedIndexes, setAcceptedIndexes] = useState<Set<number>>(new Set());
-    const [acceptingIndex, setAcceptingIndex] = useState<number | null>(null);
-    const [rejectedIndexes, setRejectedIndexes] = useState<Set<number>>(new Set());
-
-    const [jsonView, setJsonView] = useState(false);
-    const [jsonEditorValue, setJsonEditorValue] = useState('');
-    const [jsonEditorError, setJsonEditorError] = useState<string | null>(null);
-    const [bulkRows, setBulkRows] = useState<BulkProcessTableRow[]>([]);
-    const [autopilotFallbackUsed, setAutopilotFallbackUsed] = useState<boolean | null>(null);
-    const [persistedPipelineRows, setPersistedPipelineRows] = useState<PersistedPipelineRow[]>([]);
 
     const resetScrapeResults = (): void => {
-        setScrapeMarkdown(null);
-        setRawModelOutput(null);
-        setScrapeUsage(null);
-        setPageStats(null);
-        setHasScraped(false);
-        setScrapeError(null);
-        setScrapedRaces([]);
-        setAcceptedIndexes(new Set());
-        setRejectedIndexes(new Set());
+        dispatch({ type: 'RESULTS_RESET' });
     };
 
     const fileUpload = useFileUpload({ onUploadChange: resetScrapeResults });
@@ -213,7 +439,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
 
     const handleWorkflowChange = (next: ScrapeWorkflow): void => {
         if (next !== 'crawlSiteExtract') {
-            setFullPipelineUiActive(false);
+            dispatch({ type: 'PIPELINE_HIDDEN' });
             clearFullPipelineStepRefs();
         }
         setWorkflow(next);
@@ -230,34 +456,18 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
 
     const handleRunWorkflow = async () => {
         runStartedAtRef.current = performance.now();
-        setLastRunDurationMs(null);
-        setIsScraping(true);
         if (workflow === 'crawlSiteExtract') {
-            setFullPipelineUiActive(true);
-            setScrapePhase('crawling');
+            dispatch({ type: 'CRAWL_SITE_EXTRACT_START' });
             fullPipelineCrawlStartedAtRef.current = performance.now();
             fullPipelineCrawlEndedAtRef.current = null;
             fullPipelineLlmStartedAtRef.current = null;
             fullPipelineLlmEndedAtRef.current = null;
         } else {
-            setFullPipelineUiActive(false);
-            setScrapePhase('idle');
+            if (workflow !== 'autopilot') {
+                dispatch({ type: 'SCRAPE_START' });
+            }
             clearFullPipelineStepRefs();
         }
-        setScrapeError(null);
-        setScrapedRaces([]);
-        setHasScraped(false);
-        setScrapeMarkdown(null);
-        setRawModelOutput(null);
-        setScrapeUsage(null);
-        setPageStats(null);
-        setAcceptedIndexes(new Set());
-        setAcceptingIndex(null);
-        setRejectedIndexes(new Set());
-        setJsonView(false);
-        setJsonEditorValue('');
-        setJsonEditorError(null);
-        setPersistedPipelineRows([]);
 
         const fetchPageFn = isSinglePageScrape
             ? scrapeEventPageMarkdown
@@ -266,9 +476,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
         try {
             if (workflow === 'autopilot') {
                 const normalizedUrl = normalizeUrl(websiteUrl.trim());
-                setFullPipelineUiActive(true);
-                setAutopilotFallbackUsed(false);
-                setScrapePhase('crawling');
+                dispatch({ type: 'AUTOPILOT_START' });
                 fullPipelineCrawlStartedAtRef.current = performance.now();
 
                 const todayStr = new Date().toISOString().split('T')[0];
@@ -280,17 +488,14 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 } catch (scrapeErr) {
                     fullPipelineCrawlEndedAtRef.current = performance.now();
                     const errorMessage = scrapeErr instanceof Error ? scrapeErr.message : t('scrapePageError');
-                    setScrapeError(errorMessage);
-                    setHasScraped(true);
+                    dispatch({ type: 'SCRAPE_ERROR', error: errorMessage });
                     toast.error(t('scrapePageError'));
                     return;
                 }
                 const scrapeEndedAt = performance.now();
                 fullPipelineCrawlEndedAtRef.current = scrapeEndedAt;
                 fullPipelineLlmStartedAtRef.current = scrapeEndedAt;
-                setScrapeMarkdown(scrapeData.markdown);
-                setPageStats(scrapeData.pageStats);
-                setScrapePhase('llm');
+                dispatch({ type: 'MARKDOWN_UPDATE', markdown: scrapeData.markdown, pageStats: scrapeData.pageStats });
 
                 let singlePageResult;
                 try {
@@ -302,8 +507,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 } catch (llmErr) {
                     fullPipelineLlmEndedAtRef.current = performance.now();
                     const errorMessage = llmErr instanceof Error ? llmErr.message : t('llmError');
-                    setScrapeError(errorMessage);
-                    setHasScraped(true);
+                    dispatch({ type: 'SCRAPE_ERROR', error: errorMessage });
                     toast.error(t('llmError'));
                     return;
                 }
@@ -313,10 +517,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 );
                 if (singlePageRaces.length > 0) {
                     fullPipelineLlmEndedAtRef.current = performance.now();
-                    setScrapedRaces(singlePageRaces);
-                    setRawModelOutput(singlePageResult.rawModelOutput);
-                    setScrapeUsage(singlePageResult.usage);
-                    setHasScraped(true);
+                    dispatch({ type: 'AGENT_SUCCESS', races: singlePageRaces, rawModelOutput: singlePageResult.rawModelOutput, usage: singlePageResult.usage });
                     return;
                 }
 
@@ -336,33 +537,30 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                             attempt1ParseEndedAt - fullPipelineLlmStartedAtRef.current,
                         )
                         : null;
-                setPersistedPipelineRows([
-                    {
-                        kind: 'success',
-                        titleKey: 'autopilotScrapeSuccess',
-                        durationMs: attempt1ScrapeMs,
-                        pageStats: scrapeData.pageStats,
-                        markdownTokenEstimate: estimateMarkdownTokensHeuristic(scrapeData.markdown),
-                        markdownCharCount: markdownTrimmedCharCount(scrapeData.markdown),
-                    },
-                    {
-                        kind: 'success',
-                        titleKey: 'autopilotParseEmptyFallback',
-                        durationMs: attempt1ParseMs,
-                    },
-                ]);
 
                 // Attempt 2: full crawl fallback
-                setAutopilotFallbackUsed(true);
-                setScrapePhase('crawling');
+                dispatch({
+                    type: 'AUTOPILOT_FALLBACK_START',
+                    persistedRows: [
+                        {
+                            kind: 'success',
+                            titleKey: 'autopilotScrapeSuccess',
+                            durationMs: attempt1ScrapeMs,
+                            pageStats: scrapeData.pageStats,
+                            markdownTokenEstimate: estimateMarkdownTokensHeuristic(scrapeData.markdown),
+                            markdownCharCount: markdownTrimmedCharCount(scrapeData.markdown),
+                        },
+                        {
+                            kind: 'success',
+                            titleKey: 'autopilotParseEmptyFallback',
+                            durationMs: attempt1ParseMs,
+                        },
+                    ],
+                });
                 fullPipelineCrawlStartedAtRef.current = performance.now();
                 fullPipelineCrawlEndedAtRef.current = null;
                 fullPipelineLlmStartedAtRef.current = null;
                 fullPipelineLlmEndedAtRef.current = null;
-                setPageStats(null);
-                setScrapeMarkdown(null);
-                setScrapeUsage(null);
-                setRawModelOutput(null);
 
                 let crawlData;
                 try {
@@ -370,17 +568,14 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 } catch (crawlErr) {
                     fullPipelineCrawlEndedAtRef.current = performance.now();
                     const errorMessage = crawlErr instanceof Error ? crawlErr.message : t('crawlError');
-                    setScrapeError(errorMessage);
-                    setHasScraped(true);
+                    dispatch({ type: 'SCRAPE_ERROR', error: errorMessage });
                     toast.error(t('crawlError'));
                     return;
                 }
                 const crawlEndedAt = performance.now();
                 fullPipelineCrawlEndedAtRef.current = crawlEndedAt;
                 fullPipelineLlmStartedAtRef.current = crawlEndedAt;
-                setScrapeMarkdown(crawlData.markdown);
-                setPageStats(crawlData.pageStats);
-                setScrapePhase('llm');
+                dispatch({ type: 'MARKDOWN_UPDATE', markdown: crawlData.markdown, pageStats: crawlData.pageStats });
 
                 let fullCrawlResult;
                 try {
@@ -392,8 +587,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 } catch (llmErr) {
                     fullPipelineLlmEndedAtRef.current = performance.now();
                     const errorMessage = llmErr instanceof Error ? llmErr.message : t('llmError');
-                    setScrapeError(errorMessage);
-                    setHasScraped(true);
+                    dispatch({ type: 'SCRAPE_ERROR', error: errorMessage });
                     toast.error(t('llmError'));
                     return;
                 }
@@ -402,49 +596,35 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 const fullCrawlRaces = fullCrawlResult.races.filter(
                     (r) => r.date >= todayStr,
                 );
-                setScrapedRaces(fullCrawlRaces);
-                setRawModelOutput(fullCrawlResult.rawModelOutput);
-                setScrapeUsage(fullCrawlResult.usage);
-                setHasScraped(true);
+                dispatch({ type: 'AGENT_SUCCESS', races: fullCrawlRaces, rawModelOutput: fullCrawlResult.rawModelOutput, usage: fullCrawlResult.usage });
                 return;
             }
 
             if (workflow === 'crawlMdOnly') {
                 const normalizedUrl = normalizeUrl(websiteUrl.trim());
                 const data = await fetchPageFn(normalizedUrl);
-                setScrapeMarkdown(data.markdown);
-                setPageStats(data.pageStats);
-                setHasScraped(true);
+                dispatch({ type: 'CRAWL_ONLY_SUCCESS', markdown: data.markdown, pageStats: data.pageStats });
                 return;
             }
 
             if (workflow === 'llmFromFile') {
                 if (uploadKind === 'images') {
-                    if (uploadedImages.length === 0) {
-                        return;
-                    }
+                    if (uploadedImages.length === 0) return;
                     const data = await runTrailRaceAgent({
                         mode: 'images',
                         images: uploadedImages.map(img => img.dataUrl),
                         model: selectedVisionModelId,
                     });
-                    setScrapedRaces(data.races);
-                    setRawModelOutput(data.rawModelOutput);
-                    setScrapeUsage(data.usage);
+                    dispatch({ type: 'AGENT_SUCCESS', races: data.races, rawModelOutput: data.rawModelOutput, usage: data.usage });
                 } else {
                     const markdownBody = uploadedMarkdown;
-                    if (!markdownBody) {
-                        return;
-                    }
+                    if (!markdownBody) return;
                     const data = await runTrailRaceAgent({
                         mode: 'markdown',
                         markdown: markdownBody,
                         model: selectedModelId,
                     });
-                    setScrapedRaces(data.races);
-                    setScrapeMarkdown(data.markdown);
-                    setRawModelOutput(data.rawModelOutput);
-                    setScrapeUsage(data.usage);
+                    dispatch({ type: 'AGENT_SUCCESS', races: data.races, rawModelOutput: data.rawModelOutput, usage: data.usage, markdown: data.markdown });
                 }
             } else {
                 const normalizedUrl = normalizeUrl(websiteUrl.trim());
@@ -453,19 +633,15 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                     crawlData = await fetchPageFn(normalizedUrl);
                 } catch (crawlErr) {
                     fullPipelineCrawlEndedAtRef.current = performance.now();
-                    const errorMessage =
-                        crawlErr instanceof Error ? crawlErr.message : t('crawlError');
-                    setScrapeError(errorMessage);
-                    setHasScraped(true);
+                    const errorMessage = crawlErr instanceof Error ? crawlErr.message : t('crawlError');
+                    dispatch({ type: 'SCRAPE_ERROR', error: errorMessage });
                     toast.error(isSinglePageScrape ? t('scrapePageError') : t('crawlError'));
                     return;
                 }
                 const crawlEndedAt = performance.now();
                 fullPipelineCrawlEndedAtRef.current = crawlEndedAt;
                 fullPipelineLlmStartedAtRef.current = crawlEndedAt;
-                setScrapeMarkdown(crawlData.markdown);
-                setPageStats(crawlData.pageStats);
-                setScrapePhase('llm');
+                dispatch({ type: 'MARKDOWN_UPDATE', markdown: crawlData.markdown, pageStats: crawlData.pageStats });
                 let llmData;
                 try {
                     llmData = await runTrailRaceAgent({
@@ -475,23 +651,16 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                     });
                 } catch (llmErr) {
                     fullPipelineLlmEndedAtRef.current = performance.now();
-                    const errorMessage =
-                        llmErr instanceof Error ? llmErr.message : t('llmError');
-                    setScrapeError(errorMessage);
-                    setHasScraped(true);
+                    const errorMessage = llmErr instanceof Error ? llmErr.message : t('llmError');
+                    dispatch({ type: 'SCRAPE_ERROR', error: errorMessage });
                     toast.error(t('llmError'));
                     return;
                 }
-                setScrapedRaces(llmData.races);
-                setScrapeMarkdown(llmData.markdown);
-                setRawModelOutput(llmData.rawModelOutput);
-                setScrapeUsage(llmData.usage);
+                dispatch({ type: 'AGENT_SUCCESS', races: llmData.races, rawModelOutput: llmData.rawModelOutput, usage: llmData.usage, markdown: llmData.markdown });
             }
-            setHasScraped(true);
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : t('scrapeError');
-            setScrapeError(errorMessage);
-            setHasScraped(true);
+            dispatch({ type: 'SCRAPE_ERROR', error: errorMessage });
             toast.error(t('scrapeError'));
         } finally {
             if (
@@ -503,120 +672,75 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
             const startedAt = runStartedAtRef.current;
             const durationMs =
                 startedAt !== null ? Math.round(performance.now() - startedAt) : 0;
-            setLastRunDurationMs(durationMs);
+            dispatch({ type: 'SCRAPE_COMPLETE', durationMs });
             runStartedAtRef.current = null;
-            setScrapePhase('idle');
-            setIsScraping(false);
         }
     };
 
     const handleAccept = async (index: number) => {
-        setAcceptingIndex(index);
+        dispatch({ type: 'ACCEPTING_INDEX', index });
         try {
             const normalizedUrl = normalizeUrl(websiteUrl.trim());
             await acceptScrapedRace(scrapedRaces[index], normalizedUrl);
-            setAcceptedIndexes(prev => new Set(prev).add(index));
+            dispatch({ type: 'RACE_ACCEPT', index });
             toast.success(t('results.acceptSuccess'));
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : t('results.acceptError');
             toast.error(errorMessage);
         } finally {
-            setAcceptingIndex(null);
+            dispatch({ type: 'ACCEPTING_INDEX', index: null });
         }
     };
 
     const handleReject = (index: number) => {
-        setRejectedIndexes(prev => new Set(prev).add(index));
+        dispatch({ type: 'RACE_REJECT', index });
         toast.success(t('results.rejectSuccess'));
     };
 
     const handleSave = (index: number, updatedRace: TrailRace) => {
-        setScrapedRaces(prev => prev.map((r, i) => i === index ? updatedRace : r));
+        dispatch({ type: 'RACE_SAVE', index, race: updatedRace });
     };
 
     const handleSwitchToJsonView = (): void => {
-        setJsonEditorValue(JSON.stringify(scrapedRaces, null, 2));
-        setJsonEditorError(null);
-        setJsonView(true);
+        dispatch({ type: 'JSON_VIEW_OPEN', value: JSON.stringify(scrapedRaces, null, 2) });
     };
 
     const handleApplyJson = (): void => {
         try {
             const parsed = JSON.parse(jsonEditorValue);
             if (!Array.isArray(parsed)) {
-                setJsonEditorError(t('jsonNotArrayError'));
+                dispatch({ type: 'JSON_ERROR', error: t('jsonNotArrayError') });
                 return;
             }
-            setScrapedRaces(parsed as TrailRace[]);
-            setAcceptedIndexes(new Set());
-            setRejectedIndexes(new Set());
-            setJsonEditorError(null);
-            setJsonView(false);
+            dispatch({ type: 'JSON_APPLY', races: parsed as TrailRace[] });
         } catch (err) {
-            setJsonEditorError(err instanceof Error ? err.message : t('jsonParseError'));
+            dispatch({ type: 'JSON_ERROR', error: err instanceof Error ? err.message : t('jsonParseError') });
         }
     };
 
     const handleLoadDummyPreview = (): void => {
         clearFullPipelineStepRefs();
-        setScrapeError(null);
-        setHasScraped(true);
-        setIsScraping(false);
-        setScrapePhase('idle');
-        setAcceptedIndexes(new Set());
-        setAcceptingIndex(null);
-        setRejectedIndexes(new Set());
-        setLastRunDurationMs(DUMMY_LAST_RUN_DURATION_MS);
         runStartedAtRef.current = null;
-
-        if (workflow === 'crawlMdOnly') {
-            setScrapedRaces([]);
-            setScrapeMarkdown(DUMMY_SCRAPE_MARKDOWN);
-            setRawModelOutput(null);
-            setScrapeUsage(null);
-            setPageStats({ ...DUMMY_CRAWL_PAGE_STATS });
-            return;
-        }
-
-        if (workflow === 'llmFromFile') {
-            setPageStats(null);
-        } else {
-            setPageStats({ ...DUMMY_CRAWL_PAGE_STATS });
-        }
-
-        setScrapedRaces([...DUMMY_SCRAPED_RACES]);
-        setScrapeMarkdown(DUMMY_SCRAPE_MARKDOWN);
-        setRawModelOutput(DUMMY_RAW_MODEL_OUTPUT);
-        setScrapeUsage({ ...DUMMY_SCRAPE_USAGE });
-        if (workflow === 'crawlSiteExtract') {
-            setFullPipelineUiActive(true);
-        }
+        const isCrawlMdOnly = workflow === 'crawlMdOnly';
+        dispatch({
+            type: 'DUMMY_LOAD',
+            durationMs: DUMMY_LAST_RUN_DURATION_MS,
+            scrapedRaces: isCrawlMdOnly ? [] : [...DUMMY_SCRAPED_RACES],
+            markdown: DUMMY_SCRAPE_MARKDOWN,
+            rawModelOutput: isCrawlMdOnly ? null : DUMMY_RAW_MODEL_OUTPUT,
+            usage: isCrawlMdOnly ? null : { ...DUMMY_SCRAPE_USAGE },
+            pageStats: workflow === 'llmFromFile' ? null : { ...DUMMY_CRAWL_PAGE_STATS },
+            showPipeline: workflow === 'crawlSiteExtract',
+        });
     };
 
     const handleRestart = (): void => {
         if (isScraping) return;
         setWebsiteUrl('');
         fileUpload.clearUpload();
-        setLastRunDurationMs(null);
-        setScrapedRaces([]);
-        setScrapeError(null);
-        setHasScraped(false);
-        setScrapeMarkdown(null);
-        setRawModelOutput(null);
-        setScrapeUsage(null);
-        setPageStats(null);
-        setAcceptedIndexes(new Set());
-        setAcceptingIndex(null);
-        setRejectedIndexes(new Set());
-        setJsonView(false);
-        setJsonEditorValue('');
-        setJsonEditorError(null);
         runStartedAtRef.current = null;
-        setScrapePhase('idle');
-        setFullPipelineUiActive(false);
         clearFullPipelineStepRefs();
-        setAutopilotFallbackUsed(null);
-        setPersistedPipelineRows([]);
+        dispatch({ type: 'RESET' });
     };
 
     const handleDownloadMarkdown = () => {
@@ -1329,7 +1453,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 <div className="inline-flex rounded-lg border border-gray-200 bg-gray-50/80 p-1 self-start">
                     <button
                         type="button"
-                        onClick={() => setJsonView(false)}
+                        onClick={() => dispatch({ type: 'JSON_VIEW_CLOSE' })}
                         className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${!jsonView ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}
                     >
                         {t('racesTab')}
@@ -1361,7 +1485,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                 <div className="max-w-3xl flex flex-col gap-3">
                     <textarea
                         value={jsonEditorValue}
-                        onChange={(e) => setJsonEditorValue(e.target.value)}
+                        onChange={(e) => dispatch({ type: 'JSON_EDITOR_VALUE', value: e.target.value })}
                         className="w-full rounded-xl border border-gray-200 bg-white p-4 font-mono text-xs text-gray-800 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-200/80 resize-y"
                         rows={30}
                         spellCheck={false}
@@ -1373,7 +1497,7 @@ export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
                         <Button type="button" onClick={handleApplyJson}>
                             {t('applyJson')}
                         </Button>
-                        <Button type="button" variant="secondary" onClick={() => { setJsonView(false); setJsonEditorError(null); }}>
+                        <Button type="button" variant="secondary" onClick={() => dispatch({ type: 'JSON_VIEW_CLOSE' })}>
                             {t('cancelJson')}
                         </Button>
                     </div>
