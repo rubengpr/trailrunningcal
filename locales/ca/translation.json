@@ -575,7 +575,7 @@
           "error": "Error en eliminar l'URL"
         }
       },
-      "scrape": {
+      "import": {
         "title": "Extreure curses d'una web",
         "subtitle": "Rastreja una web, processa un Markdown amb IA o fes-ho tot per obtenir curses estructurades.",
         "workflowCrawlMdOnly": "Scrap",

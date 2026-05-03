@@ -17,7 +17,7 @@ interface SuggestedRacesPreviewProps {
 }
 
 export function SuggestedRacesPreview({ races, isLoading, error, onAccept, acceptedIndexes, acceptingIndex, onReject, rejectedIndexes, onSave }: SuggestedRacesPreviewProps) {
-    const t = useTranslations('admin.races.scrape.results');
+    const t = useTranslations('admin.races.import.results');
 
     if (isLoading) {
         return (

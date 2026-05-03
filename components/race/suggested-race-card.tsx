@@ -28,7 +28,7 @@ interface SuggestedRaceCardProps {
 }
 
 export function SuggestedRaceCard({ race, onAccept, isAccepted, isAccepting, isDisabled, onReject, onSave }: SuggestedRaceCardProps) {
-    const t = useTranslations('admin.races.scrape.results');
+    const t = useTranslations('admin.races.import.results');
 
     const [isEditing, setIsEditing] = useState(false);
     const [draft, setDraft] = useState<TrailRace>(race);

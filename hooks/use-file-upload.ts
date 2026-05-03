@@ -57,7 +57,7 @@ function compressImageToDataUrl(file: File): Promise<string> {
 }
 
 export function useFileUpload({ onUploadChange }: UseFileUploadOptions = {}): FileUpload {
-    const t = useTranslations('admin.races.scrape');
+    const t = useTranslations('admin.races.import');
     const markdownFileInputRef = useRef<HTMLInputElement>(null);
     const imageFileInputRef = useRef<HTMLInputElement>(null);
 

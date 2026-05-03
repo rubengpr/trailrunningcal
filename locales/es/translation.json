@@ -572,7 +572,7 @@
           "error": "Error al eliminar la URL"
         }
       },
-      "scrape": {
+      "import": {
         "title": "Extraer carreras de una web",
         "subtitle": "Rastrea una web, procesa un Markdown con IA o haz ambos para obtener carreras estructuradas.",
         "workflowCrawlMdOnly": "Scrap",

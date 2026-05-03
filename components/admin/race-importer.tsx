@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useReducer, useRef, useState } from 'react';
+import type { ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
 import { FormSelect } from '@/components/ui/form-select';
@@ -98,7 +99,7 @@ function RestartIcon({ className = 'h-5 w-5' }: { className?: string }): React.R
 }
 
 function PageStatsBadges({ pageStats, size = 'sm' }: { pageStats: PageStats; size?: 'sm' | 'md' }): React.ReactElement {
-    const t = useTranslations('admin.races.scrape');
+    const t = useTranslations('admin.races.import');
     const cls = size === 'sm' ? 'px-2 text-[11px]' : 'px-2.5 py-1 text-xs';
     return (
         <>
@@ -112,6 +113,41 @@ function PageStatsBadges({ pageStats, size = 'sm' }: { pageStats: PageStats; siz
                 {t('crawledPagesHttpError', { errorPages: pageStats.errorCount })}
             </span>
         </>
+    );
+}
+
+function PipelineRow({ kind, title, durationMs, errorDetail, children }: {
+    kind: FullPipelineRowKind;
+    title?: string;
+    durationMs?: number | null;
+    errorDetail?: string | null;
+    children?: ReactNode;
+}): React.ReactElement {
+    const t = useTranslations('admin.races.import');
+    return (
+        <div className="flex items-start gap-3">
+            <div className="flex h-5 w-4 shrink-0 flex-col items-center justify-center">
+                <FullPipelineRowIcon kind={kind} />
+            </div>
+            <div className="min-w-0 flex-1">
+                {title !== undefined && (
+                    <>
+                        <p className={`flex flex-wrap items-center gap-x-2 text-sm font-medium leading-5 ${kind === 'error' ? 'text-red-700' : 'text-gray-900'}`}>
+                            <span>{title}</span>
+                            {durationMs != null && (
+                                <span className="text-xs font-normal text-gray-500 tabular-nums">
+                                    {t('fullPipelineStepDuration', { duration: formatDurationMs(durationMs) })}
+                                </span>
+                            )}
+                            {children}
+                        </p>
+                        {errorDetail && (
+                            <p className="mt-0.5 text-xs text-red-600">{errorDetail}</p>
+                        )}
+                    </>
+                )}
+            </div>
+        </div>
     );
 }
 
@@ -386,7 +422,7 @@ interface RaceImporterProps {
 }
 
 export function RaceImporter({ pendingEntries }: RaceImporterProps) {
-    const t = useTranslations('admin.races.scrape');
+    const t = useTranslations('admin.races.import');
 
     const pendingUrlOptions: ComboboxOption[] = pendingEntries.map((e) => ({
         value: e.url,
@@ -1231,149 +1267,64 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                     {(fullPipelineSteps !== null || persistedPipelineRows.length > 0) && (
                         <div className="space-y-3 border-t border-gray-100 pt-4">
                             {persistedPipelineRows.map((row, idx) => (
-                                <div key={`persisted-${idx}`} className="flex items-start gap-3">
-                                    <div className="flex h-5 w-4 shrink-0 flex-col items-center justify-center">
-                                        <FullPipelineRowIcon kind={row.kind} />
-                                    </div>
-                                    <div className="min-w-0 flex-1">
-                                        {row.titleKey !== undefined && (
-                                            <>
-                                                <p
-                                                    className={`flex flex-wrap items-center gap-x-2 text-sm font-medium leading-5 ${row.kind === 'error'
-                                                        ? 'text-red-700'
-                                                        : 'text-gray-900'
-                                                        }`}
-                                                >
-                                                    <span>{t(row.titleKey)}</span>
-                                                    {row.durationMs !== null && (
-                                                        <span className="text-xs font-normal text-gray-500 tabular-nums">
-                                                            {t('fullPipelineStepDuration', {
-                                                                duration: formatDurationMs(row.durationMs),
-                                                            })}
-                                                        </span>
-                                                    )}
-                                                    {row.pageStats && (
-                                                        <span className="inline-flex flex-wrap items-center gap-1.5">
-                                                            <PageStatsBadges pageStats={row.pageStats} />
-                                                            {row.markdownTokenEstimate !== null &&
-                                                                row.markdownTokenEstimate !== undefined &&
-                                                                row.markdownCharCount !== null &&
-                                                                row.markdownCharCount !== undefined && (
-                                                                    <span className="text-xs font-normal text-gray-500 tabular-nums">
-                                                                        <span className="font-bold text-gray-700">
-                                                                            {row.markdownTokenEstimate}
-                                                                        </span>{' '}
-                                                                        {t('markdownStatTokensLabel')}
-                                                                        {' · '}
-                                                                        <span className="font-bold text-gray-700">
-                                                                            {row.markdownCharCount}
-                                                                        </span>{' '}
-                                                                        {t('markdownStatCharactersLabel')}
-                                                                    </span>
-                                                                )}
-                                                        </span>
-                                                    )}
-                                                </p>
-                                                {row.errorDetail && (
-                                                    <p className="mt-0.5 text-xs text-red-600">
-                                                        {row.errorDetail}
-                                                    </p>
-                                                )}
-                                            </>
-                                        )}
-                                    </div>
-                                </div>
+                                <PipelineRow
+                                    key={`persisted-${idx}`}
+                                    kind={row.kind}
+                                    title={row.titleKey !== undefined ? t(row.titleKey) : undefined}
+                                    durationMs={row.durationMs}
+                                    errorDetail={row.errorDetail}
+                                >
+                                    {row.pageStats && (
+                                        <span className="inline-flex flex-wrap items-center gap-1.5">
+                                            <PageStatsBadges pageStats={row.pageStats} />
+                                            {row.markdownTokenEstimate != null && row.markdownCharCount != null && (
+                                                <span className="text-xs font-normal text-gray-500 tabular-nums">
+                                                    <span className="font-bold text-gray-700">{row.markdownTokenEstimate}</span>{' '}
+                                                    {t('markdownStatTokensLabel')}
+                                                    {' · '}
+                                                    <span className="font-bold text-gray-700">{row.markdownCharCount}</span>{' '}
+                                                    {t('markdownStatCharactersLabel')}
+                                                </span>
+                                            )}
+                                        </span>
+                                    )}
+                                </PipelineRow>
                             ))}
                             {fullPipelineSteps !== null && (
                                 <>
-                                    <div className="flex items-start gap-3">
-                                        <div className="flex h-5 w-4 shrink-0 flex-col items-center justify-center">
-                                            <FullPipelineRowIcon kind={fullPipelineSteps.row1.kind} />
-                                        </div>
-                                        <div className="min-w-0 flex-1">
-                                            {fullPipelineSteps.row1.titleKey !== undefined && (
-                                                <>
-                                                    <p
-                                                        className={`flex flex-wrap items-center gap-x-2 text-sm font-medium leading-5 ${fullPipelineSteps.row1.kind === 'error'
-                                                            ? 'text-red-700'
-                                                            : 'text-gray-900'
-                                                            }`}
-                                                    >
-                                                        <span>{t(fullPipelineSteps.row1.titleKey)}</span>
-                                                        {fullPipelineCrawlStepMs !== null && (
-                                                            <span className="text-xs font-normal text-gray-500 tabular-nums">
-                                                                {t('fullPipelineStepDuration', {
-                                                                    duration: formatDurationMs(fullPipelineCrawlStepMs),
-                                                                })}
-                                                            </span>
-                                                        )}
-                                                        {(workflow === 'crawlSiteExtract' || workflow === 'autopilot') && pageStats !== null && (
-                                                            <span className="inline-flex flex-wrap items-center gap-1.5">
-                                                                <PageStatsBadges pageStats={pageStats} />
-                                                                {showMarkdownEstimateBesidePageStats && (
-                                                                    <span className="text-xs font-normal text-gray-500 tabular-nums">
-                                                                        <span className="font-bold text-gray-700">
-                                                                            {parseUploadTokenEstimate !== null
-                                                                                ? parseUploadTokenEstimate
-                                                                                : markdownTokenEstimate!}
-                                                                        </span>{' '}
-                                                                        {t('markdownStatTokensLabel')}
-                                                                        {' · '}
-                                                                        <span className="font-bold text-gray-700">
-                                                                            {parseUploadTokenEstimate !== null
-                                                                                ? markdownTrimmedCharCount(uploadedMarkdown!)
-                                                                                : markdownTrimmedCharCount(scrapeMarkdown!)}
-                                                                        </span>{' '}
-                                                                        {t('markdownStatCharactersLabel')}
-                                                                    </span>
-                                                                )}
-                                                            </span>
-                                                        )}
-                                                    </p>
-                                                    {fullPipelineSteps.row1.errorDetail !== undefined &&
-                                                        fullPipelineSteps.row1.errorDetail !== null &&
-                                                        fullPipelineSteps.row1.errorDetail !== '' && (
-                                                            <p className="mt-0.5 text-xs text-red-600">
-                                                                {fullPipelineSteps.row1.errorDetail}
-                                                            </p>
-                                                        )}
-                                                </>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <div className="flex items-start gap-3">
-                                        <div className="flex h-5 w-4 shrink-0 flex-col items-center justify-center">
-                                            <FullPipelineRowIcon kind={fullPipelineSteps.row2.kind} />
-                                        </div>
-                                        <div className="min-w-0 flex-1">
-                                            {fullPipelineSteps.row2.titleKey !== undefined && (
-                                                <>
-                                                    <p
-                                                        className={`flex flex-wrap items-center gap-x-2 text-sm font-medium leading-5 ${fullPipelineSteps.row2.kind === 'error'
-                                                            ? 'text-red-700'
-                                                            : 'text-gray-900'
-                                                            }`}
-                                                    >
-                                                        <span>{t(fullPipelineSteps.row2.titleKey)}</span>
-                                                        {fullPipelineLlmStepMs !== null && (
-                                                            <span className="text-xs font-normal text-gray-500 tabular-nums">
-                                                                {t('fullPipelineStepDuration', {
-                                                                    duration: formatDurationMs(fullPipelineLlmStepMs),
-                                                                })}
-                                                            </span>
-                                                        )}
-                                                    </p>
-                                                    {fullPipelineSteps.row2.errorDetail !== undefined &&
-                                                        fullPipelineSteps.row2.errorDetail !== null &&
-                                                        fullPipelineSteps.row2.errorDetail !== '' && (
-                                                            <p className="mt-0.5 text-xs text-red-600">
-                                                                {fullPipelineSteps.row2.errorDetail}
-                                                            </p>
-                                                        )}
-                                                </>
-                                            )}
-                                        </div>
-                                    </div>
+                                    <PipelineRow
+                                        kind={fullPipelineSteps.row1.kind}
+                                        title={fullPipelineSteps.row1.titleKey !== undefined ? t(fullPipelineSteps.row1.titleKey) : undefined}
+                                        durationMs={fullPipelineCrawlStepMs}
+                                        errorDetail={fullPipelineSteps.row1.errorDetail}
+                                    >
+                                        {(workflow === 'crawlSiteExtract' || workflow === 'autopilot') && pageStats !== null && (
+                                            <span className="inline-flex flex-wrap items-center gap-1.5">
+                                                <PageStatsBadges pageStats={pageStats} />
+                                                {showMarkdownEstimateBesidePageStats && (
+                                                    <span className="text-xs font-normal text-gray-500 tabular-nums">
+                                                        <span className="font-bold text-gray-700">
+                                                            {parseUploadTokenEstimate !== null ? parseUploadTokenEstimate : markdownTokenEstimate!}
+                                                        </span>{' '}
+                                                        {t('markdownStatTokensLabel')}
+                                                        {' · '}
+                                                        <span className="font-bold text-gray-700">
+                                                            {parseUploadTokenEstimate !== null
+                                                                ? markdownTrimmedCharCount(uploadedMarkdown!)
+                                                                : markdownTrimmedCharCount(scrapeMarkdown!)}
+                                                        </span>{' '}
+                                                        {t('markdownStatCharactersLabel')}
+                                                    </span>
+                                                )}
+                                            </span>
+                                        )}
+                                    </PipelineRow>
+                                    <PipelineRow
+                                        kind={fullPipelineSteps.row2.kind}
+                                        title={fullPipelineSteps.row2.titleKey !== undefined ? t(fullPipelineSteps.row2.titleKey) : undefined}
+                                        durationMs={fullPipelineLlmStepMs}
+                                        errorDetail={fullPipelineSteps.row2.errorDetail}
+                                    />
                                 </>
                             )}
                         </div>

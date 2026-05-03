@@ -17,7 +17,7 @@ interface BulkProcessTableProps {
 }
 
 function StateBadge({ state }: { state: BulkProcessState }) {
-    const t = useTranslations('admin.races.scrape.bulk');
+    const t = useTranslations('admin.races.import.bulk');
     const dotColor: Record<BulkProcessState, string> = {
         completed: 'bg-green-500',
         processing: 'bg-purple-500',
@@ -40,7 +40,7 @@ function TimeCell({ ms }: { ms: number | null }) {
 }
 
 export function BulkProcessTable({ rows }: BulkProcessTableProps) {
-    const t = useTranslations('admin.races.scrape.bulk');
+    const t = useTranslations('admin.races.import.bulk');
 
     if (rows.length === 0) {
         return null;
