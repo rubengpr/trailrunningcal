@@ -1,4 +1,4 @@
-import { locales, type Locale } from '../i18n';
+import { locales, type Locale } from '@/i18n';
 
 export const AVAILABLE_LANGUAGES = locales;
 
