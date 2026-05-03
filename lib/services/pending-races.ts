@@ -1,5 +1,4 @@
 import { createAdminClient } from '@/lib/supabase/server';
-import { normalizeUrl } from '@/lib/validation';
 import { isUrlInRaces, isUrlInPendingRaces, insertPendingRace } from '@/lib/db/pending-races';
 import type { PendingRace } from '@/types/pending-race.types';
 
@@ -8,48 +7,37 @@ export type AddPendingRacesResult = {
   skipped: { url: string; reason: string }[];
 };
 
-export async function createPendingRaces(rawUrls: string[]): Promise<AddPendingRacesResult> {
+export async function createPendingRaces(urls: string[]): Promise<AddPendingRacesResult> {
   const supabase = createAdminClient();
   const added: PendingRace[] = [];
   const skipped: { url: string; reason: string }[] = [];
 
-  for (const rawUrl of rawUrls) {
-    if (typeof rawUrl !== 'string' || rawUrl.trim().length === 0) continue;
-
-    const normalizedUrl = normalizeUrl(rawUrl.trim());
-
-    try {
-      new URL(normalizedUrl);
-    } catch {
-      skipped.push({ url: rawUrl.trim(), reason: 'invalidUrl' });
-      continue;
-    }
-
+  for (const url of urls) {
     try {
       const [inRaces, inPending] = await Promise.all([
-        isUrlInRaces(supabase, normalizedUrl),
-        isUrlInPendingRaces(supabase, normalizedUrl),
+        isUrlInRaces(supabase, url),
+        isUrlInPendingRaces(supabase, url),
       ]);
 
       if (inRaces) {
-        skipped.push({ url: normalizedUrl, reason: 'alreadyInRaces' });
+        skipped.push({ url, reason: 'alreadyInRaces' });
         continue;
       }
 
       if (inPending) {
-        skipped.push({ url: normalizedUrl, reason: 'alreadyInQueue' });
+        skipped.push({ url, reason: 'alreadyInQueue' });
         continue;
       }
 
-      const entry = await insertPendingRace(supabase, normalizedUrl);
+      const entry = await insertPendingRace(supabase, url);
       if (!entry) {
-        skipped.push({ url: normalizedUrl, reason: 'insertFailed' });
+        skipped.push({ url, reason: 'insertFailed' });
         continue;
       }
 
       added.push(entry);
     } catch {
-      skipped.push({ url: normalizedUrl, reason: 'lookupFailed' });
+      skipped.push({ url, reason: 'lookupFailed' });
     }
   }
 
