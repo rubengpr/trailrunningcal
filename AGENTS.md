@@ -21,7 +21,7 @@ For business context, metrics, positioning, and audience — invoke the `/produc
 - **Service layer inputs:** services receive already-validated and normalized data — never validate or normalize inside a service
 - **Service layer:** business logic lives in `lib/services/{feature}.ts`. DB access lives in `lib/db/`.
 - **External provider structure:** each provider lives under `lib/integrations/{provider}/` with `client.ts` (HTTP calls, auth, raw shapes), `service.ts` (orchestration, added when needed), and named helpers as they emerge (e.g. `lib/integrations/spider-cloud/`, `lib/integrations/openrouter/`)
-- **Data layer:** Server Components read directly via `lib/db/*`; Client Components mutate via API routes + `lib/api/*` wrappers — never fetch server-available data from the client
+- **Data layer:** Server Components read directly via `lib/db/*`; Client Components call own API routes exclusively through `lib/api/*` wrappers.
 - **DB transactions:** multi-table writes must be atomic. Use Postgres functions (`plpgsql`) via `supabase.rpc(...)` — do not orchestrate split writes in route handlers. Prefer `SECURITY INVOKER` and explicit `GRANT EXECUTE`.
 
 ## Components
