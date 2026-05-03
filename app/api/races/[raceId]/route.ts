@@ -1,37 +1,9 @@
 import { createClient, createAdminClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
-import { revalidatePath } from 'next/cache';
 import { getOrganizerRaceContext } from '@/lib/auth-organizer';
 import { isAdminEmail } from '@/lib/auth-admin';
-import { generateRaceSlug } from '@/lib/race-utils';
-import { locales } from '@/i18n';
-
-function revalidateHomepages() {
-  for (const locale of locales) {
-    revalidatePath(`/${locale}`, 'page');
-  }
-}
-
-function revalidateRacePages(raceName: string) {
-  const slug = generateRaceSlug(raceName);
-  for (const locale of locales) {
-    revalidatePath(`/${locale}/carrera/${slug}`, 'page');
-  }
-}
-
-function sanitizeDescription(description: unknown): { value: string | null; error: string | null } {
-  if (description === undefined || description === null) {
-    return { value: null, error: null };
-  }
-  if (typeof description !== 'string') {
-    return { value: null, error: 'Invalid input' };
-  }
-  const trimmed = description.trim();
-  if (trimmed.length > 0 && (trimmed.length < 10 || trimmed.length > 2000)) {
-    return { value: null, error: 'Invalid input' };
-  }
-  return { value: trimmed.length > 0 ? trimmed : null, error: null };
-}
+import { revalidateHomepages, revalidateRacePages } from '@/lib/revalidation';
+import { sanitizeDescription } from '@/app/api/races/validation';
 
 export async function PATCH(
   request: NextRequest,

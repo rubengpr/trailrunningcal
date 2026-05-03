@@ -1,30 +1,10 @@
 import { createClient, createAdminClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
-import { revalidatePath } from 'next/cache';
 import { isAdminEmail } from '@/lib/auth-admin';
-import { locales } from '@/i18n';
-
-function revalidateHomepages() {
-  for (const locale of locales) {
-    revalidatePath(`/${locale}`, 'page');
-  }
-}
+import { revalidateHomepages } from '@/lib/revalidation';
+import { sanitizeDescription } from '@/app/api/races/validation';
 
 const MAX_RACES_PER_ORGANIZER = 5;
-
-function sanitizeDescription(description: unknown): { value: string | null; error: string | null } {
-  if (description === undefined || description === null) {
-    return { value: null, error: null };
-  }
-  if (typeof description !== 'string') {
-    return { value: null, error: 'Invalid input' };
-  }
-  const trimmed = description.trim();
-  if (trimmed.length > 0 && (trimmed.length < 10 || trimmed.length > 2000)) {
-    return { value: null, error: 'Invalid input' };
-  }
-  return { value: trimmed.length > 0 ? trimmed : null, error: null };
-}
 
 export async function POST(request: NextRequest) {
   try {

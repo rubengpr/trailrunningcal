@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth-admin';
-import { parseInput, ValidationError } from './validate-input';
+import { parseInput, ValidationError } from './validation';
 import { crawlSite, scrapePage } from '@/lib/integrations/spider-cloud/service';
 
 export const maxDuration = 60;
