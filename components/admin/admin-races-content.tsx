@@ -37,7 +37,7 @@ export function AdminRacesContent({ races }: AdminRacesContentProps) {
             }
             headerAction={
                 <div className="flex gap-2">
-                    <Button variant="secondary" onClick={() => router.push(`/${locale}/admin/carreras/scrape`)}>
+                    <Button variant="secondary" onClick={() => router.push(`/${locale}/admin/carreras/import`)}>
                         {t('scrapeButton')}
                     </Button>
                     <Button onClick={() => router.push(`/${locale}/admin/carreras/new`)}>

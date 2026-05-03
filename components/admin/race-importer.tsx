@@ -364,11 +364,11 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
     }
 }
 
-interface ScrapePageContentProps {
+interface RaceImporterProps {
     pendingEntries: PendingRace[];
 }
 
-export function ScrapePageContent({ pendingEntries }: ScrapePageContentProps) {
+export function RaceImporter({ pendingEntries }: RaceImporterProps) {
     const t = useTranslations('admin.races.scrape');
 
     const pendingUrlOptions: ComboboxOption[] = pendingEntries.map((e) => ({

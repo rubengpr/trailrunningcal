@@ -1,11 +1,11 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { AdminLayout } from '@/components/admin/admin-layout';
-import { ScrapePageContent } from '@/components/admin/scrape-page-content';
+import { RaceImporter } from '@/components/admin/race-importer';
 import { getPendingRaces } from '@/lib/db/pending-races';
 import { isAdminEmail } from '@/lib/auth-admin';
 
-export default async function AdminScrapePage({
+export default async function AdminImportPage({
     params,
 }: {
     params: Promise<{ locale: string }>;
@@ -28,7 +28,7 @@ export default async function AdminScrapePage({
 
     return (
         <AdminLayout>
-            <ScrapePageContent pendingEntries={pendingEntries} />
+            <RaceImporter pendingEntries={pendingEntries} />
         </AdminLayout>
     );
 }
