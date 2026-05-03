@@ -9,13 +9,13 @@ export async function checkRaceImage(raceId: string): Promise<RaceImageStatus> {
     method: 'GET',
   });
 
-  const data = await response.json();
+  const json = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.error ?? 'Failed to check image');
+    throw new Error(json.error ?? 'Failed to check image');
   }
 
-  return data;
+  return json.data;
 }
 
 export async function uploadRaceImage(raceId: string, file: File): Promise<void> {

@@ -51,7 +51,7 @@ export async function GET(
       .single();
 
     if (raceError || !raceRow || !raceRow.organizer_id) {
-      return NextResponse.json({ hasImage: false });
+      return NextResponse.json({ success: true, data: { hasImage: false } });
     }
 
     const organizerId = raceRow.organizer_id;
@@ -75,14 +75,13 @@ export async function GET(
     }
 
     if (!filename) {
-      return NextResponse.json({ hasImage: false });
+      return NextResponse.json({ success: true, data: { hasImage: false } });
     }
 
     const imageUrl = getRaceImageUrlWithFilename(organizerId, raceId, filename);
     return NextResponse.json({
-      hasImage: true,
-      filename,
-      imageUrl,
+      success: true,
+      data: { hasImage: true, filename, imageUrl },
     });
   } catch (error) {
     console.error('API error:', error);
