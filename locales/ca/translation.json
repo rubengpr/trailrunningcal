@@ -460,31 +460,31 @@
     "addRaceA": "Pots proposar una cursa fent servir el formulari de la web o contactant a info@trailrunningcal.com. Si ets l'organitzador, pots reclamar la propietat de l'esdeveniment i afegir dades com fotos, mapa i preus."
   },
   "ultraTrail": {
-    "pageTitle": "Ultra Trail Running {year} - Curses de més de 50 km",
+    "pageTitle": "Ultra Trail Running Catalunya {year} - Curses de més de 50 km",
     "pageDescription": "Troba totes les curses d'ultra trail running a Catalunya (més de 50 km). Dates, desnivells i tota la informació per al {year}.",
     "pageBody": "Les curses d'ultra trail (més de 50 km) representen el màxim desafiament del running de muntanya: distàncies extremes, grans desnivells i terrenys alpins d'alta muntanya. A Catalunya, l'ultra trail té el seu escenari al Pirineu, el Prepirineu i espais naturals protegits, amb proves que van dels 50 fins als més de 100 km.",
     "breadcrumb": "Ultra Trail"
   },
   "maraton": {
-    "pageTitle": "Marató Trail Running {year} - Curses de 40 a 50 km",
+    "pageTitle": "Marató Trail Running Catalunya {year} - Curses de 40 a 50 km",
     "pageDescription": "Troba totes les curses de trail running de marató a Catalunya (40-50 km). Dates, desnivells i tota la informació per al {year}.",
     "pageBody": "La marató de trail running (40–50 km) és la distància de referència per a corredors de muntanya amb experiència. Combina resistència, tècnica i coneixement del terreny en recorreguts per senders, crestes i cims. A Catalunya, les maratons de trail discorren per entorns únics com el Pirineu, el Montseny i els Ports de Tortosa-Beseit.",
     "breadcrumb": "Marató Trail"
   },
   "mediaMaraton": {
-    "pageTitle": "Mitja Marató Trail Running {year} - Curses de 20 a 24 km",
+    "pageTitle": "Mitja Marató Trail Running Catalunya {year} - Curses de 20 a 24 km",
     "pageDescription": "Troba totes les curses de trail running de mitja marató a Catalunya (20-24 km). Dates, desnivells i tota la informació per al {year}.",
     "pageBody": "La mitja marató de trail running (20–24 km) és una de les distàncies més populars entre els corredors de muntanya. Una distància exigent que combina resistència i tècnica en terreny de muntanya, i un pas habitual cap a maratons i ultres. A Catalunya trobaràs mitges maratons de trail pel Pirineu, el Montseny, la Costa Brava i el Garraf al llarg de tot l'any.",
     "breadcrumb": "Mitja Marató Trail"
   },
   "marcha": {
-    "pageTitle": "Marxes i Caminades {year} - Rutes no competitives a Catalunya",
+    "pageTitle": "Marxes i Caminades Catalunya {year} - Rutes no competitives",
     "pageDescription": "Troba totes les marxes populars i caminades a Catalunya. Rutes per a tots els nivells, sense competició, en entorns naturals. Dates i informació per al {year}.",
     "pageBody": "Les marxes populars i caminades són proves no competitives pensades per gaudir de l'entorn natural a peu o corrent sense cronòmetre. A Catalunya trobaràs marxes pel Pirineu, el Montseny, la Costa Brava i el Garraf, amb recorreguts per a tots els nivells i edats. Una opció ideal per iniciar-se al trail running o per participar en família.",
     "breadcrumb": "Marxa Popular"
   },
   "kmVertical": {
-    "pageTitle": "Quilòmetre Vertical {year} - Curses d'alta muntanya a Catalunya",
+    "pageTitle": "Quilòmetre Vertical Catalunya {year} - Curses d'alta muntanya",
     "pageDescription": "Troba totes les curses de quilòmetre vertical a Catalunya. Proves de curta distància amb desnivell extrem per al {year}.",
     "pageBody": "El quilòmetre vertical (KV) és una modalitat de cursa de muntanya caracteritzada per una distància curta —generalment entre 3 i 5 km— amb un desnivell positiu molt elevat en proporció. Requereix una potència i resistència muscular excepcionals. A Catalunya, els KV se celebren als entorns més verticals del Pirineu i les serralades prelitorals, amb proves que formen part de circuits nacionals i internacionals.",
     "breadcrumb": "Quilòmetre Vertical"

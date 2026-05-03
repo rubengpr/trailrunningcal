@@ -457,31 +457,31 @@
     "addRaceA": "Puedes proponer una carrera usando el formulario de la web o contactando en info@trailrunningcal.com. Si eres el organizador, puedes reclamar la propiedad del evento y añadir datos como fotos, mapa y precios."
   },
   "ultraTrail": {
-    "pageTitle": "Ultra Trail Running {year} - Carreras de más de 50 km",
+    "pageTitle": "Ultra Trail Running Cataluña {year} - Carreras de más de 50 km",
     "pageDescription": "Encuentra todas las carreras de ultra trail running en Cataluña (más de 50 km). Fechas, desniveles y toda la información para {year}.",
     "pageBody": "Las carreras de ultra trail (más de 50 km) representan el máximo desafío del running de montaña: distancias extremas, grandes desniveles y terrenos alpinos de alta montaña. En Cataluña, el ultra trail tiene su escenario en el Pirineo, el Prepirineo y espacios naturales protegidos, con pruebas que van desde los 50 hasta los más de 100 km.",
     "breadcrumb": "Ultra Trail"
   },
   "maraton": {
-    "pageTitle": "Maratón Trail Running {year} - Carreras de 40 a 50 km",
+    "pageTitle": "Maratón Trail Running Cataluña {year} - Carreras de 40 a 50 km",
     "pageDescription": "Encuentra todas las carreras de trail running de maratón en Cataluña (40-50 km). Fechas, desniveles y toda la información para {year}.",
     "pageBody": "La maratón de trail running (40–50 km) es la distancia de referencia para corredores de montaña con experiencia. Combina resistencia, técnica y conocimiento del terreno en recorridos por senderos, crestas y cimas. En Cataluña, las maratones de trail discurren por entornos únicos como el Pirineo, el Montseny y los Ports de Tortosa-Beseit.",
     "breadcrumb": "Maratón Trail"
   },
   "mediaMaraton": {
-    "pageTitle": "Media Maratón Trail Running {year} - Carreras de 20 a 24 km",
+    "pageTitle": "Media Maratón Trail Running Cataluña {year} - Carreras de 20 a 24 km",
     "pageDescription": "Encuentra todas las carreras de trail running de media maratón en Cataluña (20-24 km). Fechas, desniveles y toda la información para {year}.",
     "pageBody": "La media maratón de trail running (20–24 km) es una de las distancias más populares entre corredores de montaña. Una distancia exigente que combina resistencia y técnica en terreno de montaña, y un paso habitual hacia maratones y ultras. En Cataluña encontrarás media maratones de trail por el Pirineo, el Montseny, la Costa Brava y el Garraf a lo largo de todo el año.",
     "breadcrumb": "Media Maratón Trail"
   },
   "marcha": {
-    "pageTitle": "Marchas y Caminadas {year} - Rutas no competitivas en Cataluña",
+    "pageTitle": "Marchas y Caminadas Cataluña {year} - Rutas no competitivas",
     "pageDescription": "Encuentra todas las marchas populares y caminadas en Cataluña. Rutas para todos los niveles, sin competición, en entornos naturales. Fechas e información para {year}.",
     "pageBody": "Las marchas populares y caminadas son pruebas no competitivas pensadas para disfrutar del entorno natural a pie o corriendo sin cronómetro. En Cataluña encontrarás marchas por el Pirineo, el Montseny, la Costa Brava y el Garraf, con recorridos para todos los niveles y edades. Una opción ideal para iniciarse en el trail running o para participar en familia.",
     "breadcrumb": "Marcha Popular"
   },
   "kmVertical": {
-    "pageTitle": "Kilómetro Vertical {year} - Carreras de alta montaña en Cataluña",
+    "pageTitle": "Kilómetro Vertical Cataluña {year} - Carreras de alta montaña",
     "pageDescription": "Encuentra todas las carreras de kilómetro vertical en Cataluña. Pruebas de corta distancia con desnivel extremo para {year}.",
     "pageBody": "El kilómetro vertical (KV) es una modalidad de carrera de montaña caracterizada por una distancia corta —generalmente entre 3 y 5 km— con un desnivel positivo muy elevado en proporción. Requiere una potencia y resistencia muscular excepcionales. En Cataluña, los KV se celebran en los entornos más verticales del Pirineo y las cordilleras prelitorales, con pruebas que forman parte de circuitos nacionales e internacionales.",
     "breadcrumb": "Kilómetro Vertical"
