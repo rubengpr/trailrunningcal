@@ -8,6 +8,7 @@ import { FormSelect } from '@/components/ui/form-select';
 import { Combobox } from '@/components/ui/combobox';
 import type { ComboboxOption } from '@/components/ui/combobox';
 import { Button } from '@/components/ui/button';
+import { TabSwitcher } from '@/components/ui/tab-switcher';
 import { SectionHeader } from '@/components/ui/section-header';
 import { SuggestedRacesPreview } from '@/components/race/suggested-races-preview';
 import {
@@ -990,55 +991,25 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
             />
             <div className="max-w-3xl rounded-2xl border border-gray-100 bg-white p-6 shadow-sm sm:p-8">
                 <div className="space-y-6">
-                    <div className="inline-flex rounded-lg border border-gray-200 bg-gray-50/80 p-1">
-                        <button
-                            type="button"
-                            onClick={() => handleWorkflowChange('autopilot')}
-                            disabled={isScraping}
-                            className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${workflow === 'autopilot'
-                                ? 'bg-white text-gray-900 shadow-sm'
-                                : 'text-gray-600 hover:text-gray-900'
-                                }`}
-                        >
-                            <span className="inline-flex items-center gap-1.5">
-                                <Sparkles className="size-4" strokeWidth={1.5} />
-                                {t('workflowAutopilot')}
-                            </span>
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => handleWorkflowChange('crawlSiteExtract')}
-                            disabled={isScraping}
-                            className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${workflow === 'crawlSiteExtract'
-                                ? 'bg-white text-gray-900 shadow-sm'
-                                : 'text-gray-600 hover:text-gray-900'
-                                }`}
-                        >
-                            {t('workflowCrawlAndLlm')}
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => handleWorkflowChange('crawlMdOnly')}
-                            disabled={isScraping}
-                            className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${workflow === 'crawlMdOnly'
-                                ? 'bg-white text-gray-900 shadow-sm'
-                                : 'text-gray-600 hover:text-gray-900'
-                                }`}
-                        >
-                            {t('workflowCrawlMdOnly')}
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => handleWorkflowChange('llmFromFile')}
-                            disabled={isScraping}
-                            className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${workflow === 'llmFromFile'
-                                ? 'bg-white text-gray-900 shadow-sm'
-                                : 'text-gray-600 hover:text-gray-900'
-                                }`}
-                        >
-                            {t('workflowLlmFromFile')}
-                        </button>
-                    </div>
+                    <TabSwitcher
+                        tabs={[
+                            {
+                                id: 'autopilot',
+                                label: (
+                                    <span className="inline-flex items-center gap-1.5">
+                                        <Sparkles className="size-4" strokeWidth={1.5} />
+                                        {t('workflowAutopilot')}
+                                    </span>
+                                ),
+                            },
+                            { id: 'crawlSiteExtract', label: t('workflowCrawlAndLlm') },
+                            { id: 'crawlMdOnly', label: t('workflowCrawlMdOnly') },
+                            { id: 'llmFromFile', label: t('workflowLlmFromFile') },
+                        ]}
+                        activeId={workflow}
+                        onChange={(id) => handleWorkflowChange(id as ScrapeWorkflow)}
+                        disabled={isScraping}
+                    />
 
                     {(workflow === 'crawlMdOnly' || workflow === 'crawlSiteExtract' || workflow === 'autopilot') && (
                         <div className="grid gap-2 w-full">
@@ -1105,8 +1076,8 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                                         disabled={isScraping || uploadKind === 'images'}
                                         title={t('uploadMarkdownButtonTitle')}
                                         className={`inline-flex h-9 w-9 items-center justify-center rounded-md border shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${uploadKind === 'markdown'
-                                                ? 'border-gray-900 bg-gray-50 text-gray-900'
-                                                : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                            ? 'border-gray-900 bg-gray-50 text-gray-900'
+                                            : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                                             }`}
                                     >
                                         <FileText className="h-4 w-4" strokeWidth={2} />
@@ -1117,8 +1088,8 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                                         disabled={isScraping || uploadKind === 'markdown'}
                                         title={t('uploadImagesButtonTitle')}
                                         className={`inline-flex h-9 w-9 items-center justify-center rounded-md border shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${uploadKind === 'images'
-                                                ? 'border-gray-900 bg-gray-50 text-gray-900'
-                                                : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                            ? 'border-gray-900 bg-gray-50 text-gray-900'
+                                            : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                                             }`}
                                     >
                                         <ImageIcon className="h-4 w-4" strokeWidth={2} />
@@ -1388,22 +1359,19 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                     </div>
                 )}
             {showLlmMetricsUi && hasScraped && !isScraping && scrapeError === null && (
-                <div className="inline-flex rounded-lg border border-gray-200 bg-gray-50/80 p-1 self-start">
-                    <button
-                        type="button"
-                        onClick={() => dispatch({ type: 'JSON_TAB_CLOSED' })}
-                        className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${!jsonView ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}
-                    >
-                        {t('racesTab')}
-                    </button>
-                    <button
-                        type="button"
-                        onClick={handleSwitchToJsonView}
-                        className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${jsonView ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}
-                    >
-                        {t('jsonTab')}
-                    </button>
-                </div>
+                <TabSwitcher
+                tabs={[
+                    { id: 'races', label: t('racesTab') },
+                    { id: 'json', label: t('jsonTab') },
+                ]}
+                activeId={jsonView ? 'json' : 'races'}
+                onChange={(id) =>
+                    id === 'json'
+                        ? handleSwitchToJsonView()
+                        : dispatch({ type: 'JSON_TAB_CLOSED' })
+                }
+                className="self-start"
+            />
             )}
             {showSuggestedRacesPreview && !jsonView && (
                 <SuggestedRacesPreview
