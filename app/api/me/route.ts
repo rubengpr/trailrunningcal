@@ -8,11 +8,11 @@ export async function GET() {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json({ isAdmin: false });
+      return NextResponse.json({ success: true, data: { isAdmin: false } });
     }
 
-    return NextResponse.json({ isAdmin: isAdminEmail(user.email) });
+    return NextResponse.json({ success: true, data: { isAdmin: isAdminEmail(user.email) } });
   } catch {
-    return NextResponse.json({ isAdmin: false });
+    return NextResponse.json({ success: true, data: { isAdmin: false } });
   }
 }
