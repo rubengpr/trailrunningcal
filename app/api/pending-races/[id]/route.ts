@@ -12,7 +12,7 @@ export async function DELETE(
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user || !isAdminEmail(user.email)) {
-      return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const admin = createAdminClient();
@@ -24,12 +24,12 @@ export async function DELETE(
 
     if (deleteError) {
       console.error('Pending race delete error:', deleteError);
-      return NextResponse.json({ error: 'failedToDeleteEntry' }, { status: 500 });
+      return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('API error:', error);
-    return NextResponse.json({ error: 'internalServerError' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
