@@ -14,7 +14,7 @@ function getSponsorAltFromUrl(url: string): string {
   return capitalized ? `${capitalized} logo` : 'Sponsor logo';
 }
 
-export default function Sponsors({ sponsors }: SponsorsProps) {
+export function Sponsors({ sponsors }: SponsorsProps) {
   return (
     <div className="flex flex-row flex-wrap justify-center items-center py-4 md:py-8 gap-2 md:gap-4 lg:gap-6">
       {sponsors.map((sponsor, index) => (

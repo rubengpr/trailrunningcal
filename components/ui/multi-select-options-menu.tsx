@@ -2,7 +2,7 @@
 
 import type { CSSProperties, RefObject } from 'react';
 import { Check } from 'lucide-react';
-import MultiSelectOption from '@/components/ui/multi-select-option';
+import { MultiSelectOption } from '@/components/ui/multi-select-option';
 
 export interface MultiSelectOptionItem {
   value: string;
@@ -19,7 +19,7 @@ interface MultiSelectOptionsMenuProps {
   style?: CSSProperties;
 }
 
-export default function MultiSelectOptionsMenu({
+export function MultiSelectOptionsMenu({
   options,
   selectedValues,
   placeholder,

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import BlogPostCard from '@/components/blog/blog-post-card';
+import { BlogPostCard } from '@/components/blog/blog-post-card';
 import type { Locale } from '@/i18n';
 import { getPostsForLocale } from '@/lib/blog-utils';
 import {

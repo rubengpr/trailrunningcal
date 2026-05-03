@@ -297,7 +297,7 @@ interface RacesMapProps {
   onMarkerPinClick?: (raceId: string) => void;
 }
 
-export default function RacesMap({
+export function RacesMap({
   markers,
   locale,
   labels,

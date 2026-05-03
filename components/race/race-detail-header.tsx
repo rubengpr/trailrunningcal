@@ -1,8 +1,8 @@
 import { getTranslations } from 'next-intl/server';
 import { ConfirmedDateBadge } from '@/components/race/confirmed-date-badge';
-import VerifiedBadge from '@/components/icons/verified-badge';
-import RaceOrganizerLinks from '@/components/race/race-organizer-links';
-import RaceShareWhatsappButton from '@/components/race/race-share-whatsapp-button';
+import { VerifiedBadge } from '@/components/icons/verified-badge';
+import { RaceOrganizerLinks } from '@/components/race/race-organizer-links';
+import { RaceShareWhatsappButton } from '@/components/race/race-share-whatsapp-button';
 import { RaceFavoriteButton } from '@/components/race/race-favorite-button';
 import { TrackedLink } from '@/components/ui/tracked-link';
 import { BASE_URL } from '@/lib/config';

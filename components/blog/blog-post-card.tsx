@@ -16,7 +16,7 @@ interface BlogPostCardProps {
   compact?: boolean;
 }
 
-export default function BlogPostCard({
+export function BlogPostCard({
   title,
   excerpt,
   date,

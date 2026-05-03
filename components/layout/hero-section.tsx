@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Breadcrumb } from '@/components/layout/breadcrumb';
-import HeroCtaButton from '@/components/layout/hero-cta-button';
+import { HeroCtaButton } from '@/components/layout/hero-cta-button';
 
 interface BreadcrumbItem {
   name: string;
@@ -17,7 +17,7 @@ interface HeroSectionProps {
   breadcrumbItems?: BreadcrumbItem[];
 }
 
-export default function HeroSection({
+export function HeroSection({
   titleStart,
   titlePlace,
   subtitle,

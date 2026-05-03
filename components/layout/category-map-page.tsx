@@ -1,8 +1,8 @@
 import type { Locale } from '@/i18n';
 import type { TrailRace } from '@/types/race.types';
 import type { RaceMapMarker, MapPageLabels } from '@/types/map.types';
-import CategoryHeroSection from '@/components/layout/category-hero-section';
-import RacesExplorerClient from '@/components/races-map/races-explorer-client';
+import { CategoryHeroSection } from '@/components/layout/category-hero-section';
+import { RacesExplorerClient } from '@/components/races-map/races-explorer-client';
 
 interface BreadcrumbItem {
   name: string;
@@ -25,7 +25,7 @@ interface CategoryMapPageProps {
   showDistanceFilter?: boolean;
 }
 
-export default function CategoryMapPage({
+export function CategoryMapPage({
   locale,
   races,
   markers,

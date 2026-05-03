@@ -16,7 +16,7 @@ const CATEGORY_SLUGS = [
 
 const MAX_FOOTER_POSTS = 5;
 
-export default async function Footer() {
+export async function Footer() {
   const locale = (await getLocale()) as Locale;
   const t = await getTranslations('footer');
   const tNav = await getTranslations('navigation');

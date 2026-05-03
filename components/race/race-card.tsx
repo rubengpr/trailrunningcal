@@ -23,7 +23,7 @@ interface RaceCardProps {
   imageAlt: string;
 }
 
-export default function RaceCard({
+export function RaceCard({
   raceName,
   distance,
   elevationGain,

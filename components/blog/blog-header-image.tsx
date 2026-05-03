@@ -5,7 +5,7 @@ interface BlogHeaderImageProps {
   alt: string;
 }
 
-export default function BlogHeaderImage({ src, alt }: BlogHeaderImageProps) {
+export function BlogHeaderImage({ src, alt }: BlogHeaderImageProps) {
   return (
     <div className="my-8 w-full relative aspect-video rounded-lg overflow-hidden">
       <Image

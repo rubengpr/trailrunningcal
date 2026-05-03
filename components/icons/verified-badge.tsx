@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import Tooltip from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ui/tooltip';
 
 interface VerifiedBadgeProps {
   tooltip?: string;
@@ -7,7 +7,7 @@ interface VerifiedBadgeProps {
   className?: string;
 }
 
-export default function VerifiedBadge({ tooltip, size = 'md', className = '' }: VerifiedBadgeProps) {
+export function VerifiedBadge({ tooltip, size = 'md', className = '' }: VerifiedBadgeProps) {
   const sizeMap = {
     sm: { width: 24, height: 24, classes: 'w-3 h-3 sm:w-4 sm:h-4' },
     md: { width: 40, height: 40, classes: 'w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7' },

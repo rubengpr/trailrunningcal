@@ -6,7 +6,7 @@ import { generateMetadataFromOptions } from '@/seo/meta-config';
 import { buildProvinceAlternateLinks } from '@/lib/alternate-links';
 import { BASE_URL } from '@/lib/config';
 import { buildBreadcrumbJsonLd } from '@/lib/seo/breadcrumb-json-ld';
-import CategoryMapPage from '@/components/layout/category-map-page';
+import { CategoryMapPage } from '@/components/layout/category-map-page';
 import { getCategoryPageData } from '@/lib/category-page';
 import { PROVINCE_SLUGS, type ProvinceSlug } from '@/lib/constants';
 

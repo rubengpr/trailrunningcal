@@ -8,7 +8,7 @@ interface HeroCtaButtonProps {
   label: string;
 }
 
-export default function HeroCtaButton({ label }: HeroCtaButtonProps) {
+export function HeroCtaButton({ label }: HeroCtaButtonProps) {
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const [visible, setVisible] = useState(false);
 

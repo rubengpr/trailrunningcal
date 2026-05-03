@@ -13,7 +13,7 @@ import { buildBlogPostAlternateLinks } from '@/lib/alternate-links';
 import { buildBlogJsonLd } from '@/lib/seo/blog-json-ld';
 import { buildBreadcrumbJsonLd } from '@/lib/seo/breadcrumb-json-ld';
 import { getTranslations } from 'next-intl/server';
-import BlogPostCard from '@/components/blog/blog-post-card';
+import { BlogPostCard } from '@/components/blog/blog-post-card';
 
 interface PageProps {
   params: Promise<{

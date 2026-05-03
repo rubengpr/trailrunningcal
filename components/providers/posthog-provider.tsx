@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import posthog from 'posthog-js';
 
-export default function PostHogProvider() {
+export function PostHogProvider() {
   useEffect(() => {
     if (posthog.__loaded) return;
 

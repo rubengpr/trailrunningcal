@@ -1,3 +1,3 @@
-export default function BlogDivider() {
+export function BlogDivider() {
   return <div className="my-20" />;
 }

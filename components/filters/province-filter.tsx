@@ -7,7 +7,7 @@ interface ProvinceFilterProps {
   onProvinceSelect: (provinces: string[]) => void;
 }
 
-export default function ProvinceFilter({
+export function ProvinceFilter({
   selectedProvince,
   onProvinceSelect,
 }: ProvinceFilterProps) {

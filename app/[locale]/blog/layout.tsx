@@ -1,5 +1,5 @@
-import Navbar from '@/components/layout/navbar';
-import Footer from '@/components/layout/footer';
+import { Navbar } from '@/components/layout/navbar';
+import { Footer } from '@/components/layout/footer';
 import { MobileFiltersProvider } from '@/components/providers/mobile-filters-provider';
 
 export default function BlogLayout({

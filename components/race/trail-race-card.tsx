@@ -4,7 +4,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useFeatureFlagVariantKey } from 'posthog-js/react';
-import VerifiedBadge from '@/components/icons/verified-badge';
+import { VerifiedBadge } from '@/components/icons/verified-badge';
 import { getDisplayPrice } from '@/lib/race-utils';
 import { TEST_VERIFIED_RACES_NAME } from '@/lib/constants';
 
@@ -93,7 +93,7 @@ const getElevationRatioColor = (ratio: number | null): string => {
   return 'bg-red-100 text-red-800';
 };
 
-export default function TrailRaceCard({
+export function TrailRaceCard({
   date,
   name,
   distanceKm,

@@ -8,7 +8,7 @@ interface MultiSelectOptionProps {
   onClick: () => void;
 }
 
-export default function MultiSelectOption({
+export function MultiSelectOption({
   label,
   selected,
   onClick,

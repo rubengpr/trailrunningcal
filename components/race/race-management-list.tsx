@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react';
 import { useLocale } from 'next-intl';
 import { SectionHeader } from '@/components/ui/section-header';
-import TrailRaceCard from '@/components/race/trail-race-card';
+import { TrailRaceCard } from '@/components/race/trail-race-card';
 import { RaceManagementTable } from '@/components/race/race-management-table';
 import { generateRaceSlug } from '@/lib/race-utils';
 import type { TrailRace } from '@/types/race.types';

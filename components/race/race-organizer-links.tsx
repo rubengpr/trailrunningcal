@@ -29,7 +29,7 @@ function hasAnySocialUrl(organizer: Organizer): boolean {
   );
 }
 
-export default function RaceOrganizerLinks({
+export function RaceOrganizerLinks({
   organizer,
   raceId,
   raceSlug,

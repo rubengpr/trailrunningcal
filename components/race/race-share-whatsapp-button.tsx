@@ -13,7 +13,7 @@ interface RaceShareWhatsappButtonProps {
   raceSlug?: string;
 }
 
-export default function RaceShareWhatsappButton({
+export function RaceShareWhatsappButton({
   message,
   label,
   iconOnly = false,

@@ -7,7 +7,7 @@ interface TooltipProps {
   className?: string;
 }
 
-export default function Tooltip({
+export function Tooltip({
   text,
   children,
   size = 'md',

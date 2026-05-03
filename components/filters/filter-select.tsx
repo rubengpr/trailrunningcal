@@ -3,7 +3,7 @@
 import { createPortal } from 'react-dom';
 import { ChevronDown } from 'lucide-react';
 import { useMultiSelectMenu } from '@/hooks/use-multi-select-menu';
-import MultiSelectOptionsMenu from '@/components/ui/multi-select-options-menu';
+import { MultiSelectOptionsMenu } from '@/components/ui/multi-select-options-menu';
 
 export interface FilterSelectOption {
   value: string;

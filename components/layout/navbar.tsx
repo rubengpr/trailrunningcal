@@ -13,7 +13,7 @@ import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { track } from '@/lib/analytics/track';
 import { Menu, Heart, ChevronDown, CircleUser, SlidersHorizontal } from 'lucide-react';
 
-export default function Navbar() {
+export function Navbar() {
   const t = useTranslations('navigation');
   const tFilters = useTranslations('filters');
   const locale = useLocale();

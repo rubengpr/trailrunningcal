@@ -1,7 +1,7 @@
 'use client';
 
 import { createPortal } from 'react-dom';
-import MultiSelectOptionsMenu, { type MultiSelectOptionItem } from '@/components/ui/multi-select-options-menu';
+import { MultiSelectOptionsMenu, type MultiSelectOptionItem } from '@/components/ui/multi-select-options-menu';
 import { useMultiSelectMenu } from '@/hooks/use-multi-select-menu';
 
 interface FilterPillProps {
@@ -14,7 +14,7 @@ interface FilterPillProps {
   size: 'sm' | 'md';
 }
 
-export default function FilterPill({
+export function FilterPill({
   label,
   selectedValues,
   options,

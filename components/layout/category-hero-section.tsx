@@ -1,7 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import type { Locale } from '@/i18n';
 import { Breadcrumb } from '@/components/layout/breadcrumb';
-import HeroSection from '@/components/layout/hero-section';
+import { HeroSection } from '@/components/layout/hero-section';
 
 interface BreadcrumbItem {
   name: string;
@@ -18,7 +18,7 @@ interface CategoryHeroSectionProps {
   locale: Locale;
 }
 
-export default async function CategoryHeroSection({
+export async function CategoryHeroSection({
   title,
   titleStart,
   titlePlace,

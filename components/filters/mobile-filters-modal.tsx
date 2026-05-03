@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import MonthFilter from '@/components/filters/month-filter';
-import ProvinceFilter from '@/components/filters/province-filter';
+import { MonthFilter } from '@/components/filters/month-filter';
+import { ProvinceFilter } from '@/components/filters/province-filter';
 import { DISTANCE_GROUPS } from '@/lib/constants';
 import { RACE_TYPES, RACE_TYPE_CATEGORY_KEYS } from '@/lib/home-race-filters';
 import { Button } from '@/components/ui/button';
@@ -20,7 +20,7 @@ interface MobileFiltersModalProps {
   initialRaceType: string[];
 }
 
-export default function MobileFiltersModal({
+export function MobileFiltersModal({
   isOpen,
   onClose,
   onApply,

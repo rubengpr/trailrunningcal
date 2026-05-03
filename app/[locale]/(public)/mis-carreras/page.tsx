@@ -4,7 +4,7 @@ import type { Locale } from '@/i18n';
 import { getRaces } from '@/lib/db/races';
 import { BASE_URL } from '@/lib/config';
 import { generateMetadataFromOptions } from '@/seo/meta-config';
-import FavoritesClient from '@/components/home/favorites-client';
+import { FavoritesClient } from '@/components/home/favorites-client';
 
 export const revalidate = 3600;
 

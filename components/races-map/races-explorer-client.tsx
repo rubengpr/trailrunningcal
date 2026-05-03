@@ -7,16 +7,16 @@ import { useFeatureFlagVariantKey } from 'posthog-js/react';
 import type { TrailRace } from '@/types/race.types';
 import type { Locale } from '@/i18n';
 import type { MapPageLabels, RaceMapMarker } from '@/types/map.types';
-import RacesExplorerFiltersSection from '@/components/races-map/races-explorer-filters-section';
-import MobileFiltersButton from '@/components/filters/mobile-filters-button';
-import MobileFiltersModal from '@/components/filters/mobile-filters-modal';
-import TrailRaceCard from '@/components/race/trail-race-card';
-import ErrorBoundary from '@/components/ui/error-boundary';
+import { RacesExplorerFiltersSection } from '@/components/races-map/races-explorer-filters-section';
+import { MobileFiltersButton } from '@/components/filters/mobile-filters-button';
+import { MobileFiltersModal } from '@/components/filters/mobile-filters-modal';
+import { TrailRaceCard } from '@/components/race/trail-race-card';
+import { ErrorBoundary } from '@/components/ui/error-boundary';
 import { SearchError } from '@/components/ui/error-message';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Button } from '@/components/ui/button';
 import type { DesktopLayout, LayoutToggleButton } from '@/components/ui/layout-toggle';
-import RacesMap from '@/components/races-map/races-map';
+import { RacesMap } from '@/components/races-map/races-map';
 import { MapToggleFab } from '@/components/races-map/map-toggle-fab';
 import { Search, RefreshCw, TriangleAlert } from 'lucide-react';
 import { useMinWidthLg } from '@/hooks/use-min-width-lg';
@@ -46,7 +46,7 @@ interface RacesExplorerClientProps {
   showDistanceFilter?: boolean;
 }
 
-export default function RacesExplorerClient({
+export function RacesExplorerClient({
   races,
   markers,
   locale,

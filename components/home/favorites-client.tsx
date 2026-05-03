@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
 import type { TrailRace } from '@/types/race.types';
-import TrailRaceCard from '@/components/race/trail-race-card';
+import { TrailRaceCard } from '@/components/race/trail-race-card';
 import { useFavorites } from '@/hooks/use-favorites';
 import { generateRaceSlug } from '@/lib/race-utils';
 import { Heart } from 'lucide-react';
@@ -13,7 +13,7 @@ interface FavoritesClientProps {
   races: TrailRace[];
 }
 
-export default function FavoritesClient({ races }: FavoritesClientProps) {
+export function FavoritesClient({ races }: FavoritesClientProps) {
   const t = useTranslations('favorites');
   const locale = useLocale();
   const { favorites } = useFavorites();

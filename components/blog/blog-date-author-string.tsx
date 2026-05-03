@@ -7,7 +7,7 @@ interface DateAuthorStringProps {
   locale?: Locale;
 }
 
-export default function DateAuthorString({
+export function DateAuthorString({
   date,
   author = 'Ruben Godoy',
   locale = 'es',

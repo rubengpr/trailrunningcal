@@ -8,7 +8,7 @@ interface MobileFiltersButtonProps {
   color?: 'white' | 'black';
 }
 
-export default function MobileFiltersButton({ filterCount, onClick, color = 'white' }: MobileFiltersButtonProps) {
+export function MobileFiltersButton({ filterCount, onClick, color = 'white' }: MobileFiltersButtonProps) {
   const tFilters = useTranslations('filters');
 
   return (

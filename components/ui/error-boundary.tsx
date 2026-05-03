@@ -96,4 +96,4 @@ function DefaultErrorFallback({ error }: DefaultErrorFallbackProps) {
   );
 }
 
-export default ErrorBoundary;
+export { ErrorBoundary };

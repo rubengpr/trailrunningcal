@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import Footer from '@/components/layout/footer';
+import { Footer } from '@/components/layout/footer';
 import {
   getSeoMetaConfig,
   generateMetadataFromOptions,

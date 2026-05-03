@@ -5,7 +5,7 @@ import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { Toaster } from 'react-hot-toast';
 import { Analytics } from '@vercel/analytics/next';
-import PostHogProvider from '@/components/providers/posthog-provider';
+import { PostHogProvider } from '@/components/providers/posthog-provider';
 import { locales, type Locale } from '../../i18n';
 import '../globals.css';
 

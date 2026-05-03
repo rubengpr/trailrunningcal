@@ -9,7 +9,7 @@ interface MonthFilterProps {
   onMonthSelect: (months: string[]) => void;
 }
 
-export default function MonthFilter({
+export function MonthFilter({
   initialSelectedMonth = [],
   onMonthSelect,
 }: MonthFilterProps) {

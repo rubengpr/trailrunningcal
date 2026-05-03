@@ -1,7 +1,7 @@
 'use client';
 
 import type { RefObject } from 'react';
-import FilterBar from '@/components/filters/filter-bar';
+import { FilterBar } from '@/components/filters/filter-bar';
 import { LayoutToggle } from '@/components/ui/layout-toggle';
 import type { DesktopLayout, LayoutToggleButton } from '@/components/ui/layout-toggle';
 
@@ -26,7 +26,7 @@ interface RacesExplorerFiltersSectionProps {
   pillsScrollRef: RefObject<HTMLDivElement | null>;
 }
 
-export default function RacesExplorerFiltersSection({
+export function RacesExplorerFiltersSection({
   filterLayout,
   canScrollLeft,
   canScrollRight,
