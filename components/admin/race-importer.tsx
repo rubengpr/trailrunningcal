@@ -3,7 +3,6 @@
 import { useMemo, useReducer, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
-import { FormInput } from '@/components/ui/form-input';
 import { FormSelect } from '@/components/ui/form-select';
 import { Combobox } from '@/components/ui/combobox';
 import type { ComboboxOption } from '@/components/ui/combobox';
@@ -96,6 +95,24 @@ function FullPipelineRowIcon({ kind }: { kind: FullPipelineRowKind }): React.Rea
 
 function RestartIcon({ className = 'h-5 w-5' }: { className?: string }): React.ReactElement {
     return <RefreshCw className={className} strokeWidth={2} />;
+}
+
+function PageStatsBadges({ pageStats, size = 'sm' }: { pageStats: PageStats; size?: 'sm' | 'md' }): React.ReactElement {
+    const t = useTranslations('admin.races.scrape');
+    const cls = size === 'sm' ? 'px-2 text-[11px]' : 'px-2.5 py-1 text-xs';
+    return (
+        <>
+            <span className={`inline-flex items-center rounded-full border border-gray-200/80 bg-gray-100 font-medium text-gray-800 tabular-nums ${cls}`}>
+                {t('crawledPagesTotal', { scrapedPages: pageStats.total })}
+            </span>
+            <span className={`inline-flex items-center rounded-full border border-green-200/80 bg-green-100 font-medium text-green-800 tabular-nums ${cls}`}>
+                {t('crawledPagesHttpSuccess', { successPages: pageStats.successCount })}
+            </span>
+            <span className={`inline-flex items-center rounded-full border border-red-200/80 bg-red-100 font-medium text-red-800 tabular-nums ${cls}`}>
+                {t('crawledPagesHttpError', { errorPages: pageStats.errorCount })}
+            </span>
+        </>
+    );
 }
 
 function triggerMarkdownFileDownload(markdown: string, downloadName: string): void {
@@ -1237,21 +1254,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                                                     )}
                                                     {row.pageStats && (
                                                         <span className="inline-flex flex-wrap items-center gap-1.5">
-                                                            <span className="inline-flex items-center rounded-full border border-gray-200/80 bg-gray-100 px-2 text-[11px] font-medium text-gray-800 tabular-nums">
-                                                                {t('crawledPagesTotal', {
-                                                                    scrapedPages: row.pageStats.total,
-                                                                })}
-                                                            </span>
-                                                            <span className="inline-flex items-center rounded-full border border-green-200/80 bg-green-100 px-2 text-[11px] font-medium text-green-800 tabular-nums">
-                                                                {t('crawledPagesHttpSuccess', {
-                                                                    successPages: row.pageStats.successCount,
-                                                                })}
-                                                            </span>
-                                                            <span className="inline-flex items-center rounded-full border border-red-200/80 bg-red-100 px-2 text-[11px] font-medium text-red-800 tabular-nums">
-                                                                {t('crawledPagesHttpError', {
-                                                                    errorPages: row.pageStats.errorCount,
-                                                                })}
-                                                            </span>
+                                                            <PageStatsBadges pageStats={row.pageStats} />
                                                             {row.markdownTokenEstimate !== null &&
                                                                 row.markdownTokenEstimate !== undefined &&
                                                                 row.markdownCharCount !== null &&
@@ -1306,21 +1309,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                                                         )}
                                                         {(workflow === 'crawlSiteExtract' || workflow === 'autopilot') && pageStats !== null && (
                                                             <span className="inline-flex flex-wrap items-center gap-1.5">
-                                                                <span className="inline-flex items-center rounded-full border border-gray-200/80 bg-gray-100 px-2 text-[11px] font-medium text-gray-800 tabular-nums">
-                                                                    {t('crawledPagesTotal', {
-                                                                        scrapedPages: pageStats.total,
-                                                                    })}
-                                                                </span>
-                                                                <span className="inline-flex items-center rounded-full border border-green-200/80 bg-green-100 px-2 text-[11px] font-medium text-green-800 tabular-nums">
-                                                                    {t('crawledPagesHttpSuccess', {
-                                                                        successPages: pageStats.successCount,
-                                                                    })}
-                                                                </span>
-                                                                <span className="inline-flex items-center rounded-full border border-red-200/80 bg-red-100 px-2 text-[11px] font-medium text-red-800 tabular-nums">
-                                                                    {t('crawledPagesHttpError', {
-                                                                        errorPages: pageStats.errorCount,
-                                                                    })}
-                                                                </span>
+                                                                <PageStatsBadges pageStats={pageStats} />
                                                                 {showMarkdownEstimateBesidePageStats && (
                                                                     <span className="text-xs font-normal text-gray-500 tabular-nums">
                                                                         <span className="font-bold text-gray-700">
@@ -1391,21 +1380,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                     )}
                     {workflow === 'crawlMdOnly' && pageStats !== null && (
                         <div className="flex flex-wrap items-center gap-2">
-                            <span className="inline-flex items-center rounded-full border border-gray-200/80 bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-800 tabular-nums">
-                                {t('crawledPagesTotal', {
-                                    scrapedPages: pageStats.total,
-                                })}
-                            </span>
-                            <span className="inline-flex items-center rounded-full border border-green-200/80 bg-green-100 px-2.5 py-1 text-xs font-medium text-green-800 tabular-nums">
-                                {t('crawledPagesHttpSuccess', {
-                                    successPages: pageStats.successCount,
-                                })}
-                            </span>
-                            <span className="inline-flex items-center rounded-full border border-red-200/80 bg-red-100 px-2.5 py-1 text-xs font-medium text-red-800 tabular-nums">
-                                {t('crawledPagesHttpError', {
-                                    errorPages: pageStats.errorCount,
-                                })}
-                            </span>
+                            <PageStatsBadges pageStats={pageStats} size="md" />
                         </div>
                     )}
                     {showMarkdownEstimateLine && !showMarkdownEstimateBesidePageStats && (
