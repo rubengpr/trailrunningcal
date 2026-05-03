@@ -14,12 +14,6 @@ export async function PATCH(
     const { raceId } = await context.params;
     const supabase = await createClient();
 
-    const { priceEur } = await request.json();
-
-    if (typeof priceEur !== 'number' || priceEur < 0 || priceEur > 9999) {
-      return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
-    }
-
     const {
       data: { user },
       error: authError,
@@ -27,6 +21,12 @@ export async function PATCH(
 
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { priceEur } = await request.json();
+
+    if (typeof priceEur !== 'number' || priceEur < 0 || priceEur > 9999) {
+      return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
     }
 
     const isAdmin = isAdminEmail(user.email);
