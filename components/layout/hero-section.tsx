@@ -55,7 +55,7 @@ export function HeroSection({
       />
 
       {/* Bottom fade to page background */}
-      <div className="absolute bottom-0 left-0 right-0 h-[140px] bg-gradient-to-t from-white to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-[140px] bg-linear-to-t from-white to-transparent pointer-events-none" />
 
       {/* Content */}
       <div className="relative h-full flex flex-col items-center justify-center px-6 text-center pt-16 pb-16 lg:pt-0 lg:items-start lg:text-left lg:px-16 xl:px-24">
