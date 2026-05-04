@@ -7,6 +7,7 @@ import { BASE_URL } from '@/lib/config';
 import { buildBreadcrumbJsonLd } from '@/lib/seo/breadcrumb-json-ld';
 import { CategoryMapPage } from '@/components/layout/category-map-page';
 import { getCategoryPageData } from '@/lib/category-page';
+import type { FaqItem } from '@/lib/seo/faq-json-ld';
 
 export const revalidate = 300;
 
@@ -58,6 +59,10 @@ export default async function KmVerticalPage({
     isVkRace(race.name, race.distanceKm, race.elevationGainM),
   );
 
+  const contentSections = Object.values(
+    t.raw('contentSections') as Record<string, FaqItem>
+  );
+
   return (
     <CategoryMapPage
       locale={locale}
@@ -77,6 +82,8 @@ export default async function KmVerticalPage({
         { name: t('breadcrumb') },
       ]}
       labels={labels}
+      contentSections={contentSections}
+      contentSectionsHeading={t('contentSectionsTitle')}
     />
   );
 }

@@ -501,6 +501,29 @@
     "titleStart": "Explora maratones de trail running en",
     "titlePlace": "Cataluña",
     "heroSubtitle": "Explora carreras de montaña de maratón por el Pirineo, el Montseny y los Ports de Beseit. Encuentra tu próxima carrera de 40 a 50 km en Cataluña.",
+    "contentSectionsTitle": "Preguntas frecuentes",
+    "contentSections": {
+      "0": {
+        "question": "¿Qué es una maratón de trail running?",
+        "answer": "La maratón de trail running es una modalidad de carrera de montaña de entre 40 y 50 km, con terreno natural no asfaltado y desnivel acumulado variable. A diferencia de distancias cortas, requiere una gestión del esfuerzo más precisa y mayor autosuficiencia. En Cataluña encontrarás maratones de trail repartidas por todo el territorio, desde el Pirineo hasta la costa."
+      },
+      "1": {
+        "question": "¿En qué se diferencia de una maratón de asfalto?",
+        "answer": "Aunque comparten una distancia similar, son disciplinas muy distintas. La maratón de trail incorpora terreno natural, desnivel positivo acumulado y condiciones variables de montaña. Los tiempos son significativamente más altos, el impacto articular es menor y la exigencia técnica es mayor. Mochila, bastones y zapatillas de trail son habituales en lugar de la equipación de carretera."
+      },
+      "2": {
+        "question": "¿Cómo prepararse para una maratón de trail?",
+        "answer": "Antes de afrontar una maratón de trail conviene haber completado varias medias maratones de montaña y acumular experiencia en terreno técnico. El entrenamiento debe incluir salidas largas con desnivel, trabajo de fuerza específico y simulacros en condiciones similares a las del día de la prueba. La regularidad a lo largo de varios meses es más importante que los picos de entrenamiento puntual."
+      },
+      "3": {
+        "question": "¿Qué material se necesita para una maratón de trail?",
+        "answer": "La mayoría de maratones de trail en Cataluña exigen material mínimo obligatorio: impermeable, manta de emergencia, agua mínima y comida de reserva. Es recomendable llevar zapatillas con suela de trail, mochila de hidratación y bastones plegables. Cada carrera publica su lista oficial antes del evento."
+      },
+      "4": {
+        "question": "¿Cuánto tiempo se tarda en completar una maratón de trail?",
+        "answer": "Los tiempos varían según el desnivel acumulado y el nivel del corredor. En Cataluña, una maratón de trail de 40-50 km con 2.000-3.000 m de desnivel suele tener tiempos de corte de entre 8 y 12 horas. La mayoría de participantes no compite por el tiempo sino por completar el recorrido dentro del corte establecido."
+      }
+    },
     "breadcrumb": "Maratón Trail"
   },
   "mediaMaraton": {
@@ -510,6 +533,29 @@
     "titleStart": "Explora medias maratones de trail running en",
     "titlePlace": "Cataluña",
     "heroSubtitle": "Explora carreras de montaña de media maratón por el Pirineo, el Montseny y la Costa Brava. El punto de partida ideal para dar el salto a distancias mayores.",
+    "contentSectionsTitle": "Preguntas frecuentes",
+    "contentSections": {
+      "0": {
+        "question": "¿Qué es una media maratón de trail running?",
+        "answer": "La media maratón de trail running es una carrera de montaña de entre 20 y 24 km, con terreno natural no asfaltado y desnivel variable. Es una de las distancias más populares en Cataluña: exigente pero accesible, combina resistencia y técnica sin los requerimientos extremos de las distancias largas. Encontrarás pruebas repartidas por todo el territorio a lo largo de todo el año."
+      },
+      "1": {
+        "question": "¿Es la media maratón de trail apta para corredores principiantes?",
+        "answer": "La media maratón de trail no es una distancia para iniciarse en el running. Requiere una base sólida de rodaje, experiencia previa en terreno de montaña y haber completado distancias más cortas de trail. Para quienes ya corren en asfalto y quieren dar el salto al trail, es una meta realista con la preparación adecuada."
+      },
+      "2": {
+        "question": "¿Cómo prepararse para una media maratón de trail?",
+        "answer": "El entrenamiento debe incluir salidas regulares en montaña con desnivel progresivo, trabajo de fuerza de tren inferior y rodajes largos en terreno similar al de la carrera. Es importante practicar en condiciones parecidas a las del día de la prueba: terreno técnico, pendientes y, si es posible, el mismo horario. Con 3-4 meses de preparación específica, un corredor con base puede afrontar la distancia con garantías."
+      },
+      "3": {
+        "question": "¿Qué material se necesita para una media maratón de trail?",
+        "answer": "Muchas medias maratones de trail en Cataluña exigen material mínimo obligatorio: impermeable, agua mínima y comida de emergencia. Es recomendable correr con zapatillas de trail, mochila o cinturón de hidratación y ropa técnica adaptada a la montaña. Cada carrera publica su lista oficial antes del evento."
+      },
+      "4": {
+        "question": "¿Cuánto tiempo se tarda en completar una media maratón de trail?",
+        "answer": "Los tiempos varían según el desnivel y el nivel del corredor. En Cataluña, una media maratón de trail de 20-24 km con 1.000-1.500 m de desnivel suele completarse entre 2 y 4 horas. Los tiempos de corte más habituales están entre 4 y 6 horas."
+      }
+    },
     "breadcrumb": "Media Maratón Trail"
   },
   "marcha": {
@@ -519,6 +565,29 @@
     "titleStart": "Explora marchas populares de montaña en",
     "titlePlace": "Cataluña",
     "heroSubtitle": "Explora marchas populares de montaña por el Pirineo, el Montseny y el Garraf. Para quienes disfrutan la montaña sin cronómetro.",
+    "contentSectionsTitle": "Preguntas frecuentes",
+    "contentSections": {
+      "0": {
+        "question": "¿Qué es una marcha popular de montaña?",
+        "answer": "Las marchas populares de montaña son pruebas no competitivas en las que los participantes recorren un itinerario por terreno natural a pie o corriendo, sin cronómetro oficial ni clasificación. El objetivo es disfrutar del entorno, no competir. En Cataluña encontrarás marchas por el Pirineo, el Montseny, el Garraf y muchos otros espacios naturales a lo largo de todo el año."
+      },
+      "1": {
+        "question": "¿En qué se diferencia de una carrera de trail?",
+        "answer": "La principal diferencia es que las marchas no son competitivas. No hay clasificación por tiempos, el ritmo lo marca cada participante y el ambiente es más festivo y familiar. Muchas marchas admiten perros, niños y participantes de cualquier nivel físico, algo que no es habitual en las carreras de trail."
+      },
+      "2": {
+        "question": "¿Es la marcha popular apta para todo el mundo?",
+        "answer": "En general sí, aunque depende de la distancia y el desnivel de cada marcha. Las hay diseñadas para familias con niños, para personas mayores o para quienes se inician en la montaña. Conviene revisar el perfil del recorrido antes de inscribirse para asegurarse de que se ajusta al nivel de todos los participantes."
+      },
+      "3": {
+        "question": "¿Qué material se recomienda para una marcha popular?",
+        "answer": "Al ser pruebas no competitivas, el material exigido suele ser mínimo o ninguno. Aun así, se recomienda llevar calzado de montaña o trail, ropa técnica adecuada a la climatología, agua suficiente y algo de comida. En marchas largas o de alta montaña, es aconsejable añadir impermeable y capas de abrigo."
+      },
+      "4": {
+        "question": "¿Cómo encontrar marchas populares en Cataluña?",
+        "answer": "El calendario de Trail Running Cal recoge las principales marchas populares de montaña en Cataluña con fechas, recorridos y toda la información necesaria. Es habitual que las inscripciones se abran con pocas semanas de antelación y que las plazas sean limitadas, especialmente en las marchas más conocidas."
+      }
+    },
     "breadcrumb": "Marcha Popular"
   },
   "kmVertical": {
@@ -528,6 +597,29 @@
     "titleStart": "Explora kilómetros verticales de trail running en",
     "titlePlace": "Cataluña",
     "heroSubtitle": "Explora carreras de montaña de kilómetro vertical en el Pirineo y el Prepirineo. Máximo desnivel, mínima distancia: el formato más vertical del trail running.",
+    "contentSectionsTitle": "Preguntas frecuentes",
+    "contentSections": {
+      "0": {
+        "question": "¿Qué es un kilómetro vertical?",
+        "answer": "El kilómetro vertical (KV) es una modalidad de carrera de montaña de corta distancia —generalmente entre 3 y 5 km— con un desnivel positivo muy elevado en proporción, habitualmente cercano a los 1.000 m. El objetivo es ascender lo más rápido posible. No hay descenso cronometrado: la prueba termina en la cima."
+      },
+      "1": {
+        "question": "¿Qué exigencias físicas tiene un kilómetro vertical?",
+        "answer": "El KV es una de las modalidades más exigentes a nivel muscular y cardiorrespiratorio del trail running. La pendiente constante y el ritmo explosivo requieren una potencia de tren inferior muy desarrollada y una gran capacidad aeróbica. A diferencia de otras distancias, el esfuerzo es continuo y máximo desde la salida hasta la llegada."
+      },
+      "2": {
+        "question": "¿Cómo prepararse para un kilómetro vertical?",
+        "answer": "El entrenamiento específico para un KV se basa en series de ascenso en pendiente, trabajo de fuerza explosiva de piernas y sesiones de cardio de alta intensidad. La práctica regular en rampas y terreno muy inclinado es imprescindible. Muchos corredores combinan el KV con otras distancias para mantener el volumen de entrenamiento."
+      },
+      "3": {
+        "question": "¿Qué material se necesita para un kilómetro vertical?",
+        "answer": "El KV es una prueba minimalista en cuanto a material. En la mayoría de casos no se exige mochila ni avituallamiento propio, dado que la duración es corta. Las zapatillas de trail con suela agresiva y, en algunos terrenos, los bastones de carbono ligeros son los elementos más valorados por los competidores."
+      },
+      "4": {
+        "question": "¿Dónde se celebran los kilómetros verticales en Cataluña?",
+        "answer": "Los KV en Cataluña se concentran en los entornos más verticales del Pirineo y las cordilleras prelitorales. Collformic, Montserrat y diferentes cimas pirenaicas son escenarios habituales de estas pruebas, algunas de las cuales forman parte de circuitos nacionales e internacionales."
+      }
+    },
     "breadcrumb": "Kilómetro Vertical"
   },
   "backyard": {
@@ -537,6 +629,29 @@
     "titleStart": "Explora backyard ultras en",
     "titlePlace": "Cataluña",
     "heroSubtitle": "Descubre carreras de montaña Backyard Ultra en Cataluña. Bucles de 6,7 km que se repiten hasta que solo queda uno en pie.",
+    "contentSectionsTitle": "Preguntas frecuentes",
+    "contentSections": {
+      "0": {
+        "question": "¿Qué es una carrera Backyard Ultra?",
+        "answer": "El Backyard Ultra es un formato de carrera en el que los participantes completan bucles de aproximadamente 6,7 km cada hora, de forma continua, hasta que solo queda un corredor en pie. No hay distancia fija ni tiempo límite: la carrera termina cuando todos los participantes menos uno han abandonado. El ganador es el último en completar un bucle."
+      },
+      "1": {
+        "question": "¿Cómo funciona exactamente el formato Backyard Ultra?",
+        "answer": "Cada hora en punto suena una señal y los participantes deben salir a completar el siguiente bucle. Quien no regrese a la salida antes de que suene la siguiente señal queda eliminado. No importa el tiempo que sobra entre bucles: descansar, comer o dormir es decisión de cada corredor. El resultado final se mide en número de bucles completados."
+      },
+      "2": {
+        "question": "¿Qué exigencias físicas y mentales tiene un Backyard Ultra?",
+        "answer": "El Backyard Ultra es tan físico como mental. Las primeras horas son asequibles para cualquier corredor de trail con base, pero a medida que se acumulan bucles —y horas sin dormir— la resistencia mental se convierte en el factor diferencial. Gestionar el sueño, la nutrición y el estado emocional es tan importante como el entrenamiento físico."
+      },
+      "3": {
+        "question": "¿Cómo prepararse para un Backyard Ultra?",
+        "answer": "No existe una preparación estándar, pero el volumen de entrenamiento continuado, la experiencia en ultras y la capacidad de correr con privación de sueño son claves. Muchos participantes incorporan sesiones nocturnas y entrenamientos en estado de fatiga acumulada para simular las condiciones reales de la carrera."
+      },
+      "4": {
+        "question": "¿Dónde se celebran Backyard Ultras en Cataluña?",
+        "answer": "El formato Backyard está ganando popularidad en Cataluña y cada año aparecen nuevas pruebas en el calendario. Trail Running Cal recoge todas las carreras Backyard Ultra en Cataluña con fechas, ubicación e información de inscripción."
+      }
+    },
     "breadcrumb": "Backyard Ultra"
   },
   "admin": {

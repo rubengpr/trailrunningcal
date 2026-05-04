@@ -504,6 +504,29 @@
     "titleStart": "Explora maratons de trail running a",
     "titlePlace": "Catalunya",
     "heroSubtitle": "Explora curses de muntanya de marató pel Pirineu, el Montseny i els Ports de Beseit. Troba la teva propera cursa de 40 a 50 km a Catalunya.",
+    "contentSectionsTitle": "Preguntes freqüents",
+    "contentSections": {
+      "0": {
+        "question": "Què és una marató de trail running?",
+        "answer": "La marató de trail running és una modalitat de cursa de muntanya d'entre 40 i 50 km, amb terreny natural no asfaltat i desnivell acumulat variable. A diferència de les distàncies curtes, requereix una gestió de l'esforç més precisa i major autosuficiència. A Catalunya trobaràs maratons de trail repartides per tot el territori, des del Pirineu fins a la costa."
+      },
+      "1": {
+        "question": "En què es diferencia d'una marató d'asfalt?",
+        "answer": "Tot i compartir una distància similar, són disciplines molt diferents. La marató de trail incorpora terreny natural, desnivell positiu acumulat i condicions variables de muntanya. Els temps són significativament més alts, l'impacte articular és menor i l'exigència tècnica és major. Motxilla, bastons i sabatilles de trail són habituals en lloc de l'equipació de carretera."
+      },
+      "2": {
+        "question": "Com preparar-se per a una marató de trail?",
+        "answer": "Abans d'afrontar una marató de trail convé haver completat diverses mitges maratons de muntanya i acumular experiència en terreny tècnic. L'entrenament ha d'incloure sortides llargues amb desnivell, treball de força específic i simulacres en condicions similars a les del dia de la prova. La regularitat al llarg de diversos mesos és més important que els pics d'entrenament puntual."
+      },
+      "3": {
+        "question": "Quin material es necessita per a una marató de trail?",
+        "answer": "La majoria de maratons de trail a Catalunya exigeixen material mínim obligatori: impermeable, manta d'emergència, aigua mínima i menjar de reserva. És recomanable portar sabatilles amb sola de trail, motxilla d'hidratació i bastons plegables. Cada cursa publica la seva llista oficial abans de l'esdeveniment."
+      },
+      "4": {
+        "question": "Quant de temps es tarda a completar una marató de trail?",
+        "answer": "Els temps varien segons el desnivell acumulat i el nivell del corredor. A Catalunya, una marató de trail de 40-50 km amb 2.000-3.000 m de desnivell sol tenir temps de tall d'entre 8 i 12 hores. La majoria de participants no competeix pel temps sinó per completar el recorregut dins del tall establert."
+      }
+    },
     "breadcrumb": "Marató Trail"
   },
   "mediaMaraton": {
@@ -513,6 +536,29 @@
     "titleStart": "Explora mitges maratons de trail running a",
     "titlePlace": "Catalunya",
     "heroSubtitle": "Explora curses de muntanya de mitja marató pel Pirineu, el Montseny i la Costa Brava. El punt de partida ideal per fer el salt a distàncies més llargues.",
+    "contentSectionsTitle": "Preguntes freqüents",
+    "contentSections": {
+      "0": {
+        "question": "Què és una mitja marató de trail running?",
+        "answer": "La mitja marató de trail running és una cursa de muntanya d'entre 20 i 24 km, amb terreny natural no asfaltat i desnivell variable. És una de les distàncies més populars a Catalunya: exigent però accessible, combina resistència i tècnica sense els requeriments extrems de les distàncies llargues. Trobaràs proves repartides per tot el territori al llarg de tot l'any."
+      },
+      "1": {
+        "question": "És la mitja marató de trail apta per a corredors principiants?",
+        "answer": "La mitja marató de trail no és una distància per iniciar-se en el running. Requereix una base sòlida de rodatge, experiència prèvia en terreny de muntanya i haver completat distàncies més curtes de trail. Per als qui ja corren en asfalt i volen fer el salt al trail, és una fita realista amb la preparació adequada."
+      },
+      "2": {
+        "question": "Com preparar-se per a una mitja marató de trail?",
+        "answer": "L'entrenament ha d'incloure sortides regulars a la muntanya amb desnivell progressiu, treball de força del tren inferior i rodatges llargs en terreny similar al de la cursa. És important practicar en condicions semblants a les del dia de la prova: terreny tècnic, pendents i, si és possible, el mateix horari. Amb 3-4 mesos de preparació específica, un corredor amb base pot afrontar la distància amb garanties."
+      },
+      "3": {
+        "question": "Quin material es necessita per a una mitja marató de trail?",
+        "answer": "Moltes mitges maratons de trail a Catalunya exigeixen material mínim obligatori: impermeable, aigua mínima i menjar d'emergència. És recomanable córrer amb sabatilles de trail, motxilla o cinturó d'hidratació i roba tècnica adaptada a la muntanya. Cada cursa publica la seva llista oficial abans de l'esdeveniment."
+      },
+      "4": {
+        "question": "Quant de temps es tarda a completar una mitja marató de trail?",
+        "answer": "Els temps varien segons el desnivell i el nivell del corredor. A Catalunya, una mitja marató de trail de 20-24 km amb 1.000-1.500 m de desnivell sol completar-se entre 2 i 4 hores. Els temps de tall més habituals estan entre 4 i 6 hores."
+      }
+    },
     "breadcrumb": "Mitja Marató Trail"
   },
   "marcha": {
@@ -522,6 +568,29 @@
     "titleStart": "Explora marxes populars de muntanya a",
     "titlePlace": "Catalunya",
     "heroSubtitle": "Explora marxes populars de muntanya pel Pirineu, el Montseny i el Garraf. Per als qui gaudeixen de la muntanya sense cronòmetre.",
+    "contentSectionsTitle": "Preguntes freqüents",
+    "contentSections": {
+      "0": {
+        "question": "Què és una marxa popular de muntanya?",
+        "answer": "Les marxes populars de muntanya són proves no competitives en què els participants recorren un itinerari per terreny natural a peu o corrent, sense cronòmetre oficial ni classificació. L'objectiu és gaudir de l'entorn, no competir. A Catalunya trobaràs marxes pel Pirineu, el Montseny, el Garraf i molts altres espais naturals al llarg de tot l'any."
+      },
+      "1": {
+        "question": "En què es diferencia d'una cursa de trail?",
+        "answer": "La principal diferència és que les marxes no són competitives. No hi ha classificació per temps, el ritme el marca cada participant i l'ambient és més festiu i familiar. Moltes marxes admeten gossos, nens i participants de qualsevol nivell físic, cosa que no és habitual en les curses de trail."
+      },
+      "2": {
+        "question": "És la marxa popular apta per a tothom?",
+        "answer": "En general sí, tot i que depèn de la distància i el desnivell de cada marxa. N'hi ha de dissenyades per a famílies amb nens, per a persones grans o per als qui s'inicien a la muntanya. Convé revisar el perfil del recorregut abans d'inscriure's per assegurar-se que s'ajusta al nivell de tots els participants."
+      },
+      "3": {
+        "question": "Quin material es recomana per a una marxa popular?",
+        "answer": "En ser proves no competitives, el material exigit sol ser mínim o cap. Tot i així, es recomana portar calçat de muntanya o trail, roba tècnica adequada a la climatologia, aigua suficient i alguna cosa per menjar. En marxes llargues o d'alta muntanya, és aconsellable afegir impermeable i capes d'abric."
+      },
+      "4": {
+        "question": "Com trobar marxes populars a Catalunya?",
+        "answer": "El calendari de Trail Running Cal recull les principals marxes populars de muntanya a Catalunya amb dates, recorreguts i tota la informació necessària. És habitual que les inscripcions s'obrin amb poques setmanes d'antelació i que les places siguin limitades, especialment en les marxes més conegudes."
+      }
+    },
     "breadcrumb": "Marxa Popular"
   },
   "kmVertical": {
@@ -531,6 +600,29 @@
     "titleStart": "Explora quilòmetres verticals de trail running a",
     "titlePlace": "Catalunya",
     "heroSubtitle": "Explora curses de muntanya de quilòmetre vertical al Pirineu i el Prepirineu. Màxim desnivell, mínima distància: el format més vertical del trail running.",
+    "contentSectionsTitle": "Preguntes freqüents",
+    "contentSections": {
+      "0": {
+        "question": "Què és un quilòmetre vertical?",
+        "answer": "El quilòmetre vertical (KV) és una modalitat de cursa de muntanya de curta distància —generalment entre 3 i 5 km— amb un desnivell positiu molt elevat en proporció, habitualment proper als 1.000 m. L'objectiu és ascendir el més ràpid possible. No hi ha descens cronometrat: la prova acaba al cim."
+      },
+      "1": {
+        "question": "Quines exigències físiques té un quilòmetre vertical?",
+        "answer": "El KV és una de les modalitats més exigents a nivell muscular i cardiorespiratori del trail running. El pendent constant i el ritme explosiu requereixen una potència del tren inferior molt desenvolupada i una gran capacitat aeròbica. A diferència d'altres distàncies, l'esforç és continu i màxim des de la sortida fins a l'arribada."
+      },
+      "2": {
+        "question": "Com preparar-se per a un quilòmetre vertical?",
+        "answer": "L'entrenament específic per a un KV es basa en sèries d'ascens en pendent, treball de força explosiva de cames i sessions de cardio d'alta intensitat. La pràctica regular en rampes i terreny molt inclinat és imprescindible. Molts corredors combinen el KV amb altres distàncies per mantenir el volum d'entrenament."
+      },
+      "3": {
+        "question": "Quin material es necessita per a un quilòmetre vertical?",
+        "answer": "El KV és una prova minimalista pel que fa al material. En la majoria de casos no s'exigeix motxilla ni avituallament propi, atès que la durada és curta. Les sabatilles de trail amb sola agressiva i, en alguns terrenys, els bastons de carboni lleugers són els elements més valorats pels competidors."
+      },
+      "4": {
+        "question": "On se celebren els quilòmetres verticals a Catalunya?",
+        "answer": "Els KV a Catalunya es concentren als entorns més verticals del Pirineu i les serralades prelitorals. Collformic, Montserrat i diferents cims pirinencs són escenaris habituals d'aquestes proves, algunes de les quals formen part de circuits nacionals i internacionals."
+      }
+    },
     "breadcrumb": "Quilòmetre Vertical"
   },
   "backyard": {
@@ -540,6 +632,29 @@
     "titleStart": "Explora backyard ultras a",
     "titlePlace": "Catalunya",
     "heroSubtitle": "Descobreix curses de muntanya Backyard Ultra a Catalunya. Bucles de 6,7 km que es repeteixen fins que només en queda un en peu.",
+    "contentSectionsTitle": "Preguntes freqüents",
+    "contentSections": {
+      "0": {
+        "question": "Què és una cursa Backyard Ultra?",
+        "answer": "El Backyard Ultra és un format de cursa en què els participants completen bucles d'aproximadament 6,7 km cada hora, de forma contínua, fins que només queda un corredor en peu. No hi ha distància fixa ni límit de temps: la cursa acaba quan tots els participants menys un han abandonat. El guanyador és l'últim a completar un bucle."
+      },
+      "1": {
+        "question": "Com funciona exactament el format Backyard Ultra?",
+        "answer": "Cada hora en punt sona un senyal i els participants han de sortir a completar el següent bucle. Qui no torni a la sortida abans que soni el següent senyal queda eliminat. No importa el temps que sobra entre bucles: descansar, menjar o dormir és decisió de cada corredor. El resultat final es mesura en nombre de bucles completats."
+      },
+      "2": {
+        "question": "Quines exigències físiques i mentals té un Backyard Ultra?",
+        "answer": "El Backyard Ultra és tan físic com mental. Les primeres hores són assequibles per a qualsevol corredor de trail amb base, però a mesura que s'acumulen bucles —i hores sense dormir— la resistència mental es converteix en el factor diferencial. Gestionar el son, la nutrició i l'estat emocional és tan important com l'entrenament físic."
+      },
+      "3": {
+        "question": "Com preparar-se per a un Backyard Ultra?",
+        "answer": "No existeix una preparació estàndard, però el volum d'entrenament continuat, l'experiència en ultres i la capacitat de córrer amb privació de son són claus. Molts participants incorporen sessions nocturnes i entrenaments en estat de fatiga acumulada per simular les condicions reals de la cursa."
+      },
+      "4": {
+        "question": "On se celebren Backyard Ultras a Catalunya?",
+        "answer": "El format Backyard està guanyant popularitat a Catalunya i cada any apareixen noves proves al calendari. Trail Running Cal recull totes les curses Backyard Ultra a Catalunya amb dates, ubicació i informació d'inscripció."
+      }
+    },
     "breadcrumb": "Backyard Ultra"
   },
   "admin": {
