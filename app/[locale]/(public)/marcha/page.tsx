@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import type { Locale } from '@/i18n';
-import { generateMetadataFromOptions } from '@/seo/meta-config';
+import { generateMetadataFromOptions } from '@/lib/seo/meta-config';
 import { buildMarchaAlternateLinks } from '@/lib/alternate-links';
 import { BASE_URL } from '@/lib/config';
-import { buildBreadcrumbJsonLd } from '@/lib/seo/breadcrumb-json-ld';
+import { buildBreadcrumbJsonLd } from '@/lib/seo/json-ld';
 import { CategoryMapPage } from '@/components/layout/category-map-page';
 import { getCategoryPageData } from '@/lib/category-page';
-import type { FaqItem } from '@/lib/seo/faq-json-ld';
+import type { FaqItem } from '@/lib/seo/json-ld';
 
 export const revalidate = 300;
 

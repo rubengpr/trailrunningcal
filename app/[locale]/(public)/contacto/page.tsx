@@ -4,7 +4,7 @@ import { Footer } from '@/components/layout/footer';
 import {
   getSeoMetaConfig,
   generateMetadataFromOptions,
-} from '@/seo/meta-config';
+} from '@/lib/seo/meta-config';
 import type { Locale } from '@/i18n';
 import { CONTACT_EMAIL } from '@/lib/config';
 import { Mail, MapPin } from 'lucide-react';

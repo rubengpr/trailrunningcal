@@ -1,4 +1,4 @@
-import type { FaqItem } from '@/lib/seo/faq-json-ld';
+import type { FaqItem } from '@/lib/seo/json-ld';
 
 interface FaqSectionProps {
   sections: FaqItem[];

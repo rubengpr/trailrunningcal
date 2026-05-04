@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import type { Locale } from '../i18n';
+import type { Locale } from '@/i18n';
 import { BASE_URL } from '@/lib/config';
 
 export type SeoPageId = 'home' | 'contact' | 'blog';

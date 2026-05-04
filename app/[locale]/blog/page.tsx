@@ -6,9 +6,9 @@ import { getPostsForLocale } from '@/lib/blog-utils';
 import {
   getSeoMetaConfig,
   generateMetadataFromOptions,
-} from '@/seo/meta-config';
+} from '@/lib/seo/meta-config';
 import { buildBlogListingAlternateLinks } from '@/lib/alternate-links';
-import { buildBreadcrumbJsonLd } from '@/lib/seo/breadcrumb-json-ld';
+import { buildBreadcrumbJsonLd } from '@/lib/seo/json-ld';
 import { BASE_URL } from '@/lib/config';
 
 export async function generateMetadata({

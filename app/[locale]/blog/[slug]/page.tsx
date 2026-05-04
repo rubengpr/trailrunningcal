@@ -8,10 +8,10 @@ import {
 } from '@/lib/blog-utils';
 import { renderMDXFile } from '@/lib/mdx-renderer';
 import { BASE_URL } from '@/lib/config';
-import { generateMetadataFromOptions } from '@/seo/meta-config';
+import { generateMetadataFromOptions } from '@/lib/seo/meta-config';
 import { buildBlogPostAlternateLinks } from '@/lib/alternate-links';
-import { buildBlogJsonLd } from '@/lib/seo/blog-json-ld';
-import { buildBreadcrumbJsonLd } from '@/lib/seo/breadcrumb-json-ld';
+import { buildBlogJsonLd } from '@/lib/seo/json-ld';
+import { buildBreadcrumbJsonLd } from '@/lib/seo/json-ld';
 import { getTranslations } from 'next-intl/server';
 import { BlogPostCard } from '@/components/blog/blog-post-card';
 

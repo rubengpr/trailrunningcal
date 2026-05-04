@@ -2,7 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import type { Locale } from '@/i18n';
 import type { TrailRace } from '@/types/race.types';
 import type { RaceMapMarker, MapPageLabels } from '@/types/map.types';
-import { buildFaqJsonLd, type FaqItem } from '@/lib/seo/faq-json-ld';
+import { buildFaqJsonLd, type FaqItem } from '@/lib/seo/json-ld';
 import { HeroSection } from '@/components/layout/hero-section';
 import { FaqSection } from '@/components/layout/faq-section';
 import { RacesExplorerClient } from '@/components/races-map/races-explorer-client';
