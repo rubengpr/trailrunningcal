@@ -466,6 +466,9 @@
     "pageTitle": "Ultra Trail Running Cataluña {year} - Carreras de más de 50 km",
     "pageDescription": "Encuentra todas las carreras de ultra trail running en Cataluña (más de 50 km). Fechas, desniveles y toda la información para {year}.",
     "pageBody": "Las carreras de ultra trail (más de 50 km) representan el máximo desafío del running de montaña: distancias extremas, grandes desniveles y terrenos alpinos de alta montaña. En Cataluña, el ultra trail tiene su escenario en el Pirineo, el Prepirineo y espacios naturales protegidos, con pruebas que van desde los 50 hasta los más de 100 km.",
+    "titleStart": "Explora ultras de trail running en",
+    "titlePlace": "Cataluña",
+    "heroSubtitle": "Explora carreras de montaña de ultra trail por el Pirineo, el Prepirineo y los parques naturales. Distancias, desniveles y todo lo que necesitas para afrontar el máximo reto del trail running.",
     "breadcrumb": "Ultra Trail",
     "contentSectionsTitle": "Preguntas frecuentes",
     "contentSections": {
@@ -495,30 +498,45 @@
     "pageTitle": "Maratón Trail Running Cataluña {year} - Carreras de 40 a 50 km",
     "pageDescription": "Encuentra todas las carreras de trail running de maratón en Cataluña (40-50 km). Fechas, desniveles y toda la información para {year}.",
     "pageBody": "La maratón de trail running (40–50 km) es la distancia de referencia para corredores de montaña con experiencia. Combina resistencia, técnica y conocimiento del terreno en recorridos por senderos, crestas y cimas. En Cataluña, las maratones de trail discurren por entornos únicos como el Pirineo, el Montseny y los Ports de Tortosa-Beseit.",
+    "titleStart": "Explora maratones de trail running en",
+    "titlePlace": "Cataluña",
+    "heroSubtitle": "Explora carreras de montaña de maratón por el Pirineo, el Montseny y los Ports de Beseit. Encuentra tu próxima carrera de 40 a 50 km en Cataluña.",
     "breadcrumb": "Maratón Trail"
   },
   "mediaMaraton": {
     "pageTitle": "Media Maratón Trail Running Cataluña {year} - Carreras de 20 a 24 km",
     "pageDescription": "Encuentra todas las carreras de trail running de media maratón en Cataluña (20-24 km). Fechas, desniveles y toda la información para {year}.",
     "pageBody": "La media maratón de trail running (20–24 km) es una de las distancias más populares entre corredores de montaña. Una distancia exigente que combina resistencia y técnica en terreno de montaña, y un paso habitual hacia maratones y ultras. En Cataluña encontrarás media maratones de trail por el Pirineo, el Montseny, la Costa Brava y el Garraf a lo largo de todo el año.",
+    "titleStart": "Explora medias maratones de trail running en",
+    "titlePlace": "Cataluña",
+    "heroSubtitle": "Explora carreras de montaña de media maratón por el Pirineo, el Montseny y la Costa Brava. El punto de partida ideal para dar el salto a distancias mayores.",
     "breadcrumb": "Media Maratón Trail"
   },
   "marcha": {
     "pageTitle": "Marchas y Caminadas Cataluña {year} - Rutas no competitivas",
     "pageDescription": "Encuentra todas las marchas populares y caminadas en Cataluña. Rutas para todos los niveles, sin competición, en entornos naturales. Fechas e información para {year}.",
     "pageBody": "Las marchas populares y caminadas son pruebas no competitivas pensadas para disfrutar del entorno natural a pie o corriendo sin cronómetro. En Cataluña encontrarás marchas por el Pirineo, el Montseny, la Costa Brava y el Garraf, con recorridos para todos los niveles y edades. Una opción ideal para iniciarse en el trail running o para participar en familia.",
+    "titleStart": "Explora marchas populares de montaña en",
+    "titlePlace": "Cataluña",
+    "heroSubtitle": "Explora marchas populares de montaña por el Pirineo, el Montseny y el Garraf. Para quienes disfrutan la montaña sin cronómetro.",
     "breadcrumb": "Marcha Popular"
   },
   "kmVertical": {
     "pageTitle": "Kilómetro Vertical Cataluña {year} - Carreras de alta montaña",
     "pageDescription": "Encuentra todas las carreras de kilómetro vertical en Cataluña. Pruebas de corta distancia con desnivel extremo para {year}.",
     "pageBody": "El kilómetro vertical (KV) es una modalidad de carrera de montaña caracterizada por una distancia corta —generalmente entre 3 y 5 km— con un desnivel positivo muy elevado en proporción. Requiere una potencia y resistencia muscular excepcionales. En Cataluña, los KV se celebran en los entornos más verticales del Pirineo y las cordilleras prelitorales, con pruebas que forman parte de circuitos nacionales e internacionales.",
+    "titleStart": "Explora kilómetros verticales de trail running en",
+    "titlePlace": "Cataluña",
+    "heroSubtitle": "Explora carreras de montaña de kilómetro vertical en el Pirineo y el Prepirineo. Máximo desnivel, mínima distancia: el formato más vertical del trail running.",
     "breadcrumb": "Kilómetro Vertical"
   },
   "backyard": {
     "pageTitle": "Backyard Ultra {year} - Carreras Backyard en Cataluña",
     "pageDescription": "Encuentra todas las carreras Backyard Ultra en Cataluña. El formato más extremo del running: corres hasta que solo queda uno. Fechas e información para {year}.",
     "pageBody": "Las carreras Backyard Ultra son un formato en el que los participantes completan bucles de ~6,7 km (una hora) de forma continua hasta que solo queda un corredor en pie. Sin distancia fija ni tiempo límite, el Backyard es una prueba de resistencia mental y física llevada al extremo. En Cataluña, este formato está ganando popularidad como una de las experiencias más desafiantes del trail running.",
+    "titleStart": "Explora backyard ultras en",
+    "titlePlace": "Cataluña",
+    "heroSubtitle": "Descubre carreras de montaña Backyard Ultra en Cataluña. Bucles de 6,7 km que se repiten hasta que solo queda uno en pie.",
     "breadcrumb": "Backyard Ultra"
   },
   "admin": {

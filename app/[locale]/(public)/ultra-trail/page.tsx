@@ -59,6 +59,9 @@ export default async function UltraTrailPage({
       ])}
       heroTitle={t('pageTitle', { year })}
       heroBody={t('pageBody')}
+      heroTitleStart={t('titleStart')}
+      heroTitlePlace={t('titlePlace')}
+      heroSubtitle={t('heroSubtitle')}
       breadcrumbItems={[
         { name: calendarLabel, href: `/${locale}` },
         { name: t('breadcrumb') },
