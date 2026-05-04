@@ -1,7 +1,9 @@
 import type { Locale } from '@/i18n';
 import type { TrailRace } from '@/types/race.types';
 import type { RaceMapMarker, MapPageLabels } from '@/types/map.types';
+import { buildFaqJsonLd, type FaqItem } from '@/lib/seo/faq-json-ld';
 import { CategoryHeroSection } from '@/components/layout/category-hero-section';
+import { FaqSection } from '@/components/layout/faq-section';
 import { RacesExplorerClient } from '@/components/races-map/races-explorer-client';
 
 interface BreadcrumbItem {
@@ -23,6 +25,8 @@ interface CategoryMapPageProps {
   labels: MapPageLabels;
   showProvinceFilter?: boolean;
   showDistanceFilter?: boolean;
+  contentSections?: FaqItem[];
+  contentSectionsHeading?: string;
 }
 
 export function CategoryMapPage({
@@ -39,6 +43,8 @@ export function CategoryMapPage({
   labels,
   showProvinceFilter = true,
   showDistanceFilter = false,
+  contentSections,
+  contentSectionsHeading,
 }: CategoryMapPageProps) {
   return (
     <>
@@ -65,6 +71,15 @@ export function CategoryMapPage({
           showDistanceFilter={showDistanceFilter}
         />
       </div>
+      {contentSections && contentSections.length > 0 && contentSectionsHeading && (
+        <>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(buildFaqJsonLd(contentSections)) }}
+          />
+          <FaqSection sections={contentSections} heading={contentSectionsHeading} />
+        </>
+      )}
     </>
   );
 }

@@ -10,11 +10,8 @@ import type { Locale } from '@/i18n';
 import { buildHomeAlternateLinks } from '@/lib/alternate-links';
 import { getRaces } from '@/lib/db/races';
 import { getRacesMapData } from '@/lib/db/races-map';
-import {
-  buildWebsiteJsonLd,
-  buildOrganizationJsonLd,
-  buildFaqJsonLd,
-} from '@/lib/seo/home-json-ld';
+import { buildWebsiteJsonLd, buildOrganizationJsonLd } from '@/lib/seo/home-json-ld';
+import { buildFaqJsonLd } from '@/lib/seo/faq-json-ld';
 import type { MapPageLabels } from '@/types/map.types';
 
 /** Calendar + map data; map markers benefit from fresher revalidation than static-only home. */

@@ -469,7 +469,30 @@
     "pageTitle": "Ultra Trail Running Catalunya {year} - Curses de més de 50 km",
     "pageDescription": "Troba totes les curses d'ultra trail running a Catalunya (més de 50 km). Dates, desnivells i tota la informació per al {year}.",
     "pageBody": "Les curses d'ultra trail (més de 50 km) representen el màxim desafiament del running de muntanya: distàncies extremes, grans desnivells i terrenys alpins d'alta muntanya. A Catalunya, l'ultra trail té el seu escenari al Pirineu, el Prepirineu i espais naturals protegits, amb proves que van dels 50 fins als més de 100 km.",
-    "breadcrumb": "Ultra Trail"
+    "breadcrumb": "Ultra Trail",
+    "contentSectionsTitle": "Preguntes freqüents",
+    "contentSections": {
+      "0": {
+        "question": "Què és una cursa d'ultra trail?",
+        "answer": "L'ultra trail és una modalitat de cursa de muntanya de més de 50 km amb grans desnivells i terreny natural no asfaltat. Exigeix una resistència física i mental excepcionals i es desenvolupa en entorns d'alta muntanya. A Catalunya, les proves d'ultra trail recorren el Pirineu, el Prepirineu i espais naturals protegits com el Parc Natural del Cadí-Moixeró o la Vall de Núria."
+      },
+      "1": {
+        "question": "Com preparar-se per a un ultra trail a Catalunya?",
+        "answer": "La preparació per a un ultra trail requereix almenys 6 mesos d'entrenament progressiu. És clau combinar volum de quilometratge setmanal amb sessions específiques de desnivell positiu a la muntanya, entrenament de força i pràctica nocturna amb frontal. La familiarització amb el terreny català —senders tècnics, crestes i zones d'alta muntanya— és fonamental per afrontar les proves amb garanties."
+      },
+      "2": {
+        "question": "Quines són les millors zones per a l'ultra trail a Catalunya?",
+        "answer": "El Pirineu català concentra la major part de les proves d'ultra trail, amb escenaris com l'Alt Urgell, el Pallars Sobirà i la Cerdanya. El Prepirineu ofereix opcions més accessibles des de Barcelona i Girona. Altres zones destacades són la Garrotxa, amb la seva orografia volcànica, i el Montseny, que acull proves de referència en el calendari català."
+      },
+      "3": {
+        "question": "Quin material cal per córrer un ultra trail?",
+        "answer": "La majoria de proves d'ultra trail a Catalunya exigeixen una llista de material obligatori: frontal amb pila de recanvi, manta d'emergència, xiulet, impermeable, aigua mínima i menjar de reserva. A més, és recomanable portar bastons, sabatilles de trail amb sola agresiva i roba d'abric adaptada a l'alta muntanya. Cada cursa publica la seva llista oficial abans de l'esdeveniment."
+      },
+      "4": {
+        "question": "Quant de temps es tarda a acabar un ultra trail?",
+        "answer": "El temps de finalització d'un ultra trail varia molt segons la distància, el desnivell acumulat i el nivell del corredor. A Catalunya, les proves de 50-60 km solen tenir temps de tall d'entre 14 i 18 hores. Els ultres de 80-100 km poden allargar-se fins a 24-30 hores. La majoria de participants no competeixen pel temps, sinó per completar el recorregut dins del tall establert."
+      }
+    }
   },
   "maraton": {
     "pageTitle": "Marató Trail Running Catalunya {year} - Curses de 40 a 50 km",
