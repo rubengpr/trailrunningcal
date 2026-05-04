@@ -55,7 +55,6 @@ export default async function BackyardPage({
         { name: calendarLabel, url: `${BASE_URL}/${locale}` },
         { name: t('breadcrumb'), url: `${BASE_URL}/${locale}/backyard` },
       ])}
-      heroTitle={t('pageTitle', { year })}
       heroBody={t('pageBody')}
       heroTitleStart={t('titleStart')}
       heroTitlePlace={t('titlePlace')}

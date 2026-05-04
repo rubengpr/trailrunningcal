@@ -77,7 +77,6 @@ export default async function ProvincePage({
         { name: calendarLabel, url: `${BASE_URL}/${locale}` },
         { name: provinceName, url: `${BASE_URL}/${locale}/provincia/${province}` },
       ])}
-      heroTitle={t('pageTitle', { province: provinceName, year })}
       heroBody={t('pageBody', { province: provinceName })}
       heroTitleStart={t('heroTitleStart')}
       heroTitlePlace={provinceName}

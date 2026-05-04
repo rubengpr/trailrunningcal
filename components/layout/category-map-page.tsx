@@ -1,8 +1,9 @@
+import { getTranslations } from 'next-intl/server';
 import type { Locale } from '@/i18n';
 import type { TrailRace } from '@/types/race.types';
 import type { RaceMapMarker, MapPageLabels } from '@/types/map.types';
 import { buildFaqJsonLd, type FaqItem } from '@/lib/seo/faq-json-ld';
-import { CategoryHeroSection } from '@/components/layout/category-hero-section';
+import { HeroSection } from '@/components/layout/hero-section';
 import { FaqSection } from '@/components/layout/faq-section';
 import { RacesExplorerClient } from '@/components/races-map/races-explorer-client';
 
@@ -16,10 +17,9 @@ interface CategoryMapPageProps {
   races: TrailRace[];
   markers: RaceMapMarker[];
   breadcrumbJsonLd: object;
-  heroTitle: string;
   heroBody: string;
-  heroTitleStart?: string;
-  heroTitlePlace?: string;
+  heroTitleStart: string;
+  heroTitlePlace: string;
   heroSubtitle?: string;
   breadcrumbItems: BreadcrumbItem[];
   labels: MapPageLabels;
@@ -29,12 +29,11 @@ interface CategoryMapPageProps {
   contentSectionsHeading?: string;
 }
 
-export function CategoryMapPage({
+export async function CategoryMapPage({
   locale,
   races,
   markers,
   breadcrumbJsonLd,
-  heroTitle,
   heroBody,
   heroTitleStart,
   heroTitlePlace,
@@ -46,20 +45,20 @@ export function CategoryMapPage({
   contentSections,
   contentSectionsHeading,
 }: CategoryMapPageProps) {
+  const t = await getTranslations({ locale, namespace: 'landing' });
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      <CategoryHeroSection
-        title={heroTitle}
+      <HeroSection
         titleStart={heroTitleStart}
         titlePlace={heroTitlePlace}
-        body={heroBody}
-        subtitle={heroSubtitle}
+        subtitle={heroSubtitle ?? heroBody ?? ''}
+        ctaLabel={t('cta')}
         breadcrumbItems={breadcrumbItems}
-        locale={locale}
       />
       <div id="calendar" className="mx-auto w-full pt-6 pb-16 sm:pt-10 lg:pt-4 scroll-mt-18 sm:scroll-mt-20">
         <RacesExplorerClient

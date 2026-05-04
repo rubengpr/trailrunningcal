@@ -72,7 +72,6 @@ export default async function KmVerticalPage({
         { name: calendarLabel, url: `${BASE_URL}/${locale}` },
         { name: t('breadcrumb'), url: `${BASE_URL}/${locale}/km-vertical` },
       ])}
-      heroTitle={t('pageTitle', { year })}
       heroBody={t('pageBody')}
       heroTitleStart={t('titleStart')}
       heroTitlePlace={t('titlePlace')}
