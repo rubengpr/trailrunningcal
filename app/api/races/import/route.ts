@@ -4,6 +4,7 @@ import {
   processAutopilot,
   processCrawlSite,
   processCrawlSiteExtract,
+  processScrapePage,
 } from '@/lib/services/race-import';
 import { parseInput, ValidationError } from './validation';
 
@@ -28,6 +29,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     if (input.workflow === 'crawlMdOnly') {
       const data = await processCrawlSite(input);
+      return NextResponse.json({ success: true, data });
+    }
+
+    if (input.workflow === 'scrapePage') {
+      const data = await processScrapePage(input);
       return NextResponse.json({ success: true, data });
     }
 

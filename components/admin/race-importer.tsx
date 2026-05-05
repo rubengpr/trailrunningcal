@@ -44,7 +44,7 @@ import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.type
 import type { PendingRace } from '@/types/pending-race.types';
 import { XCircle, RefreshCw, Sparkles, FileText, ImageIcon, X } from 'lucide-react';
 
-type ScrapeWorkflow = 'crawlMdOnly' | 'llmFromFile' | 'crawlSiteExtract' | 'autopilot';
+type ScrapeWorkflow = 'crawlMdOnly' | 'scrapePage' | 'llmFromFile' | 'crawlSiteExtract' | 'autopilot';
 
 type ScrapePhase = 'idle' | 'crawling' | 'llm';
 
@@ -337,7 +337,7 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
                 fullPipelineUiActive: action.showPipeline,
                 autopilotFallbackUsed: action.result.fallbackUsed,
                 persistedPipelineRows: action.persistedRows,
-                scrapePhase: action.result.workflow === 'crawlMdOnly' ? 'crawling' : 'llm',
+                scrapePhase: action.result.workflow === 'crawlMdOnly' || action.result.workflow === 'scrapePage' ? 'crawling' : 'llm',
             };
         case 'SCRAPE_ERROR':
             return { ...state, scrapeError: action.error, hasScraped: true };
@@ -541,7 +541,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
 
     const canRunScrape =
         !isScraping &&
-        (workflow === 'crawlMdOnly' || workflow === 'crawlSiteExtract' || workflow === 'autopilot'
+        (workflow === 'crawlMdOnly' || workflow === 'scrapePage' || workflow === 'crawlSiteExtract' || workflow === 'autopilot'
             ? isValidUrl(websiteUrl)
             : uploadKind === 'images'
                 ? uploadedImages.length > 0
@@ -589,7 +589,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         runStartedAtRef.current = performance.now();
 
         try {
-            if (workflow === 'autopilot' || workflow === 'crawlSiteExtract' || workflow === 'crawlMdOnly') {
+            if (workflow === 'autopilot' || workflow === 'crawlSiteExtract' || workflow === 'crawlMdOnly' || workflow === 'scrapePage') {
                 const normalizedUrl = normalizeUrl(websiteUrl.trim());
 
                 if (workflow === 'autopilot') {
@@ -610,7 +610,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                 }
 
                 const data = await runRaceImport(
-                    workflow === 'crawlMdOnly'
+                    workflow === 'crawlMdOnly' || workflow === 'scrapePage'
                         ? { workflow, websiteUrl: normalizedUrl }
                         : { workflow, websiteUrl: normalizedUrl, model: selectedModelId },
                 );
@@ -708,14 +708,14 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
     const handleLoadDummyPreview = (): void => {
         clearFullPipelineStepRefs();
         runStartedAtRef.current = null;
-        const isCrawlMdOnly = workflow === 'crawlMdOnly';
+        const isMarkdownOnly = workflow === 'crawlMdOnly' || workflow === 'scrapePage';
         dispatch({
             type: 'PREVIEW_LOADED',
             durationMs: DUMMY_LAST_RUN_DURATION_MS,
-            scrapedRaces: isCrawlMdOnly ? [] : [...DUMMY_SCRAPED_RACES],
+            scrapedRaces: isMarkdownOnly ? [] : [...DUMMY_SCRAPED_RACES],
             markdown: DUMMY_SCRAPE_MARKDOWN,
-            rawModelOutput: isCrawlMdOnly ? null : DUMMY_RAW_MODEL_OUTPUT,
-            usage: isCrawlMdOnly ? null : { ...DUMMY_SCRAPE_USAGE },
+            rawModelOutput: isMarkdownOnly ? null : DUMMY_RAW_MODEL_OUTPUT,
+            usage: isMarkdownOnly ? null : { ...DUMMY_SCRAPE_USAGE },
             pageStats: workflow === 'llmFromFile' ? null : { ...DUMMY_CRAWL_PAGE_STATS },
             showPipeline: workflow === 'crawlSiteExtract',
         });
@@ -756,17 +756,18 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
     };
 
     const showSuggestedRacesPreview =
-        workflow !== 'crawlMdOnly'
+        workflow !== 'crawlMdOnly' && workflow !== 'scrapePage'
             ? isScraping || hasScraped
             : hasScraped && scrapeError !== null;
 
     const primaryButtonLabel =
         workflow === 'crawlMdOnly' ? t('crawlMdButton') :
+            workflow === 'scrapePage' ? t('scrapePageButton') :
             workflow === 'autopilot' ? t('bulk.runButton') :
                 t('scrapeButton');
 
     const primaryLoadingLabel =
-        workflow === 'crawlMdOnly'
+        workflow === 'crawlMdOnly' || workflow === 'scrapePage'
             ? t('crawlingMarkdown')
             : workflow === 'autopilot'
                 ? t('bulk.running')
@@ -774,7 +775,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                     ? t('crawlingMarkdown')
                     : t('scraping');
 
-    const showLlmMetricsUi = workflow !== 'crawlMdOnly';
+    const showLlmMetricsUi = workflow !== 'crawlMdOnly' && workflow !== 'scrapePage';
 
     const markdownTokenEstimate = useMemo((): number | null => {
         if (scrapeMarkdown === null || scrapeMarkdown === '') {
@@ -928,6 +929,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                                 ),
                             },
                             { id: 'crawlSiteExtract', label: t('workflowCrawlAndLlm') },
+                            { id: 'scrapePage', label: t('workflowScrapePage') },
                             { id: 'crawlMdOnly', label: t('workflowCrawlMdOnly') },
                             { id: 'llmFromFile', label: t('workflowLlmFromFile') },
                         ]}
@@ -936,7 +938,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                         disabled={isScraping}
                     />
 
-                    {(workflow === 'crawlMdOnly' || workflow === 'crawlSiteExtract' || workflow === 'autopilot') && (
+                    {(workflow === 'crawlMdOnly' || workflow === 'scrapePage' || workflow === 'crawlSiteExtract' || workflow === 'autopilot') && (
                         <div className="grid gap-2 w-full">
                             <Combobox
                                 id="websiteUrl"
@@ -1201,7 +1203,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                             )}
                         </div>
                     )}
-                    {workflow === 'crawlMdOnly' && pageStats !== null && (
+                    {(workflow === 'crawlMdOnly' || workflow === 'scrapePage') && pageStats !== null && (
                         <div className="flex flex-wrap items-center gap-2">
                             <PageStatsBadges pageStats={pageStats} size="md" />
                         </div>

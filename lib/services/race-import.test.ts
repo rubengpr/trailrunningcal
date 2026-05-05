@@ -24,6 +24,7 @@ import {
   processAutopilot,
   processCrawlSite,
   processCrawlSiteExtract,
+  processScrapePage,
 } from './race-import';
 
 const MODEL = OPENROUTER_SCRAPE_MODEL_IDS[0];
@@ -160,5 +161,25 @@ describe('processCrawlSite', () => {
     expect(result.rawModelOutput).toBeNull();
     expect(result.usage).toBeNull();
     expect(result.markdown).toBe('crawl markdown');
+  });
+});
+
+describe('processScrapePage', () => {
+  it('returns markdown and page stats from a single-page scrape', async () => {
+    mocks.scrapePage.mockResolvedValue(scrapeResult('single page markdown'));
+
+    const result = await processScrapePage({
+      url: 'https://example.com/race',
+    });
+
+    expect(mocks.scrapePage).toHaveBeenCalledWith('https://example.com/race');
+    expect(mocks.crawlSite).not.toHaveBeenCalled();
+    expect(mocks.extractFromMarkdown).not.toHaveBeenCalled();
+    expect(result.workflow).toBe('scrapePage');
+    expect(result.races).toEqual([]);
+    expect(result.rawModelOutput).toBeNull();
+    expect(result.usage).toBeNull();
+    expect(result.markdown).toBe('single page markdown');
+    expect(result.steps.map((step) => step.name)).toEqual(['scrapePage']);
   });
 });

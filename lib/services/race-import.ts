@@ -142,3 +142,21 @@ export async function processCrawlSite(input: {
     steps: [scrapeStep('crawlSite', crawl.result, crawl.durationMs)],
   };
 }
+
+export async function processScrapePage(input: {
+  url: string;
+}): Promise<RaceImportResult> {
+  const scrape = await timeStep(() => scrapePage(input.url));
+
+  return {
+    workflow: 'scrapePage',
+    url: input.url,
+    races: [],
+    markdown: scrape.result.markdown,
+    rawModelOutput: null,
+    usage: null,
+    pageStats: scrape.result.pageStats,
+    fallbackUsed: null,
+    steps: [scrapeStep('scrapePage', scrape.result, scrape.durationMs)],
+  };
+}

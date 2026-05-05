@@ -50,6 +50,18 @@ describe('parseInput', () => {
     });
   });
 
+  it('accepts scrape page without a model', () => {
+    expect(
+      parseInput({
+        workflow: 'scrapePage',
+        websiteUrl: 'example.com/race',
+      }),
+    ).toEqual({
+      workflow: 'scrapePage',
+      url: 'https://example.com/race',
+    });
+  });
+
   it('requires a model for autopilot', () => {
     expect(() =>
       parseInput({

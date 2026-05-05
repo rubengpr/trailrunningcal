@@ -6,7 +6,8 @@ import type { TrailRace } from '@/types/trail-race-agent.types';
 export type RaceImportWorkflow =
   | 'autopilot'
   | 'crawlSiteExtract'
-  | 'crawlMdOnly';
+  | 'crawlMdOnly'
+  | 'scrapePage';
 
 export type RaceImportStepName = 'scrapePage' | 'crawlSite' | 'extract';
 
@@ -33,7 +34,7 @@ export interface RaceImportResult {
 
 export type RaceImportRequest =
   | {
-      workflow: 'crawlMdOnly';
+      workflow: 'crawlMdOnly' | 'scrapePage';
       websiteUrl: string;
     }
   | {
