@@ -868,6 +868,8 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         showMarkdownEstimateLine;
 
     const fullPipelineCrawlStepMs = useMemo((): number | null => {
+        // Keep this memo recalculating on the live timer tick while crawling is active.
+        void liveElapsedMs;
         if ((workflow !== 'crawlSiteExtract' && workflow !== 'autopilot') || !fullPipelineUiActive) {
             return null;
         }
@@ -886,6 +888,8 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
     }, [workflow, fullPipelineUiActive, isScraping, scrapePhase, liveElapsedMs]);
 
     const fullPipelineLlmStepMs = useMemo((): number | null => {
+        // Keep this memo recalculating on the live timer tick while LLM extraction is active.
+        void liveElapsedMs;
         if ((workflow !== 'crawlSiteExtract' && workflow !== 'autopilot') || !fullPipelineUiActive) {
             return null;
         }
