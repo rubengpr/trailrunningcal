@@ -22,6 +22,7 @@ For business context, metrics, positioning, and audience — invoke the `/produc
 - **Service layer:** business logic lives in `lib/services/{feature}.ts`. DB access lives in `lib/db/`.
 - **External provider structure:** each provider lives under `lib/integrations/{provider}/` with `client.ts` (HTTP calls, auth, raw shapes), `service.ts` (orchestration, added when needed), and named helpers as they emerge (e.g. `lib/integrations/spider-cloud/`, `lib/integrations/openrouter/`)
 - **Data layer:** Server Components read directly via `lib/db/*`; Client Components call own API routes exclusively through `lib/api/*` wrappers.
+- **Workflow orchestration:** frontend clients request outcomes by calling backend API endpoints with explicit workflow/input payloads. Multi-step business workflows belong in backend services, not client components.
 - **DB transactions:** multi-table writes must be atomic. Use Postgres functions (`plpgsql`) via `supabase.rpc(...)` — do not orchestrate split writes in route handlers. Prefer `SECURITY INVOKER` and explicit `GRANT EXECUTE`.
 
 ## Components
