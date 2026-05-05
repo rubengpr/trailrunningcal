@@ -1,0 +1,48 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { requireAdmin } from '@/lib/auth-admin';
+import {
+  processAutopilot,
+  processCrawlSite,
+  processCrawlSiteExtract,
+} from '@/lib/services/race-import';
+import { parseInput, ValidationError } from './validation';
+
+export const maxDuration = 60;
+
+export async function POST(request: NextRequest): Promise<NextResponse> {
+  try {
+    await requireAdmin();
+
+    const body = await request.json();
+    const input = parseInput(body);
+
+    if (input.workflow === 'autopilot') {
+      const data = await processAutopilot(input);
+      return NextResponse.json({ success: true, data });
+    }
+
+    if (input.workflow === 'crawlSiteExtract') {
+      const data = await processCrawlSiteExtract(input);
+      return NextResponse.json({ success: true, data });
+    }
+
+    if (input.workflow === 'crawlMdOnly') {
+      const data = await processCrawlSite(input);
+      return NextResponse.json({ success: true, data });
+    }
+
+    return NextResponse.json({ error: 'Invalid workflow' }, { status: 400 });
+  } catch (error) {
+    if (error instanceof ValidationError) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status },
+      );
+    }
+    console.error('Race import API error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 },
+    );
+  }
+}

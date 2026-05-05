@@ -4,6 +4,10 @@ import type {
 } from '@/lib/integrations/openrouter/scrape-models';
 import type { PageStats } from '@/types/races-scrape-api.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
+import type {
+  RaceImportRequest,
+  RaceImportResult,
+} from '@/types/races-import-api.types';
 
 /**
  * Creates a new race via the API. Safe to call from client components.
@@ -179,6 +183,23 @@ export async function runTrailRaceAgent(
     ...responseData.data,
     markdown: options.mode === 'markdown' ? options.markdown : '',
   };
+}
+
+export async function runRaceImport(
+  options: RaceImportRequest,
+): Promise<RaceImportResult> {
+  const response = await fetch('/api/races/import', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(options),
+  });
+
+  const responseData = await response.json();
+  if (!response.ok) {
+    throw new Error(responseData.error || 'Failed to import races');
+  }
+
+  return responseData.data;
 }
 
 /**

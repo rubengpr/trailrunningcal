@@ -1,0 +1,94 @@
+import { describe, expect, it } from 'vitest';
+
+import { OPENROUTER_SCRAPE_MODEL_IDS } from '@/lib/integrations/openrouter/scrape-models';
+import { parseInput, ValidationError } from './validation';
+
+const MODEL = OPENROUTER_SCRAPE_MODEL_IDS[0];
+
+describe('parseInput', () => {
+  it('rejects non-object bodies', () => {
+    expect(() => parseInput(null)).toThrow(ValidationError);
+  });
+
+  it('rejects invalid workflows', () => {
+    expect(() =>
+      parseInput({
+        workflow: 'unknown',
+        websiteUrl: 'https://example.com',
+        model: MODEL,
+      }),
+    ).toThrow('Invalid workflow');
+  });
+
+  it('requires a website URL', () => {
+    expect(() =>
+      parseInput({
+        workflow: 'crawlMdOnly',
+        websiteUrl: '',
+      }),
+    ).toThrow('Website URL is required');
+  });
+
+  it('rejects invalid URLs', () => {
+    expect(() =>
+      parseInput({
+        workflow: 'crawlMdOnly',
+        websiteUrl: 'not a url',
+      }),
+    ).toThrow('Invalid URL format');
+  });
+
+  it('normalizes URLs', () => {
+    expect(
+      parseInput({
+        workflow: 'crawlMdOnly',
+        websiteUrl: 'example.com/race',
+      }),
+    ).toEqual({
+      workflow: 'crawlMdOnly',
+      url: 'https://example.com/race',
+    });
+  });
+
+  it('requires a model for autopilot', () => {
+    expect(() =>
+      parseInput({
+        workflow: 'autopilot',
+        websiteUrl: 'https://example.com',
+      }),
+    ).toThrow('Model is required');
+  });
+
+  it('requires a model for crawl and extract', () => {
+    expect(() =>
+      parseInput({
+        workflow: 'crawlSiteExtract',
+        websiteUrl: 'https://example.com',
+      }),
+    ).toThrow('Model is required');
+  });
+
+  it('rejects invalid models', () => {
+    expect(() =>
+      parseInput({
+        workflow: 'autopilot',
+        websiteUrl: 'https://example.com',
+        model: 'invalid-model',
+      }),
+    ).toThrow('Invalid model');
+  });
+
+  it('returns validated LLM workflow input', () => {
+    expect(
+      parseInput({
+        workflow: 'autopilot',
+        websiteUrl: 'trail.example/race',
+        model: MODEL,
+      }),
+    ).toEqual({
+      workflow: 'autopilot',
+      url: 'https://trail.example/race',
+      model: MODEL,
+    });
+  });
+});
