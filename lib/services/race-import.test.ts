@@ -156,7 +156,7 @@ describe('processCrawlSite', () => {
 
     expect(mocks.crawlSite).toHaveBeenCalledWith('https://example.com/race');
     expect(mocks.extractFromMarkdown).not.toHaveBeenCalled();
-    expect(result.workflow).toBe('crawlMdOnly');
+    expect(result.workflow).toBe('crawlSite');
     expect(result.races).toEqual([]);
     expect(result.rawModelOutput).toBeNull();
     expect(result.usage).toBeNull();

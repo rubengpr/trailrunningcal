@@ -23,7 +23,7 @@ describe('parseInput', () => {
   it('requires a website URL', () => {
     expect(() =>
       parseInput({
-        workflow: 'crawlMdOnly',
+        workflow: 'crawlSite',
         websiteUrl: '',
       }),
     ).toThrow('Website URL is required');
@@ -32,7 +32,7 @@ describe('parseInput', () => {
   it('rejects invalid URLs', () => {
     expect(() =>
       parseInput({
-        workflow: 'crawlMdOnly',
+        workflow: 'crawlSite',
         websiteUrl: 'not a url',
       }),
     ).toThrow('Invalid URL format');
@@ -41,11 +41,11 @@ describe('parseInput', () => {
   it('normalizes URLs', () => {
     expect(
       parseInput({
-        workflow: 'crawlMdOnly',
+        workflow: 'crawlSite',
         websiteUrl: 'example.com/race',
       }),
     ).toEqual({
-      workflow: 'crawlMdOnly',
+      workflow: 'crawlSite',
       url: 'https://example.com/race',
     });
   });

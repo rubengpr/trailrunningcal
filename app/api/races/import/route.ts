@@ -27,7 +27,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ success: true, data });
     }
 
-    if (input.workflow === 'crawlMdOnly') {
+    if (input.workflow === 'crawlSite') {
       const data = await processCrawlSite(input);
       return NextResponse.json({ success: true, data });
     }

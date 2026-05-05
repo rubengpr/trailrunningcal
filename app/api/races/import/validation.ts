@@ -6,7 +6,7 @@ import type { RaceImportWorkflow } from '@/types/races-import-api.types';
 export { ValidationError };
 
 export type ParsedInput =
-  | { workflow: 'crawlMdOnly' | 'scrapePage'; url: string }
+  | { workflow: 'crawlSite' | 'scrapePage'; url: string }
   | {
       workflow: 'autopilot' | 'crawlSiteExtract';
       url: string;
@@ -17,7 +17,7 @@ function parseWorkflow(value: unknown): RaceImportWorkflow {
   if (
     value === 'autopilot' ||
     value === 'crawlSiteExtract' ||
-    value === 'crawlMdOnly' ||
+    value === 'crawlSite' ||
     value === 'scrapePage'
   ) {
     return value;
@@ -66,7 +66,7 @@ export function parseInput(body: unknown): ParsedInput {
   const workflow = parseWorkflow(rawWorkflow);
   const url = parseUrl(websiteUrl);
 
-  if (workflow === 'crawlMdOnly' || workflow === 'scrapePage') {
+  if (workflow === 'crawlSite' || workflow === 'scrapePage') {
     return { workflow, url };
   }
 

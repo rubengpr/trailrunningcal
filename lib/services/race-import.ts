@@ -131,7 +131,7 @@ export async function processCrawlSite(input: {
   const crawl = await timeStep(() => crawlSite(input.url));
 
   return {
-    workflow: 'crawlMdOnly',
+    workflow: 'crawlSite',
     url: input.url,
     races: [],
     markdown: crawl.result.markdown,
