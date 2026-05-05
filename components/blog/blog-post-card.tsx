@@ -29,7 +29,7 @@ export function BlogPostCard({
   compact = false,
 }: BlogPostCardProps) {
   return (
-    <Link href={`/${locale}/blog/${slug}`}>
+    <Link href={`/${locale}/blog/${slug}`} prefetch={false}>
       <article className="flex flex-col group cursor-pointer p-4 -m-4 rounded-2xl transition-all duration-200 hover:bg-white hover:ring-1 hover:ring-gray-200 hover:shadow-lg">
         {/* Image */}
         <div className={`w-full rounded-xl overflow-hidden relative shadow-sm ${compact ? 'aspect-16/7 mb-2' : 'aspect-16/10 mb-6'}`}>

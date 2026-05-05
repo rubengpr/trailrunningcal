@@ -27,7 +27,7 @@ export async function Footer() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
         <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex flex-col gap-3 max-w-sm">
-            <Link href={`/${locale}`} className="flex items-center gap-2 w-fit">
+            <Link href={`/${locale}`} prefetch={false} className="flex items-center gap-2 w-fit">
               <Image
                 src="/logo.svg"
                 width={32}
@@ -54,6 +54,7 @@ export async function Footer() {
                   <Link
                     key={slug}
                     href={`/${locale}/${slug}`}
+                    prefetch={false}
                     className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors py-1"
                   >
                     {tNav(key)}
@@ -70,6 +71,7 @@ export async function Footer() {
                   <Link
                     key={province}
                     href={`/${locale}/provincia/${province}`}
+                    prefetch={false}
                     className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors py-1"
                   >
                     {tNav(province)}
@@ -84,6 +86,7 @@ export async function Footer() {
               <div className="flex flex-col gap-1">
                 <Link
                   href={`/${locale}/blog`}
+                  prefetch={false}
                   className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors py-1"
                 >
                   {t('blog')}
@@ -92,6 +95,7 @@ export async function Footer() {
                   <Link
                     key={post.slug}
                     href={`/${locale}/blog/${post.slug}`}
+                    prefetch={false}
                     className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors py-1 line-clamp-1"
                   >
                     {post.title}
@@ -107,6 +111,7 @@ export async function Footer() {
           </p>
           <Link
             href={`/${locale}/${locale === 'ca' ? 'contacte' : 'contacto'}`}
+            prefetch={false}
             className="text-sm text-gray-500 hover:text-gray-900 hover:underline transition-colors"
           >
             {t('contact')}

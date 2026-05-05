@@ -171,6 +171,7 @@ function MarkerPopupBody({
         <h3 className="min-w-0 wrap-break-word text-base font-bold tracking-tight leading-snug text-gray-900">
           <Link
             href={`/${locale}/carrera/${race.pathSegment}`}
+            prefetch={false}
             target="_blank"
             rel="noopener noreferrer"
             title={labels.racePageLink}

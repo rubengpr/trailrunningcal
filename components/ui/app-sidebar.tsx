@@ -29,6 +29,7 @@ export function AppSidebar({ navItems }: AppSidebarProps) {
                         <Link
                             key={item.href}
                             href={item.href}
+                            prefetch={false}
                             className={`flex items-center gap-2 px-4 py-3 text-sm whitespace-nowrap border-b-2 transition-colors ${
                                 active
                                     ? 'border-gray-900 text-gray-900 font-medium'
@@ -53,6 +54,7 @@ export function AppSidebar({ navItems }: AppSidebarProps) {
                             <Link
                                 key={item.href}
                                 href={item.href}
+                                prefetch={false}
                                 className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 ease-in-out ${
                                     active
                                         ? 'bg-gray-100 text-gray-900 font-medium'

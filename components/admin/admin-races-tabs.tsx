@@ -22,6 +22,7 @@ export function AdminRacesTabs() {
                     <Link
                         key={tab.href}
                         href={tab.href}
+                        prefetch={false}
                         className={`px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors ${
                             isActive
                                 ? 'border-gray-900 text-gray-900'
