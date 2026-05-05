@@ -9,6 +9,7 @@ import { FormSelect } from '@/components/ui/form-select';
 import { Combobox } from '@/components/ui/combobox';
 import type { ComboboxOption } from '@/components/ui/combobox';
 import { Button } from '@/components/ui/button';
+import { IconActionMenu } from '@/components/ui/icon-action-menu';
 import { TabSwitcher } from '@/components/ui/tab-switcher';
 import { SectionHeader } from '@/components/ui/section-header';
 import { SuggestedRacesPreview } from '@/components/race/suggested-races-preview';
@@ -1130,23 +1131,25 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                                 {t('runWorkflowButton')}
                             </span>
                         </Button>
-                        {scrapeMarkdown && (
-                            <Button
-                                type="button"
-                                variant="secondary"
-                                onClick={handleDownloadMarkdown}
-                            >
-                                {t('downloadMarkdown')}
-                            </Button>
-                        )}
-                        {rawModelOutput !== null && rawModelOutput !== '' && (
-                            <Button
-                                type="button"
-                                variant="secondary"
-                                onClick={handleDownloadRawModelOutput}
-                            >
-                                {t('downloadRawResponse')}
-                            </Button>
+                        {(scrapeMarkdown || (rawModelOutput !== null && rawModelOutput !== '')) && (
+                            <IconActionMenu
+                                triggerAriaLabel={t('downloadMenuTriggerLabel')}
+                                disabled={isScraping}
+                                items={[
+                                    {
+                                        id: 'markdown',
+                                        label: t('downloadMenuMarkdown'),
+                                        disabled: !scrapeMarkdown,
+                                        onSelect: handleDownloadMarkdown,
+                                    },
+                                    {
+                                        id: 'json',
+                                        label: t('downloadMenuJson'),
+                                        disabled: rawModelOutput === null || rawModelOutput === '',
+                                        onSelect: handleDownloadRawModelOutput,
+                                    },
+                                ]}
+                            />
                         )}
                         <Button
                             type="button"

@@ -1,0 +1,94 @@
+'use client';
+
+import { createPortal } from 'react-dom';
+import { ChevronDown, Download } from 'lucide-react';
+import { useMultiSelectMenu } from '@/hooks/use-multi-select-menu';
+
+export interface IconActionMenuItem {
+    id: string;
+    label: string;
+    onSelect: () => void;
+    disabled?: boolean;
+}
+
+interface IconActionMenuProps {
+    triggerAriaLabel: string;
+    triggerTitle?: string;
+    disabled?: boolean;
+    items: IconActionMenuItem[];
+}
+
+const triggerBaseClass =
+    'inline-flex h-9 min-h-9 shrink-0 items-center justify-center gap-0.5 rounded-xl border border-gray-300 bg-white px-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer';
+
+export function IconActionMenu({
+    triggerAriaLabel,
+    triggerTitle,
+    disabled = false,
+    items,
+}: IconActionMenuProps) {
+    const { open, containerRef, triggerRef, dropdownRef, dropdownStyle, toggleOpen, closeMenu } =
+        useMultiSelectMenu({
+            usePortalPosition: true,
+            minWidth: 160,
+            offset: 4,
+        });
+
+    const panel =
+        open &&
+        typeof document !== 'undefined' &&
+        createPortal(
+            <div
+                ref={dropdownRef}
+                className="z-9999 overflow-hidden rounded-lg border border-gray-200 bg-white py-1 shadow-lg animate-filter-select-in"
+                style={{
+                    position: 'absolute',
+                    top: dropdownStyle.top,
+                    left: dropdownStyle.left,
+                    minWidth: dropdownStyle.minWidth,
+                }}
+            >
+                {items.map((item) => (
+                    <button
+                        key={item.id}
+                        type="button"
+                        disabled={item.disabled}
+                        className="flex w-full cursor-pointer px-3 py-2 text-left text-sm text-gray-900 transition-colors duration-100 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-white"
+                        onClick={() => {
+                            if (item.disabled) return;
+                            item.onSelect();
+                            closeMenu();
+                        }}
+                    >
+                        {item.label}
+                    </button>
+                ))}
+            </div>,
+            document.body,
+        );
+
+    return (
+        <div ref={containerRef} className="relative shrink-0">
+            <button
+                ref={triggerRef}
+                type="button"
+                className={triggerBaseClass}
+                aria-label={triggerAriaLabel}
+                title={triggerTitle ?? triggerAriaLabel}
+                aria-expanded={open}
+                aria-haspopup="menu"
+                disabled={disabled}
+                onClick={toggleOpen}
+            >
+                <Download className="size-4 shrink-0" strokeWidth={2} aria-hidden />
+                <ChevronDown
+                    size={14}
+                    strokeWidth={2}
+                    className={`shrink-0 text-gray-500 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+                    aria-hidden
+                />
+            </button>
+            {panel}
+        </div>
+    );
+}
