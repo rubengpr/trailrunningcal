@@ -3,6 +3,7 @@
 import { useMemo, useReducer, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
+import Image from 'next/image';
 import toast from 'react-hot-toast';
 import { FormSelect } from '@/components/ui/form-select';
 import { Combobox } from '@/components/ui/combobox';
@@ -1024,9 +1025,12 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                                         <div className="flex flex-wrap gap-2">
                                             {uploadedImages.map((img, idx) => (
                                                 <div key={idx} className="relative flex items-center gap-1.5 rounded-md border border-gray-200 bg-gray-50 px-2 py-1.5">
-                                                    <img
+                                                    <Image
                                                         src={img.dataUrl}
                                                         alt={img.name}
+                                                        width={32}
+                                                        height={32}
+                                                        unoptimized
                                                         className="h-8 w-8 rounded object-cover"
                                                     />
                                                     <span className="max-w-[120px] truncate text-xs text-gray-600">{img.name}</span>
