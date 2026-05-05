@@ -172,6 +172,7 @@ export function TrailRaceCard({
                 {!displayOnly && raceSlug ? (
                   <Link
                     href={`/${locale}/carrera/${raceSlug}`}
+                    prefetch={false}
                     className={`min-w-0 hover:underline sm:hover:no-underline ${useStretchedLink
                         ? 'after:absolute after:inset-0'
                         : 'pointer-events-auto relative z-10'
@@ -203,6 +204,7 @@ export function TrailRaceCard({
                 {categorySlug ? (
                   <Link
                     href={`/${locale}/${categorySlug}`}
+                    prefetch={false}
                     className="relative z-10 pointer-events-auto min-w-0 max-w-full wrap-break-word px-2 py-0.5 text-xs font-medium rounded-sm bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors sm:max-w-none"
                     onClick={(e) => e.stopPropagation()}
                   >
@@ -222,6 +224,7 @@ export function TrailRaceCard({
                 {!displayOnly && raceSlug && showWebButton && (
                   <Link
                     href={`/${locale}/carrera/${raceSlug}`}
+                    prefetch={false}
                     className="relative z-10 sm:hidden inline-flex shrink-0 items-center pointer-events-auto bg-black text-white px-2 py-0.5 rounded-sm text-xs font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
                     onClick={(e) => {
                       e.stopPropagation();
@@ -245,6 +248,7 @@ export function TrailRaceCard({
             {!displayOnly && raceSlug && showWebButton && (
               <Link
                 href={`/${locale}/carrera/${raceSlug}`}
+                prefetch={false}
                 className="relative z-10 hidden sm:inline-flex items-center bg-black text-white rounded-sm px-3 py-1 text-xs font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
                 onClick={(e) => {
                   e.stopPropagation();
