@@ -42,7 +42,7 @@ import type { RaceImportResult, RaceImportStep, RaceImportWorkflow } from '@/typ
 import type { TrailRace } from '@/types/trail-race-agent.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 import type { PendingRace } from '@/types/pending-race.types';
-import { XCircle, RefreshCw, Sparkles, FileText, ImageIcon, X } from 'lucide-react';
+import { XCircle, RefreshCw, Sparkles, FileText, ImageIcon, X, Play } from 'lucide-react';
 
 type ScrapeWorkflow = 'autopilot' | 'full' | 'ingest' | 'llmFromFile';
 type ScrapeSourceMode = 'scrapePage' | 'crawlSite';
@@ -772,14 +772,6 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
             ? isScraping || hasScraped
             : hasScraped && scrapeError !== null;
 
-    const primaryButtonLabel =
-        workflow === 'ingest'
-            ? sourceMode === 'crawlSite'
-                ? t('crawlSiteButton')
-                : t('scrapePageButton') :
-            workflow === 'autopilot' ? t('bulk.runButton') :
-                t('scrapeButton');
-
     const primaryLoadingLabel =
         workflow === 'ingest'
             ? t('crawlingMarkdown')
@@ -1133,7 +1125,10 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                             isLoading={isScraping}
                             loadingText={primaryLoadingLabel}
                         >
-                            {primaryButtonLabel}
+                            <span className="inline-flex items-center gap-2">
+                                <Play className="size-4 shrink-0" strokeWidth={2} aria-hidden />
+                                {t('runWorkflowButton')}
+                            </span>
                         </Button>
                         {scrapeMarkdown && (
                             <Button
