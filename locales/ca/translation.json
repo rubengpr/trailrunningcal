@@ -744,7 +744,7 @@
         "workflowLlmFromFile": "Parse",
         "workflowCrawlAndLlm": "Full",
         "workflowAutopilot": "Auto",
-        "importSourceModeLabel": "Mode",
+        "importSourceModeLabel": "mode",
         "sourceScrapePage": "Scrap",
         "sourceCrawlSite": "Crawl",
         "runWorkflowButton": "Executar",
