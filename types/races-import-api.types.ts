@@ -6,6 +6,7 @@ import type { TrailRace } from '@/types/trail-race-agent.types';
 export type RaceImportWorkflow =
   | 'autopilot'
   | 'crawlSiteExtract'
+  | 'scrapePageExtract'
   | 'crawlSite'
   | 'scrapePage';
 
@@ -38,7 +39,7 @@ export type RaceImportRequest =
       websiteUrl: string;
     }
   | {
-      workflow: 'autopilot' | 'crawlSiteExtract';
+      workflow: 'autopilot' | 'crawlSiteExtract' | 'scrapePageExtract';
       websiteUrl: string;
       model: OpenRouterScrapeModelId;
     };

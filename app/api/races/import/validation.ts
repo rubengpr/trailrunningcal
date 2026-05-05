@@ -8,7 +8,7 @@ export { ValidationError };
 export type ParsedInput =
   | { workflow: 'crawlSite' | 'scrapePage'; url: string }
   | {
-      workflow: 'autopilot' | 'crawlSiteExtract';
+      workflow: 'autopilot' | 'crawlSiteExtract' | 'scrapePageExtract';
       url: string;
       model: OpenRouterScrapeModelId;
     };
@@ -17,6 +17,7 @@ function parseWorkflow(value: unknown): RaceImportWorkflow {
   if (
     value === 'autopilot' ||
     value === 'crawlSiteExtract' ||
+    value === 'scrapePageExtract' ||
     value === 'crawlSite' ||
     value === 'scrapePage'
   ) {

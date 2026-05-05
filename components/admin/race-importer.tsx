@@ -38,13 +38,14 @@ import {
 } from '@/lib/scrape-markdown-token-estimate';
 import { normalizeUrl } from '@/lib/validation';
 import type { PageStats } from '@/types/races-scrape-api.types';
-import type { RaceImportResult, RaceImportStep } from '@/types/races-import-api.types';
+import type { RaceImportResult, RaceImportStep, RaceImportWorkflow } from '@/types/races-import-api.types';
 import type { TrailRace } from '@/types/trail-race-agent.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 import type { PendingRace } from '@/types/pending-race.types';
 import { XCircle, RefreshCw, Sparkles, FileText, ImageIcon, X } from 'lucide-react';
 
-type ScrapeWorkflow = 'crawlSite' | 'scrapePage' | 'llmFromFile' | 'crawlSiteExtract' | 'autopilot';
+type ScrapeWorkflow = 'autopilot' | 'full' | 'ingest' | 'llmFromFile';
+type ScrapeSourceMode = 'scrapePage' | 'crawlSite';
 
 type ScrapePhase = 'idle' | 'crawling' | 'llm';
 
@@ -488,6 +489,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
     const fullPipelineLlmEndedAtRef = useRef<number | null>(null);
 
     const [workflow, setWorkflow] = useState<ScrapeWorkflow>('autopilot');
+    const [sourceMode, setSourceMode] = useState<ScrapeSourceMode>('crawlSite');
     const [websiteUrl, setWebsiteUrl] = useState('');
     const [selectedModelId, setSelectedModelId] = useState<OpenRouterScrapeModelId>(
         OPENROUTER_SCRAPE_MODEL_IDS[0],
@@ -541,7 +543,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
 
     const canRunScrape =
         !isScraping &&
-        (workflow === 'crawlSite' || workflow === 'scrapePage' || workflow === 'crawlSiteExtract' || workflow === 'autopilot'
+        (workflow === 'autopilot' || workflow === 'full' || workflow === 'ingest'
             ? isValidUrl(websiteUrl)
             : uploadKind === 'images'
                 ? uploadedImages.length > 0
@@ -555,7 +557,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
     };
 
     const handleWorkflowChange = (next: ScrapeWorkflow): void => {
-        if (next !== 'crawlSiteExtract') {
+        if (next !== 'full') {
             dispatch({ type: 'PIPELINE_HIDDEN' });
             clearFullPipelineStepRefs();
         }
@@ -570,12 +572,21 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         resetScrapeResults();
     };
 
+    const selectedImportWorkflow = (): RaceImportWorkflow | null => {
+        if (workflow === 'autopilot') return 'autopilot';
+        if (workflow === 'full') {
+            return sourceMode === 'crawlSite' ? 'crawlSiteExtract' : 'scrapePageExtract';
+        }
+        if (workflow === 'ingest') return sourceMode;
+        return null;
+    };
+
     const setCompletedImportStepRefs = (result: RaceImportResult): void => {
         const isFallback = result.workflow === 'autopilot' && result.fallbackUsed === true;
         const crawlStep =
             result.workflow === 'autopilot'
                 ? findStep(result.steps, isFallback ? 'crawlSite' : 'scrapePage')
-                : findStep(result.steps, 'crawlSite');
+                : (findStep(result.steps, 'crawlSite') ?? findStep(result.steps, 'scrapePage'));
         const extractStep = findStep(result.steps, 'extract', isFallback ? 1 : 0);
 
         fullPipelineCrawlStartedAtRef.current = crawlStep ? 0 : null;
@@ -589,7 +600,8 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         runStartedAtRef.current = performance.now();
 
         try {
-            if (workflow === 'autopilot' || workflow === 'crawlSiteExtract' || workflow === 'crawlSite' || workflow === 'scrapePage') {
+            const importWorkflow = selectedImportWorkflow();
+            if (importWorkflow !== null) {
                 const normalizedUrl = normalizeUrl(websiteUrl.trim());
 
                 if (workflow === 'autopilot') {
@@ -598,7 +610,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                     fullPipelineCrawlEndedAtRef.current = null;
                     fullPipelineLlmStartedAtRef.current = null;
                     fullPipelineLlmEndedAtRef.current = null;
-                } else if (workflow === 'crawlSiteExtract') {
+                } else if (workflow === 'full') {
                     dispatch({ type: 'CRAWL_SITE_EXTRACT_START' });
                     fullPipelineCrawlStartedAtRef.current = performance.now();
                     fullPipelineCrawlEndedAtRef.current = null;
@@ -610,9 +622,9 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                 }
 
                 const data = await runRaceImport(
-                    workflow === 'crawlSite' || workflow === 'scrapePage'
-                        ? { workflow, websiteUrl: normalizedUrl }
-                        : { workflow, websiteUrl: normalizedUrl, model: selectedModelId },
+                    importWorkflow === 'crawlSite' || importWorkflow === 'scrapePage'
+                        ? { workflow: importWorkflow, websiteUrl: normalizedUrl }
+                        : { workflow: importWorkflow, websiteUrl: normalizedUrl, model: selectedModelId },
                 );
 
                 setCompletedImportStepRefs(data);
@@ -620,7 +632,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                     type: 'IMPORT_SUCCESS',
                     result: data,
                     persistedRows: buildAutopilotFallbackRows(data),
-                    showPipeline: workflow === 'autopilot' || workflow === 'crawlSiteExtract',
+                    showPipeline: workflow === 'autopilot' || workflow === 'full',
                 });
                 return;
             }
@@ -708,7 +720,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
     const handleLoadDummyPreview = (): void => {
         clearFullPipelineStepRefs();
         runStartedAtRef.current = null;
-        const isMarkdownOnly = workflow === 'crawlSite' || workflow === 'scrapePage';
+        const isMarkdownOnly = workflow === 'ingest';
         dispatch({
             type: 'PREVIEW_LOADED',
             durationMs: DUMMY_LAST_RUN_DURATION_MS,
@@ -717,7 +729,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
             rawModelOutput: isMarkdownOnly ? null : DUMMY_RAW_MODEL_OUTPUT,
             usage: isMarkdownOnly ? null : { ...DUMMY_SCRAPE_USAGE },
             pageStats: workflow === 'llmFromFile' ? null : { ...DUMMY_CRAWL_PAGE_STATS },
-            showPipeline: workflow === 'crawlSiteExtract',
+            showPipeline: workflow === 'full',
         });
     };
 
@@ -756,26 +768,28 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
     };
 
     const showSuggestedRacesPreview =
-        workflow !== 'crawlSite' && workflow !== 'scrapePage'
+        workflow !== 'ingest'
             ? isScraping || hasScraped
             : hasScraped && scrapeError !== null;
 
     const primaryButtonLabel =
-        workflow === 'crawlSite' ? t('crawlSiteButton') :
-            workflow === 'scrapePage' ? t('scrapePageButton') :
+        workflow === 'ingest'
+            ? sourceMode === 'crawlSite'
+                ? t('crawlSiteButton')
+                : t('scrapePageButton') :
             workflow === 'autopilot' ? t('bulk.runButton') :
                 t('scrapeButton');
 
     const primaryLoadingLabel =
-        workflow === 'crawlSite' || workflow === 'scrapePage'
+        workflow === 'ingest'
             ? t('crawlingMarkdown')
             : workflow === 'autopilot'
                 ? t('bulk.running')
-                : workflow === 'crawlSiteExtract' && scrapePhase === 'crawling'
+                : workflow === 'full' && scrapePhase === 'crawling'
                     ? t('crawlingMarkdown')
                     : t('scraping');
 
-    const showLlmMetricsUi = workflow !== 'crawlSite' && workflow !== 'scrapePage';
+    const showLlmMetricsUi = workflow !== 'ingest';
 
     const markdownTokenEstimate = useMemo((): number | null => {
         if (scrapeMarkdown === null || scrapeMarkdown === '') {
@@ -807,7 +821,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         row1: FullPipelineRowConfig;
         row2: FullPipelineRowConfig;
     } | null => {
-        if ((workflow !== 'crawlSiteExtract' && workflow !== 'autopilot') || !fullPipelineUiActive) {
+        if ((workflow !== 'full' && workflow !== 'autopilot') || !fullPipelineUiActive) {
             return null;
         }
         if (!isScraping && !hasScraped) {
@@ -864,7 +878,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
     ]);
 
     const showMarkdownEstimateBesidePageStats =
-        (workflow === 'crawlSiteExtract' || workflow === 'autopilot') &&
+        (workflow === 'full' || workflow === 'autopilot') &&
         fullPipelineSteps !== null &&
         pageStats !== null &&
         showMarkdownEstimateLine;
@@ -872,7 +886,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
     const fullPipelineCrawlStepMs = useMemo((): number | null => {
         // Keep this memo recalculating on the live timer tick while crawling is active.
         void liveElapsedMs;
-        if ((workflow !== 'crawlSiteExtract' && workflow !== 'autopilot') || !fullPipelineUiActive) {
+        if ((workflow !== 'full' && workflow !== 'autopilot') || !fullPipelineUiActive) {
             return null;
         }
         if (fullPipelineCrawlStartedAtRef.current === null) {
@@ -892,7 +906,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
     const fullPipelineLlmStepMs = useMemo((): number | null => {
         // Keep this memo recalculating on the live timer tick while LLM extraction is active.
         void liveElapsedMs;
-        if ((workflow !== 'crawlSiteExtract' && workflow !== 'autopilot') || !fullPipelineUiActive) {
+        if ((workflow !== 'full' && workflow !== 'autopilot') || !fullPipelineUiActive) {
             return null;
         }
         if (fullPipelineLlmStartedAtRef.current === null) {
@@ -928,9 +942,8 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                                     </span>
                                 ),
                             },
-                            { id: 'crawlSiteExtract', label: t('workflowCrawlAndLlm') },
-                            { id: 'scrapePage', label: t('workflowScrapePage') },
-                            { id: 'crawlSite', label: t('workflowCrawlSite') },
+                            { id: 'full', label: t('workflowCrawlAndLlm') },
+                            { id: 'ingest', label: t('workflowIngest') },
                             { id: 'llmFromFile', label: t('workflowLlmFromFile') },
                         ]}
                         activeId={workflow}
@@ -938,7 +951,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                         disabled={isScraping}
                     />
 
-                    {(workflow === 'crawlSite' || workflow === 'scrapePage' || workflow === 'crawlSiteExtract' || workflow === 'autopilot') && (
+                    {(workflow === 'autopilot' || workflow === 'full' || workflow === 'ingest') && (
                         <div className="grid gap-2 w-full">
                             <Combobox
                                 id="websiteUrl"
@@ -950,6 +963,19 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                                 disabled={isScraping}
                             />
                         </div>
+                    )}
+
+                    {(workflow === 'full' || workflow === 'ingest') && (
+                        <FormSelect
+                            id="importSourceMode"
+                            label={t('importSourceModeLabel')}
+                            value={sourceMode}
+                            onChange={(e) => setSourceMode(e.target.value as ScrapeSourceMode)}
+                            disabled={isScraping}
+                        >
+                            <option value="scrapePage">{t('sourceScrapePage')}</option>
+                            <option value="crawlSite">{t('sourceCrawlSite')}</option>
+                        </FormSelect>
                     )}
 
                     {workflow === 'llmFromFile' && (
@@ -1064,7 +1090,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                         </>
                     )}
 
-                    {(workflow === 'crawlSiteExtract' || workflow === 'autopilot' || (workflow === 'llmFromFile' && uploadKind !== 'images')) && (
+                    {(workflow === 'full' || workflow === 'autopilot' || (workflow === 'llmFromFile' && uploadKind !== 'images')) && (
                         <FormSelect
                             id="openrouterModel"
                             label={t('modelLabel')}
@@ -1177,7 +1203,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                                         durationMs={fullPipelineCrawlStepMs}
                                         errorDetail={fullPipelineSteps.row1.errorDetail}
                                     >
-                                        {(workflow === 'crawlSiteExtract' || workflow === 'autopilot') && pageStats !== null && (
+                                        {(workflow === 'full' || workflow === 'autopilot') && pageStats !== null && (
                                             <span className="inline-flex flex-wrap items-center gap-1.5">
                                                 <PageStatsBadges pageStats={pageStats} />
                                                 {showMarkdownEstimateBesidePageStats && (
@@ -1203,7 +1229,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                             )}
                         </div>
                     )}
-                    {(workflow === 'crawlSite' || workflow === 'scrapePage') && pageStats !== null && (
+                    {workflow === 'ingest' && pageStats !== null && (
                         <div className="flex flex-wrap items-center gap-2">
                             <PageStatsBadges pageStats={pageStats} size="md" />
                         </div>

@@ -125,6 +125,31 @@ export async function processCrawlSiteExtract(input: {
   };
 }
 
+export async function processScrapePageExtract(input: {
+  url: string;
+  model: OpenRouterScrapeModelId;
+}): Promise<RaceImportResult> {
+  const scrape = await timeStep(() => scrapePage(input.url));
+  const extract = await timeStep(() =>
+    extractFromMarkdown(scrape.result.markdown, input.model),
+  );
+
+  return {
+    workflow: 'scrapePageExtract',
+    url: input.url,
+    races: extract.result.races,
+    markdown: scrape.result.markdown,
+    rawModelOutput: extract.result.rawModelOutput,
+    usage: extract.result.usage,
+    pageStats: scrape.result.pageStats,
+    fallbackUsed: null,
+    steps: [
+      scrapeStep('scrapePage', scrape.result, scrape.durationMs),
+      extractStep(extract.result.races.length, extract.durationMs),
+    ],
+  };
+}
+
 export async function processCrawlSite(input: {
   url: string;
 }): Promise<RaceImportResult> {

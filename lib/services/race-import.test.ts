@@ -25,6 +25,7 @@ import {
   processCrawlSite,
   processCrawlSiteExtract,
   processScrapePage,
+  processScrapePageExtract,
 } from './race-import';
 
 const MODEL = OPENROUTER_SCRAPE_MODEL_IDS[0];
@@ -141,6 +142,31 @@ describe('processCrawlSiteExtract', () => {
     expect(result.fallbackUsed).toBeNull();
     expect(result.steps.map((step) => step.name)).toEqual([
       'crawlSite',
+      'extract',
+    ]);
+  });
+});
+
+describe('processScrapePageExtract', () => {
+  it('scrapes a single page and extracts once', async () => {
+    mocks.scrapePage.mockResolvedValue(scrapeResult('single page markdown'));
+    mocks.extractFromMarkdown.mockResolvedValue(extractResult([race()]));
+
+    const result = await processScrapePageExtract({
+      url: 'https://example.com/race',
+      model: MODEL,
+    });
+
+    expect(mocks.scrapePage).toHaveBeenCalledWith('https://example.com/race');
+    expect(mocks.crawlSite).not.toHaveBeenCalled();
+    expect(mocks.extractFromMarkdown).toHaveBeenCalledWith(
+      'single page markdown',
+      MODEL,
+    );
+    expect(result.workflow).toBe('scrapePageExtract');
+    expect(result.fallbackUsed).toBeNull();
+    expect(result.steps.map((step) => step.name)).toEqual([
+      'scrapePage',
       'extract',
     ]);
   });

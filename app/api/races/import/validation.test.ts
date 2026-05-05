@@ -80,6 +80,15 @@ describe('parseInput', () => {
     ).toThrow('Model is required');
   });
 
+  it('requires a model for scrape page and extract', () => {
+    expect(() =>
+      parseInput({
+        workflow: 'scrapePageExtract',
+        websiteUrl: 'https://example.com',
+      }),
+    ).toThrow('Model is required');
+  });
+
   it('rejects invalid models', () => {
     expect(() =>
       parseInput({
@@ -99,6 +108,20 @@ describe('parseInput', () => {
       }),
     ).toEqual({
       workflow: 'autopilot',
+      url: 'https://trail.example/race',
+      model: MODEL,
+    });
+  });
+
+  it('returns validated scrape page extraction input', () => {
+    expect(
+      parseInput({
+        workflow: 'scrapePageExtract',
+        websiteUrl: 'trail.example/race',
+        model: MODEL,
+      }),
+    ).toEqual({
+      workflow: 'scrapePageExtract',
       url: 'https://trail.example/race',
       model: MODEL,
     });

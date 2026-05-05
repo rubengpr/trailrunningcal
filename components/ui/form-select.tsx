@@ -47,12 +47,14 @@ export function FormSelect({
           <ChevronDown size={16} />
         </span>
       </div>
-      <div className="h-5">
-        {error && <p className="text-sm text-red-500 ml-1">{error}</p>}
-        {helperText && !error && (
-          <p className="text-xs text-gray-500 ml-1">{helperText}</p>
-        )}
-      </div>
+      {(error || helperText) && (
+        <div>
+          {error && <p className="text-sm text-red-500 ml-1">{error}</p>}
+          {helperText && !error && (
+            <p className="text-xs text-gray-500 ml-1">{helperText}</p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
