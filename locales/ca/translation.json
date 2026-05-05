@@ -764,7 +764,7 @@
         "cancelJson": "Cancel·lar",
         "jsonParseError": "JSON invàlid",
         "jsonNotArrayError": "El JSON ha de ser un array",
-        "downloadRawResponse": "Descarregar resposta en brut",
+        "downloadRawResponse": "Descarregar JSON",
         "eventUrlForAcceptLabel": "url",
         "urlForAcceptHint": "Cal per acceptar curses al calendari. Fes servir la pàgina pública de l'event.",
         "websiteUrlLabel": "url",

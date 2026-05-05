@@ -761,7 +761,7 @@
         "cancelJson": "Cancelar",
         "jsonParseError": "JSON inválido",
         "jsonNotArrayError": "El JSON debe ser un array",
-        "downloadRawResponse": "Descargar respuesta en bruto",
+        "downloadRawResponse": "Descargar JSON",
         "eventUrlForAcceptLabel": "url",
         "urlForAcceptHint": "Necesaria para aceptar carreras en el calendario. Usa la página pública del evento.",
         "websiteUrlLabel": "url",
