@@ -2,7 +2,7 @@ import { createClient, createAdminClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { getOrganizerRaceContext } from '@/lib/auth-organizer';
 import { isAdminEmail } from '@/lib/auth-admin';
-import { revalidateHomepages, revalidateRacePages } from '@/lib/revalidation';
+import { revalidateRacePages, revalidateHomepages, revalidateProvincePage, revalidateCategoryPages } from '@/lib/revalidation';
 import { sanitizeDescription } from '@/app/api/races/validation';
 
 export async function PATCH(
@@ -22,8 +22,16 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { date, name, distanceKm, elevationGainM, websiteUrl, city, province, description } =
-      await request.json();
+    const {
+      date,
+      name,
+      distanceKm,
+      elevationGainM,
+      websiteUrl,
+      city,
+      province,
+      description,
+    } = await request.json();
 
     const isAdmin = isAdminEmail(user.email);
 
@@ -55,7 +63,7 @@ export async function PATCH(
 
     const { data: existingRace } = await dbClient
       .from('races')
-      .select('name')
+      .select('name, province, distance_km, elevation_gain_m')
       .eq('id', raceId)
       .single();
 
@@ -68,18 +76,27 @@ export async function PATCH(
 
     if (error) {
       console.error('Database error:', error);
-      return NextResponse.json({ error: 'Failed to update race' }, { status: 500 });
+      return NextResponse.json(
+        { error: 'Failed to update race' },
+        { status: 500 },
+      );
     }
 
-    revalidateHomepages();
     if (existingRace?.name) {
+      revalidateHomepages();
+      revalidateCategoryPages({ name: existingRace.name, distanceKm: existingRace.distance_km, elevationGainM: existingRace.elevation_gain_m });
       revalidateRacePages(existingRace.name);
+      if (existingRace.province) revalidateProvincePage(existingRace.province);
+      if (province && province !== existingRace.province) revalidateProvincePage(province);
     }
 
     return NextResponse.json({ success: true, data });
   } catch (error) {
     console.error('API error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 },
+    );
   }
 }
 
@@ -107,7 +124,7 @@ export async function DELETE(
 
       const { data: race } = await adminClient
         .from('races')
-        .select('name')
+        .select('name, province, distance_km, elevation_gain_m')
         .eq('id', raceId)
         .single();
 
@@ -118,12 +135,17 @@ export async function DELETE(
 
       if (error) {
         console.error('Delete error:', error);
-        return NextResponse.json({ error: 'Failed to delete race' }, { status: 500 });
+        return NextResponse.json(
+          { error: 'Failed to delete race' },
+          { status: 500 },
+        );
       }
 
       if (race?.name) {
         revalidateHomepages();
+        revalidateCategoryPages({ name: race.name, distanceKm: race.distance_km, elevationGainM: race.elevation_gain_m });
         revalidateRacePages(race.name);
+        if (race.province) revalidateProvincePage(race.province);
       }
     } else {
       const organizerContext = await getOrganizerRaceContext(supabase, raceId);
@@ -139,16 +161,24 @@ export async function DELETE(
 
       if (error) {
         console.error('Delete error:', error);
-        return NextResponse.json({ error: 'Failed to delete race' }, { status: 500 });
+        return NextResponse.json(
+          { error: 'Failed to delete race' },
+          { status: 500 },
+        );
       }
 
       revalidateHomepages();
+      revalidateCategoryPages(organizerContext.race);
       revalidateRacePages(organizerContext.race.name);
+      if (organizerContext.race.province) revalidateProvincePage(organizerContext.race.province);
     }
 
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('API error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 },
+    );
   }
 }
