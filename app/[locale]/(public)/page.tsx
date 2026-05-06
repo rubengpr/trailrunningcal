@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { HeroSection } from '@/components/layout/hero-section';
 import { RacesExplorerClient } from '@/components/races-map/races-explorer-client';
 import {
@@ -14,8 +14,7 @@ import { buildWebsiteJsonLd, buildOrganizationJsonLd } from '@/lib/seo/json-ld';
 import { buildFaqJsonLd } from '@/lib/seo/json-ld';
 import type { MapPageLabels } from '@/types/map.types';
 
-/** Calendar + map data; map markers benefit from fresher revalidation than static-only home. */
-export const revalidate = 300;
+export const revalidate = 86400;
 
 export async function generateMetadata({
   params,
@@ -23,6 +22,7 @@ export async function generateMetadata({
   params: Promise<{ locale: Locale }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations({ locale });
   const seoMeta = getSeoMetaConfig('home', locale);
 
@@ -47,6 +47,7 @@ export default async function HomePage({
   params: Promise<{ locale: Locale }>;
 }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations({ locale });
 
   const [races, { markers }] = await Promise.all([

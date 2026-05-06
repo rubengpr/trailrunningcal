@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import type { Locale } from '@/i18n';
 import { getRaces } from '@/lib/db/races';
 import { BASE_URL } from '@/lib/config';
 import { generateMetadataFromOptions } from '@/lib/seo/meta-config';
 import { FavoritesClient } from '@/components/home/favorites-client';
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export async function generateMetadata({
   params,
@@ -14,6 +14,7 @@ export async function generateMetadata({
   params: Promise<{ locale: Locale }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'favorites' });
 
   return generateMetadataFromOptions({
@@ -31,6 +32,7 @@ export default async function MisCarrerasPage({
   params: Promise<{ locale: Locale }>;
 }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'favorites' });
   const races = await getRaces();
 

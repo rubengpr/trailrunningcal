@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import type { Locale } from '@/i18n';
 import { generateMetadataFromOptions } from '@/lib/seo/meta-config';
 import { buildUltraTrailAlternateLinks } from '@/lib/alternate-links';
@@ -9,7 +9,7 @@ import type { FaqItem } from '@/lib/seo/json-ld';
 import { CategoryMapPage } from '@/components/layout/category-map-page';
 import { getCategoryPageData } from '@/lib/category-page';
 
-export const revalidate = 300;
+export const revalidate = 86400;
 
 const DISTANCE_MIN = 50;
 
@@ -19,6 +19,7 @@ export async function generateMetadata({
   params: Promise<{ locale: Locale }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'ultraTrail' });
   const year = new Date().getFullYear();
 
@@ -39,6 +40,7 @@ export default async function UltraTrailPage({
   params: Promise<{ locale: Locale }>;
 }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const { allRaces, markers, labels, calendarLabel, year } = await getCategoryPageData(locale);
   const t = await getTranslations({ locale, namespace: 'ultraTrail' });
 

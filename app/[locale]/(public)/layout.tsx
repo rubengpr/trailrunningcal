@@ -1,4 +1,4 @@
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { MobileFiltersProvider } from '@/components/providers/mobile-filters-provider';
@@ -13,6 +13,7 @@ export default async function PublicLayout({
 }) {
   const { locale: localeParam } = await params;
   const locale = localeParam as Locale;
+  setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'navigation' });
 
   return (

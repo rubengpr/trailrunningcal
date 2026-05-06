@@ -1,7 +1,7 @@
 import { locales } from '@/i18n';
 import { notFound } from 'next/navigation';
 import { formatDateToSpanish, formatDateToCatalan } from '@/lib/date-utils';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import type { Locale } from '@/i18n';
 import { generateRaceSlug } from '@/lib/race-utils';
 import type { Metadata } from 'next';
@@ -30,7 +30,7 @@ const PROVINCE_SLUGS: Record<string, string> = {
 };
 
 
-export const revalidate = 86400; // 24 hours (on-demand revalidation handles mutations)
+export const revalidate = false;
 
 export async function generateMetadata({
   params,
@@ -113,6 +113,7 @@ export default async function RacePage({
   params: Promise<{ locale: string; race: string }>;
 }) {
   const { locale, race } = await params;
+  setRequestLocale(locale);
 
   const raceData = await getRaceBySlug(race);
   const displayPrice = getDisplayPrice(raceData?.priceEur);

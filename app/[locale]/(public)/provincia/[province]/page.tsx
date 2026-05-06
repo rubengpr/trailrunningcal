@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import type { Locale } from '@/i18n';
 import { generateMetadataFromOptions } from '@/lib/seo/meta-config';
 import { buildProvinceAlternateLinks } from '@/lib/alternate-links';
@@ -10,7 +10,7 @@ import { CategoryMapPage } from '@/components/layout/category-map-page';
 import { getCategoryPageData } from '@/lib/category-page';
 import { PROVINCE_SLUGS, type ProvinceSlug } from '@/lib/constants';
 
-export const revalidate = 300;
+export const revalidate = 86400;
 
 const PROVINCE_DB_NAMES: Record<ProvinceSlug, string> = {
   barcelona: 'Barcelona',
@@ -29,6 +29,7 @@ export async function generateMetadata({
   params: Promise<{ locale: Locale; province: string }>;
 }): Promise<Metadata> {
   const { locale, province } = await params;
+  setRequestLocale(locale);
 
   if (!isValidProvince(province)) {
     return {};
@@ -55,6 +56,7 @@ export default async function ProvincePage({
   params: Promise<{ locale: Locale; province: string }>;
 }) {
   const { locale, province } = await params;
+  setRequestLocale(locale);
 
   if (!isValidProvince(province)) {
     notFound();

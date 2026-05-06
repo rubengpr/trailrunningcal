@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import type { Locale } from '@/i18n';
 import { generateMetadataFromOptions } from '@/lib/seo/meta-config';
 import { buildMaratonAlternateLinks } from '@/lib/alternate-links';
@@ -9,7 +9,7 @@ import { CategoryMapPage } from '@/components/layout/category-map-page';
 import { getCategoryPageData } from '@/lib/category-page';
 import type { FaqItem } from '@/lib/seo/json-ld';
 
-export const revalidate = 300;
+export const revalidate = 86400;
 
 const DISTANCE_MIN = 40;
 const DISTANCE_MAX = 50;
@@ -20,6 +20,7 @@ export async function generateMetadata({
   params: Promise<{ locale: Locale }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'maraton' });
   const year = new Date().getFullYear();
 
@@ -40,6 +41,7 @@ export default async function MaratonPage({
   params: Promise<{ locale: Locale }>;
 }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const { allRaces, markers, labels, calendarLabel, year } = await getCategoryPageData(locale);
   const t = await getTranslations({ locale, namespace: 'maraton' });
 
