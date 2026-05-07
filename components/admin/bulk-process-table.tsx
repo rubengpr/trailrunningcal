@@ -1,27 +1,30 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { formatDurationMs } from '@/lib/format-duration';
+import type { RaceImportBatchItemStatus } from '@/types/races-import-api.types';
 
-export type BulkProcessState = 'completed' | 'processing' | 'empty' | 'failed';
+export type BulkProcessState = RaceImportBatchItemStatus;
 
 export interface BulkProcessTableRow {
+    id: string;
     url: string;
-    scrapeMs: number | null;
-    parseMs: number | null;
-    state: BulkProcessState;
+    status: BulkProcessState;
+    raceCount: number | null;
+    updatedAt: string;
 }
 
 interface BulkProcessTableProps {
     rows: BulkProcessTableRow[];
+    onViewResult: (itemId: string) => void;
+    viewingItemId?: string | null;
 }
 
 function StateBadge({ state }: { state: BulkProcessState }) {
     const t = useTranslations('admin.races.import.bulk');
     const dotColor: Record<BulkProcessState, string> = {
         completed: 'bg-green-500',
-        processing: 'bg-purple-500',
-        empty: 'bg-amber-400',
+        running: 'bg-purple-500',
+        pending: 'bg-gray-300',
         failed: 'bg-red-500',
     };
     return (
@@ -32,14 +35,23 @@ function StateBadge({ state }: { state: BulkProcessState }) {
     );
 }
 
-function TimeCell({ ms }: { ms: number | null }) {
-    if (ms === null) {
+function RaceCountCell({ raceCount }: { raceCount: number | null }) {
+    if (raceCount === null) {
         return <span className="text-gray-300">—</span>;
     }
-    return <span className="tabular-nums text-gray-700">{formatDurationMs(ms)}</span>;
+    return <span className="tabular-nums text-gray-700">{raceCount}</span>;
 }
 
-export function BulkProcessTable({ rows }: BulkProcessTableProps) {
+function formatUpdatedAt(value: string): string {
+    return new Intl.DateTimeFormat(undefined, {
+        day: '2-digit',
+        month: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+    }).format(new Date(value));
+}
+
+export function BulkProcessTable({ rows, onViewResult, viewingItemId }: BulkProcessTableProps) {
     const t = useTranslations('admin.races.import.bulk');
 
     if (rows.length === 0) {
@@ -53,25 +65,40 @@ export function BulkProcessTable({ rows }: BulkProcessTableProps) {
                     <thead>
                         <tr className="border-b border-gray-100 text-[11px] font-medium uppercase tracking-wide text-gray-500">
                             <th className="py-2 pr-3 font-medium">{t('columns.url')}</th>
-                            <th className="py-2 pr-3 font-medium">{t('columns.scrape')}</th>
-                            <th className="py-2 pr-3 font-medium">{t('columns.parsing')}</th>
-                            <th className="py-2 pr-0 text-right font-medium" aria-hidden></th>
+                            <th className="py-2 pr-3 font-medium">{t('columns.status')}</th>
+                            <th className="py-2 pr-3 font-medium">{t('columns.suggestedRaces')}</th>
+                            <th className="py-2 pr-3 font-medium">{t('columns.updatedAt')}</th>
+                            <th className="py-2 pr-0 text-right font-medium">{t('columns.actions')}</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {rows.map((row, index) => (
-                            <tr key={index} className="border-b border-gray-50 last:border-b-0">
+                        {rows.map((row) => (
+                            <tr key={row.id} className="border-b border-gray-50 last:border-b-0">
                                 <td className="max-w-[260px] truncate py-2.5 pr-3 text-gray-700">
                                     {row.url.replace(/^https?:\/\/(www\.)?/, '')}
                                 </td>
                                 <td className="py-2.5 pr-3">
-                                    <TimeCell ms={row.scrapeMs} />
+                                    <StateBadge state={row.status} />
                                 </td>
                                 <td className="py-2.5 pr-3">
-                                    <TimeCell ms={row.parseMs} />
+                                    <RaceCountCell raceCount={row.raceCount} />
+                                </td>
+                                <td className="py-2.5 pr-3 text-gray-500 tabular-nums">
+                                    {formatUpdatedAt(row.updatedAt)}
                                 </td>
                                 <td className="py-2.5 pr-0 text-right">
-                                    <StateBadge state={row.state} />
+                                    {row.status === 'completed' ? (
+                                        <button
+                                            type="button"
+                                            onClick={() => onViewResult(row.id)}
+                                            disabled={viewingItemId === row.id}
+                                            className="rounded-md border border-gray-200 bg-white px-2.5 py-1 text-[11px] font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                                        >
+                                            {viewingItemId === row.id ? t('actions.loading') : t('actions.viewResult')}
+                                        </button>
+                                    ) : (
+                                        <span className="text-gray-300">—</span>
+                                    )}
                                 </td>
                             </tr>
                         ))}

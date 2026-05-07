@@ -26,13 +26,26 @@ function parseWorkflow(value: unknown): RaceImportWorkflow {
   throw new ValidationError('Invalid workflow', 400);
 }
 
-function parseUrl(value: unknown): string {
+export function assertRequestBody(
+  body: unknown,
+): asserts body is Record<string, unknown> {
+  if (typeof body !== 'object' || body === null) {
+    throw new ValidationError('Invalid request body', 400);
+  }
+}
+
+export function parseImportUrl(
+  value: unknown,
+  requiredMessage: string,
+): string {
   const rawUrl = typeof value === 'string' ? value.trim() : '';
+
   if (!rawUrl) {
-    throw new ValidationError('Website URL is required', 400);
+    throw new ValidationError(requiredMessage, 400);
   }
 
   const url = normalizeUrl(rawUrl);
+
   try {
     new URL(url);
   } catch {
@@ -42,36 +55,36 @@ function parseUrl(value: unknown): string {
   return url;
 }
 
-function parseModel(value: unknown): OpenRouterScrapeModelId {
+export function parseImportModel(value: unknown): OpenRouterScrapeModelId {
   const isModelMissing = typeof value !== 'string' || value === '';
+
   if (isModelMissing || !isOpenRouterScrapeModelId(value)) {
     throw new ValidationError(
       isModelMissing ? 'Model is required' : 'Invalid model',
       400,
     );
   }
+
   return value;
 }
 
 export function parseInput(body: unknown): ParsedInput {
-  if (typeof body !== 'object' || body === null) {
-    throw new ValidationError('Invalid request body', 400);
-  }
+  assertRequestBody(body);
 
   const {
     workflow: rawWorkflow,
     websiteUrl,
     model,
-  } = body as Record<string, unknown>;
+  } = body;
 
   const workflow = parseWorkflow(rawWorkflow);
-  const url = parseUrl(websiteUrl);
+  const url = parseImportUrl(websiteUrl, 'Website URL is required');
 
   if (workflow === 'crawlSite' || workflow === 'scrapePage') {
     return { workflow, url };
   }
 
-  const parsedModel = parseModel(model);
+  const parsedModel = parseImportModel(model);
 
   return { workflow, url, model: parsedModel };
 }

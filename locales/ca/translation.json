@@ -744,6 +744,7 @@
         "workflowLlmFromFile": "Parse",
         "workflowCrawlAndLlm": "Full",
         "workflowAutopilot": "Auto",
+        "workflowBulkAutopilot": "Bulk",
         "importSourceModeLabel": "mode",
         "sourceScrapePage": "Scrap",
         "sourceCrawlSite": "Crawl",
@@ -802,21 +803,39 @@
         "usageTotalTokens": "total",
         "bulk": {
           "urlLabel": "URL del lloc web",
+          "urlsLabel": "URLs d'esdeveniments",
+          "urlsPlaceholder": "https://exemple.com/event-1\nhttps://exemple.com/event-2",
+          "urlsHint": "{count} URL(s) preparades per importar",
           "modelLabel": "Model",
           "runButton": "Executar",
           "running": "Executant...",
+          "startSuccess": "Importació per lots iniciada amb {count} URL(s)",
           "runError": "Error en executar el procés automàtic",
+          "pollError": "Error en actualitzar l'estat del lot",
+          "resultError": "Error en carregar el resultat",
+          "statusSummary": "{completed}/{total} completades · {failed} fallides",
           "columns": {
             "url": "URL",
-            "scrape": "Scrape",
-            "parsing": "Parsing",
-            "state": "Estat"
+            "status": "Estat",
+            "suggestedRaces": "Curses suggerides",
+            "updatedAt": "Actualitzada",
+            "actions": "Accions"
           },
           "state": {
             "completed": "Completada",
-            "processing": "En procés",
-            "empty": "Sense curses",
+            "running": "En procés",
+            "pending": "Pendent",
             "failed": "Fallida"
+          },
+          "batchStatus": {
+            "pending": "Lot pendent",
+            "running": "Lot en procés",
+            "completed": "Lot completat",
+            "failed": "Lot fallit"
+          },
+          "actions": {
+            "viewResult": "Veure resultat",
+            "loading": "Carregant..."
           }
         },
         "results": {

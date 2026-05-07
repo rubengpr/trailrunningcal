@@ -741,6 +741,7 @@
         "workflowLlmFromFile": "Parse",
         "workflowCrawlAndLlm": "Full",
         "workflowAutopilot": "Auto",
+        "workflowBulkAutopilot": "Bulk",
         "importSourceModeLabel": "modo",
         "sourceScrapePage": "Scrap",
         "sourceCrawlSite": "Crawl",
@@ -799,21 +800,39 @@
         "usageTotalTokens": "total",
         "bulk": {
           "urlLabel": "URL del sitio web",
+          "urlsLabel": "URLs de eventos",
+          "urlsPlaceholder": "https://ejemplo.com/evento-1\nhttps://ejemplo.com/evento-2",
+          "urlsHint": "{count} URL(s) listas para importar",
           "modelLabel": "Modelo",
           "runButton": "Ejecutar",
           "running": "Ejecutando...",
+          "startSuccess": "Importación por lotes iniciada con {count} URL(s)",
           "runError": "Error al ejecutar el proceso automático",
+          "pollError": "Error al actualizar el estado del lote",
+          "resultError": "Error al cargar el resultado",
+          "statusSummary": "{completed}/{total} completadas · {failed} fallidas",
           "columns": {
             "url": "URL",
-            "scrape": "Scrape",
-            "parsing": "Parsing",
-            "state": "Estado"
+            "status": "Estado",
+            "suggestedRaces": "Carreras sugeridas",
+            "updatedAt": "Actualizada",
+            "actions": "Acciones"
           },
           "state": {
             "completed": "Completada",
-            "processing": "En proceso",
-            "empty": "Sin carreras",
+            "running": "En proceso",
+            "pending": "Pendiente",
             "failed": "Fallida"
+          },
+          "batchStatus": {
+            "pending": "Lote pendiente",
+            "running": "Lote en proceso",
+            "completed": "Lote completado",
+            "failed": "Lote fallido"
+          },
+          "actions": {
+            "viewResult": "Ver resultado",
+            "loading": "Cargando..."
           }
         },
         "results": {
