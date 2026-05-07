@@ -3,14 +3,14 @@ import type { OpenRouterScrapeModelId } from '@/lib/integrations/openrouter/scra
 import type {
   RaceImportBatch,
   RaceImportBatchItem,
-  RaceImportBatchItemRow,
+  RaceImportItemRow,
   RaceImportBatchStatus,
-  RaceImportBatchStatusResponse,
-  RaceImportBatchRow,
+  RaceImportBatchSnapshot,
+  RaceImportRow,
   RaceImportResult,
 } from '@/types/races-import-api.types';
 
-function toBatch(row: RaceImportBatchRow): RaceImportBatch {
+function toBatch(row: RaceImportRow): RaceImportBatch {
   return {
     id: row.id,
     status: row.status,
@@ -21,7 +21,7 @@ function toBatch(row: RaceImportBatchRow): RaceImportBatch {
   };
 }
 
-function toItem(row: RaceImportBatchItemRow): RaceImportBatchItem {
+function toItem(row: RaceImportItemRow): RaceImportBatchItem {
   return {
     id: row.id,
     batchId: row.batch_id,
@@ -66,10 +66,10 @@ export async function createRaceImportBatch(input: {
     throw new Error('Failed to create race import batch');
   }
 
-  return toBatch(data[0] as RaceImportBatchRow);
+  return toBatch(data[0] as RaceImportRow);
 }
 
-export async function setRaceImportBatchWorkflowRunId(input: {
+export async function setBatchWorkflowRunId(input: {
   batchId: string;
   workflowRunId: string;
 }): Promise<void> {
@@ -105,10 +105,10 @@ export async function getRaceImportBatch(
     throw new Error('Failed to fetch race import batch');
   }
 
-  return data ? toBatch(data as RaceImportBatchRow) : null;
+  return data ? toBatch(data as RaceImportRow) : null;
 }
 
-export async function getPendingRaceImportItems(
+export async function getPendingBatchItems(
   batchId: string,
 ): Promise<RaceImportBatchItem[]> {
   const supabase = createAdminClient();
@@ -127,15 +127,15 @@ export async function getPendingRaceImportItems(
     throw new Error('Failed to fetch race import batch items');
   }
 
-  return ((data ?? []) as RaceImportBatchItemRow[]).map(toItem);
+  return ((data ?? []) as RaceImportItemRow[]).map(toItem);
 }
 
-export async function getRaceImportBatchStatus(
+export async function getBatchStatus(
   batchId: string,
-): Promise<RaceImportBatchStatusResponse | null> {
+): Promise<RaceImportBatchSnapshot | null> {
   const [batch, items] = await Promise.all([
     getRaceImportBatch(batchId),
-    getRaceImportBatchItems(batchId),
+    getBatchItems(batchId),
   ]);
 
   if (!batch) {
@@ -149,7 +149,7 @@ export async function getRaceImportBatchStatus(
   };
 }
 
-export async function getRaceImportBatchItems(
+export async function getBatchItems(
   batchId: string,
 ): Promise<RaceImportBatchItem[]> {
   const supabase = createAdminClient();
@@ -167,10 +167,10 @@ export async function getRaceImportBatchItems(
     throw new Error('Failed to fetch race import batch items');
   }
 
-  return ((data ?? []) as RaceImportBatchItemRow[]).map(toItem);
+  return ((data ?? []) as RaceImportItemRow[]).map(toItem);
 }
 
-export async function updateRaceImportBatchStatus(
+export async function updateBatchStatus(
   batchId: string,
   status: RaceImportBatchStatus,
 ): Promise<void> {
@@ -190,7 +190,7 @@ export async function updateRaceImportBatchStatus(
   }
 }
 
-export async function markRaceImportItemRunning(itemId: string): Promise<void> {
+export async function markBatchItemRunning(itemId: string): Promise<void> {
   const supabase = createAdminClient();
 
   const { error } = await supabase
@@ -208,7 +208,7 @@ export async function markRaceImportItemRunning(itemId: string): Promise<void> {
   }
 }
 
-export async function markRaceImportItemCompleted(
+export async function markBatchItemCompleted(
   itemId: string,
   input: {
     result: RaceImportResult;
@@ -234,7 +234,7 @@ export async function markRaceImportItemCompleted(
   }
 }
 
-export async function markRaceImportItemFailed(
+export async function markBatchItemFailed(
   itemId: string,
   errorMessage: string,
 ): Promise<void> {
@@ -255,7 +255,7 @@ export async function markRaceImportItemFailed(
   }
 }
 
-export async function getRaceImportBatchItemResult(
+export async function getItemResult(
   itemId: string,
 ): Promise<RaceImportResult | null> {
   const supabase = createAdminClient();

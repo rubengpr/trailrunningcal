@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth-admin';
-import { getRaceImportBatchStatus } from '@/lib/db/race-import-batches';
+import { getBatchStatus } from '@/lib/db/race-import-batches';
 import { ValidationError } from '@/lib/errors';
 
 export async function GET(
@@ -11,7 +11,7 @@ export async function GET(
     await requireAdmin();
 
     const { batchId } = await context.params;
-    const data = await getRaceImportBatchStatus(batchId);
+    const data = await getBatchStatus(batchId);
 
     if (!data) {
       return NextResponse.json(

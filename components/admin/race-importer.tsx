@@ -28,8 +28,8 @@ import {
     runRaceImport,
     acceptScrapedRace,
     startRaceImportBatch,
-    getRaceImportBatch,
-    getRaceImportBatchItemResult,
+    getBatchStatus,
+    getItemResult,
 } from '@/lib/api/races';
 import { OPENROUTER_SCRAPE_MODEL_IDS, OPENROUTER_VISION_MODEL_IDS } from '@/lib/integrations/openrouter/scrape-models';
 import type { OpenRouterScrapeModelId, OpenRouterVisionModelId } from '@/lib/integrations/openrouter/scrape-models';
@@ -42,7 +42,7 @@ import {
 } from '@/lib/scrape-markdown-token-estimate';
 import { normalizeUrl } from '@/lib/validation';
 import type { PageStats } from '@/types/races-scrape-api.types';
-import type { RaceImportBatchStatusResponse, RaceImportResult, RaceImportStep, RaceImportWorkflow } from '@/types/races-import-api.types';
+import type { RaceImportBatchSnapshot, RaceImportResult, RaceImportStep, RaceImportWorkflow } from '@/types/races-import-api.types';
 import type { TrailRace } from '@/types/trail-race-agent.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 import type { PendingRace } from '@/types/pending-race.types';
@@ -493,10 +493,10 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         label: e.url.replace(/^https?:\/\/(www\.)?/, ''),
     }));
 
-    const fullPipelineCrawlStartedAtRef = useRef<number | null>(null);
-    const fullPipelineCrawlEndedAtRef = useRef<number | null>(null);
-    const fullPipelineLlmStartedAtRef = useRef<number | null>(null);
-    const fullPipelineLlmEndedAtRef = useRef<number | null>(null);
+    const crawlStartedAtRef = useRef<number | null>(null);
+    const crawlEndedAtRef = useRef<number | null>(null);
+    const llmStartedAtRef = useRef<number | null>(null);
+    const llmEndedAtRef = useRef<number | null>(null);
 
     const [workflow, setWorkflow] = useState<ScrapeWorkflow>('autopilot');
     const [sourceMode, setSourceMode] = useState<ScrapeSourceMode>('crawlSite');
@@ -509,7 +509,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
     );
     const [batchUrlsInput, setBatchUrlsInput] = useState('');
     const [activeBatchId, setActiveBatchId] = useState<string | null>(null);
-    const [batchStatus, setBatchStatus] = useState<RaceImportBatchStatusResponse | null>(null);
+    const [batchSnapshot, setBatchSnapshot] = useState<RaceImportBatchSnapshot | null>(null);
     const [isStartingBatch, setIsStartingBatch] = useState(false);
     const [viewingBatchItemId, setViewingBatchItemId] = useState<string | null>(null);
 
@@ -566,7 +566,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
     }, [batchUrlsInput]);
 
     const isBatchRunning =
-        batchStatus?.batch.status === 'pending' || batchStatus?.batch.status === 'running';
+        batchSnapshot?.batch.status === 'pending' || batchSnapshot?.batch.status === 'running';
 
     const canRunBatch =
         parsedBatchUrls.length > 0 &&
@@ -574,7 +574,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         !isStartingBatch &&
         !isBatchRunning;
 
-    const canRunScrape =
+    const canRunWorkflow =
         !isScraping &&
         (workflow === 'bulkAutopilot'
             ? canRunBatch
@@ -585,10 +585,10 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                     : Boolean(uploadedMarkdown && uploadedMarkdown.length > 0));
 
     const clearFullPipelineStepRefs = (): void => {
-        fullPipelineCrawlStartedAtRef.current = null;
-        fullPipelineCrawlEndedAtRef.current = null;
-        fullPipelineLlmStartedAtRef.current = null;
-        fullPipelineLlmEndedAtRef.current = null;
+        crawlStartedAtRef.current = null;
+        crawlEndedAtRef.current = null;
+        llmStartedAtRef.current = null;
+        llmEndedAtRef.current = null;
     };
 
     const handleWorkflowChange = (next: ScrapeWorkflow): void => {
@@ -607,7 +607,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         resetScrapeResults();
     };
 
-    const selectedImportWorkflow = (): RaceImportWorkflow | null => {
+    const resolveImportWorkflow = (): RaceImportWorkflow | null => {
         if (workflow === 'autopilot') return 'autopilot';
         if (workflow === 'full') {
             return sourceMode === 'crawlSite' ? 'crawlSiteExtract' : 'scrapePageExtract';
@@ -624,21 +624,21 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                 : (findStep(result.steps, 'crawlSite') ?? findStep(result.steps, 'scrapePage'));
         const extractStep = findStep(result.steps, 'extract', isFallback ? 1 : 0);
 
-        fullPipelineCrawlStartedAtRef.current = crawlStep ? 0 : null;
-        fullPipelineCrawlEndedAtRef.current = crawlStep ? crawlStep.durationMs : null;
-        fullPipelineLlmStartedAtRef.current = extractStep ? 0 : null;
-        fullPipelineLlmEndedAtRef.current = extractStep ? extractStep.durationMs : null;
+        crawlStartedAtRef.current = crawlStep ? 0 : null;
+        crawlEndedAtRef.current = crawlStep ? crawlStep.durationMs : null;
+        llmStartedAtRef.current = extractStep ? 0 : null;
+        llmEndedAtRef.current = extractStep ? extractStep.durationMs : null;
     };
 
-    const refreshBatchStatus = useCallback(async (batchId: string): Promise<RaceImportBatchStatusResponse> => {
-        const data = await getRaceImportBatch(batchId);
-        setBatchStatus(data);
+    const fetchBatchStatus = useCallback(async (batchId: string): Promise<RaceImportBatchSnapshot> => {
+        const data = await getBatchStatus(batchId);
+        setBatchSnapshot(data);
         return data;
     }, []);
 
-    const handleRunBatchWorkflow = async (): Promise<void> => {
+    const handleStartBatchImport = async (): Promise<void> => {
         setIsStartingBatch(true);
-        setBatchStatus(null);
+        setBatchSnapshot(null);
         setActiveBatchId(null);
         resetScrapeResults();
 
@@ -649,7 +649,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
             });
 
             setActiveBatchId(batchId);
-            await refreshBatchStatus(batchId);
+            await fetchBatchStatus(batchId);
             toast.success(t('bulk.startSuccess', { count: parsedBatchUrls.length }));
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : t('bulk.runError');
@@ -661,29 +661,29 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
 
     const handleRunWorkflow = async () => {
         if (workflow === 'bulkAutopilot') {
-            await handleRunBatchWorkflow();
+            await handleStartBatchImport();
             return;
         }
 
         runStartedAtRef.current = performance.now();
 
         try {
-            const importWorkflow = selectedImportWorkflow();
+            const importWorkflow = resolveImportWorkflow();
             if (importWorkflow !== null) {
                 const normalizedUrl = normalizeUrl(websiteUrl.trim());
 
                 if (workflow === 'autopilot') {
                     dispatch({ type: 'AUTOPILOT_START' });
-                    fullPipelineCrawlStartedAtRef.current = performance.now();
-                    fullPipelineCrawlEndedAtRef.current = null;
-                    fullPipelineLlmStartedAtRef.current = null;
-                    fullPipelineLlmEndedAtRef.current = null;
+                    crawlStartedAtRef.current = performance.now();
+                    crawlEndedAtRef.current = null;
+                    llmStartedAtRef.current = null;
+                    llmEndedAtRef.current = null;
                 } else if (workflow === 'full') {
                     dispatch({ type: 'CRAWL_SITE_EXTRACT_START' });
-                    fullPipelineCrawlStartedAtRef.current = performance.now();
-                    fullPipelineCrawlEndedAtRef.current = null;
-                    fullPipelineLlmStartedAtRef.current = null;
-                    fullPipelineLlmEndedAtRef.current = null;
+                    crawlStartedAtRef.current = performance.now();
+                    crawlEndedAtRef.current = null;
+                    llmStartedAtRef.current = null;
+                    llmEndedAtRef.current = null;
                 } else {
                     dispatch({ type: 'SCRAPE_START' });
                     clearFullPipelineStepRefs();
@@ -731,10 +731,10 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
             toast.error(t('scrapeError'));
         } finally {
             if (
-                fullPipelineLlmStartedAtRef.current !== null &&
-                fullPipelineLlmEndedAtRef.current === null
+                llmStartedAtRef.current !== null &&
+                llmEndedAtRef.current === null
             ) {
-                fullPipelineLlmEndedAtRef.current = performance.now();
+                llmEndedAtRef.current = performance.now();
             }
             const startedAt = runStartedAtRef.current;
             const durationMs =
@@ -745,16 +745,16 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
     };
 
     useEffect(() => {
-        if (!activeBatchId || !batchStatus) {
+        if (!activeBatchId || !batchSnapshot) {
             return;
         }
 
-        if (batchStatus.batch.status !== 'pending' && batchStatus.batch.status !== 'running') {
+        if (batchSnapshot.batch.status !== 'pending' && batchSnapshot.batch.status !== 'running') {
             return;
         }
 
         const intervalId = window.setInterval(() => {
-            void refreshBatchStatus(activeBatchId).catch((error) => {
+            void fetchBatchStatus(activeBatchId).catch((error) => {
                 console.error('Race import batch polling error:', error);
                 toast.error(t('bulk.pollError'));
                 setActiveBatchId(null);
@@ -762,13 +762,13 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         }, 3000);
 
         return () => window.clearInterval(intervalId);
-    }, [activeBatchId, batchStatus, refreshBatchStatus, t]);
+    }, [activeBatchId, batchSnapshot, fetchBatchStatus, t]);
 
     const handleViewBatchResult = async (itemId: string): Promise<void> => {
         setViewingBatchItemId(itemId);
 
         try {
-            const result = await getRaceImportBatchItemResult(itemId);
+            const result = await getItemResult(itemId);
             setWebsiteUrl(result.url);
             setCompletedImportStepRefs(result);
             dispatch({
@@ -847,7 +847,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         setWebsiteUrl('');
         setBatchUrlsInput('');
         setActiveBatchId(null);
-        setBatchStatus(null);
+        setBatchSnapshot(null);
         setViewingBatchItemId(null);
         fileUpload.clearUpload();
         runStartedAtRef.current = null;
@@ -996,16 +996,16 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         if ((workflow !== 'full' && workflow !== 'autopilot') || !fullPipelineUiActive) {
             return null;
         }
-        if (fullPipelineCrawlStartedAtRef.current === null) {
+        if (crawlStartedAtRef.current === null) {
             return null;
         }
-        if (fullPipelineCrawlEndedAtRef.current !== null) {
+        if (crawlEndedAtRef.current !== null) {
             return Math.round(
-                fullPipelineCrawlEndedAtRef.current - fullPipelineCrawlStartedAtRef.current,
+                crawlEndedAtRef.current - crawlStartedAtRef.current,
             );
         }
         if (isScraping && scrapePhase === 'crawling') {
-            return Math.round(performance.now() - fullPipelineCrawlStartedAtRef.current);
+            return Math.round(performance.now() - crawlStartedAtRef.current);
         }
         return null;
     }, [workflow, fullPipelineUiActive, isScraping, scrapePhase, liveElapsedMs]);
@@ -1016,29 +1016,29 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         if ((workflow !== 'full' && workflow !== 'autopilot') || !fullPipelineUiActive) {
             return null;
         }
-        if (fullPipelineLlmStartedAtRef.current === null) {
+        if (llmStartedAtRef.current === null) {
             return null;
         }
-        if (fullPipelineLlmEndedAtRef.current !== null) {
+        if (llmEndedAtRef.current !== null) {
             return Math.round(
-                fullPipelineLlmEndedAtRef.current - fullPipelineLlmStartedAtRef.current,
+                llmEndedAtRef.current - llmStartedAtRef.current,
             );
         }
         if (isScraping && scrapePhase === 'llm') {
-            return Math.round(performance.now() - fullPipelineLlmStartedAtRef.current);
+            return Math.round(performance.now() - llmStartedAtRef.current);
         }
         return null;
     }, [workflow, fullPipelineUiActive, isScraping, scrapePhase, liveElapsedMs]);
 
     const batchRows = useMemo((): BulkProcessTableRow[] => {
-        return batchStatus?.items.map((item) => ({
+        return batchSnapshot?.items.map((item) => ({
             id: item.id,
             url: item.url,
             status: item.status,
             raceCount: item.raceCount,
             updatedAt: item.updatedAt,
         })) ?? [];
-    }, [batchStatus]);
+    }, [batchSnapshot]);
 
     return (
         <div className="flex flex-col gap-8">
@@ -1267,7 +1267,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                         <Button
                             type="button"
                             onClick={handleRunWorkflow}
-                            disabled={!canRunScrape}
+                            disabled={!canRunWorkflow}
                             isLoading={isScraping || isStartingBatch}
                             loadingText={primaryLoadingLabel}
                         >
@@ -1452,17 +1452,17 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                     onSave={handleSave}
                 />
             )}
-            {batchStatus && (
+            {batchSnapshot && (
                 <div className="max-w-3xl rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-5">
                     <p className="text-sm font-medium text-gray-900">
                         {t('bulk.statusSummary', {
-                            completed: batchStatus.summary.completed,
-                            failed: batchStatus.summary.failed,
-                            total: batchStatus.summary.total,
+                            completed: batchSnapshot.summary.completed,
+                            failed: batchSnapshot.summary.failed,
+                            total: batchSnapshot.summary.total,
                         })}
                     </p>
                     <p className="mt-1 text-xs text-gray-500">
-                        {t(`bulk.batchStatus.${batchStatus.batch.status}`)}
+                        {t(`bulk.batchStatus.${batchSnapshot.batch.status}`)}
                     </p>
                 </div>
             )}

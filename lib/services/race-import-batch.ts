@@ -2,13 +2,13 @@ import { start } from 'workflow/api';
 import type { OpenRouterScrapeModelId } from '@/lib/integrations/openrouter/scrape-models';
 import {
   createRaceImportBatch,
-  getPendingRaceImportItems,
+  getPendingBatchItems,
   getRaceImportBatch,
-  markRaceImportItemCompleted,
-  markRaceImportItemFailed,
-  markRaceImportItemRunning,
-  setRaceImportBatchWorkflowRunId,
-  updateRaceImportBatchStatus,
+  markBatchItemCompleted,
+  markBatchItemFailed,
+  markBatchItemRunning,
+  setBatchWorkflowRunId,
+  updateBatchStatus,
 } from '@/lib/db/race-import-batches';
 import { processAutopilot } from '@/lib/services/race-import';
 
@@ -29,7 +29,7 @@ export async function startRaceImportBatch(input: {
       },
     ]);
 
-    await setRaceImportBatchWorkflowRunId({
+    await setBatchWorkflowRunId({
       batchId: batch.id,
       workflowRunId: run.runId,
     });
@@ -39,7 +39,7 @@ export async function startRaceImportBatch(input: {
       workflowRunId: run.runId,
     };
   } catch (error) {
-    await updateRaceImportBatchStatus(batch.id, 'failed');
+    await updateBatchStatus(batch.id, 'failed');
     throw error;
   }
 }
@@ -48,21 +48,21 @@ async function markBatchRunningStep(batchId: string): Promise<void> {
   'use step';
 
   console.log('Starting race import batch', { batchId });
-  await updateRaceImportBatchStatus(batchId, 'running');
+  await updateBatchStatus(batchId, 'running');
 }
 
 async function markBatchCompletedStep(batchId: string): Promise<void> {
   'use step';
 
   console.log('Completing race import batch', { batchId });
-  await updateRaceImportBatchStatus(batchId, 'completed');
+  await updateBatchStatus(batchId, 'completed');
 }
 
 async function markBatchFailedStep(batchId: string): Promise<void> {
   'use step';
 
   console.error('Failing race import batch', { batchId });
-  await updateRaceImportBatchStatus(batchId, 'failed');
+  await updateBatchStatus(batchId, 'failed');
 }
 
 async function getRaceImportBatchStep(batchId: string) {
@@ -77,10 +77,10 @@ async function getRaceImportBatchStep(batchId: string) {
   return batch;
 }
 
-async function getPendingRaceImportItemsStep(batchId: string) {
+async function getPendingBatchItemsStep(batchId: string) {
   'use step';
 
-  return getPendingRaceImportItems(batchId);
+  return getPendingBatchItems(batchId);
 }
 
 async function processRaceImportItemStep(input: {
@@ -96,14 +96,14 @@ async function processRaceImportItemStep(input: {
       url: input.url,
     });
 
-    await markRaceImportItemRunning(input.itemId);
+    await markBatchItemRunning(input.itemId);
 
     const result = await processAutopilot({
       url: input.url,
       model: input.model,
     });
 
-    await markRaceImportItemCompleted(input.itemId, {
+    await markBatchItemCompleted(input.itemId, {
       result,
       raceCount: result.races.length,
     });
@@ -116,7 +116,7 @@ async function processRaceImportItemStep(input: {
       error: message,
     });
 
-    await markRaceImportItemFailed(input.itemId, message);
+    await markBatchItemFailed(input.itemId, message);
   }
 }
 
@@ -129,7 +129,7 @@ export async function raceImportBatchWorkflow(
     await markBatchRunningStep(input.batchId);
 
     const batch = await getRaceImportBatchStep(input.batchId);
-    const items = await getPendingRaceImportItemsStep(input.batchId);
+    const items = await getPendingBatchItemsStep(input.batchId);
 
     for (const item of items) {
       await processRaceImportItemStep({

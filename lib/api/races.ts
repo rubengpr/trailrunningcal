@@ -5,7 +5,7 @@ import type {
 import type { PageStats } from '@/types/races-scrape-api.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 import type {
-  RaceImportBatchStatusResponse,
+  RaceImportBatchSnapshot,
   RaceImportRequest,
   RaceImportResult,
 } from '@/types/races-import-api.types';
@@ -222,9 +222,9 @@ export async function startRaceImportBatch(options: {
   return responseData.data;
 }
 
-export async function getRaceImportBatch(
+export async function getBatchStatus(
   batchId: string,
-): Promise<RaceImportBatchStatusResponse> {
+): Promise<RaceImportBatchSnapshot> {
   const response = await fetch(`/api/races/import/batches/${batchId}`);
   const responseData = await response.json();
 
@@ -235,7 +235,7 @@ export async function getRaceImportBatch(
   return responseData.data;
 }
 
-export async function getRaceImportBatchItemResult(
+export async function getItemResult(
   itemId: string,
 ): Promise<RaceImportResult> {
   const response = await fetch(`/api/races/import/batch-items/${itemId}`);
@@ -243,7 +243,7 @@ export async function getRaceImportBatchItemResult(
 
   if (!response.ok) {
     throw new Error(
-      responseData.error || 'Failed to fetch race import batch item result',
+      responseData.error || 'Failed to fetch race import item result',
     );
   }
 

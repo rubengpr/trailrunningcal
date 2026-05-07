@@ -1,9 +1,9 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import type { RaceImportBatchItemStatus } from '@/types/races-import-api.types';
+import type { RaceImportItemStatus } from '@/types/races-import-api.types';
 
-export type BulkProcessState = RaceImportBatchItemStatus;
+export type BulkProcessState = RaceImportItemStatus;
 
 export interface BulkProcessTableRow {
     id: string;

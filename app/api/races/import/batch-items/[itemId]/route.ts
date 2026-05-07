@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth-admin';
-import { getRaceImportBatchItemResult } from '@/lib/db/race-import-batches';
+import { getItemResult } from '@/lib/db/race-import-batches';
 import { ValidationError } from '@/lib/errors';
 
 export async function GET(
@@ -11,11 +11,11 @@ export async function GET(
     await requireAdmin();
 
     const { itemId } = await context.params;
-    const data = await getRaceImportBatchItemResult(itemId);
+    const data = await getItemResult(itemId);
 
     if (!data) {
       return NextResponse.json(
-        { error: 'Race import batch item result not found' },
+        { error: 'Race import item result not found' },
         { status: 404 },
       );
     }
@@ -29,7 +29,7 @@ export async function GET(
       );
     }
 
-    console.error('Race import batch item result API error:', error);
+    console.error('Race import item result API error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 },

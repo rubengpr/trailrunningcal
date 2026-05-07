@@ -50,7 +50,7 @@ export type RaceImportBatchStatus =
   | 'completed'
   | 'failed';
 
-export type RaceImportBatchItemStatus =
+export type RaceImportItemStatus =
   | 'pending'
   | 'running'
   | 'completed'
@@ -69,14 +69,14 @@ export interface RaceImportBatchItem {
   id: string;
   batchId: string;
   url: string;
-  status: RaceImportBatchItemStatus;
+  status: RaceImportItemStatus;
   raceCount: number | null;
   error: string | null;
   createdAt: string;
   updatedAt: string;
 }
 
-export interface RaceImportBatchSummary {
+export interface RaceImportSummary {
   total: number;
   pending: number;
   running: number;
@@ -84,13 +84,13 @@ export interface RaceImportBatchSummary {
   failed: number;
 }
 
-export interface RaceImportBatchStatusResponse {
+export interface RaceImportBatchSnapshot {
   batch: RaceImportBatch;
-  summary: RaceImportBatchSummary;
+  summary: RaceImportSummary;
   items: RaceImportBatchItem[];
 }
 
-export interface RaceImportBatchRow {
+export interface RaceImportRow {
   id: string;
   status: RaceImportBatchStatus;
   model: OpenRouterScrapeModelId;
@@ -99,11 +99,11 @@ export interface RaceImportBatchRow {
   updated_at: string;
 }
 
-export interface RaceImportBatchItemRow {
+export interface RaceImportItemRow {
   id: string;
   batch_id: string;
   url: string;
-  status: RaceImportBatchItemStatus;
+  status: RaceImportItemStatus;
   result: RaceImportResult | null;
   race_count: number | null;
   error: string | null;
