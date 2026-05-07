@@ -43,3 +43,70 @@ export type RaceImportRequest =
       websiteUrl: string;
       model: OpenRouterScrapeModelId;
     };
+
+export type RaceImportBatchStatus =
+  | 'pending'
+  | 'running'
+  | 'completed'
+  | 'failed';
+
+export type RaceImportBatchItemStatus =
+  | 'pending'
+  | 'running'
+  | 'completed'
+  | 'failed';
+
+export interface RaceImportBatch {
+  id: string;
+  status: RaceImportBatchStatus;
+  model: OpenRouterScrapeModelId;
+  workflowRunId: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface RaceImportBatchItem {
+  id: string;
+  batchId: string;
+  url: string;
+  status: RaceImportBatchItemStatus;
+  raceCount: number | null;
+  error: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface RaceImportBatchSummary {
+  total: number;
+  pending: number;
+  running: number;
+  completed: number;
+  failed: number;
+}
+
+export interface RaceImportBatchStatusResponse {
+  batch: RaceImportBatch;
+  summary: RaceImportBatchSummary;
+  items: RaceImportBatchItem[];
+}
+
+export interface RaceImportBatchRow {
+  id: string;
+  status: RaceImportBatchStatus;
+  model: OpenRouterScrapeModelId;
+  workflow_run_id: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface RaceImportBatchItemRow {
+  id: string;
+  batch_id: string;
+  url: string;
+  status: RaceImportBatchItemStatus;
+  result: RaceImportResult | null;
+  race_count: number | null;
+  error: string | null;
+  created_at: string;
+  updated_at: string;
+}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useReducer, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
@@ -27,6 +27,9 @@ import {
     runTrailRaceAgent,
     runRaceImport,
     acceptScrapedRace,
+    startRaceImportBatch,
+    getRaceImportBatch,
+    getRaceImportBatchItemResult,
 } from '@/lib/api/races';
 import { OPENROUTER_SCRAPE_MODEL_IDS, OPENROUTER_VISION_MODEL_IDS } from '@/lib/integrations/openrouter/scrape-models';
 import type { OpenRouterScrapeModelId, OpenRouterVisionModelId } from '@/lib/integrations/openrouter/scrape-models';
@@ -39,13 +42,13 @@ import {
 } from '@/lib/scrape-markdown-token-estimate';
 import { normalizeUrl } from '@/lib/validation';
 import type { PageStats } from '@/types/races-scrape-api.types';
-import type { RaceImportResult, RaceImportStep, RaceImportWorkflow } from '@/types/races-import-api.types';
+import type { RaceImportBatchStatusResponse, RaceImportResult, RaceImportStep, RaceImportWorkflow } from '@/types/races-import-api.types';
 import type { TrailRace } from '@/types/trail-race-agent.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 import type { PendingRace } from '@/types/pending-race.types';
 import { XCircle, RefreshCw, Sparkles, FileText, ImageIcon, X, Play } from 'lucide-react';
 
-type ScrapeWorkflow = 'autopilot' | 'full' | 'ingest' | 'llmFromFile';
+type ScrapeWorkflow = 'autopilot' | 'bulkAutopilot' | 'full' | 'ingest' | 'llmFromFile';
 type ScrapeSourceMode = 'scrapePage' | 'crawlSite';
 
 type ScrapePhase = 'idle' | 'crawling' | 'llm';
@@ -336,6 +339,12 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
                 pageStats: action.result.pageStats,
                 scrapeMarkdown: action.result.markdown,
                 hasScraped: true,
+                acceptedIndexes: new Set(),
+                acceptingIndex: null,
+                rejectedIndexes: new Set(),
+                jsonView: false,
+                jsonEditorValue: '',
+                jsonEditorError: null,
                 fullPipelineUiActive: action.showPipeline,
                 autopilotFallbackUsed: action.result.fallbackUsed,
                 persistedPipelineRows: action.persistedRows,
@@ -498,6 +507,11 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
     const [selectedVisionModelId, setSelectedVisionModelId] = useState<OpenRouterVisionModelId>(
         OPENROUTER_VISION_MODEL_IDS[0],
     );
+    const [batchUrlsInput, setBatchUrlsInput] = useState('');
+    const [activeBatchId, setActiveBatchId] = useState<string | null>(null);
+    const [batchStatus, setBatchStatus] = useState<RaceImportBatchStatusResponse | null>(null);
+    const [isStartingBatch, setIsStartingBatch] = useState(false);
+    const [viewingBatchItemId, setViewingBatchItemId] = useState<string | null>(null);
 
     const [state, dispatch] = useReducer(scrapeReducer, initialScrapeState);
     const {
@@ -518,7 +532,6 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         jsonView,
         jsonEditorValue,
         jsonEditorError,
-        bulkRows,
         autopilotFallbackUsed,
         persistedPipelineRows,
     } = state;
@@ -542,13 +555,34 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         handleRemoveImage,
     } = fileUpload;
 
+    const parsedBatchUrls = useMemo((): string[] => {
+        const urls = batchUrlsInput
+            .split(/\r?\n/)
+            .map((url) => url.trim())
+            .filter(Boolean)
+            .map(normalizeUrl);
+
+        return Array.from(new Set(urls));
+    }, [batchUrlsInput]);
+
+    const isBatchRunning =
+        batchStatus?.batch.status === 'pending' || batchStatus?.batch.status === 'running';
+
+    const canRunBatch =
+        parsedBatchUrls.length > 0 &&
+        parsedBatchUrls.every(isValidUrl) &&
+        !isStartingBatch &&
+        !isBatchRunning;
+
     const canRunScrape =
         !isScraping &&
-        (workflow === 'autopilot' || workflow === 'full' || workflow === 'ingest'
-            ? isValidUrl(websiteUrl)
-            : uploadKind === 'images'
-                ? uploadedImages.length > 0
-                : Boolean(uploadedMarkdown && uploadedMarkdown.length > 0));
+        (workflow === 'bulkAutopilot'
+            ? canRunBatch
+            : workflow === 'autopilot' || workflow === 'full' || workflow === 'ingest'
+                ? isValidUrl(websiteUrl)
+                : uploadKind === 'images'
+                    ? uploadedImages.length > 0
+                    : Boolean(uploadedMarkdown && uploadedMarkdown.length > 0));
 
     const clearFullPipelineStepRefs = (): void => {
         fullPipelineCrawlStartedAtRef.current = null;
@@ -596,8 +630,41 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         fullPipelineLlmEndedAtRef.current = extractStep ? extractStep.durationMs : null;
     };
 
+    const refreshBatchStatus = useCallback(async (batchId: string): Promise<RaceImportBatchStatusResponse> => {
+        const data = await getRaceImportBatch(batchId);
+        setBatchStatus(data);
+        return data;
+    }, []);
+
+    const handleRunBatchWorkflow = async (): Promise<void> => {
+        setIsStartingBatch(true);
+        setBatchStatus(null);
+        setActiveBatchId(null);
+        resetScrapeResults();
+
+        try {
+            const { batchId } = await startRaceImportBatch({
+                urls: parsedBatchUrls,
+                model: selectedModelId,
+            });
+
+            setActiveBatchId(batchId);
+            await refreshBatchStatus(batchId);
+            toast.success(t('bulk.startSuccess', { count: parsedBatchUrls.length }));
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : t('bulk.runError');
+            toast.error(errorMessage);
+        } finally {
+            setIsStartingBatch(false);
+        }
+    };
 
     const handleRunWorkflow = async () => {
+        if (workflow === 'bulkAutopilot') {
+            await handleRunBatchWorkflow();
+            return;
+        }
+
         runStartedAtRef.current = performance.now();
 
         try {
@@ -677,6 +744,47 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         }
     };
 
+    useEffect(() => {
+        if (!activeBatchId || !batchStatus) {
+            return;
+        }
+
+        if (batchStatus.batch.status !== 'pending' && batchStatus.batch.status !== 'running') {
+            return;
+        }
+
+        const intervalId = window.setInterval(() => {
+            void refreshBatchStatus(activeBatchId).catch((error) => {
+                console.error('Race import batch polling error:', error);
+                toast.error(t('bulk.pollError'));
+                setActiveBatchId(null);
+            });
+        }, 3000);
+
+        return () => window.clearInterval(intervalId);
+    }, [activeBatchId, batchStatus, refreshBatchStatus, t]);
+
+    const handleViewBatchResult = async (itemId: string): Promise<void> => {
+        setViewingBatchItemId(itemId);
+
+        try {
+            const result = await getRaceImportBatchItemResult(itemId);
+            setWebsiteUrl(result.url);
+            setCompletedImportStepRefs(result);
+            dispatch({
+                type: 'IMPORT_SUCCESS',
+                result,
+                persistedRows: buildAutopilotFallbackRows(result),
+                showPipeline: false,
+            });
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : t('bulk.resultError');
+            toast.error(errorMessage);
+        } finally {
+            setViewingBatchItemId(null);
+        }
+    };
+
     const handleAccept = async (index: number) => {
         dispatch({ type: 'ACCEPTING_INDEX', index });
         try {
@@ -735,8 +843,12 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
     };
 
     const handleRestart = (): void => {
-        if (isScraping) return;
+        if (isScraping || isStartingBatch) return;
         setWebsiteUrl('');
+        setBatchUrlsInput('');
+        setActiveBatchId(null);
+        setBatchStatus(null);
+        setViewingBatchItemId(null);
         fileUpload.clearUpload();
         runStartedAtRef.current = null;
         clearFullPipelineStepRefs();
@@ -776,6 +888,8 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
     const primaryLoadingLabel =
         workflow === 'ingest'
             ? t('crawlingMarkdown')
+            : workflow === 'bulkAutopilot'
+                ? t('bulk.running')
             : workflow === 'autopilot'
                 ? t('bulk.running')
                 : workflow === 'full' && scrapePhase === 'crawling'
@@ -916,6 +1030,16 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         return null;
     }, [workflow, fullPipelineUiActive, isScraping, scrapePhase, liveElapsedMs]);
 
+    const batchRows = useMemo((): BulkProcessTableRow[] => {
+        return batchStatus?.items.map((item) => ({
+            id: item.id,
+            url: item.url,
+            status: item.status,
+            raceCount: item.raceCount,
+            updatedAt: item.updatedAt,
+        })) ?? [];
+    }, [batchStatus]);
+
     return (
         <div className="flex flex-col gap-8">
             <SectionHeader
@@ -935,13 +1059,14 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                                     </span>
                                 ),
                             },
+                            { id: 'bulkAutopilot', label: t('workflowBulkAutopilot') },
                             { id: 'full', label: t('workflowCrawlAndLlm') },
                             { id: 'ingest', label: t('workflowIngest') },
                             { id: 'llmFromFile', label: t('workflowLlmFromFile') },
                         ]}
                         activeId={workflow}
                         onChange={(id) => handleWorkflowChange(id as ScrapeWorkflow)}
-                        disabled={isScraping}
+                        disabled={isScraping || isStartingBatch}
                     />
 
                     {(workflow === 'autopilot' || workflow === 'full' || workflow === 'ingest') && (
@@ -955,6 +1080,26 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                                 placeholder={t('websiteUrlPlaceholder')}
                                 disabled={isScraping}
                             />
+                        </div>
+                    )}
+
+                    {workflow === 'bulkAutopilot' && (
+                        <div className="grid gap-2 w-full">
+                            <label htmlFor="batchUrls" className="text-sm font-medium leading-none text-gray-900">
+                                {t('bulk.urlsLabel')}
+                            </label>
+                            <textarea
+                                id="batchUrls"
+                                value={batchUrlsInput}
+                                onChange={(event) => setBatchUrlsInput(event.target.value)}
+                                placeholder={t('bulk.urlsPlaceholder')}
+                                disabled={isStartingBatch || isBatchRunning}
+                                className="min-h-32 w-full resize-y rounded-xl border border-gray-200 bg-white p-3 text-sm text-gray-800 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-200/80 disabled:cursor-not-allowed disabled:opacity-60"
+                                spellCheck={false}
+                            />
+                            <p className="text-xs text-gray-500">
+                                {t('bulk.urlsHint', { count: parsedBatchUrls.length })}
+                            </p>
                         </div>
                     )}
 
@@ -1083,7 +1228,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                         </>
                     )}
 
-                    {(workflow === 'full' || workflow === 'autopilot' || (workflow === 'llmFromFile' && uploadKind !== 'images')) && (
+                    {(workflow === 'full' || workflow === 'autopilot' || workflow === 'bulkAutopilot' || (workflow === 'llmFromFile' && uploadKind !== 'images')) && (
                         <FormSelect
                             id="openrouterModel"
                             label={t('modelLabel')}
@@ -1091,7 +1236,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                             onChange={(e) =>
                                 setSelectedModelId(e.target.value as OpenRouterScrapeModelId)
                             }
-                            disabled={isScraping}
+                            disabled={isScraping || isStartingBatch || isBatchRunning}
                         >
                             {OPENROUTER_SCRAPE_MODEL_IDS.map((id) => (
                                 <option key={id} value={id}>
@@ -1123,7 +1268,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                             type="button"
                             onClick={handleRunWorkflow}
                             disabled={!canRunScrape}
-                            isLoading={isScraping}
+                            isLoading={isScraping || isStartingBatch}
                             loadingText={primaryLoadingLabel}
                         >
                             <span className="inline-flex items-center gap-2">
@@ -1155,7 +1300,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                             type="button"
                             variant="secondary"
                             onClick={handleLoadDummyPreview}
-                            disabled={isScraping}
+                            disabled={isScraping || isStartingBatch}
                         >
                             {t('loadDummyPreview')}
                         </Button>
@@ -1163,7 +1308,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                             type="button"
                             variant="secondary"
                             onClick={handleRestart}
-                            disabled={isScraping}
+                            disabled={isScraping || isStartingBatch}
                             className="h-9 w-9 min-h-9 shrink-0 p-0"
                             title={t('restart')}
                         >
@@ -1307,7 +1452,25 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                     onSave={handleSave}
                 />
             )}
-            <BulkProcessTable rows={bulkRows} />
+            {batchStatus && (
+                <div className="max-w-3xl rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-5">
+                    <p className="text-sm font-medium text-gray-900">
+                        {t('bulk.statusSummary', {
+                            completed: batchStatus.summary.completed,
+                            failed: batchStatus.summary.failed,
+                            total: batchStatus.summary.total,
+                        })}
+                    </p>
+                    <p className="mt-1 text-xs text-gray-500">
+                        {t(`bulk.batchStatus.${batchStatus.batch.status}`)}
+                    </p>
+                </div>
+            )}
+            <BulkProcessTable
+                rows={batchRows}
+                onViewResult={handleViewBatchResult}
+                viewingItemId={viewingBatchItemId}
+            />
             {jsonView && hasScraped && !isScraping && scrapeError === null && (
                 <div className="max-w-3xl flex flex-col gap-3">
                     <textarea

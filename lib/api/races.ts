@@ -5,6 +5,7 @@ import type {
 import type { PageStats } from '@/types/races-scrape-api.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 import type {
+  RaceImportBatchStatusResponse,
   RaceImportRequest,
   RaceImportResult,
 } from '@/types/races-import-api.types';
@@ -197,6 +198,53 @@ export async function runRaceImport(
   const responseData = await response.json();
   if (!response.ok) {
     throw new Error(responseData.error || 'Failed to import races');
+  }
+
+  return responseData.data;
+}
+
+export async function startRaceImportBatch(options: {
+  urls: string[];
+  model: OpenRouterScrapeModelId;
+}): Promise<{ batchId: string; workflowRunId: string }> {
+  const response = await fetch('/api/races/import/batches', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(options),
+  });
+
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(responseData.error || 'Failed to start race import batch');
+  }
+
+  return responseData.data;
+}
+
+export async function getRaceImportBatch(
+  batchId: string,
+): Promise<RaceImportBatchStatusResponse> {
+  const response = await fetch(`/api/races/import/batches/${batchId}`);
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(responseData.error || 'Failed to fetch race import batch');
+  }
+
+  return responseData.data;
+}
+
+export async function getRaceImportBatchItemResult(
+  itemId: string,
+): Promise<RaceImportResult> {
+  const response = await fetch(`/api/races/import/batch-items/${itemId}`);
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      responseData.error || 'Failed to fetch race import batch item result',
+    );
   }
 
   return responseData.data;

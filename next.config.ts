@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 import createMDX from '@next/mdx';
+import { withWorkflow } from 'workflow/next';
 
 const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 
@@ -101,5 +102,5 @@ const withMDX = createMDX({
   // No plugins - removed to fix Turbopack serialization error
 });
 
-// Apply MDX and next-intl plugins to Next.js config
-export default withNextIntl(withMDX(nextConfig));
+// Apply MDX, next-intl, and Workflow plugins to Next.js config
+export default withWorkflow(withNextIntl(withMDX(nextConfig)));
