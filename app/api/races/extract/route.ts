@@ -28,6 +28,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       success: true,
       data: {
         races: result.races,
+        errorMessage: result.errorMessage,
         rawModelOutput: result.rawModelOutput,
         usage: result.usage,
         pageStats: EMPTY_PAGE_STATS,

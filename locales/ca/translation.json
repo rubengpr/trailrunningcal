@@ -838,6 +838,7 @@
           "title": "Curses trobades",
           "loading": "Cercant curses a la web... Això pot trigar fins a 30 segons.",
           "noResults": "No s'han trobat curses en aquesta web.",
+          "noResultsTitle": "No s'han trobat curses",
           "errorTitle": "Error en extreure dades",
           "distance": "Distància",
           "elevation": "Desnivell positiu",

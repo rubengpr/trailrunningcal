@@ -13,7 +13,8 @@ Your mission is to read the **markdown** you are given (full context for the eve
 
 ## Output shape
 
-- Return a structured JSON with a \`races\` array.
+- Return a structured JSON with a \`races\` array and an \`errorMessage\` field.
+- **\`errorMessage\`**: set to \`null\` when at least one race is returned. When \`races\` is empty, set \`errorMessage\` to a concise Spanish sentence explaining why—e.g. the edition is cancelled, the content only lists youth races, there are no trail race distances found, all dates are in the past, etc. Never leave \`errorMessage\` null when \`races\` is empty.
 - If nothing qualifies, return races as an empty array—keep the field, no nulls, no invented races.
 - If the markdown shows the edition as **suspended, cancelled, or not held** as a normal edition (see Hard constraints), return \`races\` as \`[]\`—same as when nothing qualifies.
 - **One object per race** described in the content: single-race write-ups → one element; multi-distance events → one element per distance/modality.

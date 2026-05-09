@@ -53,9 +53,13 @@ function scrapeResult(markdown: string): SpiderServiceResult {
   };
 }
 
-function extractResult(races: TrailRace[]): OpenRouterServiceResult {
+function extractResult(
+  races: TrailRace[],
+  errorMessage: string | null = null,
+): OpenRouterServiceResult {
   return {
     races,
+    errorMessage,
     rawModelOutput: JSON.stringify({ races }),
     usage: {
       promptTokens: 10,
@@ -89,6 +93,33 @@ describe('processCrawlSiteExtract', () => {
       'extract',
     ]);
   });
+
+  it('propagates errorMessage from the extraction service when races is empty', async () => {
+    const msg = 'La edición está cancelada.';
+    mocks.crawlSite.mockResolvedValue(scrapeResult('crawl markdown'));
+    mocks.extractFromMarkdown.mockResolvedValue(extractResult([], msg));
+
+    const result = await processCrawlSiteExtract({
+      url: 'https://example.com/race',
+      model: MODEL,
+    });
+
+    expect(result.races).toEqual([]);
+    expect(result.errorMessage).toBe(msg);
+  });
+
+  it('passes null errorMessage when races are found', async () => {
+    mocks.crawlSite.mockResolvedValue(scrapeResult('crawl markdown'));
+    mocks.extractFromMarkdown.mockResolvedValue(extractResult([race()], null));
+
+    const result = await processCrawlSiteExtract({
+      url: 'https://example.com/race',
+      model: MODEL,
+    });
+
+    expect(result.races).toHaveLength(1);
+    expect(result.errorMessage).toBeNull();
+  });
 });
 
 describe('processScrapePageExtract', () => {
@@ -114,6 +145,20 @@ describe('processScrapePageExtract', () => {
       'extract',
     ]);
   });
+
+  it('propagates errorMessage from the extraction service when races is empty', async () => {
+    const msg = 'Solo se encontraron pruebas infantiles.';
+    mocks.scrapePage.mockResolvedValue(scrapeResult('single page markdown'));
+    mocks.extractFromMarkdown.mockResolvedValue(extractResult([], msg));
+
+    const result = await processScrapePageExtract({
+      url: 'https://example.com/race',
+      model: MODEL,
+    });
+
+    expect(result.races).toEqual([]);
+    expect(result.errorMessage).toBe(msg);
+  });
 });
 
 describe('processCrawlSite', () => {
@@ -128,6 +173,7 @@ describe('processCrawlSite', () => {
     expect(mocks.extractFromMarkdown).not.toHaveBeenCalled();
     expect(result.workflow).toBe('crawlSite');
     expect(result.races).toEqual([]);
+    expect(result.errorMessage).toBeNull();
     expect(result.rawModelOutput).toBeNull();
     expect(result.usage).toBeNull();
     expect(result.markdown).toBe('crawl markdown');
@@ -147,6 +193,7 @@ describe('processScrapePage', () => {
     expect(mocks.extractFromMarkdown).not.toHaveBeenCalled();
     expect(result.workflow).toBe('scrapePage');
     expect(result.races).toEqual([]);
+    expect(result.errorMessage).toBeNull();
     expect(result.rawModelOutput).toBeNull();
     expect(result.usage).toBeNull();
     expect(result.markdown).toBe('single page markdown');

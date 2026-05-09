@@ -24,6 +24,7 @@ export interface RaceImportResult {
   workflow: RaceImportWorkflow;
   url: string;
   races: TrailRace[];
+  errorMessage: string | null;
   markdown: string | null;
   rawModelOutput: string | null;
   usage: OpenRouterScrapeUsage | null;

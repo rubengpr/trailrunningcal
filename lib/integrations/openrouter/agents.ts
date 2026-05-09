@@ -11,6 +11,7 @@ import { parseJsonOutputText } from '@/lib/agents/trail-race-scraper';
 
 export interface OpenRouterServiceResult {
   races: TrailRace[];
+  errorMessage: string | null;
   rawModelOutput: string;
   usage: OpenRouterScrapeUsage | null;
 }
@@ -101,9 +102,11 @@ function extractResult(
     typeof messageContent === 'string' ? messageContent : '';
   const parsed = parseJsonOutputText(rawModelOutput);
   const races = Array.isArray(parsed?.races) ? parsed.races : [];
+  const errorMessage =
+    typeof parsed?.errorMessage === 'string' ? parsed.errorMessage : null;
   const usage = mapCompletionUsageToScrapeUsage(completion.usage);
 
-  return { races, rawModelOutput, usage };
+  return { races, errorMessage, rawModelOutput, usage };
 }
 
 export async function runImagesAgent(

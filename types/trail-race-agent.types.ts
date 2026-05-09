@@ -10,4 +10,5 @@ export interface TrailRace {
 
 export interface TrailRaceAgentParsed {
   races: TrailRace[];
+  errorMessage: string | null;
 }

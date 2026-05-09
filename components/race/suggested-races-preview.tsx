@@ -8,6 +8,7 @@ interface SuggestedRacesPreviewProps {
     races: TrailRace[];
     isLoading: boolean;
     error: string | null;
+    emptyMessage?: string | null;
     onAccept: (index: number) => Promise<void>;
     acceptedIndexes: Set<number>;
     acceptingIndex: number | null;
@@ -16,7 +17,7 @@ interface SuggestedRacesPreviewProps {
     onSave: (index: number, race: TrailRace) => void;
 }
 
-export function SuggestedRacesPreview({ races, isLoading, error, onAccept, acceptedIndexes, acceptingIndex, onReject, rejectedIndexes, onSave }: SuggestedRacesPreviewProps) {
+export function SuggestedRacesPreview({ races, isLoading, error, emptyMessage, onAccept, acceptedIndexes, acceptingIndex, onReject, rejectedIndexes, onSave }: SuggestedRacesPreviewProps) {
     const t = useTranslations('admin.races.import.results');
 
     if (isLoading) {
@@ -39,8 +40,9 @@ export function SuggestedRacesPreview({ races, isLoading, error, onAccept, accep
 
     if (races.length === 0) {
         return (
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
-                <p className="text-sm text-gray-600">{t('noResults')}</p>
+            <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+                <p className="text-sm font-medium text-red-800">{t('noResultsTitle')}</p>
+                {emptyMessage && <p className="text-sm text-red-600 mt-1">{emptyMessage}</p>}
             </div>
         );
     }

@@ -12,6 +12,9 @@ import { TRAIL_RACE_AGENT_INSTRUCTIONS } from '@/lib/prompts';
 
 const MODEL = 'gpt-5.4-mini';
 
+const FALLBACK_EMPTY_MESSAGE =
+  'No se encontraron carreras adultas de trail válidas en el contenido proporcionado.';
+
 export function requireOpenAIApiKey(): string {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
@@ -111,6 +114,7 @@ export interface TrailRaceDomainAgentResult {
   response: Response;
   parsed: TrailRaceAgentParsed | null;
   races: TrailRace[];
+  errorMessage: string | null;
 }
 
 /**
@@ -129,8 +133,12 @@ export async function runTrailRaceMarkdownAgent(
 
   const parsed = parseJsonOutputText(response.output_text);
   const races = Array.isArray(parsed?.races) ? parsed.races : [];
+  const errorMessage =
+    races.length === 0
+      ? (typeof parsed?.errorMessage === 'string' ? parsed.errorMessage : FALLBACK_EMPTY_MESSAGE)
+      : null;
 
-  return { response, parsed, races };
+  return { response, parsed, races, errorMessage };
 }
 
 /**
@@ -159,10 +167,15 @@ export async function runTrailRaceDomainAgent(
 
   const parsed = parseJsonOutputText(response.output_text);
   const races = Array.isArray(parsed?.races) ? parsed.races : [];
+  const errorMessage =
+    races.length === 0
+      ? (typeof parsed?.errorMessage === 'string' ? parsed.errorMessage : FALLBACK_EMPTY_MESSAGE)
+      : null;
 
   return {
     response,
     parsed,
     races,
+    errorMessage,
   };
 }

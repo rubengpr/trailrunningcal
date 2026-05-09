@@ -6,9 +6,23 @@ import {
 import type { OpenRouterServiceResult } from '@/lib/integrations/openrouter/agents';
 import type { OpenRouterScrapeModelId, OpenRouterVisionModelId } from '@/lib/integrations/openrouter/scrape-models';
 
+const FALLBACK_EMPTY_MESSAGE =
+  'No se encontraron carreras adultas de trail válidas en el contenido proporcionado.';
+
+const PAST_RACES_MESSAGE =
+  'Las carreras encontradas tienen fechas pasadas y no se pueden importar.';
+
 function filterFutureRaces(result: OpenRouterServiceResult): OpenRouterServiceResult {
   const todayStr = new Date().toISOString().split('T')[0];
-  return { ...result, races: result.races.filter((race) => race.date >= todayStr) };
+  const races = result.races.filter((race) => race.date >= todayStr);
+  let errorMessage: string | null = null;
+  if (races.length === 0) {
+    errorMessage =
+      result.races.length > 0
+        ? PAST_RACES_MESSAGE
+        : (result.errorMessage ?? FALLBACK_EMPTY_MESSAGE);
+  }
+  return { ...result, races, errorMessage };
 }
 
 export async function extractFromMarkdown(

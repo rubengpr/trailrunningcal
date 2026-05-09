@@ -104,6 +104,7 @@ export async function deleteRace(raceId: string): Promise<void> {
 
 export interface TrailRaceAgentRunResult {
   races: import('@/types/trail-race-agent.types').TrailRace[];
+  errorMessage: string | null;
   markdown: string;
   rawModelOutput: string;
   usage: OpenRouterScrapeUsage | null;

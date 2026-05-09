@@ -33,6 +33,10 @@ export const TRAIL_RACE_AGENT_JSON_SCHEMA = {
         ],
       },
     },
+    // Null when races were found; a short Spanish explanation when races is empty.
+    errorMessage: {
+      anyOf: [{ type: 'string' }, { type: 'null' }],
+    },
   },
-  required: ['races'],
+  required: ['races', 'errorMessage'],
 } as const;

@@ -186,6 +186,7 @@ interface ScrapeState {
     lastRunDurationMs: number | null;
     scrapedRaces: TrailRace[];
     scrapeError: string | null;
+    scrapeEmptyMessage: string | null;
     hasScraped: boolean;
     scrapeMarkdown: string | null;
     rawModelOutput: string | null;
@@ -206,7 +207,7 @@ type ScrapeAction =
     | { type: 'SCRAPE_START' }
     | { type: 'CRAWL_SITE_EXTRACT_START' }
     // Run completion
-    | { type: 'AGENT_SUCCESS'; races: TrailRace[]; rawModelOutput: string; usage: OpenRouterScrapeUsage | null; markdown?: string }
+    | { type: 'AGENT_SUCCESS'; races: TrailRace[]; errorMessage: string | null; rawModelOutput: string; usage: OpenRouterScrapeUsage | null; markdown?: string }
     | { type: 'IMPORT_SUCCESS'; result: RaceImportResult; persistedRows: PersistedPipelineRow[]; showPipeline: boolean }
     | { type: 'SCRAPE_ERROR'; error: string }
     | { type: 'SCRAPE_COMPLETE'; durationMs: number }
@@ -234,6 +235,7 @@ const initialScrapeState: ScrapeState = {
     lastRunDurationMs: null,
     scrapedRaces: [],
     scrapeError: null,
+    scrapeEmptyMessage: null,
     hasScraped: false,
     scrapeMarkdown: null,
     rawModelOutput: null,
@@ -258,6 +260,7 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
                 isScraping: true,
                 lastRunDurationMs: null,
                 scrapeError: null,
+                scrapeEmptyMessage: null,
                 scrapedRaces: [],
                 hasScraped: false,
                 scrapeMarkdown: null,
@@ -278,6 +281,7 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
                 isScraping: true,
                 lastRunDurationMs: null,
                 scrapeError: null,
+                scrapeEmptyMessage: null,
                 scrapedRaces: [],
                 hasScraped: false,
                 scrapeMarkdown: null,
@@ -299,6 +303,7 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
             return {
                 ...state,
                 scrapedRaces: action.races,
+                scrapeEmptyMessage: action.races.length === 0 ? action.errorMessage : null,
                 rawModelOutput: action.rawModelOutput,
                 scrapeUsage: action.usage,
                 hasScraped: true,
@@ -308,6 +313,7 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
             return {
                 ...state,
                 scrapedRaces: action.result.races,
+                scrapeEmptyMessage: action.result.races.length === 0 ? action.result.errorMessage : null,
                 rawModelOutput: action.result.rawModelOutput,
                 scrapeUsage: action.result.usage,
                 pageStats: action.result.pageStats,
@@ -339,6 +345,7 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
                 pageStats: null,
                 hasScraped: false,
                 scrapeError: null,
+                scrapeEmptyMessage: null,
                 scrapedRaces: [],
                 acceptedIndexes: new Set(),
                 rejectedIndexes: new Set(),
@@ -349,6 +356,7 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
                 isScraping: false,
                 scrapePhase: 'idle',
                 scrapeError: null,
+                scrapeEmptyMessage: null,
                 hasScraped: true,
                 acceptedIndexes: new Set(),
                 acceptingIndex: null,
@@ -471,6 +479,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         lastRunDurationMs,
         scrapedRaces,
         scrapeError,
+        scrapeEmptyMessage,
         hasScraped,
         scrapeMarkdown,
         rawModelOutput,
@@ -651,7 +660,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                         images: uploadedImages.map(img => img.dataUrl),
                         model: selectedVisionModelId,
                     });
-                    dispatch({ type: 'AGENT_SUCCESS', races: data.races, rawModelOutput: data.rawModelOutput, usage: data.usage });
+                    dispatch({ type: 'AGENT_SUCCESS', races: data.races, errorMessage: data.errorMessage, rawModelOutput: data.rawModelOutput, usage: data.usage });
                 } else {
                     const markdownBody = uploadedMarkdown;
                     if (!markdownBody) return;
@@ -660,7 +669,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                         markdown: markdownBody,
                         model: selectedModelId,
                     });
-                    dispatch({ type: 'AGENT_SUCCESS', races: data.races, rawModelOutput: data.rawModelOutput, usage: data.usage, markdown: data.markdown });
+                    dispatch({ type: 'AGENT_SUCCESS', races: data.races, errorMessage: data.errorMessage, rawModelOutput: data.rawModelOutput, usage: data.usage, markdown: data.markdown });
                 }
             }
         } catch (err) {
@@ -1372,6 +1381,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                     races={scrapedRaces}
                     isLoading={isScraping}
                     error={scrapeError}
+                    emptyMessage={scrapeEmptyMessage}
                     onAccept={handleAccept}
                     acceptedIndexes={acceptedIndexes}
                     acceptingIndex={acceptingIndex}
