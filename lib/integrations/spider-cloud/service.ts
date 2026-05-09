@@ -61,6 +61,9 @@ const BLACKLIST: readonly string[] = [
   'xarxes',
   'sharer',
   'intent',
+  'facebook\\.com\\/sharer',
+  'x\\.com\\/intent\\/tweet',
+  'twitter\\.com\\/intent\\/tweet',
   // Accommodation
   'allotjaments',
   'alojamientos',
@@ -86,6 +89,19 @@ const BLACKLIST: readonly string[] = [
   'rss',
 ];
 
+const EXCLUDED_RESULT_URL_PATTERNS: readonly RegExp[] = [
+  /facebook\.com\/sharer/i,
+  /x\.com\/intent\/tweet/i,
+  /twitter\.com\/intent\/tweet/i,
+];
+
+function filterExcludedResultPages(pages: Page[]): Page[] {
+  return pages.filter(
+    (page) =>
+      !EXCLUDED_RESULT_URL_PATTERNS.some((pattern) => pattern.test(page.url)),
+  );
+}
+
 function summarizeStats(pages: Page[]): PageStats {
   const total = pages.length;
   let successCount = 0;
@@ -100,14 +116,16 @@ function summarizeStats(pages: Page[]): PageStats {
 
 export async function scrapePage(url: string): Promise<SpiderServiceResult> {
   const pages = await scrape(url, { blacklist: BLACKLIST });
-  const pageStats = summarizeStats(pages);
-  const markdown = mergePages(url, pages);
+  const filteredPages = filterExcludedResultPages(pages);
+  const pageStats = summarizeStats(filteredPages);
+  const markdown = mergePages(url, filteredPages);
   return { markdown, pageStats };
 }
 
 export async function crawlSite(url: string): Promise<SpiderServiceResult> {
   const pages = await crawl(url, { blacklist: BLACKLIST });
-  const pageStats = summarizeStats(pages);
-  const markdown = mergePages(url, pages);
+  const filteredPages = filterExcludedResultPages(pages);
+  const pageStats = summarizeStats(filteredPages);
+  const markdown = mergePages(url, filteredPages);
   return { markdown, pageStats };
 }
