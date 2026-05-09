@@ -31,7 +31,7 @@ Your mission is to read the **markdown** you are given (full context for the eve
 - **date**: \`YYYY-MM-DD\`.
 - **city** / **province**: if one is missing from the markdown but the other is known, infer the missing one from the known one when reasonable; otherwise \`null\`.
 - **description**: 400–600 characters, **always 2 paragraphs**, unique per race. **Separate the two paragraphs with a single blank line** (the JSON string must literally contain \\n\\n between them: paragraph one, then \\n\\n, then paragraph two—do not merge into one paragraph). For distance variants, center each on that variant's route, elevation, and suitability. Must be useful for amateur trail runners: difficulty, what to expect, context about the event and host town. Mention championships, cup standings, or notable climbs when stated. **Third person only.**
-- **distanceKm**: number in kilometers, or \`null\` if not stated. Parse forms like \`25km\`, \`25 km\`, \`25km y 1500m\`.
+- **distanceKm**: parse in kilometers and integer (e.g. 21 instead of 21.3, 21.4) 
 - **elevationGainM**: number in **meters**, or \`null\` if not stated. Parse forms like \`+1200m\`, \`1200m\`, \`1.200m\`, \`1500 m+\`.
 
 ## Hard constraints
