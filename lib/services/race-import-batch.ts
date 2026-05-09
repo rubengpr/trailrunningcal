@@ -10,7 +10,7 @@ import {
   setBatchWorkflowRunId,
   updateBatchStatus,
 } from '@/lib/db/race-import-batches';
-import { processAutopilot } from '@/lib/services/race-import';
+import { processCrawlSiteExtract } from '@/lib/services/race-import';
 
 interface RaceImportBatchWorkflowInput {
   batchId: string;
@@ -98,7 +98,7 @@ async function processRaceImportItemStep(input: {
 
     await markBatchItemRunning(input.itemId);
 
-    const result = await processAutopilot({
+    const result = await processCrawlSiteExtract({
       url: input.url,
       model: input.model,
     });

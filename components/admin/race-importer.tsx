@@ -48,7 +48,7 @@ import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.type
 import type { PendingRace } from '@/types/pending-race.types';
 import { XCircle, RefreshCw, Sparkles, FileText, ImageIcon, X, Play } from 'lucide-react';
 
-type ScrapeWorkflow = 'autopilot' | 'bulkAutopilot' | 'full' | 'ingest' | 'llmFromFile';
+type ScrapeWorkflow = 'bulk' | 'full' | 'ingest' | 'llmFromFile';
 type ScrapeSourceMode = 'scrapePage' | 'crawlSite';
 
 type ScrapePhase = 'idle' | 'crawling' | 'llm';
@@ -198,7 +198,6 @@ interface ScrapeState {
     jsonEditorValue: string;
     jsonEditorError: string | null;
     bulkRows: BulkProcessTableRow[];
-    autopilotFallbackUsed: boolean | null;
     persistedPipelineRows: PersistedPipelineRow[];
 }
 
@@ -206,7 +205,6 @@ type ScrapeAction =
     // Workflow start
     | { type: 'SCRAPE_START' }
     | { type: 'CRAWL_SITE_EXTRACT_START' }
-    | { type: 'AUTOPILOT_START' }
     // Run completion
     | { type: 'AGENT_SUCCESS'; races: TrailRace[]; rawModelOutput: string; usage: OpenRouterScrapeUsage | null; markdown?: string }
     | { type: 'IMPORT_SUCCESS'; result: RaceImportResult; persistedRows: PersistedPipelineRow[]; showPipeline: boolean }
@@ -248,7 +246,6 @@ const initialScrapeState: ScrapeState = {
     jsonEditorValue: '',
     jsonEditorError: null,
     bulkRows: [],
-    autopilotFallbackUsed: null,
     persistedPipelineRows: [],
 };
 
@@ -297,29 +294,6 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
                 fullPipelineUiActive: true,
                 scrapePhase: 'crawling',
             };
-        case 'AUTOPILOT_START':
-            return {
-                ...state,
-                isScraping: true,
-                lastRunDurationMs: null,
-                scrapeError: null,
-                scrapedRaces: [],
-                hasScraped: false,
-                scrapeMarkdown: null,
-                rawModelOutput: null,
-                scrapeUsage: null,
-                pageStats: null,
-                acceptedIndexes: new Set(),
-                acceptingIndex: null,
-                rejectedIndexes: new Set(),
-                jsonView: false,
-                jsonEditorValue: '',
-                jsonEditorError: null,
-                persistedPipelineRows: [],
-                fullPipelineUiActive: true,
-                autopilotFallbackUsed: false,
-                scrapePhase: 'crawling',
-            };
         // Run completion
         case 'AGENT_SUCCESS':
             return {
@@ -346,7 +320,6 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
                 jsonEditorValue: '',
                 jsonEditorError: null,
                 fullPipelineUiActive: action.showPipeline,
-                autopilotFallbackUsed: action.result.fallbackUsed,
                 persistedPipelineRows: action.persistedRows,
                 scrapePhase: action.result.workflow === 'crawlSite' || action.result.workflow === 'scrapePage' ? 'crawling' : 'llm',
             };
@@ -458,29 +431,6 @@ function findStep(
     return null;
 }
 
-function buildAutopilotFallbackRows(result: RaceImportResult): PersistedPipelineRow[] {
-    if (result.workflow !== 'autopilot' || result.fallbackUsed !== true) {
-        return [];
-    }
-
-    const firstScrape = findStep(result.steps, 'scrapePage');
-    const firstExtract = findStep(result.steps, 'extract');
-
-    return [
-        {
-            kind: firstScrape?.status === 'failed' ? 'error' : 'success',
-            titleKey: 'autopilotScrapeSuccess',
-            durationMs: firstScrape?.durationMs ?? null,
-            pageStats: firstScrape?.pageStats ?? null,
-        },
-        {
-            kind: firstExtract?.status === 'failed' ? 'error' : 'success',
-            titleKey: 'autopilotParseEmptyFallback',
-            durationMs: firstExtract?.durationMs ?? null,
-        },
-    ];
-}
-
 interface RaceImporterProps {
     pendingEntries: PendingRace[];
 }
@@ -498,7 +448,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
     const llmStartedAtRef = useRef<number | null>(null);
     const llmEndedAtRef = useRef<number | null>(null);
 
-    const [workflow, setWorkflow] = useState<ScrapeWorkflow>('autopilot');
+    const [workflow, setWorkflow] = useState<ScrapeWorkflow>('full');
     const [sourceMode, setSourceMode] = useState<ScrapeSourceMode>('crawlSite');
     const [websiteUrl, setWebsiteUrl] = useState('');
     const [selectedModelId, setSelectedModelId] = useState<OpenRouterScrapeModelId>(
@@ -532,7 +482,6 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         jsonView,
         jsonEditorValue,
         jsonEditorError,
-        autopilotFallbackUsed,
         persistedPipelineRows,
     } = state;
 
@@ -576,9 +525,9 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
 
     const canRunWorkflow =
         !isScraping &&
-        (workflow === 'bulkAutopilot'
+        (workflow === 'bulk'
             ? canRunBatch
-            : workflow === 'autopilot' || workflow === 'full' || workflow === 'ingest'
+            : workflow === 'full' || workflow === 'ingest'
                 ? isValidUrl(websiteUrl)
                 : uploadKind === 'images'
                     ? uploadedImages.length > 0
@@ -608,7 +557,6 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
     };
 
     const resolveImportWorkflow = (): RaceImportWorkflow | null => {
-        if (workflow === 'autopilot') return 'autopilot';
         if (workflow === 'full') {
             return sourceMode === 'crawlSite' ? 'crawlSiteExtract' : 'scrapePageExtract';
         }
@@ -617,12 +565,8 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
     };
 
     const setCompletedImportStepRefs = (result: RaceImportResult): void => {
-        const isFallback = result.workflow === 'autopilot' && result.fallbackUsed === true;
-        const crawlStep =
-            result.workflow === 'autopilot'
-                ? findStep(result.steps, isFallback ? 'crawlSite' : 'scrapePage')
-                : (findStep(result.steps, 'crawlSite') ?? findStep(result.steps, 'scrapePage'));
-        const extractStep = findStep(result.steps, 'extract', isFallback ? 1 : 0);
+        const crawlStep = findStep(result.steps, 'crawlSite') ?? findStep(result.steps, 'scrapePage');
+        const extractStep = findStep(result.steps, 'extract');
 
         crawlStartedAtRef.current = crawlStep ? 0 : null;
         crawlEndedAtRef.current = crawlStep ? crawlStep.durationMs : null;
@@ -660,7 +604,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
     };
 
     const handleRunWorkflow = async () => {
-        if (workflow === 'bulkAutopilot') {
+        if (workflow === 'bulk') {
             await handleStartBatchImport();
             return;
         }
@@ -672,13 +616,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
             if (importWorkflow !== null) {
                 const normalizedUrl = normalizeUrl(websiteUrl.trim());
 
-                if (workflow === 'autopilot') {
-                    dispatch({ type: 'AUTOPILOT_START' });
-                    crawlStartedAtRef.current = performance.now();
-                    crawlEndedAtRef.current = null;
-                    llmStartedAtRef.current = null;
-                    llmEndedAtRef.current = null;
-                } else if (workflow === 'full') {
+                if (workflow === 'full') {
                     dispatch({ type: 'CRAWL_SITE_EXTRACT_START' });
                     crawlStartedAtRef.current = performance.now();
                     crawlEndedAtRef.current = null;
@@ -699,8 +637,8 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                 dispatch({
                     type: 'IMPORT_SUCCESS',
                     result: data,
-                    persistedRows: buildAutopilotFallbackRows(data),
-                    showPipeline: workflow === 'autopilot' || workflow === 'full',
+                    persistedRows: [],
+                    showPipeline: workflow === 'full',
                 });
                 return;
             }
@@ -774,7 +712,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
             dispatch({
                 type: 'IMPORT_SUCCESS',
                 result,
-                persistedRows: buildAutopilotFallbackRows(result),
+                persistedRows: [],
                 showPipeline: false,
             });
         } catch (err) {
@@ -888,9 +826,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
     const primaryLoadingLabel =
         workflow === 'ingest'
             ? t('crawlingMarkdown')
-            : workflow === 'bulkAutopilot'
-                ? t('bulk.running')
-            : workflow === 'autopilot'
+            : workflow === 'bulk'
                 ? t('bulk.running')
                 : workflow === 'full' && scrapePhase === 'crawling'
                     ? t('crawlingMarkdown')
@@ -928,7 +864,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         row1: FullPipelineRowConfig;
         row2: FullPipelineRowConfig;
     } | null => {
-        if ((workflow !== 'full' && workflow !== 'autopilot') || !fullPipelineUiActive) {
+        if (workflow !== 'full' || !fullPipelineUiActive) {
             return null;
         }
         if (!isScraping && !hasScraped) {
@@ -936,8 +872,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         }
         let row1: FullPipelineRowConfig;
         if (isScraping && scrapePhase === 'crawling') {
-            const autopilotLoadingKey = autopilotFallbackUsed ? 'fullPipelineCrawlingWebsite' : 'autopilotProcessing';
-            row1 = { kind: 'loading', titleKey: workflow === 'autopilot' ? autopilotLoadingKey : 'fullPipelineCrawlingWebsite' };
+            row1 = { kind: 'loading', titleKey: 'fullPipelineCrawlingWebsite' };
         } else if (isScraping && scrapePhase === 'llm') {
             row1 = { kind: 'success', titleKey: 'fullPipelineCrawlSuccess' };
         } else if (!isScraping && hasScraped && scrapeError && !scrapeMarkdown) {
@@ -945,12 +880,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         } else if (!isScraping && hasScraped && scrapeError && scrapeMarkdown) {
             row1 = { kind: 'success', titleKey: 'fullPipelineCrawlSuccess' };
         } else if (!isScraping && hasScraped && !scrapeError) {
-            const successKey = workflow === 'autopilot' && autopilotFallbackUsed === false
-                ? 'autopilotScrapeSuccess'
-                : 'fullPipelineCrawlSuccess';
-            row1 = { kind: 'success', titleKey: successKey };
-        } else if (isScraping) {
-            row1 = { kind: 'loading', titleKey: 'fullPipelineCrawlingWebsite' };
+            row1 = { kind: 'success', titleKey: 'fullPipelineCrawlSuccess' };
         } else {
             row1 = { kind: 'loading', titleKey: 'fullPipelineCrawlingWebsite' };
         }
@@ -981,11 +911,10 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         scrapePhase,
         scrapeError,
         scrapeMarkdown,
-        autopilotFallbackUsed,
     ]);
 
     const showMarkdownEstimateBesidePageStats =
-        (workflow === 'full' || workflow === 'autopilot') &&
+        workflow === 'full' &&
         fullPipelineSteps !== null &&
         pageStats !== null &&
         showMarkdownEstimateLine;
@@ -993,7 +922,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
     const fullPipelineCrawlStepMs = useMemo((): number | null => {
         // Keep this memo recalculating on the live timer tick while crawling is active.
         void liveElapsedMs;
-        if ((workflow !== 'full' && workflow !== 'autopilot') || !fullPipelineUiActive) {
+        if (workflow !== 'full' || !fullPipelineUiActive) {
             return null;
         }
         if (crawlStartedAtRef.current === null) {
@@ -1013,7 +942,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
     const fullPipelineLlmStepMs = useMemo((): number | null => {
         // Keep this memo recalculating on the live timer tick while LLM extraction is active.
         void liveElapsedMs;
-        if ((workflow !== 'full' && workflow !== 'autopilot') || !fullPipelineUiActive) {
+        if (workflow !== 'full' || !fullPipelineUiActive) {
             return null;
         }
         if (llmStartedAtRef.current === null) {
@@ -1051,16 +980,15 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                     <TabSwitcher
                         tabs={[
                             {
-                                id: 'autopilot',
+                                id: 'full',
                                 label: (
                                     <span className="inline-flex items-center gap-1.5">
                                         <Sparkles className="size-4" strokeWidth={1.5} />
-                                        {t('workflowAutopilot')}
+                                        {t('workflowCrawlAndLlm')}
                                     </span>
                                 ),
                             },
-                            { id: 'bulkAutopilot', label: t('workflowBulkAutopilot') },
-                            { id: 'full', label: t('workflowCrawlAndLlm') },
+                            { id: 'bulk', label: t('workflowBulk') },
                             { id: 'ingest', label: t('workflowIngest') },
                             { id: 'llmFromFile', label: t('workflowLlmFromFile') },
                         ]}
@@ -1069,7 +997,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                         disabled={isScraping || isStartingBatch}
                     />
 
-                    {(workflow === 'autopilot' || workflow === 'full' || workflow === 'ingest') && (
+                    {(workflow === 'full' || workflow === 'ingest') && (
                         <div className="grid gap-2 w-full">
                             <Combobox
                                 id="websiteUrl"
@@ -1083,7 +1011,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                         </div>
                     )}
 
-                    {workflow === 'bulkAutopilot' && (
+                    {workflow === 'bulk' && (
                         <div className="grid gap-2 w-full">
                             <label htmlFor="batchUrls" className="text-sm font-medium leading-none text-gray-900">
                                 {t('bulk.urlsLabel')}
@@ -1228,7 +1156,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                         </>
                     )}
 
-                    {(workflow === 'full' || workflow === 'autopilot' || workflow === 'bulkAutopilot' || (workflow === 'llmFromFile' && uploadKind !== 'images')) && (
+                    {(workflow === 'full' || workflow === 'bulk' || (workflow === 'llmFromFile' && uploadKind !== 'images')) && (
                         <FormSelect
                             id="openrouterModel"
                             label={t('modelLabel')}
@@ -1346,7 +1274,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                                         durationMs={fullPipelineCrawlStepMs}
                                         errorDetail={fullPipelineSteps.row1.errorDetail}
                                     >
-                                        {(workflow === 'full' || workflow === 'autopilot') && pageStats !== null && (
+                                        {workflow === 'full' && pageStats !== null && (
                                             <span className="inline-flex flex-wrap items-center gap-1.5">
                                                 <PageStatsBadges pageStats={pageStats} />
                                                 {showMarkdownEstimateBesidePageStats && (

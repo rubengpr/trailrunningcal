@@ -62,15 +62,6 @@ describe('parseInput', () => {
     });
   });
 
-  it('requires a model for autopilot', () => {
-    expect(() =>
-      parseInput({
-        workflow: 'autopilot',
-        websiteUrl: 'https://example.com',
-      }),
-    ).toThrow('Model is required');
-  });
-
   it('requires a model for crawl and extract', () => {
     expect(() =>
       parseInput({
@@ -92,22 +83,22 @@ describe('parseInput', () => {
   it('rejects invalid models', () => {
     expect(() =>
       parseInput({
-        workflow: 'autopilot',
+        workflow: 'crawlSiteExtract',
         websiteUrl: 'https://example.com',
         model: 'invalid-model',
       }),
     ).toThrow('Invalid model');
   });
 
-  it('returns validated LLM workflow input', () => {
+  it('returns validated crawl site extract input', () => {
     expect(
       parseInput({
-        workflow: 'autopilot',
+        workflow: 'crawlSiteExtract',
         websiteUrl: 'trail.example/race',
         model: MODEL,
       }),
     ).toEqual({
-      workflow: 'autopilot',
+      workflow: 'crawlSiteExtract',
       url: 'https://trail.example/race',
       model: MODEL,
     });

@@ -43,63 +43,6 @@ function extractStep(raceCount: number, durationMs: number): RaceImportStep {
   };
 }
 
-export async function processAutopilot(input: {
-  url: string;
-  model: OpenRouterScrapeModelId;
-}): Promise<RaceImportResult> {
-  const singlePageScrape = await timeStep(() => scrapePage(input.url));
-  const singlePageExtract = await timeStep(() =>
-    extractFromMarkdown(singlePageScrape.result.markdown, input.model),
-  );
-
-  const initialSteps = [
-    scrapeStep(
-      'scrapePage',
-      singlePageScrape.result,
-      singlePageScrape.durationMs,
-    ),
-    extractStep(
-      singlePageExtract.result.races.length,
-      singlePageExtract.durationMs,
-    ),
-  ];
-
-  if (singlePageExtract.result.races.length > 0) {
-    return {
-      workflow: 'autopilot',
-      url: input.url,
-      races: singlePageExtract.result.races,
-      markdown: singlePageScrape.result.markdown,
-      rawModelOutput: singlePageExtract.result.rawModelOutput,
-      usage: singlePageExtract.result.usage,
-      pageStats: singlePageScrape.result.pageStats,
-      fallbackUsed: false,
-      steps: initialSteps,
-    };
-  }
-
-  const crawl = await timeStep(() => crawlSite(input.url));
-  const crawlExtract = await timeStep(() =>
-    extractFromMarkdown(crawl.result.markdown, input.model),
-  );
-
-  return {
-    workflow: 'autopilot',
-    url: input.url,
-    races: crawlExtract.result.races,
-    markdown: crawl.result.markdown,
-    rawModelOutput: crawlExtract.result.rawModelOutput,
-    usage: crawlExtract.result.usage,
-    pageStats: crawl.result.pageStats,
-    fallbackUsed: true,
-    steps: [
-      ...initialSteps,
-      scrapeStep('crawlSite', crawl.result, crawl.durationMs),
-      extractStep(crawlExtract.result.races.length, crawlExtract.durationMs),
-    ],
-  };
-}
-
 export async function processCrawlSiteExtract(input: {
   url: string;
   model: OpenRouterScrapeModelId;

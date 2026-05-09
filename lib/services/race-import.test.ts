@@ -21,7 +21,6 @@ vi.mock('@/lib/integrations/openrouter/service', () => ({
 }));
 
 import {
-  processAutopilot,
   processCrawlSite,
   processCrawlSiteExtract,
   processScrapePage,
@@ -69,61 +68,6 @@ function extractResult(races: TrailRace[]): OpenRouterServiceResult {
 
 afterEach(() => {
   vi.clearAllMocks();
-});
-
-describe('processAutopilot', () => {
-  it('returns single-page races when the first extraction finds races', async () => {
-    mocks.scrapePage.mockResolvedValue(scrapeResult('single page markdown'));
-    mocks.extractFromMarkdown.mockResolvedValue(extractResult([race()]));
-
-    const result = await processAutopilot({
-      url: 'https://example.com/race',
-      model: MODEL,
-    });
-
-    expect(mocks.scrapePage).toHaveBeenCalledWith('https://example.com/race');
-    expect(mocks.extractFromMarkdown).toHaveBeenCalledWith(
-      'single page markdown',
-      MODEL,
-    );
-    expect(mocks.crawlSite).not.toHaveBeenCalled();
-    expect(result.fallbackUsed).toBe(false);
-    expect(result.races).toHaveLength(1);
-    expect(result.markdown).toBe('single page markdown');
-    expect(result.steps.map((step) => step.name)).toEqual([
-      'scrapePage',
-      'extract',
-    ]);
-  });
-
-  it('falls back to full crawl when single-page extraction is empty', async () => {
-    mocks.scrapePage.mockResolvedValue(scrapeResult('single page markdown'));
-    mocks.crawlSite.mockResolvedValue(scrapeResult('full crawl markdown'));
-    mocks.extractFromMarkdown
-      .mockResolvedValueOnce(extractResult([]))
-      .mockResolvedValueOnce(extractResult([race({ name: 'Fallback Race' })]));
-
-    const result = await processAutopilot({
-      url: 'https://example.com/race',
-      model: MODEL,
-    });
-
-    expect(mocks.crawlSite).toHaveBeenCalledWith('https://example.com/race');
-    expect(mocks.extractFromMarkdown).toHaveBeenNthCalledWith(
-      2,
-      'full crawl markdown',
-      MODEL,
-    );
-    expect(result.fallbackUsed).toBe(true);
-    expect(result.races[0].name).toBe('Fallback Race');
-    expect(result.markdown).toBe('full crawl markdown');
-    expect(result.steps.map((step) => `${step.name}:${step.status}`)).toEqual([
-      'scrapePage:success',
-      'extract:empty',
-      'crawlSite:success',
-      'extract:success',
-    ]);
-  });
 });
 
 describe('processCrawlSiteExtract', () => {

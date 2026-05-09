@@ -4,7 +4,6 @@ import type { PageStats } from '@/types/races-scrape-api.types';
 import type { TrailRace } from '@/types/trail-race-agent.types';
 
 export type RaceImportWorkflow =
-  | 'autopilot'
   | 'crawlSiteExtract'
   | 'scrapePageExtract'
   | 'crawlSite'
@@ -39,7 +38,7 @@ export type RaceImportRequest =
       websiteUrl: string;
     }
   | {
-      workflow: 'autopilot' | 'crawlSiteExtract' | 'scrapePageExtract';
+      workflow: 'crawlSiteExtract' | 'scrapePageExtract';
       websiteUrl: string;
       model: OpenRouterScrapeModelId;
     };

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth-admin';
 import {
-  processAutopilot,
   processCrawlSite,
   processCrawlSiteExtract,
   processScrapePage,
@@ -17,11 +16,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     const body = await request.json();
     const input = parseInput(body);
-
-    if (input.workflow === 'autopilot') {
-      const data = await processAutopilot(input);
-      return NextResponse.json({ success: true, data });
-    }
 
     if (input.workflow === 'crawlSiteExtract') {
       const data = await processCrawlSiteExtract(input);
