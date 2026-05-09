@@ -18,6 +18,7 @@ const BLACKLIST: readonly string[] = [
   'imatge',
   'imagen',
   'album',
+  'feed',
   // Past results & rankings
   'classificaci',
   'clasificacion',
