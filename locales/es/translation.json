@@ -794,6 +794,9 @@
         "restart": "Reiniciar",
         "usageReasoningTokens": "reasoning",
         "usageTotalTokens": "total",
+        "addToPendingSuccess": "URL añadida a la cola de pendientes",
+        "addToPendingAlready": "Esta URL ya estaba en la cola de pendientes",
+        "addToPendingError": "Error al añadir a pendientes",
         "bulk": {
           "urlLabel": "URL del sitio web",
           "urlsLabel": "URLs de eventos",
@@ -836,6 +839,8 @@
           "loading": "Buscando carreras en la web... Esto puede tardar hasta 30 segundos.",
           "noResults": "No se encontraron carreras en esta web.",
           "noResultsTitle": "No se encontraron carreras",
+          "addToPendingButton": "Añadir a pendientes",
+          "addToPendingLoading": "Añadiendo...",
           "errorTitle": "Error al extraer datos",
           "distance": "Distancia",
           "elevation": "Desnivel positivo",

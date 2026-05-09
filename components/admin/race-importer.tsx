@@ -46,6 +46,7 @@ import type { RaceImportBatchSnapshot, RaceImportResult, RaceImportStep, RaceImp
 import type { TrailRace } from '@/types/trail-race-agent.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 import type { PendingRace } from '@/types/pending-race.types';
+import { addPendingRaces } from '@/lib/api/pending-races';
 import { XCircle, RefreshCw, Sparkles, FileText, ImageIcon, X, Play } from 'lucide-react';
 
 type ScrapeWorkflow = 'bulk' | 'full' | 'ingest' | 'llmFromFile';
@@ -214,7 +215,7 @@ type ScrapeAction =
     // UI / reset
     | { type: 'PIPELINE_HIDDEN' }
     | { type: 'RESULTS_CLEARED' }
-    | { type: 'PREVIEW_LOADED'; scrapedRaces: TrailRace[]; markdown: string; rawModelOutput: string | null; usage: OpenRouterScrapeUsage | null; pageStats: PageStats | null; showPipeline: boolean; durationMs: number }
+    | { type: 'PREVIEW_LOADED'; scrapedRaces: TrailRace[]; markdown: string; rawModelOutput: string | null; usage: OpenRouterScrapeUsage | null; pageStats: PageStats | null; showPipeline: boolean; durationMs: number; emptyMessage?: string | null }
     | { type: 'WORKFLOW_RESET' }
     // Race review
     | { type: 'ACCEPTING_INDEX'; index: number | null }
@@ -356,7 +357,7 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
                 isScraping: false,
                 scrapePhase: 'idle',
                 scrapeError: null,
-                scrapeEmptyMessage: null,
+                scrapeEmptyMessage: action.emptyMessage ?? null,
                 hasScraped: true,
                 acceptedIndexes: new Set(),
                 acceptingIndex: null,
@@ -470,6 +471,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
     const [batchSnapshot, setBatchSnapshot] = useState<RaceImportBatchSnapshot | null>(null);
     const [isStartingBatch, setIsStartingBatch] = useState(false);
     const [viewingBatchItemId, setViewingBatchItemId] = useState<string | null>(null);
+    const [isAddingToPending, setIsAddingToPending] = useState(false);
 
     const [state, dispatch] = useReducer(scrapeReducer, initialScrapeState);
     const {
@@ -498,6 +500,23 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
 
     const resetScrapeResults = (): void => {
         dispatch({ type: 'RESULTS_CLEARED' });
+    };
+
+    const handleAddToPending = async (): Promise<void> => {
+        if (isAddingToPending || !websiteUrl) return;
+        setIsAddingToPending(true);
+        try {
+            const result = await addPendingRaces([normalizeUrl(websiteUrl)]);
+            if (result.skipped.length > 0 && result.added.length === 0) {
+                toast.success(t('addToPendingAlready'));
+            } else {
+                toast.success(t('addToPendingSuccess'));
+            }
+        } catch {
+            toast.error(t('addToPendingError'));
+        } finally {
+            setIsAddingToPending(false);
+        }
     };
 
     const fileUpload = useFileUpload({ onUploadChange: resetScrapeResults });
@@ -781,6 +800,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
             type: 'PREVIEW_LOADED',
             durationMs: DUMMY_LAST_RUN_DURATION_MS,
             scrapedRaces: isMarkdownOnly ? [] : [...DUMMY_SCRAPED_RACES],
+            emptyMessage: isMarkdownOnly ? t('results.noResults') : null,
             markdown: DUMMY_SCRAPE_MARKDOWN,
             rawModelOutput: isMarkdownOnly ? null : DUMMY_RAW_MODEL_OUTPUT,
             usage: isMarkdownOnly ? null : { ...DUMMY_SCRAPE_USAGE },
@@ -1382,6 +1402,18 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                     isLoading={isScraping}
                     error={scrapeError}
                     emptyMessage={scrapeEmptyMessage}
+                    emptyAction={
+                        scrapeEmptyMessage != null ? (
+                            <Button
+                                variant="secondary"
+                                onClick={handleAddToPending}
+                                isLoading={isAddingToPending}
+                                loadingText={t('results.addToPendingLoading')}
+                            >
+                                {t('results.addToPendingButton')}
+                            </Button>
+                        ) : undefined
+                    }
                     onAccept={handleAccept}
                     acceptedIndexes={acceptedIndexes}
                     acceptingIndex={acceptingIndex}

@@ -797,6 +797,9 @@
         "restart": "Recomençar",
         "usageReasoningTokens": "reasoning",
         "usageTotalTokens": "total",
+        "addToPendingSuccess": "URL afegida a la cua de pendents",
+        "addToPendingAlready": "Aquesta URL ja estava a la cua de pendents",
+        "addToPendingError": "Error en afegir a pendents",
         "bulk": {
           "urlLabel": "URL del lloc web",
           "urlsLabel": "URLs d'esdeveniments",
@@ -839,6 +842,8 @@
           "loading": "Cercant curses a la web... Això pot trigar fins a 30 segons.",
           "noResults": "No s'han trobat curses en aquesta web.",
           "noResultsTitle": "No s'han trobat curses",
+          "addToPendingButton": "Afegir a pendents",
+          "addToPendingLoading": "Afegint...",
           "errorTitle": "Error en extreure dades",
           "distance": "Distància",
           "elevation": "Desnivell positiu",

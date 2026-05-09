@@ -1,5 +1,6 @@
 'use client';
 
+import type { ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import type { TrailRace } from '@/types/trail-race-agent.types';
 import { SuggestedRaceCard } from '@/components/race/suggested-race-card';
@@ -9,6 +10,7 @@ interface SuggestedRacesPreviewProps {
     isLoading: boolean;
     error: string | null;
     emptyMessage?: string | null;
+    emptyAction?: ReactNode;
     onAccept: (index: number) => Promise<void>;
     acceptedIndexes: Set<number>;
     acceptingIndex: number | null;
@@ -17,7 +19,7 @@ interface SuggestedRacesPreviewProps {
     onSave: (index: number, race: TrailRace) => void;
 }
 
-export function SuggestedRacesPreview({ races, isLoading, error, emptyMessage, onAccept, acceptedIndexes, acceptingIndex, onReject, rejectedIndexes, onSave }: SuggestedRacesPreviewProps) {
+export function SuggestedRacesPreview({ races, isLoading, error, emptyMessage, emptyAction, onAccept, acceptedIndexes, acceptingIndex, onReject, rejectedIndexes, onSave }: SuggestedRacesPreviewProps) {
     const t = useTranslations('admin.races.import.results');
 
     if (isLoading) {
@@ -40,9 +42,12 @@ export function SuggestedRacesPreview({ races, isLoading, error, emptyMessage, o
 
     if (races.length === 0) {
         return (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-                <p className="text-sm font-medium text-red-800">{t('noResultsTitle')}</p>
-                {emptyMessage && <p className="text-sm text-red-600 mt-1">{emptyMessage}</p>}
+            <div className="flex items-center gap-4 overflow-hidden rounded-lg border border-red-200 bg-red-50 p-6">
+                <div className="flex min-w-0 flex-1 items-baseline gap-2 overflow-hidden">
+                    <p className="shrink-0 text-sm font-medium text-red-800">{t('noResultsTitle')}</p>
+                    {emptyMessage && <p className="min-w-0 truncate text-sm text-red-600">{emptyMessage}</p>}
+                </div>
+                {emptyAction && <div className="shrink-0">{emptyAction}</div>}
             </div>
         );
     }
