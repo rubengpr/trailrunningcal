@@ -1,5 +1,6 @@
 import { start } from 'workflow/api';
 import type { OpenRouterScrapeModelId } from '@/lib/integrations/openrouter/scrape-models';
+import { checkDuplicateRaces } from '@/lib/guards/duplicate-races';
 import {
   createRaceImportBatch,
   getPendingBatchItems,
@@ -20,6 +21,7 @@ export async function startRaceImportBatch(input: {
   urls: string[];
   model: OpenRouterScrapeModelId;
 }): Promise<{ batchId: string; workflowRunId: string }> {
+  await checkDuplicateRaces(input.urls);
   const batch = await createRaceImportBatch(input);
 
   try {

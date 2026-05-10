@@ -7,6 +7,7 @@ import type {
   RaceImportStep,
   RaceImportStepName,
 } from '@/types/races-import-api.types';
+import { checkDuplicateRaces } from '@/lib/guards/duplicate-races';
 
 interface TimedResult<T> {
   result: T;
@@ -47,6 +48,7 @@ export async function processCrawlSiteExtract(input: {
   url: string;
   model: OpenRouterScrapeModelId;
 }): Promise<RaceImportResult> {
+  await checkDuplicateRaces([input.url]);
   const crawl = await timeStep(() => crawlSite(input.url));
   const extract = await timeStep(() =>
     extractFromMarkdown(crawl.result.markdown, input.model),
@@ -73,6 +75,7 @@ export async function processScrapePageExtract(input: {
   url: string;
   model: OpenRouterScrapeModelId;
 }): Promise<RaceImportResult> {
+  await checkDuplicateRaces([input.url]);
   const scrape = await timeStep(() => scrapePage(input.url));
   const extract = await timeStep(() =>
     extractFromMarkdown(scrape.result.markdown, input.model),

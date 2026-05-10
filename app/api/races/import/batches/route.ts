@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
 import { startRaceImportBatch } from '@/lib/services/race-import-batch';
 import { parseBatchInput, ValidationError } from './validation';
-import { conflictCheckResponse } from '@/app/api/races/race-url-conflict';
+import { DuplicateRaceError } from '@/lib/errors';
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
@@ -11,9 +11,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const body = await request.json();
     const input = parseBatchInput(body);
 
-    const conflict = await conflictCheckResponse(input.urls);
-    if (conflict) return conflict;
-
     const data = await startRaceImportBatch(input);
 
     return NextResponse.json({
@@ -21,6 +18,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       data,
     });
   } catch (error) {
+    if (error instanceof DuplicateRaceError) {
+      return NextResponse.json(
+        { error: 'conflict', conflicts: error.conflicts },
+        { status: 409 },
+      );
+    }
     if (error instanceof ValidationError) {
       return NextResponse.json(
         { error: error.message },

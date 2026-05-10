@@ -7,7 +7,7 @@ import {
   processScrapePageExtract,
 } from '@/lib/services/race-import';
 import { parseInput, ValidationError } from './validation';
-import { conflictCheckResponse } from '@/app/api/races/race-url-conflict';
+import { DuplicateRaceError } from '@/lib/errors';
 
 export const maxDuration = 60;
 
@@ -17,9 +17,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     const body = await request.json();
     const input = parseInput(body);
-
-    const conflict = await conflictCheckResponse([input.url]);
-    if (conflict) return conflict;
 
     if (input.workflow === 'crawlSiteExtract') {
       const data = await processCrawlSiteExtract(input);
@@ -43,6 +40,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     return NextResponse.json({ error: 'Invalid workflow' }, { status: 400 });
   } catch (error) {
+    if (error instanceof DuplicateRaceError) {
+      return NextResponse.json(
+        { error: 'conflict', conflicts: error.conflicts },
+        { status: 409 },
+      );
+    }
     if (error instanceof ValidationError) {
       return NextResponse.json(
         { error: error.message },

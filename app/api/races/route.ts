@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
 import { parseRaceInput, ValidationError } from '@/app/api/races/validation';
-import { conflictCheckResponse } from '@/app/api/races/race-url-conflict';
+import { DuplicateRaceError } from '@/lib/errors';
 import { createRace } from '@/lib/services/races';
 
 export async function POST(request: NextRequest) {
@@ -10,9 +10,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const input = parseRaceInput(body, isAdmin);
 
-    const conflict = await conflictCheckResponse([input.websiteUrl]);
-    if (conflict) return conflict;
-
     const raceId = await createRace(input, user.id, isAdmin);
 
     return NextResponse.json(
@@ -20,6 +17,12 @@ export async function POST(request: NextRequest) {
       { status: 201 },
     );
   } catch (error) {
+    if (error instanceof DuplicateRaceError) {
+      return NextResponse.json(
+        { error: 'conflict', conflicts: error.conflicts },
+        { status: 409 },
+      );
+    }
     if (error instanceof ValidationError) {
       return NextResponse.json(
         { error: error.message },
