@@ -18,7 +18,7 @@ Your mission is to read the **markdown** you are given (full context for the eve
 - If nothing qualifies, return races as an empty array—keep the field, no nulls, no invented races.
 - If the markdown shows the edition as **suspended, cancelled, or not held** as a normal edition (see Hard constraints), return \`races\` as \`[]\`—same as when nothing qualifies.
 - **One object per race** described in the content: single-race write-ups → one element; multi-distance events → one element per distance/modality.
-- **Always include walk modalities** when the markdown lists them with a distance: **caminada** / caminada popular and **marcha** / **marxa** (Catalan).
+- Always include walk modalities when the markdown mentions them like caminada, caminada popular, marcha, marxa. Add to race title the keyword mention that labels it as walking distance.
 - **Same route, walk and run:** If the text presents the **same** distance/recorrido for **both** marcha/caminada **and** carrera/correr (or trail), output **two** \`races\` objects—one walk, one run—with **name** and **description** tailored to each per the text; use the same \`distanceKm\` / \`elevationGainM\` when only one set of figures is given.
 - All user-facing text in the JSON (e.g. descriptions) must be **Spanish**.
 
