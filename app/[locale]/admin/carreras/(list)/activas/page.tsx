@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { AdminRacesContent } from '@/components/admin/admin-races-content';
 import { getRaces } from '@/lib/db/races';
-import { isAdminEmail } from '@/lib/auth-admin';
+import { isAdminEmail } from '@/lib/auth';
 
 export default async function AdminRacesActivasPage({
     params,

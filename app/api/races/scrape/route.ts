@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAdmin } from '@/lib/auth-admin';
+import { requireAdmin } from '@/lib/auth';
 import { parseInput, ValidationError } from './validation';
 import { crawlSite, scrapePage } from '@/lib/integrations/spider-cloud/service';
 

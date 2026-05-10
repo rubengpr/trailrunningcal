@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { AdminLoginForm } from '@/components/admin/admin-login-form';
-import { isAdminEmail } from '@/lib/auth-admin';
+import { isAdminEmail } from '@/lib/auth';
 
 export default async function AdminLoginPage({
   params,

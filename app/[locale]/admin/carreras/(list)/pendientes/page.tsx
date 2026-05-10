@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { AdminPendingRacesContent } from '@/components/admin/admin-pending-races-content';
 import { getPendingRaces } from '@/lib/db/pending-races';
-import { isAdminEmail } from '@/lib/auth-admin';
+import { isAdminEmail } from '@/lib/auth';
 
 export default async function AdminCarrerasPendientesPage({
     params,

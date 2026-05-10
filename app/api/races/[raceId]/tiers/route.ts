@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { createClient, createAdminClient } from '@/lib/supabase/server';
 import { getOrganizerRaceContext } from '@/lib/auth-organizer';
-import { isAdminEmail } from '@/lib/auth-admin';
+import { isAdminEmail } from '@/lib/auth';
 import { generateRaceSlug } from '@/lib/race-utils';
 import { locales } from '@/i18n';
 

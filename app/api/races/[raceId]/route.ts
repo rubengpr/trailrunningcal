@@ -1,7 +1,7 @@
 import { createClient, createAdminClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { getOrganizerRaceContext } from '@/lib/auth-organizer';
-import { isAdminEmail } from '@/lib/auth-admin';
+import { isAdminEmail } from '@/lib/auth';
 import { revalidateRacePages, revalidateHomepages, revalidateProvincePage, revalidateCategoryPages } from '@/lib/revalidation';
 import { sanitizeDescription } from '@/app/api/races/validation';
 

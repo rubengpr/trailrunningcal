@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAdmin } from '@/lib/auth-admin';
+import { requireAdmin } from '@/lib/auth';
 import { startRaceImportBatch } from '@/lib/services/race-import-batch';
 import { parseBatchInput, ValidationError } from './validation';
 import { conflictCheckResponse } from '@/app/api/races/race-url-conflict';

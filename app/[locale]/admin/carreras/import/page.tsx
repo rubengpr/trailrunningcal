@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import { AdminLayout } from '@/components/admin/admin-layout';
 import { RaceImporter } from '@/components/admin/race-importer';
 import { getPendingRaces } from '@/lib/db/pending-races';
-import { isAdminEmail } from '@/lib/auth-admin';
+import { isAdminEmail } from '@/lib/auth';
 
 export default async function AdminImportPage({
     params,

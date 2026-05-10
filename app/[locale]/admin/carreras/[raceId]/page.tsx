@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import { AdminLayout } from '@/components/admin/admin-layout';
 import { RaceForm } from '@/components/race/race-form';
 import { toTrailRace } from '@/lib/db/races';
-import { isAdminEmail } from '@/lib/auth-admin';
+import { isAdminEmail } from '@/lib/auth';
 import type { RaceRow } from '@/types/race.types';
 
 async function getRaceById(raceId: string) {

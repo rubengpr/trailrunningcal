@@ -1,3 +1,4 @@
+import type { AuthUser } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/server';
 import { ValidationError } from '@/lib/errors';
 
@@ -11,13 +12,21 @@ export function isAdminEmail(email: string | undefined): boolean {
   return ADMIN_EMAILS.includes(email.trim().toLowerCase());
 }
 
-export async function requireAdmin(): Promise<void> {
+export async function requireAuth(): Promise<{ user: AuthUser; isAdmin: boolean }> {
   const supabase = await createClient();
   const {
     data: { user },
     error,
   } = await supabase.auth.getUser();
-  if (error || !user || !isAdminEmail(user.email)) {
+  if (error || !user) {
+    throw new ValidationError('Unauthorized', 401);
+  }
+  return { user, isAdmin: isAdminEmail(user.email) };
+}
+
+export async function requireAdmin(): Promise<void> {
+  const { isAdmin } = await requireAuth();
+  if (!isAdmin) {
     throw new ValidationError('Unauthorized', 401);
   }
 }
