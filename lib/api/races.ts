@@ -9,6 +9,21 @@ import type {
   RaceImportRequest,
   RaceImportResult,
 } from '@/types/races-import-api.types';
+import type { ConflictingRace } from '@/types/race.types';
+
+export type ConflictResult = { ok: false; conflicts: ConflictingRace[] };
+
+function parseConflict(status: number, data: unknown): ConflictResult | null {
+  if (
+    status === 409 &&
+    typeof data === 'object' &&
+    data !== null &&
+    'conflicts' in data
+  ) {
+    return { ok: false, conflicts: (data as { conflicts: ConflictingRace[] }).conflicts };
+  }
+  return null;
+}
 
 /**
  * Creates a new race via the API. Safe to call from client components.
@@ -23,7 +38,7 @@ export async function createRace(fields: {
   city: string;
   province: string;
   description: string;
-}): Promise<{ id: string }> {
+}): Promise<{ ok: true; data: { id: string } } | ConflictResult> {
   const response = await fetch('/api/races', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -42,11 +57,14 @@ export async function createRace(fields: {
 
   const responseData = await response.json();
 
+  const conflict = parseConflict(response.status, responseData);
+  if (conflict) return conflict;
+
   if (!response.ok) {
     throw new Error(responseData.error || 'Failed to create race');
   }
 
-  return responseData.data;
+  return { ok: true, data: responseData.data };
 }
 
 /**
@@ -189,7 +207,7 @@ export async function runTrailRaceAgent(
 
 export async function runRaceImport(
   options: RaceImportRequest,
-): Promise<RaceImportResult> {
+): Promise<{ ok: true; data: RaceImportResult } | ConflictResult> {
   const response = await fetch('/api/races/import', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -197,17 +215,21 @@ export async function runRaceImport(
   });
 
   const responseData = await response.json();
+
+  const conflict = parseConflict(response.status, responseData);
+  if (conflict) return conflict;
+
   if (!response.ok) {
     throw new Error(responseData.error || 'Failed to import races');
   }
 
-  return responseData.data;
+  return { ok: true, data: responseData.data };
 }
 
 export async function startRaceImportBatch(options: {
   urls: string[];
   model: OpenRouterScrapeModelId;
-}): Promise<{ batchId: string; workflowRunId: string }> {
+}): Promise<{ ok: true; data: { batchId: string; workflowRunId: string } } | ConflictResult> {
   const response = await fetch('/api/races/import/batches', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -216,11 +238,14 @@ export async function startRaceImportBatch(options: {
 
   const responseData = await response.json();
 
+  const conflict = parseConflict(response.status, responseData);
+  if (conflict) return conflict;
+
   if (!response.ok) {
     throw new Error(responseData.error || 'Failed to start race import batch');
   }
 
-  return responseData.data;
+  return { ok: true, data: responseData.data };
 }
 
 export async function getBatchStatus(

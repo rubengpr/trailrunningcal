@@ -1,6 +1,6 @@
 import { cache } from 'react';
 import { createStaticClient } from '@/lib/supabase/server';
-import type { TrailRace, RaceRow } from '@/types/race.types';
+import type { TrailRace, RaceRow, ConflictingRace } from '@/types/race.types';
 import { generateRaceSlug } from '@/lib/race-utils';
 
 export function toTrailRace(row: RaceRow): TrailRace {
@@ -150,3 +150,26 @@ export const getRecommendedRaces = cache(async function getRecommendedRaces(
 
   return (data as RaceRow[]).map(toTrailRace);
 });
+
+export async function getUrlConflicts(urls: string[]): Promise<ConflictingRace[]> {
+  const supabase = createStaticClient();
+  const today = new Date().toISOString().slice(0, 10);
+
+  const { data, error } = await supabase
+    .from('races')
+    .select('id, name, date, website_url')
+    .in('website_url', urls)
+    .gt('date', today);
+
+  if (error) {
+    console.error('Failed to fetch URL conflicts:', error);
+    return [];
+  }
+
+  return (data ?? []).map((row: { id: string; name: string; date: string; website_url: string }) => ({
+    id: row.id,
+    name: row.name,
+    date: row.date,
+    websiteUrl: row.website_url,
+  }));
+}

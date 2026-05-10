@@ -900,5 +900,10 @@
     "30-40": "30–40 km",
     "40-50": "40–50 km",
     "50+": "+50 km"
+  },
+  "raceConflictModal": {
+    "title": "URL ja registrada",
+    "description": "Les carreres següents ja estan llistades amb aquesta URL i tenen data futura. Elimina el conflicte abans de continuar.",
+    "close": "Tancar"
   }
 }

@@ -7,10 +7,11 @@ import toast from 'react-hot-toast';
 import { FormInput } from '@/components/ui/form-input';
 import { FormTextarea } from '@/components/ui/form-textarea';
 import { FormImageInput } from '@/components/ui/form-image-input';
-import type { TrailRace } from '@/types/race.types';
+import type { TrailRace, ConflictingRace } from '@/types/race.types';
 import { updateRace, createRace, deleteRace } from '@/lib/api/races';
 import { updatePrice } from '@/lib/api/race-tiers';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
+import { RaceConflictModal } from '@/components/ui/race-conflict-modal';
 import { useModal } from '@/hooks/use-modal';
 import { uploadRaceImage, checkRaceImage, removeRaceImage, type RaceImageStatus } from '@/lib/api/race-image';
 import {
@@ -60,6 +61,8 @@ export function RaceForm({ raceId, initialData, isEditMode, redirectBasePath = '
     const [isLoading, setIsLoading] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const { isOpen: isDeleteModalOpen, open: openDeleteModal, close: closeDeleteModal } = useModal();
+    const { isOpen: isConflictModalOpen, open: openConflictModal, close: closeConflictModal } = useModal();
+    const [urlConflicts, setUrlConflicts] = useState<ConflictingRace[]>([]);
 
     const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
     const [imageError, setImageError] = useState('');
@@ -182,7 +185,13 @@ export function RaceForm({ raceId, initialData, isEditMode, redirectBasePath = '
 
         try {
             if (!isEditMode) {
-                await createRace({ date, name, distanceKm, elevationGainM, priceEur, websiteUrl, city, province, description });
+                const result = await createRace({ date, name, distanceKm, elevationGainM, priceEur, websiteUrl, city, province, description });
+                if (!result.ok) {
+                    setUrlConflicts(result.conflicts);
+                    openConflictModal();
+                    setIsLoading(false);
+                    return;
+                }
                 toast.success(t('success'));
                 router.push(`/${locale}/${redirectBasePath}`);
                 return;
@@ -425,6 +434,11 @@ export function RaceForm({ raceId, initialData, isEditMode, redirectBasePath = '
                 confirmButtonText={t('deleteConfirm.confirm')}
                 cancelButtonText={t('deleteConfirm.cancel')}
                 isSubmitting={isDeleting}
+            />
+            <RaceConflictModal
+                isOpen={isConflictModalOpen}
+                onClose={closeConflictModal}
+                conflicts={urlConflicts}
             />
         </form>
     );

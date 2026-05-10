@@ -897,5 +897,10 @@
     "30-40": "30–40 km",
     "40-50": "40–50 km",
     "50+": "+50 km"
+  },
+  "raceConflictModal": {
+    "title": "URL ya registrada",
+    "description": "Las siguientes carreras ya están listadas con esta URL y tienen fecha futura. Elimina el conflicto antes de continuar.",
+    "close": "Cerrar"
   }
 }

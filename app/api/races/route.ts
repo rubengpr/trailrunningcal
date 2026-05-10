@@ -2,6 +2,7 @@ import { createClient, createAdminClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { isAdminEmail } from '@/lib/auth-admin';
 import { sanitizeDescription } from '@/app/api/races/validation';
+import { conflictCheckResponse } from '@/app/api/races/race-url-conflict';
 
 const MAX_RACES_PER_ORGANIZER = 5;
 
@@ -151,6 +152,9 @@ export async function POST(request: NextRequest) {
     if (descResult.error) {
       return NextResponse.json({ error: descResult.error }, { status: 400 });
     }
+
+    const conflict = await conflictCheckResponse([websiteUrl]);
+    if (conflict) return conflict;
 
     const dbClient = isAdmin ? createAdminClient() : supabase;
 

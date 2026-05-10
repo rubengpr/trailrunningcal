@@ -7,6 +7,7 @@ import {
   processScrapePageExtract,
 } from '@/lib/services/race-import';
 import { parseInput, ValidationError } from './validation';
+import { conflictCheckResponse } from '@/app/api/races/race-url-conflict';
 
 export const maxDuration = 60;
 
@@ -16,6 +17,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     const body = await request.json();
     const input = parseInput(body);
+
+    const conflict = await conflictCheckResponse([input.url]);
+    if (conflict) return conflict;
 
     if (input.workflow === 'crawlSiteExtract') {
       const data = await processCrawlSiteExtract(input);

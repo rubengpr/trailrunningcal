@@ -24,6 +24,13 @@ export type RaceRow = {
   hero_image_filename?: string | null;
 };
 
+export interface ConflictingRace {
+  id: string;
+  name: string;
+  date: string;
+  websiteUrl: string;
+}
+
 export interface TrailRace {
   id: string;
   name: string;

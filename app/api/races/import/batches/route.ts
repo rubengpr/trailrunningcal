@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth-admin';
 import { startRaceImportBatch } from '@/lib/services/race-import-batch';
 import { parseBatchInput, ValidationError } from './validation';
+import { conflictCheckResponse } from '@/app/api/races/race-url-conflict';
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
@@ -9,6 +10,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     const body = await request.json();
     const input = parseBatchInput(body);
+
+    const conflict = await conflictCheckResponse(input.urls);
+    if (conflict) return conflict;
+
     const data = await startRaceImportBatch(input);
 
     return NextResponse.json({

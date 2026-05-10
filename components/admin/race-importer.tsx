@@ -47,6 +47,9 @@ import type { TrailRace } from '@/types/trail-race-agent.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 import type { PendingRace } from '@/types/pending-race.types';
 import { addPendingRaces } from '@/lib/api/pending-races';
+import { RaceConflictModal } from '@/components/ui/race-conflict-modal';
+import { useModal } from '@/hooks/use-modal';
+import type { ConflictingRace } from '@/types/race.types';
 import { XCircle, RefreshCw, Sparkles, FileText, ImageIcon, X, Play } from 'lucide-react';
 
 type ScrapeWorkflow = 'bulk' | 'full' | 'ingest' | 'llmFromFile';
@@ -472,6 +475,8 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
     const [isStartingBatch, setIsStartingBatch] = useState(false);
     const [viewingBatchItemId, setViewingBatchItemId] = useState<string | null>(null);
     const [isAddingToPending, setIsAddingToPending] = useState(false);
+    const [importConflicts, setImportConflicts] = useState<ConflictingRace[]>([]);
+    const { isOpen: isConflictModalOpen, open: openConflictModal, close: closeConflictModal } = useModal();
 
     const [state, dispatch] = useReducer(scrapeReducer, initialScrapeState);
     const {
@@ -615,13 +620,19 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         resetScrapeResults();
 
         try {
-            const { batchId } = await startRaceImportBatch({
+            const result = await startRaceImportBatch({
                 urls: parsedBatchUrls,
                 model: selectedModelId,
             });
 
-            setActiveBatchId(batchId);
-            await fetchBatchStatus(batchId);
+            if (!result.ok) {
+                setImportConflicts(result.conflicts);
+                openConflictModal();
+                return;
+            }
+
+            setActiveBatchId(result.data.batchId);
+            await fetchBatchStatus(result.data.batchId);
             toast.success(t('bulk.startSuccess', { count: parsedBatchUrls.length }));
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : t('bulk.runError');
@@ -655,16 +666,23 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                     clearFullPipelineStepRefs();
                 }
 
-                const data = await runRaceImport(
+                const result = await runRaceImport(
                     importWorkflow === 'crawlSite' || importWorkflow === 'scrapePage'
                         ? { workflow: importWorkflow, websiteUrl: normalizedUrl }
                         : { workflow: importWorkflow, websiteUrl: normalizedUrl, model: selectedModelId },
                 );
 
-                setCompletedImportStepRefs(data);
+                if (!result.ok) {
+                    setImportConflicts(result.conflicts);
+                    openConflictModal();
+                    dispatch({ type: 'WORKFLOW_RESET' });
+                    return;
+                }
+
+                setCompletedImportStepRefs(result.data);
                 dispatch({
                     type: 'IMPORT_SUCCESS',
-                    result: data,
+                    result: result.data,
                     persistedRows: [],
                     showPipeline: workflow === 'full',
                 });
@@ -1463,6 +1481,11 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                     </div>
                 </div>
             )}
+            <RaceConflictModal
+                isOpen={isConflictModalOpen}
+                onClose={closeConflictModal}
+                conflicts={importConflicts}
+            />
         </div>
     );
 }
