@@ -902,8 +902,8 @@
     "50+": "+50 km"
   },
   "raceConflictModal": {
-    "title": "URL ja registrada",
-    "description": "Les carreres següents ja estan llistades amb aquesta URL i tenen data futura. Elimina el conflicte abans de continuar.",
+    "title": "Esdeveniment duplicat",
+    "description": "Ja hi ha curses publicats amb la mateixa url:",
     "close": "Tancar"
   }
 }
