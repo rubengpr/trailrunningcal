@@ -1,4 +1,4 @@
-import { createStaticClient } from '@/lib/supabase/server';
+import { createClient, createStaticClient } from '@/lib/supabase/server';
 import type { Organizer } from '@/types/organizer.types';
 
 type OrganizerRow = {
@@ -37,4 +37,39 @@ export async function getOrganizerById(
   }
 
   return toOrganizer(data as OrganizerRow);
+}
+
+export async function getOrganizerByOwnerId(
+  ownerId: string,
+): Promise<{ id: string } | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('organizers')
+    .select('id')
+    .eq('owner_id', ownerId)
+    .single();
+
+  if (error || !data) {
+    return null;
+  }
+
+  return { id: data.id };
+}
+
+export async function getOrganizerRaceCount(
+  organizerId: string,
+): Promise<number> {
+  const supabase = await createClient();
+
+  const { count, error } = await supabase
+    .from('races')
+    .select('id', { count: 'exact', head: true })
+    .eq('organizer_id', organizerId);
+
+  if (error) {
+    throw new Error('Failed to count organizer races');
+  }
+
+  return count ?? 0;
 }

@@ -1,5 +1,5 @@
 import { cache } from 'react';
-import { createStaticClient } from '@/lib/supabase/server';
+import { createClient, createAdminClient, createStaticClient } from '@/lib/supabase/server';
 import type { TrailRace, RaceRow, ConflictingRace } from '@/types/race.types';
 import { generateRaceSlug } from '@/lib/race-utils';
 
@@ -172,4 +172,44 @@ export async function getUrlConflicts(urls: string[]): Promise<ConflictingRace[]
     date: row.date,
     websiteUrl: row.website_url,
   }));
+}
+
+export type CreateRaceParams = {
+  name: string;
+  date: string;
+  distanceKm: number;
+  elevationGainM: number | null;
+  priceEur: number | null;
+  websiteUrl: string;
+  city: string;
+  province: string;
+  description: string | null;
+  organizerId: string | null;
+};
+
+export async function insertRace(
+  params: CreateRaceParams,
+  useAdmin: boolean,
+): Promise<string> {
+  const dbClient = useAdmin ? createAdminClient() : await createClient();
+
+  const { data, error } = await dbClient.rpc('create_race_with_tier', {
+    p_name: params.name,
+    p_date: params.date,
+    p_distance_km: params.distanceKm,
+    p_elevation_gain_m: params.elevationGainM,
+    p_website_url: params.websiteUrl,
+    p_city: params.city,
+    p_province: params.province,
+    p_description: params.description,
+    p_organizer_id: params.organizerId,
+    p_price_eur: params.priceEur,
+  });
+
+  if (error || !data) {
+    console.error('Create race transaction error:', error);
+    throw new Error('Failed to create race');
+  }
+
+  return data as string;
 }
