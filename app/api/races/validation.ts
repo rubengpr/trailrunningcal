@@ -71,6 +71,7 @@ export function parseRaceInput(body: unknown, isAdmin: boolean): ParsedRaceInput
   if (
     elevationGainM !== null &&
     (typeof elevationGainM !== 'number' ||
+      !Number.isInteger(elevationGainM) ||
       elevationGainM <= 0 ||
       elevationGainM >= 100000)
   ) {

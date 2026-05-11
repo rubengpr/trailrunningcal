@@ -19,7 +19,7 @@ export const TRAIL_RACE_AGENT_JSON_SCHEMA = {
           distanceKm: { type: 'integer' },
           // Minimax (and some providers) reject JSON Schema `type` as string[]; use anyOf for nullable.
           elevationGainM: {
-            anyOf: [{ type: 'number' }, { type: 'null' }],
+            anyOf: [{ type: 'integer' }, { type: 'null' }],
           },
         },
         required: [

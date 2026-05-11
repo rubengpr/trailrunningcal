@@ -34,6 +34,16 @@ export async function PATCH(
       }
     }
 
+    if (
+      elevationGainM !== null &&
+      (typeof elevationGainM !== 'number' ||
+        !Number.isInteger(elevationGainM) ||
+        elevationGainM <= 0 ||
+        elevationGainM >= 100000)
+    ) {
+      return NextResponse.json({ error: 'Invalid elevation gain' }, { status: 400 });
+    }
+
     const descResult = sanitizeDescription(description);
     if (descResult.error) {
       return NextResponse.json({ error: descResult.error }, { status: 400 });
