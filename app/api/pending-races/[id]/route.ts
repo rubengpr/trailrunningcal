@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createAdminClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/auth';
 import { ValidationError } from '@/lib/errors';
+import { deletePendingRace } from '@/lib/db/pending-races';
 
 export async function DELETE(
   _request: NextRequest,
@@ -10,18 +10,7 @@ export async function DELETE(
   try {
     const { id } = await context.params;
     await requireAdmin();
-
-    const admin = createAdminClient();
-
-    const { error: deleteError } = await admin
-      .from('pending_races')
-      .delete()
-      .eq('id', id);
-
-    if (deleteError) {
-      console.error('Pending race delete error:', deleteError);
-      return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-    }
+    await deletePendingRace(id);
 
     return NextResponse.json({ success: true });
   } catch (error) {

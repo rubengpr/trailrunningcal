@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { revalidatePath } from 'next/cache';
-import { createClient, createAdminClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import { getOrganizerRaceContext } from '@/lib/auth-organizer';
 import { requireAuth } from '@/lib/auth';
 import { ValidationError } from '@/lib/errors';
 import { generateRaceSlug } from '@/lib/race-utils';
 import { locales } from '@/i18n';
+import { revalidatePath } from 'next/cache';
+import { updateTierPrice } from '@/lib/db/race-tiers';
+import { getRaceName } from '@/lib/db/races';
 
 export async function PATCH(
   request: NextRequest,
@@ -29,29 +31,10 @@ export async function PATCH(
       }
     }
 
-    const dbClient = isAdmin ? createAdminClient() : supabase;
+    const data = await updateTierPrice(raceId, priceEur, isAdmin);
 
-    const { data, error } = await dbClient
-      .from('race_tiers')
-      .update({ price_eur: priceEur, updated_at: new Date().toISOString() })
-      .eq('race_id', raceId)
-      .select();
-
-    if (error) {
-      console.error('Database error:', error);
-      return NextResponse.json(
-        { error: 'Failed to update prices' },
-        { status: 500 },
-      );
-    }
-
-    const { data: race } = await dbClient
-      .from('races')
-      .select('name')
-      .eq('id', raceId)
-      .single();
-
-    const slug = race?.name ? generateRaceSlug(race.name) : null;
+    const raceName = await getRaceName(raceId, isAdmin);
+    const slug = raceName ? generateRaceSlug(raceName) : null;
     for (const locale of locales) {
       revalidatePath(`/${locale}`, 'page');
       if (slug) {

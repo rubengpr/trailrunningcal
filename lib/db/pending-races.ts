@@ -55,6 +55,20 @@ export async function isUrlInPendingRaces(
   return data !== null;
 }
 
+export async function deletePendingRace(id: string): Promise<void> {
+  const supabase = createAdminClient();
+
+  const { error } = await supabase
+    .from('pending_races')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    console.error('Pending race delete error:', error);
+    throw new Error('Failed to delete pending race');
+  }
+}
+
 export async function insertPendingRace(
   supabase: AdminClient,
   url: string,

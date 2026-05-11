@@ -1,10 +1,11 @@
-import { createClient, createAdminClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { getOrganizerRaceContext } from '@/lib/auth-organizer';
 import { requireAuth } from '@/lib/auth';
 import { ValidationError } from '@/lib/errors';
 import { revalidateRacePages, revalidateHomepages, revalidateProvincePage, revalidateCategoryPages } from '@/lib/revalidation';
 import { sanitizeDescription } from '@/app/api/races/validation';
+import { getRaceById, updateRace, deleteRace } from '@/lib/db/races';
 
 export async function PATCH(
   request: NextRequest,
@@ -50,28 +51,8 @@ export async function PATCH(
     if (city !== undefined) updateFields.city = city;
     if (province !== undefined) updateFields.province = province;
 
-    const dbClient = isAdmin ? createAdminClient() : supabase;
-
-    const { data: existingRace } = await dbClient
-      .from('races')
-      .select('name, province, distance_km, elevation_gain_m')
-      .eq('id', raceId)
-      .single();
-
-    const { data, error } = await dbClient
-      .from('races')
-      .update(updateFields)
-      .eq('id', raceId)
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Database error:', error);
-      return NextResponse.json(
-        { error: 'Failed to update race' },
-        { status: 500 },
-      );
-    }
+    const existingRace = await getRaceById(raceId, isAdmin);
+    const data = await updateRace(raceId, updateFields, isAdmin);
 
     if (existingRace?.name) {
       revalidateHomepages();
@@ -104,26 +85,8 @@ export async function DELETE(
     const supabase = await createClient();
 
     if (isAdmin) {
-      const adminClient = createAdminClient();
-
-      const { data: race } = await adminClient
-        .from('races')
-        .select('name, province, distance_km, elevation_gain_m')
-        .eq('id', raceId)
-        .single();
-
-      const { error } = await adminClient
-        .from('races')
-        .delete()
-        .eq('id', raceId);
-
-      if (error) {
-        console.error('Delete error:', error);
-        return NextResponse.json(
-          { error: 'Failed to delete race' },
-          { status: 500 },
-        );
-      }
+      const race = await getRaceById(raceId, true);
+      await deleteRace(raceId, true);
 
       if (race?.name) {
         revalidateHomepages();
@@ -137,19 +100,7 @@ export async function DELETE(
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
       }
 
-      const { error } = await supabase
-        .from('races')
-        .delete()
-        .eq('id', raceId)
-        .eq('organizer_id', organizerContext.organizerId);
-
-      if (error) {
-        console.error('Delete error:', error);
-        return NextResponse.json(
-          { error: 'Failed to delete race' },
-          { status: 500 },
-        );
-      }
+      await deleteRace(raceId, false, organizerContext.organizerId);
 
       revalidateHomepages();
       revalidateCategoryPages(organizerContext.race);

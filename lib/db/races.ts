@@ -174,6 +174,79 @@ export async function getUrlConflicts(urls: string[]): Promise<ConflictingRace[]
   }));
 }
 
+export async function getRaceById(
+  raceId: string,
+  useAdmin: boolean,
+): Promise<{ name: string; province: string; distance_km: number; elevation_gain_m: number | null } | null> {
+  const dbClient = useAdmin ? createAdminClient() : await createClient();
+
+  const { data, error } = await dbClient
+    .from('races')
+    .select('name, province, distance_km, elevation_gain_m')
+    .eq('id', raceId)
+    .single();
+
+  if (error || !data) return null;
+  return data;
+}
+
+export async function updateRace(
+  raceId: string,
+  fields: Record<string, unknown>,
+  useAdmin: boolean,
+) {
+  const dbClient = useAdmin ? createAdminClient() : await createClient();
+
+  const { data, error } = await dbClient
+    .from('races')
+    .update(fields)
+    .eq('id', raceId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Database error:', error);
+    throw new Error('Failed to update race');
+  }
+
+  return data;
+}
+
+export async function deleteRace(
+  raceId: string,
+  useAdmin: boolean,
+  organizerId?: string,
+) {
+  const dbClient = useAdmin ? createAdminClient() : await createClient();
+
+  let query = dbClient.from('races').delete().eq('id', raceId);
+  if (organizerId) {
+    query = query.eq('organizer_id', organizerId);
+  }
+
+  const { error } = await query;
+
+  if (error) {
+    console.error('Delete error:', error);
+    throw new Error('Failed to delete race');
+  }
+}
+
+export async function getRaceName(
+  raceId: string,
+  useAdmin: boolean,
+): Promise<string | null> {
+  const dbClient = useAdmin ? createAdminClient() : await createClient();
+
+  const { data } = await dbClient
+    .from('races')
+    .select('name')
+    .eq('id', raceId)
+    .single();
+
+  return data?.name ?? null;
+}
+
 export type CreateRaceParams = {
   name: string;
   date: string;

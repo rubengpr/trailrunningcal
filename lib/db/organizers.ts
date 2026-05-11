@@ -57,6 +57,42 @@ export async function getOrganizerByOwnerId(
   return { id: data.id };
 }
 
+export async function updateOrganizer(
+  ownerId: string,
+  input: {
+    organizationName: string;
+    organizationWebsite?: string;
+    facebookUrl?: string;
+    instagramUrl?: string;
+    youtubeUrl?: string;
+    tiktokUrl?: string;
+  },
+) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('organizers')
+    .update({
+      name: input.organizationName,
+      website: input.organizationWebsite,
+      facebook_url: input.facebookUrl,
+      instagram_url: input.instagramUrl,
+      youtube_url: input.youtubeUrl,
+      tiktok_url: input.tiktokUrl,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('owner_id', ownerId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Database error:', error);
+    throw new Error('Failed to update organizer');
+  }
+
+  return data;
+}
+
 export async function getOrganizerRaceCount(
   organizerId: string,
 ): Promise<number> {
