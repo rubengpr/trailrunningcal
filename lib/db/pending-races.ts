@@ -37,9 +37,9 @@ export async function isUrlInRaces(
     .from('races')
     .select('id')
     .eq('website_url', url)
-    .maybeSingle();
+    .limit(1);
   if (error) throw error;
-  return data !== null;
+  return (data?.length ?? 0) > 0;
 }
 
 export async function isUrlInPendingRaces(
@@ -50,9 +50,9 @@ export async function isUrlInPendingRaces(
     .from('pending_races')
     .select('id')
     .eq('url', url)
-    .maybeSingle();
+    .limit(1);
   if (error) throw error;
-  return data !== null;
+  return (data?.length ?? 0) > 0;
 }
 
 export async function deletePendingRace(id: string): Promise<void> {

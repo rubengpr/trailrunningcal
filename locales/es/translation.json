@@ -702,7 +702,7 @@
           "titleOne": "1 url no se ha guardado",
           "reasons": {
             "invalidUrl": "Formato de url inválido",
-            "alreadyInRaces": "Ya existe como carrera",
+            "alreadyInRaces": "Evento ya registrado",
             "alreadyInQueue": "Ya está en la cola",
             "lookupFailed": "Error al verificar",
             "insertFailed": "Error al insertar"
