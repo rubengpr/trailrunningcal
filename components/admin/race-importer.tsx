@@ -633,7 +633,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
 
             setActiveBatchId(result.data.batchId);
             await fetchBatchStatus(result.data.batchId);
-            toast.success(t('bulk.startSuccess', { count: parsedBatchUrls.length }));
+            toast.success(parsedBatchUrls.length === 1 ? t('bulk.startSuccessOne') : t('bulk.startSuccess', { count: parsedBatchUrls.length }));
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : t('bulk.runError');
             toast.error(errorMessage);
@@ -1073,7 +1073,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                                 spellCheck={false}
                             />
                             <p className="text-xs text-gray-500">
-                                {t('bulk.urlsHint', { count: parsedBatchUrls.length })}
+                                {parsedBatchUrls.length === 1 ? t('bulk.urlsHintOne') : t('bulk.urlsHint', { count: parsedBatchUrls.length })}
                             </p>
                         </div>
                     )}
@@ -1161,7 +1161,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                                 {uploadKind === 'images' && uploadedImages.length > 0 && (
                                     <>
                                         <span className="text-xs text-gray-500">
-                                            {t('imageCount', { count: uploadedImages.length })}
+                                            {uploadedImages.length === 1 ? t('imageCountOne') : t('imageCount', { count: uploadedImages.length })}
                                         </span>
                                         <div className="flex flex-wrap gap-2">
                                             {uploadedImages.map((img, idx) => (

@@ -66,7 +66,7 @@ export function AdminPendingRacesContent({ entries }: AdminPendingRacesContentPr
                 setUrlsText('');
                 const message = result.skipped.length > 0
                     ? t('addPartialSuccess', { added: result.added.length, skipped: result.skipped.length })
-                    : t('addSuccess', { count: result.added.length });
+                    : result.added.length === 1 ? t('addSuccessOne') : t('addSuccess', { count: result.added.length });
                 toast.success(message);
             } else {
                 toast.error(t('addNoneAdded'));
