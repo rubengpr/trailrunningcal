@@ -700,7 +700,8 @@
         "addNoneAdded": "No s'han afegit URLs noves",
         "addError": "Error en afegir les URLs",
         "skipped": {
-          "title": "{count} URL(s) omesa(es)",
+          "title": "{count} urls no s'han guardat",
+          "titleOne": "1 url no s'ha guardat",
           "reasons": {
             "invalidUrl": "Format d'URL no vàlid",
             "alreadyInRaces": "Ja existeix com a cursa",

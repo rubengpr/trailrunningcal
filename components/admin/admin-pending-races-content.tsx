@@ -6,9 +6,10 @@ import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/button';
 import { SectionHeader } from '@/components/ui/section-header';
 import { BaseModal } from '@/components/ui/base-modal';
+import { AlertBanner } from '@/components/ui/alert-banner';
 import { addPendingRaces, deletePendingRace } from '@/lib/api/pending-races';
 import { formatDateToSpanish, formatDateToCatalan } from '@/lib/date-utils';
-import { CornerDownLeft, ChevronRight, Trash2 } from 'lucide-react';
+import { CornerDownLeft, Trash2 } from 'lucide-react';
 import type { PendingRace } from '@/types/pending-race.types';
 import type { SkippedPendingRace } from '@/lib/api/pending-races';
 
@@ -124,31 +125,25 @@ export function AdminPendingRacesContent({ entries }: AdminPendingRacesContentPr
             </form>
 
             {skippedEntries.length > 0 && (
-                <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-                    <details className="group">
-                        <summary className="flex cursor-pointer items-center gap-1.5 text-sm text-gray-700 marker:content-none list-none">
-                            <ChevronRight size={14} className="transition-transform group-open:rotate-90 shrink-0 text-gray-400" />
-                            {t('skipped.title', { count: skippedEntries.length })}
-                        </summary>
-                        <ul className="mt-4 flex flex-col gap-3 pl-5">
-                            {Object.entries(
-                                skippedEntries.reduce<Record<string, string[]>>((acc, entry) => {
-                                    (acc[entry.reason] ??= []).push(entry.url);
-                                    return acc;
-                                }, {}),
-                            ).map(([reason, urls]) => (
-                                <li key={reason}>
-                                    <p className="text-xs font-medium text-gray-500">{t(`skipped.reasons.${reason}`)}</p>
-                                    <ul className="mt-1 flex flex-col gap-0.5 pl-3">
-                                        {urls.map((url) => (
-                                            <li key={url} className="text-xs font-mono text-gray-400 break-all">{url}</li>
-                                        ))}
-                                    </ul>
-                                </li>
-                            ))}
-                        </ul>
-                    </details>
-                </div>
+                <AlertBanner variant="warning" title={skippedEntries.length === 1 ? t('skipped.titleOne') : t('skipped.title', { count: skippedEntries.length })}>
+                    <ul className="flex flex-col gap-3">
+                        {Object.entries(
+                            skippedEntries.reduce<Record<string, string[]>>((acc, entry) => {
+                                (acc[entry.reason] ??= []).push(entry.url);
+                                return acc;
+                            }, {}),
+                        ).map(([reason, urls]) => (
+                            <li key={reason}>
+                                <p className="text-xs font-medium">{t(`skipped.reasons.${reason}`)}</p>
+                                <ul className="mt-1 flex flex-col gap-0.5 pl-3">
+                                    {urls.map((url) => (
+                                        <li key={url} className="text-xs font-mono break-all opacity-75">{url}</li>
+                                    ))}
+                                </ul>
+                            </li>
+                        ))}
+                    </ul>
+                </AlertBanner>
             )}
 
             {pendingEntries.length === 0 ? (

@@ -697,7 +697,8 @@
         "addNoneAdded": "No se han añadido URLs nuevas",
         "addError": "Error al añadir las URLs",
         "skipped": {
-          "title": "{count} URL(s) omitidas",
+          "title": "{count} urls no se han guardado",
+          "titleOne": "1 url no se ha guardado",
           "reasons": {
             "invalidUrl": "Formato de URL inválido",
             "alreadyInRaces": "Ya existe como carrera",
