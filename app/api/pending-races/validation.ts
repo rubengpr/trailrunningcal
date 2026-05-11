@@ -1,16 +1,16 @@
 import { normalizeUrl } from '@/lib/validation';
+import { ValidationError } from '@/lib/errors';
 import type { SkippedUrl } from '@/types/pending-race.types';
 
 const MAX_URLS = 100;
 
-export function validateUrlsPayload(urls: unknown): string | null {
+export function validateUrlsPayload(urls: unknown): asserts urls is string[] {
   if (!urls || !Array.isArray(urls) || urls.length === 0) {
-    return 'URLs are required';
+    throw new ValidationError('URLs are required', 400);
   }
   if (urls.length > MAX_URLS) {
-    return `Too many URLs (max ${MAX_URLS})`;
+    throw new ValidationError(`Too many URLs (max ${MAX_URLS})`, 400);
   }
-  return null;
 }
 
 type ValidatedUrls = {

@@ -11,11 +11,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { urls } = body;
 
-    const payloadError = validateUrlsPayload(urls);
-    if (payloadError) {
-      return NextResponse.json({ error: payloadError }, { status: 400 });
-    }
-
+    validateUrlsPayload(urls);
     const { validUrls, invalidSkips } = validateAndNormalizeUrls(urls);
 
     const result = await createPendingRaces(validUrls);
