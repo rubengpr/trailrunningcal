@@ -1,17 +1,12 @@
-import { createClient } from "@/lib/supabase/server";
-import { NextRequest, NextResponse } from "next/server";
+import { createClient } from '@/lib/supabase/server';
+import { requireAuth } from '@/lib/auth';
+import { ValidationError } from '@/lib/errors';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function PATCH(request: NextRequest) {
     try {
+        const { user } = await requireAuth();
         const supabase = await createClient();
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-        if (authError || !user) {
-            return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 401 }
-            );
-        }
 
         const { organizationName, organizationWebsite, facebookUrl, instagramUrl, youtubeUrl, tiktokUrl } = await request.json();
 
@@ -56,6 +51,9 @@ export async function PATCH(request: NextRequest) {
                 data
             });
     } catch (error) {
+        if (error instanceof ValidationError) {
+            return NextResponse.json({ error: error.message }, { status: error.status });
+        }
         console.error('API error:', error);
         return NextResponse.json(
             { error: 'Internal server error' },
