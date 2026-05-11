@@ -1,43 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { isAdminEmail } from '@/lib/auth';
-import { normalizeUrl } from '@/lib/validation';
+import { requireAdmin } from '@/lib/auth';
+import { ValidationError } from '@/lib/errors';
 import { createPendingRaces } from '@/lib/services/pending-races';
-import type { SkippedUrl } from '@/types/pending-race.types';
+import { validateUrlsPayload, validateAndNormalizeUrls } from './validation';
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user || !isAdminEmail(user.email)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    await requireAdmin();
 
     const body = await request.json();
     const { urls } = body;
 
-    if (!urls || !Array.isArray(urls) || urls.length === 0) {
-      return NextResponse.json({ error: 'URLs are required' }, { status: 400 });
+    const payloadError = validateUrlsPayload(urls);
+    if (payloadError) {
+      return NextResponse.json({ error: payloadError }, { status: 400 });
     }
 
-    if (urls.length > 100) {
-      return NextResponse.json({ error: 'Too many URLs (max 100)' }, { status: 400 });
-    }
-
-    const validUrls: string[] = [];
-    const invalidSkips: SkippedUrl[] = [];
-
-    for (const raw of urls) {
-      if (typeof raw !== 'string' || raw.trim().length === 0) continue;
-      const normalized = normalizeUrl(raw.trim());
-      try {
-        new URL(normalized);
-        validUrls.push(normalized);
-      } catch {
-        invalidSkips.push({ url: raw.trim(), reason: 'invalidUrl' });
-      }
-    }
+    const { validUrls, invalidSkips } = validateAndNormalizeUrls(urls);
 
     const result = await createPendingRaces(validUrls);
 
@@ -49,6 +28,9 @@ export async function POST(request: NextRequest) {
       },
     }, { status: 201 });
   } catch (error) {
+    if (error instanceof ValidationError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
     console.error('API error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

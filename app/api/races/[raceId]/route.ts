@@ -1,7 +1,8 @@
 import { createClient, createAdminClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { getOrganizerRaceContext } from '@/lib/auth-organizer';
-import { isAdminEmail } from '@/lib/auth';
+import { requireAuth } from '@/lib/auth';
+import { ValidationError } from '@/lib/errors';
 import { revalidateRacePages, revalidateHomepages, revalidateProvincePage, revalidateCategoryPages } from '@/lib/revalidation';
 import { sanitizeDescription } from '@/app/api/races/validation';
 
@@ -11,16 +12,8 @@ export async function PATCH(
 ) {
   try {
     const { raceId } = await context.params;
+    const { isAdmin } = await requireAuth();
     const supabase = await createClient();
-
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
 
     const {
       date,
@@ -32,8 +25,6 @@ export async function PATCH(
       province,
       description,
     } = await request.json();
-
-    const isAdmin = isAdminEmail(user.email);
 
     if (!isAdmin) {
       const organizerContext = await getOrganizerRaceContext(supabase, raceId);
@@ -92,6 +83,9 @@ export async function PATCH(
 
     return NextResponse.json({ success: true, data });
   } catch (error) {
+    if (error instanceof ValidationError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
     console.error('API error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
@@ -106,18 +100,8 @@ export async function DELETE(
 ) {
   try {
     const { raceId } = await context.params;
+    const { isAdmin } = await requireAuth();
     const supabase = await createClient();
-
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const isAdmin = isAdminEmail(user.email);
 
     if (isAdmin) {
       const adminClient = createAdminClient();
@@ -175,6 +159,9 @@ export async function DELETE(
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (error instanceof ValidationError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
     console.error('API error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },

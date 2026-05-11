@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient, createAdminClient } from '@/lib/supabase/server';
-import { isAdminEmail } from '@/lib/auth';
+import { createAdminClient } from '@/lib/supabase/server';
+import { requireAdmin } from '@/lib/auth';
+import { ValidationError } from '@/lib/errors';
 
 export async function DELETE(
   _request: NextRequest,
@@ -8,12 +9,7 @@ export async function DELETE(
 ) {
   try {
     const { id } = await context.params;
-    const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user || !isAdminEmail(user.email)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    await requireAdmin();
 
     const admin = createAdminClient();
 
@@ -29,6 +25,9 @@ export async function DELETE(
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (error instanceof ValidationError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
     console.error('API error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { createClient, createAdminClient } from '@/lib/supabase/server';
 import { getOrganizerRaceContext } from '@/lib/auth-organizer';
-import { isAdminEmail } from '@/lib/auth';
+import { requireAuth } from '@/lib/auth';
+import { ValidationError } from '@/lib/errors';
 import { generateRaceSlug } from '@/lib/race-utils';
 import { locales } from '@/i18n';
 
@@ -12,24 +13,14 @@ export async function PATCH(
 ) {
   try {
     const { raceId } = await context.params;
+    const { isAdmin } = await requireAuth();
     const supabase = await createClient();
-
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
 
     const { priceEur } = await request.json();
 
     if (typeof priceEur !== 'number' || priceEur < 0 || priceEur > 9999) {
       return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
     }
-
-    const isAdmin = isAdminEmail(user.email);
 
     if (!isAdmin) {
       const context = await getOrganizerRaceContext(supabase, raceId);
@@ -70,6 +61,9 @@ export async function PATCH(
 
     return NextResponse.json({ success: true, data });
   } catch (error) {
+    if (error instanceof ValidationError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
     console.error('API error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
