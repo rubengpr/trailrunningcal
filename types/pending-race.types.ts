@@ -8,6 +8,11 @@ export interface PendingRace {
   updatedAt: string;
 }
 
+export type SkippedUrl = {
+  url: string;
+  reason: string;
+};
+
 export type PendingRaceRow = {
   id: string;
   url: string;

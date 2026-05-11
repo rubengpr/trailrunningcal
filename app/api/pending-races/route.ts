@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { isAdminEmail } from '@/lib/auth';
 import { normalizeUrl } from '@/lib/validation';
 import { createPendingRaces } from '@/lib/services/pending-races';
+import type { SkippedUrl } from '@/types/pending-race.types';
 
 export async function POST(request: NextRequest) {
   try {
@@ -25,7 +26,7 @@ export async function POST(request: NextRequest) {
     }
 
     const validUrls: string[] = [];
-    const invalidSkips: { url: string; reason: string }[] = [];
+    const invalidSkips: SkippedUrl[] = [];
 
     for (const raw of urls) {
       if (typeof raw !== 'string' || raw.trim().length === 0) continue;
