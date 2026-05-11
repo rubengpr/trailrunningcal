@@ -704,7 +704,7 @@
           "title": "{count} urls no s'han guardat",
           "titleOne": "1 url no s'ha guardat",
           "reasons": {
-            "invalidUrl": "Format d'URL no vàlid",
+            "invalidUrl": "Format url invàlid",
             "alreadyInRaces": "Ja existeix com a cursa",
             "alreadyInQueue": "Ja és a la cua",
             "lookupFailed": "Error en verificar",

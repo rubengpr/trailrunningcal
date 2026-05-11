@@ -29,19 +29,36 @@ export async function getPendingRaces(): Promise<PendingRace[]> {
   return ((data ?? []) as PendingRaceRow[]).map(toPendingRace);
 }
 
-export async function isUrlInRaces(supabase: AdminClient, url: string): Promise<boolean> {
-  const { data, error } = await supabase.from('races').select('id').eq('website_url', url).maybeSingle();
+export async function isUrlInRaces(
+  supabase: AdminClient,
+  url: string,
+): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('races')
+    .select('id')
+    .eq('website_url', url)
+    .maybeSingle();
   if (error) throw error;
   return data !== null;
 }
 
-export async function isUrlInPendingRaces(supabase: AdminClient, url: string): Promise<boolean> {
-  const { data, error } = await supabase.from('pending_races').select('id').eq('url', url).maybeSingle();
+export async function isUrlInPendingRaces(
+  supabase: AdminClient,
+  url: string,
+): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('pending_races')
+    .select('id')
+    .eq('url', url)
+    .maybeSingle();
   if (error) throw error;
   return data !== null;
 }
 
-export async function insertPendingRace(supabase: AdminClient, url: string): Promise<PendingRace | null> {
+export async function insertPendingRace(
+  supabase: AdminClient,
+  url: string,
+): Promise<PendingRace | null> {
   const { data, error } = await supabase
     .from('pending_races')
     .insert({ url })
