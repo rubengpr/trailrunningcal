@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { X, CheckCircle2, Pencil } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { TrailRace } from '@/types/trail-race-agent.types';
+import { RaceEditForm } from '@/components/race/race-edit-form';
 
 function RejectIcon({ className = 'h-6 w-6' }: { className?: string }) {
     return <X className={className} strokeWidth={1.5} />;
@@ -61,8 +62,6 @@ export function SuggestedRaceCard({ race, onAccept, isAccepted, isAccepting, isD
         setIsEditing(false);
     };
 
-    const inputClass = 'border border-gray-200 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 w-full bg-white';
-
     const borderClass = isAccepted
         ? 'border-green-300 bg-green-50/30'
         : isEditing
@@ -72,94 +71,7 @@ export function SuggestedRaceCard({ race, onAccept, isAccepted, isAccepting, isD
     if (isEditing) {
         return (
             <div className={`${borderClass} border rounded-lg p-4 shadow-sm flex flex-col gap-4`}>
-                <div className="flex flex-col gap-3">
-                    <div className="flex flex-col gap-1">
-                        <label className="text-xs font-medium text-gray-600">{t('editFieldName')}</label>
-                        <input
-                            type="text"
-                            className={inputClass}
-                            value={draft.name}
-                            onChange={(e) => setDraft(prev => ({ ...prev, name: e.target.value }))}
-                        />
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                        <div className="flex flex-col gap-1">
-                            <label className="text-xs font-medium text-gray-600">{t('editFieldDate')}</label>
-                            <input
-                                type="date"
-                                className={inputClass}
-                                value={draft.date}
-                                onChange={(e) => setDraft(prev => ({ ...prev, date: e.target.value }))}
-                            />
-                        </div>
-                        <div className="flex flex-col gap-1">
-                            <label className="text-xs font-medium text-gray-600">{t('editFieldDistance')}</label>
-                            <input
-                                type="number"
-                                step="0.1"
-                                min="0"
-                                className={inputClass}
-                                value={draft.distanceKm}
-                                onChange={(e) => setDraft(prev => ({ ...prev, distanceKm: parseFloat(e.target.value) || 0 }))}
-                            />
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-3 gap-3">
-                        <div className="flex flex-col gap-1">
-                            <label className="text-xs font-medium text-gray-600">{t('editFieldElevation')}</label>
-                            <input
-                                type="number"
-                                min="0"
-                                className={inputClass}
-                                value={draft.elevationGainM ?? ''}
-                                onChange={(e) => setDraft(prev => ({ ...prev, elevationGainM: e.target.value === '' ? null : parseInt(e.target.value, 10) || 0 }))}
-                            />
-                        </div>
-                        <div className="flex flex-col gap-1">
-                            <label className="text-xs font-medium text-gray-600">{t('editFieldCity')}</label>
-                            <input
-                                type="text"
-                                className={inputClass}
-                                value={draft.city}
-                                onChange={(e) => setDraft(prev => ({ ...prev, city: e.target.value }))}
-                            />
-                        </div>
-                        <div className="flex flex-col gap-1">
-                            <label className="text-xs font-medium text-gray-600">{t('editFieldProvince')}</label>
-                            <input
-                                type="text"
-                                className={inputClass}
-                                value={draft.province}
-                                onChange={(e) => setDraft(prev => ({ ...prev, province: e.target.value }))}
-                            />
-                        </div>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                        <label className="text-xs font-medium text-gray-600">{t('editFieldDescription')}</label>
-                        <textarea
-                            rows={5}
-                            className={`${inputClass} resize-y`}
-                            value={draft.description}
-                            onChange={(e) => setDraft(prev => ({ ...prev, description: e.target.value }))}
-                        />
-                    </div>
-                </div>
-                <div className="flex justify-end gap-2">
-                    <button
-                        type="button"
-                        onClick={handleCancel}
-                        className="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 border border-gray-300 bg-white hover:bg-gray-50 transition-colors focus:outline-none cursor-pointer"
-                    >
-                        {t('editCancelButton')}
-                    </button>
-                    <button
-                        type="button"
-                        onClick={handleSave}
-                        className="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium text-white bg-black hover:bg-gray-800 transition-colors focus:outline-none cursor-pointer"
-                    >
-                        {t('editSaveButton')}
-                    </button>
-                </div>
+                <RaceEditForm draft={draft} onChange={setDraft} onSave={handleSave} onCancel={handleCancel} size="md" />
             </div>
         );
     }
