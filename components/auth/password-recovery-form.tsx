@@ -8,7 +8,7 @@ import { FormInput } from '@/components/ui/form-input';
 import { FormCard } from '@/components/ui/form-card';
 import { Button } from '@/components/ui/button';
 import { InlineError } from '@/components/ui/inline-error';
-import { validateEmail as validateEmailUtil } from '@/lib/auth-validation';
+import { validateEmail as validateEmailUtil } from '@/lib/auth/validation';
 
 export function PasswordRecoveryForm({
   initialError,

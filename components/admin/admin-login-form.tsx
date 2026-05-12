@@ -11,7 +11,7 @@ import { InlineError } from '@/components/ui/inline-error';
 import {
   validateEmail as validateEmailUtil,
   validatePassword as validatePasswordUtil,
-} from '@/lib/auth-validation';
+} from '@/lib/auth/validation';
 
 export function AdminLoginForm({
   className,

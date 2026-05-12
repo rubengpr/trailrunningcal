@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validateEmail, validatePassword } from './auth-validation';
+import { validateEmail, validatePassword } from './validation';
 
 // Mock translation function for testing
 const mockT = (key: string): string => {

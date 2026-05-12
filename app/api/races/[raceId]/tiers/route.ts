@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { getOrganizerRaceContext } from '@/lib/auth-organizer';
+import { getOrganizerRaceContext } from '@/lib/auth/organizer';
 import { requireAuth } from '@/lib/auth';
 import { ValidationError } from '@/lib/errors';
 import { generateRaceSlug } from '@/lib/race-utils';

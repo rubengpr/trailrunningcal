@@ -1,4 +1,4 @@
-import { validatePasswordStrength } from './password-utils';
+import { validatePasswordStrength } from '@/lib/password-utils';
 
 /**
  * Translation keys used for auth validation error messages

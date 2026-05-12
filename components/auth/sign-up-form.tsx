@@ -12,7 +12,7 @@ import { SuccessMessage } from '@/components/ui/success-message';
 import {
   validateEmail as validateEmailUtil,
   validatePassword as validatePasswordUtil,
-} from '@/lib/auth-validation';
+} from '@/lib/auth/validation';
 
 export function SignUpForm({
   initialError,
