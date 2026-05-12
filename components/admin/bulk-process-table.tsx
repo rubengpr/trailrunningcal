@@ -3,8 +3,8 @@
 import { useTranslations } from 'next-intl';
 import { IconActionMenu } from '@/components/ui/icon-action-menu';
 import type { RaceImportItemStatus } from '@/types/races-import-api.types';
-import { triggerDownload } from '@/lib/download-utils';
-import { cleanUrl } from '@/lib/url-utils';
+import { triggerDownload } from '@/lib/utils/download';
+import { cleanUrl } from '@/lib/utils/url';
 
 export type BulkProcessState = RaceImportItemStatus;
 

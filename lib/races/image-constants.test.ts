@@ -3,7 +3,7 @@ import {
   getRaceImageFilename,
   getVersionedRaceImageFilename,
   getExtensionFromMimeType,
-} from './race-image-constants';
+} from './image-constants';
 
 describe('getRaceImageFilename', () => {
   it('should return main.webp for webp extension', () => {

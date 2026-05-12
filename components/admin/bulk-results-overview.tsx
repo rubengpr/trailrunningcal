@@ -5,8 +5,8 @@ import { X, CheckCircle2, Pencil } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { TrailRace } from '@/types/trail-race-agent.types';
 import { RaceEditForm } from '@/components/race/race-edit-form';
-import { formatDateShort } from '@/lib/date-utils';
-import { cleanUrl } from '@/lib/url-utils';
+import { formatDateShort } from '@/lib/utils/date';
+import { cleanUrl } from '@/lib/utils/url';
 
 export interface BulkResultItem {
     url: string;

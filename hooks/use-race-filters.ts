@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { TrailRace } from '@/types/race.types';
 import type { RaceMapMarker } from '@/types/map.types';
-import { filterHomeRaces, filterMapMarkersByRaceIds } from '@/lib/home-race-filters';
+import { filterHomeRaces, filterMapMarkersByRaceIds } from '@/lib/races/home-filters';
 
 interface FilterStorageKeys {
   month: string;

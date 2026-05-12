@@ -6,7 +6,7 @@ import {
   buildContactAlternateLinks,
   buildRaceAlternateLinks,
 } from './alternate-links';
-import { BASE_URL } from './config';
+import { BASE_URL } from '@/lib/config';
 import * as blogUtils from './blog-utils';
 import type { BlogPost } from './blog-utils';
 

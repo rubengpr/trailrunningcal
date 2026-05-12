@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { getLocale, getTranslations } from 'next-intl/server';
-import { getPostsForLocale } from '@/lib/blog-utils';
+import { getPostsForLocale } from '@/lib/content/blog-utils';
 import type { Locale } from '@/i18n';
 import { PROVINCE_SLUGS } from '@/lib/constants';
 

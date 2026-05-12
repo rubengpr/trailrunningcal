@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getOrganizerRaceContext } from '@/lib/auth/organizer';
 import { requireAuth } from '@/lib/auth';
 import { ValidationError } from '@/lib/errors';
-import { revalidateRacePages, revalidateHomepages, revalidateProvincePage, revalidateCategoryPages } from '@/lib/revalidation';
+import { revalidateRacePages, revalidateHomepages, revalidateProvincePage, revalidateCategoryPages } from '@/lib/cache/revalidation';
 import { sanitizeDescription } from '@/app/api/races/validation';
 import { getRaceById, updateRace, deleteRace } from '@/lib/db/races';
 

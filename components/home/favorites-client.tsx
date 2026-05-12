@@ -6,7 +6,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import type { TrailRace } from '@/types/race.types';
 import { TrailRaceCard } from '@/components/race/trail-race-card';
 import { useFavorites } from '@/hooks/use-favorites';
-import { generateRaceSlug } from '@/lib/race-utils';
+import { generateRaceSlug } from '@/lib/races/utils';
 import { Heart } from 'lucide-react';
 
 interface FavoritesClientProps {

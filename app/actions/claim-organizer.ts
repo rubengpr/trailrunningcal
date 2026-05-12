@@ -4,7 +4,7 @@ import { Resend } from 'resend';
 import { headers } from 'next/headers';
 import { createClient } from '@/lib/supabase/server';
 import { escapeHtml } from '@/lib/security/escape-html';
-import { checkRateLimitByIp } from '@/lib/rate-limit';
+import { checkRateLimitByIp } from '@/lib/security/rate-limit';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 

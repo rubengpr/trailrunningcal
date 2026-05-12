@@ -23,18 +23,12 @@ export interface BlogPost extends BlogPostFrontmatter {
 
 const postsDirectory = path.join(process.cwd(), 'content/blog');
 
-/**
- * Scans content/blog/ directory and returns all blog posts from all locales
- * @returns Array of all blog posts, sorted by date (newest first)
- */
 export function getAllBlogPosts(): BlogPost[] {
-  // Check if posts directory exists
   if (!fs.existsSync(postsDirectory)) {
     console.warn(`Posts directory not found: ${postsDirectory}`);
     return [];
   }
 
-  // Get all article folders in content/blog/
   const articleFolders = fs
     .readdirSync(postsDirectory, { withFileTypes: true })
     .filter((dirent) => dirent.isDirectory())
@@ -42,16 +36,13 @@ export function getAllBlogPosts(): BlogPost[] {
 
   const allPosts: BlogPost[] = [];
 
-  // For each article folder, check for es.mdx and ca.mdx files
   for (const articleFolder of articleFolders) {
     const articlePath = path.join(postsDirectory, articleFolder);
 
-    // Check for both locale files
     const locales: Locale[] = ['es', 'ca'];
     for (const locale of locales) {
       const mdxFilePath = path.join(articlePath, `${locale}.mdx`);
 
-      // Skip if file doesn't exist
       if (!fs.existsSync(mdxFilePath)) {
         continue;
       }
@@ -60,7 +51,6 @@ export function getAllBlogPosts(): BlogPost[] {
         const fileContents = fs.readFileSync(mdxFilePath, 'utf8');
         const { data, content } = matter(fileContents);
 
-        // Validate required frontmatter fields
         if (!data.title || !data.slug || !data.translationKey || !data.image) {
           console.warn(
             `Post ${articleFolder}/${locale}.mdx is missing required frontmatter fields (title, slug, translationKey, or image)`,
@@ -68,7 +58,6 @@ export function getAllBlogPosts(): BlogPost[] {
           continue;
         }
 
-        // Validate translationKey matches folder name
         if (data.translationKey !== articleFolder) {
           console.warn(
             `Post ${articleFolder}/${locale}.mdx has translationKey "${data.translationKey}" but folder is "${articleFolder}". They should match.`,
@@ -96,29 +85,19 @@ export function getAllBlogPosts(): BlogPost[] {
           `Error reading post ${articleFolder}/${locale}.mdx:`,
           error,
         );
-        // Continue processing other files
       }
     }
   }
 
-  // Sort by date, newest first
-  // ISO dates parse reliably, but handle missing/invalid dates
   return allPosts.sort((a, b) => {
     const dateA = a.date ? new Date(a.date).getTime() : 0;
     const dateB = b.date ? new Date(b.date).getTime() : 0;
-    // Invalid dates become NaN, treat as 0 (oldest)
     const timeA = isNaN(dateA) ? 0 : dateA;
     const timeB = isNaN(dateB) ? 0 : dateB;
     return timeB - timeA;
   });
 }
 
-/**
- * Finds a blog post by its slug and locale
- * @param slug - The slug of the post
- * @param locale - The locale of the post
- * @returns The blog post or null if not found
- */
 export function getPostBySlug(slug: string, locale: Locale): BlogPost | null {
   const allPosts = getAllBlogPosts();
   return (
@@ -127,21 +106,11 @@ export function getPostBySlug(slug: string, locale: Locale): BlogPost | null {
   );
 }
 
-/**
- * Gets all translations of an article by its translationKey
- * @param translationKey - The translationKey that links translations together
- * @returns Array of all translations of the article
- */
 export function getPostTranslations(translationKey: string): BlogPost[] {
   const allPosts = getAllBlogPosts();
   return allPosts.filter((post) => post.translationKey === translationKey);
 }
 
-/**
- * Gets all blog posts for a specific locale
- * @param locale - The locale to filter by
- * @returns Array of posts for the locale, sorted by date (newest first)
- */
 export function getPostsForLocale(locale: Locale): BlogPost[] {
   const allPosts = getAllBlogPosts();
   return allPosts

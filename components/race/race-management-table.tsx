@@ -2,8 +2,8 @@
 
 import {
   formatDateByLocale,
-} from '@/lib/date-utils';
-import { formatDisplayPrice } from '@/lib/race-utils';
+} from '@/lib/utils/date';
+import { formatDisplayPrice } from '@/lib/races/utils';
 import type { TrailRace } from '@/types/race.types';
 
 export interface RaceManagementTableLabels {

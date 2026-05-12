@@ -5,11 +5,11 @@ import {
   getAllBlogPosts,
   getPostBySlug,
   getPostsForLocale,
-} from '@/lib/blog-utils';
-import { renderMDXFile } from '@/lib/mdx-renderer';
+} from '@/lib/content/blog-utils';
+import { renderMDXFile } from '@/lib/content/mdx-renderer';
 import { BASE_URL } from '@/lib/config';
 import { generateMetadataFromOptions } from '@/lib/seo/meta-config';
-import { buildBlogPostAlternateLinks } from '@/lib/alternate-links';
+import { buildBlogPostAlternateLinks } from '@/lib/content/alternate-links';
 import { buildBlogJsonLd } from '@/lib/seo/json-ld';
 import { buildBreadcrumbJsonLd } from '@/lib/seo/json-ld';
 import { getTranslations } from 'next-intl/server';

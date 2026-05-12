@@ -25,7 +25,7 @@ export type RaceType = (typeof RACE_TYPES)[number];
 const VK_KEYWORDS = ['kilómetro vertical', 'quilòmetre vertical', 'km vertical'];
 const MARCHA_KEYWORDS = ['marcha', 'marxa', 'caminada'];
 
-export function matchesRaceType(race: TrailRace, type: RaceType): boolean {
+function matchesRaceType(race: TrailRace, type: RaceType): boolean {
   const lowerName = race.name.toLowerCase();
   switch (type) {
     case 'backyard':

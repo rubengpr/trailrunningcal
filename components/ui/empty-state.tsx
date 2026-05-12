@@ -30,16 +30,3 @@ export function EmptyState({
     </div>
   );
 }
-
-interface EmptyStateIconProps {
-  children: ReactNode;
-  className?: string;
-}
-
-export function EmptyStateIcon({ children, className = '' }: EmptyStateIconProps) {
-  return (
-    <div className={`mx-auto h-16 w-16 text-gray-400 ${className}`.trim()}>
-      {children}
-    </div>
-  );
-}

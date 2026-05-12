@@ -9,11 +9,6 @@ export const formatDate = (dateString: string | null) => {
   return { day, month, dayOfWeek };
 };
 
-/**
- * Formats a date to Spanish human-readable format
- * @param date - Date object or ISO date string
- * @returns Formatted date string (e.g., "30 de noviembre de 2025")
- */
 export const formatDateToSpanish = (date: Date | string): string => {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
 
@@ -28,11 +23,6 @@ export const formatDateToSpanish = (date: Date | string): string => {
   }).format(dateObj);
 };
 
-/**
- * Formats a date to Catalan human-readable format
- * @param date - Date object or ISO date string
- * @returns Formatted date string (e.g., "30 de novembre de 2025")
- */
 export const formatDateToCatalan = (date: Date | string): string => {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
 

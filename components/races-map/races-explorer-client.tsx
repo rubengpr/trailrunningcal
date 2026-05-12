@@ -23,7 +23,7 @@ import { useMinWidthLg } from '@/hooks/use-min-width-lg';
 import { useScrollEdges } from '@/hooks/use-scroll-edges';
 import { useMobileFilters } from '@/components/providers/mobile-filters-provider';
 import { useRaceFilters } from '@/hooks/use-race-filters';
-import { generateRaceSlug } from '@/lib/race-utils';
+import { generateRaceSlug } from '@/lib/races/utils';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { track } from '@/lib/analytics/track';
 

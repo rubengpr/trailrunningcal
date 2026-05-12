@@ -25,9 +25,6 @@ function parseConflict(status: number, data: unknown): ConflictResult | null {
   return null;
 }
 
-/**
- * Creates a new race via the API. Safe to call from client components.
- */
 export async function createRace(fields: {
   date: string;
   name: string;
@@ -67,9 +64,6 @@ export async function createRace(fields: {
   return { ok: true, data: responseData.data };
 }
 
-/**
- * Updates a race via the API. Safe to call from client components.
- */
 export async function updateRace(
   raceId: string,
   date: string,
@@ -105,9 +99,6 @@ export async function updateRace(
   return responseData;
 }
 
-/**
- * Deletes a race via the API. Safe to call from client components.
- */
 export async function deleteRace(raceId: string): Promise<void> {
   const response = await fetch(`/api/races/${raceId}`, {
     method: 'DELETE',
@@ -133,53 +124,6 @@ export type TrailRaceAgentRunOptions =
   | { mode: 'markdown'; model: OpenRouterScrapeModelId; markdown: string }
   | { mode: 'images'; model: OpenRouterVisionModelId; images: string[] };
 
-/**
- * Crawls an event website and returns joined markdown only (no LLM). Admin-only.
- */
-export async function crawlEventWebsiteMarkdown(
-  websiteUrl: string,
-): Promise<{ markdown: string; pageStats: PageStats }> {
-  const response = await fetch('/api/races/scrape', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      mode: 'crawlSite',
-      websiteUrl,
-    }),
-  });
-
-  const responseData = await response.json();
-
-  if (!response.ok) {
-    throw new Error(responseData.error || 'Failed to crawl website');
-  }
-
-  return responseData.data;
-}
-
-/**
- * Scrapes a single event page (no link-following) and returns markdown only (no LLM). Admin-only.
- */
-export async function scrapeEventPageMarkdown(
-  websiteUrl: string,
-): Promise<{ markdown: string; pageStats: PageStats }> {
-  const response = await fetch('/api/races/scrape', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      mode: 'scrapePage',
-      websiteUrl,
-    }),
-  });
-
-  const responseData = await response.json();
-
-  if (!response.ok) {
-    throw new Error(responseData.error || 'Failed to scrape page');
-  }
-
-  return responseData.data;
-}
 
 export async function runTrailRaceAgent(
   options: TrailRaceAgentRunOptions,
@@ -276,9 +220,7 @@ export async function getItemResult(
   return responseData.data;
 }
 
-/**
- * Accepts a scraped race by creating it in the database. Admin-only.
- */
+// Admin-only
 export async function acceptScrapedRace(
   race: import('@/types/trail-race-agent.types').TrailRace,
   websiteUrl: string,

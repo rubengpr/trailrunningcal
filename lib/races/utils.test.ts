@@ -4,7 +4,7 @@ import {
   getRaceBySlug,
   getAllRaceSlugs,
   getDisplayPrice,
-} from './race-utils';
+} from './utils';
 import type { TrailRace } from '@/types/race.types';
 
 describe('generateRaceSlug', () => {

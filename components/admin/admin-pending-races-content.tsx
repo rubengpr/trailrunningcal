@@ -8,7 +8,7 @@ import { SectionHeader } from '@/components/ui/section-header';
 import { BaseModal } from '@/components/ui/base-modal';
 import { AlertBanner } from '@/components/ui/alert-banner';
 import { addPendingRaces, deletePendingRace } from '@/lib/api/pending-races';
-import { formatDateToSpanish, formatDateToCatalan } from '@/lib/date-utils';
+import { formatDateToSpanish, formatDateToCatalan } from '@/lib/utils/date';
 import { CornerDownLeft, Trash2 } from 'lucide-react';
 import type { PendingRace } from '@/types/pending-race.types';
 import type { SkippedPendingRace } from '@/lib/api/pending-races';

@@ -5,7 +5,7 @@ import { Loader2, CheckCircle2, X, ImageIcon } from 'lucide-react';
 import {
     MAX_RACE_IMAGE_SIZE_BYTES,
     ALLOWED_RACE_IMAGE_MIME_TYPES,
-} from '@/lib/race-image-constants';
+} from '@/lib/races/image-constants';
 
 export interface FormImageInputMessages {
     selectFile: string;

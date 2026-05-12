@@ -1,8 +1,8 @@
-import type { BlogPost } from '@/lib/blog-utils';
+import type { BlogPost } from '@/lib/content/blog-utils';
 import type { TrailRace } from '@/types/race.types';
 import type { Locale } from '@/i18n';
 import { BASE_URL, CONTACT_EMAIL } from '@/lib/config';
-import { getDisplayPrice } from '@/lib/race-utils';
+import { getDisplayPrice } from '@/lib/races/utils';
 import { SITE_NAME } from '@/lib/seo/meta-config';
 
 const LOGO_URL =

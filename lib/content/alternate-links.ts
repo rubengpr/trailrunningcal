@@ -1,11 +1,7 @@
-import { BASE_URL } from './config';
+import { BASE_URL } from '@/lib/config';
 import { locales, type Locale } from '@/i18n';
-import { getPostBySlug, getPostTranslations } from './blog-utils';
+import { getPostBySlug, getPostTranslations } from '@/lib/content/blog-utils';
 
-/**
- * Builds alternate language links for the home page
- * @returns Record with es, ca, and x-default URLs
- */
 export function buildHomeAlternateLinks(): Record<string, string> {
   return {
     es: `${BASE_URL}/es`,
@@ -14,10 +10,6 @@ export function buildHomeAlternateLinks(): Record<string, string> {
   };
 }
 
-/**
- * Builds alternate language links for the blog listing page
- * @returns Record with es, ca, and x-default URLs
- */
 export function buildBlogListingAlternateLinks(): Record<string, string> {
   return {
     es: `${BASE_URL}/es/blog`,
@@ -26,13 +18,6 @@ export function buildBlogListingAlternateLinks(): Record<string, string> {
   };
 }
 
-/**
- * Builds alternate language links for a blog post
- * Uses translationKey to find all translations of the post
- * @param locale - Current locale
- * @param slug - Current slug
- * @returns Record with alternate URLs or undefined if post not found
- */
 export function buildBlogPostAlternateLinks(
   locale: Locale,
   slug: string,
@@ -45,12 +30,10 @@ export function buildBlogPostAlternateLinks(
   const translations = getPostTranslations(post.translationKey);
   const alternates: Record<string, string> = {};
 
-  // Add alternate language links
   for (const translation of translations) {
     alternates[translation.locale] = `${BASE_URL}/${translation.locale}/blog/${translation.slug}`;
   }
 
-  // Add x-default pointing to Spanish blog post (always Spanish)
   const spanishTranslation = translations.find(
     (translation) => translation.locale === 'es',
   )!;
@@ -59,10 +42,6 @@ export function buildBlogPostAlternateLinks(
   return alternates;
 }
 
-/**
- * Builds alternate language links for the contact page
- * @returns Record with es, ca, and x-default URLs
- */
 export function buildContactAlternateLinks(): Record<string, string> {
   return {
     es: `${BASE_URL}/es/contacto`,
@@ -71,12 +50,6 @@ export function buildContactAlternateLinks(): Record<string, string> {
   };
 }
 
-/**
- * Builds alternate language links for a province page
- * Province slugs are the same across locales
- * @param provinceSlug - The province slug (e.g. 'barcelona')
- * @returns Record with es, ca, and x-default URLs
- */
 export function buildProvinceAlternateLinks(
   provinceSlug: string,
 ): Record<string, string> {
@@ -87,10 +60,6 @@ export function buildProvinceAlternateLinks(
   };
 }
 
-/**
- * Builds alternate language links for the ultra-trail page
- * @returns Record with es, ca, and x-default URLs
- */
 export function buildUltraTrailAlternateLinks(): Record<string, string> {
   return {
     es: `${BASE_URL}/es/ultra-trail`,
@@ -99,10 +68,6 @@ export function buildUltraTrailAlternateLinks(): Record<string, string> {
   };
 }
 
-/**
- * Builds alternate language links for the maraton page
- * @returns Record with es, ca, and x-default URLs
- */
 export function buildMaratonAlternateLinks(): Record<string, string> {
   return {
     es: `${BASE_URL}/es/maraton`,
@@ -111,10 +76,6 @@ export function buildMaratonAlternateLinks(): Record<string, string> {
   };
 }
 
-/**
- * Builds alternate language links for the media-maraton page
- * @returns Record with es, ca, and x-default URLs
- */
 export function buildMediaMaratonAlternateLinks(): Record<string, string> {
   return {
     es: `${BASE_URL}/es/media-maraton`,
@@ -123,10 +84,6 @@ export function buildMediaMaratonAlternateLinks(): Record<string, string> {
   };
 }
 
-/**
- * Builds alternate language links for the marcha page
- * @returns Record with es, ca, and x-default URLs
- */
 export function buildMarchaAlternateLinks(): Record<string, string> {
   return {
     es: `${BASE_URL}/es/marcha`,
@@ -135,10 +92,6 @@ export function buildMarchaAlternateLinks(): Record<string, string> {
   };
 }
 
-/**
- * Builds alternate language links for the backyard page
- * @returns Record with es, ca, and x-default URLs
- */
 export function buildBackyardAlternateLinks(): Record<string, string> {
   return {
     es: `${BASE_URL}/es/backyard`,
@@ -147,10 +100,6 @@ export function buildBackyardAlternateLinks(): Record<string, string> {
   };
 }
 
-/**
- * Builds alternate language links for the km-vertical page
- * @returns Record with es, ca, and x-default URLs
- */
 export function buildKmVerticalAlternateLinks(): Record<string, string> {
   return {
     es: `${BASE_URL}/es/km-vertical`,
@@ -159,12 +108,6 @@ export function buildKmVerticalAlternateLinks(): Record<string, string> {
   };
 }
 
-/**
- * Builds alternate language links for a race page
- * Race slugs are the same across locales (generated from race name)
- * @param raceSlug - The race slug
- * @returns Record with es, ca, and x-default URLs
- */
 export function buildRaceAlternateLinks(
   raceSlug: string,
 ): Record<string, string> {

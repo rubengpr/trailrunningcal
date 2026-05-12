@@ -7,7 +7,7 @@ import {
   generateMetadataFromOptions,
 } from '@/lib/seo/meta-config';
 import type { Locale } from '@/i18n';
-import { buildHomeAlternateLinks } from '@/lib/alternate-links';
+import { buildHomeAlternateLinks } from '@/lib/content/alternate-links';
 import { getRaces } from '@/lib/db/races';
 import { getRacesMapData } from '@/lib/db/races-map';
 import { buildWebsiteJsonLd, buildOrganizationJsonLd } from '@/lib/seo/json-ld';

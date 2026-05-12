@@ -8,7 +8,7 @@ import { createRoot, type Root } from 'react-dom/client';
 import maplibregl, { type StyleSpecification } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type { Locale } from '@/i18n';
-import { formatDateToCatalan, formatDateToSpanish } from '@/lib/date-utils';
+import { formatDateToCatalan, formatDateToSpanish } from '@/lib/utils/date';
 import type { MapPageLabels, RaceMapMarker } from '@/types/map.types';
 import { ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react';
 

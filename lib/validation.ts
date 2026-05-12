@@ -1,8 +1,3 @@
-/**
- * Validation utility for form fields
- * Provides a reusable pattern for field validation with error messages
- */
-
 export interface ValidationRule<T = string> {
     validate: (value: T) => boolean;
     errorMessage: string;
@@ -13,9 +8,19 @@ export interface ValidationResult {
     error: string;
 }
 
-/**
- * Generic field validator that runs multiple validation rules
- */
+export interface FieldErrors {
+    [key: string]: string;
+}
+
+export interface FormValidator<T> {
+    errors: FieldErrors;
+    validate: (field: keyof T, value: string, rules: ValidationRule[]) => boolean;
+    validateAll: (fields: Partial<Record<keyof T, ValidationRule[]>>, values: T) => boolean;
+    clearError: (field: keyof T) => void;
+    clearAll: () => void;
+    setErrors: (errors: FieldErrors) => void;
+}
+
 export function validateField<T = string>(
     value: T,
     rules: ValidationRule<T>[]
@@ -28,9 +33,14 @@ export function validateField<T = string>(
     return { isValid: true, error: '' };
 }
 
-/**
- * Common validation rule factories
- */
+export function normalizeUrl(url: string): string {
+    const trimmed = url.trim();
+    if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
+        return `https://${trimmed}`;
+    }
+    return trimmed;
+}
+
 export const ValidationRules = {
     required: (errorMessage: string): ValidationRule<string> => ({
         validate: (value: string) => value.trim().length > 0,
@@ -84,7 +94,6 @@ export const ValidationRules = {
             const trimmed = value.trim();
             if (!trimmed) return false;
 
-            // Normalize URL: prepend https:// if no protocol
             let normalized = trimmed;
             if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
                 normalized = `https://${trimmed}`;
@@ -108,34 +117,6 @@ export const ValidationRules = {
         errorMessage,
     }),
 };
-
-/**
- * Normalize a URL by adding https:// if missing
- */
-export function normalizeUrl(url: string): string {
-    const trimmed = url.trim();
-    if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
-        return `https://${trimmed}`;
-    }
-    return trimmed;
-}
-
-/**
- * Form validation state manager
- * Manages errors for multiple fields in a single state object
- */
-export interface FieldErrors {
-    [key: string]: string;
-}
-
-export interface FormValidator<T> {
-    errors: FieldErrors;
-    validate: (field: keyof T, value: string, rules: ValidationRule[]) => boolean;
-    validateAll: (fields: Partial<Record<keyof T, ValidationRule[]>>, values: T) => boolean;
-    clearError: (field: keyof T) => void;
-    clearAll: () => void;
-    setErrors: (errors: FieldErrors) => void;
-}
 
 export function createFormValidator<T>(
     setErrors: (errors: FieldErrors) => void,

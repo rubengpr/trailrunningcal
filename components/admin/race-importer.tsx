@@ -13,7 +13,7 @@ import { IconActionMenu } from '@/components/ui/icon-action-menu';
 import { TabSwitcher } from '@/components/ui/tab-switcher';
 import { SectionHeader } from '@/components/ui/section-header';
 import { SuggestedRacesPreview } from '@/components/race/suggested-races-preview';
-import { cleanUrl } from '@/lib/url-utils';
+import { cleanUrl } from '@/lib/utils/url';
 import {
     DUMMY_CRAWL_PAGE_STATS,
     DUMMY_LAST_RUN_DURATION_MS,
@@ -36,14 +36,11 @@ import {
 } from '@/lib/api/races';
 import { OPENROUTER_SCRAPE_MODEL_IDS, OPENROUTER_VISION_MODEL_IDS } from '@/lib/integrations/openrouter/scrape-models';
 import type { OpenRouterScrapeModelId, OpenRouterVisionModelId } from '@/lib/integrations/openrouter/scrape-models';
-import { formatDurationMs } from '@/lib/format-duration';
-import { triggerDownload } from '@/lib/download-utils';
+import { formatDurationMs } from '@/lib/utils/format-duration';
+import { triggerDownload } from '@/lib/utils/download';
 import { useLiveTimer } from '@/hooks/use-live-timer';
 import { useFileUpload } from '@/hooks/use-file-upload';
-import {
-    estimateMarkdownTokensHeuristic,
-    markdownTrimmedCharCount,
-} from '@/lib/scrape-markdown-token-estimate';
+
 import { normalizeUrl } from '@/lib/validation';
 import type { PageStats } from '@/types/races-scrape-api.types';
 import type { RaceImportBatchSnapshot, RaceImportResult, RaceImportStep, RaceImportWorkflow } from '@/types/races-import-api.types';
@@ -55,6 +52,17 @@ import { RaceConflictModal } from '@/components/ui/race-conflict-modal';
 import { useModal } from '@/hooks/use-modal';
 import type { ConflictingRace } from '@/types/race.types';
 import { XCircle, RefreshCw, Sparkles, FileText, ImageIcon, X, Play } from 'lucide-react';
+
+const CHARS_PER_TOKEN = 2.87;
+
+function estimateMarkdownTokensHeuristic(markdown: string): number {
+  const trimmed = markdown.trim();
+  return trimmed.length === 0 ? 0 : Math.round(trimmed.length / CHARS_PER_TOKEN);
+}
+
+function markdownTrimmedCharCount(markdown: string): number {
+  return markdown.trim().length;
+}
 
 type ScrapeWorkflow = 'bulk' | 'full' | 'ingest' | 'llmFromFile';
 type ScrapeSourceMode = 'scrapePage' | 'crawlSite';

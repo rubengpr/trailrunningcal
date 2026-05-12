@@ -1,6 +1,6 @@
 import { revalidatePath } from 'next/cache';
 import { locales } from '@/i18n';
-import { generateRaceSlug } from '@/lib/race-utils';
+import { generateRaceSlug } from '@/lib/races/utils';
 
 type RaceForRevalidation = { name: string; distanceKm: number; elevationGainM: number | null };
 

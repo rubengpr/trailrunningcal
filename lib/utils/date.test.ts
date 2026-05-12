@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { formatDate, formatDateToSpanish, formatDateToCatalan } from './date-utils';
+import { formatDate, formatDateToSpanish, formatDateToCatalan, formatDateByLocale, formatDateShort } from './date';
 
 describe('formatDate', () => {
   describe('null input', () => {
@@ -79,6 +79,48 @@ describe('formatDateToCatalan', () => {
   describe('invalid string', () => {
     it('should return empty string for invalid date', () => {
       expect(formatDateToCatalan('not-a-date')).toBe('');
+    });
+  });
+});
+
+describe('formatDateByLocale', () => {
+  describe('null input', () => {
+    it('should return N/D for null', () => {
+      expect(formatDateByLocale(null, 'es')).toBe('N/D');
+    });
+  });
+
+  describe('ca locale', () => {
+    it('should return Catalan formatted date', () => {
+      const result = formatDateByLocale('2025-06-15', 'ca');
+      expect(result).toContain('juny');
+    });
+  });
+
+  describe('es locale', () => {
+    it('should return Spanish formatted date', () => {
+      const result = formatDateByLocale('2025-06-15', 'es');
+      expect(result).toContain('junio');
+    });
+  });
+});
+
+describe('formatDateShort', () => {
+  describe('valid date string', () => {
+    it('should return dd/mm/yy format', () => {
+      expect(formatDateShort('2025-11-30')).toBe('30/11/25');
+    });
+  });
+
+  describe('valid Date object', () => {
+    it('should return dd/mm/yy format', () => {
+      expect(formatDateShort(new Date('2025-06-15T12:00:00Z'))).toBe('15/06/25');
+    });
+  });
+
+  describe('invalid string', () => {
+    it('should return the original string for invalid input', () => {
+      expect(formatDateShort('not-a-date')).toBe('not-a-date');
     });
   });
 });

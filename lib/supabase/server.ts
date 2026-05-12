@@ -19,9 +19,7 @@ export async function createClient() {
               cookieStore.set(name, value, options),
             );
           } catch {
-            // The `setAll` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing
-            // user sessions.
+            // ignore: setAll called from a Server Component with no writable cookie store
           }
         },
       },
@@ -29,11 +27,7 @@ export async function createClient() {
   );
 }
 
-/**
- * Creates a Supabase admin client with service role key.
- * This client bypasses Row Level Security (RLS) policies.
- * Use with caution - only in server-side API routes where you need admin access.
- */
+// bypasses RLS — server-side only
 export function createAdminClient() {
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -49,11 +43,6 @@ export function createAdminClient() {
   );
 }
 
-/**
- * Creates a Supabase client for static generation (build time).
- * This client doesn't use cookies and is suitable for use in generateStaticParams,
- * sitemap generation, and other static build-time operations.
- */
 export function createStaticClient() {
   return createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

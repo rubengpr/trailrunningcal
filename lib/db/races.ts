@@ -1,7 +1,7 @@
 import { cache } from 'react';
 import { createClient, createAdminClient, createStaticClient } from '@/lib/supabase/server';
 import type { TrailRace, RaceRow, ConflictingRace } from '@/types/race.types';
-import { generateRaceSlug } from '@/lib/race-utils';
+import { generateRaceSlug } from '@/lib/races/utils';
 
 export function toTrailRace(row: RaceRow): TrailRace {
   return {
@@ -27,11 +27,6 @@ export function toTrailRace(row: RaceRow): TrailRace {
 
 let racesCache: TrailRace[] | null = null;
 
-/**
- * Fetches all races from the database using the static client (no cookies).
- * Safe for use in all public pages and ISR — does not force dynamic rendering.
- * @returns Array of TrailRace objects
- */
 export const getRaces = cache(async function getRaces(): Promise<TrailRace[]> {
   if (racesCache) return racesCache;
 
@@ -77,11 +72,6 @@ const RACE_SELECT = `
   race_tiers ( price_eur )
 ` as const;
 
-/**
- * Fetches a single race by its URL slug.
- * Does a lightweight lookup (id + name only) to find the matching race,
- * then fetches the full row for that single race.
- */
 export const getRaceBySlug = cache(async function getRaceBySlug(
   slug: string,
 ): Promise<TrailRace | null> {
@@ -116,10 +106,6 @@ export const getRaceBySlug = cache(async function getRaceBySlug(
   return toTrailRace(data as RaceRow);
 });
 
-/**
- * Fetches recommended races from the same province, ordered by date.
- * Returns up to `limit` races after the given date (or any dated races if date is null).
- */
 export const getRecommendedRaces = cache(async function getRecommendedRaces(
   province: string,
   excludeId: string,

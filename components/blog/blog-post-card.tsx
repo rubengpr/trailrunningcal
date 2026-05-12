@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import type { Locale } from '@/i18n';
-import { formatDateToSpanish, formatDateToCatalan } from '@/lib/date-utils';
+import { formatDateToSpanish, formatDateToCatalan } from '@/lib/utils/date';
 
 interface BlogPostCardProps {
   title: string;

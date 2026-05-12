@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { getRaceImageUrlWithFilename } from '@/lib/race-image-url';
+import { getRaceImageUrlWithFilename } from '@/lib/races/image-url';
 import {
   RACE_IMAGE_BUCKET,
   ALLOWED_RACE_IMAGE_MIME_TYPES,
@@ -8,7 +8,7 @@ import {
   getVersionedRaceImageFilename,
   getExtensionFromMimeType,
   RACE_IMAGE_EXTENSIONS,
-} from '@/lib/race-image-constants';
+} from '@/lib/races/image-constants';
 import { ValidationError } from '@/lib/errors';
 
 type RaceImageResult =

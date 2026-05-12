@@ -2,12 +2,12 @@ import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { BlogPostCard } from '@/components/blog/blog-post-card';
 import type { Locale } from '@/i18n';
-import { getPostsForLocale } from '@/lib/blog-utils';
+import { getPostsForLocale } from '@/lib/content/blog-utils';
 import {
   getSeoMetaConfig,
   generateMetadataFromOptions,
 } from '@/lib/seo/meta-config';
-import { buildBlogListingAlternateLinks } from '@/lib/alternate-links';
+import { buildBlogListingAlternateLinks } from '@/lib/content/alternate-links';
 import { buildBreadcrumbJsonLd } from '@/lib/seo/json-ld';
 import { BASE_URL } from '@/lib/config';
 

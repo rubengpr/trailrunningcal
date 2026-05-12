@@ -8,7 +8,7 @@ import {
 import type { Locale } from '@/i18n';
 import { CONTACT_EMAIL } from '@/lib/config';
 import { Mail, MapPin } from 'lucide-react';
-import { buildContactAlternateLinks } from '@/lib/alternate-links';
+import { buildContactAlternateLinks } from '@/lib/content/alternate-links';
 
 export async function generateMetadata({
   params,

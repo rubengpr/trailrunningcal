@@ -6,7 +6,7 @@ import { Trash2 } from 'lucide-react';
 import { FilterSelect } from '@/components/filters/filter-select';
 import { FilterPill } from '@/components/filters/filter-pill';
 import { PROVINCES, DISTANCE_GROUPS, MONTH_INDICES } from '@/lib/constants';
-import { RACE_TYPES, RACE_TYPE_CATEGORY_KEYS } from '@/lib/home-race-filters';
+import { RACE_TYPES, RACE_TYPE_CATEGORY_KEYS } from '@/lib/races/home-filters';
 
 interface FilterBarProps {
   selectedMonth: string[];

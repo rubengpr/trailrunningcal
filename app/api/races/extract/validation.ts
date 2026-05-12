@@ -1,8 +1,9 @@
 import { isOpenRouterScrapeModelId, isOpenRouterVisionModelId } from '@/lib/integrations/openrouter/scrape-models';
 import type { OpenRouterScrapeModelId, OpenRouterVisionModelId } from '@/lib/integrations/openrouter/scrape-models';
-import { MAX_SCRAPE_MARKDOWN_BYTES } from '@/lib/scrape-markdown-limits';
 import { ValidationError } from '@/lib/errors';
 export { ValidationError };
+
+const MAX_SCRAPE_MARKDOWN_BYTES = 2 * 1024 * 1024;
 
 export type ParsedInput =
   | { mode: 'markdown'; markdown: string; model: OpenRouterScrapeModelId }

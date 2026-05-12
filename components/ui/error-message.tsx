@@ -75,26 +75,6 @@ export function ErrorMessage({
   );
 }
 
-interface RaceCardErrorProps {
-  onRetry?: () => void;
-}
-
-export function RaceCardError({ onRetry }: RaceCardErrorProps) {
-  const t = useTranslations('errors');
-
-  return (
-    <div className="bg-white rounded-lg shadow-sm border border-red-200 p-6">
-      <ErrorMessage
-        title={t('raceLoadError')}
-        message={t('raceLoadErrorMessageFull')}
-        onRetry={onRetry}
-        variant="compact"
-        className="min-h-[120px]"
-      />
-    </div>
-  );
-}
-
 interface SearchErrorProps {
   onRetry?: () => void;
 }

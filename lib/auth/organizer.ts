@@ -8,10 +8,6 @@ export interface OrganizerRaceContext {
   race: TrailRace;
 }
 
-/**
- * Resolves the current user's organizer and verifies they own the given race.
- * Use in API routes before any mutation on a race.
- */
 export async function getOrganizerRaceContext(
   supabase: SupabaseClient,
   raceId: string,

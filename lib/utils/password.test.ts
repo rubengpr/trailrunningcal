@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validatePasswordStrength } from './password-utils';
+import { validatePasswordStrength } from './password';
 
 describe('validatePasswordStrength', () => {
   describe('length validation', () => {

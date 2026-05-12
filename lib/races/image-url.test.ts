@@ -3,7 +3,7 @@ import {
   getRaceImageUrlWithFilename,
   getRaceImageUrl,
   getRaceImageUrls,
-} from './race-image-url';
+} from './image-url';
 
 const MOCK_SUPABASE_URL = 'https://example.supabase.co';
 const ORG_ID = 'org-123';

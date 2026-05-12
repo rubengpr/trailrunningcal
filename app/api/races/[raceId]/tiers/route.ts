@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { getOrganizerRaceContext } from '@/lib/auth/organizer';
 import { requireAuth } from '@/lib/auth';
 import { ValidationError } from '@/lib/errors';
-import { generateRaceSlug } from '@/lib/race-utils';
+import { generateRaceSlug } from '@/lib/races/utils';
 import { locales } from '@/i18n';
 import { revalidatePath } from 'next/cache';
 import { updateTierPrice } from '@/lib/db/race-tiers';

@@ -1,6 +1,6 @@
 import { cache } from 'react';
 import { createStaticClient } from '@/lib/supabase/server';
-import { generateRaceSlug } from '@/lib/race-utils';
+import { generateRaceSlug } from '@/lib/races/utils';
 import type { RaceMapMarker, RaceMapPinRace, RacesMapResponse } from '@/types/map.types';
 
 function getTodayDateString(): string {
@@ -27,9 +27,6 @@ type GroupValue = {
   races: RaceMapPinRace[];
 };
 
-/**
- * Upcoming dated races grouped by city/province, with coordinates from city_locations.
- */
 export const getRacesMapData = cache(async function getRacesMapData(): Promise<RacesMapResponse> {
   const supabase = createStaticClient();
 

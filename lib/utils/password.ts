@@ -1,8 +1,3 @@
-/**
- * Validates password strength against security requirements
- * @param password - The password to validate
- * @returns true if password meets all requirements, false otherwise
- */
 export function validatePasswordStrength(password: string): boolean {
   if (!password || password.length < 8) {
     return false;

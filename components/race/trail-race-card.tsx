@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useFeatureFlagVariantKey } from 'posthog-js/react';
 import { VerifiedBadge } from '@/components/icons/verified-badge';
-import { getDisplayPrice } from '@/lib/race-utils';
+import { getDisplayPrice } from '@/lib/races/utils';
 import { TEST_VERIFIED_RACES_NAME } from '@/lib/constants';
 
 interface TrailRaceCardProps {
