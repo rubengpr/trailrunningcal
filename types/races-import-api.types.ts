@@ -72,6 +72,8 @@ export interface RaceImportBatchItem {
   status: RaceImportItemStatus;
   raceCount: number | null;
   error: string | null;
+  markdown: string | null;
+  rawModelOutput: string | null;
   createdAt: string;
   updatedAt: string;
 }

@@ -29,6 +29,8 @@ function toItem(row: RaceImportItemRow): RaceImportBatchItem {
     status: row.status,
     raceCount: row.race_count,
     error: row.error,
+    markdown: row.result?.markdown ?? null,
+    rawModelOutput: row.result?.rawModelOutput ?? null,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };

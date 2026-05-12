@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { IconActionMenu } from '@/components/ui/icon-action-menu';
 import type { RaceImportItemStatus } from '@/types/races-import-api.types';
 
 export type BulkProcessState = RaceImportItemStatus;
@@ -11,24 +12,24 @@ export interface BulkProcessTableRow {
     status: BulkProcessState;
     raceCount: number | null;
     updatedAt: string;
+    markdown: string | null;
+    rawModelOutput: string | null;
 }
 
 interface BulkProcessTableProps {
     rows: BulkProcessTableRow[];
-    onViewResult: (itemId: string) => void;
-    viewingItemId?: string | null;
 }
 
 function StateBadge({ state }: { state: BulkProcessState }) {
     const t = useTranslations('admin.races.import.bulk');
     const dotColor: Record<BulkProcessState, string> = {
-        completed: 'bg-green-500',
-        running: 'bg-purple-500',
+        completed: 'bg-green-400',
+        running: 'bg-purple-400',
         pending: 'bg-gray-300',
-        failed: 'bg-red-500',
+        failed: 'bg-red-400',
     };
     return (
-        <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-medium text-gray-700">
+        <span className="inline-flex items-center gap-1.5 rounded-full py-0.5 font-medium text-gray-700">
             <span className={`h-2 w-2 shrink-0 rounded-full ${dotColor[state]}`} aria-hidden />
             {t(`state.${state}`)}
         </span>
@@ -36,9 +37,7 @@ function StateBadge({ state }: { state: BulkProcessState }) {
 }
 
 function RaceCountCell({ raceCount }: { raceCount: number | null }) {
-    if (raceCount === null) {
-        return <span className="text-gray-300">—</span>;
-    }
+    if (raceCount === null) return null;
     return <span className="tabular-nums text-gray-700">{raceCount}</span>;
 }
 
@@ -51,7 +50,17 @@ function formatUpdatedAt(value: string): string {
     }).format(new Date(value));
 }
 
-export function BulkProcessTable({ rows, onViewResult, viewingItemId }: BulkProcessTableProps) {
+function triggerDownload(content: string, filename: string, mimeType: string): void {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = filename;
+    anchor.click();
+    URL.revokeObjectURL(url);
+}
+
+export function BulkProcessTable({ rows }: BulkProcessTableProps) {
     const t = useTranslations('admin.races.import.bulk');
 
     if (rows.length === 0) {
@@ -61,47 +70,80 @@ export function BulkProcessTable({ rows, onViewResult, viewingItemId }: BulkProc
     return (
         <div className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-2 shadow-sm">
             <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <table className="w-full border-separate border-spacing-x-8 text-left text-xs">
                     <thead>
-                        <tr className="border-b border-gray-100 text-[11px] font-medium uppercase tracking-wide text-gray-500">
-                            <th className="py-2 pr-3 font-medium">{t('columns.url')}</th>
-                            <th className="py-2 pr-3 font-medium">{t('columns.status')}</th>
-                            <th className="py-2 pr-3 font-medium">{t('columns.suggestedRaces')}</th>
-                            <th className="py-2 pr-3 font-medium">{t('columns.updatedAt')}</th>
-                            <th className="py-2 pr-0 text-right font-medium">{t('columns.actions')}</th>
+                        <tr className="text-[11px] font-medium uppercase tracking-wide text-gray-500">
+                            <th className="w-[45%] border-b border-gray-100 py-2 font-medium">{t('columns.url')}</th>
+                            <th className="border-b border-gray-100 py-2 font-medium">{t('columns.status')}</th>
+                            <th className="w-16 border-b border-gray-100 py-2 text-right font-medium">{t('columns.suggestedRaces')}</th>
+                            <th className="border-b border-gray-100 py-2 font-medium">{t('columns.updatedAt')}</th>
+                            <th className="border-b border-gray-100 py-2"></th>
                         </tr>
                     </thead>
                     <tbody>
-                        {rows.map((row) => (
-                            <tr key={row.id} className="border-b border-gray-50 last:border-b-0">
-                                <td className="max-w-[260px] truncate py-2.5 pr-3 text-gray-700">
-                                    {row.url.replace(/^https?:\/\/(www\.)?/, '')}
-                                </td>
-                                <td className="py-2.5 pr-3">
-                                    <StateBadge state={row.status} />
-                                </td>
-                                <td className="py-2.5 pr-3">
-                                    <RaceCountCell raceCount={row.raceCount} />
-                                </td>
-                                <td className="py-2.5 pr-3 text-gray-500 tabular-nums">
-                                    {formatUpdatedAt(row.updatedAt)}
-                                </td>
-                                <td className="py-2.5 pr-0 text-right">
-                                    {row.status === 'completed' ? (
-                                        <button
-                                            type="button"
-                                            onClick={() => onViewResult(row.id)}
-                                            disabled={viewingItemId === row.id}
-                                            className="rounded-md border border-gray-200 bg-white px-2.5 py-1 text-[11px] font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                        {rows.map((row) => {
+                            const hostname = (() => {
+                                try {
+                                    return new URL(row.url).hostname.replace(/^www\./, '');
+                                } catch {
+                                    return 'file';
+                                }
+                            })();
+
+                            return (
+                                <tr key={row.id} className="group align-middle">
+                                    <td className="max-w-[260px] truncate border-b border-gray-50 py-2.5 group-last:border-b-0">
+                                        <a
+                                            href={row.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-gray-700 hover:underline"
                                         >
-                                            {viewingItemId === row.id ? t('actions.loading') : t('actions.viewResult')}
-                                        </button>
-                                    ) : (
-                                        <span className="text-gray-300">—</span>
-                                    )}
-                                </td>
-                            </tr>
-                        ))}
+                                            {row.url.replace(/^https?:\/\/(www\.)?/, '')}
+                                        </a>
+                                    </td>
+                                    <td className="border-b border-gray-50 py-2.5 group-last:border-b-0">
+                                        <StateBadge state={row.status} />
+                                    </td>
+                                    <td className="border-b border-gray-50 py-2.5 text-right group-last:border-b-0">
+                                        <RaceCountCell raceCount={row.raceCount} />
+                                    </td>
+                                    <td className="border-b border-gray-50 py-2.5 text-gray-500 tabular-nums group-last:border-b-0">
+                                        {(row.status === 'completed' || row.status === 'failed') && formatUpdatedAt(row.updatedAt)}
+                                    </td>
+                                    <td className="border-b border-gray-50 py-2.5 text-right group-last:border-b-0">
+                                        {row.status === 'completed' ? (
+                                            <IconActionMenu
+                                                triggerAriaLabel={t('columns.actions')}
+                                                size="sm"
+                                                items={[
+                                                    {
+                                                        id: 'downloadMarkdown',
+                                                        label: t('actions.downloadMarkdown'),
+                                                        disabled: !row.markdown,
+                                                        onSelect: () => {
+                                                            if (row.markdown) {
+                                                                triggerDownload(row.markdown, `crawl-${hostname}.md`, 'text/markdown');
+                                                            }
+                                                        },
+                                                    },
+                                                    {
+                                                        id: 'downloadJson',
+                                                        label: t('actions.downloadJson'),
+                                                        disabled: !row.rawModelOutput,
+                                                        onSelect: () => {
+                                                            if (row.rawModelOutput) {
+                                                                triggerDownload(row.rawModelOutput, `model-raw-${hostname}.json`, 'application/json;charset=utf-8');
+                                                            }
+                                                        },
+                                                    },
+                                                ]}
+                                            />
+                                        ) : null}
+                                    </td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
             </div>

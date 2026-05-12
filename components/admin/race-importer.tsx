@@ -23,6 +23,8 @@ import {
 } from '@/components/admin/scrape-preview.mock';
 import { BulkProcessTable } from '@/components/admin/bulk-process-table';
 import type { BulkProcessTableRow } from '@/components/admin/bulk-process-table';
+import { BulkResultsOverview } from '@/components/admin/bulk-results-overview';
+import type { BulkResultItem } from '@/components/admin/bulk-results-overview';
 import {
     runTrailRaceAgent,
     runRaceImport,
@@ -475,6 +477,8 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
     const [isStartingBatch, setIsStartingBatch] = useState(false);
     const [viewingBatchItemId, setViewingBatchItemId] = useState<string | null>(null);
     const [isAddingToPending, setIsAddingToPending] = useState(false);
+    const [bulkResultItems, setBulkResultItems] = useState<BulkResultItem[]>([]);
+    const fetchedBatchItemIds = useRef<Set<string>>(new Set());
     const [importConflicts, setImportConflicts] = useState<ConflictingRace[]>([]);
     const { isOpen: isConflictModalOpen, open: openConflictModal, close: closeConflictModal } = useModal();
 
@@ -748,6 +752,31 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         return () => window.clearInterval(intervalId);
     }, [activeBatchId, batchSnapshot, fetchBatchStatus, t]);
 
+    useEffect(() => {
+        if (!batchSnapshot || isBatchRunning) return;
+
+        const completedItems = batchSnapshot.items.filter(
+            (item) => item.status === 'completed' && !fetchedBatchItemIds.current.has(item.id),
+        );
+        if (completedItems.length === 0) return;
+
+        const itemIds = completedItems.map((item) => item.id);
+        itemIds.forEach((id) => fetchedBatchItemIds.current.add(id));
+
+        void Promise.all(itemIds.map((id) => getItemResult(id)))
+            .then((results) => {
+                const newItems: BulkResultItem[] = results.map((result) => ({
+                    url: result.url,
+                    races: result.races,
+                }));
+                setBulkResultItems((prev) => [...prev, ...newItems]);
+            })
+            .catch((err) => {
+                console.error('Failed to fetch bulk result items:', err);
+                itemIds.forEach((id) => fetchedBatchItemIds.current.delete(id));
+            });
+    }, [batchSnapshot, isBatchRunning]);
+
     const handleViewBatchResult = async (itemId: string): Promise<void> => {
         setViewingBatchItemId(itemId);
 
@@ -793,6 +822,11 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         dispatch({ type: 'RACE_EDITED', index, race: updatedRace });
     };
 
+    const handleBulkAccept = async (url: string, _raceIndex: number, race: TrailRace): Promise<void> => {
+        await acceptScrapedRace(race, url);
+        toast.success(t('results.acceptSuccess'));
+    };
+
     const handleSwitchToJsonView = (): void => {
         dispatch({ type: 'JSON_TAB_OPENED', value: JSON.stringify(scrapedRaces, null, 2) });
     };
@@ -834,6 +868,8 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         setActiveBatchId(null);
         setBatchSnapshot(null);
         setViewingBatchItemId(null);
+        setBulkResultItems([]);
+        fetchedBatchItemIds.current.clear();
         fileUpload.clearUpload();
         runStartedAtRef.current = null;
         clearFullPipelineStepRefs();
@@ -1013,6 +1049,8 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
             status: item.status,
             raceCount: item.raceCount,
             updatedAt: item.updatedAt,
+            markdown: item.markdown,
+            rawModelOutput: item.rawModelOutput,
         })) ?? [];
     }, [batchSnapshot]);
 
@@ -1440,25 +1478,22 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                     onSave={handleSave}
                 />
             )}
-            {batchSnapshot && (
-                <div className="max-w-3xl rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-5">
-                    <p className="text-sm font-medium text-gray-900">
-                        {t('bulk.statusSummary', {
-                            completed: batchSnapshot.summary.completed,
-                            failed: batchSnapshot.summary.failed,
-                            total: batchSnapshot.summary.total,
-                        })}
-                    </p>
-                    <p className="mt-1 text-xs text-gray-500">
-                        {t(`bulk.batchStatus.${batchSnapshot.batch.status}`)}
-                    </p>
+            {batchRows.length > 0 && (
+                <div>
+                    {batchSnapshot && (
+                        <p className="mb-2 text-xs text-gray-500">
+                            {t('bulk.statusSummary', {
+                                completed: batchSnapshot.summary.completed,
+                                failed: batchSnapshot.summary.failed,
+                            })}
+                        </p>
+                    )}
+                    <BulkProcessTable rows={batchRows} />
                 </div>
             )}
-            <BulkProcessTable
-                rows={batchRows}
-                onViewResult={handleViewBatchResult}
-                viewingItemId={viewingBatchItemId}
-            />
+            {bulkResultItems.length > 0 && (
+                <BulkResultsOverview items={bulkResultItems} onAccept={handleBulkAccept} />
+            )}
             {jsonView && hasScraped && !isScraping && scrapeError === null && (
                 <div className="max-w-3xl flex flex-col gap-3">
                     <textarea

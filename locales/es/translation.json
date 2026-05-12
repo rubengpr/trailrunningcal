@@ -814,11 +814,11 @@
           "runError": "Error al ejecutar el proceso automático",
           "pollError": "Error al actualizar el estado del lote",
           "resultError": "Error al cargar el resultado",
-          "statusSummary": "{completed}/{total} completadas · {failed} fallidas",
+          "statusSummary": "{completed} completadas · {failed} fallidas",
           "columns": {
             "url": "URL",
             "status": "Estado",
-            "suggestedRaces": "Carreras sugeridas",
+            "suggestedRaces": "Carreras",
             "updatedAt": "Actualizada",
             "actions": "Acciones"
           },
@@ -828,15 +828,11 @@
             "pending": "Pendiente",
             "failed": "Fallida"
           },
-          "batchStatus": {
-            "pending": "Lote pendiente",
-            "running": "Lote en proceso",
-            "completed": "Lote completado",
-            "failed": "Lote fallido"
-          },
           "actions": {
             "viewResult": "Ver resultado",
-            "loading": "Cargando..."
+            "loading": "Cargando...",
+            "downloadMarkdown": "Markdown",
+            "downloadJson": "JSON"
           }
         },
         "results": {
@@ -847,6 +843,7 @@
           "addToPendingButton": "Añadir a pendientes",
           "addToPendingLoading": "Añadiendo...",
           "errorTitle": "Error al extraer datos",
+          "name": "Nombre",
           "distance": "Distancia",
           "elevation": "Desnivel positivo",
           "location": "Ubicación",

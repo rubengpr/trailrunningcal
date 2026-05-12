@@ -16,16 +16,22 @@ interface IconActionMenuProps {
     triggerTitle?: string;
     disabled?: boolean;
     items: IconActionMenuItem[];
+    triggerIcon?: React.ReactNode;
+    size?: 'default' | 'sm';
 }
 
-const triggerBaseClass =
-    'inline-flex h-9 min-h-9 shrink-0 items-center justify-center gap-0.5 rounded-xl border border-gray-300 bg-white px-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer';
+const triggerClass = {
+    default: 'inline-flex h-9 min-h-9 shrink-0 items-center justify-center gap-0.5 rounded-xl border border-gray-300 bg-white px-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer',
+    sm: 'inline-flex h-7 min-h-7 shrink-0 items-center justify-center gap-0.5 rounded-lg border border-gray-200 bg-white px-1 text-xs font-medium text-gray-500 transition-colors hover:bg-gray-50 focus:outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer',
+};
 
 export function IconActionMenu({
     triggerAriaLabel,
     triggerTitle,
     disabled = false,
     items,
+    triggerIcon,
+    size = 'default',
 }: IconActionMenuProps) {
     const { open, containerRef, triggerRef, dropdownRef, dropdownStyle, toggleOpen, closeMenu } =
         useMultiSelectMenu({
@@ -53,7 +59,7 @@ export function IconActionMenu({
                         key={item.id}
                         type="button"
                         disabled={item.disabled}
-                        className="flex w-full cursor-pointer px-3 py-2 text-left text-sm text-gray-900 transition-colors duration-100 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-white"
+                        className={`flex w-full cursor-pointer text-left text-gray-900 transition-colors duration-100 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-white ${size === 'sm' ? 'px-2.5 py-1.5 text-xs' : 'px-3 py-2 text-sm'}`}
                         onClick={() => {
                             if (item.disabled) return;
                             item.onSelect();
@@ -72,7 +78,7 @@ export function IconActionMenu({
             <button
                 ref={triggerRef}
                 type="button"
-                className={triggerBaseClass}
+                className={triggerClass[size]}
                 aria-label={triggerAriaLabel}
                 title={triggerTitle ?? triggerAriaLabel}
                 aria-expanded={open}
@@ -80,13 +86,17 @@ export function IconActionMenu({
                 disabled={disabled}
                 onClick={toggleOpen}
             >
-                <Download className="size-4 shrink-0" strokeWidth={2} aria-hidden />
-                <ChevronDown
-                    size={14}
-                    strokeWidth={2}
-                    className={`shrink-0 text-gray-500 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
-                    aria-hidden
-                />
+                {triggerIcon ?? (
+                    <>
+                        <Download className={`${size === 'sm' ? 'size-3.5' : 'size-4'} shrink-0`} strokeWidth={2} aria-hidden />
+                        <ChevronDown
+                            size={size === 'sm' ? 12 : 14}
+                            strokeWidth={2}
+                            className={`shrink-0 text-gray-500 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+                            aria-hidden
+                        />
+                    </>
+                )}
             </button>
             {panel}
         </div>

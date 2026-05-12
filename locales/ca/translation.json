@@ -817,11 +817,11 @@
           "runError": "Error en executar el procés automàtic",
           "pollError": "Error en actualitzar l'estat del lot",
           "resultError": "Error en carregar el resultat",
-          "statusSummary": "{completed}/{total} completades · {failed} fallides",
+          "statusSummary": "{completed} completades · {failed} fallides",
           "columns": {
             "url": "URL",
             "status": "Estat",
-            "suggestedRaces": "Curses suggerides",
+            "suggestedRaces": "Curses",
             "updatedAt": "Actualitzada",
             "actions": "Accions"
           },
@@ -831,15 +831,11 @@
             "pending": "Pendent",
             "failed": "Fallida"
           },
-          "batchStatus": {
-            "pending": "Lot pendent",
-            "running": "Lot en procés",
-            "completed": "Lot completat",
-            "failed": "Lot fallit"
-          },
           "actions": {
             "viewResult": "Veure resultat",
-            "loading": "Carregant..."
+            "loading": "Carregant...",
+            "downloadMarkdown": "Markdown",
+            "downloadJson": "JSON"
           }
         },
         "results": {
@@ -850,6 +846,7 @@
           "addToPendingButton": "Afegir a pendents",
           "addToPendingLoading": "Afegint...",
           "errorTitle": "Error en extreure dades",
+          "name": "Nom",
           "distance": "Distància",
           "elevation": "Desnivell positiu",
           "location": "Ubicació",
