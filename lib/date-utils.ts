@@ -59,3 +59,17 @@ export const formatDateByLocale = (
     ? formatDateToCatalan(date)
     : formatDateToSpanish(date);
 };
+
+export const formatDateShort = (date: Date | string): string => {
+  const dateObj = typeof date === 'string' ? new Date(date + 'T00:00:00') : date;
+
+  if (isNaN(dateObj.getTime())) {
+    return typeof date === 'string' ? date : '';
+  }
+
+  return dateObj.toLocaleDateString('es-ES', {
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit',
+  });
+};

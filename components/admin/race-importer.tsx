@@ -13,6 +13,7 @@ import { IconActionMenu } from '@/components/ui/icon-action-menu';
 import { TabSwitcher } from '@/components/ui/tab-switcher';
 import { SectionHeader } from '@/components/ui/section-header';
 import { SuggestedRacesPreview } from '@/components/race/suggested-races-preview';
+import { cleanUrl } from '@/lib/url-utils';
 import {
     DUMMY_CRAWL_PAGE_STATS,
     DUMMY_LAST_RUN_DURATION_MS,
@@ -446,7 +447,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
 
     const pendingUrlOptions: ComboboxOption[] = pendingEntries.map((e) => ({
         value: e.url,
-        label: e.url.replace(/^https?:\/\/(www\.)?/, ''),
+        label: cleanUrl(e.url),
     }));
 
     const crawlStartedAtRef = useRef<number | null>(null);

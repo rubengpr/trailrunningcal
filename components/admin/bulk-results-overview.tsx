@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { X, CheckCircle2, Pencil } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { TrailRace } from '@/types/trail-race-agent.types';
+import { formatDateShort } from '@/lib/date-utils';
+import { cleanUrl } from '@/lib/url-utils';
 
 export interface BulkResultItem {
     url: string;
@@ -13,23 +15,6 @@ export interface BulkResultItem {
 interface BulkResultsOverviewProps {
     items: BulkResultItem[];
     onAccept: (url: string, raceIndex: number, race: TrailRace) => Promise<void>;
-}
-
-function formatDate(dateStr: string): string {
-    try {
-        const date = new Date(dateStr + 'T00:00:00');
-        return date.toLocaleDateString('es-ES', {
-            day: '2-digit',
-            month: '2-digit',
-            year: '2-digit',
-        });
-    } catch {
-        return dateStr;
-    }
-}
-
-function cleanUrl(url: string): string {
-    return url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
 }
 
 function ResultCard({ item, onAccept }: { item: BulkResultItem; onAccept: (raceIndex: number, race: TrailRace) => Promise<void> }) {
@@ -164,7 +149,7 @@ function RaceRow({ race, isExpanded, onToggle, isLast, isAccepted, isAccepting, 
                     {race.name}
                 </td>
                 <td className={`${borderClass} w-[10%] py-2.5 pr-8 tabular-nums text-gray-500 ${isExpanded ? 'border-b-0' : ''}`}>
-                    {formatDate(race.date)}
+                    {formatDateShort(race.date)}
                 </td>
                 <td className={`${borderClass} w-[25%] py-2.5 pr-8 text-gray-500 ${isExpanded ? 'border-b-0' : ''}`}>
                     {race.city}, {race.province}

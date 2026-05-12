@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { IconActionMenu } from '@/components/ui/icon-action-menu';
 import type { RaceImportItemStatus } from '@/types/races-import-api.types';
 import { triggerDownload } from '@/lib/download-utils';
+import { cleanUrl } from '@/lib/url-utils';
 
 export type BulkProcessState = RaceImportItemStatus;
 
@@ -91,7 +92,7 @@ export function BulkProcessTable({ rows }: BulkProcessTableProps) {
                                             rel="noopener noreferrer"
                                             className="text-gray-700 hover:underline"
                                         >
-                                            {row.url.replace(/^https?:\/\/(www\.)?/, '')}
+                                            {cleanUrl(row.url)}
                                         </a>
                                     </td>
                                     <td className="border-b border-gray-50 py-2.5 group-last:border-b-0">
