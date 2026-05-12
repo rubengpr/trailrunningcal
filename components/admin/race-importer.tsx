@@ -36,6 +36,7 @@ import {
 import { OPENROUTER_SCRAPE_MODEL_IDS, OPENROUTER_VISION_MODEL_IDS } from '@/lib/integrations/openrouter/scrape-models';
 import type { OpenRouterScrapeModelId, OpenRouterVisionModelId } from '@/lib/integrations/openrouter/scrape-models';
 import { formatDurationMs } from '@/lib/format-duration';
+import { triggerDownload } from '@/lib/download-utils';
 import { useLiveTimer } from '@/hooks/use-live-timer';
 import { useFileUpload } from '@/hooks/use-file-upload';
 import {
@@ -164,15 +165,6 @@ function PipelineRow({ kind, title, durationMs, errorDetail, children }: {
     );
 }
 
-function triggerMarkdownFileDownload(markdown: string, downloadName: string): void {
-    const blob = new Blob([markdown], { type: 'text/markdown' });
-    const objectUrl = URL.createObjectURL(blob);
-    const anchor = document.createElement('a');
-    anchor.href = objectUrl;
-    anchor.download = downloadName;
-    anchor.click();
-    URL.revokeObjectURL(objectUrl);
-}
 
 function isValidUrl(url: string): boolean {
     const trimmed = url.trim();
@@ -885,20 +877,12 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
             const hostname = new URL(normalizeUrl(websiteUrl.trim())).hostname.replace(/^www\./, '');
             downloadName = `crawl-${hostname}.md`;
         }
-        triggerMarkdownFileDownload(scrapeMarkdown, downloadName);
+        triggerDownload(scrapeMarkdown, downloadName, 'text/markdown');
     };
 
     const handleDownloadRawModelOutput = (): void => {
         if (rawModelOutput === null || rawModelOutput === '') return;
-        const blob = new Blob([rawModelOutput], {
-            type: 'application/json;charset=utf-8',
-        });
-        const objectUrl = URL.createObjectURL(blob);
-        const anchor = document.createElement('a');
-        anchor.href = objectUrl;
-        anchor.download = `model-raw-${Date.now()}.json`;
-        anchor.click();
-        URL.revokeObjectURL(objectUrl);
+        triggerDownload(rawModelOutput, `model-raw-${Date.now()}.json`, 'application/json;charset=utf-8');
     };
 
     const showSuggestedRacesPreview =

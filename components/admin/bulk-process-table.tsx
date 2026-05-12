@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { IconActionMenu } from '@/components/ui/icon-action-menu';
 import type { RaceImportItemStatus } from '@/types/races-import-api.types';
+import { triggerDownload } from '@/lib/download-utils';
 
 export type BulkProcessState = RaceImportItemStatus;
 
@@ -50,15 +51,6 @@ function formatUpdatedAt(value: string): string {
     }).format(new Date(value));
 }
 
-function triggerDownload(content: string, filename: string, mimeType: string): void {
-    const blob = new Blob([content], { type: mimeType });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement('a');
-    anchor.href = url;
-    anchor.download = filename;
-    anchor.click();
-    URL.revokeObjectURL(url);
-}
 
 export function BulkProcessTable({ rows }: BulkProcessTableProps) {
     const t = useTranslations('admin.races.import.bulk');
