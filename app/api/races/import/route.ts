@@ -52,6 +52,15 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         { status: error.status },
       );
     }
+    const isTimeout =
+      (error instanceof Error && error.message === 'Spider request timed out') ||
+      (error != null &&
+        typeof error === 'object' &&
+        'name' in error &&
+        error.name === 'TimeoutError');
+    if (isTimeout) {
+      return NextResponse.json({ error: 'timeout' }, { status: 504 });
+    }
     console.error('Race import API error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },

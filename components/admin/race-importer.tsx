@@ -715,9 +715,10 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                 }
             }
         } catch (err) {
-            const errorMessage = err instanceof Error ? err.message : t('scrapeError');
+            const isTimeout = err instanceof Error && err.message === 'timeout';
+            const errorMessage = isTimeout ? t('scrapeTimeout') : t('scrapeError');
             dispatch({ type: 'SCRAPE_ERROR', error: errorMessage });
-            toast.error(t('scrapeError'));
+            toast.error(errorMessage);
         } finally {
             if (
                 llmStartedAtRef.current !== null &&

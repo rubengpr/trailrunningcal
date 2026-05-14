@@ -93,14 +93,28 @@ async function postAndParse(
 ): Promise<Page[]> {
   const apiKey = requireApiKey('SPIDER_API_KEY');
 
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  });
+  let response: Response;
+  try {
+    response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(15_000),
+    });
+  } catch (err) {
+    if (
+      err != null &&
+      typeof err === 'object' &&
+      'name' in err &&
+      err.name === 'TimeoutError'
+    ) {
+      throw new Error('Spider request timed out');
+    }
+    throw err;
+  }
 
   const responseText = await response.text();
   let parsed: unknown;
@@ -125,8 +139,11 @@ async function postAndParse(
 }
 
 export async function scrape(url: string, options?: Options): Promise<Page[]> {
-  const { requestMode = 'smart', returnFormat = 'markdown', blacklist } =
-    options ?? {};
+  const {
+    requestMode = 'smart',
+    returnFormat = 'markdown',
+    blacklist,
+  } = options ?? {};
   const body: Record<string, unknown> = {
     url,
     request: requestMode,

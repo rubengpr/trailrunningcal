@@ -776,6 +776,7 @@
         "scrapeSuccess": "S'han trobat {count} curses",
         "scrapeNoResults": "No s'han trobat curses en aquesta web",
         "scrapeError": "Error en extreure dades de la web",
+        "scrapeTimeout": "Timeout en connectar amb la web",
         "crawlError": "Error en rastrejar la web",
         "scrapePageError": "Error en obtenir la pàgina",
         "llmError": "Error en processar amb el model",
