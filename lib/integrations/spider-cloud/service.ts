@@ -62,9 +62,9 @@ const BLACKLIST: readonly string[] = [
   'xarxes',
   'sharer',
   'intent',
-  'facebook\\.com\\/sharer',
-  'x\\.com\\/intent\\/tweet',
-  'twitter\\.com\\/intent\\/tweet',
+  'facebook.com/sharer',
+  'x.com/intent/tweet',
+  'twitter.com/intent/tweet',
   // Accommodation
   'allotjaments',
   'alojamientos',
