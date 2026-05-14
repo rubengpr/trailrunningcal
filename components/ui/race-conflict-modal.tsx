@@ -17,13 +17,13 @@ export function RaceConflictModal({ isOpen, onClose, conflicts }: RaceConflictMo
   const showUrl = new Set(conflicts.map((c) => c.websiteUrl)).size > 1;
 
   return (
-    <BaseModal isOpen={isOpen} onClose={onClose} title={t('title')} maxWidth="lg">
+    <BaseModal isOpen={isOpen} onClose={onClose} title={t('title')} maxWidth="2xl">
       <p className="mb-4 text-sm text-gray-600">{t('description')}</p>
       <ul className="mb-6 divide-y divide-gray-100 rounded-md border border-gray-200">
         {conflicts.map((race) => (
-          <li key={race.id} className="flex items-center justify-between gap-4 px-4 py-3">
+          <li key={race.id} className={`grid items-center gap-4 px-4 py-3 ${showUrl ? 'grid-cols-[1fr_auto_1fr]' : 'grid-cols-[1fr_auto]'}`}>
             <span className="text-sm font-medium text-gray-900">{race.name}</span>
-            <span className="shrink-0 text-xs text-gray-500">{race.date}</span>
+            <span className="text-xs text-gray-500">{race.date}</span>
             {showUrl && (
               <span className="truncate text-xs text-gray-400">{race.websiteUrl}</span>
             )}

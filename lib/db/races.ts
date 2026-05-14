@@ -137,7 +137,7 @@ export const getRecommendedRaces = cache(async function getRecommendedRaces(
   return (data as RaceRow[]).map(toTrailRace);
 });
 
-export async function getUrlConflicts(urls: string[]): Promise<ConflictingRace[]> {
+export async function getFutureRacesByUrl(urls: string[]): Promise<ConflictingRace[]> {
   const supabase = createStaticClient();
   const today = new Date().toISOString().slice(0, 10);
 
