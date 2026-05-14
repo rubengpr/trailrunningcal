@@ -8,6 +8,7 @@ import type {
   RaceImportStepName,
 } from '@/types/races-import-api.types';
 import { checkDuplicateRaces } from '@/lib/guards/duplicate-races';
+import { createPendingRace } from './pending-races';
 
 interface TimedResult<T> {
   result: T;
@@ -44,10 +45,25 @@ function extractStep(raceCount: number, durationMs: number): RaceImportStep {
   };
 }
 
+const BLACKLIST_DOMAINS: string[] = ['instagram.com', 'curses.cat'];
+
+function isUrlDomainBlacklisted(url: string): boolean {
+  try {
+    const { hostname } = new URL(url);
+    return BLACKLIST_DOMAINS.some((domain) => hostname.endsWith(domain));
+  } catch {
+    return false;
+  }
+}
+
 export async function processCrawlSiteExtract(input: {
   url: string;
   model: OpenRouterScrapeModelId;
-}): Promise<RaceImportResult> {
+}): Promise<RaceImportResult | null> {
+  if (isUrlDomainBlacklisted(input.url)) {
+    await createPendingRace(input.url);
+    return null;
+  }
   await checkDuplicateRaces([input.url]);
   const crawl = await timeStep(() => crawlSite(input.url));
   const extract = await timeStep(() =>

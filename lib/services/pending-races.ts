@@ -1,5 +1,9 @@
 import { createAdminClient } from '@/lib/supabase/server';
-import { isUrlInRaces, isUrlInPendingRaces, insertPendingRace } from '@/lib/db/pending-races';
+import {
+  isUrlInRaces,
+  isUrlInPendingRaces,
+  insertPendingRace,
+} from '@/lib/db/pending-races';
 import type { PendingRace, SkippedUrl } from '@/types/pending-race.types';
 
 export type AddPendingRacesResult = {
@@ -7,7 +11,20 @@ export type AddPendingRacesResult = {
   skipped: SkippedUrl[];
 };
 
-export async function createPendingRaces(urls: string[]): Promise<AddPendingRacesResult> {
+export async function createPendingRace(
+  url: string,
+): Promise<PendingRace | null> {
+  const supabase = createAdminClient();
+
+  const exists = await isUrlInPendingRaces(supabase, url);
+  if (exists) throw new Error('URL already exists in pending races');
+
+  return insertPendingRace(supabase, url);
+}
+
+export async function createPendingRaces(
+  urls: string[],
+): Promise<AddPendingRacesResult> {
   const supabase = createAdminClient();
   const added: PendingRace[] = [];
   const skipped: SkippedUrl[] = [];

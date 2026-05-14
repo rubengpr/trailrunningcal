@@ -213,7 +213,7 @@ export async function markBatchItemRunning(itemId: string): Promise<void> {
 export async function markBatchItemCompleted(
   itemId: string,
   input: {
-    result: RaceImportResult;
+    result: RaceImportResult | null;
     raceCount: number;
   },
 ): Promise<void> {

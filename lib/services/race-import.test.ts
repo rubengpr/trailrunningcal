@@ -9,6 +9,8 @@ const mocks = vi.hoisted(() => ({
   scrapePage: vi.fn(),
   crawlSite: vi.fn(),
   extractFromMarkdown: vi.fn(),
+  createPendingRace: vi.fn(),
+  checkDuplicateRaces: vi.fn(),
 }));
 
 vi.mock('@/lib/integrations/spider-cloud/service', () => ({
@@ -18,6 +20,14 @@ vi.mock('@/lib/integrations/spider-cloud/service', () => ({
 
 vi.mock('@/lib/integrations/openrouter/service', () => ({
   extractFromMarkdown: mocks.extractFromMarkdown,
+}));
+
+vi.mock('./pending-races', () => ({
+  createPendingRace: mocks.createPendingRace,
+}));
+
+vi.mock('@/lib/guards/duplicate-races', () => ({
+  checkDuplicateRaces: mocks.checkDuplicateRaces,
 }));
 
 import {
@@ -86,9 +96,9 @@ describe('processCrawlSiteExtract', () => {
 
     expect(mocks.crawlSite).toHaveBeenCalledOnce();
     expect(mocks.extractFromMarkdown).toHaveBeenCalledOnce();
-    expect(result.workflow).toBe('crawlSiteExtract');
-    expect(result.fallbackUsed).toBeNull();
-    expect(result.steps.map((step) => step.name)).toEqual([
+    expect(result!.workflow).toBe('crawlSiteExtract');
+    expect(result!.fallbackUsed).toBeNull();
+    expect(result!.steps.map((step) => step.name)).toEqual([
       'crawlSite',
       'extract',
     ]);
@@ -104,8 +114,8 @@ describe('processCrawlSiteExtract', () => {
       model: MODEL,
     });
 
-    expect(result.races).toEqual([]);
-    expect(result.errorMessage).toBe(msg);
+    expect(result!.races).toEqual([]);
+    expect(result!.errorMessage).toBe(msg);
   });
 
   it('passes null errorMessage when races are found', async () => {
@@ -117,8 +127,24 @@ describe('processCrawlSiteExtract', () => {
       model: MODEL,
     });
 
-    expect(result.races).toHaveLength(1);
-    expect(result.errorMessage).toBeNull();
+    expect(result!.races).toHaveLength(1);
+    expect(result!.errorMessage).toBeNull();
+  });
+
+  it('returns null and creates a pending race for blacklisted domains', async () => {
+    mocks.createPendingRace.mockResolvedValue(undefined);
+
+    const result = await processCrawlSiteExtract({
+      url: 'https://instagram.com/somerace',
+      model: MODEL,
+    });
+
+    expect(result).toBeNull();
+    expect(mocks.createPendingRace).toHaveBeenCalledWith(
+      'https://instagram.com/somerace',
+    );
+    expect(mocks.crawlSite).not.toHaveBeenCalled();
+    expect(mocks.extractFromMarkdown).not.toHaveBeenCalled();
   });
 });
 

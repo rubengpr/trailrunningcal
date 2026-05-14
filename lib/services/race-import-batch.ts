@@ -107,7 +107,7 @@ async function processRaceImportItemStep(input: {
 
     await markBatchItemCompleted(input.itemId, {
       result,
-      raceCount: result.races.length,
+      raceCount: result?.races.length ?? 0,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
