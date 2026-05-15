@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { getOrganizerRaceContext } from '@/lib/auth/organizer';
-import { ValidationError } from '@/lib/errors';
+import { handleRouteError } from '@/lib/api/handle-error';
 import {
   getRaceImage,
   uploadRaceImage,
@@ -23,11 +23,7 @@ export async function GET(
 
     return NextResponse.json({ success: true, data: result });
   } catch (error) {
-    console.error('API error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 },
-    );
+    return handleRouteError(error);
   }
 }
 
@@ -57,14 +53,7 @@ export async function POST(
 
     return NextResponse.json({ success: true, filename });
   } catch (error) {
-    if (error instanceof ValidationError) {
-      return NextResponse.json({ error: error.message }, { status: error.status });
-    }
-    console.error('API error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 },
-    );
+    return handleRouteError(error);
   }
 }
 
@@ -90,13 +79,6 @@ export async function DELETE(
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    if (error instanceof ValidationError) {
-      return NextResponse.json({ error: error.message }, { status: error.status });
-    }
-    console.error('API error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 },
-    );
+    return handleRouteError(error);
   }
 }

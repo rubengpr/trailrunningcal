@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
-import { parseRaceInput, ValidationError } from '@/app/api/races/validation';
-import { DuplicateRaceError } from '@/lib/errors';
+import { parseRaceInput } from '@/app/api/races/validation';
+import { handleRouteError } from '@/lib/api/handle-error';
 import { createRace } from '@/lib/services/races';
 
 export async function POST(request: NextRequest) {
@@ -17,22 +17,6 @@ export async function POST(request: NextRequest) {
       { status: 201 },
     );
   } catch (error) {
-    if (error instanceof DuplicateRaceError) {
-      return NextResponse.json(
-        { error: 'conflict', conflicts: error.conflicts },
-        { status: 409 },
-      );
-    }
-    if (error instanceof ValidationError) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: error.status },
-      );
-    }
-    console.error('API error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 },
-    );
+    return handleRouteError(error);
   }
 }

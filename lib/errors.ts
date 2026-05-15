@@ -1,8 +1,23 @@
 import type { ConflictingRace } from '@/types/race.types';
 
+export class AuthError extends Error {
+  constructor() {
+    super('Unauthorized');
+  }
+}
+
 export class ValidationError extends Error {
-  constructor(message: string, public readonly status: number) {
+  constructor(
+    message: string,
+    public readonly status: number,
+  ) {
     super(message);
+  }
+}
+
+export class TimeoutError extends Error {
+  constructor() {
+    super('Request timed out');
   }
 }
 

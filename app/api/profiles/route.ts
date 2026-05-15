@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
-import { ValidationError } from '@/lib/errors';
 import { updateProfile } from '@/lib/db/profiles';
+import { handleRouteError } from '@/lib/api/handle-error';
 import { parseProfileInput } from './validation';
 
 export async function PATCH(request: NextRequest) {
@@ -14,13 +14,6 @@ export async function PATCH(request: NextRequest) {
 
     return NextResponse.json({ success: true, data });
   } catch (error) {
-    if (error instanceof ValidationError) {
-      return NextResponse.json({ error: error.message }, { status: error.status });
-    }
-    console.error('API error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 },
-    );
+    return handleRouteError(error);
   }
 }

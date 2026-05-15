@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
-import { parseInput, ValidationError } from './validation';
+import { handleRouteError } from '@/lib/api/handle-error';
+import { parseInput } from './validation';
 import { crawlSite, scrapePage } from '@/lib/integrations/spider-cloud/service';
 
 export const maxDuration = 60;
@@ -30,16 +31,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     return NextResponse.json({ error: 'Invalid mode' }, { status: 400 });
   } catch (error) {
-    if (error instanceof ValidationError) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: error.status },
-      );
-    }
-    console.error('Scrape API error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 },
-    );
+    return handleRouteError(error);
   }
 }

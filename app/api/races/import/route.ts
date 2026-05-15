@@ -6,8 +6,8 @@ import {
   processScrapePage,
   processScrapePageExtract,
 } from '@/lib/services/race-import';
-import { parseInput, ValidationError } from './validation';
-import { DuplicateRaceError } from '@/lib/errors';
+import { parseInput } from './validation';
+import { handleRouteError } from '@/lib/api/handle-error';
 
 export const maxDuration = 60;
 
@@ -40,31 +40,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     return NextResponse.json({ error: 'Invalid workflow' }, { status: 400 });
   } catch (error) {
-    if (error instanceof DuplicateRaceError) {
-      return NextResponse.json(
-        { error: 'conflict', conflicts: error.conflicts },
-        { status: 409 },
-      );
-    }
-    if (error instanceof ValidationError) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: error.status },
-      );
-    }
-    const isTimeout =
-      (error instanceof Error && error.message === 'Spider request timed out') ||
-      (error != null &&
-        typeof error === 'object' &&
-        'name' in error &&
-        error.name === 'TimeoutError');
-    if (isTimeout) {
-      return NextResponse.json({ error: 'timeout' }, { status: 504 });
-    }
-    console.error('Race import API error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 },
-    );
+    return handleRouteError(error);
   }
 }

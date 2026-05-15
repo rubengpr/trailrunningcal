@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
 import { startRaceImportBatch } from '@/lib/services/race-import-batch';
-import { parseBatchInput, ValidationError } from './validation';
-import { DuplicateRaceError } from '@/lib/errors';
+import { parseBatchInput } from './validation';
+import { handleRouteError } from '@/lib/api/handle-error';
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
@@ -18,23 +18,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       data,
     });
   } catch (error) {
-    if (error instanceof DuplicateRaceError) {
-      return NextResponse.json(
-        { error: 'conflict', conflicts: error.conflicts },
-        { status: 409 },
-      );
-    }
-    if (error instanceof ValidationError) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: error.status },
-      );
-    }
-
-    console.error('Race import batch API error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 },
-    );
+    return handleRouteError(error);
   }
 }

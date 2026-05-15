@@ -11,16 +11,33 @@ export type OrganizerInput = {
 
 function validateOptionalUrl(value: unknown): void {
   if (value === undefined || value === null || value === '') return;
-  if (typeof value !== 'string') throw new ValidationError('Invalid input', 400);
-  try { new URL(value); } catch {
+  if (typeof value !== 'string')
+    throw new ValidationError('Invalid input', 400);
+  try {
+    new URL(value);
+  } catch {
     throw new ValidationError('Invalid input', 400);
   }
 }
 
-export function parseOrganizerInput(body: Record<string, unknown>): OrganizerInput {
-  const { organizationName, organizationWebsite, facebookUrl, instagramUrl, youtubeUrl, tiktokUrl } = body;
+export function parseOrganizerInput(
+  body: Record<string, unknown>,
+): OrganizerInput {
+  const {
+    organizationName,
+    organizationWebsite,
+    facebookUrl,
+    instagramUrl,
+    youtubeUrl,
+    tiktokUrl,
+  } = body;
 
-  if (!organizationName || typeof organizationName !== 'string' || organizationName.trim().length === 0 || organizationName.trim().length > 100) {
+  if (
+    !organizationName ||
+    typeof organizationName !== 'string' ||
+    organizationName.trim().length === 0 ||
+    organizationName.trim().length > 100
+  ) {
     throw new ValidationError('Invalid input', 400);
   }
 

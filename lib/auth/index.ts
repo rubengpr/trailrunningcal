@@ -1,6 +1,6 @@
 import type { AuthUser } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/server';
-import { ValidationError } from '@/lib/errors';
+import { AuthError } from '@/lib/errors';
 
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? '')
   .split(',')
@@ -19,7 +19,7 @@ export async function requireAuth(): Promise<{ user: AuthUser; isAdmin: boolean 
     error,
   } = await supabase.auth.getUser();
   if (error || !user) {
-    throw new ValidationError('Unauthorized', 401);
+    throw new AuthError();
   }
   return { user, isAdmin: isAdminEmail(user.email) };
 }
@@ -27,6 +27,6 @@ export async function requireAuth(): Promise<{ user: AuthUser; isAdmin: boolean 
 export async function requireAdmin(): Promise<void> {
   const { isAdmin } = await requireAuth();
   if (!isAdmin) {
-    throw new ValidationError('Unauthorized', 401);
+    throw new AuthError();
   }
 }

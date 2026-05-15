@@ -1,3 +1,4 @@
+import { TimeoutError } from '@/lib/errors';
 import { requireApiKey } from '@/lib/integrations/utils';
 
 // --- Constants ---
@@ -111,7 +112,7 @@ async function postAndParse(
       'name' in err &&
       err.name === 'TimeoutError'
     ) {
-      throw new Error('Spider request timed out');
+      throw new TimeoutError();
     }
     throw err;
   }

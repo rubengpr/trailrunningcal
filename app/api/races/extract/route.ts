@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
-import { parseInput, ValidationError } from './validation';
+import { handleRouteError } from '@/lib/api/handle-error';
+import { parseInput } from './validation';
 import { extractFromMarkdown, extractFromImages } from '@/lib/integrations/openrouter/service';
 import type { PageStats } from '@/types/races-scrape-api.types';
 
@@ -35,10 +36,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       },
     });
   } catch (error) {
-    if (error instanceof ValidationError) {
-      return NextResponse.json({ error: error.message }, { status: error.status });
-    }
-    console.error('Extract API error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return handleRouteError(error);
   }
 }
