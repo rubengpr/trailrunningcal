@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
 import { updateProfile } from '@/lib/db/profiles';
-import { handleRouteError } from '@/lib/api/handle-error';
+import { handleRouteError } from '@/lib/utils/handle-error';
 import { parseProfileInput } from './validation';
 
 export async function PATCH(request: NextRequest) {

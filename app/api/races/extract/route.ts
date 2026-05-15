@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
-import { handleRouteError } from '@/lib/api/handle-error';
+import { handleRouteError } from '@/lib/utils/handle-error';
 import { parseInput } from './validation';
 import { extractFromMarkdown, extractFromImages } from '@/lib/integrations/openrouter/service';
 import type { PageStats } from '@/types/races-scrape-api.types';

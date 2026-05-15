@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
 import { parseRaceInput } from '@/app/api/races/validation';
-import { handleRouteError } from '@/lib/api/handle-error';
+import { handleRouteError } from '@/lib/utils/handle-error';
 import { createRace } from '@/lib/services/races';
 
 export async function POST(request: NextRequest) {

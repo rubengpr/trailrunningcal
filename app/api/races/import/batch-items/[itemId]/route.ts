@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
 import { getItemResult } from '@/lib/db/race-import-batches';
-import { handleRouteError } from '@/lib/api/handle-error';
+import { handleRouteError } from '@/lib/utils/handle-error';
 
 export async function GET(
   _request: NextRequest,

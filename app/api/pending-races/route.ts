@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
 import { createPendingRaces } from '@/lib/services/pending-races';
-import { handleRouteError } from '@/lib/api/handle-error';
+import { handleRouteError } from '@/lib/utils/handle-error';
 import { validateUrlsPayload, validateAndNormalizeUrls } from './validation';
 
 export async function POST(request: NextRequest) {

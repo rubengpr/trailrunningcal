@@ -7,7 +7,7 @@ import {
   processScrapePageExtract,
 } from '@/lib/services/race-import';
 import { parseInput } from './validation';
-import { handleRouteError } from '@/lib/api/handle-error';
+import { handleRouteError } from '@/lib/utils/handle-error';
 
 export const maxDuration = 60;
 

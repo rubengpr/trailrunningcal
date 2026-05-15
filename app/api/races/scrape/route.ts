@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
-import { handleRouteError } from '@/lib/api/handle-error';
+import { handleRouteError } from '@/lib/utils/handle-error';
 import { parseInput } from './validation';
 import { crawlSite, scrapePage } from '@/lib/integrations/spider-cloud/service';
 

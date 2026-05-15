@@ -1,7 +1,7 @@
 import { requireAuth } from '@/lib/auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { updateOrganizer } from '@/lib/db/organizers';
-import { handleRouteError } from '@/lib/api/handle-error';
+import { handleRouteError } from '@/lib/utils/handle-error';
 import { parseOrganizerInput } from './validation';
 
 export async function PATCH(request: NextRequest) {
