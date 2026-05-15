@@ -45,6 +45,7 @@ export function createOpenRouterClient(
   return new OpenAI({
     apiKey,
     baseURL: OPENROUTER_BASE_URL,
+    timeout: 15_000,
     ...(defaultHeaders ? { defaultHeaders } : {}),
   });
 }

@@ -1,6 +1,7 @@
 import { start } from 'workflow/api';
 import type { OpenRouterScrapeModelId } from '@/lib/integrations/openrouter/scrape-models';
 import { checkDuplicateRaces } from '@/lib/guards/duplicate-races';
+import { TimeoutError } from '@/lib/errors';
 import {
   createRaceImportBatch,
   getPendingBatchItems,

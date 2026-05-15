@@ -1042,6 +1042,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
             url: item.url,
             status: item.status,
             raceCount: item.raceCount,
+            error: item.error,
             updatedAt: item.updatedAt,
             markdown: item.markdown,
             rawModelOutput: item.rawModelOutput,

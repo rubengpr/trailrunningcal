@@ -13,6 +13,7 @@ export interface BulkProcessTableRow {
     url: string;
     status: BulkProcessState;
     raceCount: number | null;
+    error: string | null;
     updatedAt: string;
     markdown: string | null;
     rawModelOutput: string | null;
@@ -68,6 +69,7 @@ export function BulkProcessTable({ rows }: BulkProcessTableProps) {
                         <tr className="text-[11px] font-medium uppercase tracking-wide text-gray-500">
                             <th className="w-[45%] border-b border-gray-100 py-2 font-medium">{t('columns.url')}</th>
                             <th className="border-b border-gray-100 py-2 font-medium">{t('columns.status')}</th>
+                            <th className="border-b border-gray-100 py-2"></th>
                             <th className="w-16 border-b border-gray-100 py-2 text-right font-medium">{t('columns.suggestedRaces')}</th>
                             <th className="border-b border-gray-100 py-2 font-medium">{t('columns.updatedAt')}</th>
                             <th className="border-b border-gray-100 py-2"></th>
@@ -97,6 +99,11 @@ export function BulkProcessTable({ rows }: BulkProcessTableProps) {
                                     </td>
                                     <td className="border-b border-gray-50 py-2.5 group-last:border-b-0">
                                         <StateBadge state={row.status} />
+                                    </td>
+                                    <td className="border-b border-gray-50 py-2.5 group-last:border-b-0">
+                                        {row.status === 'failed' && row.error && (
+                                            <span className="text-xs text-red-600">{row.error}</span>
+                                        )}
                                     </td>
                                     <td className="border-b border-gray-50 py-2.5 text-right group-last:border-b-0">
                                         <RaceCountCell raceCount={row.raceCount} />

@@ -95,6 +95,7 @@ async function postAndParse(
   const apiKey = requireApiKey('SPIDER_API_KEY');
 
   let response: Response;
+  let responseText: string;
   try {
     response = await fetch(endpoint, {
       method: 'POST',
@@ -105,19 +106,18 @@ async function postAndParse(
       body: JSON.stringify(body),
       signal: AbortSignal.timeout(15_000),
     });
+    responseText = await response.text();
   } catch (err) {
     if (
       err != null &&
       typeof err === 'object' &&
       'name' in err &&
-      err.name === 'TimeoutError'
+      (err.name === 'TimeoutError' || err.name === 'AbortError')
     ) {
-      throw new TimeoutError();
+      throw new TimeoutError('Spider Cloud');
     }
     throw err;
   }
-
-  const responseText = await response.text();
   let parsed: unknown;
   try {
     parsed = JSON.parse(responseText) as unknown;

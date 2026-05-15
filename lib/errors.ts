@@ -15,14 +15,16 @@ export class ValidationError extends Error {
   }
 }
 
+export type TimeoutSource = 'Spider Cloud' | 'Openrouter';
+
 export class TimeoutError extends Error {
-  constructor() {
-    super('Request timed out');
+  constructor(public readonly source: TimeoutSource) {
+    super(`${source} timeout`);
   }
 }
 
 export class DuplicateRaceError extends Error {
   constructor(public readonly conflicts: ConflictingRace[]) {
-    super('URL conflict detected');
+    super('Duplicated race');
   }
 }

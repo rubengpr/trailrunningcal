@@ -1,4 +1,5 @@
 import type OpenAI from 'openai';
+import { APIConnectionTimeoutError } from 'openai/error';
 import { TRAIL_RACE_AGENT_JSON_SCHEMA } from '@/lib/agents/trail-race-agent-schema';
 import type {
   OpenRouterScrapeModelId,
@@ -8,6 +9,7 @@ import type { TrailRace } from '@/types/trail-race-agent.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 import { TRAIL_RACE_AGENT_INSTRUCTIONS } from '@/lib/prompts';
 import { parseJsonOutputText } from '@/lib/agents/trail-race-scraper';
+import { TimeoutError } from '@/lib/errors';
 
 export interface OpenRouterServiceResult {
   races: TrailRace[];
@@ -114,32 +116,39 @@ export async function runImagesAgent(
   images: string[],
   model: OpenRouterVisionModelId,
 ): Promise<OpenRouterServiceResult> {
-  const completion = await client.chat.completions.create({
-    model,
-    messages: [
-      { role: 'system', content: TRAIL_RACE_AGENT_INSTRUCTIONS },
-      {
-        role: 'user',
-        content: images.map((url) => ({
-          type: 'image_url' as const,
-          image_url: { url },
-        })),
+  try {
+    const completion = await client.chat.completions.create({
+      model,
+      messages: [
+        { role: 'system', content: TRAIL_RACE_AGENT_INSTRUCTIONS },
+        {
+          role: 'user',
+          content: images.map((url) => ({
+            type: 'image_url' as const,
+            image_url: { url },
+          })),
+        },
+      ],
+      response_format: {
+        type: 'json_schema',
+        json_schema: {
+          name: 'trail_race',
+          strict: true,
+          schema: TRAIL_RACE_AGENT_JSON_SCHEMA as unknown as Record<
+            string,
+            unknown
+          >,
+        },
       },
-    ],
-    response_format: {
-      type: 'json_schema',
-      json_schema: {
-        name: 'trail_race',
-        strict: true,
-        schema: TRAIL_RACE_AGENT_JSON_SCHEMA as unknown as Record<
-          string,
-          unknown
-        >,
-      },
-    },
-  });
+    });
 
-  return extractResult(completion, model);
+    return extractResult(completion, model);
+  } catch (err) {
+    if (err instanceof APIConnectionTimeoutError) {
+      throw new TimeoutError('Openrouter');
+    }
+    throw err;
+  }
 }
 
 export async function runMarkdownAgent(
@@ -147,24 +156,31 @@ export async function runMarkdownAgent(
   markdown: string,
   model: OpenRouterScrapeModelId,
 ): Promise<OpenRouterServiceResult> {
-  const completion = await client.chat.completions.create({
-    model,
-    messages: [
-      { role: 'system', content: TRAIL_RACE_AGENT_INSTRUCTIONS },
-      { role: 'user', content: markdown },
-    ],
-    response_format: {
-      type: 'json_schema',
-      json_schema: {
-        name: 'trail_race',
-        strict: true,
-        schema: TRAIL_RACE_AGENT_JSON_SCHEMA as unknown as Record<
-          string,
-          unknown
-        >,
+  try {
+    const completion = await client.chat.completions.create({
+      model,
+      messages: [
+        { role: 'system', content: TRAIL_RACE_AGENT_INSTRUCTIONS },
+        { role: 'user', content: markdown },
+      ],
+      response_format: {
+        type: 'json_schema',
+        json_schema: {
+          name: 'trail_race',
+          strict: true,
+          schema: TRAIL_RACE_AGENT_JSON_SCHEMA as unknown as Record<
+            string,
+            unknown
+          >,
+        },
       },
-    },
-  });
+    });
 
-  return extractResult(completion, model);
+    return extractResult(completion, model);
+  } catch (err) {
+    if (err instanceof APIConnectionTimeoutError) {
+      throw new TimeoutError('Openrouter');
+    }
+    throw err;
+  }
 }
