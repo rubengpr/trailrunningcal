@@ -1,5 +1,9 @@
 import { cache } from 'react';
-import { createClient, createAdminClient, createStaticClient } from '@/lib/supabase/server';
+import {
+  createClient,
+  createAdminClient,
+  createStaticClient,
+} from '@/lib/supabase/server';
 import type { TrailRace, RaceRow, ConflictingRace } from '@/types/race.types';
 import { generateRaceSlug } from '@/lib/races/utils';
 
@@ -116,7 +120,9 @@ export const getRecommendedRaces = cache(async function getRecommendedRaces(
 
   let query = supabase
     .from('races')
-    .select('id, name, date, distance_km, elevation_gain_m, city, province, organizer_id')
+    .select(
+      'id, name, date, distance_km, elevation_gain_m, city, province, organizer_id',
+    )
     .eq('province', province)
     .neq('id', excludeId)
     .not('date', 'is', null)
@@ -137,7 +143,9 @@ export const getRecommendedRaces = cache(async function getRecommendedRaces(
   return (data as RaceRow[]).map(toTrailRace);
 });
 
-export async function getFutureRacesByUrl(urls: string[]): Promise<ConflictingRace[]> {
+export async function getFutureRacesByUrl(
+  urls: string[],
+): Promise<ConflictingRace[]> {
   const supabase = createStaticClient();
   const today = new Date().toISOString().slice(0, 10);
 
@@ -152,18 +160,25 @@ export async function getFutureRacesByUrl(urls: string[]): Promise<ConflictingRa
     return [];
   }
 
-  return (data ?? []).map((row: { id: string; name: string; date: string; website_url: string }) => ({
-    id: row.id,
-    name: row.name,
-    date: row.date,
-    websiteUrl: row.website_url,
-  }));
+  return (data ?? []).map(
+    (row: { id: string; name: string; date: string; website_url: string }) => ({
+      id: row.id,
+      name: row.name,
+      date: row.date,
+      websiteUrl: row.website_url,
+    }),
+  );
 }
 
 export async function getRaceById(
   raceId: string,
   useAdmin: boolean,
-): Promise<{ name: string; province: string; distance_km: number; elevation_gain_m: number | null } | null> {
+): Promise<{
+  name: string;
+  province: string;
+  distance_km: number;
+  elevation_gain_m: number | null;
+} | null> {
   const dbClient = useAdmin ? createAdminClient() : await createClient();
 
   const { data, error } = await dbClient

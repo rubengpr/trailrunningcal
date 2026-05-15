@@ -3,7 +3,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getOrganizerRaceContext } from '@/lib/auth/organizer';
 import { requireAuth } from '@/lib/auth';
 import { ValidationError } from '@/lib/errors';
-import { revalidateRacePages, revalidateHomepages, revalidateProvincePage, revalidateCategoryPages } from '@/lib/cache/revalidation';
+import {
+  revalidateRacePages,
+  revalidateHomepages,
+  revalidateProvincePage,
+  revalidateCategoryPages,
+} from '@/lib/cache/revalidation';
 import { sanitizeDescription } from '@/app/api/races/validation';
 import { getRaceById, updateRace, deleteRace } from '@/lib/db/races';
 
@@ -41,7 +46,10 @@ export async function PATCH(
         elevationGainM <= 0 ||
         elevationGainM >= 100000)
     ) {
-      return NextResponse.json({ error: 'Invalid elevation gain' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Invalid elevation gain' },
+        { status: 400 },
+      );
     }
 
     const descResult = sanitizeDescription(description);
@@ -66,18 +74,26 @@ export async function PATCH(
 
     if (existingRace?.name) {
       revalidateHomepages();
-      revalidateCategoryPages({ name: existingRace.name, distanceKm: existingRace.distance_km, elevationGainM: existingRace.elevation_gain_m });
+      revalidateCategoryPages({
+        name: existingRace.name,
+        distanceKm: existingRace.distance_km,
+        elevationGainM: existingRace.elevation_gain_m,
+      });
       revalidateRacePages(existingRace.name);
       if (existingRace.province) revalidateProvincePage(existingRace.province);
-      if (province && province !== existingRace.province) revalidateProvincePage(province);
+      if (province && province !== existingRace.province)
+        revalidateProvincePage(province);
     }
 
     return NextResponse.json({ success: true, data });
   } catch (error) {
     if (error instanceof ValidationError) {
-      return NextResponse.json({ error: error.message }, { status: error.status });
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status },
+      );
     }
-    console.error('API error:', error);
+    console.error(error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 },
@@ -100,7 +116,11 @@ export async function DELETE(
 
       if (race?.name) {
         revalidateHomepages();
-        revalidateCategoryPages({ name: race.name, distanceKm: race.distance_km, elevationGainM: race.elevation_gain_m });
+        revalidateCategoryPages({
+          name: race.name,
+          distanceKm: race.distance_km,
+          elevationGainM: race.elevation_gain_m,
+        });
         revalidateRacePages(race.name);
         if (race.province) revalidateProvincePage(race.province);
       }
@@ -115,13 +135,17 @@ export async function DELETE(
       revalidateHomepages();
       revalidateCategoryPages(organizerContext.race);
       revalidateRacePages(organizerContext.race.name);
-      if (organizerContext.race.province) revalidateProvincePage(organizerContext.race.province);
+      if (organizerContext.race.province)
+        revalidateProvincePage(organizerContext.race.province);
     }
 
     return NextResponse.json({ success: true });
   } catch (error) {
     if (error instanceof ValidationError) {
-      return NextResponse.json({ error: error.message }, { status: error.status });
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status },
+      );
     }
     console.error('API error:', error);
     return NextResponse.json(
