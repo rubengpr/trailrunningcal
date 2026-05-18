@@ -12,6 +12,32 @@ import type {
 import type { ConflictingRace } from '@/types/race.types';
 
 export type ConflictResult = { ok: false; conflicts: ConflictingRace[] };
+export type MarkdownTooLongResult = {
+  ok: false;
+  reason: 'markdown_too_long';
+  markdown: string;
+};
+
+function parseMarkdownTooLong(
+  status: number,
+  data: unknown,
+): MarkdownTooLongResult | null {
+  if (
+    status === 422 &&
+    typeof data === 'object' &&
+    data !== null &&
+    'error' in data &&
+    'markdown' in data &&
+    (data as { error: string; markdown: string }).error === 'markdown_too_long'
+  ) {
+    return {
+      ok: false,
+      reason: 'markdown_too_long',
+      markdown: (data as { error: string; markdown: string }).markdown ?? '',
+    };
+  }
+  return null;
+}
 
 function parseConflict(status: number, data: unknown): ConflictResult | null {
   if (
@@ -20,7 +46,10 @@ function parseConflict(status: number, data: unknown): ConflictResult | null {
     data !== null &&
     'conflicts' in data
   ) {
-    return { ok: false, conflicts: (data as { conflicts: ConflictingRace[] }).conflicts };
+    return {
+      ok: false,
+      conflicts: (data as { conflicts: ConflictingRace[] }).conflicts,
+    };
   }
   return null;
 }
@@ -124,10 +153,11 @@ export type TrailRaceAgentRunOptions =
   | { mode: 'markdown'; model: OpenRouterScrapeModelId; markdown: string }
   | { mode: 'images'; model: OpenRouterVisionModelId; images: string[] };
 
-
 export async function runTrailRaceAgent(
   options: TrailRaceAgentRunOptions,
-): Promise<TrailRaceAgentRunResult> {
+): Promise<
+  { ok: true; data: TrailRaceAgentRunResult } | MarkdownTooLongResult
+> {
   const body =
     options.mode === 'markdown'
       ? { markdown: options.markdown, model: options.model }
@@ -140,18 +170,27 @@ export async function runTrailRaceAgent(
   });
 
   const responseData = await response.json();
+
+  const tooLong = parseMarkdownTooLong(response.status, responseData);
+  if (tooLong) return tooLong;
+
   if (!response.ok)
     throw new Error(responseData.error || 'Failed to extract races');
 
   return {
-    ...responseData.data,
-    markdown: options.mode === 'markdown' ? options.markdown : '',
+    ok: true,
+    data: {
+      ...responseData.data,
+      markdown: options.mode === 'markdown' ? options.markdown : '',
+    },
   };
 }
 
 export async function runRaceImport(
   options: RaceImportRequest,
-): Promise<{ ok: true; data: RaceImportResult } | ConflictResult> {
+): Promise<
+  { ok: true; data: RaceImportResult } | ConflictResult | MarkdownTooLongResult
+> {
   const response = await fetch('/api/races/import', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -163,6 +202,9 @@ export async function runRaceImport(
   const conflict = parseConflict(response.status, responseData);
   if (conflict) return conflict;
 
+  const tooLong = parseMarkdownTooLong(response.status, responseData);
+  if (tooLong) return tooLong;
+
   if (!response.ok) {
     throw new Error(responseData.error || 'Failed to import races');
   }
@@ -173,7 +215,10 @@ export async function runRaceImport(
 export async function startRaceImportBatch(options: {
   urls: string[];
   model: OpenRouterScrapeModelId;
-}): Promise<{ ok: true; data: { batchId: string; workflowRunId: string } } | ConflictResult> {
+}): Promise<
+  | { ok: true; data: { batchId: string; workflowRunId: string } }
+  | ConflictResult
+> {
   const response = await fetch('/api/races/import/batches', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -205,9 +250,7 @@ export async function getBatchStatus(
   return responseData.data;
 }
 
-export async function getItemResult(
-  itemId: string,
-): Promise<RaceImportResult> {
+export async function getItemResult(itemId: string): Promise<RaceImportResult> {
   const response = await fetch(`/api/races/import/batch-items/${itemId}`);
   const responseData = await response.json();
 

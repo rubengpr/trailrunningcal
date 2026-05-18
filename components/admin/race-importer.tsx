@@ -56,12 +56,12 @@ import { XCircle, RefreshCw, Sparkles, FileText, ImageIcon, X, Play } from 'luci
 const CHARS_PER_TOKEN = 2.87;
 
 function estimateMarkdownTokensHeuristic(markdown: string): number {
-  const trimmed = markdown.trim();
-  return trimmed.length === 0 ? 0 : Math.round(trimmed.length / CHARS_PER_TOKEN);
+    const trimmed = markdown.trim();
+    return trimmed.length === 0 ? 0 : Math.round(trimmed.length / CHARS_PER_TOKEN);
 }
 
 function markdownTrimmedCharCount(markdown: string): number {
-  return markdown.trim().length;
+    return markdown.trim().length;
 }
 
 type ScrapeWorkflow = 'bulk' | 'full' | 'ingest' | 'llmFromFile';
@@ -216,7 +216,7 @@ type ScrapeAction =
     // Run completion
     | { type: 'AGENT_SUCCESS'; races: TrailRace[]; errorMessage: string | null; rawModelOutput: string; usage: OpenRouterScrapeUsage | null; markdown?: string }
     | { type: 'IMPORT_SUCCESS'; result: RaceImportResult; persistedRows: PersistedPipelineRow[]; showPipeline: boolean }
-    | { type: 'SCRAPE_ERROR'; error: string }
+    | { type: 'SCRAPE_ERROR'; error: string; markdown?: string }
     | { type: 'SCRAPE_COMPLETE'; durationMs: number }
     // UI / reset
     | { type: 'PIPELINE_HIDDEN' }
@@ -337,7 +337,12 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
                 scrapePhase: action.result.workflow === 'crawlSite' || action.result.workflow === 'scrapePage' ? 'crawling' : 'llm',
             };
         case 'SCRAPE_ERROR':
-            return { ...state, scrapeError: action.error, hasScraped: true };
+            return {
+                ...state,
+                scrapeError: action.error,
+                hasScraped: true,
+                ...(action.markdown !== undefined ? { scrapeMarkdown: action.markdown } : {}),
+            };
         case 'SCRAPE_COMPLETE':
             return { ...state, isScraping: false, scrapePhase: 'idle', lastRunDurationMs: action.durationMs };
         // UI / reset
@@ -678,6 +683,12 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                 );
 
                 if (!result.ok) {
+                    if ('reason' in result) {
+                        const errorMessage = t('markdownTooLong');
+                        dispatch({ type: 'SCRAPE_ERROR', error: errorMessage, markdown: result.markdown });
+                        toast.error(errorMessage);
+                        return;
+                    }
                     setImportConflicts(result.conflicts);
                     openConflictModal();
                     dispatch({ type: 'WORKFLOW_RESET' });
@@ -697,21 +708,28 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
             if (workflow === 'llmFromFile') {
                 if (uploadKind === 'images') {
                     if (uploadedImages.length === 0) return;
-                    const data = await runTrailRaceAgent({
+                    const result = await runTrailRaceAgent({
                         mode: 'images',
                         images: uploadedImages.map(img => img.dataUrl),
                         model: selectedVisionModelId,
                     });
-                    dispatch({ type: 'AGENT_SUCCESS', races: data.races, errorMessage: data.errorMessage, rawModelOutput: data.rawModelOutput, usage: data.usage });
+                    if (!result.ok) throw new Error(t('scrapeError'));
+                    dispatch({ type: 'AGENT_SUCCESS', races: result.data.races, errorMessage: result.data.errorMessage, rawModelOutput: result.data.rawModelOutput, usage: result.data.usage });
                 } else {
                     const markdownBody = uploadedMarkdown;
                     if (!markdownBody) return;
-                    const data = await runTrailRaceAgent({
+                    const result = await runTrailRaceAgent({
                         mode: 'markdown',
                         markdown: markdownBody,
                         model: selectedModelId,
                     });
-                    dispatch({ type: 'AGENT_SUCCESS', races: data.races, errorMessage: data.errorMessage, rawModelOutput: data.rawModelOutput, usage: data.usage, markdown: data.markdown });
+                    if (!result.ok) {
+                        const errorMessage = t('markdownTooLong');
+                        dispatch({ type: 'SCRAPE_ERROR', error: errorMessage, markdown: result.markdown });
+                        toast.error(errorMessage);
+                        return;
+                    }
+                    dispatch({ type: 'AGENT_SUCCESS', races: result.data.races, errorMessage: result.data.errorMessage, rawModelOutput: result.data.rawModelOutput, usage: result.data.usage, markdown: result.data.markdown });
                 }
             }
         } catch (err) {
@@ -1434,18 +1452,18 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                 )}
             {showLlmMetricsUi && hasScraped && !isScraping && scrapeError === null && (
                 <TabSwitcher
-                tabs={[
-                    { id: 'races', label: t('racesTab') },
-                    { id: 'json', label: t('jsonTab') },
-                ]}
-                activeId={jsonView ? 'json' : 'races'}
-                onChange={(id) =>
-                    id === 'json'
-                        ? handleSwitchToJsonView()
-                        : dispatch({ type: 'JSON_TAB_CLOSED' })
-                }
-                className="self-start"
-            />
+                    tabs={[
+                        { id: 'races', label: t('racesTab') },
+                        { id: 'json', label: t('jsonTab') },
+                    ]}
+                    activeId={jsonView ? 'json' : 'races'}
+                    onChange={(id) =>
+                        id === 'json'
+                            ? handleSwitchToJsonView()
+                            : dispatch({ type: 'JSON_TAB_CLOSED' })
+                    }
+                    className="self-start"
+                />
             )}
             {showSuggestedRacesPreview && !jsonView && (
                 <SuggestedRacesPreview

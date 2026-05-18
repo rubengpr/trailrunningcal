@@ -1,3 +1,4 @@
+import { MarkdownTooLongError } from '@/lib/errors';
 import { createOpenRouterClient } from '@/lib/integrations/openrouter/client';
 import {
   runMarkdownAgent,
@@ -8,6 +9,8 @@ import type {
   OpenRouterScrapeModelId,
   OpenRouterVisionModelId,
 } from '@/lib/integrations/openrouter/scrape-models';
+
+const MAX_MARKDOWN_LENGTH = 300_000;
 
 const FALLBACK_EMPTY_MESSAGE =
   'No se encontraron carreras adultas de trail válidas en el contenido proporcionado.';
@@ -34,6 +37,9 @@ export async function extractFromMarkdown(
   markdown: string,
   model: OpenRouterScrapeModelId,
 ): Promise<OpenRouterServiceResult> {
+  if (markdown.length > MAX_MARKDOWN_LENGTH) {
+    throw new MarkdownTooLongError(markdown);
+  }
   const client = createOpenRouterClient();
   const result = await runMarkdownAgent(client, markdown, model);
   const filtered = filterFutureRaces(result);

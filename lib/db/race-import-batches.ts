@@ -239,6 +239,7 @@ export async function markBatchItemCompleted(
 export async function markBatchItemFailed(
   itemId: string,
   errorMessage: string,
+  markdown?: string,
 ): Promise<void> {
   const supabase = createAdminClient();
 
@@ -247,6 +248,7 @@ export async function markBatchItemFailed(
     .update({
       status: 'failed',
       error: errorMessage,
+      result: markdown ? ({ markdown } as RaceImportResult) : null,
       updated_at: new Date().toISOString(),
     })
     .eq('id', itemId);

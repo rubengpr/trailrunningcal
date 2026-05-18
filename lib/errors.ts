@@ -28,3 +28,9 @@ export class DuplicateRaceError extends Error {
     super('Duplicated race');
   }
 }
+
+export class MarkdownTooLongError extends Error {
+  constructor(public readonly markdown: string) {
+    super('Markdown too long');
+  }
+}

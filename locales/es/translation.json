@@ -774,6 +774,7 @@
         "scrapeNoResults": "No se encontraron carreras en esta web",
         "scrapeError": "Error al extraer datos de la web",
         "scrapeTimeout": "Timeout al conectar con la web",
+        "markdownTooLong": "Markdown contiene más de 300k caracteres",
         "crawlError": "Error al rastrear la web",
         "scrapePageError": "Error al obtener la página",
         "llmError": "Error al procesar con el modelo",

@@ -139,6 +139,20 @@ export function BulkProcessTable({ rows }: BulkProcessTableProps) {
                                                     },
                                                 ]}
                                             />
+                                        ) : row.status === 'failed' && row.markdown ? (
+                                            <IconActionMenu
+                                                triggerAriaLabel={t('columns.actions')}
+                                                size="sm"
+                                                items={[
+                                                    {
+                                                        id: 'downloadMarkdown',
+                                                        label: t('actions.downloadMarkdown'),
+                                                        onSelect: () => {
+                                                            triggerDownload(row.markdown!, `crawl-${hostname}.md`, 'text/markdown');
+                                                        },
+                                                    },
+                                                ]}
+                                            />
                                         ) : null}
                                     </td>
                                 </tr>

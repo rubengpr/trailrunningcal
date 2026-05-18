@@ -777,6 +777,7 @@
         "scrapeNoResults": "No s'han trobat curses en aquesta web",
         "scrapeError": "Error en extreure dades de la web",
         "scrapeTimeout": "Timeout en connectar amb la web",
+        "markdownTooLong": "Markdown conté més de 300k caracters",
         "crawlError": "Error en rastrejar la web",
         "scrapePageError": "Error en obtenir la pàgina",
         "llmError": "Error en processar amb el model",
