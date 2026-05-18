@@ -10,7 +10,7 @@ import type {
   OpenRouterVisionModelId,
 } from '@/lib/integrations/openrouter/scrape-models';
 
-const MIN_MARKDOWN_LENGTH = 500;
+const MIN_MARKDOWN_LENGTH = 1000;
 const MAX_MARKDOWN_LENGTH = 300_000;
 
 const FALLBACK_EMPTY_MESSAGE =
