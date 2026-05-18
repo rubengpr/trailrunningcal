@@ -41,7 +41,7 @@ For business context, metrics, positioning, and audience — invoke the `/produc
 - **Ownership:** after auth, verify the resource belongs to the user before any mutation — query the DB to confirm, never trust client-supplied ownership claims
 - **Input validation:** validate and sanitize all user inputs server-side before DB or external calls
 - **XSS:** never use `dangerouslySetInnerHTML` with unsanitized input
-- **API errors:** return generic messages only (`"Internal server error"`, `"Unauthorized"`) — never expose stack traces or internal details
+- **API errors:** never expose stack traces or internal details. Generic errors use short messages (`"Internal server error"`, `"Unauthorized"`); structured errors (e.g. 409 conflict, 422 validation) may include domain data when the client needs it to recover.
 - **Auth — pages:** check `supabase.auth.getUser()` and redirect to `/{locale}/login` if user is missing
 
 ## Workflow
