@@ -34,3 +34,9 @@ export class MarkdownTooLongError extends Error {
     super('Markdown too long');
   }
 }
+
+export class MarkdownTooShortError extends Error {
+  constructor(public readonly markdown: string) {
+    super('Markdown too short');
+  }
+}

@@ -3,6 +3,7 @@ import {
   AuthError,
   DuplicateRaceError,
   MarkdownTooLongError,
+  MarkdownTooShortError,
   TimeoutError,
   ValidationError,
 } from '@/lib/errors';
@@ -29,6 +30,13 @@ export function handleRouteError(error: unknown): NextResponse {
   if (error instanceof MarkdownTooLongError) {
     return NextResponse.json(
       { error: 'markdown_too_long', markdown: error.markdown },
+      { status: 422 },
+    );
+  }
+
+  if (error instanceof MarkdownTooShortError) {
+    return NextResponse.json(
+      { error: 'markdown_too_short', markdown: error.markdown },
       { status: 422 },
     );
   }

@@ -1,4 +1,4 @@
-import { MarkdownTooLongError } from '@/lib/errors';
+import { MarkdownTooLongError, MarkdownTooShortError } from '@/lib/errors';
 import { createOpenRouterClient } from '@/lib/integrations/openrouter/client';
 import {
   runMarkdownAgent,
@@ -10,6 +10,7 @@ import type {
   OpenRouterVisionModelId,
 } from '@/lib/integrations/openrouter/scrape-models';
 
+const MIN_MARKDOWN_LENGTH = 500;
 const MAX_MARKDOWN_LENGTH = 300_000;
 
 const FALLBACK_EMPTY_MESSAGE =
@@ -17,6 +18,15 @@ const FALLBACK_EMPTY_MESSAGE =
 
 const PAST_RACES_MESSAGE =
   'Las carreras encontradas tienen fechas pasadas y no se pueden importar.';
+
+function validateMarkdownLength(markdown: string): void {
+  if (markdown.length < MIN_MARKDOWN_LENGTH) {
+    throw new MarkdownTooShortError(markdown);
+  }
+  if (markdown.length > MAX_MARKDOWN_LENGTH) {
+    throw new MarkdownTooLongError(markdown);
+  }
+}
 
 function filterFutureRaces(
   result: OpenRouterServiceResult,
@@ -37,9 +47,7 @@ export async function extractFromMarkdown(
   markdown: string,
   model: OpenRouterScrapeModelId,
 ): Promise<OpenRouterServiceResult> {
-  if (markdown.length > MAX_MARKDOWN_LENGTH) {
-    throw new MarkdownTooLongError(markdown);
-  }
+  validateMarkdownLength(markdown);
   const client = createOpenRouterClient();
   const result = await runMarkdownAgent(client, markdown, model);
   const filtered = filterFutureRaces(result);

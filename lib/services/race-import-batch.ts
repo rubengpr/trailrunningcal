@@ -1,7 +1,7 @@
 import { start } from 'workflow/api';
 import type { OpenRouterScrapeModelId } from '@/lib/integrations/openrouter/scrape-models';
 import { checkDuplicateRaces } from '@/lib/guards/duplicate-races';
-import { MarkdownTooLongError, TimeoutError } from '@/lib/errors';
+import { MarkdownTooLongError, MarkdownTooShortError, TimeoutError } from '@/lib/errors';
 import {
   createRaceImportBatch,
   getPendingBatchItems,
@@ -119,7 +119,8 @@ async function processRaceImportItemStep(input: {
       error: message,
     });
 
-    const markdown = error instanceof MarkdownTooLongError ? error.markdown : undefined;
+    const markdown = error instanceof MarkdownTooLongError || error instanceof MarkdownTooShortError
+      ? error.markdown : undefined;
     await markBatchItemFailed(input.itemId, message, markdown);
   }
 }

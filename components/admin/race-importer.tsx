@@ -684,7 +684,9 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
 
                 if (!result.ok) {
                     if ('reason' in result) {
-                        const errorMessage = t('markdownTooLong');
+                        const errorMessage = result.reason === 'markdown_too_long'
+                            ? t('markdownTooLong')
+                            : t('markdownTooShort');
                         dispatch({ type: 'SCRAPE_ERROR', error: errorMessage, markdown: result.markdown });
                         toast.error(errorMessage);
                         return;
@@ -724,7 +726,9 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                         model: selectedModelId,
                     });
                     if (!result.ok) {
-                        const errorMessage = t('markdownTooLong');
+                        const errorMessage = result.reason === 'markdown_too_long'
+                            ? t('markdownTooLong')
+                            : t('markdownTooShort');
                         dispatch({ type: 'SCRAPE_ERROR', error: errorMessage, markdown: result.markdown });
                         toast.error(errorMessage);
                         return;

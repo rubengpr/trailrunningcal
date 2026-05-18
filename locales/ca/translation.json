@@ -778,6 +778,7 @@
         "scrapeError": "Error en extreure dades de la web",
         "scrapeTimeout": "Timeout en connectar amb la web",
         "markdownTooLong": "Markdown conté més de 300k caracters",
+        "markdownTooShort": "Markdown massa curt",
         "crawlError": "Error en rastrejar la web",
         "scrapePageError": "Error en obtenir la pàgina",
         "llmError": "Error en processar amb el model",

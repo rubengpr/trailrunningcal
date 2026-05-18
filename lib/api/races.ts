@@ -12,28 +12,36 @@ import type {
 import type { ConflictingRace } from '@/types/race.types';
 
 export type ConflictResult = { ok: false; conflicts: ConflictingRace[] };
-export type MarkdownTooLongResult = {
+type MarkdownRejectedReason = 'markdown_too_long' | 'markdown_too_short';
+
+export type MarkdownRejectedResult = {
   ok: false;
-  reason: 'markdown_too_long';
+  reason: MarkdownRejectedReason;
   markdown: string;
 };
 
-function parseMarkdownTooLong(
+const MARKDOWN_REJECTED_REASONS = new Set<string>([
+  'markdown_too_long',
+  'markdown_too_short',
+]);
+
+function parseMarkdownRejected(
   status: number,
   data: unknown,
-): MarkdownTooLongResult | null {
+): MarkdownRejectedResult | null {
   if (
     status === 422 &&
     typeof data === 'object' &&
     data !== null &&
     'error' in data &&
     'markdown' in data &&
-    (data as { error: string; markdown: string }).error === 'markdown_too_long'
+    MARKDOWN_REJECTED_REASONS.has((data as { error: string }).error)
   ) {
+    const typed = data as { error: MarkdownRejectedReason; markdown: string };
     return {
       ok: false,
-      reason: 'markdown_too_long',
-      markdown: (data as { error: string; markdown: string }).markdown ?? '',
+      reason: typed.error,
+      markdown: typed.markdown ?? '',
     };
   }
   return null;
@@ -156,7 +164,7 @@ export type TrailRaceAgentRunOptions =
 export async function runTrailRaceAgent(
   options: TrailRaceAgentRunOptions,
 ): Promise<
-  { ok: true; data: TrailRaceAgentRunResult } | MarkdownTooLongResult
+  { ok: true; data: TrailRaceAgentRunResult } | MarkdownRejectedResult
 > {
   const body =
     options.mode === 'markdown'
@@ -171,7 +179,7 @@ export async function runTrailRaceAgent(
 
   const responseData = await response.json();
 
-  const tooLong = parseMarkdownTooLong(response.status, responseData);
+  const tooLong = parseMarkdownRejected(response.status, responseData);
   if (tooLong) return tooLong;
 
   if (!response.ok)
@@ -189,7 +197,7 @@ export async function runTrailRaceAgent(
 export async function runRaceImport(
   options: RaceImportRequest,
 ): Promise<
-  { ok: true; data: RaceImportResult } | ConflictResult | MarkdownTooLongResult
+  { ok: true; data: RaceImportResult } | ConflictResult | MarkdownRejectedResult
 > {
   const response = await fetch('/api/races/import', {
     method: 'POST',
@@ -202,7 +210,7 @@ export async function runRaceImport(
   const conflict = parseConflict(response.status, responseData);
   if (conflict) return conflict;
 
-  const tooLong = parseMarkdownTooLong(response.status, responseData);
+  const tooLong = parseMarkdownRejected(response.status, responseData);
   if (tooLong) return tooLong;
 
   if (!response.ok) {
