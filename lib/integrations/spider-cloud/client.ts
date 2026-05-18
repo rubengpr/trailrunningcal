@@ -104,7 +104,7 @@ async function postAndParse(
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
-      signal: AbortSignal.timeout(15_000),
+      signal: AbortSignal.timeout(30_000),
     });
     responseText = await response.text();
   } catch (err) {
