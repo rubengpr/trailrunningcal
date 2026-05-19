@@ -738,7 +738,7 @@
       },
       "import": {
         "title": "Extraer carreras de una web",
-        "subtitle": "Rastrea una web, procesa un Markdown con IA o haz ambos para obtener carreras estructuradas.",
+        "subtitle": "Importa carreras desde URLs, archivos o imágenes. Rastrea webs, extrae datos con IA o ambas cosas a la vez.",
         "workflowIngest": "Ingest",
         "workflowLlmFromFile": "Parse",
         "workflowCrawlAndLlm": "Full",

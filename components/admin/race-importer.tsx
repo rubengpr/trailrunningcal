@@ -9,6 +9,7 @@ import { FormSelect } from '@/components/ui/form-select';
 import { Combobox } from '@/components/ui/combobox';
 import type { ComboboxOption } from '@/components/ui/combobox';
 import { Button } from '@/components/ui/button';
+import { IconButton } from '@/components/ui/icon-button';
 import { IconActionMenu } from '@/components/ui/icon-action-menu';
 import { TabSwitcher } from '@/components/ui/tab-switcher';
 import { SectionHeader } from '@/components/ui/section-header';
@@ -51,17 +52,13 @@ import { addPendingRaces } from '@/lib/api/pending-races';
 import { RaceConflictModal } from '@/components/ui/race-conflict-modal';
 import { useModal } from '@/hooks/use-modal';
 import type { ConflictingRace } from '@/types/race.types';
-import { XCircle, RefreshCw, Sparkles, FileText, ImageIcon, X, Play } from 'lucide-react';
+import { XCircle, RotateCcw, Sparkles, FileText, ImageIcon, X, Play, Coins, WholeWord } from 'lucide-react';
 
 const CHARS_PER_TOKEN = 2.87;
 
 function estimateMarkdownTokensHeuristic(markdown: string): number {
     const trimmed = markdown.trim();
     return trimmed.length === 0 ? 0 : Math.round(trimmed.length / CHARS_PER_TOKEN);
-}
-
-function markdownTrimmedCharCount(markdown: string): number {
-    return markdown.trim().length;
 }
 
 type ScrapeWorkflow = 'bulk' | 'full' | 'ingest' | 'llmFromFile';
@@ -115,10 +112,6 @@ function FullPipelineRowIcon({ kind }: { kind: FullPipelineRowKind }): React.Rea
             —
         </span>
     );
-}
-
-function RestartIcon({ className = 'h-5 w-5' }: { className?: string }): React.ReactElement {
-    return <RefreshCw className={className} strokeWidth={2} />;
 }
 
 function PageStatsBadges({ pageStats, size = 'sm' }: { pageStats: PageStats; size?: 'sm' | 'md' }): React.ReactElement {
@@ -422,17 +415,21 @@ interface MarkdownStatLineProps {
     tokenEstimate: number;
     charCount: number;
     as?: 'span' | 'p';
+    size?: 'sm' | 'md';
 }
 
-function MarkdownStatLine({ tokenEstimate, charCount, as: Tag = 'span' }: MarkdownStatLineProps) {
-    const t = useTranslations('admin.races.import');
+function MarkdownStatLine({ tokenEstimate, charCount, as: Tag = 'span', size = 'sm' }: MarkdownStatLineProps) {
+    const cls = size === 'sm' ? 'px-2 text-[11px]' : 'px-2.5 py-1 text-xs';
     return (
-        <Tag className="text-xs font-normal text-gray-500 tabular-nums">
-            <span className="font-bold text-gray-700">{tokenEstimate}</span>{' '}
-            {t('markdownStatTokensLabel')}
-            {' · '}
-            <span className="font-bold text-gray-700">{charCount}</span>{' '}
-            {t('markdownStatCharactersLabel')}
+        <Tag className="inline-flex flex-wrap items-center gap-1.5">
+            <span className={`inline-flex items-center gap-1 rounded-full border border-gray-200/60 bg-gray-50 font-medium text-gray-600 tabular-nums ${cls}`}>
+                <Coins className="size-3" strokeWidth={2} aria-hidden />
+                {tokenEstimate}
+            </span>
+            <span className={`inline-flex items-center gap-1 rounded-full border border-gray-200/60 bg-gray-50 font-medium text-gray-600 tabular-nums ${cls}`}>
+                <WholeWord className="size-3" strokeWidth={2} aria-hidden />
+                {charCount}
+            </span>
         </Tag>
     );
 }
@@ -1077,7 +1074,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                 title={t('title')}
                 subtitle={t('subtitle')}
             />
-            <div className="max-w-3xl rounded-2xl border border-gray-100 bg-white p-6 shadow-sm sm:p-8">
+            <div>
                 <div className="space-y-6">
                     <TabSwitcher
                         tabs={[
@@ -1100,21 +1097,20 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                     />
 
                     {(workflow === 'full' || workflow === 'ingest') && (
-                        <div className="grid gap-2 w-full">
-                            <Combobox
-                                id="websiteUrl"
-                                label={t('websiteUrlLabel')}
-                                value={websiteUrl}
-                                onChange={setWebsiteUrl}
-                                options={pendingUrlOptions}
-                                placeholder={t('websiteUrlPlaceholder')}
-                                disabled={isScraping}
-                            />
-                        </div>
+                        <Combobox
+                            id="websiteUrl"
+                            label={t('websiteUrlLabel')}
+                            value={websiteUrl}
+                            onChange={setWebsiteUrl}
+                            options={pendingUrlOptions}
+                            placeholder={t('websiteUrlPlaceholder')}
+                            disabled={isScraping}
+                            className="max-w-xl"
+                        />
                     )}
 
                     {workflow === 'bulk' && (
-                        <div className="grid gap-2 w-full">
+                        <div className="grid gap-2 w-full max-w-xl">
                             <label htmlFor="batchUrls" className="text-sm font-medium leading-none text-gray-900">
                                 {t('bulk.urlsLabel')}
                             </label>
@@ -1127,19 +1123,52 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                                 className="min-h-32 w-full resize-y rounded-xl border border-gray-200 bg-white p-3 text-sm text-gray-800 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-200/80 disabled:cursor-not-allowed disabled:opacity-60"
                                 spellCheck={false}
                             />
-                            <p className="text-xs text-gray-500">
-                                {parsedBatchUrls.length === 1 ? t('bulk.urlsHintOne') : t('bulk.urlsHint', { count: parsedBatchUrls.length })}
-                            </p>
+                            {parsedBatchUrls.length > 0 && (
+                                <p className="text-xs text-gray-500">
+                                    {parsedBatchUrls.length === 1 ? t('bulk.urlsHintOne') : t('bulk.urlsHint', { count: parsedBatchUrls.length })}
+                                </p>
+                            )}
                         </div>
                     )}
 
-                    {(workflow === 'full' || workflow === 'ingest') && (
+                    {workflow === 'full' && (
+                        <div className="grid max-w-xl grid-cols-2 gap-4">
+                            <FormSelect
+                                id="importSourceMode"
+                                label={t('importSourceModeLabel')}
+                                value={sourceMode}
+                                onChange={(e) => setSourceMode(e.target.value as ScrapeSourceMode)}
+                                disabled={isScraping}
+                            >
+                                <option value="scrapePage">{t('sourceScrapePage')}</option>
+                                <option value="crawlSite">{t('sourceCrawlSite')}</option>
+                            </FormSelect>
+                            <FormSelect
+                                id="openrouterModel"
+                                label={t('modelLabel')}
+                                value={selectedModelId}
+                                onChange={(e) =>
+                                    setSelectedModelId(e.target.value as OpenRouterScrapeModelId)
+                                }
+                                disabled={isScraping || isStartingBatch || isBatchRunning}
+                            >
+                                {OPENROUTER_SCRAPE_MODEL_IDS.map((id) => (
+                                    <option key={id} value={id}>
+                                        {id}
+                                    </option>
+                                ))}
+                            </FormSelect>
+                        </div>
+                    )}
+
+                    {workflow === 'ingest' && (
                         <FormSelect
                             id="importSourceMode"
                             label={t('importSourceModeLabel')}
                             value={sourceMode}
                             onChange={(e) => setSourceMode(e.target.value as ScrapeSourceMode)}
                             disabled={isScraping}
+                            containerClassName="max-w-xl"
                         >
                             <option value="scrapePage">{t('sourceScrapePage')}</option>
                             <option value="crawlSite">{t('sourceCrawlSite')}</option>
@@ -1254,11 +1283,12 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                                 placeholder={t('websiteUrlPlaceholder')}
                                 helperText={t('urlForAcceptHint')}
                                 disabled={isScraping}
+                                className="max-w-xl"
                             />
                         </>
                     )}
 
-                    {(workflow === 'full' || workflow === 'bulk' || (workflow === 'llmFromFile' && uploadKind !== 'images')) && (
+                    {(workflow === 'bulk' || (workflow === 'llmFromFile' && uploadKind !== 'images')) && (
                         <FormSelect
                             id="openrouterModel"
                             label={t('modelLabel')}
@@ -1267,6 +1297,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                                 setSelectedModelId(e.target.value as OpenRouterScrapeModelId)
                             }
                             disabled={isScraping || isStartingBatch || isBatchRunning}
+                            containerClassName="max-w-xl"
                         >
                             {OPENROUTER_SCRAPE_MODEL_IDS.map((id) => (
                                 <option key={id} value={id}>
@@ -1285,6 +1316,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                                 setSelectedVisionModelId(e.target.value as OpenRouterVisionModelId)
                             }
                             disabled={isScraping}
+                            containerClassName="max-w-xl"
                         >
                             {OPENROUTER_VISION_MODEL_IDS.map((id) => (
                                 <option key={id} value={id}>
@@ -1293,7 +1325,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                             ))}
                         </FormSelect>
                     )}
-                    <div className="flex flex-col gap-3 border-t border-gray-100 pt-6 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2">
                         <Button
                             type="button"
                             onClick={handleRunWorkflow}
@@ -1334,16 +1366,13 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                         >
                             {t('loadDummyPreview')}
                         </Button>
-                        <Button
-                            type="button"
-                            variant="secondary"
+                        <IconButton
                             onClick={handleRestart}
                             disabled={isScraping || isStartingBatch}
-                            className="h-9 w-9 min-h-9 shrink-0 p-0"
                             title={t('restart')}
                         >
-                            <RestartIcon className="h-5 w-5" />
-                        </Button>
+                            <RotateCcw className="h-4 w-4" strokeWidth={2} />
+                        </IconButton>
                     </div>
                     {(fullPipelineSteps !== null || persistedPipelineRows.length > 0) && (
                         <div className="space-y-3 border-t border-gray-100 pt-4">
@@ -1384,8 +1413,8 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                                                         tokenEstimate={parseUploadTokenEstimate ?? markdownTokenEstimate!}
                                                         charCount={
                                                             parseUploadTokenEstimate !== null
-                                                                ? markdownTrimmedCharCount(uploadedMarkdown!)
-                                                                : markdownTrimmedCharCount(scrapeMarkdown!)
+                                                                ? uploadedMarkdown!.trim().length
+                                                                : scrapeMarkdown!.trim().length
                                                         }
                                                     />
                                                 )}
@@ -1413,8 +1442,8 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                             tokenEstimate={parseUploadTokenEstimate ?? markdownTokenEstimate!}
                             charCount={
                                 parseUploadTokenEstimate !== null
-                                    ? markdownTrimmedCharCount(uploadedMarkdown!)
-                                    : markdownTrimmedCharCount(scrapeMarkdown!)
+                                    ? uploadedMarkdown!.trim().length
+                                    : scrapeMarkdown!.trim().length
                             }
                         />
                     )}

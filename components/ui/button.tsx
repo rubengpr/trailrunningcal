@@ -35,7 +35,7 @@ export function Button({
 
   const variantClasses = {
     primary: 'bg-black text-white hover:bg-gray-800',
-    secondary: 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2',
+    secondary: 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50',
   };
 
   const shapeClasses = {

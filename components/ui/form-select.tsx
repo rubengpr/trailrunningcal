@@ -14,6 +14,7 @@ interface FormSelectProps
   helperText?: string;
   children: ReactNode;
   className?: string;
+  containerClassName?: string;
 }
 
 export function FormSelect({
@@ -23,11 +24,12 @@ export function FormSelect({
   helperText,
   children,
   className = '',
+  containerClassName,
   disabled,
   ...props
 }: FormSelectProps) {
   return (
-    <div className="grid gap-2 w-full">
+    <div className={`grid gap-2 w-full ${containerClassName ?? ''}`}>
       <label htmlFor={id} className="text-sm font-medium leading-none text-gray-900">
         {label}
       </label>

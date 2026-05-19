@@ -16,6 +16,7 @@ interface ComboboxProps {
     placeholder?: string;
     disabled?: boolean;
     helperText?: string;
+    className?: string;
 }
 
 export function Combobox({
@@ -27,6 +28,7 @@ export function Combobox({
     placeholder,
     disabled,
     helperText,
+    className,
 }: ComboboxProps) {
     const generatedId = useId();
     const id = externalId ?? generatedId;
@@ -97,7 +99,7 @@ export function Combobox({
     };
 
     return (
-        <div className="grid gap-2 w-full">
+        <div className={`grid gap-2 w-full ${className ?? ''}`}>
             {label && (
                 <label htmlFor={id} className="text-sm font-medium leading-none">
                     {label}

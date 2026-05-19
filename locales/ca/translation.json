@@ -741,7 +741,7 @@
       },
       "import": {
         "title": "Extreure curses d'una web",
-        "subtitle": "Rastreja una web, processa un Markdown amb IA o fes-ho tot per obtenir curses estructurades.",
+        "subtitle": "Importa curses des d'URLs, fitxers o imatges. Rastreja webs, extreu dades amb IA o totes dues coses alhora.",
         "workflowIngest": "Ingest",
         "workflowLlmFromFile": "Parse",
         "workflowCrawlAndLlm": "Full",
