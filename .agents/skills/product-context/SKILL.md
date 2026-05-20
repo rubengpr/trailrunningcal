@@ -35,12 +35,12 @@ Geographically scoped to Catalonia and focused on trail/mountain events — not 
 
 ## Main metrics (March 2026)
 
-| Metric | Value |
-| --- | --- |
-| Monthly visits | ~3,000 |
-| Listed events | ~600 |
-| MoM visits growth | 100% |
-| Mobile share | 67% |
-| Organic traffic (Google Search) | 85% |
+| Metric                          | Value   |
+| ------------------------------- | ------- |
+| Monthly visits                  | ~10,000 |
+| Listed events                   | ~600    |
+| MoM visits growth               | 100%    |
+| Mobile share                    | 67%     |
+| Organic traffic (Google Search) | 85%     |
 
 Analytics instrumented via PostHog (proxied `/ingest`), Vercel Analytics, and Cloudflare Web Analytics. Numbers above are business snapshots and may not live in the repo.
