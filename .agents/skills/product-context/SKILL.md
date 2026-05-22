@@ -7,7 +7,7 @@ description: Business, product, and market context for Trail Running Cal. Load w
 
 ## What it is
 
-Trail Running Cal (**Trail Running Calendar** in SEO/schema) is a bilingual (Spanish + Catalan) web product at [trailrunningcal.com](https://www.trailrunningcal.com) that helps people discover and plan trail and mountain races in Catalonia, Spain.
+Trail Running Cal (**Trail Running Calendar** in SEO/schema) is a bilingual (Spanish + Catalan) web product at [trailrunningcal.com](https://www.trailrunningcal.com) that helps people discover and plan trail and mountain races in Catalonia, Spain. It is maintained by one single product engineer with limited resources.
 
 ## Core user promise
 
@@ -29,18 +29,24 @@ Regional authority: "reference platform" / "most complete calendar" for trail ru
 
 Be the default discovery layer for trail racing in Spain. Strong SEO and structured data, local language, trust via curation, organizer relationships, and up-to-date listings.
 
+## 2026 focus
+
+Main goal for 2026 is to scale from Catalonia to trail and mountain racing across Spain: broader race coverage, discovery, and SEO at national level, with the same curation and calendar quality bar.
+
 ## Scope / non-goals
 
-Geographically scoped to Catalonia and focused on trail/mountain events — not road running, not worldwide coverage.
+Today the product and listings center on Catalonia; 2026 work targets Spain-wide trail/mountain coverage (see 2026 focus). Still out of scope: road running and worldwide coverage.
 
-## Main metrics (March 2026)
+## Core tech stack
+
+Next.js (App Router), React, and TypeScript, deployed on Vercel. Supabase (Postgres + Auth) is the backend. Architecture is React Server Components plus Route Handler APIs, with server-side services over the database and client-side fetches to those APIs. next-intl for bilingual UI (es, ca); MapLibre GL for the race map; PostHog, Vercel Analytics, and Cloudflare Web Analytics for observability.
+
+## Main metrics (April 2026)
 
 | Metric                          | Value   |
 | ------------------------------- | ------- |
 | Monthly visits                  | ~10,000 |
-| Listed events                   | ~600    |
-| MoM visits growth               | 100%    |
+| Listed events                   | ~300    |
+| Month-over-Month visits growth  | 100%    |
 | Mobile share                    | 67%     |
 | Organic traffic (Google Search) | 85%     |
-
-Analytics instrumented via PostHog (proxied `/ingest`), Vercel Analytics, and Cloudflare Web Analytics. Numbers above are business snapshots and may not live in the repo.
