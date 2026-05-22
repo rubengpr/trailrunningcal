@@ -1,38 +1,17 @@
-import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import type { Locale } from '@/i18n';
-import { generateMetadataFromOptions } from '@/lib/seo/meta-config';
-import { buildMarchaAlternateLinks } from '@/lib/content/alternate-links';
 import { BASE_URL } from '@/lib/config';
 import { buildBreadcrumbJsonLd } from '@/lib/seo/json-ld';
 import { CategoryMapPage } from '@/components/layout/category-map-page';
-import { getCategoryPageData } from '@/lib/content/category-page';
+import { generateCategoryMetadata, getCategoryPageData } from '@/lib/content/category-page';
 import type { FaqItem } from '@/lib/seo/json-ld';
 
 export const revalidate = 86400;
 
 const WALKING_KEYWORDS = ['marcha', 'marxa', 'caminada'];
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ locale: Locale }>;
-}): Promise<Metadata> {
-  const { locale } = await params;
-  setRequestLocale(locale);
-  const t = await getTranslations({ locale, namespace: 'marcha' });
-  const year = new Date().getFullYear();
-
-  return generateMetadataFromOptions({
-    title: t('pageTitle', { year }),
-    description: t('pageDescription', { year }),
-    canonicalUrl: `${BASE_URL}/${locale}/marcha`,
-    locale,
-    ogImageUrl: `${BASE_URL}/og-image.png`,
-    ogType: 'website',
-    alternateLinks: buildMarchaAlternateLinks(),
-  });
-}
+export const generateMetadata = (props: { params: Promise<{ locale: Locale }> }) =>
+  generateCategoryMetadata({ ...props, namespace: 'marcha', slug: 'marcha' });
 
 export default async function MarchaPage({
   params,

@@ -60,6 +60,14 @@ export function buildProvinceAlternateLinks(
   };
 }
 
+export function buildStaticPublicAlternateLinks(slug: string): Record<string, string> {
+  return {
+    es: `${BASE_URL}/es/${slug}`,
+    ca: `${BASE_URL}/ca/${slug}`,
+    'x-default': `${BASE_URL}/es/${slug}`,
+  };
+}
+
 export function buildUltraTrailAlternateLinks(): Record<string, string> {
   return {
     es: `${BASE_URL}/es/ultra-trail`,
