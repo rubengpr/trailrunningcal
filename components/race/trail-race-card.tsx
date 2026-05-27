@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useFeatureFlagVariantKey } from 'posthog-js/react';
 import { VerifiedBadge } from '@/components/icons/verified-badge';
+import { getPrimaryPublicRaceCategory, getRaceDisplayCategoryKey } from '@/lib/races/categories';
 import { getDisplayPrice } from '@/lib/races/utils';
 import { TEST_VERIFIED_RACES_NAME } from '@/lib/constants';
 
@@ -54,37 +55,6 @@ const calculateElevationRatio = (
   return Math.round(elevationGainM / distanceKm);
 };
 
-const getRaceCategory = (distanceKm: number, name: string, elevationGainM: number | null): string => {
-  const lowerName = name.toLowerCase();
-  if (lowerName.includes('marcha') || lowerName.includes('marxa') || lowerName.includes('caminada')) {
-    return 'marcha';
-  }
-  if (lowerName.includes('backyard')) return 'backyard';
-  const hasVkKeyword =
-    lowerName.includes('kilómetro vertical') ||
-    lowerName.includes('quilòmetre vertical') ||
-    lowerName.includes('km vertical') ||
-    lowerName.includes(' kv ') ||
-    lowerName.startsWith('kv ') ||
-    lowerName.endsWith(' kv');
-  const hasVkRatio = distanceKm < 4 && elevationGainM !== null && elevationGainM >= 600;
-  if (hasVkKeyword || hasVkRatio) return 'vk';
-  if (distanceKm > 42) return 'ultra';
-  if (distanceKm >= 42) return 'maraton';
-  if (distanceKm >= 20) return 'media';
-  if (distanceKm >= 10) return 'trail';
-  return 'sprint';
-};
-
-const CATEGORY_SLUG: Record<string, string> = {
-  ultra: 'ultra-trail',
-  maraton: 'maraton',
-  media: 'media-maraton',
-  marcha: 'marcha',
-  vk: 'km-vertical',
-  backyard: 'backyard',
-};
-
 const getElevationRatioColor = (ratio: number | null): string => {
   if (ratio === null) return 'bg-gray-100 text-gray-800';
   if (ratio < 40) return 'bg-green-100 text-green-800';
@@ -111,10 +81,11 @@ export function TrailRaceCard({
   const router = useRouter();
   const webButtonVariant = useFeatureFlagVariantKey('web-button-experiment');
   const showWebButton = webButtonVariant !== 'no-web-button';
+  const raceForCategory = { name, distanceKm, elevationGainM };
   const { day, month, dayOfWeek } = formatDate(date, t);
   const elevationRatio = calculateElevationRatio(elevationGainM, distanceKm);
-  const raceCategory = getRaceCategory(distanceKm, name, elevationGainM);
-  const categorySlug = CATEGORY_SLUG[raceCategory] ?? null;
+  const raceCategory = getRaceDisplayCategoryKey(raceForCategory);
+  const categorySlug = getPrimaryPublicRaceCategory(raceForCategory)?.slug ?? null;
   const elevationRatioColor = getElevationRatioColor(elevationRatio);
   const displayPrice = getDisplayPrice(priceEur);
 

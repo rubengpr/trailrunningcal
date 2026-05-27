@@ -1,5 +1,11 @@
 import type { TrailRace } from '@/types/race.types';
 import type { RaceMapMarker } from '@/types/map.types';
+import {
+  getRaceCategoryConfig,
+  RACE_CATEGORY_CONFIGS,
+  RACE_CATEGORY_SLUGS,
+  type RaceCategorySlug,
+} from '@/lib/races/categories';
 
 const DISTANCE_RANGES: Record<string, [number, number]> = {
   '0-10':  [0,  10],
@@ -10,45 +16,15 @@ const DISTANCE_RANGES: Record<string, [number, number]> = {
   '50+':   [50, Infinity],
 };
 
-export const RACE_TYPES = ['ultra-trail', 'maraton', 'media-maraton', 'marcha', 'km-vertical', 'backyard'] as const;
+export const RACE_TYPES = RACE_CATEGORY_SLUGS;
 
-export const RACE_TYPE_CATEGORY_KEYS: Record<string, string> = {
-  'ultra-trail': 'ultra',
-  'maraton': 'maraton',
-  'media-maraton': 'media',
-  'marcha': 'marcha',
-  'km-vertical': 'vk',
-  'backyard': 'backyard',
-};
+export const RACE_TYPE_CATEGORY_KEYS: Record<RaceCategorySlug, string> = Object.fromEntries(
+  RACE_CATEGORY_SLUGS.map((slug) => [slug, RACE_CATEGORY_CONFIGS[slug].labelKey]),
+) as Record<RaceCategorySlug, string>;
 export type RaceType = (typeof RACE_TYPES)[number];
 
-const VK_KEYWORDS = ['kilómetro vertical', 'quilòmetre vertical', 'km vertical'];
-const MARCHA_KEYWORDS = ['marcha', 'marxa', 'caminada'];
-
 function matchesRaceType(race: TrailRace, type: RaceType): boolean {
-  const lowerName = race.name.toLowerCase();
-  switch (type) {
-    case 'backyard':
-      return lowerName.includes('backyard');
-    case 'km-vertical': {
-      const hasKeyword =
-        VK_KEYWORDS.some((kw) => lowerName.includes(kw)) ||
-        lowerName.includes(' kv ') ||
-        lowerName.startsWith('kv ') ||
-        lowerName.endsWith(' kv');
-      const hasRatio =
-        race.distanceKm < 4 && race.elevationGainM !== null && race.elevationGainM >= 600;
-      return hasKeyword || hasRatio;
-    }
-    case 'marcha':
-      return MARCHA_KEYWORDS.some((kw) => lowerName.includes(kw));
-    case 'ultra-trail':
-      return race.distanceKm >= 50;
-    case 'maraton':
-      return race.distanceKm >= 40 && race.distanceKm < 50;
-    case 'media-maraton':
-      return race.distanceKm >= 20 && race.distanceKm <= 24;
-  }
+  return getRaceCategoryConfig(type).matches(race);
 }
 
 export function filterHomeRaces(

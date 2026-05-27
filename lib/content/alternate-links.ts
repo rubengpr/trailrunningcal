@@ -68,54 +68,6 @@ export function buildStaticPublicAlternateLinks(slug: string): Record<string, st
   };
 }
 
-export function buildUltraTrailAlternateLinks(): Record<string, string> {
-  return {
-    es: `${BASE_URL}/es/ultra-trail`,
-    ca: `${BASE_URL}/ca/ultra-trail`,
-    'x-default': `${BASE_URL}/es/ultra-trail`,
-  };
-}
-
-export function buildMaratonAlternateLinks(): Record<string, string> {
-  return {
-    es: `${BASE_URL}/es/maraton`,
-    ca: `${BASE_URL}/ca/maraton`,
-    'x-default': `${BASE_URL}/es/maraton`,
-  };
-}
-
-export function buildMediaMaratonAlternateLinks(): Record<string, string> {
-  return {
-    es: `${BASE_URL}/es/media-maraton`,
-    ca: `${BASE_URL}/ca/media-maraton`,
-    'x-default': `${BASE_URL}/es/media-maraton`,
-  };
-}
-
-export function buildMarchaAlternateLinks(): Record<string, string> {
-  return {
-    es: `${BASE_URL}/es/marcha`,
-    ca: `${BASE_URL}/ca/marcha`,
-    'x-default': `${BASE_URL}/es/marcha`,
-  };
-}
-
-export function buildBackyardAlternateLinks(): Record<string, string> {
-  return {
-    es: `${BASE_URL}/es/backyard`,
-    ca: `${BASE_URL}/ca/backyard`,
-    'x-default': `${BASE_URL}/es/backyard`,
-  };
-}
-
-export function buildKmVerticalAlternateLinks(): Record<string, string> {
-  return {
-    es: `${BASE_URL}/es/km-vertical`,
-    ca: `${BASE_URL}/ca/km-vertical`,
-    'x-default': `${BASE_URL}/es/km-vertical`,
-  };
-}
-
 export function buildRaceAlternateLinks(
   raceSlug: string,
 ): Record<string, string> {

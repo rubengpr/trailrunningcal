@@ -3,6 +3,7 @@ import { BASE_URL } from '@/lib/config';
 import { locales, type Locale } from '@/i18n';
 import { PROVINCE_SLUGS } from '@/lib/constants';
 import { getAllBlogPosts } from '@/lib/content/blog-utils';
+import { RACE_CATEGORY_SLUGS } from '@/lib/races/categories';
 import { generateRaceSlug } from '@/lib/races/utils';
 import { getRaces } from '@/lib/db/races';
 import {
@@ -12,12 +13,7 @@ import {
   buildRaceAlternateLinks,
   buildBlogPostAlternateLinks,
   buildProvinceAlternateLinks,
-  buildUltraTrailAlternateLinks,
-  buildMaratonAlternateLinks,
-  buildMediaMaratonAlternateLinks,
-  buildMarchaAlternateLinks,
-  buildKmVerticalAlternateLinks,
-  buildBackyardAlternateLinks,
+  buildStaticPublicAlternateLinks,
 } from '@/lib/content/alternate-links';
 
 const CONTACT_PATHS: Record<Locale, string> = {
@@ -110,82 +106,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  // Add ultra trail page (both locales)
-  for (const locale of locales) {
-    urls.push({
-      url: `${BASE_URL}/${locale}/ultra-trail`,
-      lastModified: currentDate,
-      changeFrequency: 'weekly',
-      priority: 0.8,
-      alternates: {
-        languages: buildUltraTrailAlternateLinks(),
-      },
-    });
-  }
-
-  // Add marathon page (both locales)
-  for (const locale of locales) {
-    urls.push({
-      url: `${BASE_URL}/${locale}/maraton`,
-      lastModified: currentDate,
-      changeFrequency: 'weekly',
-      priority: 0.8,
-      alternates: {
-        languages: buildMaratonAlternateLinks(),
-      },
-    });
-  }
-
-  // Add half-marathon page (both locales)
-  for (const locale of locales) {
-    urls.push({
-      url: `${BASE_URL}/${locale}/media-maraton`,
-      lastModified: currentDate,
-      changeFrequency: 'weekly',
-      priority: 0.8,
-      alternates: {
-        languages: buildMediaMaratonAlternateLinks(),
-      },
-    });
-  }
-
-  // Add marcha page (both locales)
-  for (const locale of locales) {
-    urls.push({
-      url: `${BASE_URL}/${locale}/marcha`,
-      lastModified: currentDate,
-      changeFrequency: 'weekly',
-      priority: 0.8,
-      alternates: {
-        languages: buildMarchaAlternateLinks(),
-      },
-    });
-  }
-
-  // Add km-vertical page (both locales)
-  for (const locale of locales) {
-    urls.push({
-      url: `${BASE_URL}/${locale}/km-vertical`,
-      lastModified: currentDate,
-      changeFrequency: 'weekly',
-      priority: 0.8,
-      alternates: {
-        languages: buildKmVerticalAlternateLinks(),
-      },
-    });
-  }
-
-  // Add backyard page (both locales)
-  for (const locale of locales) {
-    urls.push({
-      url: `${BASE_URL}/${locale}/backyard`,
-      lastModified: currentDate,
-      changeFrequency: 'weekly',
-      priority: 0.8,
-      alternates: {
-        languages: buildBackyardAlternateLinks(),
-      },
-    });
+  for (const categorySlug of RACE_CATEGORY_SLUGS) {
+    for (const locale of locales) {
+      urls.push({
+        url: `${BASE_URL}/${locale}/${categorySlug}`,
+        lastModified: currentDate,
+        changeFrequency: 'weekly',
+        priority: 0.8,
+        alternates: {
+          languages: buildStaticPublicAlternateLinks(categorySlug),
+        },
+      });
+    }
   }
 
   // Add race pages (all locales)

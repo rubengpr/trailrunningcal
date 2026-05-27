@@ -18,17 +18,16 @@ export interface CategoryPageData {
 }
 
 interface CategoryMetadataOptions {
-  params: Promise<{ locale: Locale }>;
+  locale: Locale;
   namespace: string;
   slug: string;
 }
 
 export async function generateCategoryMetadata({
-  params,
+  locale,
   namespace,
   slug,
 }: CategoryMetadataOptions): Promise<Metadata> {
-  const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace });
   const year = new Date().getFullYear();

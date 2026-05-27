@@ -18,7 +18,7 @@ interface RaceDetailHeaderProps {
   formattedDate: string;
   provinceSlug: string | null;
   categorySlug: string | null;
-  raceCategory: string | null;
+  raceCategory: string;
   displayPrice: number | null;
 }
 
@@ -55,7 +55,7 @@ export async function RaceDetailHeader({
             {formattedDate}
           </span>
           {race.date && <ConfirmedDateBadge locale={locale} />}
-          {categorySlug && raceCategory && (
+          {categorySlug ? (
             <TrackedLink
               href={`/${locale}/${categorySlug}`}
               eventName="race_category_link_clicked"
@@ -64,6 +64,10 @@ export async function RaceDetailHeader({
             >
               {tCategory(raceCategory)}
             </TrackedLink>
+          ) : (
+            <span className="shrink-0 px-2 py-0.5 text-xs font-medium rounded-sm bg-gray-100 text-gray-800">
+              {tCategory(raceCategory)}
+            </span>
           )}
         </div>
         <div className="flex flex-row flex-wrap gap-x-3 gap-y-1 text-sm lg:text-base text-gray-600">

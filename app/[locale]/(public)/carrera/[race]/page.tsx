@@ -21,6 +21,7 @@ import { TrailRaceCard } from '@/components/race/trail-race-card';
 import { getRaceImageUrlWithFilename } from '@/lib/races/image-url';
 import { TrackedLink } from '@/components/ui/tracked-link';
 import { RaceDetailHeader } from '@/components/race/race-detail-header';
+import { getPrimaryPublicRaceCategory, getRaceDisplayCategoryKey } from '@/lib/races/categories';
 
 const PROVINCE_SLUGS: Record<string, string> = {
   Barcelona: 'barcelona',
@@ -148,16 +149,8 @@ export default async function RacePage({
   const jsonLd = buildRaceJsonLd(raceData, race, locale as Locale);
   const provinceSlug = PROVINCE_SLUGS[raceData.province] ?? null;
 
-  const CATEGORY_SLUG: Record<string, string> = {
-    ultra: 'ultra-trail',
-    maraton: 'maraton',
-    media: 'media-maraton',
-  };
-  const raceCategory =
-    raceData.distanceKm > 42 ? 'ultra' :
-      raceData.distanceKm >= 42 ? 'maraton' :
-        raceData.distanceKm >= 20 ? 'media' : null;
-  const categorySlug = raceCategory ? CATEGORY_SLUG[raceCategory] : null;
+  const raceCategory = getRaceDisplayCategoryKey(raceData);
+  const categorySlug = getPrimaryPublicRaceCategory(raceData)?.slug ?? null;
 
   const breadcrumbJsonLd = buildBreadcrumbJsonLd([
     { name: tNav('calendar'), url: `${BASE_URL}/${locale}` },

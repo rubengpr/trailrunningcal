@@ -5,6 +5,7 @@ import {
   buildBlogPostAlternateLinks,
   buildContactAlternateLinks,
   buildRaceAlternateLinks,
+  buildStaticPublicAlternateLinks,
 } from './alternate-links';
 import { BASE_URL } from '@/lib/config';
 import * as blogUtils from './blog-utils';
@@ -368,5 +369,17 @@ describe('buildRaceAlternateLinks', () => {
     expect(result1.ca).toContain(raceSlug1);
     expect(result2.es).toContain(raceSlug2);
     expect(result2.ca).toContain(raceSlug2);
+  });
+});
+
+describe('buildStaticPublicAlternateLinks', () => {
+  it('should return correct alternate links for a static public page', () => {
+    const result = buildStaticPublicAlternateLinks('ultra-trail');
+
+    expect(result).toEqual({
+      es: `${BASE_URL}/es/ultra-trail`,
+      ca: `${BASE_URL}/ca/ultra-trail`,
+      'x-default': `${BASE_URL}/es/ultra-trail`,
+    });
   });
 });
