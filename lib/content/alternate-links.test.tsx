@@ -5,7 +5,8 @@ import {
   buildBlogPostAlternateLinks,
   buildContactAlternateLinks,
   buildRaceAlternateLinks,
-  buildStaticPublicAlternateLinks,
+  buildTypeAlternateLinks,
+  getTypePath,
 } from './alternate-links';
 import { BASE_URL } from '@/lib/config';
 import * as blogUtils from './blog-utils';
@@ -372,14 +373,27 @@ describe('buildRaceAlternateLinks', () => {
   });
 });
 
-describe('buildStaticPublicAlternateLinks', () => {
-  it('should return correct alternate links for a static public page', () => {
-    const result = buildStaticPublicAlternateLinks('ultra-trail');
+describe('getTypePath', () => {
+  it('should return the race type path for a locale and type slug', () => {
+    expect(getTypePath('es', 'ultra-trail')).toBe('/es/t/ultra-trail');
+    expect(getTypePath('ca', 'backyard')).toBe('/ca/t/backyard');
+  });
+});
+
+describe('buildTypeAlternateLinks', () => {
+  it('should return correct alternate links for a race type page', () => {
+    const result = buildTypeAlternateLinks('ultra-trail');
 
     expect(result).toEqual({
-      es: `${BASE_URL}/es/ultra-trail`,
-      ca: `${BASE_URL}/ca/ultra-trail`,
-      'x-default': `${BASE_URL}/es/ultra-trail`,
+      es: `${BASE_URL}/es/t/ultra-trail`,
+      ca: `${BASE_URL}/ca/t/ultra-trail`,
+      'x-default': `${BASE_URL}/es/t/ultra-trail`,
     });
+  });
+
+  it('should always set x-default to Spanish', () => {
+    const result = buildTypeAlternateLinks('backyard');
+
+    expect(result['x-default']).toBe(result.es);
   });
 });

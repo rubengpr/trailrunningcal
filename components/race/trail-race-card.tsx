@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useFeatureFlagVariantKey } from 'posthog-js/react';
 import { VerifiedBadge } from '@/components/icons/verified-badge';
-import { getPrimaryPublicRaceCategory, getRaceDisplayCategoryKey } from '@/lib/races/categories';
+import { getPrimaryPublicRaceCategory, getRaceDisplayCategoryKey } from '@/lib/races/race-types';
+import { getTypePath } from '@/lib/races/race-types';
 import { getDisplayPrice } from '@/lib/races/utils';
 import { TEST_VERIFIED_RACES_NAME } from '@/lib/constants';
 
@@ -174,7 +175,7 @@ export function TrailRaceCard({
               <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1.5">
                 {categorySlug ? (
                   <Link
-                    href={`/${locale}/${categorySlug}`}
+                    href={getTypePath(locale, categorySlug)}
                     prefetch={false}
                     className="relative z-10 pointer-events-auto min-w-0 max-w-full wrap-break-word px-2 py-0.5 text-xs font-medium rounded-sm bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors sm:max-w-none"
                     onClick={(e) => e.stopPropagation()}

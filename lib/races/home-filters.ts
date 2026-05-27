@@ -5,7 +5,7 @@ import {
   RACE_CATEGORY_CONFIGS,
   RACE_CATEGORY_SLUGS,
   type RaceCategorySlug,
-} from '@/lib/races/categories';
+} from '@/lib/races/race-types';
 
 const DISTANCE_RANGES: Record<string, [number, number]> = {
   '0-10':  [0,  10],

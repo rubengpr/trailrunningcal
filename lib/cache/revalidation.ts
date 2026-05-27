@@ -1,6 +1,7 @@
 import { revalidatePath } from 'next/cache';
 import { locales } from '@/i18n';
-import { getRaceCategorySlugsForRace } from '@/lib/races/categories';
+import { getRaceCategorySlugsForRace } from '@/lib/races/race-types';
+import { getTypePath } from '@/lib/races/race-types';
 import { generateRaceSlug } from '@/lib/races/utils';
 
 type RaceForRevalidation = { name: string; distanceKm: number; elevationGainM: number | null };
@@ -22,7 +23,7 @@ export function revalidateCategoryPages(race: RaceForRevalidation) {
   const slugs = getRaceCategorySlugsForRace(race);
   for (const locale of locales) {
     for (const slug of slugs) {
-      revalidatePath(`/${locale}/${slug}`, 'page');
+      revalidatePath(getTypePath(locale, slug), 'page');
     }
   }
 }

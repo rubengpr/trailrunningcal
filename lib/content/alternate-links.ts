@@ -1,6 +1,9 @@
 import { BASE_URL } from '@/lib/config';
 import { locales, type Locale } from '@/i18n';
+import { getTypePath, type RaceCategorySlug } from '@/lib/races/race-types';
 import { getPostBySlug, getPostTranslations } from '@/lib/content/blog-utils';
+
+export { getTypePath } from '@/lib/races/race-types';
 
 export function buildHomeAlternateLinks(): Record<string, string> {
   return {
@@ -60,12 +63,15 @@ export function buildProvinceAlternateLinks(
   };
 }
 
-export function buildStaticPublicAlternateLinks(slug: string): Record<string, string> {
-  return {
-    es: `${BASE_URL}/es/${slug}`,
-    ca: `${BASE_URL}/ca/${slug}`,
-    'x-default': `${BASE_URL}/es/${slug}`,
-  };
+export function buildTypeAlternateLinks(
+  typeSlug: RaceCategorySlug,
+): Record<string, string> {
+  const alternates: Record<string, string> = {};
+  for (const locale of locales) {
+    alternates[locale] = `${BASE_URL}${getTypePath(locale, typeSlug)}`;
+  }
+  alternates['x-default'] = `${BASE_URL}${getTypePath('es', typeSlug)}`;
+  return alternates;
 }
 
 export function buildRaceAlternateLinks(

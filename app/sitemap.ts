@@ -3,7 +3,7 @@ import { BASE_URL } from '@/lib/config';
 import { locales, type Locale } from '@/i18n';
 import { PROVINCE_SLUGS } from '@/lib/constants';
 import { getAllBlogPosts } from '@/lib/content/blog-utils';
-import { RACE_CATEGORY_SLUGS } from '@/lib/races/categories';
+import { RACE_CATEGORY_SLUGS } from '@/lib/races/race-types';
 import { generateRaceSlug } from '@/lib/races/utils';
 import { getRaces } from '@/lib/db/races';
 import {
@@ -13,7 +13,8 @@ import {
   buildRaceAlternateLinks,
   buildBlogPostAlternateLinks,
   buildProvinceAlternateLinks,
-  buildStaticPublicAlternateLinks,
+  buildTypeAlternateLinks,
+  getTypePath,
 } from '@/lib/content/alternate-links';
 
 const CONTACT_PATHS: Record<Locale, string> = {
@@ -106,15 +107,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  for (const categorySlug of RACE_CATEGORY_SLUGS) {
+  for (const typeSlug of RACE_CATEGORY_SLUGS) {
     for (const locale of locales) {
       urls.push({
-        url: `${BASE_URL}/${locale}/${categorySlug}`,
+        url: `${BASE_URL}${getTypePath(locale, typeSlug)}`,
         lastModified: currentDate,
         changeFrequency: 'weekly',
         priority: 0.8,
         alternates: {
-          languages: buildStaticPublicAlternateLinks(categorySlug),
+          languages: buildTypeAlternateLinks(typeSlug),
         },
       });
     }

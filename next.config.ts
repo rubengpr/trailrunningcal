@@ -4,6 +4,14 @@ import createMDX from '@next/mdx';
 import { withWorkflow } from 'workflow/next';
 
 const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
+const RACE_TYPE_REDIRECT_SLUGS = [
+  'ultra-trail',
+  'maraton',
+  'media-maraton',
+  'marcha',
+  'km-vertical',
+  'backyard',
+] as const;
 
 const nextConfig: NextConfig = {
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
@@ -69,6 +77,21 @@ const nextConfig: NextConfig = {
         ],
       },
     ];
+  },
+
+  async redirects() {
+    return RACE_TYPE_REDIRECT_SLUGS.flatMap((slug) => [
+      {
+        source: `/es/${slug}`,
+        destination: `/es/t/${slug}`,
+        permanent: true,
+      },
+      {
+        source: `/ca/${slug}`,
+        destination: `/ca/t/${slug}`,
+        permanent: true,
+      },
+    ]);
   },
 
   // PostHog rewrites (EU region) — static assets first, then catch-all

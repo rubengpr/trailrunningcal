@@ -7,6 +7,8 @@ import { RaceFavoriteButton } from '@/components/race/race-favorite-button';
 import { TrackedLink } from '@/components/ui/tracked-link';
 import { BASE_URL } from '@/lib/config';
 import { TEST_VERIFIED_RACES_NAME } from '@/lib/constants';
+import { getTypePath } from '@/lib/races/race-types';
+import type { RaceCategorySlug } from '@/lib/races/race-types';
 import type { TrailRace } from '@/types/race.types';
 import type { Organizer } from '@/types/organizer.types';
 
@@ -17,7 +19,7 @@ interface RaceDetailHeaderProps {
   organizer: Organizer | null;
   formattedDate: string;
   provinceSlug: string | null;
-  categorySlug: string | null;
+  categorySlug: RaceCategorySlug | null;
   raceCategory: string;
   displayPrice: number | null;
 }
@@ -34,7 +36,6 @@ export async function RaceDetailHeader({
   displayPrice,
 }: RaceDetailHeaderProps) {
   const tRace = await getTranslations({ locale, namespace: 'race' });
-  const tProvincia = await getTranslations({ locale, namespace: 'provincia' });
   const tCategory = await getTranslations({ locale, namespace: 'category' });
 
   const isVerified = !!(race.organizerId || TEST_VERIFIED_RACES_NAME.includes(race.name));
@@ -57,7 +58,7 @@ export async function RaceDetailHeader({
           {race.date && <ConfirmedDateBadge locale={locale} />}
           {categorySlug ? (
             <TrackedLink
-              href={`/${locale}/${categorySlug}`}
+              href={getTypePath(locale, categorySlug)}
               eventName="race_category_link_clicked"
               eventProperties={{ race_id: race.id, race_slug: raceSlug, category: raceCategory }}
               className="shrink-0 px-2 py-0.5 text-xs font-medium rounded-sm bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors"

@@ -21,7 +21,7 @@ import { TrailRaceCard } from '@/components/race/trail-race-card';
 import { getRaceImageUrlWithFilename } from '@/lib/races/image-url';
 import { TrackedLink } from '@/components/ui/tracked-link';
 import { RaceDetailHeader } from '@/components/race/race-detail-header';
-import { getPrimaryPublicRaceCategory, getRaceDisplayCategoryKey } from '@/lib/races/categories';
+import { getPrimaryPublicRaceCategory, getRaceDisplayCategoryKey } from '@/lib/races/race-types';
 
 const PROVINCE_SLUGS: Record<string, string> = {
   Barcelona: 'barcelona',

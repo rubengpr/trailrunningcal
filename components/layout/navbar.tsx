@@ -11,11 +11,11 @@ import { useFavorites } from '@/hooks/use-favorites';
 import { useMobileFilters } from '@/components/providers/mobile-filters-provider';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { track } from '@/lib/analytics/track';
+import { getTypePath } from '@/lib/races/race-types';
 import { Menu, Heart, ChevronDown, CircleUser, SlidersHorizontal } from 'lucide-react';
 
 export function Navbar() {
   const t = useTranslations('navigation');
-  const tFilters = useTranslations('filters');
   const locale = useLocale();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -27,6 +27,14 @@ export function Navbar() {
   const { isAvailable: isFilterAvailable, open: openFilters, filterCount, filterVariant } = useMobileFilters();
 
   const isHomepage = pathname === `/${locale}`;
+  const typeLinks = [
+    { slug: 'ultra-trail', labelKey: 'ultraTrail', eventText: 'ultra_trail' },
+    { slug: 'maraton', labelKey: 'maraton', eventText: 'maraton' },
+    { slug: 'media-maraton', labelKey: 'mediaMaraton', eventText: 'media_maraton' },
+    { slug: 'marcha', labelKey: 'marcha', eventText: 'marcha' },
+    { slug: 'km-vertical', labelKey: 'kmVertical', eventText: 'km_vertical' },
+    { slug: 'backyard', labelKey: 'backyard', eventText: 'backyard' },
+  ] as const;
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -186,12 +194,12 @@ export function Navbar() {
                 <div className="absolute top-full right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[320px] p-3 flex gap-6">
                   <div className="flex-1">
                     <p className="px-2 pb-1 text-xs font-semibold text-gray-400 uppercase tracking-wide">{t('categoriesHeading')}</p>
-                    <Link href={`/${locale}/ultra-trail`} prefetch={false} className="block px-2 py-1.5 text-sm rounded hover:bg-gray-50 transition-colors" onClick={() => { setIsCategoriesOpen(false); setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'ultra_trail', link_href: `/${locale}/ultra-trail`, locale }), 0); }}>{t('ultraTrail')}</Link>
-                    <Link href={`/${locale}/maraton`} prefetch={false} className="block px-2 py-1.5 text-sm rounded hover:bg-gray-50 transition-colors" onClick={() => { setIsCategoriesOpen(false); setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'maraton', link_href: `/${locale}/maraton`, locale }), 0); }}>{t('maraton')}</Link>
-                    <Link href={`/${locale}/media-maraton`} prefetch={false} className="block px-2 py-1.5 text-sm rounded hover:bg-gray-50 transition-colors" onClick={() => { setIsCategoriesOpen(false); setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'media_maraton', link_href: `/${locale}/media-maraton`, locale }), 0); }}>{t('mediaMaraton')}</Link>
-                    <Link href={`/${locale}/marcha`} prefetch={false} className="block px-2 py-1.5 text-sm rounded hover:bg-gray-50 transition-colors" onClick={() => { setIsCategoriesOpen(false); setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'marcha', link_href: `/${locale}/marcha`, locale }), 0); }}>{t('marcha')}</Link>
-                    <Link href={`/${locale}/km-vertical`} prefetch={false} className="block px-2 py-1.5 text-sm rounded hover:bg-gray-50 transition-colors" onClick={() => { setIsCategoriesOpen(false); setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'km_vertical', link_href: `/${locale}/km-vertical`, locale }), 0); }}>{t('kmVertical')}</Link>
-                    <Link href={`/${locale}/backyard`} prefetch={false} className="block px-2 py-1.5 text-sm rounded hover:bg-gray-50 transition-colors" onClick={() => { setIsCategoriesOpen(false); setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'backyard', link_href: `/${locale}/backyard`, locale }), 0); }}>{t('backyard')}</Link>
+                    {typeLinks.map(({ slug, labelKey, eventText }) => {
+                      const href = getTypePath(locale, slug);
+                      return (
+                        <Link key={slug} href={href} prefetch={false} className="block px-2 py-1.5 text-sm rounded hover:bg-gray-50 transition-colors" onClick={() => { setIsCategoriesOpen(false); setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: eventText, link_href: href, locale }), 0); }}>{t(labelKey)}</Link>
+                      );
+                    })}
                   </div>
                   <div className="w-px bg-gray-100" />
                   <div className="flex-1">

@@ -106,6 +106,10 @@ export function isRaceCategorySlug(value: string): value is RaceCategorySlug {
   return RACE_CATEGORY_SLUGS.includes(value as RaceCategorySlug);
 }
 
+export function getTypePath(locale: string, typeSlug: RaceCategorySlug): string {
+  return `/${locale}/t/${typeSlug}`;
+}
+
 export function getRaceCategoryConfig(slug: RaceCategorySlug): RaceCategoryConfig {
   return RACE_CATEGORY_CONFIGS[slug];
 }

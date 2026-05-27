@@ -5,7 +5,7 @@ import {
   getRaceCategoryConfig,
   getRaceCategorySlugsForRace,
   isRaceCategorySlug,
-} from '@/lib/races/categories';
+} from '@/lib/races/race-types';
 import type { TrailRace } from '@/types/race.types';
 
 function race(overrides: Partial<TrailRace>): TrailRace {

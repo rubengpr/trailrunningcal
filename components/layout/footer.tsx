@@ -4,6 +4,7 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import { getPostsForLocale } from '@/lib/content/blog-utils';
 import type { Locale } from '@/i18n';
 import { PROVINCE_SLUGS } from '@/lib/constants';
+import { getTypePath } from '@/lib/races/race-types';
 
 const CATEGORY_SLUGS = [
   { slug: 'ultra-trail', key: 'ultraTrail' },
@@ -53,7 +54,7 @@ export async function Footer() {
                 {CATEGORY_SLUGS.map(({ slug, key }) => (
                   <Link
                     key={slug}
-                    href={`/${locale}/${slug}`}
+                    href={getTypePath(locale, slug)}
                     prefetch={false}
                     className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors py-1"
                   >
