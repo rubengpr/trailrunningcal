@@ -2,6 +2,7 @@ import { revalidatePath } from 'next/cache';
 import { locales } from '@/i18n';
 import { getRaceCategorySlugsForRace } from '@/lib/races/race-types';
 import { getTypePath } from '@/lib/races/race-types';
+import { getDestinationPath, getProvinceByDbName } from '@/lib/geography/destinations';
 import { generateRaceSlug } from '@/lib/races/utils';
 
 type RaceForRevalidation = { name: string; distanceKm: number; elevationGainM: number | null };
@@ -13,9 +14,17 @@ export function revalidateHomepages() {
 }
 
 export function revalidateProvincePage(province: string) {
-  const slug = province.toLowerCase();
+  const destination = getProvinceByDbName(province);
+
+  if (!destination) {
+    return;
+  }
+
   for (const locale of locales) {
-    revalidatePath(`/${locale}/provincia/${slug}`, 'page');
+    revalidatePath(
+      getDestinationPath(locale, destination.province.regionId, destination.id),
+      'page',
+    );
   }
 }
 

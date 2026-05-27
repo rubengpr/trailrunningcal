@@ -1,6 +1,3 @@
-export const PROVINCE_SLUGS = ['barcelona', 'girona', 'lleida', 'tarragona'] as const;
-export type ProvinceSlug = (typeof PROVINCE_SLUGS)[number];
-
 export const PROVINCES = ['Barcelona', 'Girona', 'Lleida', 'Tarragona'] as const;
 
 export const DISTANCE_GROUPS = ['0-10', '10-20', '20-30', '30-40', '40-50', '50+'] as const;

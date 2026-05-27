@@ -9,8 +9,18 @@ import { BASE_URL } from '@/lib/config';
 import { TEST_VERIFIED_RACES_NAME } from '@/lib/constants';
 import { getTypePath } from '@/lib/races/race-types';
 import type { RaceCategorySlug } from '@/lib/races/race-types';
+import {
+  getDestinationPath,
+  type DestinationProvinceId,
+  type RegionId,
+} from '@/lib/geography/destinations';
 import type { TrailRace } from '@/types/race.types';
 import type { Organizer } from '@/types/organizer.types';
+
+type ProvinceDestination = {
+  regionId: RegionId;
+  provinceId: DestinationProvinceId;
+};
 
 interface RaceDetailHeaderProps {
   race: TrailRace;
@@ -18,7 +28,7 @@ interface RaceDetailHeaderProps {
   locale: string;
   organizer: Organizer | null;
   formattedDate: string;
-  provinceSlug: string | null;
+  provinceDestination: ProvinceDestination | null;
   categorySlug: RaceCategorySlug | null;
   raceCategory: string;
   displayPrice: number | null;
@@ -30,7 +40,7 @@ export async function RaceDetailHeader({
   locale,
   organizer,
   formattedDate,
-  provinceSlug,
+  provinceDestination,
   categorySlug,
   raceCategory,
   displayPrice,
@@ -74,9 +84,13 @@ export async function RaceDetailHeader({
         <div className="flex flex-row flex-wrap gap-x-3 gap-y-1 text-sm lg:text-base text-gray-600">
           <div className="flex flex-row gap-1">
             <span className="whitespace-nowrap">{race.city},</span>
-            {provinceSlug ? (
+            {provinceDestination ? (
               <TrackedLink
-                href={`/${locale}/provincia/${provinceSlug}`}
+                href={getDestinationPath(
+                  locale,
+                  provinceDestination.regionId,
+                  provinceDestination.provinceId,
+                )}
                 eventName="race_province_inline_clicked"
                 eventProperties={{ race_id: race.id, race_slug: raceSlug, province: race.province }}
                 className="whitespace-nowrap hover:underline"

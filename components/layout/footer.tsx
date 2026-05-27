@@ -3,8 +3,12 @@ import Link from 'next/link';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { getPostsForLocale } from '@/lib/content/blog-utils';
 import type { Locale } from '@/i18n';
-import { PROVINCE_SLUGS } from '@/lib/constants';
 import { getTypePath } from '@/lib/races/race-types';
+import {
+  DESTINATION_PROVINCE_IDS,
+  GEOGRAPHY,
+  getDestinationPath,
+} from '@/lib/geography/destinations';
 
 const CATEGORY_SLUGS = [
   { slug: 'ultra-trail', key: 'ultraTrail' },
@@ -68,16 +72,20 @@ export async function Footer() {
                 {t('byProvince')}
               </p>
               <div className="flex flex-col gap-1">
-                {PROVINCE_SLUGS.map((province) => (
-                  <Link
-                    key={province}
-                    href={`/${locale}/provincia/${province}`}
-                    prefetch={false}
-                    className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors py-1"
-                  >
-                    {tNav(province)}
-                  </Link>
-                ))}
+                {DESTINATION_PROVINCE_IDS.map((provinceId) => {
+                  const province = GEOGRAPHY.provinces[provinceId];
+
+                  return (
+                    <Link
+                      key={provinceId}
+                      href={getDestinationPath(locale, province.regionId, provinceId)}
+                      prefetch={false}
+                      className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors py-1"
+                    >
+                      {tNav(province.slug)}
+                    </Link>
+                  );
+                })}
               </div>
             </div>
             <div className="col-span-2 sm:col-span-1 flex flex-col gap-2">

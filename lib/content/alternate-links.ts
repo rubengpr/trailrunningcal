@@ -4,6 +4,10 @@ import { getTypePath, type RaceCategorySlug } from '@/lib/races/race-types';
 import { getPostBySlug, getPostTranslations } from '@/lib/content/blog-utils';
 
 export { getTypePath } from '@/lib/races/race-types';
+export {
+  buildDestinationAlternateLinks,
+  getDestinationPath,
+} from '@/lib/geography/destinations';
 
 export function buildHomeAlternateLinks(): Record<string, string> {
   return {
@@ -50,16 +54,6 @@ export function buildContactAlternateLinks(): Record<string, string> {
     es: `${BASE_URL}/es/contacto`,
     ca: `${BASE_URL}/ca/contacte`,
     'x-default': `${BASE_URL}/es/contacto`,
-  };
-}
-
-export function buildProvinceAlternateLinks(
-  provinceSlug: string,
-): Record<string, string> {
-  return {
-    es: `${BASE_URL}/es/provincia/${provinceSlug}`,
-    ca: `${BASE_URL}/ca/provincia/${provinceSlug}`,
-    'x-default': `${BASE_URL}/es/provincia/${provinceSlug}`,
   };
 }
 

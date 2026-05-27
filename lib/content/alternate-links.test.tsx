@@ -6,6 +6,8 @@ import {
   buildContactAlternateLinks,
   buildRaceAlternateLinks,
   buildTypeAlternateLinks,
+  buildDestinationAlternateLinks,
+  getDestinationPath,
   getTypePath,
 } from './alternate-links';
 import { BASE_URL } from '@/lib/config';
@@ -395,5 +397,28 @@ describe('buildTypeAlternateLinks', () => {
     const result = buildTypeAlternateLinks('backyard');
 
     expect(result['x-default']).toBe(result.es);
+  });
+});
+
+describe('getDestinationPath', () => {
+  it('should return the destination path for a locale, region, and province', () => {
+    expect(getDestinationPath('es', 'catalonia', 'barcelona')).toBe(
+      '/es/d/cataluna/barcelona',
+    );
+    expect(getDestinationPath('ca', 'catalonia', 'barcelona')).toBe(
+      '/ca/d/cataluna/barcelona',
+    );
+  });
+});
+
+describe('buildDestinationAlternateLinks', () => {
+  it('should return correct alternate links for a destination page', () => {
+    const result = buildDestinationAlternateLinks('catalonia', 'barcelona');
+
+    expect(result).toEqual({
+      es: `${BASE_URL}/es/d/cataluna/barcelona`,
+      ca: `${BASE_URL}/ca/d/cataluna/barcelona`,
+      'x-default': `${BASE_URL}/es/d/cataluna/barcelona`,
+    });
   });
 });

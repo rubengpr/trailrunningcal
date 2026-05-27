@@ -3,71 +3,79 @@ import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import type { Locale } from '@/i18n';
 import { generateMetadataFromOptions } from '@/lib/seo/meta-config';
-import { buildProvinceAlternateLinks } from '@/lib/content/alternate-links';
+import { buildDestinationAlternateLinks } from '@/lib/geography/destinations';
 import { BASE_URL } from '@/lib/config';
 import { buildBreadcrumbJsonLd } from '@/lib/seo/json-ld';
 import { CategoryMapPage } from '@/components/layout/category-map-page';
 import { getCategoryPageData } from '@/lib/content/category-page';
-import { PROVINCE_SLUGS, type ProvinceSlug } from '@/lib/constants';
+import {
+  getDestinationBySlugs,
+  getDestinationPath,
+} from '@/lib/geography/destinations';
 
 export const revalidate = 86400;
-
-const PROVINCE_DB_NAMES: Record<ProvinceSlug, string> = {
-  barcelona: 'Barcelona',
-  girona: 'Girona',
-  lleida: 'Lleida',
-  tarragona: 'Tarragona',
-};
-
-function isValidProvince(value: string): value is ProvinceSlug {
-  return PROVINCE_SLUGS.includes(value as ProvinceSlug);
-}
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ locale: Locale; province: string }>;
+  params: Promise<{ locale: Locale; region: string; province: string }>;
 }): Promise<Metadata> {
-  const { locale, province } = await params;
+  const { locale, region, province } = await params;
   setRequestLocale(locale);
 
-  if (!isValidProvince(province)) {
+  const destination = getDestinationBySlugs(region, province);
+
+  if (!destination) {
     return {};
   }
 
   const t = await getTranslations({ locale, namespace: 'provincia' });
-  const provinceName = t(`names.${province}`);
+  const provinceName = t(`names.${destination.province.slug}`);
   const year = new Date().getFullYear();
 
   return generateMetadataFromOptions({
     title: t('pageTitle', { province: provinceName, year }),
-    description: t(`pageDescriptions.${province}`, { year }),
-    canonicalUrl: `${BASE_URL}/${locale}/provincia/${province}`,
+    description: t(`pageDescriptions.${destination.province.slug}`, { year }),
+    canonicalUrl: `${BASE_URL}${getDestinationPath(
+      locale,
+      destination.regionId,
+      destination.provinceId,
+    )}`,
     locale,
     ogImageUrl: `${BASE_URL}/og-image.png`,
     ogType: 'website',
-    alternateLinks: buildProvinceAlternateLinks(province),
+    alternateLinks: buildDestinationAlternateLinks(
+      destination.regionId,
+      destination.provinceId,
+    ),
   });
 }
 
-export default async function ProvincePage({
+export default async function DestinationPage({
   params,
 }: {
-  params: Promise<{ locale: Locale; province: string }>;
+  params: Promise<{ locale: Locale; region: string; province: string }>;
 }) {
-  const { locale, province } = await params;
+  const { locale, region, province } = await params;
   setRequestLocale(locale);
 
-  if (!isValidProvince(province)) {
+  const destination = getDestinationBySlugs(region, province);
+
+  if (!destination) {
     notFound();
   }
 
-  const { allRaces, markers, labels, calendarLabel, year } = await getCategoryPageData(locale);
+  const { allRaces, markers, labels, calendarLabel } = await getCategoryPageData(locale);
   const t = await getTranslations({ locale, namespace: 'provincia' });
-  const provinceName = t(`names.${province}`);
+  const provinceName = t(`names.${destination.province.slug}`);
+  const destinationPath = getDestinationPath(
+    locale,
+    destination.regionId,
+    destination.provinceId,
+  );
 
   const races = allRaces.filter(
-    (race) => race.province === PROVINCE_DB_NAMES[province],
+    (race) => race.province === destination.province.dbName,
   );
 
   return (
@@ -77,12 +85,12 @@ export default async function ProvincePage({
       markers={markers}
       breadcrumbJsonLd={buildBreadcrumbJsonLd([
         { name: calendarLabel, url: `${BASE_URL}/${locale}` },
-        { name: provinceName, url: `${BASE_URL}/${locale}/provincia/${province}` },
+        { name: provinceName, url: `${BASE_URL}${destinationPath}` },
       ])}
       heroBody={t('pageBody', { province: provinceName })}
       heroTitleStart={t('heroTitleStart')}
       heroTitlePlace={provinceName}
-      heroSubtitle={t(`heroSubtitles.${province}`)}
+      heroSubtitle={t(`heroSubtitles.${destination.province.slug}`)}
       breadcrumbItems={[
         { name: calendarLabel, href: `/${locale}` },
         { name: provinceName },

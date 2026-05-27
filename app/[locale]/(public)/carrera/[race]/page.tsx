@@ -22,13 +22,7 @@ import { getRaceImageUrlWithFilename } from '@/lib/races/image-url';
 import { TrackedLink } from '@/components/ui/tracked-link';
 import { RaceDetailHeader } from '@/components/race/race-detail-header';
 import { getPrimaryPublicRaceCategory, getRaceDisplayCategoryKey } from '@/lib/races/race-types';
-
-const PROVINCE_SLUGS: Record<string, string> = {
-  Barcelona: 'barcelona',
-  Girona: 'girona',
-  Lleida: 'lleida',
-  Tarragona: 'tarragona',
-};
+import { getDestinationPath, getProvinceByDbName } from '@/lib/geography/destinations';
 
 
 export const revalidate = false;
@@ -147,18 +141,29 @@ export default async function RacePage({
       : null;
 
   const jsonLd = buildRaceJsonLd(raceData, race, locale as Locale);
-  const provinceSlug = PROVINCE_SLUGS[raceData.province] ?? null;
+  const destinationProvince = getProvinceByDbName(raceData.province);
+  const provinceDestination = destinationProvince
+    ? {
+        regionId: destinationProvince.province.regionId,
+        provinceId: destinationProvince.id,
+        provinceSlug: destinationProvince.province.slug,
+      }
+    : null;
 
   const raceCategory = getRaceDisplayCategoryKey(raceData);
   const categorySlug = getPrimaryPublicRaceCategory(raceData)?.slug ?? null;
 
   const breadcrumbJsonLd = buildBreadcrumbJsonLd([
     { name: tNav('calendar'), url: `${BASE_URL}/${locale}` },
-    ...(provinceSlug
+    ...(provinceDestination
       ? [
         {
-          name: tProvincia(`names.${provinceSlug}`),
-          url: `${BASE_URL}/${locale}/provincia/${provinceSlug}`,
+          name: tProvincia(`names.${provinceDestination.provinceSlug}`),
+          url: `${BASE_URL}${getDestinationPath(
+            locale,
+            provinceDestination.regionId,
+            provinceDestination.provinceId,
+          )}`,
         },
       ]
       : []),
@@ -187,8 +192,17 @@ export default async function RacePage({
           <Breadcrumb
             items={[
               { name: tNav('calendar'), href: `/${locale}` },
-              ...(provinceSlug
-                ? [{ name: tProvincia(`names.${provinceSlug}`), href: `/${locale}/provincia/${provinceSlug}` }]
+              ...(provinceDestination
+                ? [
+                    {
+                      name: tProvincia(`names.${provinceDestination.provinceSlug}`),
+                      href: getDestinationPath(
+                        locale,
+                        provinceDestination.regionId,
+                        provinceDestination.provinceId,
+                      ),
+                    },
+                  ]
                 : []),
               { name: raceData.name },
             ]}
@@ -200,7 +214,7 @@ export default async function RacePage({
             locale={locale}
             organizer={organizer}
             formattedDate={formattedDate}
-            provinceSlug={provinceSlug}
+            provinceDestination={provinceDestination}
             categorySlug={categorySlug}
             raceCategory={raceCategory}
             displayPrice={displayPrice}
@@ -230,10 +244,14 @@ export default async function RacePage({
           )}
 
 
-          {provinceSlug && (
+          {provinceDestination && (
             <div className="flex flex-col gap-3 mt-12">
               <TrackedLink
-                href={`/${locale}/provincia/${provinceSlug}`}
+                href={getDestinationPath(
+                  locale,
+                  provinceDestination.regionId,
+                  provinceDestination.provinceId,
+                )}
                 eventName="race_province_link_clicked"
                 eventProperties={{ race_id: raceData.id, race_slug: race }}
                 className="flex items-center justify-between w-full border border-gray-200 rounded-lg px-4 py-3 hover:border-gray-300 transition-colors"

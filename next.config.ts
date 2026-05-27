@@ -13,6 +13,13 @@ const RACE_TYPE_REDIRECT_SLUGS = [
   'backyard',
 ] as const;
 
+const DESTINATION_REDIRECT_SLUGS = [
+  'barcelona',
+  'girona',
+  'lleida',
+  'tarragona',
+] as const;
+
 const nextConfig: NextConfig = {
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
 
@@ -80,7 +87,7 @@ const nextConfig: NextConfig = {
   },
 
   async redirects() {
-    return RACE_TYPE_REDIRECT_SLUGS.flatMap((slug) => [
+    const raceTypeRedirects = RACE_TYPE_REDIRECT_SLUGS.flatMap((slug) => [
       {
         source: `/es/${slug}`,
         destination: `/es/t/${slug}`,
@@ -92,6 +99,21 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
     ]);
+
+    const destinationRedirects = DESTINATION_REDIRECT_SLUGS.flatMap((slug) => [
+      {
+        source: `/es/provincia/${slug}`,
+        destination: `/es/d/cataluna/${slug}`,
+        permanent: true,
+      },
+      {
+        source: `/ca/provincia/${slug}`,
+        destination: `/ca/d/cataluna/${slug}`,
+        permanent: true,
+      },
+    ]);
+
+    return [...raceTypeRedirects, ...destinationRedirects];
   },
 
   // PostHog rewrites (EU region) — static assets first, then catch-all

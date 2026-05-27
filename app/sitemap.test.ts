@@ -27,3 +27,21 @@ describe('sitemap race type URLs', () => {
     expect(sitemapUrls).not.toContain(`${BASE_URL}/ca/ultra-trail`);
   });
 });
+
+describe('sitemap destination URLs', () => {
+  it('includes parallel /d destination URLs', async () => {
+    const urls = await sitemap();
+    const sitemapUrls = urls.map((entry) => entry.url);
+
+    expect(sitemapUrls).toContain(`${BASE_URL}/es/d/cataluna/barcelona`);
+    expect(sitemapUrls).toContain(`${BASE_URL}/ca/d/cataluna/barcelona`);
+  });
+
+  it('does not include legacy /provincia URLs', async () => {
+    const urls = await sitemap();
+    const sitemapUrls = urls.map((entry) => entry.url);
+
+    expect(sitemapUrls).not.toContain(`${BASE_URL}/es/provincia/barcelona`);
+    expect(sitemapUrls).not.toContain(`${BASE_URL}/ca/provincia/barcelona`);
+  });
+});

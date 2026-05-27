@@ -1,9 +1,9 @@
 import { MetadataRoute } from 'next';
 import { BASE_URL } from '@/lib/config';
 import { locales, type Locale } from '@/i18n';
-import { PROVINCE_SLUGS } from '@/lib/constants';
 import { getAllBlogPosts } from '@/lib/content/blog-utils';
 import { RACE_CATEGORY_SLUGS } from '@/lib/races/race-types';
+import { DESTINATION_PROVINCE_IDS } from '@/lib/geography/destinations';
 import { generateRaceSlug } from '@/lib/races/utils';
 import { getRaces } from '@/lib/db/races';
 import {
@@ -12,8 +12,9 @@ import {
   buildContactAlternateLinks,
   buildRaceAlternateLinks,
   buildBlogPostAlternateLinks,
-  buildProvinceAlternateLinks,
   buildTypeAlternateLinks,
+  buildDestinationAlternateLinks,
+  getDestinationPath,
   getTypePath,
 } from '@/lib/content/alternate-links';
 
@@ -92,16 +93,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  // Add province pages (all locales)
-  for (const province of PROVINCE_SLUGS) {
+  for (const provinceId of DESTINATION_PROVINCE_IDS) {
     for (const locale of locales) {
       urls.push({
-        url: `${BASE_URL}/${locale}/provincia/${province}`,
+        url: `${BASE_URL}${getDestinationPath(locale, 'catalonia', provinceId)}`,
         lastModified: currentDate,
         changeFrequency: 'weekly',
         priority: 0.9,
         alternates: {
-          languages: buildProvinceAlternateLinks(province),
+          languages: buildDestinationAlternateLinks('catalonia', provinceId),
         },
       });
     }

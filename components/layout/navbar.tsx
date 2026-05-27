@@ -12,6 +12,11 @@ import { useMobileFilters } from '@/components/providers/mobile-filters-provider
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { track } from '@/lib/analytics/track';
 import { getTypePath } from '@/lib/races/race-types';
+import {
+  DESTINATION_PROVINCE_IDS,
+  GEOGRAPHY,
+  getDestinationPath,
+} from '@/lib/geography/destinations';
 import { Menu, Heart, ChevronDown, CircleUser, SlidersHorizontal } from 'lucide-react';
 
 export function Navbar() {
@@ -204,17 +209,22 @@ export function Navbar() {
                   <div className="w-px bg-gray-100" />
                   <div className="flex-1">
                     <p className="px-2 pb-1 text-xs font-semibold text-gray-400 uppercase tracking-wide">{t('provincesHeading')}</p>
-                    {(['barcelona', 'girona', 'lleida', 'tarragona'] as const).map((province) => (
-                      <Link
-                        key={province}
-                        href={`/${locale}/provincia/${province}`}
-                        prefetch={false}
-                        className="block px-2 py-1.5 text-sm rounded hover:bg-gray-50 transition-colors"
-                        onClick={() => { setIsCategoriesOpen(false); setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: province, link_href: `/${locale}/provincia/${province}`, locale }), 0); }}
-                      >
-                        {t(province)}
-                      </Link>
-                    ))}
+                    {DESTINATION_PROVINCE_IDS.map((provinceId) => {
+                      const province = GEOGRAPHY.provinces[provinceId];
+                      const href = getDestinationPath(locale, province.regionId, provinceId);
+
+                      return (
+                        <Link
+                          key={provinceId}
+                          href={href}
+                          prefetch={false}
+                          className="block px-2 py-1.5 text-sm rounded hover:bg-gray-50 transition-colors"
+                          onClick={() => { setIsCategoriesOpen(false); setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: provinceId, link_href: href, locale }), 0); }}
+                        >
+                          {t(province.slug)}
+                        </Link>
+                      );
+                    })}
                   </div>
                 </div>
               )}
