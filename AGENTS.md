@@ -19,10 +19,12 @@ For business context, metrics, positioning, and audience — invoke the `/produc
 - **API file structure:** one `route.ts` per resource under `app/api/[resource]/`; dynamic segments at `app/api/[resource]/[id]/route.ts`
 - **Route handlers:** auth, structural input validation (shape, types), service delegation, HTTP response. Extract long or shared structural input validation to a co-located `validation.ts`
 - **Service layer:** receive clean, structured data. Contains domain rules/validation. Business logic lives in `lib/services/{feature}.ts`. DB access lives in `lib/db/`.
+- **Domain helpers:** put small reusable domain helpers in `lib/{resource}/utils.ts`; use a specific module name only when the helper group has a clear concept.
 - **External provider structure:** each provider lives under `lib/integrations/{provider}/` with `client.ts` (HTTP calls, auth, raw shapes), `service.ts` (orchestration, added when needed), and named helpers as they emerge (e.g. `lib/integrations/spider-cloud/`, `lib/integrations/openrouter/`)
 - **Data layer:** Server Components read directly via `lib/db/*`; Client Components call own API routes exclusively through `lib/api/*` wrappers.
 - **Workflow orchestration:** frontend clients request outcomes by calling backend API endpoints with explicit workflow/input payloads. Multi-step business workflows belong in backend services, not client components.
 - **DB transactions:** multi-table writes must be atomic. Use Postgres functions (`plpgsql`) via `supabase.rpc(...)` — do not orchestrate split writes in route handlers. Prefer `SECURITY INVOKER` and explicit `GRANT EXECUTE`.
+- **Domain helpers:** put small reusable domain helpers in lib/{resource}/utils.ts; use a specific module name only when the helper group has a clear concept
 
 ## Components
 
