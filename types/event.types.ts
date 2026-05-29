@@ -1,0 +1,64 @@
+export type EventRow = {
+  id: string;
+  name: string;
+  slug: string;
+  website_url: string | null;
+  organizer_id: string | null;
+  description: string | null;
+  hero_image_filename: string | null;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type EventRaceRow = {
+  id: string;
+  name: string;
+  date: string | null;
+  distance_km: number;
+  elevation_gain_m: number | null;
+  city: string;
+  province: string;
+  map_url?: string | null;
+  race_tiers?: Array<{ price_eur: number }> | null;
+};
+
+export interface TrailEvent {
+  id: string;
+  name: string;
+  slug: string;
+  websiteUrl: string | null;
+  organizerId: string | null;
+  description: string | null;
+  heroImageFilename: string | null;
+}
+
+export interface TrailEventRace {
+  id: string;
+  name: string;
+  date: string | null;
+  distanceKm: number;
+  elevationGainM: number | null;
+  city: string;
+  province: string;
+  mapUrl?: string | null;
+  priceEur?: Array<{ price_eur: number }> | null;
+}
+
+export interface TrailEventDateRange {
+  startDate: string | null;
+  endDate: string | null;
+}
+
+export interface TrailEventLocation {
+  city: string | null;
+  province: string | null;
+  isMultipleLocations: boolean;
+}
+
+export interface TrailEventDetail {
+  event: TrailEvent;
+  races: TrailEventRace[];
+  allRaceCount: number;
+  dateRange: TrailEventDateRange;
+  location: TrailEventLocation;
+}
