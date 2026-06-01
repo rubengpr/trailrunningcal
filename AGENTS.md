@@ -24,7 +24,6 @@ For business context, metrics, positioning, and audience — invoke the `/produc
 - **Data layer:** Server Components read directly via `lib/db/*`; Client Components call own API routes exclusively through `lib/api/*` wrappers.
 - **Workflow orchestration:** frontend clients request outcomes by calling backend API endpoints with explicit workflow/input payloads. Multi-step business workflows belong in backend services, not client components.
 - **DB transactions:** multi-table writes must be atomic. Use Postgres functions (`plpgsql`) via `supabase.rpc(...)` — do not orchestrate split writes in route handlers. Prefer `SECURITY INVOKER` and explicit `GRANT EXECUTE`.
-- **Domain helpers:** put small reusable domain helpers in lib/{resource}/utils.ts; use a specific module name only when the helper group has a clear concept
 
 ## Components
 
