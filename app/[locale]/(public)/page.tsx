@@ -8,7 +8,7 @@ import {
 } from '@/lib/seo/meta-config';
 import type { Locale } from '@/i18n';
 import { buildHomeAlternateLinks } from '@/lib/content/alternate-links';
-import { getRaces } from '@/lib/db/races';
+import { getEvents } from '@/lib/db/events';
 import { getRacesMapData } from '@/lib/db/races-map';
 import { buildWebsiteJsonLd, buildOrganizationJsonLd } from '@/lib/seo/json-ld';
 import { buildFaqJsonLd } from '@/lib/seo/json-ld';
@@ -48,10 +48,10 @@ export default async function HomePage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const t = await getTranslations({ locale });
 
-  const [races, { markers }] = await Promise.all([
-    getRaces(),
+  const [t, events, { markers }] = await Promise.all([
+    getTranslations({ locale }),
+    getEvents(),
     getRacesMapData(),
   ]);
 
@@ -73,18 +73,15 @@ export default async function HomePage({
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
-      />
+      <script type="application/ld+json">
+        {JSON.stringify(websiteJsonLd)}
+      </script>
+      <script type="application/ld+json">
+        {JSON.stringify(organizationJsonLd)}
+      </script>
+      <script type="application/ld+json">
+        {JSON.stringify(faqJsonLd)}
+      </script>
       <HeroSection
         titleStart={t('landing.titleStart')}
         titlePlace={t('landing.titlePlace')}
@@ -93,7 +90,7 @@ export default async function HomePage({
       />
       <div id="calendar" className="mx-auto w-full min-w-0 pt-6 pb-16 sm:pt-10 lg:pt-4 scroll-mt-18 sm:scroll-mt-20">
         <RacesExplorerClient
-          races={races}
+          events={events}
           markers={markers}
           locale={locale}
           labels={labels}

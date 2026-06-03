@@ -1,15 +1,17 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useFeatureFlagVariantKey } from 'posthog-js/react';
+import type { TrailEventDetail } from '@/types/event.types';
 import type { TrailRace } from '@/types/race.types';
 import type { Locale } from '@/i18n';
 import type { MapPageLabels, RaceMapMarker } from '@/types/map.types';
 import { RacesExplorerFiltersSection } from '@/components/races-map/races-explorer-filters-section';
 import { MobileFiltersButton } from '@/components/filters/mobile-filters-button';
 import { MobileFiltersModal } from '@/components/filters/mobile-filters-modal';
+import { EventCard } from '@/components/event/event-card';
 import { TrailRaceCard } from '@/components/race/trail-race-card';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
 import { SearchError } from '@/components/ui/error-message';
@@ -22,6 +24,8 @@ import { Search, RefreshCw, TriangleAlert } from 'lucide-react';
 import { useMinWidthLg } from '@/hooks/use-min-width-lg';
 import { useScrollEdges } from '@/hooks/use-scroll-edges';
 import { useMobileFilters } from '@/components/providers/mobile-filters-provider';
+import { filterMapMarkersByRaceIds } from '@/lib/races/home-filters';
+import { filterHomeEvents, getEventRaceIds } from '@/lib/events/utils';
 import { useRaceFilters } from '@/hooks/use-race-filters';
 import { generateRaceSlug } from '@/lib/races/utils';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
@@ -38,7 +42,8 @@ type FiltersAppliedVariant =
 type FilterType = 'month' | 'province' | 'distance' | 'race_type' | 'apply';
 
 interface RacesExplorerClientProps {
-  races: TrailRace[];
+  events?: TrailEventDetail[];
+  races?: TrailRace[];
   markers: RaceMapMarker[];
   locale: Locale;
   labels: MapPageLabels;
@@ -47,6 +52,7 @@ interface RacesExplorerClientProps {
 }
 
 export function RacesExplorerClient({
+  events,
   races,
   markers,
   locale,
@@ -58,14 +64,15 @@ export function RacesExplorerClient({
   const tFilters = useTranslations('filters');
   const tErrors = useTranslations('errors');
   const tMap = useTranslations('map');
-  const [focusRaceId, setFocusRaceId] = useState<string | null>(null);
-  const [focusRaceNonce, setFocusRaceNonce] = useState(0);
   const [mobileView, setMobileView] = useState<MobileView>('list');
   const [desktopLayout, setDesktopLayout] = useState<DesktopLayout>('both');
+  const [focusRaceId, setFocusRaceId] = useState<string | null>(null);
+  const [focusRaceNonce, setFocusRaceNonce] = useState(0);
   const pillsScrollRef = useRef<HTMLDivElement>(null);
 
-  const router = useRouter();
   const isDesktopMap = useMinWidthLg();
+  const router = useRouter();
+  const isEventMode = events !== undefined;
   const v2Variant = useFeatureFlagVariantKey('filter-flag-v2');
   const v2VariantStr = typeof v2Variant === 'string' ? v2Variant : null;
   const filterLayout = v2VariantStr?.includes('-') ? v2VariantStr.slice(0, v2VariantStr.lastIndexOf('-')) : (v2VariantStr ?? 'control');
@@ -83,25 +90,51 @@ export function RacesExplorerClient({
     });
   }, [analyticsFilterVariant]);
 
-  const {
-    selectedMonth,
-    selectedProvince,
-    selectedDistance,
-    selectedRaceType,
-    setSelectedMonth,
-    setSelectedProvince,
-    activeFiltersCount,
-    filteredRaces,
-    filteredMarkers,
-    handleMonthSelect,
-    handleProvinceSelect,
-    handleDistanceSelect,
-    handleRaceTypeSelect,
-    handleClearFilters,
-    handleFiltersApply,
-  } = useRaceFilters({
-    races,
+  const [selectedMonth, setSelectedMonth] = useState<string[]>([]);
+  const [selectedProvince, setSelectedProvince] = useState<string[]>([]);
+  const [selectedDistance, setSelectedDistance] = useState<string[]>([]);
+  const [selectedRaceType, setSelectedRaceType] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!isEventMode || typeof window === 'undefined') return;
+
+    const readStoredFilter = (key: string): string[] => {
+      try {
+        const stored = sessionStorage.getItem(key);
+        return stored ? JSON.parse(stored) : [];
+      } catch {
+        return [];
+      }
+    };
+
+    setSelectedMonth(readStoredFilter('filter_month'));
+    setSelectedProvince(readStoredFilter('filter_province'));
+    setSelectedDistance(readStoredFilter('filter_distance'));
+    setSelectedRaceType(readStoredFilter('filter_type'));
+  }, [isEventMode]);
+
+  useEffect(() => {
+    if (!isEventMode || typeof window === 'undefined') return;
+    sessionStorage.setItem('filter_month', JSON.stringify(selectedMonth));
+    sessionStorage.setItem('filter_province', JSON.stringify(selectedProvince));
+    sessionStorage.setItem('filter_distance', JSON.stringify(selectedDistance));
+    sessionStorage.setItem('filter_type', JSON.stringify(selectedRaceType));
+  }, [isEventMode, selectedMonth, selectedProvince, selectedDistance, selectedRaceType]);
+
+  const filteredEvents = useMemo(
+    () => filterHomeEvents(events ?? [], selectedMonth, selectedProvince, selectedDistance, selectedRaceType),
+    [events, selectedMonth, selectedProvince, selectedDistance, selectedRaceType],
+  );
+
+  const eventFilteredMarkers = useMemo(() => {
+    const raceIds = getEventRaceIds(filteredEvents);
+    return filterMapMarkersByRaceIds(markers, raceIds);
+  }, [filteredEvents, markers]);
+
+  const raceFilters = useRaceFilters({
+    races: races ?? [],
     markers,
+    persistence: { enabled: !isEventMode },
     analytics: {
       onMonthSelect: () => {
         trackFiltersApplied('month');
@@ -124,6 +157,16 @@ export function RacesExplorerClient({
     },
   });
 
+  const activeSelectedMonth = isEventMode ? selectedMonth : raceFilters.selectedMonth;
+  const activeSelectedProvince = isEventMode ? selectedProvince : raceFilters.selectedProvince;
+  const activeSelectedDistance = isEventMode ? selectedDistance : raceFilters.selectedDistance;
+  const activeSelectedRaceType = isEventMode ? selectedRaceType : raceFilters.selectedRaceType;
+  const activeFiltersCount = isEventMode
+    ? selectedMonth.length + selectedProvince.length + selectedDistance.length + selectedRaceType.length
+    : raceFilters.activeFiltersCount;
+  const activeFilteredMarkers = isEventMode ? eventFilteredMarkers : raceFilters.filteredMarkers;
+  const activeListCount = isEventMode ? filteredEvents.length : raceFilters.filteredRaces.length;
+
   const { canScrollLeft, canScrollRight } = useScrollEdges(pillsScrollRef, isPillVariant);
   const { isOpen: isFiltersModalOpen, open: openFiltersModal, close: closeFiltersModal, register, unregister, updateFilterCount, updateFilterVariant, filterCount } = useMobileFilters();
 
@@ -142,15 +185,100 @@ export function RacesExplorerClient({
   }, [activeFiltersCount, updateFilterCount]);
 
   const handleRetry = () => {
-    setSelectedMonth([]);
-    setSelectedProvince([]);
+    if (isEventMode) {
+      setSelectedMonth([]);
+      setSelectedProvince([]);
+      setSelectedDistance([]);
+      setSelectedRaceType([]);
+    } else {
+      raceFilters.handleClearFilters();
+    }
     window.location.reload();
   };
 
+  const handleMonthSelect = useCallback((month: string[]) => {
+    if (isEventMode) {
+      setSelectedMonth(month);
+      trackFiltersApplied('month');
+      return;
+    }
+
+    raceFilters.handleMonthSelect(month);
+  }, [isEventMode, raceFilters, trackFiltersApplied]);
+
+  const handleProvinceSelect = useCallback((province: string[]) => {
+    if (isEventMode) {
+      setSelectedProvince(province);
+      trackFiltersApplied('province');
+      return;
+    }
+
+    raceFilters.handleProvinceSelect(province);
+  }, [isEventMode, raceFilters, trackFiltersApplied]);
+
+  const handleDistanceSelect = useCallback((distance: string[]) => {
+    if (isEventMode) {
+      setSelectedDistance(distance);
+      trackFiltersApplied('distance');
+      return;
+    }
+
+    raceFilters.handleDistanceSelect(distance);
+  }, [isEventMode, raceFilters, trackFiltersApplied]);
+
+  const handleRaceTypeSelect = useCallback((raceType: string[]) => {
+    if (isEventMode) {
+      setSelectedRaceType(raceType);
+      trackFiltersApplied('race_type');
+      return;
+    }
+
+    raceFilters.handleRaceTypeSelect(raceType);
+  }, [isEventMode, raceFilters, trackFiltersApplied]);
+
+  const handleClearFilters = useCallback(() => {
+    if (isEventMode) {
+      setSelectedMonth([]);
+      setSelectedProvince([]);
+      setSelectedDistance([]);
+      setSelectedRaceType([]);
+      track(ANALYTICS_EVENTS.RACE_FILTERS_CLEARED);
+      return;
+    }
+
+    raceFilters.handleClearFilters();
+  }, [isEventMode, raceFilters]);
+
   const handleFiltersApplyAndClose = (month: string[], province: string[], distance: string[], raceType: string[]) => {
-    handleFiltersApply(month, province, distance, raceType);
+    if (isEventMode) {
+      setSelectedMonth(month);
+      setSelectedProvince(province);
+      setSelectedDistance(distance);
+      setSelectedRaceType(raceType);
+      trackFiltersApplied('apply');
+    } else {
+      raceFilters.handleFiltersApply(month, province, distance, raceType);
+    }
     closeFiltersModal();
   };
+
+  const focusRaceOnMap = useCallback((raceId: string): void => {
+    setFocusRaceId(raceId);
+    setFocusRaceNonce((nonce) => nonce + 1);
+    if (!isDesktopMap) {
+      setMobileView('map');
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+  }, [isDesktopMap]);
+
+  const handleRaceCardClick = useCallback((raceId: string, raceSlug: string): void => {
+    if (desktopLayout === 'list') {
+      router.push(`/${locale}/carrera/${raceSlug}`);
+      return;
+    }
+
+    focusRaceOnMap(raceId);
+  }, [desktopLayout, focusRaceOnMap, locale, router]);
 
   const handleDesktopLayoutChange = (layout: DesktopLayout, button: LayoutToggleButton): void => {
     setDesktopLayout(layout);
@@ -168,25 +296,6 @@ export function RacesExplorerClient({
     window.scrollTo({ top: 0, behavior: 'instant' });
     setTimeout(() => track(ANALYTICS_EVENTS.MAP_VIEW_LIST_CLICKED, { locale }), 0);
   };
-
-  const focusRaceOnMap = useCallback((raceId: string) => {
-    setFocusRaceId(raceId);
-    setFocusRaceNonce((n) => n + 1);
-  }, []);
-
-  const handleRaceCardClick = useCallback(
-    (raceId: string, raceSlug: string) => {
-      const hasPin = filteredMarkers.some((m) =>
-        m.races.some((r) => r.id === raceId),
-      );
-      if (isDesktopMap && hasPin) {
-        focusRaceOnMap(raceId);
-        return;
-      }
-      router.push(`/${locale}/carrera/${raceSlug}`);
-    },
-    [focusRaceOnMap, isDesktopMap, filteredMarkers, locale, router],
-  );
 
   /** Split column — sticky map; height on map root. */
   const mapPanelClassNameDesktop =
@@ -213,10 +322,10 @@ export function RacesExplorerClient({
         filterLayout={filterLayout}
         canScrollLeft={canScrollLeft}
         canScrollRight={canScrollRight}
-        selectedMonth={selectedMonth}
-        selectedProvince={selectedProvince}
-        selectedDistance={selectedDistance}
-        selectedRaceType={selectedRaceType}
+        selectedMonth={activeSelectedMonth}
+        selectedProvince={activeSelectedProvince}
+        selectedDistance={activeSelectedDistance}
+        selectedRaceType={activeSelectedRaceType}
         onMonthSelect={handleMonthSelect}
         onProvinceSelect={handleProvinceSelect}
         onDistanceSelect={handleDistanceSelect}
@@ -251,23 +360,50 @@ export function RacesExplorerClient({
                     className={`min-w-0 w-full min-h-0 ${desktopLayout === 'both' ? 'lg:w-1/2 lg:max-h-[calc(100vh-12rem)] lg:overflow-y-auto lg:pr-1' : 'lg:w-full'} ${showMobileMapFab && mobileView === 'list' ? 'pb-20' : ''}`}
                   >
                     <div className="grid min-h-[200px] min-w-0 grid-cols-1 gap-4">
-                      {filteredRaces.length === 0 ? (
+                      {activeListCount === 0 ? (
                         <EmptyState
                           icon={
-                            <Search className="mx-auto h-16 w-16 text-gray-400" strokeWidth={1.5} />
+                            <Search className="mx-auto size-16 text-gray-400" strokeWidth={1.5} />
                           }
                           title={tResults('noRacesFound')}
                           description={tResults('noRacesMessage')}
                           action={
                             <Button onClick={handleClearFilters}>
-                              <RefreshCw className="w-4 h-4 mr-2" strokeWidth={2} />
+                              <RefreshCw className="size-4 mr-2" strokeWidth={2} />
                               {tFilters('clearFilters')}
                             </Button>
                           }
                         />
+                      ) : isEventMode ? (
+                        filteredEvents.map((eventDetail) => {
+                          return (
+                            <div key={eventDetail.event.id} className="min-w-0">
+                              <ErrorBoundary
+                                fallback={
+                                  <div className="bg-white rounded-lg shadow-sm border border-red-200 p-6">
+                                    <div className="text-center">
+                                      <div className="mb-2">
+                                        <TriangleAlert className="mx-auto size-8 text-red-500" strokeWidth={2} />
+                                      </div>
+                                      <h4 className="text-sm font-semibold text-gray-900 mb-1">
+                                        {tErrors('raceLoadError')}
+                                      </h4>
+                                      <p className="text-xs text-gray-600">
+                                        {tErrors('raceLoadErrorMessage')}
+                                      </p>
+                                    </div>
+                                  </div>
+                                }
+                              >
+                                <EventCard eventDetail={eventDetail} locale={locale} />
+                              </ErrorBoundary>
+                            </div>
+                          );
+                        })
                       ) : (
-                        filteredRaces.map((race) => {
+                        raceFilters.filteredRaces.map((race) => {
                           const raceSlug = generateRaceSlug(race.name);
+
                           return (
                             <div key={race.id} className="min-w-0">
                               <ErrorBoundary
@@ -275,7 +411,7 @@ export function RacesExplorerClient({
                                   <div className="bg-white rounded-lg shadow-sm border border-red-200 p-6">
                                     <div className="text-center">
                                       <div className="mb-2">
-                                        <TriangleAlert className="mx-auto h-8 w-8 text-red-500" strokeWidth={2} />
+                                        <TriangleAlert className="mx-auto size-8 text-red-500" strokeWidth={2} />
                                       </div>
                                       <h4 className="text-sm font-semibold text-gray-900 mb-1">
                                         {tErrors('raceLoadError')}
@@ -292,14 +428,12 @@ export function RacesExplorerClient({
                                   name={race.name}
                                   distanceKm={race.distanceKm}
                                   elevationGainM={race.elevationGainM}
-                                  priceEur={race.priceEur ?? null}
+                                  priceEur={race.priceEur}
                                   city={race.city}
                                   province={race.province}
                                   raceSlug={raceSlug}
                                   organizerId={race.organizerId}
-                                  onCardClick={() =>
-                                    handleRaceCardClick(race.id, raceSlug)
-                                  }
+                                  onCardClick={() => handleRaceCardClick(race.id, raceSlug)}
                                 />
                               </ErrorBoundary>
                             </div>
@@ -319,7 +453,7 @@ export function RacesExplorerClient({
                     ) : (
                       <div className="w-full lg:sticky lg:top-6">
                         <RacesMap
-                          markers={filteredMarkers}
+                          markers={activeFilteredMarkers}
                           locale={locale}
                           labels={labels}
                           className={
@@ -327,9 +461,9 @@ export function RacesExplorerClient({
                               ? mapPanelClassNameDesktop
                               : mapPanelClassNameMobile
                           }
-                          focusRaceId={focusRaceId}
-                          focusRaceNonce={focusRaceNonce}
-                          onMarkerPinClick={focusRaceOnMap}
+                          focusRaceId={isEventMode ? null : focusRaceId}
+                          focusRaceNonce={isEventMode ? 0 : focusRaceNonce}
+                          onMarkerPinClick={isEventMode ? undefined : focusRaceOnMap}
                         />
                       </div>
                     )}
@@ -347,10 +481,10 @@ export function RacesExplorerClient({
           onClose={closeFiltersModal}
           onApply={handleFiltersApplyAndClose}
           onClear={handleClearFilters}
-          initialMonth={selectedMonth}
-          initialProvince={selectedProvince}
-          initialDistance={selectedDistance}
-          initialRaceType={selectedRaceType}
+          initialMonth={activeSelectedMonth}
+          initialProvince={activeSelectedProvince}
+          initialDistance={activeSelectedDistance}
+          initialRaceType={activeSelectedRaceType}
         />
       )}
 

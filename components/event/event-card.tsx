@@ -37,18 +37,15 @@ function formatDateBlock(dateString: string | null, locale: Locale) {
   };
 }
 
-function buildDistanceSummary(eventDetail: TrailEventDetail, locale: Locale): string {
-  return eventDetail.races
-    .map((race) => `${formatDistance(race.distanceKm, locale)}K`)
-    .join(' · ');
-}
-
 export function EventCard({ eventDetail, locale }: EventCardProps) {
   const { day, month, weekday } = formatDateBlock(eventDetail.dateRange.startDate, locale);
   const location = eventDetail.location.isMultipleLocations
     ? null
     : [eventDetail.location.city, eventDetail.location.province].filter(Boolean).join(', ');
-  const distanceSummary = buildDistanceSummary(eventDetail, locale);
+  const distances = eventDetail.races.map((race) => ({
+    id: race.id,
+    label: formatDistance(race.distanceKm, locale),
+  }));
 
   return (
     <article className="relative w-full min-w-0 max-w-full rounded-lg bg-white shadow transition-shadow sm:hover:shadow-md">
@@ -66,7 +63,7 @@ export function EventCard({ eventDetail, locale }: EventCardProps) {
             <span className="text-xs font-medium capitalize">{month}</span>
           </div>
           <div className="min-w-0 flex-1 overflow-hidden">
-            <h3 className="truncate text-xs font-bold text-gray-900 sm:text-lg">
+            <h3 className="truncate text-sm font-bold text-gray-900 sm:text-lg">
               {eventDetail.event.name}
             </h3>
             <div className="mt-1 flex min-w-0 gap-3 overflow-hidden text-xs text-gray-600 sm:text-sm">
@@ -76,10 +73,20 @@ export function EventCard({ eventDetail, locale }: EventCardProps) {
                 </span>
               )}
             </div>
-            {distanceSummary && (
+            {distances.length > 0 && (
               <div className="mt-1.5 flex min-w-0 flex-wrap items-center gap-2">
-                <span className="min-w-0 max-w-full rounded-sm bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-800">
-                  {distanceSummary}
+                <span className="inline-flex min-w-0 max-w-full flex-wrap items-baseline gap-x-1 rounded-sm bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-800">
+                  {distances.map((distance, index) => (
+                    <span key={distance.id} className="inline-flex items-baseline gap-0.5">
+                      {index > 0 && (
+                        <span className="mr-1 text-gray-400">·</span>
+                      )}
+                      <span>{distance.label}</span>
+                      <span className="text-[8px] font-medium uppercase text-gray-500">
+                        km
+                      </span>
+                    </span>
+                  ))}
                 </span>
               </div>
             )}
