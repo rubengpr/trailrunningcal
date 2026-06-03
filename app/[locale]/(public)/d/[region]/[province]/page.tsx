@@ -65,7 +65,7 @@ export default async function DestinationPage({
     notFound();
   }
 
-  const { allRaces, markers, labels, calendarLabel } = await getCategoryPageData(locale);
+  const { events, markers, labels, calendarLabel } = await getCategoryPageData(locale);
   const t = await getTranslations({ locale, namespace: 'provincia' });
   const provinceName = t(`names.${destination.province.slug}`);
   const destinationPath = getDestinationPath(
@@ -74,14 +74,16 @@ export default async function DestinationPage({
     destination.provinceId,
   );
 
-  const races = allRaces.filter(
-    (race) => race.province === destination.province.dbName,
+  const destinationEvents = events.filter(
+    (eventDetail) =>
+      !eventDetail.location.isMultipleLocations &&
+      eventDetail.location.province === destination.province.dbName,
   );
 
   return (
     <CategoryMapPage
       locale={locale}
-      races={races}
+      events={destinationEvents}
       markers={markers}
       breadcrumbJsonLd={buildBreadcrumbJsonLd([
         { name: calendarLabel, url: `${BASE_URL}/${locale}` },

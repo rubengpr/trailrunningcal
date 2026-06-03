@@ -52,10 +52,12 @@ export default async function TypePage({
   }
 
   const config = getRaceCategoryConfig(type);
-  const { allRaces, markers, labels, calendarLabel } = await getCategoryPageData(locale);
+  const { events, markers, labels, calendarLabel } = await getCategoryPageData(locale);
   const t = await getTranslations({ locale, namespace: config.namespace });
 
-  const races = allRaces.filter(config.matches);
+  const typeEvents = events.filter((eventDetail) =>
+    eventDetail.races.some(config.matches),
+  );
 
   const contentSections = Object.values(
     t.raw('contentSections') as Record<string, FaqItem>,
@@ -64,7 +66,7 @@ export default async function TypePage({
   return (
     <CategoryMapPage
       locale={locale}
-      races={races}
+      events={typeEvents}
       markers={markers}
       breadcrumbJsonLd={buildBreadcrumbJsonLd([
         { name: calendarLabel, url: `${BASE_URL}/${locale}` },

@@ -1,12 +1,12 @@
 import { getTranslations } from 'next-intl/server';
 import type { Locale } from '@/i18n';
-import { getRaces } from '@/lib/db/races';
+import { getEvents } from '@/lib/db/events';
 import { getRacesMapData } from '@/lib/db/races-map';
 import type { MapPageLabels, RaceMapMarker } from '@/types/map.types';
-import type { TrailRace } from '@/types/race.types';
+import type { TrailEventDetail } from '@/types/event.types';
 
 export interface CategoryPageData {
-  allRaces: TrailRace[];
+  events: TrailEventDetail[];
   markers: RaceMapMarker[];
   labels: MapPageLabels;
   calendarLabel: string;
@@ -17,7 +17,7 @@ export async function getCategoryPageData(locale: Locale): Promise<CategoryPageD
   const tNav = await getTranslations({ locale, namespace: 'navigation' });
   const tCommon = await getTranslations({ locale });
   const year = new Date().getFullYear();
-  const [allRaces, { markers }] = await Promise.all([getRaces(), getRacesMapData()]);
+  const [events, { markers }] = await Promise.all([getEvents(), getRacesMapData()]);
 
   const labels: MapPageLabels = {
     previousRace: tCommon('map.previousRace'),
@@ -26,5 +26,5 @@ export async function getCategoryPageData(locale: Locale): Promise<CategoryPageD
     notAvailable: tCommon('race.notAvailable'),
   };
 
-  return { allRaces, markers, labels, calendarLabel: tNav('calendar'), year };
+  return { events, markers, labels, calendarLabel: tNav('calendar'), year };
 }

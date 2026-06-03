@@ -1,6 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import type { Locale } from '@/i18n';
-import type { TrailRace } from '@/types/race.types';
+import type { TrailEventDetail } from '@/types/event.types';
 import type { RaceMapMarker, MapPageLabels } from '@/types/map.types';
 import { buildFaqJsonLd, type FaqItem } from '@/lib/seo/json-ld';
 import { HeroSection } from '@/components/layout/hero-section';
@@ -14,7 +14,7 @@ interface BreadcrumbItem {
 
 interface CategoryMapPageProps {
   locale: Locale;
-  races: TrailRace[];
+  events: TrailEventDetail[];
   markers: RaceMapMarker[];
   breadcrumbJsonLd: object;
   heroBody: string;
@@ -31,7 +31,7 @@ interface CategoryMapPageProps {
 
 export async function CategoryMapPage({
   locale,
-  races,
+  events,
   markers,
   breadcrumbJsonLd,
   heroBody,
@@ -62,7 +62,7 @@ export async function CategoryMapPage({
       />
       <div id="calendar" className="mx-auto w-full pt-6 pb-16 sm:pt-10 lg:pt-4 scroll-mt-18 sm:scroll-mt-20">
         <RacesExplorerClient
-          races={races}
+          events={events}
           markers={markers}
           locale={locale}
           labels={labels}
