@@ -29,6 +29,20 @@ export function toTrailRace(row: RaceRow): TrailRace {
   };
 }
 
+function getJoinedEventSlug(value: unknown): string | null {
+  if (
+    typeof value === 'object' &&
+    value !== null &&
+    !Array.isArray(value) &&
+    'slug' in value &&
+    typeof value.slug === 'string'
+  ) {
+    return value.slug;
+  }
+
+  return null;
+}
+
 let racesCache: TrailRace[] | null = null;
 
 export const getRaces = cache(async function getRaces(): Promise<TrailRace[]> {
@@ -109,6 +123,29 @@ export const getRaceBySlug = cache(async function getRaceBySlug(
 
   return toTrailRace(data as RaceRow);
 });
+
+export const getEventSlugByRaceLegacySlug = cache(
+  async function getEventSlugByRaceLegacySlug(
+    legacySlug: string,
+  ): Promise<string | null> {
+    const supabase = createStaticClient();
+
+    const { data, error } = await supabase
+      .from('races')
+      .select('events ( slug )')
+      .eq('legacy_slug', legacySlug)
+      .maybeSingle();
+
+    if (error || !data) {
+      if (error) {
+        console.error('Failed to fetch event slug by race legacy slug:', error);
+      }
+      return null;
+    }
+
+    return getJoinedEventSlug((data as { events?: unknown }).events);
+  },
+);
 
 export const getRecommendedRaces = cache(async function getRecommendedRaces(
   province: string,

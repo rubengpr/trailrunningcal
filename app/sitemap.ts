@@ -4,16 +4,15 @@ import { locales, type Locale } from '@/i18n';
 import { getAllBlogPosts } from '@/lib/content/blog-utils';
 import { RACE_CATEGORY_SLUGS } from '@/lib/races/race-types';
 import { DESTINATION_PROVINCE_IDS } from '@/lib/geography/destinations';
-import { generateRaceSlug } from '@/lib/races/utils';
-import { getRaces } from '@/lib/db/races';
+import { getEvents } from '@/lib/db/events';
 import {
   buildHomeAlternateLinks,
   buildBlogListingAlternateLinks,
   buildContactAlternateLinks,
-  buildRaceAlternateLinks,
   buildBlogPostAlternateLinks,
   buildTypeAlternateLinks,
   buildDestinationAlternateLinks,
+  buildEventAlternateLinks,
   getDestinationPath,
   getTypePath,
 } from '@/lib/content/alternate-links';
@@ -27,7 +26,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const currentDate = new Date();
 
   // Use static client for static generation (sitemap is always generated at build time)
-  const races = await getRaces();
+  const events = await getEvents();
 
   const urls: MetadataRoute.Sitemap = [];
 
@@ -121,17 +120,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  // Add race pages (all locales)
-  for (const race of races) {
-    const raceSlug = generateRaceSlug(race.name);
+  // Add event pages (all locales)
+  for (const eventDetail of events) {
+    const eventSlug = eventDetail.event.slug;
     for (const locale of locales) {
       urls.push({
-        url: `${BASE_URL}/${locale}/carrera/${raceSlug}`,
+        url: `${BASE_URL}/${locale}/e/${eventSlug}`,
         lastModified: currentDate,
         changeFrequency: 'monthly',
         priority: 0.8,
         alternates: {
-          languages: buildRaceAlternateLinks(raceSlug),
+          languages: buildEventAlternateLinks(eventSlug),
         },
       });
     }
