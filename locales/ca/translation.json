@@ -64,6 +64,16 @@
     "webLink": "Web →",
     "notAvailable": "N/D",
     "officialWebsite": "Web oficial",
+    "favorite": {
+      "label": "Preferida",
+      "remove": "Treure dels preferits",
+      "save": "Desar als preferits",
+      "savedToast": "Cursa desada als preferits"
+    },
+    "share": {
+      "label": "Compartir",
+      "message": "Mira aquesta cursa de trail: {raceName} {url}"
+    },
     "services": {
       "title": "Serveis inclosos"
     },

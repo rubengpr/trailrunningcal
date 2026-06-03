@@ -64,6 +64,16 @@
     "webLink": "Web →",
     "notAvailable": "N/A",
     "officialWebsite": "Web oficial",
+    "favorite": {
+      "label": "Favorita",
+      "remove": "Quitar de favoritos",
+      "save": "Guardar en favoritos",
+      "savedToast": "Carrera guardada en favoritos"
+    },
+    "share": {
+      "label": "Compartir",
+      "message": "Mira esta carrera de trail: {raceName} {url}"
+    },
     "services": {
       "title": "Servicios incluidos"
     },
