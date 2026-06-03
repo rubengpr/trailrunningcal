@@ -190,6 +190,8 @@
     "backToCalendar": "Ver calendario completo",
     "dateTbd": "Fecha por confirmar",
     "distanceCount": "{count, plural, one {# distancia} other {# distancias}}",
+    "loadError": "No se han podido cargar tus eventos guardados.",
+    "loading": "Cargando eventos guardados...",
     "multipleLocations": "Varias ubicaciones"
   },
   "landing": {

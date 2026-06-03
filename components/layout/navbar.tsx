@@ -7,7 +7,7 @@ import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import posthog from 'posthog-js';
 import { createClient } from '@/lib/supabase/client';
-import { useFavorites } from '@/hooks/use-favorites';
+import { useEventFavorites } from '@/hooks/use-event-favorites';
 import { useMobileFilters } from '@/components/providers/mobile-filters-provider';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { track } from '@/lib/analytics/track';
@@ -28,7 +28,7 @@ export function Navbar() {
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
   const categoriesRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
-  const { favorites } = useFavorites();
+  const { favorites } = useEventFavorites();
   const { isAvailable: isFilterAvailable, open: openFilters, filterCount, filterVariant } = useMobileFilters();
 
   const isHomepage = pathname === `/${locale}`;
@@ -109,11 +109,12 @@ export function Navbar() {
         {/* LEFT: hamburger (mobile) / logo (desktop) */}
         <div className="flex items-center">
           <button
+            type="button"
             className="flex sm:hidden p-1 text-gray-400"
             onClick={handleMenuClick}
             title={t('openMenu')}
           >
-            <Menu className="h-5 w-5" strokeWidth={1.5} />
+            <Menu className="size-5" strokeWidth={1.5} />
           </button>
           <Link
             href={`/${locale}`}
@@ -125,7 +126,7 @@ export function Navbar() {
               src="/assets/web-app-manifest-192x192.png"
               width={28}
               height={28}
-              className="w-7 h-7"
+              className="size-7"
               alt="Trail Running Calendar logo"
               priority
             />
@@ -152,7 +153,7 @@ export function Navbar() {
             src="/assets/web-app-manifest-192x192.png"
             width={24}
             height={24}
-            className="w-6 h-6"
+            className="size-6"
             alt="Trail Running Calendar logo"
             priority
           />
@@ -171,24 +172,25 @@ export function Navbar() {
         <nav className="text-sm flex items-center gap-6">
           <div className="hidden sm:flex px-2 py-1 flex-row items-center gap-4">
             <Link
-              href={`/${locale}/mis-carreras`}
+              href={`/${locale}/mis-eventos`}
               prefetch={false}
               className="relative p-1 hover:text-gray-900 transition-colors"
               onClick={() =>
                 setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, {
-                  link_text: 'my_races',
-                  link_href: `/${locale}/mis-carreras`,
+                  link_text: 'my_events',
+                  link_href: `/${locale}/mis-eventos`,
                   locale,
                 }), 0)
               }
             >
-              <Heart className="w-5 h-5 text-gray-700" strokeWidth={1.5} />
+              <Heart className="size-5 text-gray-700" strokeWidth={1.5} />
               {favorites.size > 0 && (
-                <span className="absolute top-0 right-0 block w-2 h-2 rounded-full bg-red-500" />
+                <span className="absolute top-0 right-0 block size-2 rounded-full bg-red-500" />
               )}
             </Link>
             <div className="relative" ref={categoriesRef}>
               <button
+                type="button"
                 className="flex items-center gap-1 hover:text-gray-900 transition-colors cursor-pointer"
                 onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}
               >
@@ -233,7 +235,7 @@ export function Navbar() {
             <Link href={`/${locale}/${locale === 'ca' ? 'contacte' : 'contacto'}`} prefetch={false} className="hover:text-gray-900 transition-colors" onClick={() => setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'contact', link_href: `/${locale}/${locale === 'ca' ? 'contacte' : 'contacto'}`, locale }), 0)}>{t('contact')}</Link>
             {isAuthenticated && (
               <Link href={`/${locale}/org/perfil`} prefetch={false} className="p-2 rounded-lg hover:bg-gray-100 transition-colors" onClick={() => setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'profile', link_href: `/${locale}/org/perfil`, locale }), 0)}>
-                <CircleUser className="w-5 h-5 text-gray-700" strokeWidth={1.5} />
+                <CircleUser className="size-5 text-gray-700" strokeWidth={1.5} />
               </Link>
             )}
           </div>
@@ -241,21 +243,21 @@ export function Navbar() {
           {/* Mobile: heart icon (homepage only) */}
           {isHomepage && (
             <Link
-              href={`/${locale}/mis-carreras`}
+              href={`/${locale}/mis-eventos`}
               prefetch={false}
               className="relative flex sm:hidden p-1 text-gray-400"
-              title={t('myRaces')}
+              title={t('myEvents')}
               onClick={() =>
                 setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, {
-                  link_text: 'my_races',
-                  link_href: `/${locale}/mis-carreras`,
+                  link_text: 'my_events',
+                  link_href: `/${locale}/mis-eventos`,
                   locale,
                 }), 0)
               }
             >
-              <Heart className="h-5 w-5" strokeWidth={1.5} />
+              <Heart className="size-5" strokeWidth={1.5} />
               {favorites.size > 0 && (
-                <span className="absolute top-0 right-0 block w-2 h-2 rounded-full bg-red-500" />
+                <span className="absolute top-0 right-0 block size-2 rounded-full bg-red-500" />
               )}
             </Link>
           )}
@@ -263,12 +265,13 @@ export function Navbar() {
           {/* Mobile: filter icon */}
           {isFilterAvailable && filterVariant === 'control' && (
             <button
+              type="button"
               className="relative flex sm:hidden items-center gap-1 p-1 text-gray-400"
               onClick={() => { openFilters(); setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_FILTER_ICON_CLICKED, { filter_count: filterCount, variant: filterVariant }), 0); }}
             >
-              <SlidersHorizontal className="h-5 w-5" strokeWidth={2} />
+              <SlidersHorizontal className="size-5" strokeWidth={2} />
               {filterCount > 0 && (
-                <span className="absolute top-0 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-black text-[9px] font-semibold text-white">
+                <span className="absolute top-0 right-0 flex size-4 items-center justify-center rounded-full bg-black text-[9px] font-semibold text-white">
                   {filterCount}
                 </span>
               )}
@@ -278,7 +281,7 @@ export function Navbar() {
           {isMenuOpen && (
             <div className="fixed text-black inset-0 top-16 bg-white z-40 flex flex-col items-center justify-start pt-8 gap-6 font-semibold text-lg">
               <Link href={`/${locale}`} prefetch={false} onClick={() => { setIsMenuOpen(false); setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'home', link_href: `/${locale}`, locale }), 0); }}>{t('calendar')}</Link>
-              <Link href={`/${locale}/mis-carreras`} prefetch={false} onClick={() => { setIsMenuOpen(false); setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'my_races', link_href: `/${locale}/mis-carreras`, locale }), 0); }}>{t('myRaces')}</Link>
+              <Link href={`/${locale}/mis-eventos`} prefetch={false} onClick={() => { setIsMenuOpen(false); setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'my_events', link_href: `/${locale}/mis-eventos`, locale }), 0); }}>{t('myEvents')}</Link>
               <Link href={`/${locale}/${locale === 'ca' ? 'contacte' : 'contacto'}`} prefetch={false} onClick={() => { setIsMenuOpen(false); setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'contact', link_href: `/${locale}/${locale === 'ca' ? 'contacte' : 'contacto'}`, locale }), 0); }}>{t('contact')}</Link>
               <Link href={`/${locale}/blog`} prefetch={false} onClick={() => { setIsMenuOpen(false); setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'blog', link_href: `/${locale}/blog`, locale }), 0); }}>{t('blog')}</Link>
               {isAuthenticated && (

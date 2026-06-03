@@ -190,6 +190,8 @@
     "backToCalendar": "Veure calendari complet",
     "dateTbd": "Data per confirmar",
     "distanceCount": "{count, plural, one {# distància} other {# distàncies}}",
+    "loadError": "No s'han pogut carregar els teus esdeveniments desats.",
+    "loading": "Carregant esdeveniments desats...",
     "multipleLocations": "Diverses ubicacions"
   },
   "landing": {

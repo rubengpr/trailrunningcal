@@ -3,7 +3,24 @@ import type {
   EventDescriptionBatchSnapshot,
   EventDescriptionDraftResult,
 } from '@/types/event-description.types';
-import type { TrailEvent } from '@/types/event.types';
+import type { TrailEvent, TrailEventDetail } from '@/types/event.types';
+
+export async function getFavoriteEvents(
+  eventIds: string[],
+): Promise<TrailEventDetail[]> {
+  const response = await fetch('/api/events/favorites', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ eventIds }),
+  });
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(responseData.error || 'Failed to fetch favorite events');
+  }
+
+  return responseData.data;
+}
 
 export async function generateEventDescriptionDraft(
   eventId: string,

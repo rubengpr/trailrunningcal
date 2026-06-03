@@ -2,10 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import { ConfirmedDateBadge } from '@/components/race/confirmed-date-badge';
 import { VerifiedBadge } from '@/components/icons/verified-badge';
 import { RaceOrganizerLinks } from '@/components/race/race-organizer-links';
-import { RaceShareWhatsappButton } from '@/components/race/race-share-whatsapp-button';
-import { RaceFavoriteButton } from '@/components/race/race-favorite-button';
 import { TrackedLink } from '@/components/ui/tracked-link';
-import { BASE_URL } from '@/lib/config';
 import { TEST_VERIFIED_RACES_NAME } from '@/lib/constants';
 import { getTypePath } from '@/lib/races/race-types';
 import type { RaceCategorySlug } from '@/lib/races/race-types';
@@ -45,8 +42,10 @@ export async function RaceDetailHeader({
   raceCategory,
   displayPrice,
 }: RaceDetailHeaderProps) {
-  const tRace = await getTranslations({ locale, namespace: 'race' });
-  const tCategory = await getTranslations({ locale, namespace: 'category' });
+  const [tRace, tCategory] = await Promise.all([
+    getTranslations({ locale, namespace: 'race' }),
+    getTranslations({ locale, namespace: 'category' }),
+  ]);
 
   const isVerified = !!(race.organizerId || TEST_VERIFIED_RACES_NAME.includes(race.name));
 
@@ -134,23 +133,6 @@ export async function RaceDetailHeader({
               {tRace('officialWebsite')}
             </TrackedLink>
           )}
-          <div className="flex flex-row gap-2">
-            <RaceShareWhatsappButton
-              message={tRace('share.message', { raceName: race.name, url: `${BASE_URL}/${locale}/carrera/${raceSlug}` })}
-              label={tRace('share.label')}
-              iconOnly
-              className="flex-1"
-              raceId={race.id}
-              raceSlug={raceSlug}
-            />
-            <RaceFavoriteButton
-              raceId={race.id}
-              saveLabel={tRace('favorite.save')}
-              removeLabel={tRace('favorite.remove')}
-              iconOnly
-              className="flex-1"
-            />
-          </div>
         </div>
       </div>
     </div>

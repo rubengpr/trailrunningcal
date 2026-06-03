@@ -2,6 +2,7 @@ import { cache } from 'react';
 import { createAdminClient, createStaticClient } from '@/lib/supabase/server';
 import type {
   EventRaceRow,
+  EventRaceWithEventIdRow,
   EventRow,
   EventWithRacesRow,
   TrailEvent,
@@ -80,6 +81,85 @@ export const getEvents = cache(async function getEvents(): Promise<TrailEventDet
     return buildEventDetail(event, races);
   });
 });
+
+export async function getEventsByIds(
+  eventIds: string[],
+): Promise<TrailEventDetail[]> {
+  if (eventIds.length === 0) {
+    return [];
+  }
+
+  const supabase = createStaticClient();
+
+  const { data: eventData, error: eventError } = await supabase
+    .from('events')
+    .select(
+      `
+      id,
+      name,
+      slug,
+      website_url,
+      organizer_id,
+      description,
+      hero_image_filename,
+      updated_at
+    `,
+    )
+    .in('id', eventIds);
+
+  if (eventError || !eventData) {
+    console.error('Failed to fetch favorite events:', eventError);
+    return [];
+  }
+
+  const events = (eventData as EventRow[]).map(toTrailEvent);
+  const fetchedEventIds = events.map((event) => event.id);
+
+  if (fetchedEventIds.length === 0) {
+    return [];
+  }
+
+  const { data: raceData, error: raceError } = await supabase
+    .from('races')
+    .select(
+      `
+      id,
+      name,
+      date,
+      distance_km,
+      elevation_gain_m,
+      city,
+      province,
+      map_url,
+      event_id,
+      race_tiers ( price_eur )
+    `,
+    )
+    .in('event_id', fetchedEventIds);
+
+  if (raceError || !raceData) {
+    console.error('Failed to fetch favorite event races:', raceError);
+    return [];
+  }
+
+  const racesByEventId = new Map<string, TrailEventRace[]>();
+
+  for (const race of raceData as EventRaceWithEventIdRow[]) {
+    const eventRaces = racesByEventId.get(race.event_id) ?? [];
+    eventRaces.push(toTrailEventRace(race));
+    racesByEventId.set(race.event_id, eventRaces);
+  }
+
+  const eventOrder = new Map(eventIds.map((eventId, index) => [eventId, index]));
+
+  return events
+    .map((event) => buildEventDetail(event, racesByEventId.get(event.id) ?? []))
+    .sort(
+      (a, b) =>
+        (eventOrder.get(a.event.id) ?? Number.MAX_SAFE_INTEGER) -
+        (eventOrder.get(b.event.id) ?? Number.MAX_SAFE_INTEGER),
+    );
+}
 
 export const getEventBySlug = cache(async function getEventBySlug(
   slug: string,

@@ -1,10 +1,9 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import type { Locale } from '@/i18n';
-import { getRaces } from '@/lib/db/races';
 import { BASE_URL } from '@/lib/config';
 import { generateMetadataFromOptions } from '@/lib/seo/meta-config';
-import { FavoritesClient } from '@/components/home/favorites-client';
+import { EventFavoritesClient } from '@/components/home/event-favorites-client';
 
 export const revalidate = 86400;
 
@@ -20,13 +19,13 @@ export async function generateMetadata({
   return generateMetadataFromOptions({
     title: t('pageTitle'),
     description: t('pageTitle'),
-    canonicalUrl: `${BASE_URL}/${locale}/mis-carreras`,
+    canonicalUrl: `${BASE_URL}/${locale}/mis-eventos`,
     locale,
     ogImageUrl: `${BASE_URL}/og-image.png`,
   });
 }
 
-export default async function MisCarrerasPage({
+export default async function MisEventosPage({
   params,
 }: {
   params: Promise<{ locale: Locale }>;
@@ -34,13 +33,12 @@ export default async function MisCarrerasPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'favorites' });
-  const races = await getRaces();
 
   return (
     <div className="min-h-screen w-full text-gray-900 flex flex-col bg-white">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 w-full">
         <h1 className="text-2xl sm:text-3xl font-bold mb-6">{t('pageTitle')}</h1>
-        <FavoritesClient races={races} />
+        <EventFavoritesClient />
       </div>
     </div>
   );
