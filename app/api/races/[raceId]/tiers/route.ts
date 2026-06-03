@@ -20,7 +20,10 @@ export async function PATCH(
 
     const { priceEur } = await request.json();
 
-    if (typeof priceEur !== 'number' || priceEur < 0 || priceEur > 9999) {
+    if (
+      priceEur !== null &&
+      (typeof priceEur !== 'number' || priceEur < 0 || priceEur > 9999)
+    ) {
       return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
     }
 

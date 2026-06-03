@@ -1,4 +1,4 @@
-export async function updatePrice(data: { raceId: string; priceEur: number }) {
+export async function updatePrice(data: { raceId: string; priceEur: number | null }) {
   const response = await fetch(`/api/races/${data.raceId}/tiers`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },

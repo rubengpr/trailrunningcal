@@ -73,6 +73,9 @@ export async function createRace(fields: {
   province: string;
   description: string;
 }): Promise<{ ok: true; data: { id: string } } | ConflictResult> {
+  const priceEur =
+    fields.priceEur.trim().length > 0 ? parseInt(fields.priceEur, 10) : null;
+
   const response = await fetch('/api/races', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -81,7 +84,7 @@ export async function createRace(fields: {
       name: fields.name,
       distanceKm: Number(fields.distanceKm),
       elevationGainM: parseInt(fields.elevationGainM, 10),
-      priceEur: parseInt(fields.priceEur, 10),
+      priceEur,
       websiteUrl: fields.websiteUrl,
       city: fields.city,
       province: fields.province,

@@ -34,14 +34,24 @@ interface RaceFormFields {
     description: string;
 }
 
+type RaceFormInitialData = Omit<TrailRace, 'priceEur'> & {
+    priceEur?: number | null;
+};
+
 interface RaceFormProps {
     raceId: string;
-    initialData: TrailRace | null;
+    initialData: RaceFormInitialData | null;
     isEditMode: boolean;
     redirectBasePath?: string;
+    isPriceOptional?: boolean;
 }
 
-export function RaceForm({ raceId, initialData, isEditMode, redirectBasePath = 'org/carreras' }: RaceFormProps) {
+function parsePriceEur(value: string): number | null {
+    const trimmed = value.trim();
+    return trimmed.length > 0 ? parseInt(trimmed, 10) : null;
+}
+
+export function RaceForm({ raceId, initialData, isEditMode, redirectBasePath = 'org/carreras', isPriceOptional = false }: RaceFormProps) {
     const t = useTranslations('organizer.races.form');
     const router = useRouter();
     const params = useParams();
@@ -119,7 +129,17 @@ export function RaceForm({ raceId, initialData, isEditMode, redirectBasePath = '
         ],
         priceEur: [
             ValidationRules.noDecimals(t('errors.priceInvalid')),
-            ValidationRules.integerRange(0, 1000, t('errors.priceInvalid')),
+            isPriceOptional
+                ? {
+                    validate: (value: string) => {
+                        const trimmed = value.trim();
+                        if (trimmed.length === 0) return true;
+                        const num = parseInt(trimmed, 10);
+                        return !isNaN(num) && num >= 0 && num < 1000;
+                    },
+                    errorMessage: t('errors.priceInvalid'),
+                }
+                : ValidationRules.integerRange(0, 1000, t('errors.priceInvalid')),
         ],
         websiteUrl: [
             ValidationRules.required(t('errors.websiteUrlRequired')),
@@ -198,7 +218,7 @@ export function RaceForm({ raceId, initialData, isEditMode, redirectBasePath = '
             }
 
             await updateRace(raceId, date, name, distanceKm, elevationGainM, websiteUrl, city, province, description);
-            await updatePrice({ raceId, priceEur: parseInt(priceEur, 10) });
+            await updatePrice({ raceId, priceEur: parsePriceEur(priceEur) });
 
             if (selectedImageFile) {
                 try {

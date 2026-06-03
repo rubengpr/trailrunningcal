@@ -2,7 +2,7 @@ import { createClient, createAdminClient } from '@/lib/supabase/server';
 
 export async function updateTierPrice(
   raceId: string,
-  priceEur: number,
+  priceEur: number | null,
   useAdmin: boolean,
 ) {
   const dbClient = useAdmin ? createAdminClient() : await createClient();
