@@ -5,10 +5,12 @@ import posthog from 'posthog-js';
 
 export function PostHogProvider() {
   useEffect(() => {
-    if (posthog.__loaded) return;
+    const token = process.env.NEXT_PUBLIC_POSTHOG_KEY;
+
+    if (!token || posthog.__loaded) return;
 
     const init = () => {
-      posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
+      posthog.init(token, {
         api_host: '/ingest',
         ui_host: 'https://eu.posthog.com',
         defaults: '2025-05-24',
