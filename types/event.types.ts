@@ -30,6 +30,7 @@ export interface TrailEvent {
   organizerId: string | null;
   description: string | null;
   heroImageFilename: string | null;
+  updatedAt: string | null;
 }
 
 export interface TrailEventRace {

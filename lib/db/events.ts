@@ -45,6 +45,7 @@ export function toTrailEvent(row: EventRow): TrailEvent {
     organizerId: row.organizer_id ?? null,
     description: row.description ?? null,
     heroImageFilename: row.hero_image_filename ?? null,
+    updatedAt: row.updated_at ?? null,
   };
 }
 
@@ -95,7 +96,8 @@ export const getEventBySlug = cache(async function getEventBySlug(
       website_url,
       organizer_id,
       description,
-      hero_image_filename
+      hero_image_filename,
+      updated_at
     `,
     )
     .eq('slug', slug)
@@ -150,7 +152,8 @@ export async function getEventByIdForAdmin(
       website_url,
       organizer_id,
       description,
-      hero_image_filename
+      hero_image_filename,
+      updated_at
     `,
     )
     .eq('id', eventId)
@@ -211,7 +214,8 @@ export async function updateEventDescriptionForAdmin(
       website_url,
       organizer_id,
       description,
-      hero_image_filename
+      hero_image_filename,
+      updated_at
     `,
     )
     .single();

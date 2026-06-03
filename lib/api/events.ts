@@ -3,6 +3,7 @@ import type {
   EventDescriptionBatchSnapshot,
   EventDescriptionDraftResult,
 } from '@/types/event-description.types';
+import type { TrailEvent } from '@/types/event.types';
 
 export async function generateEventDescriptionDraft(
   eventId: string,
@@ -27,7 +28,7 @@ export async function generateEventDescriptionDraft(
 export async function saveEventDescription(
   eventId: string,
   description: string | null,
-): Promise<void> {
+): Promise<TrailEvent> {
   const response = await fetch(`/api/events/${eventId}/description`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
@@ -38,6 +39,8 @@ export async function saveEventDescription(
   if (!response.ok) {
     throw new Error(responseData.error || 'Failed to save event description');
   }
+
+  return responseData.data;
 }
 
 export async function startEventDescriptionBatch(input: {

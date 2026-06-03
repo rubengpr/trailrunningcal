@@ -39,6 +39,30 @@ function getInitialDescriptions(events: TrailEventDetail[]): Record<string, stri
   );
 }
 
+function getInitialUpdatedAt(events: TrailEventDetail[]): Record<string, string | null> {
+  return Object.fromEntries(
+    events.map((eventDetail) => [
+      eventDetail.event.id,
+      eventDetail.event.updatedAt,
+    ]),
+  );
+}
+
+function formatUpdatedAt(value: string | null): string {
+  if (!value) return '—';
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '—';
+
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+
+  return `${day}-${month}-${year}, ${hours}:${minutes}`;
+}
+
 const STATUS_DOT_COLOR: Record<RowStatus, string> = {
   idle: 'bg-gray-300',
   generating: 'bg-purple-400',
@@ -88,6 +112,9 @@ export function EventDescriptionGenerator({
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [currentDescriptions, setCurrentDescriptions] = useState<Record<string, string>>(() =>
     getInitialDescriptions(events),
+  );
+  const [updatedAtByEventId, setUpdatedAtByEventId] = useState<Record<string, string | null>>(() =>
+    getInitialUpdatedAt(events),
   );
   const [drafts, setDrafts] = useState<Record<string, string>>(() =>
     ({}),
@@ -180,10 +207,14 @@ export function EventDescriptionGenerator({
 
     try {
       const description = drafts[eventId] ?? currentDescriptions[eventId] ?? null;
-      await saveEventDescription(eventId, description);
+      const savedEvent = await saveEventDescription(eventId, description);
       setCurrentDescriptions((current) => ({
         ...current,
         [eventId]: description ?? '',
+      }));
+      setUpdatedAtByEventId((current) => ({
+        ...current,
+        [eventId]: savedEvent.updatedAt,
       }));
       setDrafts((current) => {
         const next = { ...current };
@@ -381,6 +412,9 @@ export function EventDescriptionGenerator({
                     {t('columns.description')}
                   </th>
                   <th className="border-b border-gray-100 px-4 py-3 font-medium">
+                    {t('columns.updatedAt')}
+                  </th>
+                  <th className="border-b border-gray-100 px-4 py-3 font-medium">
                     {t('columns.status')}
                   </th>
                   <th className="border-b border-gray-100 px-4 py-3 text-right font-medium">
@@ -395,6 +429,7 @@ export function EventDescriptionGenerator({
                   const canGenerate = !!event.websiteUrl && status !== 'generating';
                   const currentDescription = currentDescriptions[event.id] ?? '';
                   const draftDescription = drafts[event.id] ?? '';
+                  const updatedAt = updatedAtByEventId[event.id] ?? event.updatedAt;
                   const error = errors[event.id];
 
                   return (
@@ -445,6 +480,9 @@ export function EventDescriptionGenerator({
                         {error && (
                           <p className="mt-1 text-xs text-red-600">{error}</p>
                         )}
+                      </td>
+                      <td className="whitespace-nowrap px-4 py-3 text-gray-500">
+                        {formatUpdatedAt(updatedAt)}
                       </td>
                       <td className="whitespace-nowrap px-4 py-3">
                         <RowStatusBadge status={status} label={t(`rowStatus.${status}`)} />

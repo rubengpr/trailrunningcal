@@ -986,6 +986,7 @@
       "website": "Web",
       "races": "Carreras",
       "description": "Descripción",
+      "updatedAt": "Actualizado",
       "status": "Estado",
       "actions": "Acciones"
     },

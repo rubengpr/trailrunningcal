@@ -46,6 +46,7 @@ function eventDetail(
       organizerId: null,
       description: null,
       heroImageFilename: null,
+      updatedAt: null,
     },
     races: [],
     allRaceCount: 1,
