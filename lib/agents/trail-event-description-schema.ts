@@ -8,7 +8,7 @@ export const TRAIL_EVENT_DESCRIPTION_JSON_SCHEMA = {
         {
           type: 'string',
           minLength: 100,
-          maxLength: 800,
+          maxLength: 1000,
         },
         { type: 'null' },
       ],

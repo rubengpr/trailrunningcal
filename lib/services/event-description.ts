@@ -9,9 +9,10 @@ import type { TrailEventDetail } from '@/types/event.types';
 export const DEFAULT_EVENT_DESCRIPTION_MODEL: OpenRouterScrapeModelId =
   'openai/gpt-5.4-mini';
 
-export function sanitizeEventDescription(
-  description: unknown,
-): { value: string | null; error: string | null } {
+export function sanitizeEventDescription(description: unknown): {
+  value: string | null;
+  error: string | null;
+} {
   if (description === null || description === undefined) {
     return { value: null, error: null };
   }
@@ -29,14 +30,17 @@ export function sanitizeEventDescription(
     return { value: null, error: 'Description is too short' };
   }
 
-  if (trimmed.length > 800) {
+  if (trimmed.length > 1000) {
     return { value: null, error: 'Description is too long' };
   }
 
   return { value: trimmed, error: null };
 }
 
-function buildAgentInput(eventDetail: TrailEventDetail, markdown: string): string {
+function buildAgentInput(
+  eventDetail: TrailEventDetail,
+  markdown: string,
+): string {
   return [
     '# Primary event to describe',
     `Event name: ${eventDetail.event.name}`,
