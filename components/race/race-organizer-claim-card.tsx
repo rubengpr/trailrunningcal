@@ -14,18 +14,24 @@ interface RaceOrganizerClaimCardProps {
     claimButton: string;
     label: string;
     raceName: string;
+    resourceType?: 'race' | 'event';
+    claimModalNamespace?: string;
+    confirmationNamespace?: string;
 }
 
 export function RaceOrganizerClaimCard({
     claimButton,
     label,
     raceName,
+    resourceType = 'race',
+    claimModalNamespace = 'race.claimModal',
+    confirmationNamespace = 'race.claimConfirmation',
 }: RaceOrganizerClaimCardProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
     const [user, setUser] = useState<{ id: string } | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const t = useTranslations('race.claimConfirmation');
+    const t = useTranslations(confirmationNamespace);
 
     useEffect(() => {
         const checkAuth = async () => {
@@ -46,7 +52,11 @@ export function RaceOrganizerClaimCard({
     }, []);
 
     const handleButtonClick = () => {
-        track(ANALYTICS_EVENTS.RACE_ORGANIZER_CLAIM_CLICKED, { race_name: raceName });
+        if (resourceType === 'event') {
+            track(ANALYTICS_EVENTS.EVENT_ORGANIZER_CLAIM_CLICKED, { event_name: raceName });
+        } else {
+            track(ANALYTICS_EVENTS.RACE_ORGANIZER_CLAIM_CLICKED, { race_name: raceName });
+        }
         if (user) {
             setIsConfirmationModalOpen(true);
         } else {
@@ -62,7 +72,7 @@ export function RaceOrganizerClaimCard({
 
         setIsSubmitting(true);
         try {
-            await claimOrganizer(raceName);
+            await claimOrganizer(raceName, resourceType);
             toast.success(t('successMessage'));
             setIsConfirmationModalOpen(false);
         } catch (error) {
@@ -90,6 +100,7 @@ export function RaceOrganizerClaimCard({
             <ClaimOrganizerModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
+                translationNamespace={claimModalNamespace}
             />
             <ConfirmationModal
                 isOpen={isConfirmationModalOpen}

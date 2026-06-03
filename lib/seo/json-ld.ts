@@ -1,5 +1,6 @@
 import type { BlogPost } from '@/lib/content/blog-utils';
 import type { TrailRace } from '@/types/race.types';
+import type { TrailEventDetail } from '@/types/event.types';
 import type { Locale } from '@/i18n';
 import { BASE_URL, CONTACT_EMAIL } from '@/lib/config';
 import { getDisplayPrice } from '@/lib/races/utils';
@@ -173,6 +174,55 @@ export function buildRaceJsonLd(
       price,
       priceCurrency: 'EUR',
       url: eventUrl,
+    };
+  }
+
+  return jsonLd;
+}
+
+export function buildEventJsonLd(
+  detail: TrailEventDetail,
+  eventSlug: string,
+  locale: Locale,
+): Record<string, unknown> {
+  const eventUrl = `${BASE_URL}/${locale}/e/${eventSlug}`;
+  const { event, dateRange, location } = detail;
+
+  const jsonLd: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'SportsEvent',
+    name: event.name,
+    sport: 'Trail Running',
+    url: eventUrl,
+  };
+
+  if (dateRange.startDate) {
+    jsonLd.startDate = dateRange.startDate;
+    jsonLd.eventStatus = 'https://schema.org/EventScheduled';
+  }
+
+  if (dateRange.endDate && dateRange.endDate !== dateRange.startDate) {
+    jsonLd.endDate = dateRange.endDate;
+  }
+
+  if (event.description) {
+    jsonLd.description = event.description;
+  }
+
+  if (event.websiteUrl) {
+    jsonLd.sameAs = event.websiteUrl;
+  }
+
+  if (!location.isMultipleLocations && location.city && location.province) {
+    jsonLd.location = {
+      '@type': 'Place',
+      name: `${location.city}, ${location.province}`,
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: location.city,
+        addressRegion: location.province,
+        addressCountry: 'ES',
+      },
     };
   }
 

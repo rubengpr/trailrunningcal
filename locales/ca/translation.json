@@ -96,17 +96,40 @@
     "provincia": {
       "racePageLinkText": "Veure totes les curses a {province}"
     },
+    "verifiedOrganizer": "Organitzador verificat"
+  },
+  "event": {
+    "dateTbd": "Data per confirmar",
+    "favorite": {
+      "label": "Preferit",
+      "remove": "Treure dels preferits",
+      "save": "Desar als preferits",
+      "savedToast": "Esdeveniment desat als preferits"
+    },
+    "multipleLocations": "Diverses ubicacions",
+    "officialWebsite": "Web oficial",
+    "organizerCard": {
+      "claimButton": "Reclamar",
+      "label": "Ets l'organitzador d'aquest esdeveniment?"
+    },
+    "claimModal": {
+      "title": "Reclamar esdeveniment",
+      "message": "Per reclamar aquest esdeveniment, envia'ns un correu a info@trailrunningcal.com",
+      "close": "Tancar"
+    },
+    "claimConfirmation": {
+      "title": "Reclamar esdeveniment",
+      "message": "Estàs a punt de reclamar la propietat de l'esdeveniment. S'enviarà un correu a info@trailrunningcal.com per revisar la propietat. Un cop confirmat, podràs editar les dades i contingut de l'esdeveniment.",
+      "confirmButton": "Confirmar",
+      "cancelButton": "Cancel·lar",
+      "successMessage": "Esdeveniment reclamat correctament"
+    },
+    "provincePageLinkText": "Veure tots els esdeveniments a {province}",
+    "racesTitle": "Distàncies",
     "share": {
       "label": "Compartir",
-      "message": "Mira la cursa que he trobat a Trail Running Cal: {raceName} → {url}"
-    },
-    "favorite": {
-      "label": "Favorits",
-      "save": "Desa cursa",
-      "remove": "Elimina dels favorits",
-      "savedToast": "Cursa afegida a favorits"
-    },
-    "verifiedOrganizer": "Organitzador verificat"
+      "message": "Mira aquest esdeveniment de trail: {eventName} {url}"
+    }
   },
   "difficulty": {
     "fácil": "Fàcil",
@@ -130,6 +153,7 @@
     "contact": "Contacte",
     "blog": "Blog",
     "myRaces": "Les meves curses",
+    "myEvents": "Els meus esdeveniments",
     "openMenu": "Obrir menú",
     "proposeRace": "Vols afegir una cursa?",
     "profile": "El meu perfil",
@@ -150,10 +174,13 @@
     "tarragona": "Tarragona"
   },
   "favorites": {
-    "pageTitle": "Les meves curses desades",
-    "empty": "No tens curses desades",
-    "emptyMessage": "Prem el cor a qualsevol cursa per desar-la aquí.",
-    "backToCalendar": "Veure calendari complet"
+    "pageTitle": "Els meus esdeveniments desats",
+    "empty": "No tens esdeveniments desats",
+    "emptyMessage": "Prem el cor a qualsevol esdeveniment per desar-lo aquí.",
+    "backToCalendar": "Veure calendari complet",
+    "dateTbd": "Data per confirmar",
+    "distanceCount": "{count, plural, one {# distància} other {# distàncies}}",
+    "multipleLocations": "Diverses ubicacions"
   },
   "landing": {
     "titleStart": "Explora curses de trail running a",
@@ -874,6 +901,75 @@
           "editFieldDescription": "Descripció"
         }
       }
+    }
+  },
+  "adminEvents": {
+    "title": "Esdeveniments",
+    "eventCount": "{count} esdeveniments",
+    "eventCountOne": "1 esdeveniment",
+    "generateDescriptions": "Generar descripcions",
+    "empty": "No hi ha esdeveniments.",
+    "missingUrl": "Sense URL",
+    "noDescription": "Sense descripció",
+    "columns": {
+      "name": "Esdeveniment",
+      "website": "Web",
+      "races": "Curses",
+      "description": "Descripció"
+    }
+  },
+  "adminEventDescriptions": {
+    "title": "Descripcions d'esdeveniments",
+    "subtitle": "Genera esborranys en espanyol des de la web oficial i desa només després de revisar.",
+    "selectedCount": "{count} seleccionats",
+    "generateSelected": "Generar seleccionats",
+    "generatingSelected": "Generant...",
+    "model": "Model",
+    "statusSummary": "{completed} completats · {failed} fallits",
+    "empty": "No hi ha esdeveniments.",
+    "missingUrl": "Sense URL",
+    "hasDescription": "Amb descripció",
+    "noDescription": "Sense descripció",
+    "generate": "Generar",
+    "generating": "Generant...",
+    "save": "Desar",
+    "saving": "Desant...",
+    "saved": "Desat",
+    "saveSuccess": "Descripció desada",
+    "generateSuccess": "Esborrany generat",
+    "generateError": "Error en generar la descripció",
+    "saveError": "Error en desar la descripció",
+    "batchStarted": "Generació per lots iniciada",
+    "batchPollError": "Error en actualitzar el lot",
+    "batchResultError": "Error en carregar el resultat",
+    "descriptionPlaceholder": "L'esborrany generat apareixerà aquí.",
+    "draft": "Esborrany",
+    "current": "Descripció actual",
+    "review": "Revisar",
+    "website": "Web",
+    "eventCount": "{count} esdeveniments",
+    "eventCountOne": "1 esdeveniment",
+    "columns": {
+      "name": "Esdeveniment",
+      "website": "Web",
+      "races": "Curses",
+      "description": "Descripció",
+      "status": "Estat",
+      "actions": "Accions"
+    },
+    "rowStatus": {
+      "idle": "Pendent",
+      "generating": "Generant",
+      "ready": "Esborrany",
+      "saving": "Desant",
+      "saved": "Desat",
+      "failed": "Error"
+    },
+    "status": {
+      "completed": "Completat",
+      "running": "En procés",
+      "pending": "Pendent",
+      "failed": "Fallit"
     }
   },
   "playground": {

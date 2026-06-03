@@ -19,7 +19,7 @@ export type EventRaceRow = {
   city: string;
   province: string;
   map_url?: string | null;
-  race_tiers?: Array<{ price_eur: number }> | null;
+  race_tiers?: Array<{ price_eur: number | null }> | null;
 };
 
 export interface TrailEvent {
@@ -41,7 +41,7 @@ export interface TrailEventRace {
   city: string;
   province: string;
   mapUrl?: string | null;
-  priceEur?: Array<{ price_eur: number }> | null;
+  priceEur?: Array<{ price_eur: number | null }> | null;
 }
 
 export interface TrailEventDateRange {
@@ -62,3 +62,11 @@ export interface TrailEventDetail {
   dateRange: TrailEventDateRange;
   location: TrailEventLocation;
 }
+
+export type EventRaceWithEventIdRow = EventRaceRow & {
+  event_id: string;
+};
+
+export type EventWithRacesRow = EventRow & {
+  races: EventRaceWithEventIdRow[];
+};

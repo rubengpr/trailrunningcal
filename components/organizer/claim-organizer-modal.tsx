@@ -6,13 +6,15 @@ import { BaseModal } from '@/components/ui/base-modal';
 interface ClaimOrganizerModalProps {
     isOpen: boolean;
     onClose: () => void;
+    translationNamespace?: string;
 }
 
 export function ClaimOrganizerModal({
     isOpen,
     onClose,
+    translationNamespace = 'race.claimModal',
 }: ClaimOrganizerModalProps) {
-    const t = useTranslations('race.claimModal');
+    const t = useTranslations(translationNamespace);
 
     return (
         <BaseModal

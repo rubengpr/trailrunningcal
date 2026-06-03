@@ -4,6 +4,7 @@ import {
   buildBlogListingAlternateLinks,
   buildBlogPostAlternateLinks,
   buildContactAlternateLinks,
+  buildEventAlternateLinks,
   buildRaceAlternateLinks,
   buildTypeAlternateLinks,
   buildDestinationAlternateLinks,
@@ -372,6 +373,37 @@ describe('buildRaceAlternateLinks', () => {
     expect(result1.ca).toContain(raceSlug1);
     expect(result2.es).toContain(raceSlug2);
     expect(result2.ca).toContain(raceSlug2);
+  });
+});
+
+describe('buildEventAlternateLinks', () => {
+  it('should return correct alternate links for event page', () => {
+    const eventSlug = 'ultra-pirineu';
+    const result = buildEventAlternateLinks(eventSlug);
+
+    expect(result).toEqual({
+      es: `${BASE_URL}/es/e/${eventSlug}`,
+      ca: `${BASE_URL}/ca/e/${eventSlug}`,
+      'x-default': `${BASE_URL}/es/e/${eventSlug}`,
+    });
+  });
+
+  it('should always set x-default to Spanish', () => {
+    const result = buildEventAlternateLinks('any-event');
+
+    expect(result['x-default']).toBe(result.es);
+  });
+
+  it('should include /e path and provided event slug in all URLs', () => {
+    const eventSlug = 'marato-vies-verdes';
+    const result = buildEventAlternateLinks(eventSlug);
+
+    expect(result.es).toContain('/e/');
+    expect(result.ca).toContain('/e/');
+    expect(result['x-default']).toContain('/e/');
+    expect(result.es).toContain(eventSlug);
+    expect(result.ca).toContain(eventSlug);
+    expect(result['x-default']).toContain(eventSlug);
   });
 });
 

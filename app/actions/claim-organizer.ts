@@ -8,7 +8,28 @@ import { checkRateLimitByIp } from '@/lib/security/rate-limit';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export async function claimOrganizer(raceName: string): Promise<void> {
+type ClaimResourceType = 'race' | 'event';
+
+function getResourceLabels(resourceType: ClaimResourceType) {
+  return resourceType === 'event'
+    ? {
+        required: 'Event name is required',
+        subject: 'Nueva solicitud de propiedad de evento',
+        heading: 'Nueva solicitud de propiedad de evento',
+        field: 'Nombre del evento',
+      }
+    : {
+        required: 'Race name is required',
+        subject: 'Nueva solicitud de propiedad de carrera',
+        heading: 'Nueva solicitud de propiedad de carrera',
+        field: 'Nombre de la carrera',
+      };
+}
+
+export async function claimOrganizer(
+  resourceName: string,
+  resourceType: ClaimResourceType = 'race',
+): Promise<void> {
   const headersList = await headers();
   const forwardedFor = headersList.get('x-forwarded-for');
   const ip = forwardedFor ? forwardedFor.split(',').at(-1)!.trim() : 'unknown';
@@ -25,23 +46,25 @@ export async function claimOrganizer(raceName: string): Promise<void> {
     throw new Error('Unauthorized');
   }
 
-  if (!raceName || typeof raceName !== 'string' || raceName.trim().length === 0) {
-    throw new Error('Race name is required');
+  const labels = getResourceLabels(resourceType);
+
+  if (!resourceName || typeof resourceName !== 'string' || resourceName.trim().length === 0) {
+    throw new Error(labels.required);
   }
 
-  const escapedRaceName = escapeHtml(raceName.trim());
+  const escapedResourceName = escapeHtml(resourceName.trim());
   const escapedUserEmail = escapeHtml(user.email);
 
   const { error } = await resend.emails.send({
     from: process.env.RESEND_FROM_EMAIL!,
     to: 'ruben@trailrunningcal.com',
-    subject: `Nueva solicitud de propiedad de carrera: ${escapedRaceName}`,
+    subject: `${labels.subject}: ${escapedResourceName}`,
     html: `
-      <h2>Nueva solicitud de propiedad de carrera</h2>
+      <h2>${labels.heading}</h2>
       <p><strong>Email del usuario:</strong> ${escapedUserEmail}</p>
-      <p><strong>Nombre de la carrera:</strong> ${escapedRaceName}</p>
+      <p><strong>${labels.field}:</strong> ${escapedResourceName}</p>
     `,
-    text: `Nueva solicitud de propiedad de carrera\n\nEmail del usuario: ${user.email}\nNombre de la carrera: ${raceName.trim()}`,
+    text: `${labels.heading}\n\nEmail del usuario: ${user.email}\n${labels.field}: ${resourceName.trim()}`,
   });
 
   if (error) {

@@ -1,8 +1,25 @@
 import type {
   TrailEventDateRange,
+  TrailEvent,
+  TrailEventDetail,
   TrailEventLocation,
   TrailEventRace,
 } from '@/types/event.types';
+import type { Locale } from '@/i18n';
+import { formatDateToCatalan, formatDateToSpanish } from '@/lib/utils/date';
+import {
+  getRaceCategoryConfig,
+  type RaceCategorySlug,
+} from '@/lib/races/race-types';
+
+const DISTANCE_RANGES: Record<string, [number, number]> = {
+  '0-10': [0, 10],
+  '10-20': [10, 20],
+  '20-30': [20, 30],
+  '30-40': [30, 40],
+  '40-50': [40, 50],
+  '50+': [50, Infinity],
+};
 
 function yearFromDate(date: string): number {
   return Number.parseInt(date.slice(0, 4), 10);
@@ -79,4 +96,222 @@ export function buildEventLocation(
     province: isMultipleLocations ? null : [...provinces][0] ?? null,
     isMultipleLocations,
   };
+}
+
+export function buildEventDetail(
+  event: TrailEvent,
+  allRaces: TrailEventRace[],
+): TrailEventDetail {
+  const races = selectRelevantEventRaces(allRaces);
+
+  return {
+    event,
+    races,
+    allRaceCount: allRaces.length,
+    dateRange: buildEventDateRange(races),
+    location: buildEventLocation(races),
+  };
+}
+
+function formatDay(date: Date): string {
+  return new Intl.DateTimeFormat('es-ES', { day: 'numeric' }).format(date);
+}
+
+function formatMonth(date: Date, locale: Locale): string {
+  return new Intl.DateTimeFormat(locale === 'ca' ? 'ca-ES' : 'es-ES', {
+    month: 'long',
+  }).format(date);
+}
+
+function formatMonthYear(date: Date, locale: Locale): string {
+  return new Intl.DateTimeFormat(locale === 'ca' ? 'ca-ES' : 'es-ES', {
+    month: 'long',
+    year: 'numeric',
+  }).format(date);
+}
+
+function dateRangeConnector(locale: Locale): string {
+  return locale === 'ca' ? ' - ' : ' - ';
+}
+
+function dayMonthConnector(locale: Locale): string {
+  return locale === 'ca' ? ' de ' : ' de ';
+}
+
+export function formatEventDateRange(
+  dateRange: TrailEventDateRange,
+  locale: Locale,
+  fallback: string,
+): string {
+  const { startDate, endDate } = dateRange;
+
+  if (!startDate) {
+    return fallback;
+  }
+
+  if (!endDate || startDate === endDate) {
+    return locale === 'ca'
+      ? formatDateToCatalan(startDate)
+      : formatDateToSpanish(startDate);
+  }
+
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+    return fallback;
+  }
+
+  const sameYear = start.getFullYear() === end.getFullYear();
+  const sameMonth = sameYear && start.getMonth() === end.getMonth();
+
+  if (sameMonth) {
+    return `${formatDay(start)}-${formatDay(end)}${dayMonthConnector(locale)}${formatMonthYear(end, locale)}`;
+  }
+
+  if (sameYear) {
+    return `${formatDay(start)}${dayMonthConnector(locale)}${formatMonth(start, locale)}${dateRangeConnector(locale)}${formatDay(end)}${dayMonthConnector(locale)}${formatMonthYear(end, locale)}`;
+  }
+
+  const formattedStart = locale === 'ca'
+    ? formatDateToCatalan(startDate)
+    : formatDateToSpanish(startDate);
+  const formattedEnd = locale === 'ca'
+    ? formatDateToCatalan(endDate)
+    : formatDateToSpanish(endDate);
+
+  return `${formattedStart}${dateRangeConnector(locale)}${formattedEnd}`;
+}
+
+export function selectRecommendedEvents(
+  events: TrailEventDetail[],
+  {
+    province,
+    excludeEventId,
+    afterDate,
+    limit,
+  }: {
+    province: string;
+    excludeEventId: string;
+    afterDate: string;
+    limit: number;
+  },
+): TrailEventDetail[] {
+  return events
+    .filter((eventDetail) => {
+      if (eventDetail.event.id === excludeEventId) {
+        return false;
+      }
+
+      if (eventDetail.location.isMultipleLocations) {
+        return false;
+      }
+
+      if (eventDetail.location.province !== province) {
+        return false;
+      }
+
+      if (!eventDetail.dateRange.startDate) {
+        return false;
+      }
+
+      return eventDetail.dateRange.startDate >= afterDate;
+    })
+    .sort((a, b) => {
+      const dateComparison = a.dateRange.startDate!.localeCompare(b.dateRange.startDate!);
+      if (dateComparison !== 0) {
+        return dateComparison;
+      }
+
+      return a.event.name.localeCompare(b.event.name);
+    })
+    .slice(0, limit);
+}
+
+function matchesDistance(distanceKm: number, selectedDistance: string[]): boolean {
+  if (selectedDistance.length === 0) {
+    return true;
+  }
+
+  return selectedDistance.some((distance) => {
+    const range = DISTANCE_RANGES[distance];
+    if (!range) {
+      return false;
+    }
+
+    const [min, max] = range;
+    return distanceKm >= min && distanceKm < max;
+  });
+}
+
+function matchesRaceType(race: TrailEventRace, selectedRaceType: string[]): boolean {
+  if (selectedRaceType.length === 0) {
+    return true;
+  }
+
+  return selectedRaceType.some((type) =>
+    getRaceCategoryConfig(type as RaceCategorySlug).matches(race),
+  );
+}
+
+function monthIndexFromDateString(date: string): number {
+  return Number.parseInt(date.slice(5, 7), 10) - 1;
+}
+
+export function filterHomeEvents(
+  events: TrailEventDetail[],
+  selectedMonth: string[],
+  selectedProvince: string[],
+  selectedDistance: string[] = [],
+  selectedRaceType: string[] = [],
+  referenceDate: string = new Date().toISOString().slice(0, 10),
+): TrailEventDetail[] {
+  return events
+    .filter((eventDetail) => !eventDetail.location.isMultipleLocations)
+    .filter((eventDetail) => eventDetail.dateRange.startDate !== null)
+    .filter((eventDetail) => eventDetail.dateRange.startDate! > referenceDate)
+    .filter((eventDetail) => {
+      if (selectedMonth.length === 0) {
+        return true;
+      }
+
+      const month = monthIndexFromDateString(eventDetail.dateRange.startDate!);
+
+      return selectedMonth.some((selected) => Number.parseInt(selected, 10) === month);
+    })
+    .filter((eventDetail) =>
+      selectedProvince.length === 0 ||
+      (eventDetail.location.province !== null &&
+        selectedProvince.includes(eventDetail.location.province)),
+    )
+    .filter((eventDetail) => {
+      if (selectedDistance.length === 0) {
+        return true;
+      }
+
+      return eventDetail.races.some((race) =>
+        matchesDistance(race.distanceKm, selectedDistance),
+      );
+    })
+    .filter((eventDetail) => {
+      if (selectedRaceType.length === 0) {
+        return true;
+      }
+
+      return eventDetail.races.some((race) =>
+        matchesRaceType(race, selectedRaceType),
+      );
+    })
+    .sort((a, b) => {
+      const dateComparison = a.dateRange.startDate!.localeCompare(b.dateRange.startDate!);
+      if (dateComparison !== 0) {
+        return dateComparison;
+      }
+
+      return a.event.name.localeCompare(b.event.name);
+    });
+}
+
+export function getEventRaceIds(events: TrailEventDetail[]): Set<string> {
+  return new Set(events.flatMap((eventDetail) => eventDetail.races.map((race) => race.id)));
 }

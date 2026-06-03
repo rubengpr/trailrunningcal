@@ -96,17 +96,40 @@
     "provincia": {
       "racePageLinkText": "Ver todas las carreras en {province}"
     },
+    "verifiedOrganizer": "Organizador verificado"
+  },
+  "event": {
+    "dateTbd": "Fecha por confirmar",
+    "favorite": {
+      "label": "Favorito",
+      "remove": "Quitar de favoritos",
+      "save": "Guardar en favoritos",
+      "savedToast": "Evento guardado en favoritos"
+    },
+    "multipleLocations": "Varias ubicaciones",
+    "officialWebsite": "Web oficial",
+    "organizerCard": {
+      "claimButton": "Reclamar",
+      "label": "¿Eres el organizador de este evento?"
+    },
+    "claimModal": {
+      "title": "Reclamar evento",
+      "message": "Para reclamar este evento, envíanos un correo a info@trailrunningcal.com",
+      "close": "Cerrar"
+    },
+    "claimConfirmation": {
+      "title": "Reclamar evento",
+      "message": "Estás a punto de reclamar la propiedad del evento. Se enviará un email a info@trailrunningcal.com para revisar la propiedad. Una vez confirmado, podrás editar los datos y contenido del evento.",
+      "confirmButton": "Confirmar",
+      "cancelButton": "Cancelar",
+      "successMessage": "Evento reclamado correctamente"
+    },
+    "provincePageLinkText": "Ver todos los eventos en {province}",
+    "racesTitle": "Distancias",
     "share": {
       "label": "Compartir",
-      "message": "Mira la carrera que he encontrado en Trail Running Cal: {raceName} → {url}"
-    },
-    "favorite": {
-      "label": "Favoritos",
-      "save": "Guardar carrera",
-      "remove": "Eliminar de favoritos",
-      "savedToast": "Carrera añadida a favoritos"
-    },
-    "verifiedOrganizer": "Organizador verificado"
+      "message": "Mira este evento de trail: {eventName} {url}"
+    }
   },
   "difficulty": {
     "fácil": "Fácil",
@@ -130,6 +153,7 @@
     "contact": "Contacto",
     "blog": "Blog",
     "myRaces": "Mis carreras",
+    "myEvents": "Mis eventos",
     "openMenu": "Abrir menú",
     "proposeRace": "¿Quieres añadir una carrera?",
     "profile": "Mi perfil",
@@ -150,10 +174,13 @@
     "tarragona": "Tarragona"
   },
   "favorites": {
-    "pageTitle": "Mis carreras guardadas",
-    "empty": "No tienes carreras guardadas",
-    "emptyMessage": "Pulsa el corazón en cualquier carrera para guardarla aquí.",
-    "backToCalendar": "Ver calendario completo"
+    "pageTitle": "Mis eventos guardados",
+    "empty": "No tienes eventos guardados",
+    "emptyMessage": "Pulsa el corazón en cualquier evento para guardarlo aquí.",
+    "backToCalendar": "Ver calendario completo",
+    "dateTbd": "Fecha por confirmar",
+    "distanceCount": "{count, plural, one {# distancia} other {# distancias}}",
+    "multipleLocations": "Varias ubicaciones"
   },
   "landing": {
     "titleStart": "Explora carreras de trail running en",
@@ -491,6 +518,41 @@
       "4": {
         "question": "¿Cuánto tiempo se tarda en acabar un ultra trail?",
         "answer": "El tiempo de finalización de un ultra trail varía mucho según la distancia, el desnivel acumulado y el nivel del corredor. En Cataluña, las pruebas de 50-60 km suelen tener tiempos de corte de entre 14 y 18 horas. Los ultras de 80-100 km pueden extenderse hasta 24-30 horas. La mayoría de participantes no compiten por el tiempo, sino por completar el recorrido dentro del corte establecido."
+      }
+    },
+    "events": {
+      "descriptions": {
+        "title": "Descripciones de eventos",
+        "subtitle": "Genera borradores en español desde la web oficial y guarda solo después de revisar.",
+        "selectedCount": "{count} seleccionados",
+        "generateSelected": "Generar seleccionados",
+        "generatingSelected": "Generando...",
+        "model": "Modelo",
+        "statusSummary": "{completed} completados · {failed} fallidos",
+        "empty": "No hay eventos.",
+        "missingUrl": "Sin URL",
+        "hasDescription": "Con descripción",
+        "noDescription": "Sin descripción",
+        "generate": "Generar",
+        "generating": "Generando...",
+        "save": "Guardar",
+        "saving": "Guardando...",
+        "saved": "Guardado",
+        "saveSuccess": "Descripción guardada",
+        "generateSuccess": "Borrador generado",
+        "generateError": "Error al generar la descripción",
+        "saveError": "Error al guardar la descripción",
+        "batchStarted": "Generación por lotes iniciada",
+        "batchPollError": "Error al actualizar el lote",
+        "batchResultError": "Error al cargar el resultado",
+        "descriptionPlaceholder": "El borrador generado aparecerá aquí.",
+        "website": "Web",
+        "status": {
+          "completed": "Completado",
+          "running": "En proceso",
+          "pending": "Pendiente",
+          "failed": "Fallido"
+        }
       }
     }
   },
@@ -871,6 +933,75 @@
           "editFieldDescription": "Descripción"
         }
       }
+    }
+  },
+  "adminEvents": {
+    "title": "Eventos",
+    "eventCount": "{count} eventos",
+    "eventCountOne": "1 evento",
+    "generateDescriptions": "Generar descripciones",
+    "empty": "No hay eventos.",
+    "missingUrl": "Sin URL",
+    "noDescription": "Sin descripción",
+    "columns": {
+      "name": "Evento",
+      "website": "Web",
+      "races": "Carreras",
+      "description": "Descripción"
+    }
+  },
+  "adminEventDescriptions": {
+    "title": "Descripciones de eventos",
+    "subtitle": "Genera borradores en español desde la web oficial y guarda solo después de revisar.",
+    "selectedCount": "{count} seleccionados",
+    "generateSelected": "Generar seleccionados",
+    "generatingSelected": "Generando...",
+    "model": "Modelo",
+    "statusSummary": "{completed} completados · {failed} fallidos",
+    "empty": "No hay eventos.",
+    "missingUrl": "Sin URL",
+    "hasDescription": "Con descripción",
+    "noDescription": "Sin descripción",
+    "generate": "Generar",
+    "generating": "Generando...",
+    "save": "Guardar",
+    "saving": "Guardando...",
+    "saved": "Guardado",
+    "saveSuccess": "Descripción guardada",
+    "generateSuccess": "Borrador generado",
+    "generateError": "Error al generar la descripción",
+    "saveError": "Error al guardar la descripción",
+    "batchStarted": "Generación por lotes iniciada",
+    "batchPollError": "Error al actualizar el lote",
+    "batchResultError": "Error al cargar el resultado",
+    "descriptionPlaceholder": "El borrador generado aparecerá aquí.",
+    "draft": "Borrador",
+    "current": "Descripción actual",
+    "review": "Revisar",
+    "website": "Web",
+    "eventCount": "{count} eventos",
+    "eventCountOne": "1 evento",
+    "columns": {
+      "name": "Evento",
+      "website": "Web",
+      "races": "Carreras",
+      "description": "Descripción",
+      "status": "Estado",
+      "actions": "Acciones"
+    },
+    "rowStatus": {
+      "idle": "Pendiente",
+      "generating": "Generando",
+      "ready": "Borrador",
+      "saving": "Guardando",
+      "saved": "Guardado",
+      "failed": "Error"
+    },
+    "status": {
+      "completed": "Completado",
+      "running": "En proceso",
+      "pending": "Pendiente",
+      "failed": "Fallido"
     }
   },
   "playground": {

@@ -4,6 +4,11 @@ export const ANALYTICS_EVENTS = {
   DESKTOP_LAYOUT_CHANGED: 'desktop_layout_changed',
   ERROR_BOUNDARY_CAUGHT_ERROR: 'error_boundary_caught_error',
   ERROR_FALLBACK_RETRY_CLICKED: 'error_fallback_retry_clicked',
+  EVENT_FAVORITE_CLICKED: 'event_favorite_clicked',
+  EVENT_OFFICIAL_WEBSITE_CLICKED: 'event_official_website_clicked',
+  EVENT_ORGANIZER_CLAIM_CLICKED: 'event_organizer_claim_clicked',
+  EVENT_PROVINCE_LINK_CLICKED: 'event_province_link_clicked',
+  EVENT_SHARE_CLICKED: 'event_share_clicked',
   FILTERS_APPLIED: 'filters_applied',
   MAP_VIEW_LIST_CLICKED: 'map_view_list_clicked',
   NAVBAR_FILTER_ICON_CLICKED: 'navbar_filter_icon_clicked',
@@ -41,6 +46,27 @@ export interface AnalyticsEventProperties {
   };
   [ANALYTICS_EVENTS.ERROR_FALLBACK_RETRY_CLICKED]: {
     error_message?: string;
+  };
+  [ANALYTICS_EVENTS.EVENT_FAVORITE_CLICKED]: {
+    event_id: string;
+    event_slug: string;
+    action: 'save' | 'remove';
+  };
+  [ANALYTICS_EVENTS.EVENT_OFFICIAL_WEBSITE_CLICKED]: {
+    event_id: string;
+    event_slug: string;
+  };
+  [ANALYTICS_EVENTS.EVENT_ORGANIZER_CLAIM_CLICKED]: {
+    event_name: string;
+  };
+  [ANALYTICS_EVENTS.EVENT_PROVINCE_LINK_CLICKED]: {
+    event_id: string;
+    event_slug: string;
+    province: string;
+  };
+  [ANALYTICS_EVENTS.EVENT_SHARE_CLICKED]: {
+    event_id: string;
+    event_slug: string;
   };
   [ANALYTICS_EVENTS.FILTERS_APPLIED]: {
     variant:
