@@ -131,10 +131,20 @@ async function fetchDistinctPairs(): Promise<Array<{ city: string; province: str
   return pairs;
 }
 
+function countryForProvince(province: string): { name: string; code: string } {
+  if (province === 'Andorra') {
+    return { name: 'Andorra', code: 'ad' };
+  }
+
+  return { name: 'Spain', code: 'es' };
+}
+
 function buildNominatimUrl(city: string, province: string): string {
+  const country = countryForProvince(province);
+  const query = province === country.name ? `${city}, ${country.name}` : `${city}, ${province}, ${country.name}`;
   const params = new URLSearchParams({
-    q: `${city}, ${province}, Spain`,
-    countrycodes: 'es',
+    q: query,
+    countrycodes: country.code,
     limit: '1',
     format: 'jsonv2',
     addressdetails: '1',
