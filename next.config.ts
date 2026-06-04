@@ -124,6 +124,10 @@ const nextConfig: NextConfig = {
         destination: 'https://eu-assets.i.posthog.com/static/:path*',
       },
       {
+        source: '/ingest/array/:path*',
+        destination: 'https://eu-assets.i.posthog.com/array/:path*',
+      },
+      {
         source: '/ingest/:path*',
         destination: 'https://eu.i.posthog.com/:path*',
       },
@@ -131,6 +135,10 @@ const nextConfig: NextConfig = {
       {
         source: '/:locale(es|ca)/ingest/static/:path*',
         destination: 'https://eu-assets.i.posthog.com/static/:path*',
+      },
+      {
+        source: '/:locale(es|ca)/ingest/array/:path*',
+        destination: 'https://eu-assets.i.posthog.com/array/:path*',
       },
       {
         source: '/:locale(es|ca)/ingest/:path*',
