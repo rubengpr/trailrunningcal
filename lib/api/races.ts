@@ -25,7 +25,7 @@ const MARKDOWN_REJECTED_REASONS = new Set<string>([
   'markdown_too_short',
 ]);
 
-function parseMarkdownRejected(
+export function parseMarkdownRejected(
   status: number,
   data: unknown,
 ): MarkdownRejectedResult | null {
@@ -47,7 +47,7 @@ function parseMarkdownRejected(
   return null;
 }
 
-function parseConflict(status: number, data: unknown): ConflictResult | null {
+export function parseConflict(status: number, data: unknown): ConflictResult | null {
   if (
     status === 409 &&
     typeof data === 'object' &&

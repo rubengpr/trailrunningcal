@@ -161,6 +161,34 @@ export async function getEventsByIds(
     );
 }
 
+export async function getEventsByUrl(
+  urls: string[],
+): Promise<Array<{ id: string; name: string; websiteUrl: string }>> {
+  if (urls.length === 0) {
+    return [];
+  }
+
+  const supabase = createStaticClient();
+
+  const { data, error } = await supabase
+    .from('events')
+    .select('id, name, website_url')
+    .in('website_url', urls);
+
+  if (error) {
+    console.error('Failed to fetch event URL conflicts:', error);
+    return [];
+  }
+
+  return (data ?? []).map(
+    (row: { id: string; name: string; website_url: string | null }) => ({
+      id: row.id,
+      name: row.name,
+      websiteUrl: row.website_url ?? '',
+    }),
+  );
+}
+
 export const getEventBySlug = cache(async function getEventBySlug(
   slug: string,
 ): Promise<TrailEventDetail | null> {
