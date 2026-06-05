@@ -45,14 +45,14 @@ export const DUMMY_SCRAPED_RACES: TrailRace[] = [
 export const DUMMY_SCRAPED_EVENT: TrailEventAgentEvent = {
     name: 'Trail dels Bastiments',
     description:
-        'Trail dels Bastiments reúne varias distancias de montaña con salida en Castellar de n’Hug y recorridos de alta montaña por el entorno del Berguedà.\n\n' +
-        'El evento combina pruebas largas y formatos más cortos para corredores con diferentes niveles, además de actividades complementarias para familias cuando la organización las comunica.',
+        'Trail dels Bastiments reúne varias distancias de montaña con salida en Castellar de n’Hug y recorridos de alta montaña por el entorno del Berguedà. La prueba combina pistas forestales, senderos técnicos y tramos abiertos con vistas al Prepirineo, pensados para corredores que buscan una jornada exigente pero accesible según la distancia elegida. La organización plantea el evento como una cita de pueblo, cercana y bien señalizada, con avituallamientos en puntos clave.\n\n' +
+        'El programa incluye una opción larga para quienes quieren afrontar más desnivel, una distancia corta para perfiles menos experimentados y una caminata popular que mantiene el carácter montañero del evento. La propuesta destaca por su ambiente local, el paso por caminos tradicionales y una logística sencilla para participantes y acompañantes.',
     websiteUrl: 'https://example.com/trail-dels-bastiments',
 };
 
 export const DUMMY_SCRAPED_EVENT_RACES: TrailEventAgentRace[] = [
     {
-        name: 'Trail dels Bastiments - 42K',
+        name: 'La llarga',
         date: '2026-09-14',
         city: "Castellar de n'Hug",
         province: 'Barcelona',
@@ -60,7 +60,7 @@ export const DUMMY_SCRAPED_EVENT_RACES: TrailEventAgentRace[] = [
         elevationGainM: 2800,
     },
     {
-        name: 'Trail dels Bastiments - 21K',
+        name: 'La curta',
         date: '2026-09-14',
         city: "Castellar de n'Hug",
         province: 'Barcelona',
@@ -68,7 +68,7 @@ export const DUMMY_SCRAPED_EVENT_RACES: TrailEventAgentRace[] = [
         elevationGainM: 1200,
     },
     {
-        name: 'Caminada Trail dels Bastiments - 10K',
+        name: 'Caminada',
         date: '2026-09-14',
         city: "Castellar de n'Hug",
         province: 'Barcelona',

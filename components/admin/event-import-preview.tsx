@@ -1,12 +1,28 @@
 'use client';
 
-import type { ReactNode } from 'react';
-import { useTranslations } from 'next-intl';
+import { useState, type ReactNode } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
+import {
+  Calendar,
+  Check,
+  Globe,
+  MapPin,
+  TextCursor,
+  WholeWord,
+  X,
+} from 'lucide-react';
+import type { Locale } from '@/i18n';
+import {
+  buildEventDateRange,
+  buildEventLocation,
+  formatEventDateRange,
+} from '@/lib/events/utils';
+import { BaseModal } from '@/components/ui/base-modal';
+import type { TrailEventRace } from '@/types/event.types';
 import type {
   TrailEventAgentEvent,
   TrailEventAgentRace,
 } from '@/types/trail-event-agent.types';
-import { Button } from '@/components/ui/button';
 
 interface EventImportPreviewProps {
   event: TrailEventAgentEvent | null;
@@ -18,7 +34,116 @@ interface EventImportPreviewProps {
   onAccept: () => Promise<void>;
   isAccepted: boolean;
   isAccepting: boolean;
+  onReject: () => void;
+  isRejected: boolean;
+  onSaveReview: (
+    event: TrailEventAgentEvent,
+    races: TrailEventAgentRace[],
+  ) => void;
 }
+
+function toPreviewRace(
+  race: TrailEventAgentRace,
+  index: number,
+): TrailEventRace {
+  return {
+    id: `preview-${index}`,
+    name: race.name,
+    date: race.date,
+    distanceKm: race.distanceKm,
+    elevationGainM: race.elevationGainM,
+    city: race.city,
+    province: race.province,
+  };
+}
+
+function parseLocalDate(dateString: string): Date | null {
+  const [year, month, day] = dateString.split('-').map(Number);
+
+  if (!year || !month || !day) {
+    return null;
+  }
+
+  const date = new Date(year, month - 1, day);
+
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function formatRaceDate(
+  dateString: string | null,
+  locale: Locale,
+  fallback: string,
+): string {
+  if (!dateString) {
+    return fallback;
+  }
+
+  const date = parseLocalDate(dateString);
+
+  if (!date) {
+    return fallback;
+  }
+
+  return new Intl.DateTimeFormat(locale === 'ca' ? 'ca-ES' : 'es-ES', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(date);
+}
+
+function formatEventLocation(
+  races: TrailEventRace[],
+  t: ReturnType<typeof useTranslations>,
+): string {
+  const location = buildEventLocation(races);
+
+  if (location.isMultipleLocations) {
+    return t('multipleLocations');
+  }
+
+  const parts = [location.city, location.province].filter(
+    (part): part is string => part !== null && part.trim().length > 0,
+  );
+
+  return parts.length > 0 ? parts.join(', ') : t('unknown');
+}
+
+interface ReviewActionButtonProps {
+  title: string;
+  onClick: () => void;
+  disabled: boolean;
+  children: ReactNode;
+  variant?: 'default' | 'primary';
+}
+
+function ReviewActionButton({
+  title,
+  onClick,
+  disabled,
+  children,
+  variant = 'default',
+}: ReviewActionButtonProps): React.ReactElement {
+  const classes = variant === 'primary'
+    ? 'text-gray-900 hover:bg-gray-100'
+    : 'text-gray-700 hover:bg-gray-100';
+
+  return (
+    <button
+      type="button"
+      title={title}
+      disabled={disabled}
+      onClick={onClick}
+      className={`inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-35 ${classes}`}
+    >
+      {children}
+    </button>
+  );
+}
+
+const inputClass =
+  'w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-400';
+const labelClass = 'text-xs font-medium text-gray-600';
 
 export function EventImportPreview({
   event,
@@ -30,8 +155,17 @@ export function EventImportPreview({
   onAccept,
   isAccepted,
   isAccepting,
+  onReject,
+  isRejected,
+  onSaveReview,
 }: EventImportPreviewProps): React.ReactElement {
   const t = useTranslations('admin.events.import.results');
+  const locale = useLocale() as Locale;
+  const [isEditing, setIsEditing] = useState(false);
+  const [eventDraft, setEventDraft] = useState<TrailEventAgentEvent | null>(
+    null,
+  );
+  const [raceDrafts, setRaceDrafts] = useState<TrailEventAgentRace[]>([]);
 
   if (isLoading) {
     return (
@@ -69,64 +203,398 @@ export function EventImportPreview({
     );
   }
 
+  const previewRaces = races.map(toPreviewRace);
+  const dateRange = buildEventDateRange(previewRaces);
+  const eventDate = formatEventDateRange(dateRange, locale, t('unknown'));
+  const eventLocation = formatEventLocation(previewRaces, t);
+  const showRaceDates = new Set(races.map((race) => race.date ?? '')).size > 1;
+  const showRaceLocations = buildEventLocation(previewRaces).isMultipleLocations;
+  const description = event.description?.trim();
+  const websiteUrl = event.websiteUrl?.trim();
+  const isActionDisabled = isAccepting || isAccepted || isRejected;
+
+  const handleStartEdit = (): void => {
+    setEventDraft({ ...event });
+    setRaceDrafts(races.map((race) => ({ ...race })));
+    setIsEditing(true);
+  };
+
+  const handleCancelEdit = (): void => {
+    setIsEditing(false);
+    setEventDraft(null);
+    setRaceDrafts([]);
+  };
+
+  const handleSaveReview = (): void => {
+    if (!eventDraft) return;
+
+    onSaveReview(eventDraft, raceDrafts);
+    setIsEditing(false);
+  };
+
+  const updateRaceDraft = (
+    index: number,
+    race: TrailEventAgentRace,
+  ): void => {
+    setRaceDrafts((drafts) =>
+      drafts.map((draft, draftIndex) => (
+        draftIndex === index ? race : draft
+      )),
+    );
+  };
+
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h2 className="text-lg font-semibold text-gray-900">{event.name}</h2>
-          <p className="mt-1 text-sm text-gray-600">
-            {t('raceCount', { count: races.length })}
-          </p>
-        </div>
-        <Button onClick={onAccept} disabled={isAccepted || isAccepting}>
-          {isAccepted
-            ? t('accepted')
-            : isAccepting
-              ? t('accepting')
-              : t('acceptEvent')}
-        </Button>
-      </div>
+    <div
+      className="group rounded-lg bg-linear-to-br from-gray-200 via-gray-50 to-gray-200 p-px shadow-sm focus:outline-none"
+      tabIndex={0}
+    >
+      <div className="overflow-hidden rounded-[7px] bg-linear-to-br from-white via-gray-50 to-gray-100">
+        <section className="border-b border-gray-100 p-5 sm:p-6">
+          <div className="min-w-0">
+            <div className="flex min-w-0 items-start justify-between gap-3">
+              <div className="flex min-w-0 items-center gap-2">
+                <h2 className="text-xl font-semibold leading-tight text-gray-950">
+                  {event.name}
+                </h2>
+                {websiteUrl && (
+                  <a
+                    href={websiteUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  title={t('websiteUrl')}
+                  className="inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-gray-700 transition-colors hover:bg-gray-100"
+                  >
+                    <Globe className="h-4 w-4" aria-hidden="true" />
+                  </a>
+                )}
+              </div>
+              <div className="pointer-events-none flex shrink-0 items-center gap-1 opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
+                <ReviewActionButton
+                  title={isRejected ? t('reviewRejected') : t('rejectEvent')}
+                  disabled={isActionDisabled}
+                  onClick={onReject}
+                >
+                  <X className="h-4 w-4" aria-hidden="true" />
+                </ReviewActionButton>
+                <ReviewActionButton
+                  title={t('editReview')}
+                  disabled={isActionDisabled}
+                  onClick={handleStartEdit}
+                >
+                  <TextCursor className="h-3.5 w-3.5" aria-hidden="true" />
+                </ReviewActionButton>
+                <ReviewActionButton
+                  title={isAccepted ? t('reviewAccepted') : t('acceptEvent')}
+                  disabled={isActionDisabled}
+                  onClick={() => void onAccept()}
+                  variant="primary"
+                >
+                  {isAccepting ? (
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                  ) : (
+                    <Check className="h-4 w-4" aria-hidden="true" />
+                  )}
+                </ReviewActionButton>
+              </div>
+            </div>
+            <dl className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+              <div>
+                <dt className="sr-only">{t('date')}</dt>
+                <dd className="flex items-center gap-2 font-medium text-gray-900">
+                  <Calendar className="h-4 w-4 shrink-0 text-gray-400" aria-hidden="true" />
+                  <span>{eventDate}</span>
+                </dd>
+              </div>
+              <div>
+                <dt className="sr-only">{t('location')}</dt>
+                <dd className="flex items-center gap-2 font-medium text-gray-900">
+                  <MapPin className="h-4 w-4 shrink-0 text-gray-400" aria-hidden="true" />
+                  <span>{eventLocation}</span>
+                </dd>
+              </div>
+            </dl>
+          </div>
+          {description && (
+            <div className="mt-5 max-w-4xl">
+              <p className="whitespace-pre-line text-sm leading-6 text-gray-600">
+                {description}
+              </p>
+              <span
+                title={t('descriptionCharacterCount', {
+                  count: description.length,
+                })}
+                className="mt-3 inline-flex items-center gap-1 rounded-full border border-gray-200/60 bg-gray-50 px-2 text-[11px] font-medium tabular-nums text-gray-600"
+              >
+                <WholeWord className="size-3" strokeWidth={2} aria-hidden="true" />
+                {description.length}
+              </span>
+            </div>
+          )}
+        </section>
 
-      {event.description && (
-        <div className="whitespace-pre-line rounded-lg border border-gray-200 bg-white p-4 text-sm leading-6 text-gray-700">
-          {event.description}
-        </div>
-      )}
+        <section className="p-5 sm:p-6">
+          <div className="space-y-1">
+            {races.map((race, index) => {
+              const raceName = race.name.trim();
+              const city = race.city.trim() || t('unknown');
+              const province = race.province.trim() || t('unknown');
+              const elevation = race.elevationGainM === null
+                ? t('unknown')
+                : String(Math.round(race.elevationGainM));
+              const contextFields = [
+                ...(showRaceDates
+                  ? [formatRaceDate(race.date, locale, t('unknown'))]
+                  : []),
+                ...(showRaceLocations ? [city, province] : []),
+              ];
+              const metricFields = [
+                String(Math.round(race.distanceKm)),
+                elevation,
+              ];
 
-      <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
-        <table className="min-w-full divide-y divide-gray-200 text-sm">
-          <thead className="bg-gray-50 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
-            <tr>
-              <th className="px-4 py-3">{t('raceName')}</th>
-              <th className="px-4 py-3">{t('date')}</th>
-              <th className="px-4 py-3">{t('location')}</th>
-              <th className="px-4 py-3 text-right">{t('distance')}</th>
-              <th className="px-4 py-3 text-right">{t('elevation')}</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {races.map((race, index) => (
-              <tr key={`${race.name}-${index}`}>
-                <td className="px-4 py-3 font-medium text-gray-900">
-                  {race.name}
-                </td>
-                <td className="px-4 py-3 text-gray-700">
-                  {race.date ?? t('unknown')}
-                </td>
-                <td className="px-4 py-3 text-gray-700">
-                  {race.city}, {race.province}
-                </td>
-                <td className="px-4 py-3 text-right tabular-nums text-gray-700">
-                  {race.distanceKm}K
-                </td>
-                <td className="px-4 py-3 text-right tabular-nums text-gray-700">
-                  {race.elevationGainM ?? t('unknown')}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+              return (
+                <article
+                  key={`${race.date ?? 'unknown'}-${race.distanceKm}-${index}`}
+                  className="grid grid-cols-[2rem_minmax(0,1fr)] items-start gap-3 rounded-md px-2 py-2.5 text-sm font-normal text-gray-700 transition-colors hover:bg-gray-50"
+                >
+                  <span className="tabular-nums text-gray-400">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+                  <div className="grid min-w-0 gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+                    <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+                      {raceName && <span>{raceName}</span>}
+                      {contextFields.map((field, fieldIndex) => (
+                        <span
+                          key={`${field}-${fieldIndex}`}
+                          className="inline-flex items-center gap-x-2"
+                        >
+                          {(raceName || fieldIndex > 0) && (
+                            <span className="text-gray-300" aria-hidden="true">
+                              ·
+                            </span>
+                          )}
+                          <span>{field}</span>
+                        </span>
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-x-2 tabular-nums sm:justify-end">
+                      {metricFields.map((field, fieldIndex) => (
+                        <span
+                          key={`${field}-${fieldIndex}`}
+                          className="inline-flex items-center gap-x-2"
+                        >
+                          {fieldIndex > 0 && (
+                            <span className="text-gray-300" aria-hidden="true">
+                              ·
+                            </span>
+                          )}
+                          <span>{field}</span>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </section>
       </div>
+      <BaseModal
+        isOpen={isEditing && eventDraft !== null}
+        onClose={handleCancelEdit}
+        title={t('editReview')}
+        maxWidth="3xl"
+      >
+        {eventDraft && (
+          <div className="flex max-h-[70vh] flex-col gap-5 overflow-y-auto px-1 pb-1">
+            <section className="flex flex-col gap-3">
+              <h3 className="text-sm font-semibold text-gray-900">
+                {t('editEventInfo')}
+              </h3>
+              <div className="flex flex-col gap-1">
+                <label className={labelClass}>{t('editFieldName')}</label>
+                <input
+                  type="text"
+                  className={inputClass}
+                  value={eventDraft.name}
+                  onChange={(e) =>
+                    setEventDraft({ ...eventDraft, name: e.target.value })
+                  }
+                />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className={labelClass}>
+                  {t('editFieldWebsiteUrl')}
+                </label>
+                <input
+                  type="url"
+                  className={inputClass}
+                  value={eventDraft.websiteUrl ?? ''}
+                  onChange={(e) =>
+                    setEventDraft({
+                      ...eventDraft,
+                      websiteUrl: e.target.value.trim() || null,
+                    })
+                  }
+                />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className={labelClass}>
+                  {t('editFieldDescription')}
+                </label>
+                <textarea
+                  rows={12}
+                  className={`${inputClass} min-h-64 resize-y`}
+                  value={eventDraft.description ?? ''}
+                  onChange={(e) =>
+                    setEventDraft({
+                      ...eventDraft,
+                      description: e.target.value || null,
+                    })
+                  }
+                />
+              </div>
+            </section>
+
+            <section className="flex flex-col gap-3">
+              <h3 className="text-sm font-semibold text-gray-900">
+                {t('editRaceInfo')}
+              </h3>
+              <div className="divide-y divide-gray-200">
+                {raceDrafts.map((race, index) => (
+                  <div
+                    key={`${race.date ?? 'unknown'}-${race.distanceKm}-${index}`}
+                    className="py-4 first:pt-0 last:pb-0"
+                  >
+                    <div className="flex flex-col gap-1">
+                      <label className={labelClass}>
+                        {t('editFieldName')}
+                      </label>
+                      <input
+                        type="text"
+                        className={inputClass}
+                        value={race.name}
+                        onChange={(e) =>
+                          updateRaceDraft(index, {
+                            ...race,
+                            name: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="mt-3 grid gap-3 sm:grid-cols-3">
+                      <div className="flex flex-col gap-1">
+                        <label className={labelClass}>
+                          {t('editFieldDate')}
+                        </label>
+                        <input
+                          type="date"
+                          className={inputClass}
+                          value={race.date ?? ''}
+                          onChange={(e) =>
+                            updateRaceDraft(index, {
+                              ...race,
+                              date: e.target.value || null,
+                            })
+                          }
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <label className={labelClass}>
+                          {t('editFieldDistance')}
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          step="0.1"
+                          className={inputClass}
+                          value={race.distanceKm}
+                          onChange={(e) =>
+                            updateRaceDraft(index, {
+                              ...race,
+                              distanceKm: Number.parseFloat(e.target.value) || 0,
+                            })
+                          }
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <label className={labelClass}>
+                          {t('editFieldElevation')}
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          className={inputClass}
+                          value={race.elevationGainM ?? ''}
+                          onChange={(e) =>
+                            updateRaceDraft(index, {
+                              ...race,
+                              elevationGainM: e.target.value === ''
+                                ? null
+                                : Number.parseInt(e.target.value, 10) || 0,
+                            })
+                          }
+                        />
+                      </div>
+                    </div>
+                    <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                      <div className="flex flex-col gap-1">
+                        <label className={labelClass}>
+                          {t('editFieldCity')}
+                        </label>
+                        <input
+                          type="text"
+                          className={inputClass}
+                          value={race.city}
+                          onChange={(e) =>
+                            updateRaceDraft(index, {
+                              ...race,
+                              city: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <label className={labelClass}>
+                          {t('editFieldProvince')}
+                        </label>
+                        <input
+                          type="text"
+                          className={inputClass}
+                          value={race.province}
+                          onChange={(e) =>
+                            updateRaceDraft(index, {
+                              ...race,
+                              province: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={handleCancelEdit}
+                className="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50"
+              >
+                {t('cancelEdit')}
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveReview}
+                className="inline-flex items-center rounded-md bg-black px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-gray-800"
+              >
+                {t('saveReview')}
+              </button>
+            </div>
+          </div>
+        )}
+      </BaseModal>
     </div>
   );
 }

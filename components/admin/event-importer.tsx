@@ -224,6 +224,8 @@ type ScrapeAction =
     | { type: 'RACE_ACCEPT'; index: number }
     | { type: 'RACE_REJECT'; index: number }
     | { type: 'RACE_EDITED'; index: number; race: TrailEventAgentRace }
+    | { type: 'EVENT_REJECT' }
+    | { type: 'REVIEW_EDITED'; event: TrailEventAgentEvent; races: TrailEventAgentRace[] }
     // JSON editor
     | { type: 'JSON_TAB_OPENED'; value: string }
     | { type: 'JSON_TAB_CLOSED' }
@@ -398,6 +400,16 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
                 ...state,
                 scrapedRaces: state.scrapedRaces.map((r, i) => i === action.index ? action.race : r),
             };
+        case 'EVENT_REJECT':
+            return { ...state, rejectedIndexes: new Set(state.rejectedIndexes).add(0) };
+        case 'REVIEW_EDITED':
+            return {
+                ...state,
+                scrapedEvent: action.event,
+                scrapedRaces: action.races,
+                acceptedIndexes: new Set(),
+                rejectedIndexes: new Set(),
+            };
         // JSON editor
         case 'JSON_TAB_OPENED':
             return { ...state, jsonView: true, jsonEditorValue: action.value, jsonEditorError: null };
@@ -513,6 +525,7 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
         pageStats,
         acceptedIndexes,
         acceptingIndex,
+        rejectedIndexes,
         jsonView,
         jsonEditorValue,
         jsonEditorError,
@@ -839,6 +852,18 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
         } finally {
             dispatch({ type: 'ACCEPTING_INDEX', index: null });
         }
+    };
+
+    const handleReject = (): void => {
+        dispatch({ type: 'EVENT_REJECT' });
+        toast.success(t('results.reviewRejected'));
+    };
+
+    const handleSaveReview = (
+        event: TrailEventAgentEvent,
+        races: TrailEventAgentRace[],
+    ): void => {
+        dispatch({ type: 'REVIEW_EDITED', event, races });
     };
 
     const handleSwitchToJsonView = (): void => {
@@ -1535,6 +1560,9 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                     onAccept={handleAccept}
                     isAccepted={acceptedIndexes.has(0)}
                     isAccepting={acceptingIndex === 0}
+                    onReject={handleReject}
+                    isRejected={rejectedIndexes.has(0)}
+                    onSaveReview={handleSaveReview}
                 />
             )}
             {batchRows.length > 0 && (
