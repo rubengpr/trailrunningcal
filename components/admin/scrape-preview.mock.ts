@@ -1,4 +1,8 @@
 import type { TrailRace } from '@/types/trail-race-agent.types';
+import type {
+    TrailEventAgentEvent,
+    TrailEventAgentRace,
+} from '@/types/trail-event-agent.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 import type { PageStats } from '@/types/races-scrape-api.types';
 
@@ -38,6 +42,41 @@ export const DUMMY_SCRAPED_RACES: TrailRace[] = [
     },
 ];
 
+export const DUMMY_SCRAPED_EVENT: TrailEventAgentEvent = {
+    name: 'Trail dels Bastiments',
+    description:
+        'Trail dels Bastiments reúne varias distancias de montaña con salida en Castellar de n’Hug y recorridos de alta montaña por el entorno del Berguedà.\n\n' +
+        'El evento combina pruebas largas y formatos más cortos para corredores con diferentes niveles, además de actividades complementarias para familias cuando la organización las comunica.',
+    websiteUrl: 'https://example.com/trail-dels-bastiments',
+};
+
+export const DUMMY_SCRAPED_EVENT_RACES: TrailEventAgentRace[] = [
+    {
+        name: 'Trail dels Bastiments - 42K',
+        date: '2026-09-14',
+        city: "Castellar de n'Hug",
+        province: 'Barcelona',
+        distanceKm: 42,
+        elevationGainM: 2800,
+    },
+    {
+        name: 'Trail dels Bastiments - 21K',
+        date: '2026-09-14',
+        city: "Castellar de n'Hug",
+        province: 'Barcelona',
+        distanceKm: 21,
+        elevationGainM: 1200,
+    },
+    {
+        name: 'Caminada Trail dels Bastiments - 10K',
+        date: '2026-09-14',
+        city: "Castellar de n'Hug",
+        province: 'Barcelona',
+        distanceKm: 10,
+        elevationGainM: null,
+    },
+];
+
 export const DUMMY_SCRAPE_MARKDOWN =
     '# Event dummy — vista previa\n\n' +
     'Aquest contingut és fictici per provar el layout, les mides i els botons de descàrrega.\n\n' +
@@ -53,6 +92,16 @@ export const DUMMY_SCRAPE_USAGE: OpenRouterScrapeUsage = {
 };
 
 export const DUMMY_RAW_MODEL_OUTPUT = JSON.stringify({ races: DUMMY_SCRAPED_RACES }, null, 2);
+
+export const DUMMY_EVENT_RAW_MODEL_OUTPUT = JSON.stringify(
+    {
+        event: DUMMY_SCRAPED_EVENT,
+        races: DUMMY_SCRAPED_EVENT_RACES,
+        errorMessage: null,
+    },
+    null,
+    2,
+);
 
 /** Milliseconds shown as "last run" duration after loading dummy data. */
 export const DUMMY_LAST_RUN_DURATION_MS = 1_420;

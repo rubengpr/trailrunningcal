@@ -30,9 +30,23 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
         title={t('title')}
         subtitle={subtitle}
         action={
-          <Button onClick={() => router.push(`/${locale}/admin/eventos/descripciones`)}>
-            {t('generateDescriptions')}
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant="secondary"
+              onClick={() => router.push(`/${locale}/admin/eventos/import`)}
+            >
+              {t('extractEvents')}
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => router.push(`/${locale}/admin/eventos/new`)}
+            >
+              {t('newEvent')}
+            </Button>
+            <Button onClick={() => router.push(`/${locale}/admin/eventos/descripciones`)}>
+              {t('generateDescriptions')}
+            </Button>
+          </div>
         }
       />
 

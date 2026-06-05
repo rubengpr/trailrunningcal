@@ -19,21 +19,32 @@ export interface BulkProcessTableRow {
     rawModelOutput: string | null;
 }
 
+const STATE_DOT_COLOR: Record<BulkProcessState, string> = {
+    completed: 'bg-green-400',
+    running: 'bg-purple-400',
+    pending: 'bg-gray-300',
+    failed: 'bg-red-400',
+};
+
+const UPDATED_AT_FORMATTER = new Intl.DateTimeFormat(undefined, {
+    day: '2-digit',
+    month: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+});
+
 interface BulkProcessTableProps {
     rows: BulkProcessTableRow[];
+    translationsNamespace?: 'admin.races.import.bulk' | 'admin.events.import.bulk';
+    viewingRowId?: string | null;
+    onViewResult?: (rowId: string) => void;
 }
 
 function StateBadge({ state }: { state: BulkProcessState }) {
     const t = useTranslations('admin.races.import.bulk');
-    const dotColor: Record<BulkProcessState, string> = {
-        completed: 'bg-green-400',
-        running: 'bg-purple-400',
-        pending: 'bg-gray-300',
-        failed: 'bg-red-400',
-    };
     return (
         <span className="inline-flex items-center gap-1.5 rounded-full py-0.5 font-medium text-gray-700">
-            <span className={`h-2 w-2 shrink-0 rounded-full ${dotColor[state]}`} aria-hidden />
+            <span className={`h-2 w-2 shrink-0 rounded-full ${STATE_DOT_COLOR[state]}`} aria-hidden />
             {t(`state.${state}`)}
         </span>
     );
@@ -45,17 +56,17 @@ function RaceCountCell({ raceCount }: { raceCount: number | null }) {
 }
 
 function formatUpdatedAt(value: string): string {
-    return new Intl.DateTimeFormat(undefined, {
-        day: '2-digit',
-        month: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-    }).format(new Date(value));
+    return UPDATED_AT_FORMATTER.format(new Date(value));
 }
 
 
-export function BulkProcessTable({ rows }: BulkProcessTableProps) {
-    const t = useTranslations('admin.races.import.bulk');
+export function BulkProcessTable({
+    rows,
+    translationsNamespace = 'admin.races.import.bulk',
+    viewingRowId = null,
+    onViewResult,
+}: BulkProcessTableProps) {
+    const t = useTranslations(translationsNamespace);
 
     if (rows.length === 0) {
         return null;
@@ -69,10 +80,14 @@ export function BulkProcessTable({ rows }: BulkProcessTableProps) {
                         <tr className="text-[11px] font-medium uppercase tracking-wide text-gray-500">
                             <th className="w-[45%] border-b border-gray-100 py-2 font-medium">{t('columns.url')}</th>
                             <th className="border-b border-gray-100 py-2 font-medium">{t('columns.status')}</th>
-                            <th className="border-b border-gray-100 py-2"></th>
+                            <th className="border-b border-gray-100 py-2">
+                                <span className="sr-only">{t('columns.error')}</span>
+                            </th>
                             <th className="w-16 border-b border-gray-100 py-2 text-right font-medium">{t('columns.suggestedRaces')}</th>
                             <th className="border-b border-gray-100 py-2 font-medium">{t('columns.updatedAt')}</th>
-                            <th className="border-b border-gray-100 py-2"></th>
+                            <th className="border-b border-gray-100 py-2">
+                                <span className="sr-only">{t('columns.actions')}</span>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -117,6 +132,18 @@ export function BulkProcessTable({ rows }: BulkProcessTableProps) {
                                                 triggerAriaLabel={t('columns.actions')}
                                                 size="sm"
                                                 items={[
+                                                    ...(onViewResult
+                                                        ? [
+                                                            {
+                                                                id: 'viewResult',
+                                                                label: viewingRowId === row.id ? t('actions.loading') : t('actions.viewResult'),
+                                                                disabled: viewingRowId !== null,
+                                                                onSelect: () => {
+                                                                    onViewResult(row.id);
+                                                                },
+                                                            },
+                                                        ]
+                                                        : []),
                                                     {
                                                         id: 'downloadMarkdown',
                                                         label: t('actions.downloadMarkdown'),

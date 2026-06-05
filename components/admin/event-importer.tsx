@@ -13,28 +13,27 @@ import { IconButton } from '@/components/ui/icon-button';
 import { IconActionMenu } from '@/components/ui/icon-action-menu';
 import { TabSwitcher } from '@/components/ui/tab-switcher';
 import { SectionHeader } from '@/components/ui/section-header';
-import { SuggestedRacesPreview } from '@/components/race/suggested-races-preview';
+import { EventImportPreview } from '@/components/admin/event-import-preview';
 import { cleanUrl } from '@/lib/utils/url';
 import {
     DUMMY_CRAWL_PAGE_STATS,
     DUMMY_LAST_RUN_DURATION_MS,
-    DUMMY_RAW_MODEL_OUTPUT,
+    DUMMY_EVENT_RAW_MODEL_OUTPUT,
     DUMMY_SCRAPE_MARKDOWN,
     DUMMY_SCRAPE_USAGE,
-    DUMMY_SCRAPED_RACES,
+    DUMMY_SCRAPED_EVENT,
+    DUMMY_SCRAPED_EVENT_RACES,
 } from '@/components/admin/scrape-preview.mock';
 import { BulkProcessTable } from '@/components/admin/bulk-process-table';
 import type { BulkProcessTableRow } from '@/components/admin/bulk-process-table';
-import { BulkResultsOverview } from '@/components/admin/bulk-results-overview';
-import type { BulkResultItem } from '@/components/admin/bulk-results-overview';
 import {
-    runTrailRaceAgent,
-    runRaceImport,
-    acceptScrapedRace,
-    startRaceImportBatch,
-    getBatchStatus,
-    getItemResult,
-} from '@/lib/api/races';
+    runTrailEventAgent,
+    runEventImport,
+    acceptScrapedEvent,
+    startEventImportBatch,
+    getEventImportBatchStatus,
+    getEventImportItemResult,
+} from '@/lib/api/events';
 import { OPENROUTER_SCRAPE_MODEL_IDS, OPENROUTER_VISION_MODEL_IDS } from '@/lib/integrations/openrouter/scrape-models';
 import type { OpenRouterScrapeModelId, OpenRouterVisionModelId } from '@/lib/integrations/openrouter/scrape-models';
 import { formatDurationMs } from '@/lib/utils/format-duration';
@@ -44,11 +43,14 @@ import { useFileUpload } from '@/hooks/use-file-upload';
 
 import { normalizeUrl } from '@/lib/validation';
 import type { PageStats } from '@/types/races-scrape-api.types';
-import type { RaceImportBatchSnapshot, RaceImportResult, RaceImportStep, RaceImportWorkflow } from '@/types/races-import-api.types';
-import type { TrailRace } from '@/types/trail-race-agent.types';
+import type { EventImportBatchSnapshot, EventImportResult, EventImportStep, EventImportWorkflow } from '@/types/events-import-api.types';
+import type {
+    TrailEventAgentEvent,
+    TrailEventAgentRace,
+} from '@/types/trail-event-agent.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
-import type { PendingRace } from '@/types/pending-race.types';
-import { addPendingRaces } from '@/lib/api/pending-races';
+import type { PendingEvent } from '@/types/pending-event.types';
+import { addPendingEvents } from '@/lib/api/pending-events';
 import { RaceConflictModal } from '@/components/ui/race-conflict-modal';
 import { useModal } from '@/hooks/use-modal';
 import type { ConflictingRace } from '@/types/race.types';
@@ -115,7 +117,7 @@ function FullPipelineRowIcon({ kind }: { kind: FullPipelineRowKind }): React.Rea
 }
 
 function PageStatsBadges({ pageStats, size = 'sm' }: { pageStats: PageStats; size?: 'sm' | 'md' }): React.ReactElement {
-    const t = useTranslations('admin.races.import');
+    const t = useTranslations('admin.events.import');
     const cls = size === 'sm' ? 'px-2 text-[11px]' : 'px-2.5 py-1 text-xs';
     return (
         <>
@@ -139,7 +141,7 @@ function PipelineRow({ kind, title, durationMs, errorDetail, children }: {
     errorDetail?: string | null;
     children?: ReactNode;
 }): React.ReactElement {
-    const t = useTranslations('admin.races.import');
+    const t = useTranslations('admin.events.import');
     return (
         <div className="flex items-start gap-3">
             <div className="flex h-5 w-4 shrink-0 flex-col items-center justify-center">
@@ -184,7 +186,7 @@ interface ScrapeState {
     scrapePhase: ScrapePhase;
     fullPipelineUiActive: boolean;
     lastRunDurationMs: number | null;
-    scrapedRaces: TrailRace[];
+    scrapedRaces: TrailEventAgentRace[];
     scrapeError: string | null;
     scrapeEmptyMessage: string | null;
     hasScraped: boolean;
@@ -192,6 +194,7 @@ interface ScrapeState {
     rawModelOutput: string | null;
     scrapeUsage: OpenRouterScrapeUsage | null;
     pageStats: PageStats | null;
+    scrapedEvent: TrailEventAgentEvent | null;
     acceptedIndexes: Set<number>;
     acceptingIndex: number | null;
     rejectedIndexes: Set<number>;
@@ -207,25 +210,25 @@ type ScrapeAction =
     | { type: 'SCRAPE_START' }
     | { type: 'CRAWL_SITE_EXTRACT_START' }
     // Run completion
-    | { type: 'AGENT_SUCCESS'; races: TrailRace[]; errorMessage: string | null; rawModelOutput: string; usage: OpenRouterScrapeUsage | null; markdown?: string }
-    | { type: 'IMPORT_SUCCESS'; result: RaceImportResult; persistedRows: PersistedPipelineRow[]; showPipeline: boolean }
+    | { type: 'AGENT_SUCCESS'; event: TrailEventAgentEvent | null; races: TrailEventAgentRace[]; errorMessage: string | null; rawModelOutput: string; usage: OpenRouterScrapeUsage | null; markdown?: string }
+    | { type: 'IMPORT_SUCCESS'; result: EventImportResult; persistedRows: PersistedPipelineRow[]; showPipeline: boolean }
     | { type: 'SCRAPE_ERROR'; error: string; markdown?: string }
     | { type: 'SCRAPE_COMPLETE'; durationMs: number }
     // UI / reset
     | { type: 'PIPELINE_HIDDEN' }
     | { type: 'RESULTS_CLEARED' }
-    | { type: 'PREVIEW_LOADED'; scrapedRaces: TrailRace[]; markdown: string; rawModelOutput: string | null; usage: OpenRouterScrapeUsage | null; pageStats: PageStats | null; showPipeline: boolean; durationMs: number; emptyMessage?: string | null }
+    | { type: 'PREVIEW_LOADED'; scrapedEvent: TrailEventAgentEvent | null; scrapedRaces: TrailEventAgentRace[]; markdown: string; rawModelOutput: string | null; usage: OpenRouterScrapeUsage | null; pageStats: PageStats | null; showPipeline: boolean; durationMs: number; emptyMessage?: string | null }
     | { type: 'WORKFLOW_RESET' }
     // Race review
     | { type: 'ACCEPTING_INDEX'; index: number | null }
     | { type: 'RACE_ACCEPT'; index: number }
     | { type: 'RACE_REJECT'; index: number }
-    | { type: 'RACE_EDITED'; index: number; race: TrailRace }
+    | { type: 'RACE_EDITED'; index: number; race: TrailEventAgentRace }
     // JSON editor
     | { type: 'JSON_TAB_OPENED'; value: string }
     | { type: 'JSON_TAB_CLOSED' }
     | { type: 'JSON_EDITED'; value: string }
-    | { type: 'JSON_IMPORTED'; races: TrailRace[] }
+    | { type: 'JSON_IMPORTED'; event: TrailEventAgentEvent | null; races: TrailEventAgentRace[]; errorMessage: string | null }
     | { type: 'JSON_PARSE_FAILED'; error: string | null };
 
 const initialScrapeState: ScrapeState = {
@@ -241,6 +244,7 @@ const initialScrapeState: ScrapeState = {
     rawModelOutput: null,
     scrapeUsage: null,
     pageStats: null,
+    scrapedEvent: null,
     acceptedIndexes: new Set(),
     acceptingIndex: null,
     rejectedIndexes: new Set(),
@@ -267,6 +271,7 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
                 rawModelOutput: null,
                 scrapeUsage: null,
                 pageStats: null,
+                scrapedEvent: null,
                 acceptedIndexes: new Set(),
                 acceptingIndex: null,
                 rejectedIndexes: new Set(),
@@ -288,6 +293,7 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
                 rawModelOutput: null,
                 scrapeUsage: null,
                 pageStats: null,
+                scrapedEvent: null,
                 acceptedIndexes: new Set(),
                 acceptingIndex: null,
                 rejectedIndexes: new Set(),
@@ -302,8 +308,9 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
         case 'AGENT_SUCCESS':
             return {
                 ...state,
+                scrapedEvent: action.event,
                 scrapedRaces: action.races,
-                scrapeEmptyMessage: action.races.length === 0 ? action.errorMessage : null,
+                scrapeEmptyMessage: action.event === null || action.races.length === 0 ? action.errorMessage : null,
                 rawModelOutput: action.rawModelOutput,
                 scrapeUsage: action.usage,
                 hasScraped: true,
@@ -312,8 +319,9 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
         case 'IMPORT_SUCCESS':
             return {
                 ...state,
+                scrapedEvent: action.result.event,
                 scrapedRaces: action.result.races,
-                scrapeEmptyMessage: action.result.races.length === 0 ? action.result.errorMessage : null,
+                scrapeEmptyMessage: action.result.event === null || action.result.races.length === 0 ? action.result.errorMessage : null,
                 rawModelOutput: action.result.rawModelOutput,
                 scrapeUsage: action.result.usage,
                 pageStats: action.result.pageStats,
@@ -352,6 +360,7 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
                 scrapeError: null,
                 scrapeEmptyMessage: null,
                 scrapedRaces: [],
+                scrapedEvent: null,
                 acceptedIndexes: new Set(),
                 rejectedIndexes: new Set(),
             };
@@ -367,6 +376,7 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
                 acceptingIndex: null,
                 rejectedIndexes: new Set(),
                 lastRunDurationMs: action.durationMs,
+                scrapedEvent: action.scrapedEvent,
                 scrapedRaces: action.scrapedRaces,
                 scrapeMarkdown: action.markdown,
                 rawModelOutput: action.rawModelOutput,
@@ -398,7 +408,9 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
         case 'JSON_IMPORTED':
             return {
                 ...state,
+                scrapedEvent: action.event,
                 scrapedRaces: action.races,
+                scrapeEmptyMessage: action.event === null || action.races.length === 0 ? action.errorMessage : null,
                 acceptedIndexes: new Set(),
                 rejectedIndexes: new Set(),
                 jsonEditorError: null,
@@ -435,10 +447,10 @@ function MarkdownStatLine({ tokenEstimate, charCount, as: Tag = 'span', size = '
 }
 
 function findStep(
-    steps: RaceImportStep[],
-    name: RaceImportStep['name'],
+    steps: EventImportStep[],
+    name: EventImportStep['name'],
     occurrence = 0,
-): RaceImportStep | null {
+): EventImportStep | null {
     let seen = 0;
     for (const step of steps) {
         if (step.name !== name) continue;
@@ -448,12 +460,12 @@ function findStep(
     return null;
 }
 
-interface RaceImporterProps {
-    pendingEntries: PendingRace[];
+interface EventImporterProps {
+    pendingEntries: PendingEvent[];
 }
 
-export function RaceImporter({ pendingEntries }: RaceImporterProps) {
-    const t = useTranslations('admin.races.import');
+export function EventImporter({ pendingEntries }: EventImporterProps) {
+    const t = useTranslations('admin.events.import');
 
     const pendingUrlOptions: ComboboxOption[] = pendingEntries.map((e) => ({
         value: e.url,
@@ -476,15 +488,11 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
     );
     const [batchUrlsInput, setBatchUrlsInput] = useState('');
     const [activeBatchId, setActiveBatchId] = useState<string | null>(null);
-    const [batchSnapshot, setBatchSnapshot] = useState<RaceImportBatchSnapshot | null>(null);
+    const [batchSnapshot, setBatchSnapshot] = useState<EventImportBatchSnapshot | null>(null);
     const [isStartingBatch, setIsStartingBatch] = useState(false);
     const [viewingBatchItemId, setViewingBatchItemId] = useState<string | null>(null);
     const [isAddingToPending, setIsAddingToPending] = useState(false);
-    const [bulkResultItems, setBulkResultItems] = useState<BulkResultItem[]>([]);
-    const fetchedBatchItemIds = useRef<Set<string> | null>(null);
-    if (fetchedBatchItemIds.current === null) {
-        fetchedBatchItemIds.current = new Set();
-    }
+    const fetchedBatchItemIds = useRef<Set<string>>(new Set());
     const [importConflicts, setImportConflicts] = useState<ConflictingRace[]>([]);
     const { isOpen: isConflictModalOpen, open: openConflictModal, close: closeConflictModal } = useModal();
 
@@ -494,6 +502,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         scrapePhase,
         fullPipelineUiActive,
         lastRunDurationMs,
+        scrapedEvent,
         scrapedRaces,
         scrapeError,
         scrapeEmptyMessage,
@@ -504,7 +513,6 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         pageStats,
         acceptedIndexes,
         acceptingIndex,
-        rejectedIndexes,
         jsonView,
         jsonEditorValue,
         jsonEditorError,
@@ -521,7 +529,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         if (isAddingToPending || !websiteUrl) return;
         setIsAddingToPending(true);
         try {
-            const result = await addPendingRaces([normalizeUrl(websiteUrl)]);
+            const result = await addPendingEvents([normalizeUrl(websiteUrl)]);
             if (result.skipped.length > 0 && result.added.length === 0) {
                 toast.success(t('addToPendingAlready'));
             } else {
@@ -550,10 +558,9 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
     const parsedBatchUrls = useMemo((): string[] => {
         const urls = batchUrlsInput
             .split(/\r?\n/)
-            .flatMap((url) => {
-                const trimmedUrl = url.trim();
-                return trimmedUrl ? [normalizeUrl(trimmedUrl)] : [];
-            });
+            .map((url) => url.trim())
+            .filter(Boolean)
+            .map(normalizeUrl);
 
         return Array.from(new Set(urls));
     }, [batchUrlsInput]);
@@ -600,7 +607,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         resetScrapeResults();
     };
 
-    const resolveImportWorkflow = (): RaceImportWorkflow | null => {
+    const resolveImportWorkflow = (): EventImportWorkflow | null => {
         if (workflow === 'full') {
             return sourceMode === 'crawlSite' ? 'crawlSiteExtract' : 'scrapePageExtract';
         }
@@ -608,7 +615,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         return null;
     };
 
-    const setCompletedImportStepRefs = (result: RaceImportResult): void => {
+    const setCompletedImportStepRefs = (result: EventImportResult): void => {
         const crawlStep = findStep(result.steps, 'crawlSite') ?? findStep(result.steps, 'scrapePage');
         const extractStep = findStep(result.steps, 'extract');
 
@@ -618,8 +625,8 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         llmEndedAtRef.current = extractStep ? extractStep.durationMs : null;
     };
 
-    const fetchBatchStatus = useCallback(async (batchId: string): Promise<RaceImportBatchSnapshot> => {
-        const data = await getBatchStatus(batchId);
+    const fetchBatchStatus = useCallback(async (batchId: string): Promise<EventImportBatchSnapshot> => {
+        const data = await getEventImportBatchStatus(batchId);
         setBatchSnapshot(data);
         return data;
     }, []);
@@ -631,7 +638,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         resetScrapeResults();
 
         try {
-            const result = await startRaceImportBatch({
+            const result = await startEventImportBatch({
                 urls: parsedBatchUrls,
                 model: selectedModelId,
             });
@@ -677,7 +684,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                     clearFullPipelineStepRefs();
                 }
 
-                const result = await runRaceImport(
+                const result = await runEventImport(
                     importWorkflow === 'crawlSite' || importWorkflow === 'scrapePage'
                         ? { workflow: importWorkflow, websiteUrl: normalizedUrl }
                         : { workflow: importWorkflow, websiteUrl: normalizedUrl, model: selectedModelId },
@@ -711,17 +718,17 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
             if (workflow === 'llmFromFile') {
                 if (uploadKind === 'images') {
                     if (uploadedImages.length === 0) return;
-                    const result = await runTrailRaceAgent({
+                    const result = await runTrailEventAgent({
                         mode: 'images',
                         images: uploadedImages.map(img => img.dataUrl),
                         model: selectedVisionModelId,
                     });
                     if (!result.ok) throw new Error(t('scrapeError'));
-                    dispatch({ type: 'AGENT_SUCCESS', races: result.data.races, errorMessage: result.data.errorMessage, rawModelOutput: result.data.rawModelOutput, usage: result.data.usage });
+                    dispatch({ type: 'AGENT_SUCCESS', event: result.data.event, races: result.data.races, errorMessage: result.data.errorMessage, rawModelOutput: result.data.rawModelOutput, usage: result.data.usage });
                 } else {
                     const markdownBody = uploadedMarkdown;
                     if (!markdownBody) return;
-                    const result = await runTrailRaceAgent({
+                    const result = await runTrailEventAgent({
                         mode: 'markdown',
                         markdown: markdownBody,
                         model: selectedModelId,
@@ -734,7 +741,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                         toast.error(errorMessage);
                         return;
                     }
-                    dispatch({ type: 'AGENT_SUCCESS', races: result.data.races, errorMessage: result.data.errorMessage, rawModelOutput: result.data.rawModelOutput, usage: result.data.usage, markdown: result.data.markdown });
+                    dispatch({ type: 'AGENT_SUCCESS', event: result.data.event, races: result.data.races, errorMessage: result.data.errorMessage, rawModelOutput: result.data.rawModelOutput, usage: result.data.usage, markdown: result.data.markdown });
                 }
             }
         } catch (err) {
@@ -781,32 +788,19 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         if (!batchSnapshot || isBatchRunning) return;
 
         const completedItems = batchSnapshot.items.filter(
-            (item) => item.status === 'completed' && !fetchedBatchItemIds.current?.has(item.id),
+            (item) => item.status === 'completed' && !fetchedBatchItemIds.current.has(item.id),
         );
         if (completedItems.length === 0) return;
 
         const itemIds = completedItems.map((item) => item.id);
-        itemIds.forEach((id) => fetchedBatchItemIds.current?.add(id));
-
-        void Promise.all(itemIds.map((id) => getItemResult(id)))
-            .then((results) => {
-                const newItems: BulkResultItem[] = results.map((result) => ({
-                    url: result.url,
-                    races: result.races,
-                }));
-                setBulkResultItems((prev) => [...prev, ...newItems]);
-            })
-            .catch((err) => {
-                console.error('Failed to fetch bulk result items:', err);
-                itemIds.forEach((id) => fetchedBatchItemIds.current?.delete(id));
-            });
+        itemIds.forEach((id) => fetchedBatchItemIds.current.add(id));
     }, [batchSnapshot, isBatchRunning]);
 
     const handleViewBatchResult = async (itemId: string): Promise<void> => {
         setViewingBatchItemId(itemId);
 
         try {
-            const result = await getItemResult(itemId);
+            const result = await getEventImportItemResult(itemId);
             setWebsiteUrl(result.url);
             setCompletedImportStepRefs(result);
             dispatch({
@@ -823,12 +817,21 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         }
     };
 
-    const handleAccept = async (index: number) => {
-        dispatch({ type: 'ACCEPTING_INDEX', index });
+    const handleAccept = async () => {
+        if (!scrapedEvent) return;
+        dispatch({ type: 'ACCEPTING_INDEX', index: 0 });
         try {
-            const normalizedUrl = normalizeUrl(websiteUrl.trim());
-            await acceptScrapedRace(scrapedRaces[index], normalizedUrl);
-            dispatch({ type: 'RACE_ACCEPT', index });
+            const reviewedWebsiteUrl = websiteUrl.trim();
+            await acceptScrapedEvent(
+                {
+                    ...scrapedEvent,
+                    websiteUrl: reviewedWebsiteUrl
+                        ? normalizeUrl(reviewedWebsiteUrl)
+                        : scrapedEvent.websiteUrl,
+                },
+                scrapedRaces,
+            );
+            dispatch({ type: 'RACE_ACCEPT', index: 0 });
             toast.success(t('results.acceptSuccess'));
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : t('results.acceptError');
@@ -838,32 +841,40 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         }
     };
 
-    const handleReject = (index: number) => {
-        dispatch({ type: 'RACE_REJECT', index });
-        toast.success(t('results.rejectSuccess'));
-    };
-
-    const handleSave = (index: number, updatedRace: TrailRace) => {
-        dispatch({ type: 'RACE_EDITED', index, race: updatedRace });
-    };
-
-    const handleBulkAccept = async (url: string, _raceIndex: number, race: TrailRace): Promise<void> => {
-        await acceptScrapedRace(race, url);
-        toast.success(t('results.acceptSuccess'));
-    };
-
     const handleSwitchToJsonView = (): void => {
-        dispatch({ type: 'JSON_TAB_OPENED', value: JSON.stringify(scrapedRaces, null, 2) });
+        dispatch({
+            type: 'JSON_TAB_OPENED',
+            value: JSON.stringify({
+                event: scrapedEvent,
+                races: scrapedRaces,
+                errorMessage: scrapeEmptyMessage,
+            }, null, 2),
+        });
     };
 
     const handleApplyJson = (): void => {
         try {
             const parsed = JSON.parse(jsonEditorValue);
-            if (!Array.isArray(parsed)) {
+            if (
+                typeof parsed !== 'object' ||
+                parsed === null ||
+                !('event' in parsed) ||
+                !Array.isArray((parsed as { races?: unknown }).races)
+            ) {
                 dispatch({ type: 'JSON_PARSE_FAILED', error: t('jsonNotArrayError') });
                 return;
             }
-            dispatch({ type: 'JSON_IMPORTED', races: parsed as TrailRace[] });
+            const payload = parsed as {
+                event: TrailEventAgentEvent | null;
+                races: TrailEventAgentRace[];
+                errorMessage?: string | null;
+            };
+            dispatch({
+                type: 'JSON_IMPORTED',
+                event: payload.event,
+                races: payload.races,
+                errorMessage: payload.errorMessage ?? null,
+            });
         } catch (err) {
             dispatch({ type: 'JSON_PARSE_FAILED', error: err instanceof Error ? err.message : t('jsonParseError') });
         }
@@ -876,10 +887,11 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         dispatch({
             type: 'PREVIEW_LOADED',
             durationMs: DUMMY_LAST_RUN_DURATION_MS,
-            scrapedRaces: isMarkdownOnly ? [] : [...DUMMY_SCRAPED_RACES],
+            scrapedEvent: isMarkdownOnly ? null : DUMMY_SCRAPED_EVENT,
+            scrapedRaces: isMarkdownOnly ? [] : [...DUMMY_SCRAPED_EVENT_RACES],
             emptyMessage: isMarkdownOnly ? t('results.noResults') : null,
             markdown: DUMMY_SCRAPE_MARKDOWN,
-            rawModelOutput: isMarkdownOnly ? null : DUMMY_RAW_MODEL_OUTPUT,
+            rawModelOutput: isMarkdownOnly ? null : DUMMY_EVENT_RAW_MODEL_OUTPUT,
             usage: isMarkdownOnly ? null : { ...DUMMY_SCRAPE_USAGE },
             pageStats: workflow === 'llmFromFile' ? null : { ...DUMMY_CRAWL_PAGE_STATS },
             showPipeline: workflow === 'full',
@@ -893,8 +905,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         setActiveBatchId(null);
         setBatchSnapshot(null);
         setViewingBatchItemId(null);
-        setBulkResultItems([]);
-        fetchedBatchItemIds.current?.clear();
+        fetchedBatchItemIds.current.clear();
         fileUpload.clearUpload();
         runStartedAtRef.current = null;
         clearFullPipelineStepRefs();
@@ -1192,7 +1203,6 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                                         type="file"
                                         accept=".md,.json,text/markdown,text/plain,application/json"
                                         className="sr-only"
-                                        aria-label={t('uploadMarkdownButtonTitle')}
                                         onChange={handleMarkdownFileChange}
                                         disabled={isScraping}
                                     />
@@ -1203,7 +1213,6 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                                         accept="image/*"
                                         multiple
                                         className="sr-only"
-                                        aria-label={t('uploadImagesButtonTitle')}
                                         onChange={handleImageFilesChange}
                                         disabled={isScraping}
                                     />
@@ -1212,7 +1221,6 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                                         onClick={() => markdownFileInputRef.current?.click()}
                                         disabled={isScraping || uploadKind === 'images'}
                                         title={t('uploadMarkdownButtonTitle')}
-                                        aria-label={t('uploadMarkdownButtonTitle')}
                                         className={`inline-flex h-9 w-9 items-center justify-center rounded-md border shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${uploadKind === 'markdown'
                                             ? 'border-gray-900 bg-gray-50 text-gray-900'
                                             : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900'
@@ -1225,7 +1233,6 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                                         onClick={() => imageFileInputRef.current?.click()}
                                         disabled={isScraping || uploadKind === 'markdown'}
                                         title={t('uploadImagesButtonTitle')}
-                                        aria-label={t('uploadImagesButtonTitle')}
                                         className={`inline-flex h-9 w-9 items-center justify-center rounded-md border shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${uploadKind === 'images'
                                             ? 'border-gray-900 bg-gray-50 text-gray-900'
                                             : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900'
@@ -1239,7 +1246,6 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                                             onClick={handleClearUpload}
                                             disabled={isScraping}
                                             title={t('clearUpload')}
-                                            aria-label={t('clearUpload')}
                                             className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-gray-200 bg-white text-gray-400 shadow-sm transition-colors hover:bg-gray-50 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
                                         >
                                             <X className="h-4 w-4" strokeWidth={2} />
@@ -1258,7 +1264,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                                         </span>
                                         <div className="flex flex-wrap gap-2">
                                             {uploadedImages.map((img, idx) => (
-                                                <div key={`${img.name}-${img.dataUrl}`} className="relative flex items-center gap-1.5 rounded-md border border-gray-200 bg-gray-50 px-2 py-1.5">
+                                                <div key={idx} className="relative flex items-center gap-1.5 rounded-md border border-gray-200 bg-gray-50 px-2 py-1.5">
                                                     <Image
                                                         src={img.dataUrl}
                                                         alt={img.name}
@@ -1385,15 +1391,9 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                     </div>
                     {(fullPipelineSteps !== null || persistedPipelineRows.length > 0) && (
                         <div className="space-y-3 border-t border-gray-100 pt-4">
-                            {persistedPipelineRows.map((row) => (
+                            {persistedPipelineRows.map((row, idx) => (
                                 <PipelineRow
-                                    key={[
-                                        'persisted',
-                                        row.kind,
-                                        row.titleKey ?? 'custom',
-                                        row.durationMs ?? 'pending',
-                                        row.errorDetail ?? '',
-                                    ].join('-')}
+                                    key={`persisted-${idx}`}
                                     kind={row.kind}
                                     title={row.titleKey !== undefined ? t(row.titleKey) : undefined}
                                     durationMs={row.durationMs}
@@ -1514,7 +1514,8 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                 />
             )}
             {showSuggestedRacesPreview && !jsonView && (
-                <SuggestedRacesPreview
+                <EventImportPreview
+                    event={scrapedEvent}
                     races={scrapedRaces}
                     isLoading={isScraping}
                     error={scrapeError}
@@ -1532,11 +1533,8 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                         ) : undefined
                     }
                     onAccept={handleAccept}
-                    acceptedIndexes={acceptedIndexes}
-                    acceptingIndex={acceptingIndex}
-                    onReject={handleReject}
-                    rejectedIndexes={rejectedIndexes}
-                    onSave={handleSave}
+                    isAccepted={acceptedIndexes.has(0)}
+                    isAccepting={acceptingIndex === 0}
                 />
             )}
             {batchRows.length > 0 && (
@@ -1551,6 +1549,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                     )}
                     <BulkProcessTable
                         rows={batchRows}
+                        translationsNamespace="admin.events.import.bulk"
                         viewingRowId={viewingBatchItemId}
                         onViewResult={(itemId) => {
                             void handleViewBatchResult(itemId);
@@ -1558,13 +1557,9 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                     />
                 </div>
             )}
-            {bulkResultItems.length > 0 && (
-                <BulkResultsOverview items={bulkResultItems} onAccept={handleBulkAccept} />
-            )}
             {jsonView && hasScraped && !isScraping && scrapeError === null && (
                 <div className="max-w-3xl flex flex-col gap-3">
                     <textarea
-                        aria-label={t('jsonTab')}
                         value={jsonEditorValue}
                         onChange={(e) => dispatch({ type: 'JSON_EDITED', value: e.target.value })}
                         className="w-full rounded-xl border border-gray-200 bg-white p-4 font-mono text-xs text-gray-800 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-200/80 resize-y"
