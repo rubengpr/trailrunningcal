@@ -1139,10 +1139,21 @@
       "name": "Esdeveniment",
       "website": "Web",
       "races": "Curses",
-      "description": "Descripció"
+      "description": "Descripció",
+      "actions": "Accions"
     },
     "extractEvents": "Extreure esdeveniments",
     "newEvent": "Nou esdeveniment",
+    "delete": {
+      "button": "Eliminar esdeveniment",
+      "confirmTitle": "Eliminar esdeveniment",
+      "confirmDescription": "S’eliminarà {name} i {count, plural, one {1 cursa} other {les seves # curses}}. Aquesta acció no es pot desfer.",
+      "cancelButton": "Cancel·lar",
+      "confirmButton": "Eliminar",
+      "deleting": "Eliminant...",
+      "success": "Esdeveniment eliminat correctament",
+      "error": "Error en eliminar l’esdeveniment"
+    },
     "form": {
       "eventName": "Nom de l’esdeveniment",
       "websiteUrl": "Web de l’esdeveniment",

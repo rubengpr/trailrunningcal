@@ -1171,10 +1171,21 @@
       "name": "Evento",
       "website": "Web",
       "races": "Carreras",
-      "description": "Descripción"
+      "description": "Descripción",
+      "actions": "Acciones"
     },
     "extractEvents": "Extraer eventos",
     "newEvent": "Nuevo evento",
+    "delete": {
+      "button": "Eliminar evento",
+      "confirmTitle": "Eliminar evento",
+      "confirmDescription": "Se eliminará {name} y {count, plural, one {1 carrera} other {sus # carreras}}. Esta acción no se puede deshacer.",
+      "cancelButton": "Cancelar",
+      "confirmButton": "Eliminar",
+      "deleting": "Eliminando...",
+      "success": "Evento eliminado correctamente",
+      "error": "Error al eliminar el evento"
+    },
     "form": {
       "eventName": "Nombre del evento",
       "websiteUrl": "Web del evento",

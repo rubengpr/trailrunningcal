@@ -225,6 +225,17 @@ export async function saveEventDescription(
   return responseData.data;
 }
 
+export async function deleteEvent(eventId: string): Promise<void> {
+  const response = await fetch(`/api/events/${eventId}`, {
+    method: 'DELETE',
+  });
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(responseData.error || 'Failed to delete event');
+  }
+}
+
 export async function startEventDescriptionBatch(input: {
   eventIds: string[];
   model: OpenRouterScrapeModelId;

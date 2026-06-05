@@ -4,9 +4,12 @@ import { useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
+import { Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { BaseModal } from '@/components/ui/base-modal';
 import { SectionHeader } from '@/components/ui/section-header';
+import { deleteEvent } from '@/lib/api/events';
 import { cleanUrl } from '@/lib/utils/url';
 import type { TrailEventDetail } from '@/types/event.types';
 
@@ -19,10 +22,28 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
   const locale = useLocale();
   const router = useRouter();
   const [descriptionModalEvent, setDescriptionModalEvent] = useState<TrailEventDetail | null>(null);
+  const [eventToDelete, setEventToDelete] = useState<TrailEventDetail | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const subtitle = events.length === 1
     ? t('eventCountOne')
     : t('eventCount', { count: events.length });
+
+  const handleDeleteConfirm = async (): Promise<void> => {
+    if (!eventToDelete || isDeleting) return;
+
+    setIsDeleting(true);
+    try {
+      await deleteEvent(eventToDelete.event.id);
+      setEventToDelete(null);
+      toast.success(t('delete.success'));
+      router.refresh();
+    } catch {
+      toast.error(t('delete.error'));
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-8">
@@ -71,6 +92,9 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
                   </th>
                   <th className="border-b border-gray-100 px-4 py-3 font-medium">
                     {t('columns.description')}
+                  </th>
+                  <th className="border-b border-gray-100 px-4 py-3 text-right font-medium">
+                    {t('columns.actions')}
                   </th>
                 </tr>
               </thead>
@@ -123,6 +147,17 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
                           <span className="text-gray-400">{t('noDescription')}</span>
                         )}
                       </td>
+                      <td className="px-4 py-3 text-right">
+                        <button
+                          type="button"
+                          onClick={() => setEventToDelete(eventDetail)}
+                          disabled={isDeleting}
+                          title={t('delete.button')}
+                          className="inline-flex size-8 items-center justify-center rounded text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 disabled:pointer-events-none disabled:opacity-40 cursor-pointer"
+                        >
+                          <Trash2 className="size-4" strokeWidth={1.5} />
+                        </button>
+                      </td>
                     </tr>
                   );
                 })}
@@ -144,6 +179,47 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
           </p>
         </BaseModal>
       )}
+
+      <BaseModal
+        isOpen={eventToDelete !== null}
+        onClose={() => setEventToDelete(null)}
+        title={t('delete.confirmTitle')}
+        maxWidth="md"
+      >
+        <div className="flex flex-col gap-4">
+          <p className="text-sm text-gray-600">
+            {eventToDelete
+              ? t('delete.confirmDescription', {
+                name: eventToDelete.event.name,
+                count: eventToDelete.allRaceCount,
+              })
+              : null}
+          </p>
+          {eventToDelete && (
+            <p className="rounded-lg bg-gray-50 px-3 py-2 text-sm font-medium text-gray-800">
+              {eventToDelete.event.name}
+            </p>
+          )}
+          <div className="flex justify-end gap-3">
+            <Button
+              variant="secondary"
+              onClick={() => setEventToDelete(null)}
+              disabled={isDeleting}
+            >
+              {t('delete.cancelButton')}
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={handleDeleteConfirm}
+              isLoading={isDeleting}
+              loadingText={t('delete.deleting')}
+              className="border-red-300 text-red-600 hover:bg-red-50"
+            >
+              {t('delete.confirmButton')}
+            </Button>
+          </div>
+        </div>
+      </BaseModal>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { cache } from 'react';
 import { createAdminClient, createStaticClient } from '@/lib/supabase/server';
+import { ValidationError } from '@/lib/errors';
 import type {
   EventRaceRow,
   EventRaceWithEventIdRow,
@@ -334,6 +335,23 @@ export async function updateEventDescriptionForAdmin(
   }
 
   return toTrailEvent(data as EventRow);
+}
+
+export async function deleteEventForAdmin(eventId: string): Promise<void> {
+  const supabase = createAdminClient();
+
+  const { error } = await supabase.rpc('delete_event_with_races', {
+    p_event_id: eventId,
+  });
+
+  if (error) {
+    if (error.code === 'P0002') {
+      throw new ValidationError('Event not found', 404);
+    }
+
+    console.error('Failed to delete event:', error);
+    throw new Error('Failed to delete event');
+  }
 }
 
 export const getRecommendedEvents = cache(async function getRecommendedEvents(

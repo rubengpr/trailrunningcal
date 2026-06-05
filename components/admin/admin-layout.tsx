@@ -20,14 +20,14 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             icon: <Calendar className="size-5" strokeWidth={1.5} />,
         },
         {
-            href: `/${locale}/admin/carreras/activas`,
-            label: locale === 'ca' ? 'Curses' : 'Carreras',
-            icon: <List className="size-5" strokeWidth={1.5} />,
-        },
-        {
             href: `/${locale}/admin/eventos`,
             label: locale === 'ca' ? 'Esdeveniments' : 'Eventos',
             icon: <Trophy className="size-5" strokeWidth={1.5} />,
+        },
+        {
+            href: `/${locale}/admin/carreras/activas`,
+            label: locale === 'ca' ? 'Curses' : 'Carreras',
+            icon: <List className="size-5" strokeWidth={1.5} />,
         },
     ];
 

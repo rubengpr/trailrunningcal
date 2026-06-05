@@ -43,3 +43,9 @@ export function revalidateRacePages(raceName: string) {
     revalidatePath(`/${locale}/carrera/${slug}`, 'page');
   }
 }
+
+export function revalidateEventPages(eventSlug: string) {
+  for (const locale of locales) {
+    revalidatePath(`/${locale}/e/${eventSlug}`, 'page');
+  }
+}
