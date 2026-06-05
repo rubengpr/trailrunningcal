@@ -5,14 +5,18 @@ import type {
   OpenRouterScrapeModelId,
   OpenRouterVisionModelId,
 } from '@/lib/integrations/openrouter/scrape-models';
-import type { TrailRace } from '@/types/trail-race-agent.types';
+import type {
+  TrailEventAgentEvent,
+  TrailEventAgentRace,
+} from '@/types/trail-event-agent.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 import { TRAIL_RACE_AGENT_INSTRUCTIONS } from '@/lib/prompts';
 import { parseJsonOutputText } from '@/lib/agents/trail-race-scraper';
 import { TimeoutError } from '@/lib/errors';
 
 export interface OpenRouterServiceResult {
-  races: TrailRace[];
+  event: TrailEventAgentEvent | null;
+  races: TrailEventAgentRace[];
   errorMessage: string | null;
   rawModelOutput: string;
   usage: OpenRouterScrapeUsage | null;
@@ -103,12 +107,16 @@ function extractResult(
   const rawModelOutput =
     typeof messageContent === 'string' ? messageContent : '';
   const parsed = parseJsonOutputText(rawModelOutput);
+  const event =
+    parsed?.event && typeof parsed.event.name === 'string'
+      ? parsed.event
+      : null;
   const races = Array.isArray(parsed?.races) ? parsed.races : [];
   const errorMessage =
     typeof parsed?.errorMessage === 'string' ? parsed.errorMessage : null;
   const usage = mapCompletionUsageToScrapeUsage(completion.usage);
 
-  return { races, errorMessage, rawModelOutput, usage };
+  return { event, races, errorMessage, rawModelOutput, usage };
 }
 
 export async function runImagesAgent(

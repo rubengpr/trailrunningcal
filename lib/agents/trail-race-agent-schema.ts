@@ -1,10 +1,30 @@
 /**
- * Shared JSON Schema for trail race agent structured output (OpenAI Responses + OpenRouter Chat).
+ * Shared JSON Schema for trail event agent structured output (OpenAI Responses + OpenRouter Chat).
  */
 export const TRAIL_RACE_AGENT_JSON_SCHEMA = {
   type: 'object',
   additionalProperties: false,
   properties: {
+    event: {
+      anyOf: [
+        {
+          type: 'object',
+          additionalProperties: false,
+          properties: {
+            name: { type: 'string' },
+            // Minimax (and some providers) reject JSON Schema `type` as string[]; use anyOf for nullable.
+            description: {
+              anyOf: [{ type: 'string' }, { type: 'null' }],
+            },
+            websiteUrl: {
+              anyOf: [{ type: 'string' }, { type: 'null' }],
+            },
+          },
+          required: ['name', 'description', 'websiteUrl'],
+        },
+        { type: 'null' },
+      ],
+    },
     races: {
       type: 'array',
       items: {
@@ -12,12 +32,12 @@ export const TRAIL_RACE_AGENT_JSON_SCHEMA = {
         additionalProperties: false,
         properties: {
           name: { type: 'string' },
-          date: { type: 'string' },
+          date: {
+            anyOf: [{ type: 'string' }, { type: 'null' }],
+          },
           city: { type: 'string' },
           province: { type: 'string' },
-          description: { type: 'string' },
           distanceKm: { type: 'integer' },
-          // Minimax (and some providers) reject JSON Schema `type` as string[]; use anyOf for nullable.
           elevationGainM: {
             anyOf: [{ type: 'integer' }, { type: 'null' }],
           },
@@ -27,7 +47,6 @@ export const TRAIL_RACE_AGENT_JSON_SCHEMA = {
           'date',
           'city',
           'province',
-          'description',
           'distanceKm',
           'elevationGainM',
         ],
@@ -38,5 +57,5 @@ export const TRAIL_RACE_AGENT_JSON_SCHEMA = {
       anyOf: [{ type: 'string' }, { type: 'null' }],
     },
   },
-  required: ['races', 'errorMessage'],
+  required: ['event', 'races', 'errorMessage'],
 } as const;

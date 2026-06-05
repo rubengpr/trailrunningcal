@@ -64,6 +64,11 @@ function extractResult(
   errorMessage: string | null = null,
 ): OpenRouterServiceResult {
   return {
+    event: {
+      name: 'Test event',
+      description: null,
+      websiteUrl: null,
+    },
     races,
     errorMessage,
     rawModelOutput: JSON.stringify({ races }),

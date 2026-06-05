@@ -68,10 +68,6 @@ const BLACKLIST: readonly string[] = [
   // Accommodation
   'allotjaments',
   'alojamientos',
-  // Kids races
-  'kids',
-  'infantil',
-  'correxics',
   // Portfolio (unrelated website sections)
   'portfolio',
   // News & comments

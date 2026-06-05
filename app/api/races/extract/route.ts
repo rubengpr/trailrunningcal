@@ -28,7 +28,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({
       success: true,
       data: {
-        races: result.races,
+        races: result.races.map((race) => ({
+          ...race,
+          date: race.date ?? '',
+          description: '',
+        })),
         errorMessage: result.errorMessage,
         rawModelOutput: result.rawModelOutput,
         usage: result.usage,

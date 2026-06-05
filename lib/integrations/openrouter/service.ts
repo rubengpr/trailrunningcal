@@ -14,7 +14,7 @@ const MIN_MARKDOWN_LENGTH = 1000;
 const MAX_MARKDOWN_LENGTH = 300_000;
 
 const FALLBACK_EMPTY_MESSAGE =
-  'No se encontraron carreras adultas de trail válidas en el contenido proporcionado.';
+  'No se encontró un evento de trail válido en el contenido proporcionado.';
 
 const PAST_RACES_MESSAGE =
   'Las carreras encontradas tienen fechas pasadas y no se pueden importar.';
@@ -32,7 +32,9 @@ function filterFutureRaces(
   result: OpenRouterServiceResult,
 ): OpenRouterServiceResult {
   const todayStr = new Date().toISOString().split('T')[0];
-  const races = result.races.filter((race) => race.date >= todayStr);
+  const races = result.races.filter(
+    (race) => race.date === null || race.date >= todayStr,
+  );
   let errorMessage: string | null = null;
   if (races.length === 0) {
     errorMessage =

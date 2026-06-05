@@ -8,6 +8,7 @@ import type {
   RaceImportStepName,
 } from '@/types/races-import-api.types';
 import { checkDuplicateRaces } from '@/lib/guards/duplicate-races';
+import type { TrailRace } from '@/types/trail-race-agent.types';
 
 interface TimedResult<T> {
   result: T;
@@ -44,6 +45,23 @@ function extractStep(raceCount: number, durationMs: number): RaceImportStep {
   };
 }
 
+function toLegacyRaces(
+  races: Array<{
+    name: string;
+    date: string | null;
+    city: string;
+    province: string;
+    distanceKm: number;
+    elevationGainM: number | null;
+  }>,
+): TrailRace[] {
+  return races.map((race) => ({
+    ...race,
+    date: race.date ?? '',
+    description: '',
+  }));
+}
+
 export async function processCrawlSiteExtract(input: {
   url: string;
   model: OpenRouterScrapeModelId;
@@ -57,7 +75,7 @@ export async function processCrawlSiteExtract(input: {
   return {
     workflow: 'crawlSiteExtract',
     url: input.url,
-    races: extract.result.races,
+    races: toLegacyRaces(extract.result.races),
     errorMessage: extract.result.errorMessage,
     markdown: crawl.result.markdown,
     rawModelOutput: extract.result.rawModelOutput,
@@ -84,7 +102,7 @@ export async function processScrapePageExtract(input: {
   return {
     workflow: 'scrapePageExtract',
     url: input.url,
-    races: extract.result.races,
+    races: toLegacyRaces(extract.result.races),
     errorMessage: extract.result.errorMessage,
     markdown: scrape.result.markdown,
     rawModelOutput: extract.result.rawModelOutput,

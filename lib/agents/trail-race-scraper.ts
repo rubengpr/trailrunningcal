@@ -1,4 +1,4 @@
-import type { TrailRaceAgentParsed } from '@/types/trail-race-agent.types';
+import type { TrailEventAgentParsed } from '@/types/trail-event-agent.types';
 
 function stripMarkdownJsonCodeFence(text: string): string {
   let s = text.trim();
@@ -10,9 +10,9 @@ function stripMarkdownJsonCodeFence(text: string): string {
   return s.trim();
 }
 
-function tryParseTrailRaceJson(raw: string): TrailRaceAgentParsed | null {
+function tryParseTrailRaceJson(raw: string): TrailEventAgentParsed | null {
   try {
-    return JSON.parse(raw) as TrailRaceAgentParsed;
+    return JSON.parse(raw) as TrailEventAgentParsed;
   } catch {
     return null;
   }
@@ -20,7 +20,7 @@ function tryParseTrailRaceJson(raw: string): TrailRaceAgentParsed | null {
 
 export function parseJsonOutputText(
   outputText: string,
-): TrailRaceAgentParsed | null {
+): TrailEventAgentParsed | null {
   const fencedStripped = stripMarkdownJsonCodeFence(outputText);
   const direct = tryParseTrailRaceJson(fencedStripped);
   if (direct) {
