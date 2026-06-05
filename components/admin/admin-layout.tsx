@@ -17,17 +17,17 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         {
             href: `/${locale}`,
             label: locale === 'ca' ? 'Calendari' : 'Calendario',
-            icon: <Calendar className="size-5" strokeWidth={1.5} />,
+            icon: <Calendar className="size-4" strokeWidth={1.5} />,
         },
         {
             href: `/${locale}/admin/eventos`,
             label: locale === 'ca' ? 'Esdeveniments' : 'Eventos',
-            icon: <Trophy className="size-5" strokeWidth={1.5} />,
+            icon: <Trophy className="size-4" strokeWidth={1.5} />,
         },
         {
             href: `/${locale}/admin/carreras/activas`,
             label: locale === 'ca' ? 'Curses' : 'Carreras',
-            icon: <List className="size-5" strokeWidth={1.5} />,
+            icon: <List className="size-4" strokeWidth={1.5} />,
         },
     ];
 
