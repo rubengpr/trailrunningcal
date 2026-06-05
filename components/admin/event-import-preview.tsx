@@ -261,8 +261,8 @@ export function EventImportPreview({
                     href={websiteUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                  title={t('websiteUrl')}
-                  className="inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-gray-700 transition-colors hover:bg-gray-100"
+                    title={t('websiteUrl')}
+                    className="inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-gray-700 transition-colors hover:bg-gray-100"
                   >
                     <Globe className="h-4 w-4" aria-hidden="true" />
                   </a>
@@ -300,14 +300,14 @@ export function EventImportPreview({
             <dl className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
               <div>
                 <dt className="sr-only">{t('date')}</dt>
-                <dd className="flex items-center gap-2 font-medium text-gray-900">
+                <dd className="flex items-center gap-2 text-gray-900">
                   <Calendar className="h-4 w-4 shrink-0 text-gray-400" aria-hidden="true" />
                   <span>{eventDate}</span>
                 </dd>
               </div>
               <div>
                 <dt className="sr-only">{t('location')}</dt>
-                <dd className="flex items-center gap-2 font-medium text-gray-900">
+                <dd className="flex items-center gap-2 text-gray-900">
                   <MapPin className="h-4 w-4 shrink-0 text-gray-400" aria-hidden="true" />
                   <span>{eventLocation}</span>
                 </dd>
