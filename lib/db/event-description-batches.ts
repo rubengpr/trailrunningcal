@@ -5,7 +5,6 @@ import type {
   EventDescriptionBatchItem,
   EventDescriptionBatchItemRow,
   EventDescriptionBatchRow,
-  EventDescriptionBatchSnapshot,
   EventDescriptionBatchStatus,
   EventDescriptionDraftResult,
 } from '@/types/event-description.types';
@@ -36,22 +35,6 @@ function toItem(row: EventDescriptionBatchItemRow): EventDescriptionBatchItem {
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
-}
-
-function buildSummary(items: EventDescriptionBatchItem[]) {
-  return items.reduce(
-    (summary, item) => ({
-      ...summary,
-      [item.status]: summary[item.status] + 1,
-    }),
-    {
-      total: items.length,
-      pending: 0,
-      running: 0,
-      completed: 0,
-      failed: 0,
-    },
-  );
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -180,9 +163,12 @@ export async function getEventDescriptionBatchItems(
   return ((data ?? []) as EventDescriptionBatchItemRow[]).map(toItem);
 }
 
-export async function getEventDescriptionBatchStatus(
+export async function getEventDescriptionBatchSnapshotData(
   batchId: string,
-): Promise<EventDescriptionBatchSnapshot | null> {
+): Promise<{
+  batch: EventDescriptionBatch;
+  items: EventDescriptionBatchItem[];
+} | null> {
   const [batch, items] = await Promise.all([
     getEventDescriptionBatch(batchId),
     getEventDescriptionBatchItems(batchId),
@@ -194,7 +180,6 @@ export async function getEventDescriptionBatchStatus(
 
   return {
     batch,
-    summary: buildSummary(items),
     items,
   };
 }

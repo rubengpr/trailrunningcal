@@ -1,9 +1,10 @@
 import { start } from 'workflow/api';
 import type { OpenRouterScrapeModelId } from '@/lib/integrations/openrouter/scrape-models';
 import { checkDuplicateRaces } from '@/lib/guards/duplicate-races';
-import { MarkdownTooLongError, MarkdownTooShortError, TimeoutError } from '@/lib/errors';
+import { MarkdownTooLongError, MarkdownTooShortError } from '@/lib/errors';
 import {
   createRaceImportBatch,
+  getBatchSnapshotData,
   getPendingBatchItems,
   getRaceImportBatch,
   markBatchItemCompleted,
@@ -13,9 +14,45 @@ import {
   updateBatchStatus,
 } from '@/lib/db/race-import-batches';
 import { processCrawlSiteExtract } from '@/lib/services/race-import';
+import type {
+  RaceImportBatchItem,
+  RaceImportBatchSnapshot,
+} from '@/types/races-import-api.types';
 
 interface RaceImportBatchWorkflowInput {
   batchId: string;
+}
+
+function buildSummary(items: RaceImportBatchItem[]) {
+  return items.reduce(
+    (summary, item) => ({
+      ...summary,
+      [item.status]: summary[item.status] + 1,
+    }),
+    {
+      total: items.length,
+      pending: 0,
+      running: 0,
+      completed: 0,
+      failed: 0,
+    },
+  );
+}
+
+export async function getBatchStatus(
+  batchId: string,
+): Promise<RaceImportBatchSnapshot | null> {
+  const data = await getBatchSnapshotData(batchId);
+
+  if (!data) {
+    return null;
+  }
+
+  return {
+    batch: data.batch,
+    summary: buildSummary(data.items),
+    items: data.items,
+  };
 }
 
 export async function startRaceImportBatch(input: {

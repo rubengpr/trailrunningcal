@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
-import { getEventDescriptionBatchStatus } from '@/lib/db/event-description-batches';
+import { getEventDescriptionBatchStatus } from '@/lib/services/event-description-batch';
 import { handleRouteError } from '@/lib/utils/handle-error';
 import { parseUuidParam } from '@/app/api/events/description-batches/validation';
 

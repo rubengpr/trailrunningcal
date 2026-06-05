@@ -5,7 +5,6 @@ import type {
   RaceImportBatchItem,
   RaceImportItemRow,
   RaceImportBatchStatus,
-  RaceImportBatchSnapshot,
   RaceImportRow,
   RaceImportResult,
 } from '@/types/races-import-api.types';
@@ -34,22 +33,6 @@ function toItem(row: RaceImportItemRow): RaceImportBatchItem {
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
-}
-
-function buildSummary(items: RaceImportBatchItem[]) {
-  return items.reduce(
-    (summary, item) => ({
-      ...summary,
-      [item.status]: summary[item.status] + 1,
-    }),
-    {
-      total: items.length,
-      pending: 0,
-      running: 0,
-      completed: 0,
-      failed: 0,
-    },
-  );
 }
 
 export async function createRaceImportBatch(input: {
@@ -132,9 +115,12 @@ export async function getPendingBatchItems(
   return ((data ?? []) as RaceImportItemRow[]).map(toItem);
 }
 
-export async function getBatchStatus(
+export async function getBatchSnapshotData(
   batchId: string,
-): Promise<RaceImportBatchSnapshot | null> {
+): Promise<{
+  batch: RaceImportBatch;
+  items: RaceImportBatchItem[];
+} | null> {
   const [batch, items] = await Promise.all([
     getRaceImportBatch(batchId),
     getBatchItems(batchId),
@@ -146,7 +132,6 @@ export async function getBatchStatus(
 
   return {
     batch,
-    summary: buildSummary(items),
     items,
   };
 }

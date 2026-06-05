@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
-import { getBatchStatus } from '@/lib/db/race-import-batches';
+import { getBatchStatus } from '@/lib/services/race-import-batch';
 import { handleRouteError } from '@/lib/utils/handle-error';
 
 export async function GET(

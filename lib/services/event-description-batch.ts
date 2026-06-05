@@ -3,6 +3,7 @@ import type { OpenRouterScrapeModelId } from '@/lib/integrations/openrouter/scra
 import {
   createEventDescriptionBatch,
   getEventDescriptionBatch,
+  getEventDescriptionBatchSnapshotData,
   getPendingEventDescriptionItems,
   markEventDescriptionItemCompleted,
   markEventDescriptionItemFailed,
@@ -11,9 +12,45 @@ import {
   updateEventDescriptionBatchStatus,
 } from '@/lib/db/event-description-batches';
 import { generateEventDescriptionDraft } from '@/lib/services/event-description';
+import type {
+  EventDescriptionBatchItem,
+  EventDescriptionBatchSnapshot,
+} from '@/types/event-description.types';
 
 interface EventDescriptionBatchWorkflowInput {
   batchId: string;
+}
+
+function buildSummary(items: EventDescriptionBatchItem[]) {
+  return items.reduce(
+    (summary, item) => ({
+      ...summary,
+      [item.status]: summary[item.status] + 1,
+    }),
+    {
+      total: items.length,
+      pending: 0,
+      running: 0,
+      completed: 0,
+      failed: 0,
+    },
+  );
+}
+
+export async function getEventDescriptionBatchStatus(
+  batchId: string,
+): Promise<EventDescriptionBatchSnapshot | null> {
+  const data = await getEventDescriptionBatchSnapshotData(batchId);
+
+  if (!data) {
+    return null;
+  }
+
+  return {
+    batch: data.batch,
+    summary: buildSummary(data.items),
+    items: data.items,
+  };
 }
 
 export async function startEventDescriptionBatch(input: {
