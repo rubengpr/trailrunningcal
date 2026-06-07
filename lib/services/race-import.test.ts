@@ -56,6 +56,9 @@ function scrapeResult(markdown: string): SpiderServiceResult {
       successCount: 1,
       errorCount: 0,
     },
+    usage: {
+      totalCost: 0.00042,
+    },
   };
 }
 
@@ -77,6 +80,7 @@ function extractResult(
       completionTokens: 5,
       reasoningTokens: null,
       totalTokens: 15,
+      cost: 0.00014,
     },
   };
 }

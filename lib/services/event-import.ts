@@ -71,6 +71,7 @@ export async function processCrawlSiteExtract(input: {
     rawModelOutput: extract.result.rawModelOutput,
     usage: extract.result.usage,
     pageStats: crawl.result.pageStats,
+    scrapeUsage: crawl.result.usage,
     fallbackUsed: null,
     steps: [
       scrapeStep('crawlSite', crawl.result, crawl.durationMs),
@@ -99,6 +100,7 @@ export async function processScrapePageExtract(input: {
     rawModelOutput: extract.result.rawModelOutput,
     usage: extract.result.usage,
     pageStats: scrape.result.pageStats,
+    scrapeUsage: scrape.result.usage,
     fallbackUsed: null,
     steps: [
       scrapeStep('scrapePage', scrape.result, scrape.durationMs),
@@ -122,6 +124,7 @@ export async function processCrawlSite(input: {
     rawModelOutput: null,
     usage: null,
     pageStats: crawl.result.pageStats,
+    scrapeUsage: crawl.result.usage,
     fallbackUsed: null,
     steps: [scrapeStep('crawlSite', crawl.result, crawl.durationMs)],
   };
@@ -142,6 +145,7 @@ export async function processScrapePage(input: {
     rawModelOutput: null,
     usage: null,
     pageStats: scrape.result.pageStats,
+    scrapeUsage: scrape.result.usage,
     fallbackUsed: null,
     steps: [scrapeStep('scrapePage', scrape.result, scrape.durationMs)],
   };

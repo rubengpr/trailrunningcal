@@ -1,6 +1,6 @@
 import type { OpenRouterScrapeModelId } from '@/lib/integrations/openrouter/scrape-models';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
-import type { PageStats } from '@/types/races-scrape-api.types';
+import type { PageStats, ScrapeUsage } from '@/types/races-scrape-api.types';
 import type {
   TrailEventAgentEvent,
   TrailEventAgentRace,
@@ -33,6 +33,7 @@ export interface EventImportResult {
   rawModelOutput: string | null;
   usage: OpenRouterScrapeUsage | null;
   pageStats: PageStats | null;
+  scrapeUsage: ScrapeUsage | null;
   fallbackUsed: boolean | null;
   steps: EventImportStep[];
 }
