@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { Pencil, Trash2 } from 'lucide-react';
+import { TextCursor, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { BaseModal } from '@/components/ui/base-modal';
 import { SectionHeader } from '@/components/ui/section-header';
@@ -155,7 +155,7 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
                             title={t('edit.button')}
                             className="inline-flex size-8 items-center justify-center rounded text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-800 cursor-pointer"
                           >
-                            <Pencil className="size-4" strokeWidth={1.5} />
+                            <TextCursor className="size-4" strokeWidth={1.5} />
                           </button>
                           <button
                             type="button"
