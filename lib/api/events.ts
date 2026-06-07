@@ -74,6 +74,26 @@ export async function acceptScrapedEvent(
   return responseData.data;
 }
 
+export async function updateEvent(
+  eventId: string,
+  event: TrailEventAgentEvent,
+  races: Array<TrailEventAgentRace & { id?: string }>,
+): Promise<TrailEventDetail> {
+  const response = await fetch(`/api/events/${eventId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ event, races }),
+  });
+
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(responseData.error || 'Failed to update event');
+  }
+
+  return responseData.data;
+}
+
 export async function runTrailEventAgent(
   options: TrailEventAgentRunOptions,
 ): Promise<
