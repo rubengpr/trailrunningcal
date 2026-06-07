@@ -14,6 +14,7 @@ import { IconActionMenu } from '@/components/ui/icon-action-menu';
 import { TabSwitcher } from '@/components/ui/tab-switcher';
 import { SectionHeader } from '@/components/ui/section-header';
 import { SuggestedRacesPreview } from '@/components/race/suggested-races-preview';
+import { ImportCostSummary } from '@/components/admin/import-cost-summary';
 import { cleanUrl } from '@/lib/utils/url';
 import {
     DUMMY_CRAWL_PAGE_STATS,
@@ -21,6 +22,7 @@ import {
     DUMMY_RAW_MODEL_OUTPUT,
     DUMMY_SCRAPE_MARKDOWN,
     DUMMY_SCRAPE_USAGE,
+    DUMMY_SPIDER_USAGE,
     DUMMY_SCRAPED_RACES,
 } from '@/components/admin/scrape-preview.mock';
 import { BulkProcessTable } from '@/components/admin/bulk-process-table';
@@ -43,7 +45,7 @@ import { useLiveTimer } from '@/hooks/use-live-timer';
 import { useFileUpload } from '@/hooks/use-file-upload';
 
 import { normalizeUrl } from '@/lib/validation';
-import type { PageStats } from '@/types/races-scrape-api.types';
+import type { PageStats, ScrapeUsage } from '@/types/races-scrape-api.types';
 import type { RaceImportBatchSnapshot, RaceImportResult, RaceImportStep, RaceImportWorkflow } from '@/types/races-import-api.types';
 import type { TrailRace } from '@/types/trail-race-agent.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
@@ -52,14 +54,7 @@ import { addPendingRaces } from '@/lib/api/pending-races';
 import { RaceConflictModal } from '@/components/ui/race-conflict-modal';
 import { useModal } from '@/hooks/use-modal';
 import type { ConflictingRace } from '@/types/race.types';
-import { XCircle, RotateCcw, Sparkles, FileText, ImageIcon, X, Play, Coins, WholeWord } from 'lucide-react';
-
-const CHARS_PER_TOKEN = 2.87;
-
-function estimateMarkdownTokensHeuristic(markdown: string): number {
-    const trimmed = markdown.trim();
-    return trimmed.length === 0 ? 0 : Math.round(trimmed.length / CHARS_PER_TOKEN);
-}
+import { XCircle, RotateCcw, Sparkles, FileText, ImageIcon, X, Play } from 'lucide-react';
 
 type ScrapeWorkflow = 'bulk' | 'full' | 'ingest' | 'llmFromFile';
 type ScrapeSourceMode = 'scrapePage' | 'crawlSite';
@@ -81,8 +76,6 @@ interface PersistedPipelineRow {
     errorDetail?: string | null;
     durationMs: number | null;
     pageStats?: PageStats | null;
-    markdownTokenEstimate?: number | null;
-    markdownCharCount?: number | null;
 }
 
 function FullPipelineRowIcon({ kind }: { kind: FullPipelineRowKind }): React.ReactElement {
@@ -191,6 +184,7 @@ interface ScrapeState {
     scrapeMarkdown: string | null;
     rawModelOutput: string | null;
     scrapeUsage: OpenRouterScrapeUsage | null;
+    spiderUsage: ScrapeUsage | null;
     pageStats: PageStats | null;
     acceptedIndexes: Set<number>;
     acceptingIndex: number | null;
@@ -214,7 +208,7 @@ type ScrapeAction =
     // UI / reset
     | { type: 'PIPELINE_HIDDEN' }
     | { type: 'RESULTS_CLEARED' }
-    | { type: 'PREVIEW_LOADED'; scrapedRaces: TrailRace[]; markdown: string; rawModelOutput: string | null; usage: OpenRouterScrapeUsage | null; pageStats: PageStats | null; showPipeline: boolean; durationMs: number; emptyMessage?: string | null }
+    | { type: 'PREVIEW_LOADED'; scrapedRaces: TrailRace[]; markdown: string; rawModelOutput: string | null; usage: OpenRouterScrapeUsage | null; spiderUsage: ScrapeUsage | null; pageStats: PageStats | null; showPipeline: boolean; durationMs: number; emptyMessage?: string | null }
     | { type: 'WORKFLOW_RESET' }
     // Race review
     | { type: 'ACCEPTING_INDEX'; index: number | null }
@@ -240,6 +234,7 @@ const initialScrapeState: ScrapeState = {
     scrapeMarkdown: null,
     rawModelOutput: null,
     scrapeUsage: null,
+    spiderUsage: null,
     pageStats: null,
     acceptedIndexes: new Set(),
     acceptingIndex: null,
@@ -266,6 +261,7 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
                 scrapeMarkdown: null,
                 rawModelOutput: null,
                 scrapeUsage: null,
+                spiderUsage: null,
                 pageStats: null,
                 acceptedIndexes: new Set(),
                 acceptingIndex: null,
@@ -287,6 +283,7 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
                 scrapeMarkdown: null,
                 rawModelOutput: null,
                 scrapeUsage: null,
+                spiderUsage: null,
                 pageStats: null,
                 acceptedIndexes: new Set(),
                 acceptingIndex: null,
@@ -306,6 +303,7 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
                 scrapeEmptyMessage: action.races.length === 0 ? action.errorMessage : null,
                 rawModelOutput: action.rawModelOutput,
                 scrapeUsage: action.usage,
+                spiderUsage: null,
                 hasScraped: true,
                 ...(action.markdown !== undefined ? { scrapeMarkdown: action.markdown } : {}),
             };
@@ -316,6 +314,7 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
                 scrapeEmptyMessage: action.result.races.length === 0 ? action.result.errorMessage : null,
                 rawModelOutput: action.result.rawModelOutput,
                 scrapeUsage: action.result.usage,
+                spiderUsage: action.result.scrapeUsage,
                 pageStats: action.result.pageStats,
                 scrapeMarkdown: action.result.markdown,
                 hasScraped: true,
@@ -347,6 +346,7 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
                 scrapeMarkdown: null,
                 rawModelOutput: null,
                 scrapeUsage: null,
+                spiderUsage: null,
                 pageStats: null,
                 hasScraped: false,
                 scrapeError: null,
@@ -371,6 +371,7 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
                 scrapeMarkdown: action.markdown,
                 rawModelOutput: action.rawModelOutput,
                 scrapeUsage: action.usage,
+                spiderUsage: action.spiderUsage,
                 pageStats: action.pageStats,
                 fullPipelineUiActive: action.showPipeline,
             };
@@ -409,29 +410,6 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
         default:
             return state;
     }
-}
-
-interface MarkdownStatLineProps {
-    tokenEstimate: number;
-    charCount: number;
-    as?: 'span' | 'p';
-    size?: 'sm' | 'md';
-}
-
-function MarkdownStatLine({ tokenEstimate, charCount, as: Tag = 'span', size = 'sm' }: MarkdownStatLineProps) {
-    const cls = size === 'sm' ? 'px-2 text-[11px]' : 'px-2.5 py-1 text-xs';
-    return (
-        <Tag className="inline-flex flex-wrap items-center gap-1.5">
-            <span className={`inline-flex items-center gap-1 rounded-full border border-gray-200/60 bg-gray-50 font-medium text-gray-600 tabular-nums ${cls}`}>
-                <Coins className="size-3" strokeWidth={2} aria-hidden />
-                {tokenEstimate}
-            </span>
-            <span className={`inline-flex items-center gap-1 rounded-full border border-gray-200/60 bg-gray-50 font-medium text-gray-600 tabular-nums ${cls}`}>
-                <WholeWord className="size-3" strokeWidth={2} aria-hidden />
-                {charCount}
-            </span>
-        </Tag>
-    );
 }
 
 function findStep(
@@ -501,6 +479,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         scrapeMarkdown,
         rawModelOutput,
         scrapeUsage,
+        spiderUsage,
         pageStats,
         acceptedIndexes,
         acceptingIndex,
@@ -881,6 +860,7 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
             markdown: DUMMY_SCRAPE_MARKDOWN,
             rawModelOutput: isMarkdownOnly ? null : DUMMY_RAW_MODEL_OUTPUT,
             usage: isMarkdownOnly ? null : { ...DUMMY_SCRAPE_USAGE },
+            spiderUsage: workflow === 'llmFromFile' ? null : { ...DUMMY_SPIDER_USAGE },
             pageStats: workflow === 'llmFromFile' ? null : { ...DUMMY_CRAWL_PAGE_STATS },
             showPipeline: workflow === 'full',
         });
@@ -934,32 +914,6 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
 
     const showLlmMetricsUi = workflow !== 'ingest';
 
-    const markdownTokenEstimate = useMemo((): number | null => {
-        if (scrapeMarkdown === null || scrapeMarkdown === '') {
-            return null;
-        }
-        return estimateMarkdownTokensHeuristic(scrapeMarkdown);
-    }, [scrapeMarkdown]);
-
-    /** Parse: estimate from upload; hidden once scrapeMarkdown exists (same row as post-scrape estimate below buttons). */
-    const parseUploadTokenEstimate = useMemo((): number | null => {
-        if (workflow !== 'llmFromFile' || uploadKind !== 'markdown') {
-            return null;
-        }
-        if (uploadedMarkdown === null || uploadedMarkdown === '') {
-            return null;
-        }
-        if (scrapeMarkdown !== null && scrapeMarkdown !== '') {
-            return null;
-        }
-        return estimateMarkdownTokensHeuristic(uploadedMarkdown);
-    }, [workflow, uploadKind, uploadedMarkdown, scrapeMarkdown]);
-
-    const showMarkdownEstimateLine =
-        showLlmMetricsUi &&
-        ((parseUploadTokenEstimate !== null && uploadedMarkdown !== null) ||
-            (markdownTokenEstimate !== null && scrapeMarkdown !== null));
-
     const fullPipelineSteps = useMemo((): {
         row1: FullPipelineRowConfig;
         row2: FullPipelineRowConfig;
@@ -1012,12 +966,6 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
         scrapeError,
         scrapeMarkdown,
     ]);
-
-    const showMarkdownEstimateBesidePageStats =
-        workflow === 'full' &&
-        fullPipelineSteps !== null &&
-        pageStats !== null &&
-        showMarkdownEstimateLine;
 
     const fullPipelineCrawlStepMs = useMemo((): number | null => {
         // Keep this memo recalculating on the live timer tick while crawling is active.
@@ -1402,12 +1350,6 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                                     {row.pageStats && (
                                         <span className="inline-flex flex-wrap items-center gap-1.5">
                                             <PageStatsBadges pageStats={row.pageStats} />
-                                            {row.markdownTokenEstimate != null && row.markdownCharCount != null && (
-                                                <MarkdownStatLine
-                                                    tokenEstimate={row.markdownTokenEstimate}
-                                                    charCount={row.markdownCharCount}
-                                                />
-                                            )}
                                         </span>
                                     )}
                                 </PipelineRow>
@@ -1423,16 +1365,6 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                                         {workflow === 'full' && pageStats !== null && (
                                             <span className="inline-flex flex-wrap items-center gap-1.5">
                                                 <PageStatsBadges pageStats={pageStats} />
-                                                {showMarkdownEstimateBesidePageStats && (
-                                                    <MarkdownStatLine
-                                                        tokenEstimate={parseUploadTokenEstimate ?? markdownTokenEstimate!}
-                                                        charCount={
-                                                            parseUploadTokenEstimate !== null
-                                                                ? uploadedMarkdown!.trim().length
-                                                                : scrapeMarkdown!.trim().length
-                                                        }
-                                                    />
-                                                )}
                                             </span>
                                         )}
                                     </PipelineRow>
@@ -1450,17 +1382,6 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                         <div className="flex flex-wrap items-center gap-2">
                             <PageStatsBadges pageStats={pageStats} size="md" />
                         </div>
-                    )}
-                    {showMarkdownEstimateLine && !showMarkdownEstimateBesidePageStats && (
-                        <MarkdownStatLine
-                            as="p"
-                            tokenEstimate={parseUploadTokenEstimate ?? markdownTokenEstimate!}
-                            charCount={
-                                parseUploadTokenEstimate !== null
-                                    ? uploadedMarkdown!.trim().length
-                                    : scrapeMarkdown!.trim().length
-                            }
-                        />
                     )}
                     {isScraping && (
                         <p className="text-xs text-gray-500 tabular-nums">
@@ -1482,21 +1403,11 @@ export function RaceImporter({ pendingEntries }: RaceImporterProps) {
                 hasScraped &&
                 scrapeError === null &&
                 scrapeUsage !== null && (
-                    <div className="max-w-3xl rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-5">
-                        <p className="text-sm text-gray-600 tabular-nums">
-                            <span className="font-bold text-gray-900">{scrapeUsage.promptTokens}</span>
-                            {' / '}
-                            <span className="font-bold text-gray-900">{scrapeUsage.completionTokens}</span>
-                            {' · '}
-                            <span className="font-bold text-gray-900">
-                                {scrapeUsage.reasoningTokens === null ? '—' : scrapeUsage.reasoningTokens}
-                            </span>{' '}
-                            {t('usageReasoningTokens')}
-                            {' · '}
-                            <span className="font-bold text-gray-900">{scrapeUsage.totalTokens}</span>{' '}
-                            {t('usageTotalTokens')}
-                        </p>
-                    </div>
+                    <ImportCostSummary
+                        openRouterUsage={scrapeUsage}
+                        scrapeUsage={spiderUsage}
+                        translationsNamespace="admin.races.import"
+                    />
                 )}
             {showLlmMetricsUi && hasScraped && !isScraping && scrapeError === null && (
                 <TabSwitcher
