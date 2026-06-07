@@ -32,6 +32,7 @@ function mapCompletionUsageToScrapeUsage(
   const promptTokens = record.prompt_tokens;
   const completionTokens = record.completion_tokens;
   const totalTokens = record.total_tokens;
+  const cost = record.cost;
   if (
     typeof promptTokens !== 'number' ||
     typeof completionTokens !== 'number' ||
@@ -58,6 +59,7 @@ function mapCompletionUsageToScrapeUsage(
     completionTokens,
     totalTokens,
     reasoningTokens,
+    cost: typeof cost === 'number' ? cost : null,
   };
 }
 
