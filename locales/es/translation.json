@@ -1212,6 +1212,9 @@
     },
     "extractEvents": "Extraer eventos",
     "newEvent": "Nuevo evento",
+    "edit": {
+      "button": "Editar evento"
+    },
     "delete": {
       "button": "Eliminar evento",
       "confirmTitle": "Eliminar evento",

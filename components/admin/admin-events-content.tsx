@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { Trash2 } from 'lucide-react';
+import { Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { BaseModal } from '@/components/ui/base-modal';
 import { SectionHeader } from '@/components/ui/section-header';
@@ -148,15 +148,25 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
                         )}
                       </td>
                       <td className="px-4 py-3 text-right">
-                        <button
-                          type="button"
-                          onClick={() => setEventToDelete(eventDetail)}
-                          disabled={isDeleting}
-                          title={t('delete.button')}
-                          className="inline-flex size-8 items-center justify-center rounded text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 disabled:pointer-events-none disabled:opacity-40 cursor-pointer"
-                        >
-                          <Trash2 className="size-4" strokeWidth={1.5} />
-                        </button>
+                        <div className="inline-flex items-center justify-end gap-1">
+                          <button
+                            type="button"
+                            onClick={() => router.push(`/${locale}/admin/eventos/${event.id}`)}
+                            title={t('edit.button')}
+                            className="inline-flex size-8 items-center justify-center rounded text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-800 cursor-pointer"
+                          >
+                            <Pencil className="size-4" strokeWidth={1.5} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setEventToDelete(eventDetail)}
+                            disabled={isDeleting}
+                            title={t('delete.button')}
+                            className="inline-flex size-8 items-center justify-center rounded text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 disabled:pointer-events-none disabled:opacity-40 cursor-pointer"
+                          >
+                            <Trash2 className="size-4" strokeWidth={1.5} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );

@@ -10,6 +10,15 @@ export interface ParsedEventInput {
   races: TrailEventAgentRace[];
 }
 
+export type ParsedEventRaceInput = TrailEventAgentRace & {
+  id?: string;
+};
+
+export interface ParsedEventUpdateInput {
+  event: TrailEventAgentEvent;
+  races: ParsedEventRaceInput[];
+}
+
 function parseNullableString(value: unknown): string | null {
   if (value === null || value === undefined) {
     return null;
@@ -52,12 +61,25 @@ function parseEvent(value: unknown): TrailEventAgentEvent {
   };
 }
 
-function parseRace(value: unknown): TrailEventAgentRace {
+function parseOptionalRaceId(value: unknown): string | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  if (typeof value !== 'string' || value.trim().length === 0) {
+    throw new ValidationError('Invalid race id', 400);
+  }
+
+  return value.trim();
+}
+
+function parseRace(value: unknown, allowId = false): ParsedEventRaceInput {
   if (typeof value !== 'object' || value === null) {
     throw new ValidationError('Invalid race', 400);
   }
 
   const {
+    id,
     name,
     date,
     city,
@@ -110,7 +132,7 @@ function parseRace(value: unknown): TrailEventAgentRace {
     throw new ValidationError('Invalid elevation gain', 400);
   }
 
-  return {
+  const parsedRace: ParsedEventRaceInput = {
     name: name.trim(),
     date: parsedDate,
     city: city.trim(),
@@ -118,6 +140,13 @@ function parseRace(value: unknown): TrailEventAgentRace {
     distanceKm,
     elevationGainM,
   };
+
+  if (allowId) {
+    const parsedId = parseOptionalRaceId(id);
+    if (parsedId !== undefined) parsedRace.id = parsedId;
+  }
+
+  return parsedRace;
 }
 
 export function parseEventInput(body: unknown): ParsedEventInput {
@@ -133,6 +162,23 @@ export function parseEventInput(body: unknown): ParsedEventInput {
 
   return {
     event: parseEvent(event),
-    races: races.map(parseRace),
+    races: races.map((race) => parseRace(race)),
+  };
+}
+
+export function parseEventUpdateInput(body: unknown): ParsedEventUpdateInput {
+  if (typeof body !== 'object' || body === null) {
+    throw new ValidationError('Invalid request body', 400);
+  }
+
+  const { event, races } = body as Record<string, unknown>;
+
+  if (!Array.isArray(races)) {
+    throw new ValidationError('Invalid races', 400);
+  }
+
+  return {
+    event: parseEvent(event),
+    races: races.map((race) => parseRace(race, true)),
   };
 }
