@@ -77,4 +77,31 @@ describe('spider service result filtering', () => {
     expect(result.markdown).not.toContain('x.com/intent/tweet');
     expect(result.markdown).not.toContain('twitter.com/intent/tweet');
   });
+
+  it('aggregates costs only from retained pages', async () => {
+    mocks.scrape.mockResolvedValue([
+      page({
+        url: 'https://caminsdefusta.wordpress.com/contacte/',
+        costs: {
+          compute_cost: 0.1,
+          transform_cost: 0.2,
+          total_cost: 0.3,
+        },
+      }),
+      page({
+        url: 'https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fcaminsdefusta.wordpress.com%2F',
+        costs: {
+          compute_cost: 10,
+          transform_cost: 20,
+          total_cost: 30,
+        },
+      }),
+    ]);
+
+    const result = await scrapePage('https://caminsdefusta.wordpress.com');
+
+    expect(result.usage).toEqual({
+      totalCost: 0.3,
+    });
+  });
 });

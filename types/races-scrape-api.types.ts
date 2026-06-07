@@ -4,6 +4,10 @@ export interface PageStats {
   errorCount: number;
 }
 
+export interface ScrapeUsage {
+  totalCost: number | null;
+}
+
 export const SCRAPE_PIPELINE_MODES = [
   'crawlSite',
   'scrapePage',

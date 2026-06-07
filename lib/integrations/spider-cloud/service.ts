@@ -1,11 +1,12 @@
 import { scrape, crawl } from '@/lib/integrations/spider-cloud/client';
 import type { Page } from '@/lib/integrations/spider-cloud/client';
 import { mergePages } from '@/lib/integrations/spider-cloud/join-markdown';
-import type { PageStats } from '@/types/races-scrape-api.types';
+import type { PageStats, ScrapeUsage } from '@/types/races-scrape-api.types';
 
 export interface SpiderServiceResult {
   markdown: string;
   pageStats: PageStats;
+  usage: ScrapeUsage;
 }
 
 const BLACKLIST: readonly string[] = [
@@ -111,18 +112,45 @@ function summarizeStats(pages: Page[]): PageStats {
   return { total, successCount, errorCount };
 }
 
+function sumCost(
+  pages: Page[],
+  key: keyof Page['costs'],
+): number | null {
+  let sum = 0;
+  let found = false;
+
+  for (const page of pages) {
+    const value = page.costs[key];
+    if (typeof value !== 'number' || !Number.isFinite(value)) {
+      continue;
+    }
+    sum += value;
+    found = true;
+  }
+
+  return found ? sum : null;
+}
+
+function summarizeUsage(pages: Page[]): ScrapeUsage {
+  return {
+    totalCost: sumCost(pages, 'total_cost'),
+  };
+}
+
 export async function scrapePage(url: string): Promise<SpiderServiceResult> {
   const pages = await scrape(url, { blacklist: BLACKLIST });
   const filteredPages = filterExcludedResultPages(pages);
   const pageStats = summarizeStats(filteredPages);
+  const usage = summarizeUsage(filteredPages);
   const markdown = mergePages(url, filteredPages);
-  return { markdown, pageStats };
+  return { markdown, pageStats, usage };
 }
 
 export async function crawlSite(url: string): Promise<SpiderServiceResult> {
   const pages = await crawl(url, { blacklist: BLACKLIST });
   const filteredPages = filterExcludedResultPages(pages);
   const pageStats = summarizeStats(filteredPages);
+  const usage = summarizeUsage(filteredPages);
   const markdown = mergePages(url, filteredPages);
-  return { markdown, pageStats };
+  return { markdown, pageStats, usage };
 }
