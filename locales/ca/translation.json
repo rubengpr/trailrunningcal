@@ -1180,6 +1180,9 @@
     },
     "extractEvents": "Extreure esdeveniments",
     "newEvent": "Nou esdeveniment",
+    "edit": {
+      "button": "Editar esdeveniment"
+    },
     "delete": {
       "button": "Eliminar esdeveniment",
       "confirmTitle": "Eliminar esdeveniment",

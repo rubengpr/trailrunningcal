@@ -8,10 +8,14 @@ import { Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { FormInput } from '@/components/ui/form-input';
 import { FormTextarea } from '@/components/ui/form-textarea';
-import { acceptScrapedEvent } from '@/lib/api/events';
+import { ConfirmationModal } from '@/components/ui/confirmation-modal';
+import { useModal } from '@/hooks/use-modal';
+import { acceptScrapedEvent, deleteEvent, updateEvent } from '@/lib/api/events';
+import type { TrailEventDetail } from '@/types/event.types';
 import type { TrailEventAgentRace } from '@/types/trail-event-agent.types';
 
 interface RaceDraft {
+  id?: string;
   name: string;
   date: string;
   city: string;
@@ -29,6 +33,22 @@ const emptyRace = (): RaceDraft => ({
   elevationGainM: '',
 });
 
+function toRaceDrafts(initialData: TrailEventDetail | null): RaceDraft[] {
+  if (!initialData || initialData.races.length === 0) {
+    return [emptyRace()];
+  }
+
+  return initialData.races.map((race) => ({
+    id: race.id,
+    name: race.name,
+    date: race.date ?? '',
+    city: race.city,
+    province: race.province,
+    distanceKm: String(race.distanceKm),
+    elevationGainM: race.elevationGainM != null ? String(race.elevationGainM) : '',
+  }));
+}
+
 function parseOptionalInteger(value: string): number | null {
   const trimmed = value.trim();
   if (trimmed.length === 0) {
@@ -37,16 +57,29 @@ function parseOptionalInteger(value: string): number | null {
   return /^\d+$/.test(trimmed) ? Number(trimmed) : Number.NaN;
 }
 
-export function EventForm(): React.ReactElement {
+interface EventFormProps {
+  eventId?: string;
+  initialData?: TrailEventDetail | null;
+  isEditMode?: boolean;
+}
+
+export function EventForm({
+  eventId,
+  initialData = null,
+  isEditMode = false,
+}: EventFormProps): React.ReactElement {
   const t = useTranslations('adminEvents.form');
+  const deleteT = useTranslations('adminEvents.delete');
   const locale = useLocale();
   const router = useRouter();
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [websiteUrl, setWebsiteUrl] = useState('');
-  const [races, setRaces] = useState<RaceDraft[]>([emptyRace()]);
+  const [name, setName] = useState(initialData?.event.name ?? '');
+  const [description, setDescription] = useState(initialData?.event.description ?? '');
+  const [websiteUrl, setWebsiteUrl] = useState(initialData?.event.websiteUrl ?? '');
+  const [races, setRaces] = useState<RaceDraft[]>(() => toRaceDrafts(initialData));
   const [error, setError] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const { isOpen: isDeleteModalOpen, open: openDeleteModal, close: closeDeleteModal } = useModal();
 
   const updateRace = (
     index: number,
@@ -108,7 +141,8 @@ export function EventForm(): React.ReactElement {
     setIsSaving(true);
     setError('');
     try {
-      const parsedRaces: TrailEventAgentRace[] = races.map((race) => ({
+      const parsedRaces: Array<TrailEventAgentRace & { id?: string }> = races.map((race) => ({
+        ...(race.id ? { id: race.id } : {}),
         name: race.name.trim(),
         date: race.date.trim() || null,
         city: race.city.trim(),
@@ -116,6 +150,21 @@ export function EventForm(): React.ReactElement {
         distanceKm: Number(race.distanceKm),
         elevationGainM: parseOptionalInteger(race.elevationGainM),
       }));
+
+      if (isEditMode && eventId) {
+        await updateEvent(
+          eventId,
+          {
+            name: name.trim(),
+            description: description.trim() || null,
+            websiteUrl: websiteUrl.trim() || null,
+          },
+          parsedRaces,
+        );
+        toast.success(t('success'));
+        router.refresh();
+        return;
+      }
 
       await acceptScrapedEvent(
         {
@@ -133,6 +182,22 @@ export function EventForm(): React.ReactElement {
       toast.error(message);
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleDelete = async (): Promise<void> => {
+    if (!eventId || isDeleting) return;
+
+    setIsDeleting(true);
+    try {
+      await deleteEvent(eventId);
+      toast.success(deleteT('success'));
+      router.push(`/${locale}/admin/eventos/activos`);
+    } catch {
+      toast.error(deleteT('error'));
+    } finally {
+      setIsDeleting(false);
+      closeDeleteModal();
     }
   };
 
@@ -177,7 +242,7 @@ export function EventForm(): React.ReactElement {
         </div>
 
         {races.map((race, index) => (
-          <div key={index} className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+          <div key={race.id ?? index} className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
             <div className="mb-4 flex items-center justify-between gap-3">
               <h3 className="text-sm font-medium text-gray-900">
                 {t('raceTitle', { number: index + 1 })}
@@ -244,18 +309,44 @@ export function EventForm(): React.ReactElement {
         </p>
       )}
 
-      <div className="flex gap-2">
-        <Button type="submit" isLoading={isSaving} loadingText={t('saving')}>
-          {t('save')}
-        </Button>
-        <Button
-          type="button"
-          variant="secondary"
-          onClick={() => router.push(`/${locale}/admin/eventos/activos`)}
-        >
-          {t('cancel')}
-        </Button>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        {isEditMode && (
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={openDeleteModal}
+            disabled={isSaving || isDeleting}
+            className="border-red-300 text-red-600 hover:bg-red-50"
+          >
+            {isDeleting ? deleteT('deleting') : deleteT('button')}
+          </Button>
+        )}
+        <div className="ml-auto flex gap-2">
+          <Button type="submit" isLoading={isSaving} loadingText={t('saving')}>
+            {t('save')}
+          </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => router.push(`/${locale}/admin/eventos/activos`)}
+          >
+            {t('cancel')}
+          </Button>
+        </div>
       </div>
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={closeDeleteModal}
+        onConfirm={handleDelete}
+        title={deleteT('confirmTitle')}
+        message={deleteT('confirmDescription', {
+          name: name.trim() || initialData?.event.name || '',
+          count: initialData?.allRaceCount ?? races.length,
+        })}
+        confirmButtonText={deleteT('confirmButton')}
+        cancelButtonText={deleteT('cancelButton')}
+        isSubmitting={isDeleting}
+      />
     </form>
   );
 }
