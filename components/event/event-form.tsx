@@ -5,7 +5,6 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Plus, Trash2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { FormInput } from '@/components/ui/form-input';
 import { FormTextarea } from '@/components/ui/form-textarea';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
@@ -202,9 +201,12 @@ export function EventForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex max-w-4xl flex-col gap-8">
-      <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-        <div className="grid gap-4">
+    <form onSubmit={handleSubmit} noValidate className="flex w-full flex-col gap-10 p-4 md:p-6">
+      <div className="flex flex-col gap-4">
+        <h3 className="text-xl font-semibold leading-none tracking-tight">
+          {isEditMode ? t('editTitle') : t('title')}
+        </h3>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-8">
           <FormInput
             id="event-name"
             label={t('eventName')}
@@ -218,47 +220,49 @@ export function EventForm({
             onChange={(e) => setWebsiteUrl(e.target.value)}
             placeholder={t('websiteUrlPlaceholder')}
           />
-          <FormTextarea
-            id="event-description"
-            label={t('description')}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={6}
-          />
         </div>
+        <FormTextarea
+          id="event-description"
+          label={t('description')}
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          maxLength={2000}
+          showCharacterCount
+          rows={5}
+        />
       </div>
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-5">
         <div className="flex items-center justify-between gap-3">
-          <h2 className="text-base font-semibold text-gray-900">{t('racesTitle')}</h2>
-          <Button
+          <h3 className="text-xl font-semibold leading-none tracking-tight">{t('racesTitle')}</h3>
+          <button
             type="button"
-            variant="secondary"
             onClick={() => setRaces((current) => [...current, emptyRace()])}
+            className="inline-flex items-center justify-center gap-2 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none cursor-pointer"
           >
             <Plus className="size-4" strokeWidth={2} />
             {t('addRace')}
-          </Button>
+          </button>
         </div>
 
         {races.map((race, index) => (
-          <div key={race.id ?? index} className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-            <div className="mb-4 flex items-center justify-between gap-3">
+          <div key={race.id ?? index} className="flex flex-col gap-4 border-t border-gray-100 pt-5 first:border-t-0 first:pt-0">
+            <div className="flex items-center justify-between gap-3">
               <h3 className="text-sm font-medium text-gray-900">
                 {t('raceTitle', { number: index + 1 })}
               </h3>
               {races.length > 1 && (
-                <Button
+                <button
                   type="button"
-                  variant="secondary"
                   onClick={() => removeRace(index)}
+                  className="inline-flex items-center justify-center gap-2 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none cursor-pointer"
                 >
                   <Trash2 className="size-4" strokeWidth={2} />
                   {t('removeRace')}
-                </Button>
+                </button>
               )}
             </div>
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-8">
               <FormInput
                 id={`race-name-${index}`}
                 label={t('raceName')}
@@ -309,30 +313,24 @@ export function EventForm({
         </p>
       )}
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex items-center justify-end gap-3">
         {isEditMode && (
-          <Button
+          <button
             type="button"
-            variant="secondary"
             onClick={openDeleteModal}
             disabled={isSaving || isDeleting}
-            className="border-red-300 text-red-600 hover:bg-red-50"
+            className="inline-flex items-center justify-center rounded-md border border-red-200 px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 focus:outline-none disabled:pointer-events-none disabled:opacity-50 cursor-pointer"
           >
             {isDeleting ? deleteT('deleting') : deleteT('button')}
-          </Button>
+          </button>
         )}
-        <div className="ml-auto flex gap-2">
-          <Button type="submit" isLoading={isSaving} loadingText={t('saving')}>
-            {t('save')}
-          </Button>
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={() => router.push(`/${locale}/admin/eventos/activos`)}
-          >
-            {t('cancel')}
-          </Button>
-        </div>
+        <button
+          type="submit"
+          className="inline-flex items-center justify-center rounded-md bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none disabled:pointer-events-none disabled:opacity-50 cursor-pointer"
+          disabled={isSaving || isDeleting}
+        >
+          {isSaving ? t('saving') : t('save')}
+        </button>
       </div>
       <ConfirmationModal
         isOpen={isDeleteModalOpen}
