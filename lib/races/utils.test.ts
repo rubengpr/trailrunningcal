@@ -96,6 +96,11 @@ describe('generateRaceSlug', () => {
   });
 
   describe('edge cases', () => {
+    it('should handle missing names', () => {
+      expect(generateRaceSlug(null)).toBe('');
+      expect(generateRaceSlug(undefined)).toBe('');
+    });
+
     it('should handle empty string', () => {
       expect(generateRaceSlug('')).toBe('');
     });

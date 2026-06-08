@@ -1,6 +1,10 @@
 import type { TrailRace } from '@/types/race.types';
 
-export function generateRaceSlug(name: string): string {
+export function generateRaceSlug(name: string | null | undefined): string {
+  if (!name) {
+    return '';
+  }
+
   return name
     .toLowerCase()
     .normalize('NFD')
