@@ -7,10 +7,11 @@ export { ValidationError };
 
 export interface ParsedEventInput {
   event: TrailEventAgentEvent;
-  races: TrailEventAgentRace[];
+  races: ParsedEventRaceInput[];
 }
 
-export type ParsedEventRaceInput = TrailEventAgentRace & {
+export type ParsedEventRaceInput = Omit<TrailEventAgentRace, 'name'> & {
+  name: string | null;
   id?: string;
 };
 
@@ -25,7 +26,7 @@ export type ParsedEventPatchInput =
   | {
       mode: 'insert-races';
       event: TrailEventAgentEvent;
-      races: TrailEventAgentRace[];
+      races: ParsedEventRaceInput[];
     };
 
 function parseNullableString(value: unknown): string | null {
@@ -82,6 +83,19 @@ function parseOptionalRaceId(value: unknown): string | undefined {
   return value.trim();
 }
 
+function parseRaceName(value: unknown): string | null {
+  if (value === null || value === undefined) {
+    return null;
+  }
+
+  if (typeof value !== 'string') {
+    throw new ValidationError('Invalid race name', 400);
+  }
+
+  const parsedName = value.trim();
+  return parsedName.length > 0 ? parsedName : null;
+}
+
 function parseRace(value: unknown, allowId = false): ParsedEventRaceInput {
   if (typeof value !== 'object' || value === null) {
     throw new ValidationError('Invalid race', 400);
@@ -96,14 +110,6 @@ function parseRace(value: unknown, allowId = false): ParsedEventRaceInput {
     distanceKm,
     elevationGainM,
   } = value as Record<string, unknown>;
-
-  if (
-    typeof name !== 'string' ||
-    name.trim().length < 5 ||
-    name.trim().length > 200
-  ) {
-    throw new ValidationError('Invalid race name', 400);
-  }
 
   const parsedDate = parseNullableString(date);
 
@@ -142,7 +148,7 @@ function parseRace(value: unknown, allowId = false): ParsedEventRaceInput {
   }
 
   const parsedRace: ParsedEventRaceInput = {
-    name: name.trim(),
+    name: parseRaceName(name),
     date: parsedDate,
     city: city.trim(),
     province: province.trim(),

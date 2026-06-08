@@ -47,7 +47,7 @@ function extractStep(raceCount: number, durationMs: number): RaceImportStep {
 
 function toLegacyRaces(
   races: Array<{
-    name: string;
+    name: string | null;
     date: string | null;
     city: string;
     province: string;
@@ -57,6 +57,7 @@ function toLegacyRaces(
 ): TrailRace[] {
   return races.map((race) => ({
     ...race,
+    name: race.name ?? '',
     date: race.date ?? '',
     description: '',
   }));

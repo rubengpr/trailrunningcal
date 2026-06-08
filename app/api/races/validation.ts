@@ -2,7 +2,7 @@ import { ValidationError } from '@/lib/errors';
 export { ValidationError };
 
 export type ParsedRaceInput = {
-  name: string;
+  name: string | null;
   date: string;
   distanceKm: number;
   elevationGainM: number | null;
@@ -44,12 +44,7 @@ export function parseRaceInput(body: unknown, isAdmin: boolean): ParsedRaceInput
     description,
   } = body as Record<string, unknown>;
 
-  if (
-    !name ||
-    typeof name !== 'string' ||
-    name.trim().length < 5 ||
-    name.trim().length > 200
-  ) {
+  if (name !== null && name !== undefined && typeof name !== 'string') {
     throw new ValidationError('Invalid race name', 400);
   }
 
@@ -121,7 +116,8 @@ export function parseRaceInput(body: unknown, isAdmin: boolean): ParsedRaceInput
   }
 
   return {
-    name: (name as string).trim(),
+    name:
+      typeof name === 'string' && name.trim().length > 0 ? name.trim() : null,
     date: date as string,
     distanceKm: distanceKm as number,
     elevationGainM: elevationGainM as number | null,

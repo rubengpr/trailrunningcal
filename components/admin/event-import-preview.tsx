@@ -48,7 +48,7 @@ function toPreviewRace(
 ): TrailEventRace {
   return {
     id: `preview-${index}`,
-    name: race.name,
+    name: race.name ?? '',
     date: race.date,
     distanceKm: race.distanceKm,
     elevationGainM: race.elevationGainM,
@@ -335,7 +335,7 @@ export function EventImportPreview({
         <section className="p-5 sm:p-6">
           <div className="space-y-1">
             {races.map((race, index) => {
-              const raceName = race.name.trim();
+              const raceName = race.name?.trim() ?? '';
               const city = race.city.trim() || t('unknown');
               const province = race.province.trim() || t('unknown');
               const elevation = race.elevationGainM === null
@@ -473,7 +473,7 @@ export function EventImportPreview({
                       <input
                         type="text"
                         className={inputClass}
-                        value={race.name}
+                        value={race.name ?? ''}
                         onChange={(e) =>
                           updateRaceDraft(index, {
                             ...race,

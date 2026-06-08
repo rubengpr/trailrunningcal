@@ -7,14 +7,19 @@ import type {
   TrailEventAgentRace,
 } from '@/types/trail-event-agent.types';
 
+export type EventRaceWriteInput = Omit<TrailEventAgentRace, 'name'> & {
+  name: string | null;
+  id?: string;
+};
+
 export interface EventWithRacesInput {
   event: TrailEventAgentEvent;
-  races: TrailEventAgentRace[];
+  races: EventRaceWriteInput[];
 }
 
 export interface UpdateEventWithRacesInput {
   event: TrailEventAgentEvent;
-  races: Array<TrailEventAgentRace & { id?: string }>;
+  races: EventRaceWriteInput[];
 }
 
 export async function createEventWithRaces(

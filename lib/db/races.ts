@@ -286,7 +286,7 @@ export async function getRaceName(
 }
 
 export type CreateRaceParams = {
-  name: string;
+  name: string | null;
   date: string;
   distanceKm: number;
   elevationGainM: number | null;

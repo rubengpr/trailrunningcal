@@ -5,7 +5,7 @@ export interface TrailEventAgentEvent {
 }
 
 export interface TrailEventAgentRace {
-  name: string;
+  name: string | null;
   date: string | null;
   city: string;
   province: string;

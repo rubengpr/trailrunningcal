@@ -10,8 +10,8 @@ import { FormTextarea } from '@/components/ui/form-textarea';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { useModal } from '@/hooks/use-modal';
 import { acceptScrapedEvent, deleteEvent, updateEvent } from '@/lib/api/events';
+import type { EventRaceWriteInput } from '@/lib/api/events';
 import type { TrailEventDetail } from '@/types/event.types';
-import type { TrailEventAgentRace } from '@/types/trail-event-agent.types';
 
 interface RaceDraft {
   id?: string;
@@ -108,7 +108,6 @@ export function EventForm({
     if (races.length === 0) return t('errors.races');
 
     for (const race of races) {
-      if (race.name.trim().length < 5) return t('errors.raceName');
       if (!race.city.trim()) return t('errors.city');
       if (!race.province.trim()) return t('errors.province');
       const distance = Number(race.distanceKm);
@@ -140,9 +139,9 @@ export function EventForm({
     setIsSaving(true);
     setError('');
     try {
-      const parsedRaces: Array<TrailEventAgentRace & { id?: string }> = races.map((race) => ({
+      const parsedRaces: EventRaceWriteInput[] = races.map((race) => ({
         ...(race.id ? { id: race.id } : {}),
-        name: race.name.trim(),
+        name: race.name.trim() || null,
         date: race.date.trim() || null,
         city: race.city.trim(),
         province: race.province.trim(),

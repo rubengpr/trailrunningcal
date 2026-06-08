@@ -24,6 +24,11 @@ import type {
   TrailEventAgentRace,
 } from '@/types/trail-event-agent.types';
 
+export type EventRaceWriteInput = Omit<TrailEventAgentRace, 'name'> & {
+  name: string | null;
+  id?: string;
+};
+
 export interface TrailEventAgentRunResult {
   event: TrailEventAgentEvent | null;
   races: TrailEventAgentRace[];
@@ -57,7 +62,7 @@ export async function getFavoriteEvents(
 
 export async function acceptScrapedEvent(
   event: TrailEventAgentEvent,
-  races: TrailEventAgentRace[],
+  races: EventRaceWriteInput[],
 ): Promise<{ id: string }> {
   const response = await fetch('/api/events', {
     method: 'POST',
@@ -77,7 +82,7 @@ export async function acceptScrapedEvent(
 export async function updateEvent(
   eventId: string,
   event: TrailEventAgentEvent,
-  races: Array<TrailEventAgentRace & { id?: string }>,
+  races: EventRaceWriteInput[],
 ): Promise<TrailEventDetail> {
   const response = await fetch(`/api/events/${eventId}`, {
     method: 'PATCH',
@@ -97,7 +102,7 @@ export async function updateEvent(
 export async function createEventEdition(
   eventId: string,
   event: TrailEventAgentEvent,
-  races: TrailEventAgentRace[],
+  races: EventRaceWriteInput[],
 ): Promise<TrailEventDetail> {
   const response = await fetch(`/api/events/${eventId}`, {
     method: 'PATCH',

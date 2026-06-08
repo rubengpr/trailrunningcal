@@ -331,8 +331,6 @@
     "successDescription": "La teva proposta ha estat enviada correctament.",
     "successMessage": "Hem rebut la teva proposta. La revisarem i l'afegirem al calendari si és apropiat.",
     "errors": {
-      "raceNameRequired": "El nom de la cursa és obligatori",
-      "raceNameTooLong": "El nom de la cursa no pot tenir més de 200 caràcters",
       "raceWebsiteTooLong": "L'enllaç de la cursa no pot tenir més de 200 caràcters",
       "raceWebsiteRequired": "La web de la cursa és obligatòria",
       "raceWebsiteInvalid": "La URL no és vàlida",
@@ -1230,7 +1228,6 @@
         "eventName": "El nom de l’esdeveniment ha de tenir almenys 5 caràcters",
         "websiteUrl": "Format d’URL no vàlid",
         "races": "Afegeix almenys una cursa",
-        "raceName": "El nom de cada cursa ha de tenir almenys 5 caràcters",
         "city": "La ciutat és obligatòria",
         "province": "La província és obligatòria",
         "distance": "La distància ha de ser un número vàlid",

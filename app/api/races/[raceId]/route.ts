@@ -57,9 +57,12 @@ export async function PATCH(
       return NextResponse.json({ error: descResult.error }, { status: 400 });
     }
 
+    const normalizedName =
+      typeof name === 'string' && name.trim().length > 0 ? name.trim() : null;
+
     const updateFields: Record<string, unknown> = {
       date,
-      name,
+      name: normalizedName,
       distance_km: distanceKm,
       elevation_gain_m: elevationGainM,
       website_url: websiteUrl,

@@ -328,8 +328,6 @@
     "successDescription": "Tu propuesta ha sido enviada correctamente.",
     "successMessage": "Hemos recibido tu propuesta. La revisaremos y la añadiremos al calendario si es apropiada.",
     "errors": {
-      "raceNameRequired": "El nombre de la carrera es obligatorio",
-      "raceNameTooLong": "El nombre de la carrera no puede tener más de 200 caracteres",
       "raceWebsiteTooLong": "El enlace de la carrera no puede tener más de 200 caracteres",
       "raceWebsiteRequired": "La web de la carrera es obligatoria",
       "raceWebsiteInvalid": "La URL no es válida",
@@ -1262,7 +1260,6 @@
         "eventName": "El nombre del evento debe tener al menos 5 caracteres",
         "websiteUrl": "Formato de URL no válido",
         "races": "Añade al menos una carrera",
-        "raceName": "El nombre de cada carrera debe tener al menos 5 caracteres",
         "city": "La ciudad es obligatoria",
         "province": "La provincia es obligatoria",
         "distance": "La distancia debe ser un número válido",
