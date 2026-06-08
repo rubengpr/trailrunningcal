@@ -14,10 +14,19 @@ export type ParsedEventRaceInput = TrailEventAgentRace & {
   id?: string;
 };
 
-export interface ParsedEventUpdateInput {
-  event: TrailEventAgentEvent;
-  races: ParsedEventRaceInput[];
-}
+export type EventPatchMode = 'update-races' | 'insert-races';
+
+export type ParsedEventPatchInput =
+  | {
+      mode: 'update-races';
+      event: TrailEventAgentEvent;
+      races: ParsedEventRaceInput[];
+    }
+  | {
+      mode: 'insert-races';
+      event: TrailEventAgentEvent;
+      races: TrailEventAgentRace[];
+    };
 
 function parseNullableString(value: unknown): string | null {
   if (value === null || value === undefined) {
@@ -160,25 +169,53 @@ export function parseEventInput(body: unknown): ParsedEventInput {
     throw new ValidationError('Invalid races', 400);
   }
 
+  if (races.length === 0) {
+    throw new ValidationError('At least one race is required', 400);
+  }
+
   return {
     event: parseEvent(event),
     races: races.map((race) => parseRace(race)),
   };
 }
 
-export function parseEventUpdateInput(body: unknown): ParsedEventUpdateInput {
+function parsePatchMode(value: unknown): EventPatchMode {
+  if (value === 'update-races' || value === 'insert-races') {
+    return value;
+  }
+
+  throw new ValidationError('Invalid mode', 400);
+}
+
+export function parseEventPatchInput(body: unknown): ParsedEventPatchInput {
   if (typeof body !== 'object' || body === null) {
     throw new ValidationError('Invalid request body', 400);
   }
 
-  const { event, races } = body as Record<string, unknown>;
+  const { mode: rawMode, event, races } = body as Record<string, unknown>;
+  const mode = parsePatchMode(rawMode);
 
   if (!Array.isArray(races)) {
     throw new ValidationError('Invalid races', 400);
   }
 
+  if (races.length === 0) {
+    throw new ValidationError('At least one race is required', 400);
+  }
+
+  const parsedEvent = parseEvent(event);
+
+  if (mode === 'update-races') {
+    return {
+      mode,
+      event: parsedEvent,
+      races: races.map((race) => parseRace(race, true)),
+    };
+  }
+
   return {
-    event: parseEvent(event),
-    races: races.map((race) => parseRace(race, true)),
+    mode,
+    event: parsedEvent,
+    races: races.map((race) => parseRace(race)),
   };
 }

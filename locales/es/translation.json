@@ -1215,6 +1215,18 @@
     "edit": {
       "button": "Editar evento"
     },
+    "updateSuggestion": {
+      "button": "Actualizar desde la web",
+      "viewButton": "Ver sugerencia",
+      "closeButton": "Cerrar sugerencia",
+      "modalTitle": "Sugerencia para {name}",
+      "missingUrl": "El evento no tiene URL",
+      "extractSuccess": "Sugerencia generada correctamente",
+      "extractError": "Error al generar la sugerencia",
+      "acceptSuccess": "Sugerencia aplicada correctamente",
+      "acceptError": "Error al aplicar la sugerencia",
+      "rejectSuccess": "Sugerencia descartada"
+    },
     "delete": {
       "button": "Eliminar evento",
       "confirmTitle": "Eliminar evento",

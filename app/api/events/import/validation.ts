@@ -6,11 +6,16 @@ import type { EventImportWorkflow } from '@/types/events-import-api.types';
 export { ValidationError };
 
 export type ParsedInput =
-  | { workflow: 'crawlSite' | 'scrapePage'; url: string }
+  | {
+      workflow: 'crawlSite' | 'scrapePage';
+      url: string;
+      skipDuplicateCheck: boolean;
+    }
   | {
       workflow: 'crawlSiteExtract' | 'scrapePageExtract';
       url: string;
       model: OpenRouterScrapeModelId;
+      skipDuplicateCheck: boolean;
     };
 
 function parseWorkflow(value: unknown): EventImportWorkflow {
@@ -70,16 +75,22 @@ export function parseImportModel(value: unknown): OpenRouterScrapeModelId {
 export function parseInput(body: unknown): ParsedInput {
   assertRequestBody(body);
 
-  const { workflow: rawWorkflow, websiteUrl, model } = body;
+  const { workflow: rawWorkflow, websiteUrl, model, skipDuplicateCheck } = body;
 
   const workflow = parseWorkflow(rawWorkflow);
   const url = parseImportUrl(websiteUrl, 'Website URL is required');
+  const parsedSkipDuplicateCheck = skipDuplicateCheck === true;
 
   if (workflow === 'crawlSite' || workflow === 'scrapePage') {
-    return { workflow, url };
+    return { workflow, url, skipDuplicateCheck: parsedSkipDuplicateCheck };
   }
 
   const parsedModel = parseImportModel(model);
 
-  return { workflow, url, model: parsedModel };
+  return {
+    workflow,
+    url,
+    model: parsedModel,
+    skipDuplicateCheck: parsedSkipDuplicateCheck,
+  };
 }

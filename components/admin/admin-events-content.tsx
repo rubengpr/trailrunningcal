@@ -1,17 +1,28 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { TextCursor, Trash2 } from 'lucide-react';
+import { Eye, RefreshCw, TextCursor, Trash2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { BaseModal } from '@/components/ui/base-modal';
 import { SectionHeader } from '@/components/ui/section-header';
-import { deleteEvent } from '@/lib/api/events';
+import { EventImportPreview } from '@/components/admin/event-import-preview';
+import {
+  createEventEdition,
+  deleteEvent,
+  runEventImport,
+} from '@/lib/api/events';
+import { OPENROUTER_SCRAPE_MODEL_IDS } from '@/lib/integrations/openrouter/scrape-models';
 import { cleanUrl } from '@/lib/utils/url';
 import type { TrailEventDetail } from '@/types/event.types';
+import type { EventImportResult } from '@/types/events-import-api.types';
+import type {
+  TrailEventAgentEvent,
+  TrailEventAgentRace,
+} from '@/types/trail-event-agent.types';
 
 interface AdminEventsContentProps {
   events: TrailEventDetail[];
@@ -24,10 +35,144 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
   const [descriptionModalEvent, setDescriptionModalEvent] = useState<TrailEventDetail | null>(null);
   const [eventToDelete, setEventToDelete] = useState<TrailEventDetail | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [loadingSuggestionIds, setLoadingSuggestionIds] = useState<Set<string>>(new Set());
+  const [suggestions, setSuggestions] = useState<Record<string, EventImportResult>>({});
+  const [reviewEventId, setReviewEventId] = useState<string | null>(null);
+  const [acceptingSuggestionId, setAcceptingSuggestionId] = useState<string | null>(null);
 
   const subtitle = events.length === 1
     ? t('eventCountOne')
     : t('eventCount', { count: events.length });
+
+  const reviewEventDetail = reviewEventId
+    ? events.find((eventDetail) => eventDetail.event.id === reviewEventId) ?? null
+    : null;
+  const reviewSuggestion = reviewEventId ? suggestions[reviewEventId] : null;
+
+  useEffect(() => {
+    if (!reviewEventId) return;
+
+    const handleKeyDown = (event: KeyboardEvent): void => {
+      if (event.key === 'Escape') setReviewEventId(null);
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [reviewEventId]);
+
+  const setSuggestionLoading = (eventId: string, isLoading: boolean): void => {
+    setLoadingSuggestionIds((ids) => {
+      const nextIds = new Set(ids);
+      if (isLoading) {
+        nextIds.add(eventId);
+      } else {
+        nextIds.delete(eventId);
+      }
+      return nextIds;
+    });
+  };
+
+  const handleGenerateSuggestion = async (
+    eventDetail: TrailEventDetail,
+  ): Promise<void> => {
+    const websiteUrl = eventDetail.event.websiteUrl;
+    if (!websiteUrl) {
+      toast.error(t('updateSuggestion.missingUrl'));
+      return;
+    }
+
+    const eventId = eventDetail.event.id;
+    setSuggestionLoading(eventId, true);
+
+    try {
+      const result = await runEventImport({
+        workflow: 'crawlSiteExtract',
+        websiteUrl,
+        model: OPENROUTER_SCRAPE_MODEL_IDS[0],
+        skipDuplicateCheck: true,
+      });
+
+      if (!result.ok) {
+        toast.error(t('updateSuggestion.extractError'));
+        return;
+      }
+
+      setSuggestions((current) => ({
+        ...current,
+        [eventId]: result.data,
+      }));
+      toast.success(t('updateSuggestion.extractSuccess'));
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : t('updateSuggestion.extractError'),
+      );
+    } finally {
+      setSuggestionLoading(eventId, false);
+    }
+  };
+
+  const handleSaveSuggestionReview = (
+    eventId: string,
+    event: TrailEventAgentEvent,
+    races: TrailEventAgentRace[],
+  ): void => {
+    setSuggestions((current) => {
+      const suggestion = current[eventId];
+      if (!suggestion) return current;
+
+      return {
+        ...current,
+        [eventId]: {
+          ...suggestion,
+          event,
+          races,
+        },
+      };
+    });
+  };
+
+  const handleRejectSuggestion = (eventId: string): void => {
+    setSuggestions((current) => {
+      const remaining = { ...current };
+      delete remaining[eventId];
+      return remaining;
+    });
+    setReviewEventId(null);
+    toast.success(t('updateSuggestion.rejectSuccess'));
+  };
+
+  const handleAcceptSuggestion = async (eventId: string): Promise<void> => {
+    const suggestion = suggestions[eventId];
+    if (!suggestion?.event || suggestion.races.length === 0) return;
+
+    setAcceptingSuggestionId(eventId);
+    try {
+      await createEventEdition(
+        eventId,
+        suggestion.event,
+        suggestion.races,
+      );
+      setSuggestions((current) => {
+        const remaining = { ...current };
+        delete remaining[eventId];
+        return remaining;
+      });
+      setReviewEventId(null);
+      toast.success(t('updateSuggestion.acceptSuccess'));
+      router.refresh();
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : t('updateSuggestion.acceptError'),
+      );
+    } finally {
+      setAcceptingSuggestionId(null);
+    }
+  };
 
   const handleDeleteConfirm = async (): Promise<void> => {
     if (!eventToDelete || isDeleting) return;
@@ -105,6 +250,8 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
                   const truncated = description.length > 80
                     ? `${description.slice(0, 80)}…`
                     : description;
+                  const isLoadingSuggestion = loadingSuggestionIds.has(event.id);
+                  const hasSuggestion = suggestions[event.id] !== undefined;
 
                   return (
                     <tr key={event.id} className="align-middle hover:bg-gray-50/50 transition-colors duration-150">
@@ -149,6 +296,32 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
                       </td>
                       <td className="px-4 py-3 text-right">
                         <div className="inline-flex items-center justify-end gap-1">
+                          {hasSuggestion && (
+                            <button
+                              type="button"
+                              onClick={() => setReviewEventId(event.id)}
+                              title={t('updateSuggestion.viewButton')}
+                              className="inline-flex size-8 items-center justify-center rounded text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-800 cursor-pointer"
+                            >
+                              <Eye className="size-4" strokeWidth={1.5} />
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => void handleGenerateSuggestion(eventDetail)}
+                            disabled={!event.websiteUrl || isLoadingSuggestion}
+                            title={
+                              event.websiteUrl
+                                ? t('updateSuggestion.button')
+                                : t('updateSuggestion.missingUrl')
+                            }
+                            className="inline-flex size-8 items-center justify-center rounded text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-800 disabled:pointer-events-none disabled:opacity-40 cursor-pointer"
+                          >
+                            <RefreshCw
+                              className={`size-4 ${isLoadingSuggestion ? 'animate-spin' : ''}`}
+                              strokeWidth={1.5}
+                            />
+                          </button>
                           <button
                             type="button"
                             onClick={() => router.push(`/${locale}/admin/eventos/${event.id}`)}
@@ -188,6 +361,41 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
             {descriptionModalEvent.event.description}
           </p>
         </BaseModal>
+      )}
+
+      {reviewEventDetail && reviewSuggestion && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-gray-900/60 px-4 py-10 backdrop-blur-[1px] sm:py-14">
+          <button
+            type="button"
+            className="absolute inset-0 cursor-default"
+            onClick={() => setReviewEventId(null)}
+          />
+          <div className="relative z-10 w-full max-w-4xl">
+            <button
+              type="button"
+              onClick={() => setReviewEventId(null)}
+              title={t('updateSuggestion.closeButton')}
+              className="absolute -top-3 -right-3 z-20 inline-flex size-9 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 shadow-sm transition-colors hover:text-gray-900 cursor-pointer"
+            >
+              <X className="size-4" strokeWidth={1.5} />
+            </button>
+            <EventImportPreview
+              event={reviewSuggestion.event}
+              races={reviewSuggestion.races}
+              isLoading={false}
+              error={null}
+              emptyMessage={reviewSuggestion.errorMessage}
+              onAccept={() => handleAcceptSuggestion(reviewEventDetail.event.id)}
+              isAccepted={false}
+              isAccepting={acceptingSuggestionId === reviewEventDetail.event.id}
+              onReject={() => handleRejectSuggestion(reviewEventDetail.event.id)}
+              isRejected={false}
+              onSaveReview={(event, races) =>
+                handleSaveSuggestionReview(reviewEventDetail.event.id, event, races)
+              }
+            />
+          </div>
+        </div>
       )}
 
       <BaseModal

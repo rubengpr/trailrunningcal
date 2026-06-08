@@ -124,6 +124,20 @@ describe('processCrawlSiteExtract', () => {
       'extract',
     ]);
   });
+
+  it('can skip duplicate checks for existing event update suggestions', async () => {
+    mocks.crawlSite.mockResolvedValue(scrapeResult('crawl markdown'));
+    mocks.extractFromMarkdown.mockResolvedValue(extractResult([race()]));
+
+    await processCrawlSiteExtract({
+      url: 'https://example.com/event',
+      model: MODEL,
+      skipDuplicateCheck: true,
+    });
+
+    expect(mocks.checkDuplicateEvents).not.toHaveBeenCalled();
+    expect(mocks.crawlSite).toHaveBeenCalledWith('https://example.com/event');
+  });
 });
 
 describe('processScrapePageExtract', () => {

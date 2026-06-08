@@ -1183,6 +1183,18 @@
     "edit": {
       "button": "Editar esdeveniment"
     },
+    "updateSuggestion": {
+      "button": "Actualitzar des de la web",
+      "viewButton": "Veure suggeriment",
+      "closeButton": "Tancar suggeriment",
+      "modalTitle": "Suggeriment per a {name}",
+      "missingUrl": "L’esdeveniment no té URL",
+      "extractSuccess": "Suggeriment generat correctament",
+      "extractError": "Error en generar el suggeriment",
+      "acceptSuccess": "Suggeriment aplicat correctament",
+      "acceptError": "Error en aplicar el suggeriment",
+      "rejectSuccess": "Suggeriment descartat"
+    },
     "delete": {
       "button": "Eliminar esdeveniment",
       "confirmTitle": "Eliminar esdeveniment",

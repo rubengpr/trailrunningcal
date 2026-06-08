@@ -42,11 +42,13 @@ export type EventImportRequest =
   | {
       workflow: 'crawlSite' | 'scrapePage';
       websiteUrl: string;
+      skipDuplicateCheck?: boolean;
     }
   | {
       workflow: 'crawlSiteExtract' | 'scrapePageExtract';
       websiteUrl: string;
       model: OpenRouterScrapeModelId;
+      skipDuplicateCheck?: boolean;
     };
 
 export type EventImportBatchStatus =

@@ -54,8 +54,12 @@ function extractStep(raceCount: number, durationMs: number): EventImportStep {
 export async function processCrawlSiteExtract(input: {
   url: string;
   model: OpenRouterScrapeModelId;
+  skipDuplicateCheck?: boolean;
 }): Promise<EventImportResult> {
-  await checkDuplicateEvents([input.url]);
+  if (!input.skipDuplicateCheck) {
+    await checkDuplicateEvents([input.url]);
+  }
+
   const crawl = await timeStep(() => crawlSite(input.url));
   const extract = await timeStep(() =>
     extractFromMarkdown(crawl.result.markdown, input.model),
@@ -83,8 +87,12 @@ export async function processCrawlSiteExtract(input: {
 export async function processScrapePageExtract(input: {
   url: string;
   model: OpenRouterScrapeModelId;
+  skipDuplicateCheck?: boolean;
 }): Promise<EventImportResult> {
-  await checkDuplicateEvents([input.url]);
+  if (!input.skipDuplicateCheck) {
+    await checkDuplicateEvents([input.url]);
+  }
+
   const scrape = await timeStep(() => scrapePage(input.url));
   const extract = await timeStep(() =>
     extractFromMarkdown(scrape.result.markdown, input.model),

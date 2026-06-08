@@ -2,28 +2,14 @@ import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
 import { ValidationError } from '@/lib/errors';
 import {
-  revalidateCategoryPages,
-  revalidateEventPages,
+  revalidateEventRelatedPages,
   revalidateHomepages,
-  revalidateProvincePage,
-  revalidateRacePages,
 } from '@/lib/cache/revalidation';
 import { deleteEventForAdmin, getEventByIdForAdmin } from '@/lib/db/events';
 import { parseUuidParam } from '@/app/api/events/description-batches/validation';
 import { handleRouteError } from '@/lib/utils/handle-error';
-import { parseEventUpdateInput } from '@/app/api/events/validation';
-import { updateEventWithRaces } from '@/lib/services/events';
-import type { TrailEventDetail } from '@/types/event.types';
-
-function revalidateEventDetail(detail: TrailEventDetail): void {
-  revalidateEventPages(detail.event.slug);
-
-  for (const race of detail.races) {
-    revalidateRacePages(race.name);
-    revalidateCategoryPages(race);
-    if (race.province) revalidateProvincePage(race.province);
-  }
-}
+import { parseEventPatchInput } from '@/app/api/events/validation';
+import { createEventEdition, updateEventWithRaces } from '@/lib/services/events';
 
 export async function PATCH(
   request: Request,
@@ -34,23 +20,26 @@ export async function PATCH(
 
     const { eventId } = await context.params;
     const parsedEventId = parseUuidParam(eventId, 'event id');
-    const input = parseEventUpdateInput(await request.json());
+    const input = parseEventPatchInput(await request.json());
     const previousDetail = await getEventByIdForAdmin(parsedEventId);
 
     if (!previousDetail) {
       throw new ValidationError('Event not found', 404);
     }
 
-    await updateEventWithRaces(parsedEventId, input);
-    const updatedDetail = await getEventByIdForAdmin(parsedEventId);
+    let updatedDetail = previousDetail;
 
-    if (!updatedDetail) {
-      throw new ValidationError('Event not found', 404);
+    if (input.mode === 'update-races') {
+      updatedDetail = await updateEventWithRaces(parsedEventId, input);
+    }
+
+    if (input.mode === 'insert-races') {
+      updatedDetail = await createEventEdition(parsedEventId, input);
     }
 
     revalidateHomepages();
-    revalidateEventDetail(previousDetail);
-    revalidateEventDetail(updatedDetail);
+    revalidateEventRelatedPages(previousDetail);
+    revalidateEventRelatedPages(updatedDetail);
 
     return NextResponse.json({ success: true, data: updatedDetail });
   } catch (error) {
@@ -76,7 +65,7 @@ export async function DELETE(
     await deleteEventForAdmin(parsedEventId);
 
     revalidateHomepages();
-    revalidateEventDetail(eventDetail);
+    revalidateEventRelatedPages(eventDetail);
 
     return NextResponse.json({ success: true, data: null });
   } catch (error) {

@@ -82,13 +82,33 @@ export async function updateEvent(
   const response = await fetch(`/api/events/${eventId}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ event, races }),
+    body: JSON.stringify({ mode: 'update-races', event, races }),
   });
 
   const responseData = await response.json();
 
   if (!response.ok) {
     throw new Error(responseData.error || 'Failed to update event');
+  }
+
+  return responseData.data;
+}
+
+export async function createEventEdition(
+  eventId: string,
+  event: TrailEventAgentEvent,
+  races: TrailEventAgentRace[],
+): Promise<TrailEventDetail> {
+  const response = await fetch(`/api/events/${eventId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ mode: 'insert-races', event, races }),
+  });
+
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(responseData.error || 'Failed to create event edition');
   }
 
   return responseData.data;
