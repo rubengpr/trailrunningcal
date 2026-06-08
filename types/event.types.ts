@@ -12,7 +12,7 @@ export type EventRow = {
 
 export type EventRaceRow = {
   id: string;
-  name: string;
+  name: string | null;
   date: string | null;
   distance_km: number;
   elevation_gain_m: number | null;
@@ -35,7 +35,7 @@ export interface TrailEvent {
 
 export interface TrailEventRace {
   id: string;
-  name: string;
+  name: string | null;
   date: string | null;
   distanceKm: number;
   elevationGainM: number | null;

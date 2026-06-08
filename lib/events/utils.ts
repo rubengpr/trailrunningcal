@@ -27,7 +27,8 @@ function yearFromDate(date: string): number {
 
 function sortByDistanceDescending(races: TrailEventRace[]): TrailEventRace[] {
   return [...races].sort(
-    (a, b) => b.distanceKm - a.distanceKm || a.name.localeCompare(b.name),
+    (a, b) =>
+      b.distanceKm - a.distanceKm || (a.name ?? '').localeCompare(b.name ?? ''),
   );
 }
 

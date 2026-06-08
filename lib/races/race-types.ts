@@ -36,19 +36,25 @@ export interface RaceCategoryConfig {
   slug: RaceCategorySlug;
   namespace: string;
   labelKey: RaceCategoryLabelKey;
-  matches: (race: Pick<TrailRace, 'name' | 'distanceKm' | 'elevationGainM'>) => boolean;
+  matches: (race: RaceCategoryInput) => boolean;
 }
+
+type RaceCategoryInput = {
+  name: string | null;
+  distanceKm: number;
+  elevationGainM: number | null;
+};
 
 const VK_KEYWORDS = ['kilómetro vertical', 'quilòmetre vertical', 'km vertical'];
 const MARCHA_KEYWORDS = ['marcha', 'marxa', 'caminada'];
 const VK_DISTANCE_MAX = 4;
 const VK_ELEVATION_MIN = 600;
 
-function normalizedName(race: Pick<TrailRace, 'name'>): string {
-  return race.name.toLowerCase();
+function normalizedName(race: Pick<RaceCategoryInput, 'name'>): string {
+  return race.name?.toLowerCase() ?? '';
 }
 
-function isVkRace(race: Pick<TrailRace, 'name' | 'distanceKm' | 'elevationGainM'>): boolean {
+function isVkRace(race: RaceCategoryInput): boolean {
   const lowerName = normalizedName(race);
   const hasKeyword =
     VK_KEYWORDS.some((kw) => lowerName.includes(kw)) ||
@@ -115,13 +121,13 @@ export function getRaceCategoryConfig(slug: RaceCategorySlug): RaceCategoryConfi
 }
 
 export function getRaceCategorySlugsForRace(
-  race: Pick<TrailRace, 'name' | 'distanceKm' | 'elevationGainM'>,
+  race: RaceCategoryInput,
 ): RaceCategorySlug[] {
   return RACE_CATEGORY_SLUGS.filter((slug) => getRaceCategoryConfig(slug).matches(race));
 }
 
 export function getPrimaryPublicRaceCategory(
-  race: Pick<TrailRace, 'name' | 'distanceKm' | 'elevationGainM'>,
+  race: RaceCategoryInput,
 ): RaceCategoryConfig | null {
   const slug = PRIMARY_RACE_CATEGORY_PRIORITY.find((categorySlug) =>
     getRaceCategoryConfig(categorySlug).matches(race),
@@ -130,7 +136,7 @@ export function getPrimaryPublicRaceCategory(
 }
 
 export function getRaceDisplayCategoryKey(
-  race: Pick<TrailRace, 'name' | 'distanceKm' | 'elevationGainM'>,
+  race: RaceCategoryInput,
 ): RaceDisplayCategoryKey {
   const publicCategory = getPrimaryPublicRaceCategory(race);
   if (publicCategory) {

@@ -20,7 +20,7 @@ function isEventRaceRow(value: unknown): value is EventRaceRow {
   return (
     isRecord(value) &&
     typeof value.id === 'string' &&
-    typeof value.name === 'string' &&
+    (typeof value.name === 'string' || value.name === null) &&
     (typeof value.date === 'string' || value.date === null) &&
     typeof value.distance_km === 'number' &&
     (typeof value.elevation_gain_m === 'number' || value.elevation_gain_m === null) &&

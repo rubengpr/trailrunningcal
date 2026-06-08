@@ -39,7 +39,7 @@ function toRaceDrafts(initialData: TrailEventDetail | null): RaceDraft[] {
 
   return initialData.races.map((race) => ({
     id: race.id,
-    name: race.name,
+    name: race.name ?? '',
     date: race.date ?? '',
     city: race.city,
     province: race.province,
