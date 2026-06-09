@@ -1,6 +1,6 @@
 import type OpenAI from 'openai';
 import { APIConnectionTimeoutError } from 'openai/error';
-import { TRAIL_RACE_AGENT_JSON_SCHEMA } from '@/lib/agents/trail-race-agent-schema';
+import { TRAIL_EVENT_AGENT_JSON_SCHEMA } from '@/lib/agents/trail-event-agent-schema';
 import type {
   OpenRouterScrapeModelId,
   OpenRouterVisionModelId,
@@ -11,7 +11,7 @@ import type {
   TrailEventAgentRace,
 } from '@/types/trail-event-agent.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
-import { TRAIL_RACE_AGENT_INSTRUCTIONS } from '@/lib/prompts/trail-race-agent-instructions';
+import { TRAIL_EVENT_AGENT_INSTRUCTIONS } from '@/lib/prompts/trail-event-agent-instructions';
 import { TimeoutError } from '@/lib/errors';
 
 export interface OpenRouterServiceResult {
@@ -164,7 +164,7 @@ export async function runImagesAgent(
     const completion = await client.chat.completions.create({
       model,
       messages: [
-        { role: 'system', content: TRAIL_RACE_AGENT_INSTRUCTIONS },
+        { role: 'system', content: TRAIL_EVENT_AGENT_INSTRUCTIONS },
         {
           role: 'user',
           content: images.map((url) => ({
@@ -178,7 +178,7 @@ export async function runImagesAgent(
         json_schema: {
           name: 'trail_race',
           strict: true,
-          schema: TRAIL_RACE_AGENT_JSON_SCHEMA as unknown as Record<
+          schema: TRAIL_EVENT_AGENT_JSON_SCHEMA as unknown as Record<
             string,
             unknown
           >,
@@ -204,7 +204,7 @@ export async function runMarkdownAgent(
     const completion = await client.chat.completions.create({
       model,
       messages: [
-        { role: 'system', content: TRAIL_RACE_AGENT_INSTRUCTIONS },
+        { role: 'system', content: TRAIL_EVENT_AGENT_INSTRUCTIONS },
         { role: 'user', content: markdown },
       ],
       response_format: {
@@ -212,7 +212,7 @@ export async function runMarkdownAgent(
         json_schema: {
           name: 'trail_race',
           strict: true,
-          schema: TRAIL_RACE_AGENT_JSON_SCHEMA as unknown as Record<
+          schema: TRAIL_EVENT_AGENT_JSON_SCHEMA as unknown as Record<
             string,
             unknown
           >,

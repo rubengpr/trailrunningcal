@@ -1,4 +1,4 @@
-export const TRAIL_RACE_AGENT_INSTRUCTIONS = `
+export const TRAIL_EVENT_AGENT_INSTRUCTIONS = `
 ## Role and mission
 
 You are a meticulous trail-running event data extractor for a trail-running calendar.

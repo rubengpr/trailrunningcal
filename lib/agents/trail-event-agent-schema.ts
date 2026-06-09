@@ -1,7 +1,7 @@
 /**
  * Shared JSON Schema for trail event agent structured output (OpenAI Responses + OpenRouter Chat).
  */
-export const TRAIL_RACE_AGENT_JSON_SCHEMA = {
+export const TRAIL_EVENT_AGENT_JSON_SCHEMA = {
   type: 'object',
   additionalProperties: false,
   properties: {
