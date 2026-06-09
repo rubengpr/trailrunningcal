@@ -10,7 +10,7 @@ import type {
   TrailEventAgentRace,
 } from '@/types/trail-event-agent.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
-import { TRAIL_RACE_AGENT_INSTRUCTIONS } from '@/lib/prompts';
+import { TRAIL_RACE_AGENT_INSTRUCTIONS } from '@/lib/prompts/trail-race-agent-instructions';
 import { parseJsonOutputText } from '@/lib/agents/trail-race-scraper';
 import { TimeoutError } from '@/lib/errors';
 
