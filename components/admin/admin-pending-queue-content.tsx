@@ -187,7 +187,7 @@ export function AdminPendingQueueContent({
           </TableHeader>
           <TableBody>
             {pendingEntries.map((entry) => (
-              <TableRow key={entry.id} className="hover:bg-gray-50/50 transition-colors duration-150">
+              <TableRow key={entry.id} className="hover:bg-gray-100 transition-colors duration-150">
                 <TableCell>
                   <a
                     href={entry.url}

@@ -433,7 +433,7 @@ export function EventDescriptionGenerator({
                   const error = errors[event.id];
 
                   return (
-                    <tr key={event.id} className="group align-middle hover:bg-gray-50/50 transition-colors duration-150">
+                    <tr key={event.id} className="group align-middle hover:bg-gray-100 transition-colors duration-150">
                       <td className="py-3 pl-4 pr-2">
                         <input
                           type="checkbox"

@@ -25,7 +25,7 @@ interface TableHeaderProps {
 export function TableHeader({ children, className = '' }: TableHeaderProps) {
   return (
     <thead>
-      <tr className={`border-b border-gray-100 ${className}`.trim()}>{children}</tr>
+      <tr className={`bg-gray-100 border-b border-gray-200 ${className}`.trim()}>{children}</tr>
     </thead>
   );
 }
@@ -56,7 +56,7 @@ export function TableRow({
   ...props
 }: TableRowProps) {
   const clickableClasses = clickable
-    ? 'hover:bg-gray-50/50 transition-colors duration-150 cursor-pointer group'
+    ? 'hover:bg-gray-100 transition-colors duration-150 cursor-pointer group'
     : '';
   return (
     <tr className={`${clickableClasses} ${className}`.trim()} {...props}>
@@ -88,8 +88,9 @@ export function TableCell({
 
   if (header) {
     const headerColor = muted ? 'text-gray-300' : 'text-gray-500';
+    const headerStickyClass = sticky ? 'sticky left-0 bg-gray-100 z-10' : '';
     const headerClasses =
-      `px-6 py-4 text-xs font-medium uppercase tracking-wider ${headerColor} ${alignClass} ${stickyClass} ${className}`.trim();
+      `px-6 py-3 text-xs font-medium uppercase tracking-wider ${headerColor} ${alignClass} ${headerStickyClass} ${className}`.trim();
     return (
       <th className={headerClasses} {...props}>
         {children}
@@ -98,7 +99,7 @@ export function TableCell({
   }
 
   const cellAlign = align === 'right' ? 'text-right' : '';
-  const cellClasses = `px-6 py-5 ${cellAlign} ${stickyClass} ${className}`.trim();
+  const cellClasses = `px-6 py-2.5 ${cellAlign} ${stickyClass} ${className}`.trim();
   return (
     <td className={cellClasses} {...props}>
       {children}

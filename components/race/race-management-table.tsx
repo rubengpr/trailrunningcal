@@ -73,7 +73,7 @@ function RaceManagementTableRow({
     >
       <TableCell
         sticky
-        className={`whitespace-nowrap ${isClickable ? 'group-hover:bg-gray-50/50' : ''}`.trim()}
+        className={`whitespace-nowrap ${isClickable ? 'group-hover:bg-gray-100' : ''}`.trim()}
       >
         <div
           className={`text-sm font-medium ${

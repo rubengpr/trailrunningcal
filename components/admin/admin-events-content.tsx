@@ -40,7 +40,6 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
   const t = useTranslations('adminEvents');
   const locale = useLocale();
   const router = useRouter();
-  const [descriptionModalEvent, setDescriptionModalEvent] = useState<TrailEventDetail | null>(null);
   const [eventToDelete, setEventToDelete] = useState<TrailEventDetail | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [loadingSuggestionIds, setLoadingSuggestionIds] = useState<Set<string>>(new Set());
@@ -235,21 +234,16 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
             <TableCell header>{t('columns.website')}</TableCell>
             <TableCell header align="right">{t('columns.races')}</TableCell>
             <TableCell header>{t('columns.dates')}</TableCell>
-            <TableCell header>{t('columns.description')}</TableCell>
             <TableCell header align="right">{t('columns.actions')}</TableCell>
           </TableHeader>
           <TableBody>
             {events.map((eventDetail) => {
               const { event } = eventDetail;
-              const description = event.description ?? '';
-              const truncated = description.length > 80
-                ? `${description.slice(0, 80)}…`
-                : description;
               const isLoadingSuggestion = loadingSuggestionIds.has(event.id);
               const hasSuggestion = suggestions[event.id] !== undefined;
 
               return (
-                <TableRow key={event.id} className="align-middle hover:bg-gray-50/50 transition-colors duration-150">
+                <TableRow key={event.id} className="align-middle hover:bg-gray-100 transition-colors duration-150">
                   <TableCell className="max-w-[200px]">
                     <Link
                       href={`/${locale}/e/${event.slug}`}
@@ -278,19 +272,6 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
                   </TableCell>
                   <TableCell className="text-sm text-gray-700">
                     {formatEventDateRangeNumeric(eventDetail.dateRange, t('noDates'))}
-                  </TableCell>
-                  <TableCell className="max-w-[300px]">
-                    {description ? (
-                      <button
-                        type="button"
-                        onClick={() => setDescriptionModalEvent(eventDetail)}
-                        className="text-left text-sm text-gray-700 hover:opacity-70 transition-opacity"
-                      >
-                        {truncated}
-                      </button>
-                    ) : (
-                      <span className="text-sm text-gray-400">{t('noDescription')}</span>
-                    )}
                   </TableCell>
                   <TableCell align="right">
                     <div className="inline-flex items-center justify-end gap-1">
@@ -344,19 +325,6 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
             })}
           </TableBody>
         </Table>
-      )}
-
-      {descriptionModalEvent && (
-        <BaseModal
-          isOpen
-          onClose={() => setDescriptionModalEvent(null)}
-          title={descriptionModalEvent.event.name}
-          maxWidth="2xl"
-        >
-          <p className="whitespace-pre-line text-sm leading-6 text-gray-700">
-            {descriptionModalEvent.event.description}
-          </p>
-        </BaseModal>
       )}
 
       {reviewEventDetail && reviewSuggestion && (
