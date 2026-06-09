@@ -7,11 +7,11 @@ import type {
 } from '@/lib/integrations/openrouter/scrape-models';
 import type {
   TrailEventAgentEvent,
+  TrailEventAgentParsed,
   TrailEventAgentRace,
 } from '@/types/trail-event-agent.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 import { TRAIL_RACE_AGENT_INSTRUCTIONS } from '@/lib/prompts/trail-race-agent-instructions';
-import { parseJsonOutputText } from '@/lib/agents/trail-race-scraper';
 import { TimeoutError } from '@/lib/errors';
 
 export interface OpenRouterServiceResult {
@@ -20,6 +20,40 @@ export interface OpenRouterServiceResult {
   errorMessage: string | null;
   rawModelOutput: string;
   usage: OpenRouterScrapeUsage | null;
+}
+
+function stripMarkdownJsonCodeFence(text: string): string {
+  let s = text.trim();
+  if (!s.startsWith('```')) {
+    return s;
+  }
+  s = s.replace(/^```[^\n]*\r?\n?/, '');
+  s = s.replace(/\r?\n?```\s*$/, '');
+  return s.trim();
+}
+
+function tryParseAgentJson(raw: string): TrailEventAgentParsed | null {
+  try {
+    return JSON.parse(raw) as TrailEventAgentParsed;
+  } catch {
+    return null;
+  }
+}
+
+function parseAgentOutput(outputText: string): TrailEventAgentParsed | null {
+  const fencedStripped = stripMarkdownJsonCodeFence(outputText);
+  const direct = tryParseAgentJson(fencedStripped);
+  if (direct) {
+    return direct;
+  }
+
+  const firstBrace = fencedStripped.indexOf('{');
+  const lastBrace = fencedStripped.lastIndexOf('}');
+  if (firstBrace !== -1 && lastBrace > firstBrace) {
+    return tryParseAgentJson(fencedStripped.slice(firstBrace, lastBrace + 1));
+  }
+
+  return null;
 }
 
 function mapCompletionUsageToScrapeUsage(
@@ -108,7 +142,7 @@ function extractResult(
   const messageContent = choices[0].message?.content;
   const rawModelOutput =
     typeof messageContent === 'string' ? messageContent : '';
-  const parsed = parseJsonOutputText(rawModelOutput);
+  const parsed = parseAgentOutput(rawModelOutput);
   const event =
     parsed?.event && typeof parsed.event.name === 'string'
       ? parsed.event
