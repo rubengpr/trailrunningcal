@@ -1201,10 +1201,12 @@
     "empty": "No hay eventos.",
     "missingUrl": "Sin URL",
     "noDescription": "Sin descripción",
+    "noDates": "Sin fecha",
     "columns": {
       "name": "Evento",
       "website": "Web",
       "races": "Carreras",
+      "dates": "Fechas",
       "description": "Descripción",
       "actions": "Acciones"
     },

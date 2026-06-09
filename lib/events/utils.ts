@@ -6,7 +6,7 @@ import type {
   TrailEventRace,
 } from '@/types/event.types';
 import type { Locale } from '@/i18n';
-import { formatDateToCatalan, formatDateToSpanish } from '@/lib/utils/date';
+import { formatDateToCatalan, formatDateToSpanish, formatIsoDateNumeric } from '@/lib/utils/date';
 import {
   getRaceCategoryConfig,
   type RaceCategorySlug,
@@ -235,6 +235,33 @@ export function formatEventDateRange(
     : formatDateToSpanish(endDate);
 
   return `${formattedStart}${dateRangeConnector(locale)}${formattedEnd}`;
+}
+
+export function formatEventDateRangeNumeric(
+  dateRange: TrailEventDateRange,
+  fallback: string,
+): string {
+  const { startDate, endDate } = dateRange;
+
+  if (!startDate) {
+    return fallback;
+  }
+
+  const formattedStart = formatIsoDateNumeric(startDate);
+  if (!formattedStart) {
+    return fallback;
+  }
+
+  if (!endDate || startDate === endDate) {
+    return formattedStart;
+  }
+
+  const formattedEnd = formatIsoDateNumeric(endDate);
+  if (!formattedEnd) {
+    return fallback;
+  }
+
+  return `${formattedStart} - ${formattedEnd}`;
 }
 
 export function selectRecommendedEvents(

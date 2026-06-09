@@ -1,7 +1,6 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { useLocale } from 'next-intl';
 import { SectionHeader } from '@/components/ui/section-header';
 import { TrailRaceCard } from '@/components/race/trail-race-card';
 import { RaceManagementTable } from '@/components/race/race-management-table';
@@ -34,7 +33,6 @@ export function RaceManagementList({
   headerAction,
   placeholderMode = false,
 }: RaceManagementListProps) {
-  const locale = useLocale();
   const isClickable = !placeholderMode && !!onRaceClick;
 
   return (
@@ -71,7 +69,6 @@ export function RaceManagementList({
       <RaceManagementTable
         races={races}
         labels={labels}
-        locale={locale}
         placeholderMode={placeholderMode}
         isClickable={isClickable}
         onRaceClick={onRaceClick}

@@ -1169,10 +1169,12 @@
     "empty": "No hi ha esdeveniments.",
     "missingUrl": "Sense URL",
     "noDescription": "Sense descripció",
+    "noDates": "Sense data",
     "columns": {
       "name": "Esdeveniment",
       "website": "Web",
       "races": "Curses",
+      "dates": "Dates",
       "description": "Descripció",
       "actions": "Accions"
     },

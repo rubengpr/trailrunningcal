@@ -23,6 +23,7 @@ import {
   runEventImport,
 } from '@/lib/api/events';
 import { OPENROUTER_SCRAPE_MODEL_IDS } from '@/lib/integrations/openrouter/scrape-models';
+import { formatEventDateRangeNumeric } from '@/lib/events/utils';
 import { cleanUrl } from '@/lib/utils/url';
 import type { TrailEventDetail } from '@/types/event.types';
 import type { EventImportResult } from '@/types/events-import-api.types';
@@ -233,6 +234,7 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
             <TableCell header>{t('columns.name')}</TableCell>
             <TableCell header>{t('columns.website')}</TableCell>
             <TableCell header align="right">{t('columns.races')}</TableCell>
+            <TableCell header>{t('columns.dates')}</TableCell>
             <TableCell header>{t('columns.description')}</TableCell>
             <TableCell header align="right">{t('columns.actions')}</TableCell>
           </TableHeader>
@@ -273,6 +275,9 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
                   </TableCell>
                   <TableCell align="right" className="text-sm tabular-nums text-gray-700">
                     {eventDetail.allRaceCount}
+                  </TableCell>
+                  <TableCell className="text-sm text-gray-700">
+                    {formatEventDateRangeNumeric(eventDetail.dateRange, t('noDates'))}
                   </TableCell>
                   <TableCell className="max-w-[300px]">
                     {description ? (

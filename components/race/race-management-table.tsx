@@ -7,9 +7,7 @@ import {
   TableRow,
   TableCell,
 } from '@/components/ui/table';
-import {
-  formatDateByLocale,
-} from '@/lib/utils/date';
+import { formatIsoDateNumeric } from '@/lib/utils/date';
 import { formatDisplayPrice } from '@/lib/races/utils';
 import type { TrailRace } from '@/types/race.types';
 
@@ -23,7 +21,6 @@ export interface RaceManagementTableLabels {
 export interface RaceManagementTableProps {
   races: TrailRace[];
   labels: RaceManagementTableLabels;
-  locale: string;
   placeholderMode?: boolean;
   isClickable: boolean;
   onRaceClick?: (raceId: string) => void;
@@ -36,7 +33,6 @@ interface RaceManagementTableHeaderProps {
 
 interface RaceManagementTableRowProps {
   race: TrailRace;
-  locale: string;
   placeholderMode?: boolean;
   isClickable: boolean;
   onRaceClick?: (raceId: string) => void;
@@ -66,7 +62,6 @@ function RaceManagementTableHeader({
 
 function RaceManagementTableRow({
   race,
-  locale,
   placeholderMode = false,
   isClickable,
   onRaceClick,
@@ -94,7 +89,7 @@ function RaceManagementTableRow({
             placeholderMode ? 'text-gray-300' : 'text-gray-700'
           }`}
         >
-          {formatDateByLocale(race.date, locale)}
+          {formatIsoDateNumeric(race.date) ?? 'N/D'}
         </div>
       </TableCell>
       <TableCell className="whitespace-nowrap">
@@ -122,7 +117,6 @@ function RaceManagementTableRow({
 export function RaceManagementTable({
   races,
   labels,
-  locale,
   placeholderMode = false,
   isClickable,
   onRaceClick,
@@ -135,7 +129,6 @@ export function RaceManagementTable({
           <RaceManagementTableRow
             key={race.id || index}
             race={race}
-            locale={locale}
             placeholderMode={placeholderMode}
             isClickable={isClickable}
             onRaceClick={onRaceClick}

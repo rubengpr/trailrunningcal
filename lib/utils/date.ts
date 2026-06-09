@@ -50,6 +50,17 @@ export const formatDateByLocale = (
     : formatDateToSpanish(date);
 };
 
+export const formatIsoDateNumeric = (isoDate: string | null): string | null => {
+  if (!isoDate) {
+    return null;
+  }
+  const [year, month, day] = isoDate.split('-');
+  if (!year || !month || !day) {
+    return null;
+  }
+  return `${day}-${month}-${year}`;
+};
+
 export const formatDateShort = (date: Date | string): string => {
   const dateObj = typeof date === 'string' ? new Date(date + 'T00:00:00') : date;
 
