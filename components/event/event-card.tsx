@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { Locale } from '@/i18n';
 import type { TrailEventDetail } from '@/types/event.types';
+import { formatEventLocationLabel } from '@/lib/events/utils';
 
 interface EventCardProps {
   eventDetail: TrailEventDetail;
@@ -39,9 +40,7 @@ function formatDateBlock(dateString: string | null, locale: Locale) {
 
 export function EventCard({ eventDetail, locale }: EventCardProps) {
   const { day, month, weekday } = formatDateBlock(eventDetail.dateRange.startDate, locale);
-  const location = eventDetail.location.isMultipleLocations
-    ? null
-    : [eventDetail.location.city, eventDetail.location.province].filter(Boolean).join(', ');
+  const location = formatEventLocationLabel(eventDetail.location, locale);
   const distances = eventDetail.races.map((race) => ({
     id: race.id,
     label: formatDistance(race.distanceKm, locale),

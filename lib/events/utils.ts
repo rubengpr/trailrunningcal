@@ -82,21 +82,74 @@ export function buildEventDateRange(
 export function buildEventLocation(
   races: TrailEventRace[],
 ): TrailEventLocation {
-  const cities = new Set(
-    races.map((race) => race.city.trim()).filter((city) => city.length > 0),
-  );
-  const provinces = new Set(
-    races
-      .map((race) => race.province.trim())
-      .filter((province) => province.length > 0),
-  );
-  const isMultipleLocations = cities.size > 1 || provinces.size > 1;
+  const cities = new Set<string>();
+  const citiesByProvince = new Map<string, string[]>();
+  const provinceOrder: string[] = [];
+
+  for (const race of races) {
+    const city = race.city.trim();
+    const province = race.province.trim();
+
+    if (city.length > 0) {
+      cities.add(city);
+    }
+
+    if (province.length === 0) {
+      continue;
+    }
+
+    if (!citiesByProvince.has(province)) {
+      citiesByProvince.set(province, []);
+      provinceOrder.push(province);
+    }
+
+    const provinceCities = citiesByProvince.get(province)!;
+    if (city.length > 0 && !provinceCities.includes(city)) {
+      provinceCities.push(city);
+    }
+  }
+
+  const groups = provinceOrder.map((province) => ({
+    province,
+    cities: citiesByProvince.get(province) ?? [],
+  }));
+  const isMultipleLocations = cities.size > 1 || provinceOrder.length > 1;
 
   return {
     city: isMultipleLocations ? null : [...cities][0] ?? null,
-    province: isMultipleLocations ? null : [...provinces][0] ?? null,
+    province: isMultipleLocations ? null : provinceOrder[0] ?? null,
+    groups,
     isMultipleLocations,
   };
+}
+
+/**
+ * Builds a display label for an event's location(s). Cities are grouped by
+ * province so a shared province is shown only once, with their cities joined
+ * using a locale-aware conjunction (e.g. "Bagà y Sabadell, Barcelona" in es,
+ * "Bagà i Sabadell, Barcelona" in ca); distinct provinces are separated with
+ * " | ".
+ */
+export function formatEventLocationLabel(
+  location: TrailEventLocation,
+  locale: Locale,
+): string {
+  if (location.groups.length === 0) {
+    return [location.city, location.province].filter(Boolean).join(', ');
+  }
+
+  const cityList = new Intl.ListFormat(locale, {
+    style: 'long',
+    type: 'conjunction',
+  });
+
+  return location.groups
+    .map((group) =>
+      [group.cities.length > 0 ? cityList.format(group.cities) : '', group.province]
+        .filter((part) => part.length > 0)
+        .join(', '),
+    )
+    .join(' | ');
 }
 
 export function buildEventDetail(
@@ -268,7 +321,6 @@ export function filterHomeEvents(
   referenceDate: string = new Date().toISOString().slice(0, 10),
 ): TrailEventDetail[] {
   return events
-    .filter((eventDetail) => !eventDetail.location.isMultipleLocations)
     .filter((eventDetail) => eventDetail.dateRange.startDate !== null)
     .filter((eventDetail) => eventDetail.dateRange.startDate! > referenceDate)
     .filter((eventDetail) => {
@@ -282,8 +334,9 @@ export function filterHomeEvents(
     })
     .filter((eventDetail) =>
       selectedProvince.length === 0 ||
-      (eventDetail.location.province !== null &&
-        selectedProvince.includes(eventDetail.location.province)),
+      eventDetail.location.groups.some((group) =>
+        selectedProvince.includes(group.province),
+      ),
     )
     .filter((eventDetail) => {
       if (selectedDistance.length === 0) {

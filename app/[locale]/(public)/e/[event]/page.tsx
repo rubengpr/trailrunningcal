@@ -14,7 +14,7 @@ import { EventShareWhatsappButton } from '@/components/event/event-share-whatsap
 import { ConfirmedDateBadge } from '@/components/race/confirmed-date-badge';
 import { RaceOrganizerClaimCard } from '@/components/race/race-organizer-claim-card';
 import { TrackedLink } from '@/components/ui/tracked-link';
-import { formatEventDateRange } from '@/lib/events/utils';
+import { formatEventDateRange, formatEventLocationLabel } from '@/lib/events/utils';
 import { buildBreadcrumbJsonLd, buildEventJsonLd } from '@/lib/seo/json-ld';
 import { LOCALE_BY_LANGUAGE, SITE_NAME } from '@/lib/seo/meta-config';
 import { getDestinationPath, getProvinceByDbName } from '@/lib/geography/destinations';
@@ -118,11 +118,7 @@ export default async function EventPage({
     localeTyped,
     tEvent('dateTbd'),
   );
-  const locationLabel = eventData.location.isMultipleLocations
-    ? tEvent('multipleLocations')
-    : [eventData.location.city, eventData.location.province]
-      .filter(Boolean)
-      .join(', ');
+  const locationLabel = formatEventLocationLabel(eventData.location, locale as Locale);
 
   const destinationProvince =
     !eventData.location.isMultipleLocations && eventData.location.province

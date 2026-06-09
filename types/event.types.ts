@@ -50,9 +50,15 @@ export interface TrailEventDateRange {
   endDate: string | null;
 }
 
+export interface TrailEventLocationGroup {
+  province: string;
+  cities: string[];
+}
+
 export interface TrailEventLocation {
   city: string | null;
   province: string | null;
+  groups: TrailEventLocationGroup[];
   isMultipleLocations: boolean;
 }
 

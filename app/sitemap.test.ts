@@ -68,7 +68,7 @@ describe('sitemap event URLs', () => {
         races: [],
         allRaceCount: 0,
         dateRange: { startDate: null, endDate: null },
-        location: { city: null, province: null, isMultipleLocations: false },
+        location: { city: null, province: null, groups: [], isMultipleLocations: false },
       },
     ]);
 
@@ -96,7 +96,7 @@ describe('sitemap event URLs', () => {
         races: [],
         allRaceCount: 0,
         dateRange: { startDate: null, endDate: null },
-        location: { city: null, province: null, isMultipleLocations: false },
+        location: { city: null, province: null, groups: [], isMultipleLocations: false },
       },
     ]);
 

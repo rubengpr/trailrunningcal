@@ -4,6 +4,7 @@ import {
   buildEventLocation,
   filterHomeEvents,
   formatEventDateRange,
+  formatEventLocationLabel,
   getEventRaceIds,
   selectRecommendedEvents,
   selectRelevantEventRaces,
@@ -57,6 +58,7 @@ function eventDetail(
     location: {
       city: province ? 'Girona' : null,
       province,
+      groups: province ? [{ province, cities: ['Girona'] }] : [],
       isMultipleLocations: false,
     },
     ...overrides,
@@ -165,6 +167,7 @@ describe('buildEventLocation', () => {
     expect(result).toEqual({
       city: 'Bagà',
       province: 'Barcelona',
+      groups: [{ province: 'Barcelona', cities: ['Bagà'] }],
       isMultipleLocations: false,
     });
   });
@@ -178,6 +181,7 @@ describe('buildEventLocation', () => {
     expect(result).toEqual({
       city: null,
       province: null,
+      groups: [{ province: 'Barcelona', cities: ['Bagà', 'Girona'] }],
       isMultipleLocations: true,
     });
   });
@@ -201,8 +205,75 @@ describe('buildEventLocation', () => {
     expect(result).toEqual({
       city: null,
       province: null,
+      groups: [
+        { province: 'Barcelona', cities: ['Bagà'] },
+        { province: 'Girona', cities: ['Bagà'] },
+      ],
       isMultipleLocations: true,
     });
+  });
+});
+
+describe('formatEventLocationLabel', () => {
+  it('shows city and province for a single location', () => {
+    expect(
+      formatEventLocationLabel(
+        buildEventLocation([
+          race({ id: 'one', date: '2026-05-01', distanceKm: 10, city: 'All', province: 'Girona' }),
+        ]),
+        'es',
+      ),
+    ).toBe('All, Girona');
+  });
+
+  it('joins two cities sharing a province with a conjunction', () => {
+    expect(
+      formatEventLocationLabel(
+        buildEventLocation([
+          race({ id: 'one', date: '2026-05-01', distanceKm: 10, city: 'Bagà', province: 'Barcelona' }),
+          race({ id: 'two', date: '2026-05-02', distanceKm: 20, city: 'Sabadell', province: 'Barcelona' }),
+        ]),
+        'es',
+      ),
+    ).toBe('Bagà y Sabadell, Barcelona');
+  });
+
+  it('joins three cities sharing a province with commas and a conjunction', () => {
+    expect(
+      formatEventLocationLabel(
+        buildEventLocation([
+          race({ id: 'one', date: '2026-05-01', distanceKm: 10, city: 'Bagà', province: 'Barcelona' }),
+          race({ id: 'two', date: '2026-05-02', distanceKm: 20, city: 'Sabadell', province: 'Barcelona' }),
+          race({ id: 'three', date: '2026-05-03', distanceKm: 30, city: 'Terrassa', province: 'Barcelona' }),
+        ]),
+        'es',
+      ),
+    ).toBe('Bagà, Sabadell y Terrassa, Barcelona');
+  });
+
+  it('uses the Catalan conjunction for the ca locale', () => {
+    expect(
+      formatEventLocationLabel(
+        buildEventLocation([
+          race({ id: 'one', date: '2026-05-01', distanceKm: 10, city: 'Bagà', province: 'Barcelona' }),
+          race({ id: 'two', date: '2026-05-02', distanceKm: 20, city: 'Sabadell', province: 'Barcelona' }),
+        ]),
+        'ca',
+      ),
+    ).toBe('Bagà i Sabadell, Barcelona');
+  });
+
+  it('separates distinct provinces with their own cities', () => {
+    expect(
+      formatEventLocationLabel(
+        buildEventLocation([
+          race({ id: 'one', date: '2026-05-01', distanceKm: 10, city: 'Bagà', province: 'Barcelona' }),
+          race({ id: 'two', date: '2026-05-02', distanceKm: 20, city: 'Sabadell', province: 'Barcelona' }),
+          race({ id: 'three', date: '2026-05-03', distanceKm: 30, city: 'La Molina', province: 'Girona' }),
+        ]),
+        'es',
+      ),
+    ).toBe('Bagà y Sabadell, Barcelona | La Molina, Girona');
   });
 });
 
@@ -293,7 +364,15 @@ describe('selectRecommendedEvents', () => {
         eventDetail({ id: 'other-province', province: 'Barcelona' }),
         eventDetail({
           id: 'multi',
-          location: { city: null, province: null, isMultipleLocations: true },
+          location: {
+            city: null,
+            province: null,
+            groups: [
+              { province: 'Barcelona', cities: ['Bagà'] },
+              { province: 'Girona', cities: ['La Molina'] },
+            ],
+            isMultipleLocations: true,
+          },
         }),
       ],
       {
@@ -348,7 +427,7 @@ describe('selectRecommendedEvents', () => {
 });
 
 describe('filterHomeEvents', () => {
-  it('returns future single-location dated events only', () => {
+  it('returns future dated events, including multi-location ones', () => {
     const result = filterHomeEvents(
       [
         eventDetail({ id: 'future', startDate: '2026-07-01' }),
@@ -356,7 +435,15 @@ describe('filterHomeEvents', () => {
         eventDetail({ id: 'undated', startDate: null }),
         eventDetail({
           id: 'multi',
-          location: { city: null, province: null, isMultipleLocations: true },
+          location: {
+            city: null,
+            province: null,
+            groups: [
+              { province: 'Barcelona', cities: ['Bagà'] },
+              { province: 'Girona', cities: ['La Molina'] },
+            ],
+            isMultipleLocations: true,
+          },
         }),
       ],
       [],
@@ -366,7 +453,7 @@ describe('filterHomeEvents', () => {
       '2026-06-01',
     );
 
-    expect(result.map((event) => event.event.id)).toEqual(['future']);
+    expect(result.map((event) => event.event.id)).toEqual(['future', 'multi']);
   });
 
   it('filters by month', () => {

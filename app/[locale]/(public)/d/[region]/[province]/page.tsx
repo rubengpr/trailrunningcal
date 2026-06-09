@@ -74,10 +74,10 @@ export default async function DestinationPage({
     destination.provinceId,
   );
 
-  const destinationEvents = events.filter(
-    (eventDetail) =>
-      !eventDetail.location.isMultipleLocations &&
-      eventDetail.location.province === destination.province.dbName,
+  const destinationEvents = events.filter((eventDetail) =>
+    eventDetail.location.groups.some(
+      (group) => group.province === destination.province.dbName,
+    ),
   );
 
   return (

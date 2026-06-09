@@ -7,7 +7,7 @@ import { Heart } from 'lucide-react';
 import type { Locale } from '@/i18n';
 import type { TrailEventDetail } from '@/types/event.types';
 import { useEventFavorites } from '@/hooks/use-event-favorites';
-import { formatEventDateRange } from '@/lib/events/utils';
+import { formatEventDateRange, formatEventLocationLabel } from '@/lib/events/utils';
 import { getFavoriteEvents } from '@/lib/api/events';
 
 export function EventFavoritesClient() {
@@ -104,11 +104,7 @@ export function EventFavoritesClient() {
   return (
     <div className="grid grid-cols-1 gap-4 min-w-0">
       {favoriteEvents.map((eventDetail) => {
-        const location = eventDetail.location.isMultipleLocations
-          ? t('multipleLocations')
-          : [eventDetail.location.city, eventDetail.location.province]
-              .filter(Boolean)
-              .join(', ');
+        const location = formatEventLocationLabel(eventDetail.location, locale);
 
         return (
           <Link
