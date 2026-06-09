@@ -14,7 +14,7 @@ type RaceForRevalidation = {
 
 export function revalidateHomepages() {
   for (const locale of locales) {
-    revalidatePath(`/${locale}`, 'page');
+    revalidatePath(`/${locale}`);
   }
 }
 
@@ -28,7 +28,6 @@ export function revalidateProvincePage(province: string) {
   for (const locale of locales) {
     revalidatePath(
       getDestinationPath(locale, destination.province.regionId, destination.id),
-      'page',
     );
   }
 }
@@ -37,7 +36,7 @@ export function revalidateCategoryPages(race: RaceForRevalidation) {
   const slugs = getRaceCategorySlugsForRace(race);
   for (const locale of locales) {
     for (const slug of slugs) {
-      revalidatePath(getTypePath(locale, slug), 'page');
+      revalidatePath(getTypePath(locale, slug));
     }
   }
 }
@@ -49,13 +48,13 @@ export function revalidateRacePages(raceName: string | null) {
 
   const slug = generateRaceSlug(raceName);
   for (const locale of locales) {
-    revalidatePath(`/${locale}/carrera/${slug}`, 'page');
+    revalidatePath(`/${locale}/carrera/${slug}`);
   }
 }
 
 export function revalidateEventPages(eventSlug: string) {
   for (const locale of locales) {
-    revalidatePath(`/${locale}/e/${eventSlug}`, 'page');
+    revalidatePath(`/${locale}/e/${eventSlug}`);
   }
 }
 
