@@ -1,6 +1,13 @@
 'use client';
 
 import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableCell,
+} from '@/components/ui/table';
+import {
   formatDateByLocale,
 } from '@/lib/utils/date';
 import { formatDisplayPrice } from '@/lib/races/utils';
@@ -40,38 +47,20 @@ function RaceManagementTableHeader({
   placeholderMode = false,
 }: RaceManagementTableHeaderProps) {
   return (
-    <thead>
-      <tr className="border-b border-gray-100">
-        <th
-          className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider sticky left-0 bg-white z-10 ${
-            placeholderMode ? 'text-gray-300' : 'text-gray-500'
-          }`}
-        >
-          {labels.name}
-        </th>
-        <th
-          className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider ${
-            placeholderMode ? 'text-gray-300' : 'text-gray-500'
-          }`}
-        >
-          {labels.date}
-        </th>
-        <th
-          className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider ${
-            placeholderMode ? 'text-gray-300' : 'text-gray-500'
-          }`}
-        >
-          {labels.distance}
-        </th>
-        <th
-          className={`px-6 py-4 text-right text-xs font-medium uppercase tracking-wider ${
-            placeholderMode ? 'text-gray-300' : 'text-gray-500'
-          }`}
-        >
-          {labels.price}
-        </th>
-      </tr>
-    </thead>
+    <TableHeader>
+      <TableCell header sticky muted={placeholderMode}>
+        {labels.name}
+      </TableCell>
+      <TableCell header muted={placeholderMode}>
+        {labels.date}
+      </TableCell>
+      <TableCell header muted={placeholderMode}>
+        {labels.distance}
+      </TableCell>
+      <TableCell header align="right" muted={placeholderMode}>
+        {labels.price}
+      </TableCell>
+    </TableHeader>
   );
 }
 
@@ -83,14 +72,13 @@ function RaceManagementTableRow({
   onRaceClick,
 }: RaceManagementTableRowProps) {
   return (
-    <tr
+    <TableRow
+      clickable={isClickable}
       onClick={isClickable && race.id ? () => onRaceClick?.(race.id) : undefined}
-      className={isClickable ? 'hover:bg-gray-50/50 transition-colors duration-150 group cursor-pointer' : ''}
     >
-      <td
-        className={`px-6 py-5 whitespace-nowrap sticky left-0 bg-white z-10 ${
-          isClickable ? 'group-hover:bg-gray-50/50' : ''
-        }`}
+      <TableCell
+        sticky
+        className={`whitespace-nowrap ${isClickable ? 'group-hover:bg-gray-50/50' : ''}`.trim()}
       >
         <div
           className={`text-sm font-medium ${
@@ -99,8 +87,8 @@ function RaceManagementTableRow({
         >
           {race.name}
         </div>
-      </td>
-      <td className="px-6 py-5 whitespace-nowrap">
+      </TableCell>
+      <TableCell className="whitespace-nowrap">
         <div
           className={`text-sm ${
             placeholderMode ? 'text-gray-300' : 'text-gray-700'
@@ -108,8 +96,8 @@ function RaceManagementTableRow({
         >
           {formatDateByLocale(race.date, locale)}
         </div>
-      </td>
-      <td className="px-6 py-5 whitespace-nowrap">
+      </TableCell>
+      <TableCell className="whitespace-nowrap">
         <div
           className={`text-sm ${
             placeholderMode ? 'text-gray-300' : 'text-gray-700'
@@ -117,8 +105,8 @@ function RaceManagementTableRow({
         >
           {race.distanceKm} km
         </div>
-      </td>
-      <td className="px-6 py-5 whitespace-nowrap text-right">
+      </TableCell>
+      <TableCell align="right" className="whitespace-nowrap">
         <div
           className={`text-sm font-medium ${
             placeholderMode ? 'text-gray-300' : 'text-gray-900'
@@ -126,8 +114,8 @@ function RaceManagementTableRow({
         >
           {formatDisplayPrice(race.priceEur)}
         </div>
-      </td>
-    </tr>
+      </TableCell>
+    </TableRow>
   );
 }
 
@@ -140,24 +128,20 @@ export function RaceManagementTable({
   onRaceClick,
 }: RaceManagementTableProps) {
   return (
-    <div className="hidden sm:block w-full bg-white rounded-2xl shadow-sm border border-gray-50 overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <RaceManagementTableHeader labels={labels} placeholderMode={placeholderMode} />
-          <tbody className="bg-white divide-y divide-gray-50">
-            {races.map((race, index) => (
-              <RaceManagementTableRow
-                key={race.id || index}
-                race={race}
-                locale={locale}
-                placeholderMode={placeholderMode}
-                isClickable={isClickable}
-                onRaceClick={onRaceClick}
-              />
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <Table className="hidden sm:block">
+      <RaceManagementTableHeader labels={labels} placeholderMode={placeholderMode} />
+      <TableBody>
+        {races.map((race, index) => (
+          <RaceManagementTableRow
+            key={race.id || index}
+            race={race}
+            locale={locale}
+            placeholderMode={placeholderMode}
+            isClickable={isClickable}
+            onRaceClick={onRaceClick}
+          />
+        ))}
+      </TableBody>
+    </Table>
   );
 }
