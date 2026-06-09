@@ -1,11 +1,20 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { Eye, RefreshCw, TextCursor, Trash2, X } from 'lucide-react';
+import {
+  ChevronDown,
+  ChevronUp,
+  ChevronsUpDown,
+  Eye,
+  RefreshCw,
+  TextCursor,
+  Trash2,
+  X,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { BaseModal } from '@/components/ui/base-modal';
 import { SectionHeader } from '@/components/ui/section-header';
@@ -36,6 +45,9 @@ interface AdminEventsContentProps {
   events: TrailEventDetail[];
 }
 
+type SortColumn = 'name' | 'dates';
+type SortDirection = 'asc' | 'desc';
+
 export function AdminEventsContent({ events }: AdminEventsContentProps) {
   const t = useTranslations('adminEvents');
   const locale = useLocale();
@@ -46,10 +58,45 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
   const [suggestions, setSuggestions] = useState<Record<string, EventImportResult>>({});
   const [reviewEventId, setReviewEventId] = useState<string | null>(null);
   const [acceptingSuggestionId, setAcceptingSuggestionId] = useState<string | null>(null);
+  const [sortColumn, setSortColumn] = useState<SortColumn>('dates');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
   const subtitle = events.length === 1
     ? t('eventCountOne')
     : t('eventCount', { count: events.length });
+
+  const sortedEvents = useMemo(() => {
+    const directionFactor = sortDirection === 'asc' ? 1 : -1;
+
+    return [...events].sort((a, b) => {
+      const comparison =
+        sortColumn === 'name'
+          ? a.event.name.localeCompare(b.event.name, locale)
+          : (a.dateRange.startDate ?? '').localeCompare(b.dateRange.startDate ?? '');
+
+      return comparison * directionFactor;
+    });
+  }, [events, sortColumn, sortDirection, locale]);
+
+  const handleSort = (column: SortColumn): void => {
+    if (column === sortColumn) {
+      setSortDirection((direction) => (direction === 'asc' ? 'desc' : 'asc'));
+      return;
+    }
+    setSortColumn(column);
+    setSortDirection('asc');
+  };
+
+  const renderSortIcon = (column: SortColumn) => {
+    if (column !== sortColumn) {
+      return <ChevronsUpDown className="size-3.5 text-gray-300" strokeWidth={1.5} />;
+    }
+    return sortDirection === 'asc' ? (
+      <ChevronUp className="size-3.5" strokeWidth={2} />
+    ) : (
+      <ChevronDown className="size-3.5" strokeWidth={2} />
+    );
+  };
 
   const reviewEventDetail = reviewEventId
     ? events.find((eventDetail) => eventDetail.event.id === reviewEventId) ?? null
@@ -230,14 +277,32 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
       ) : (
         <Table>
           <TableHeader>
-            <TableCell header>{t('columns.name')}</TableCell>
+            <TableCell
+              header
+              className="cursor-pointer select-none transition-colors hover:text-gray-800"
+              onClick={() => handleSort('name')}
+            >
+              <span className="inline-flex items-center gap-1">
+                {t('columns.name')}
+                {renderSortIcon('name')}
+              </span>
+            </TableCell>
             <TableCell header>{t('columns.website')}</TableCell>
             <TableCell header align="right">{t('columns.races')}</TableCell>
-            <TableCell header>{t('columns.dates')}</TableCell>
+            <TableCell
+              header
+              className="cursor-pointer select-none transition-colors hover:text-gray-800"
+              onClick={() => handleSort('dates')}
+            >
+              <span className="inline-flex items-center gap-1">
+                {t('columns.dates')}
+                {renderSortIcon('dates')}
+              </span>
+            </TableCell>
             <TableCell header align="right">{t('columns.actions')}</TableCell>
           </TableHeader>
           <TableBody>
-            {events.map((eventDetail) => {
+            {sortedEvents.map((eventDetail) => {
               const { event } = eventDetail;
               const isLoadingSuggestion = loadingSuggestionIds.has(event.id);
               const hasSuggestion = suggestions[event.id] !== undefined;
