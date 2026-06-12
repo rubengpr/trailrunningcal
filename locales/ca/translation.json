@@ -200,6 +200,11 @@
     "subtitle": "Descobreix curses de muntanya a prop teu. Explora el calendari de curses de trail running a Catalunya i troba tota la informació de curses espectaculars arreu del territori.",
     "cta": "Calendari"
   },
+  "banner": {
+    "alt": "Banner",
+    "announcement": "10% descompte a Salssa PERFORM i RECOVER amb el codi",
+    "code": "TRC10"
+  },
   "contact": {
     "title": "Contacta amb Trail Running Calendar",
     "description": "Contacteu-nos per consultes sobre curses de trail running a Catalunya, afegir el vostre esdeveniment al calendari o col·laboracions.",

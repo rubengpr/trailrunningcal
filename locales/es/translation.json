@@ -200,6 +200,11 @@
     "subtitle": "Descubre carreras de montaña cerca de ti. Explora el calendario de carreras de trail running en Cataluña y encuentra toda la información de carreras espectaculares en todo el territorio.",
     "cta": "Calendario"
   },
+  "banner": {
+    "alt": "Banner",
+    "announcement": "10% descuento en Salssa PERFORM y RECOVER con el código",
+    "code": "TRC10"
+  },
   "contact": {
     "title": "Contacta con Trail Running Calendar",
     "description": "Contáctanos para consultas sobre carreras de trail running en Cataluña, añadir tu evento al calendario o colaboraciones.",
