@@ -46,7 +46,7 @@ Return structured JSON with event, races, and errorMessage.
   },
   "races": [
     {
-      "name": "Trail del Montseny - 42K",
+      "name": "Xtrem",
       "date": "2026-04-12",
       "city": "Arbúcies",
       "province": "Girona",
@@ -54,7 +54,7 @@ Return structured JSON with event, races, and errorMessage.
       "elevationGainM": 2100
     },
     {
-      "name": "Trail del Montseny - 21K",
+      "name": "Challenge",
       "date": "2026-04-12",
       "city": "Arbúcies",
       "province": "Girona",
@@ -62,7 +62,7 @@ Return structured JSON with event, races, and errorMessage.
       "elevationGainM": 1100
     },
     {
-      "name": "Trail del Montseny - 10K",
+      "name": "Sprint",
       "date": "2026-04-12",
       "city": "Arbúcies",
       "province": "Girona",
@@ -70,7 +70,7 @@ Return structured JSON with event, races, and errorMessage.
       "elevationGainM": 450
     },
     {
-      "name": "Caminada popular del Montseny - 10K",
+      "name": "Marcha",
       "date": "2026-04-12",
       "city": "Arbúcies",
       "province": "Girona",
