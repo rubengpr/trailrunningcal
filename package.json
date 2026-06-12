@@ -23,6 +23,7 @@
     "@types/mdx": "^2.0.13",
     "@vercel/analytics": "^1.6.1",
     "@vercel/functions": "^3.5.1",
+    "franc": "^6.2.0",
     "gray-matter": "^4.0.3",
     "lucide-react": "^1.11.0",
     "maplibre-gl": "^5.21.1",
