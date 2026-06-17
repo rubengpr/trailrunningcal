@@ -26,11 +26,14 @@ import {
   TableCell,
 } from '@/components/ui/table';
 import { EventImportPreview } from '@/components/admin/event-import-preview';
+import { EventRacesEditModal } from '@/components/admin/event-races-edit-modal';
 import {
   createEventEdition,
   deleteEvent,
   runEventImport,
+  updateEvent,
 } from '@/lib/api/events';
+import type { EventRaceWriteInput } from '@/lib/api/events';
 import { OPENROUTER_SCRAPE_MODEL_IDS } from '@/lib/integrations/openrouter/scrape-models';
 import { formatEventDateRangeNumeric } from '@/lib/events/utils';
 import { cleanUrl } from '@/lib/utils/url';
@@ -50,10 +53,13 @@ type SortDirection = 'asc' | 'desc';
 
 export function AdminEventsContent({ events }: AdminEventsContentProps) {
   const t = useTranslations('adminEvents');
+  const formT = useTranslations('adminEvents.form');
   const locale = useLocale();
   const router = useRouter();
   const [eventToDelete, setEventToDelete] = useState<TrailEventDetail | null>(null);
+  const [eventToEdit, setEventToEdit] = useState<TrailEventDetail | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
   const [loadingSuggestionIds, setLoadingSuggestionIds] = useState<Set<string>>(new Set());
   const [suggestions, setSuggestions] = useState<Record<string, EventImportResult>>({});
   const [reviewEventId, setReviewEventId] = useState<string | null>(null);
@@ -102,6 +108,28 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
     ? events.find((eventDetail) => eventDetail.event.id === reviewEventId) ?? null
     : null;
   const reviewSuggestion = reviewEventId ? suggestions[reviewEventId] : null;
+  const editModalEvent = useMemo<TrailEventAgentEvent | null>(() => {
+    if (!eventToEdit) return null;
+
+    return {
+      name: eventToEdit.event.name,
+      description: eventToEdit.event.description,
+      websiteUrl: eventToEdit.event.websiteUrl,
+    };
+  }, [eventToEdit]);
+  const editModalRaces = useMemo<EventRaceWriteInput[]>(() => {
+    if (!eventToEdit) return [];
+
+    return eventToEdit.races.map((race) => ({
+      id: race.id,
+      name: race.name,
+      date: race.date,
+      city: race.city,
+      province: race.province,
+      distanceKm: race.distanceKm,
+      elevationGainM: race.elevationGainM,
+    }));
+  }, [eventToEdit]);
 
   useEffect(() => {
     if (!reviewEventId) return;
@@ -225,6 +253,29 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
       );
     } finally {
       setAcceptingSuggestionId(null);
+    }
+  };
+
+  const handleSaveEdit = async (
+    event: TrailEventAgentEvent,
+    races: EventRaceWriteInput[],
+  ): Promise<void> => {
+    if (!eventToEdit || isSavingEdit) return;
+
+    setIsSavingEdit(true);
+    try {
+      await updateEvent(eventToEdit.event.id, event, races);
+      setEventToEdit(null);
+      toast.success(formT('success'));
+      router.refresh();
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : formT('errors.save'),
+      );
+    } finally {
+      setIsSavingEdit(false);
     }
   };
 
@@ -368,7 +419,7 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
                       </button>
                       <button
                         type="button"
-                        onClick={() => router.push(`/${locale}/admin/eventos/${event.id}`)}
+                        onClick={() => setEventToEdit(eventDetail)}
                         title={t('edit.button')}
                         className="inline-flex size-8 items-center justify-center rounded text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-800 cursor-pointer"
                       >
@@ -391,6 +442,19 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
           </TableBody>
         </Table>
       )}
+
+      <EventRacesEditModal
+        isOpen={eventToEdit !== null}
+        event={editModalEvent}
+        races={editModalRaces}
+        title={formT('editTitle')}
+        isSaving={isSavingEdit}
+        savingLabel={formT('saving')}
+        onClose={() => {
+          if (!isSavingEdit) setEventToEdit(null);
+        }}
+        onSave={handleSaveEdit}
+      />
 
       {reviewEventDetail && reviewSuggestion && (
         <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-gray-900/60 px-4 py-10 backdrop-blur-[1px] sm:py-14">

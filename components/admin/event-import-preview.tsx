@@ -7,19 +7,17 @@ import {
   Check,
   Globe,
   MapPin,
-  Plus,
   TextCursor,
-  Trash2,
   WholeWord,
   X,
 } from 'lucide-react';
+import { EventRacesEditModal } from '@/components/admin/event-races-edit-modal';
 import type { Locale } from '@/i18n';
 import {
   buildEventDateRange,
   buildEventLocation,
   formatEventDateRange,
 } from '@/lib/events/utils';
-import { BaseModal } from '@/components/ui/base-modal';
 import type { TrailEventRace } from '@/types/event.types';
 import type {
   TrailEventAgentEvent,
@@ -56,17 +54,6 @@ function toPreviewRace(
     elevationGainM: race.elevationGainM,
     city: race.city,
     province: race.province,
-  };
-}
-
-function emptyRaceDraft(): TrailEventAgentRace {
-  return {
-    name: null,
-    date: null,
-    city: '',
-    province: '',
-    distanceKm: 0,
-    elevationGainM: null,
   };
 }
 
@@ -154,18 +141,6 @@ function ReviewActionButton({
   );
 }
 
-function RacePositionBadge({ number }: { number: number }): React.ReactElement {
-  return (
-    <span className="inline-flex h-6 min-w-6 shrink-0 items-center justify-center rounded-full bg-gray-100 px-2 text-xs font-semibold tabular-nums text-gray-600">
-      {number}
-    </span>
-  );
-}
-
-const inputClass =
-  'w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-400';
-const labelClass = 'text-xs font-medium text-gray-600';
-
 export function EventImportPreview({
   event,
   races,
@@ -183,10 +158,6 @@ export function EventImportPreview({
   const t = useTranslations('admin.events.import.results');
   const locale = useLocale() as Locale;
   const [isEditing, setIsEditing] = useState(false);
-  const [eventDraft, setEventDraft] = useState<TrailEventAgentEvent | null>(
-    null,
-  );
-  const [raceDrafts, setRaceDrafts] = useState<TrailEventAgentRace[]>([]);
 
   if (isLoading) {
     return (
@@ -235,45 +206,19 @@ export function EventImportPreview({
   const isActionDisabled = isAccepting || isAccepted || isRejected;
 
   const handleStartEdit = (): void => {
-    setEventDraft({ ...event });
-    setRaceDrafts(races.map((race) => ({ ...race })));
     setIsEditing(true);
   };
 
   const handleCancelEdit = (): void => {
     setIsEditing(false);
-    setEventDraft(null);
-    setRaceDrafts([]);
   };
 
-  const handleSaveReview = (): void => {
-    if (!eventDraft) return;
-
-    onSaveReview(eventDraft, raceDrafts);
-    setIsEditing(false);
-  };
-
-  const updateRaceDraft = (
-    index: number,
-    race: TrailEventAgentRace,
+  const handleSaveReview = (
+    nextEvent: TrailEventAgentEvent,
+    nextRaces: TrailEventAgentRace[],
   ): void => {
-    setRaceDrafts((drafts) =>
-      drafts.map((draft, draftIndex) => (
-        draftIndex === index ? race : draft
-      )),
-    );
-  };
-
-  const addRaceDraft = (): void => {
-    setRaceDrafts((drafts) => [...drafts, emptyRaceDraft()]);
-  };
-
-  const removeRaceDraft = (index: number): void => {
-    setRaceDrafts((drafts) => (
-      drafts.length <= 1
-        ? drafts
-        : drafts.filter((_, draftIndex) => draftIndex !== index)
-    ));
+    onSaveReview(nextEvent, nextRaces);
+    setIsEditing(false);
   };
 
   return (
@@ -432,224 +377,14 @@ export function EventImportPreview({
           </div>
         </section>
       </div>
-      <BaseModal
-        isOpen={isEditing && eventDraft !== null}
-        onClose={handleCancelEdit}
+      <EventRacesEditModal
+        isOpen={isEditing}
+        event={event}
+        races={races}
         title={t('editReview')}
-        maxWidth="3xl"
-      >
-        {eventDraft && (
-          <div className="flex max-h-[70vh] flex-col gap-6 overflow-y-auto px-1 pb-1">
-            <section className="flex flex-col gap-3">
-
-              <div className="flex flex-col gap-1">
-                <label className={labelClass}>{t('editFieldName')}</label>
-                <input
-                  type="text"
-                  className={inputClass}
-                  value={eventDraft.name}
-                  onChange={(e) =>
-                    setEventDraft({ ...eventDraft, name: e.target.value })
-                  }
-                />
-              </div>
-              <div className="flex flex-col gap-1">
-                <label className={labelClass}>
-                  {t('editFieldWebsiteUrl')}
-                </label>
-                <input
-                  type="url"
-                  className={inputClass}
-                  value={eventDraft.websiteUrl ?? ''}
-                  onChange={(e) =>
-                    setEventDraft({
-                      ...eventDraft,
-                      websiteUrl: e.target.value.trim() || null,
-                    })
-                  }
-                />
-              </div>
-              <div className="flex flex-col gap-1">
-                <label className={labelClass}>
-                  {t('editFieldDescription')}
-                </label>
-                <textarea
-                  rows={12}
-                  className={`${inputClass} min-h-64 resize-y`}
-                  value={eventDraft.description ?? ''}
-                  onChange={(e) =>
-                    setEventDraft({
-                      ...eventDraft,
-                      description: e.target.value || null,
-                    })
-                  }
-                />
-              </div>
-            </section>
-
-            <section className="flex flex-col gap-3 pt-4">
-              <div className="flex items-center justify-between gap-3">
-                <h3 className="text-xl font-semibold leading-tight text-gray-950">
-                  {t('editRaceInfo')}
-                </h3>
-                <ReviewActionButton
-                  title={t('addRace')}
-                  onClick={addRaceDraft}
-                  disabled={false}
-                >
-                  <Plus className="h-4 w-4" aria-hidden="true" />
-                </ReviewActionButton>
-              </div>
-              <div className="divide-y divide-gray-200">
-                {raceDrafts.map((race, index) => (
-                  <div
-                    key={`race-draft-${index}`}
-                    className="py-8 first:pt-0 last:pb-0"
-                  >
-                    <div className="mb-3 flex items-center justify-between gap-3">
-                      <div className="flex min-w-0 items-center gap-2">
-                        <RacePositionBadge number={index + 1} />
-                        <p className="min-w-0 truncate text-sm font-semibold text-gray-900">
-                          {race.name?.trim() || t('raceTitle', { number: index + 1 })}
-                        </p>
-                      </div>
-                      <ReviewActionButton
-                        title={t('removeRace')}
-                        disabled={raceDrafts.length <= 1}
-                        onClick={() => removeRaceDraft(index)}
-                      >
-                        <Trash2 className="h-4 w-4" aria-hidden="true" />
-                      </ReviewActionButton>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <label className={labelClass}>
-                        {t('editFieldName')}
-                      </label>
-                      <input
-                        type="text"
-                        className={inputClass}
-                        value={race.name ?? ''}
-                        onChange={(e) =>
-                          updateRaceDraft(index, {
-                            ...race,
-                            name: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-                    <div className="mt-3 grid gap-3 sm:grid-cols-3">
-                      <div className="flex flex-col gap-1">
-                        <label className={labelClass}>
-                          {t('editFieldDate')}
-                        </label>
-                        <input
-                          type="date"
-                          className={inputClass}
-                          value={race.date ?? ''}
-                          onChange={(e) =>
-                            updateRaceDraft(index, {
-                              ...race,
-                              date: e.target.value || null,
-                            })
-                          }
-                        />
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <label className={labelClass}>
-                          {t('editFieldDistance')}
-                        </label>
-                        <input
-                          type="number"
-                          min="0"
-                          step="0.1"
-                          className={inputClass}
-                          value={race.distanceKm}
-                          onChange={(e) =>
-                            updateRaceDraft(index, {
-                              ...race,
-                              distanceKm: Number.parseFloat(e.target.value) || 0,
-                            })
-                          }
-                        />
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <label className={labelClass}>
-                          {t('editFieldElevation')}
-                        </label>
-                        <input
-                          type="number"
-                          min="0"
-                          className={inputClass}
-                          value={race.elevationGainM ?? ''}
-                          onChange={(e) =>
-                            updateRaceDraft(index, {
-                              ...race,
-                              elevationGainM: e.target.value === ''
-                                ? null
-                                : Number.parseInt(e.target.value, 10) || 0,
-                            })
-                          }
-                        />
-                      </div>
-                    </div>
-                    <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                      <div className="flex flex-col gap-1">
-                        <label className={labelClass}>
-                          {t('editFieldCity')}
-                        </label>
-                        <input
-                          type="text"
-                          className={inputClass}
-                          value={race.city}
-                          onChange={(e) =>
-                            updateRaceDraft(index, {
-                              ...race,
-                              city: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <label className={labelClass}>
-                          {t('editFieldProvince')}
-                        </label>
-                        <input
-                          type="text"
-                          className={inputClass}
-                          value={race.province}
-                          onChange={(e) =>
-                            updateRaceDraft(index, {
-                              ...race,
-                              province: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            <div className="flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={handleCancelEdit}
-                className="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50"
-              >
-                {t('cancelEdit')}
-              </button>
-              <button
-                type="button"
-                onClick={handleSaveReview}
-                className="inline-flex items-center rounded-md bg-black px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-gray-800"
-              >
-                {t('saveReview')}
-              </button>
-            </div>
-          </div>
-        )}
-      </BaseModal>
+        onClose={handleCancelEdit}
+        onSave={handleSaveReview}
+      />
     </div>
   );
 }
