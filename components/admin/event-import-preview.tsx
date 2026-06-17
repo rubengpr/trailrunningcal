@@ -154,6 +154,14 @@ function ReviewActionButton({
   );
 }
 
+function RacePositionBadge({ number }: { number: number }): React.ReactElement {
+  return (
+    <span className="inline-flex h-6 min-w-6 shrink-0 items-center justify-center rounded-full bg-gray-100 px-2 text-xs font-semibold tabular-nums text-gray-600">
+      {number}
+    </span>
+  );
+}
+
 const inputClass =
   'w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-400';
 const labelClass = 'text-xs font-medium text-gray-600';
@@ -431,11 +439,9 @@ export function EventImportPreview({
         maxWidth="3xl"
       >
         {eventDraft && (
-          <div className="flex max-h-[70vh] flex-col gap-5 overflow-y-auto px-1 pb-1">
+          <div className="flex max-h-[70vh] flex-col gap-6 overflow-y-auto px-1 pb-1">
             <section className="flex flex-col gap-3">
-              <h3 className="text-sm font-semibold text-gray-900">
-                {t('editEventInfo')}
-              </h3>
+
               <div className="flex flex-col gap-1">
                 <label className={labelClass}>{t('editFieldName')}</label>
                 <input
@@ -481,9 +487,9 @@ export function EventImportPreview({
               </div>
             </section>
 
-            <section className="flex flex-col gap-3">
+            <section className="flex flex-col gap-3 pt-4">
               <div className="flex items-center justify-between gap-3">
-                <h3 className="text-sm font-semibold text-gray-900">
+                <h3 className="text-xl font-semibold leading-tight text-gray-950">
                   {t('editRaceInfo')}
                 </h3>
                 <ReviewActionButton
@@ -498,12 +504,15 @@ export function EventImportPreview({
                 {raceDrafts.map((race, index) => (
                   <div
                     key={`race-draft-${index}`}
-                    className="py-4 first:pt-0 last:pb-0"
+                    className="py-8 first:pt-0 last:pb-0"
                   >
                     <div className="mb-3 flex items-center justify-between gap-3">
-                      <p className="text-xs font-semibold text-gray-700">
-                        {t('raceTitle', { number: index + 1 })}
-                      </p>
+                      <div className="flex min-w-0 items-center gap-2">
+                        <RacePositionBadge number={index + 1} />
+                        <p className="min-w-0 truncate text-sm font-semibold text-gray-900">
+                          {race.name?.trim() || t('raceTitle', { number: index + 1 })}
+                        </p>
+                      </div>
                       <ReviewActionButton
                         title={t('removeRace')}
                         disabled={raceDrafts.length <= 1}
