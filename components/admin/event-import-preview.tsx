@@ -463,7 +463,7 @@ export function EventImportPreview({
               <div className="divide-y divide-gray-200">
                 {raceDrafts.map((race, index) => (
                   <div
-                    key={`${race.date ?? 'unknown'}-${race.distanceKm}-${index}`}
+                    key={`race-draft-${index}`}
                     className="py-4 first:pt-0 last:pb-0"
                   >
                     <div className="flex flex-col gap-1">
