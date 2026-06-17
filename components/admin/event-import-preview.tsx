@@ -7,7 +7,9 @@ import {
   Check,
   Globe,
   MapPin,
+  Plus,
   TextCursor,
+  Trash2,
   WholeWord,
   X,
 } from 'lucide-react';
@@ -54,6 +56,17 @@ function toPreviewRace(
     elevationGainM: race.elevationGainM,
     city: race.city,
     province: race.province,
+  };
+}
+
+function emptyRaceDraft(): TrailEventAgentRace {
+  return {
+    name: null,
+    date: null,
+    city: '',
+    province: '',
+    distanceKm: 0,
+    elevationGainM: null,
   };
 }
 
@@ -241,6 +254,18 @@ export function EventImportPreview({
         draftIndex === index ? race : draft
       )),
     );
+  };
+
+  const addRaceDraft = (): void => {
+    setRaceDrafts((drafts) => [...drafts, emptyRaceDraft()]);
+  };
+
+  const removeRaceDraft = (index: number): void => {
+    setRaceDrafts((drafts) => (
+      drafts.length <= 1
+        ? drafts
+        : drafts.filter((_, draftIndex) => draftIndex !== index)
+    ));
   };
 
   return (
@@ -457,15 +482,36 @@ export function EventImportPreview({
             </section>
 
             <section className="flex flex-col gap-3">
-              <h3 className="text-sm font-semibold text-gray-900">
-                {t('editRaceInfo')}
-              </h3>
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="text-sm font-semibold text-gray-900">
+                  {t('editRaceInfo')}
+                </h3>
+                <ReviewActionButton
+                  title={t('addRace')}
+                  onClick={addRaceDraft}
+                  disabled={false}
+                >
+                  <Plus className="h-4 w-4" aria-hidden="true" />
+                </ReviewActionButton>
+              </div>
               <div className="divide-y divide-gray-200">
                 {raceDrafts.map((race, index) => (
                   <div
                     key={`race-draft-${index}`}
                     className="py-4 first:pt-0 last:pb-0"
                   >
+                    <div className="mb-3 flex items-center justify-between gap-3">
+                      <p className="text-xs font-semibold text-gray-700">
+                        {t('raceTitle', { number: index + 1 })}
+                      </p>
+                      <ReviewActionButton
+                        title={t('removeRace')}
+                        disabled={raceDrafts.length <= 1}
+                        onClick={() => removeRaceDraft(index)}
+                      >
+                        <Trash2 className="h-4 w-4" aria-hidden="true" />
+                      </ReviewActionButton>
+                    </div>
                     <div className="flex flex-col gap-1">
                       <label className={labelClass}>
                         {t('editFieldName')}
