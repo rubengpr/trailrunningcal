@@ -11,6 +11,7 @@ import {
 } from '@/lib/cache/revalidation';
 import { sanitizeDescription } from '@/app/api/races/validation';
 import { getRaceById, updateRace, deleteRace } from '@/lib/db/races';
+import { normalizeRaceName } from '@/lib/races/utils';
 
 export async function PATCH(
   request: NextRequest,
@@ -57,8 +58,7 @@ export async function PATCH(
       return NextResponse.json({ error: descResult.error }, { status: 400 });
     }
 
-    const normalizedName =
-      typeof name === 'string' && name.trim().length > 0 ? name.trim() : null;
+    const normalizedName = normalizeRaceName(name);
 
     const updateFields: Record<string, unknown> = {
       date,

@@ -16,7 +16,7 @@ Your mission is to read the provided context and output structured data about a 
 ## Edge cases
 
 - If event edition is suspended, cancelled, or not held, return races as an empty array
-- Always include non-competitive walk modalities that are part of the event. Usually mentioned as 'caminada', 'marxa', 'marcha'. Sometimes the shortest race and the walk modality share route and distance. Output them as separate race objects in the races array.
+- Always include to the event output non-competitive walk modalities that are usually mentioned as 'caminada', 'marxa', 'marcha'. It's usual that events that contain both race and walking modalities share route and distance. Output them as separate race objects in the races array.
 
 ## Output format
 

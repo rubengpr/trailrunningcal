@@ -13,6 +13,7 @@ import type {
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 import { TRAIL_EVENT_AGENT_INSTRUCTIONS } from '@/lib/prompts/trail-event-agent-instructions';
 import { TimeoutError } from '@/lib/errors';
+import { normalizeRaceName } from '@/lib/races/utils';
 
 export interface OpenRouterServiceResult {
   event: TrailEventAgentEvent | null;
@@ -20,6 +21,13 @@ export interface OpenRouterServiceResult {
   errorMessage: string | null;
   rawModelOutput: string;
   usage: OpenRouterScrapeUsage | null;
+}
+
+function normalizeRaces(races: TrailEventAgentRace[]): TrailEventAgentRace[] {
+  return races.map((race) => ({
+    ...race,
+    name: normalizeRaceName(race.name),
+  }));
 }
 
 function stripMarkdownJsonCodeFence(text: string): string {
@@ -147,7 +155,9 @@ function extractResult(
     parsed?.event && typeof parsed.event.name === 'string'
       ? parsed.event
       : null;
-  const races = Array.isArray(parsed?.races) ? parsed.races : [];
+  const races = Array.isArray(parsed?.races)
+    ? normalizeRaces(parsed.races)
+    : [];
   const errorMessage =
     typeof parsed?.errorMessage === 'string' ? parsed.errorMessage : null;
   const usage = mapCompletionUsageToScrapeUsage(completion.usage);

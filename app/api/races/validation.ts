@@ -1,4 +1,5 @@
 import { ValidationError } from '@/lib/errors';
+import { normalizeRaceName } from '@/lib/races/utils';
 export { ValidationError };
 
 export type ParsedRaceInput = {
@@ -116,8 +117,7 @@ export function parseRaceInput(body: unknown, isAdmin: boolean): ParsedRaceInput
   }
 
   return {
-    name:
-      typeof name === 'string' && name.trim().length > 0 ? name.trim() : null,
+    name: normalizeRaceName(name),
     date: date as string,
     distanceKm: distanceKm as number,
     elevationGainM: elevationGainM as number | null,

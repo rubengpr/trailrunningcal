@@ -1,5 +1,18 @@
 import type { TrailRace } from '@/types/race.types';
 
+export function normalizeRaceName(name: unknown): string | null {
+  if (typeof name !== 'string') {
+    return null;
+  }
+
+  const trimmed = name.trim();
+  if (trimmed.length === 0) {
+    return null;
+  }
+
+  return /[\p{L}\p{N}]/u.test(trimmed) ? trimmed : null;
+}
+
 export function generateRaceSlug(name: string | null | undefined): string {
   if (!name) {
     return '';

@@ -31,7 +31,9 @@ export const TRAIL_EVENT_AGENT_JSON_SCHEMA = {
         type: 'object',
         additionalProperties: false,
         properties: {
-          name: { type: 'string' },
+          name: {
+            anyOf: [{ type: 'string' }, { type: 'null' }],
+          },
           date: {
             anyOf: [{ type: 'string' }, { type: 'null' }],
           },

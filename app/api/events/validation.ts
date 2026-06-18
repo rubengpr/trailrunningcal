@@ -1,4 +1,5 @@
 import { ValidationError } from '@/lib/errors';
+import { normalizeRaceName } from '@/lib/races/utils';
 import type {
   TrailEventAgentEvent,
   TrailEventAgentRace,
@@ -92,8 +93,7 @@ function parseRaceName(value: unknown): string | null {
     throw new ValidationError('Invalid race name', 400);
   }
 
-  const parsedName = value.trim();
-  return parsedName.length > 0 ? parsedName : null;
+  return normalizeRaceName(value);
 }
 
 function parseRace(value: unknown, allowId = false): ParsedEventRaceInput {
