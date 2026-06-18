@@ -26,7 +26,7 @@ Return structured JSON with event, races, and errorMessage.
 - **event.name**: use the main event name from the website title. Don't include the edition number.
 - **event.description**: Spanish-translated string, 600-800 characters-long, 2 paragraphs. Separate the paragraphs explicitly with \\n\\n. Use third-person narrative. Include in the first paragraph insightful event data like edition, mountains or natural spaces the races pass through, type of terrain, and things that make the event special. Reserve the second paragraph to mention services provided, kids races, refreshments or 'avituallamientos' available, and other useful data for amateur trail runners. Don't mention data constraints. Keep in mind this description will be published and read by real visitors.
 - **event.websiteUrl**: canonical event website url.
-- **race.name**: explicit race name without including distance. Not all races have a specific name. Set value to null if no race names are mentioned. If there's a walk modality, set name to 'Marcha'.
+- **race.name**: explicit race name without including distance. Not all races have a specific name. Set value to null if no race names are mentioned. If there's one or more walk modalities, set name to 'Marcha'.
 - **race.date**: YYYY-MM-DD, or null if the date is not stated.
 - **race.city**: the city name explicit in the event data.
 - **race.province**: the city name explicit in the event data. If missing, infer it from race.city.
