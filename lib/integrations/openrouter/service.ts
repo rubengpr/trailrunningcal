@@ -6,6 +6,7 @@ import {
 } from '@/lib/integrations/openrouter/agents';
 import type { OpenRouterServiceResult } from '@/lib/integrations/openrouter/agents';
 import { checkDescriptionLang } from '@/lib/integrations/openrouter/description-language';
+import { checkDescriptionFormat } from '@/lib/integrations/openrouter/description-format';
 import { filterFutureRaces } from '@/lib/integrations/openrouter/filter-future-races';
 import type {
   OpenRouterScrapeModelId,
@@ -32,7 +33,8 @@ export async function extractFromMarkdown(
   const client = createOpenRouterClient();
   const result = await runMarkdownAgent(client, markdown, model);
   const languageChecked = await checkDescriptionLang(client, result);
-  return filterFutureRaces(languageChecked);
+  const formatChecked = await checkDescriptionFormat(client, languageChecked);
+  return filterFutureRaces(formatChecked);
 }
 
 export async function extractFromImages(
@@ -42,5 +44,6 @@ export async function extractFromImages(
   const client = createOpenRouterClient();
   const result = await runImagesAgent(client, images, model);
   const languageChecked = await checkDescriptionLang(client, result);
-  return filterFutureRaces(languageChecked);
+  const formatChecked = await checkDescriptionFormat(client, languageChecked);
+  return filterFutureRaces(formatChecked);
 }

@@ -31,13 +31,21 @@ import { extractFromMarkdown } from './service';
 
 const MODEL = OPENROUTER_SCRAPE_MODEL_IDS[0];
 const MARKDOWN = 'Official event markdown. '.repeat(60);
+const VALID_DESCRIPTION = [
+  'La Cursa de la Guineu es una prueba de montaña que recorre senderos forestales, pistas y tramos tecnicos alrededor de Barcelona. La salida concentra varias distancias pensadas para corredores con distintos niveles de experiencia, con un recorrido principal que combina desnivel progresivo, zonas rapidas y pasos por espacios naturales cercanos al municipio.',
+  'La organizacion plantea una jornada orientada a corredores populares y habituales del trail, con informacion clara sobre distancias, fechas y ubicacion. Las modalidades disponibles permiten escoger entre recorridos de diferente exigencia, manteniendo el foco en una experiencia de montaña accesible y bien integrada en el calendario catalan.',
+].join('\n\n');
+const REPAIRED_DESCRIPTION = [
+  'La Cursa de la Guineu es una carrera de montaña con salida en Barcelona y un recorrido de 21 km que combina senderos, pistas y tramos con desnivel positivo. La prueba se presenta como una cita de trail para corredores que buscan una distancia media, con datos principales ya definidos y una ubicacion claramente asociada al calendario catalan.',
+  'La informacion extraida confirma la fecha, la ciudad, la provincia, la distancia y el desnivel de la modalidad principal. La descripcion mantiene un tono editorial y prudente, sin anadir servicios no indicados ni detalles logisticos inventados, y resume la carrera de forma util para revisar el evento antes de publicarlo.',
+].join('\n\n');
 
 function event(
   overrides: Partial<TrailEventAgentEvent> = {},
 ): TrailEventAgentEvent {
   return {
     name: 'Cursa de la Guineu',
-    description: 'Event description',
+    description: VALID_DESCRIPTION,
     websiteUrl: 'https://example.com/event',
     ...overrides,
   };
@@ -78,7 +86,7 @@ function result(
   };
 }
 
-function clientWithTranslation(response: string) {
+function clientWithCompletion(response: string) {
   return {
     chat: {
       completions: {
@@ -97,25 +105,23 @@ afterEach(() => {
 
 describe('extractFromMarkdown description translation', () => {
   it('keeps Spanish descriptions unchanged', async () => {
-    const client = clientWithTranslation('unused');
-    const extracted = result(event({ description: 'Carrera de montaña.' }));
+    const client = clientWithCompletion('unused');
+    const extracted = result(event());
     mocks.createOpenRouterClient.mockReturnValue(client);
     mocks.runMarkdownAgent.mockResolvedValue(extracted);
     mocks.franc.mockReturnValue('spa');
 
     const output = await extractFromMarkdown(MARKDOWN, MODEL);
 
-    expect(output.event?.description).toBe('Carrera de montaña.');
-    expect(mocks.franc).toHaveBeenCalledWith('Carrera de montaña.', {
+    expect(output.event?.description).toBe(VALID_DESCRIPTION);
+    expect(mocks.franc).toHaveBeenCalledWith(VALID_DESCRIPTION, {
       only: ['spa', 'cat'],
     });
     expect(client.chat.completions.create).not.toHaveBeenCalled();
   });
 
   it('rewrites Catalan descriptions with gpt-5.4-nano', async () => {
-    const client = clientWithTranslation(
-      'La Cursa de la Guineu es una carrera de montaña.',
-    );
+    const client = clientWithCompletion(VALID_DESCRIPTION);
     const extracted = result(
       event({ description: 'La Cursa de la Guineu es una cursa de muntanya.' }),
     );
@@ -137,16 +143,14 @@ describe('extractFromMarkdown description translation', () => {
         },
       ],
     });
-    expect(output.event?.description).toBe(
-      'La Cursa de la Guineu es una carrera de montaña.',
-    );
+    expect(output.event?.description).toBe(VALID_DESCRIPTION);
     expect(JSON.parse(output.rawModelOutput).event.description).toBe(
-      'La Cursa de la Guineu es una carrera de montaña.',
+      VALID_DESCRIPTION,
     );
   });
 
   it('skips translation when there is no event or description', async () => {
-    const client = clientWithTranslation('unused');
+    const client = clientWithCompletion('unused');
     mocks.createOpenRouterClient.mockReturnValue(client);
 
     mocks.runMarkdownAgent.mockResolvedValueOnce(result(null));
@@ -190,9 +194,7 @@ describe('extractFromMarkdown description translation', () => {
   });
 
   it('keeps raw model output aligned after translation and future race filtering', async () => {
-    const client = clientWithTranslation(
-      'La Cursa de la Guineu es una carrera de montaña.',
-    );
+    const client = clientWithCompletion(VALID_DESCRIPTION);
     const extracted = {
       ...result(
         event({
@@ -209,6 +211,94 @@ describe('extractFromMarkdown description translation', () => {
     const rawOutput = JSON.parse(output.rawModelOutput);
 
     expect(output.races).toEqual([]);
+    expect(rawOutput.races).toEqual([]);
+    expect(rawOutput.errorMessage).toBe(output.errorMessage);
+    expect(rawOutput.event.description).toBe(output.event?.description);
+  });
+});
+
+describe('extractFromMarkdown description format check', () => {
+  it('repairs single-paragraph descriptions', async () => {
+    const client = clientWithCompletion(REPAIRED_DESCRIPTION);
+    const extracted = result(
+      event({ description: VALID_DESCRIPTION.replace(/\n\n/g, ' ') }),
+    );
+    mocks.createOpenRouterClient.mockReturnValue(client);
+    mocks.runMarkdownAgent.mockResolvedValue(extracted);
+    mocks.franc.mockReturnValue('spa');
+
+    const output = await extractFromMarkdown(MARKDOWN, MODEL);
+
+    expect(client.chat.completions.create).toHaveBeenCalledWith({
+      model: 'openai/gpt-5.4-nano',
+      temperature: 0,
+      messages: [
+        {
+          role: 'user',
+          content: expect.stringContaining('Current description:'),
+        },
+      ],
+    });
+    expect(output.event?.description).toBe(REPAIRED_DESCRIPTION);
+  });
+
+  it('repairs descriptions under 400 characters', async () => {
+    const client = clientWithCompletion(REPAIRED_DESCRIPTION);
+    const shortDescription =
+      'La Cursa de la Guineu es una carrera de montaña en Barcelona.\n\nIncluye una distancia de trail para corredores populares.';
+    const extracted = result(event({ description: shortDescription }));
+    mocks.createOpenRouterClient.mockReturnValue(client);
+    mocks.runMarkdownAgent.mockResolvedValue(extracted);
+    mocks.franc.mockReturnValue('spa');
+
+    const output = await extractFromMarkdown(MARKDOWN, MODEL);
+
+    expect(client.chat.completions.create).toHaveBeenCalledOnce();
+    expect(output.event?.description).toBe(REPAIRED_DESCRIPTION);
+  });
+
+  it('keeps the original description when format repair fails', async () => {
+    const consoleError = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined);
+    const client = {
+      chat: {
+        completions: {
+          create: vi.fn().mockRejectedValue(new Error('repair failed')),
+        },
+      },
+    };
+    const shortDescription =
+      'La Cursa de la Guineu es una carrera de montaña en Barcelona.';
+    const extracted = result(event({ description: shortDescription }));
+    mocks.createOpenRouterClient.mockReturnValue(client);
+    mocks.runMarkdownAgent.mockResolvedValue(extracted);
+    mocks.franc.mockReturnValue('spa');
+
+    const output = await extractFromMarkdown(MARKDOWN, MODEL);
+
+    expect(output.event?.description).toBe(shortDescription);
+    expect(consoleError).toHaveBeenCalledWith(
+      'OpenRouter description format repair failed',
+      { error: expect.any(Error) },
+    );
+  });
+
+  it('keeps raw model output aligned after format repair and future race filtering', async () => {
+    const client = clientWithCompletion(REPAIRED_DESCRIPTION);
+    const extracted = {
+      ...result(event({ description: 'Descripcion corta.' })),
+      races: [race({ date: '2000-06-01' })],
+    };
+    mocks.createOpenRouterClient.mockReturnValue(client);
+    mocks.runMarkdownAgent.mockResolvedValue(extracted);
+    mocks.franc.mockReturnValue('spa');
+
+    const output = await extractFromMarkdown(MARKDOWN, MODEL);
+    const rawOutput = JSON.parse(output.rawModelOutput);
+
+    expect(output.races).toEqual([]);
+    expect(output.event?.description).toBe(REPAIRED_DESCRIPTION);
     expect(rawOutput.races).toEqual([]);
     expect(rawOutput.errorMessage).toBe(output.errorMessage);
     expect(rawOutput.event.description).toBe(output.event?.description);
