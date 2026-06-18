@@ -1194,6 +1194,7 @@
           "missingWebsite": "Sin web",
           "distanceKmUnit": "km",
           "elevationMUnit": "m",
+          "elevationUnknown": "ND",
           "city": "Ciudad",
           "province": "Provincia",
           "unknown": "No disponible"

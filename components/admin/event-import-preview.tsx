@@ -317,7 +317,7 @@ export function EventImportPreview({
               const city = race.city.trim() || t('unknown');
               const province = race.province.trim() || t('unknown');
               const elevation = race.elevationGainM === null
-                ? t('unknown')
+                ? t('elevationUnknown')
                 : String(Math.round(race.elevationGainM));
               const contextFields = [
                 ...(showRaceDates
