@@ -1177,6 +1177,7 @@
           "reviewAccepted": "Evento aceptado",
           "reviewRejected": "Evento rechazado",
           "saveReview": "Guardar",
+          "savingReview": "Guardando...",
           "cancelEdit": "Cancelar",
           "editEventInfo": "Evento",
           "editRaceInfo": "Carreras",
@@ -1234,7 +1235,12 @@
       "extractError": "Error al generar la sugerencia",
       "acceptSuccess": "Sugerencia aplicada correctamente",
       "acceptError": "Error al aplicar la sugerencia",
-      "rejectSuccess": "Sugerencia descartada"
+      "rejectSuccess": "Sugerencia descartada",
+      "rejectError": "Error al descartar la sugerencia",
+      "saveSuccess": "Sugerencia guardada correctamente",
+      "saveError": "Error al guardar la sugerencia",
+      "pendingDraft": "Sugerencia pendiente de revisión",
+      "reviewPendingDraft": "Revisar sugerencia pendiente"
     },
     "delete": {
       "button": "Eliminar evento",

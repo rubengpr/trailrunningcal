@@ -39,7 +39,7 @@ interface EventImportPreviewProps {
   onSaveReview: (
     event: TrailEventAgentEvent,
     races: TrailEventAgentRace[],
-  ) => void;
+  ) => Promise<void> | void;
 }
 
 function toPreviewRace(
@@ -158,6 +158,7 @@ export function EventImportPreview({
   const t = useTranslations('admin.events.import.results');
   const locale = useLocale() as Locale;
   const [isEditing, setIsEditing] = useState(false);
+  const [isSavingReview, setIsSavingReview] = useState(false);
 
   if (isLoading) {
     return (
@@ -213,12 +214,19 @@ export function EventImportPreview({
     setIsEditing(false);
   };
 
-  const handleSaveReview = (
+  const handleSaveReview = async (
     nextEvent: TrailEventAgentEvent,
     nextRaces: TrailEventAgentRace[],
-  ): void => {
-    onSaveReview(nextEvent, nextRaces);
-    setIsEditing(false);
+  ): Promise<void> => {
+    if (isSavingReview) return;
+
+    setIsSavingReview(true);
+    try {
+      await onSaveReview(nextEvent, nextRaces);
+      setIsEditing(false);
+    } finally {
+      setIsSavingReview(false);
+    }
   };
 
   return (
@@ -382,6 +390,8 @@ export function EventImportPreview({
         event={event}
         races={races}
         title={t('editReview')}
+        isSaving={isSavingReview}
+        savingLabel={t('savingReview')}
         onClose={handleCancelEdit}
         onSave={handleSaveReview}
       />

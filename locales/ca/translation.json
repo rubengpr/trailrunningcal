@@ -1145,6 +1145,7 @@
           "reviewAccepted": "Esdeveniment acceptat",
           "reviewRejected": "Esdeveniment rebutjat",
           "saveReview": "Desar",
+          "savingReview": "Desant...",
           "cancelEdit": "Cancel·lar",
           "editEventInfo": "Esdeveniment",
           "editRaceInfo": "Curses",
@@ -1202,7 +1203,12 @@
       "extractError": "Error en generar el suggeriment",
       "acceptSuccess": "Suggeriment aplicat correctament",
       "acceptError": "Error en aplicar el suggeriment",
-      "rejectSuccess": "Suggeriment descartat"
+      "rejectSuccess": "Suggeriment descartat",
+      "rejectError": "Error en descartar el suggeriment",
+      "saveSuccess": "Suggeriment desat correctament",
+      "saveError": "Error en desar el suggeriment",
+      "pendingDraft": "Suggeriment pendent de revisió",
+      "reviewPendingDraft": "Revisar suggeriment pendent"
     },
     "delete": {
       "button": "Eliminar esdeveniment",

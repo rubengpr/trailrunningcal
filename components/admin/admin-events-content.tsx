@@ -28,17 +28,20 @@ import {
 import { EventImportPreview } from '@/components/admin/event-import-preview';
 import { EventRacesEditModal } from '@/components/admin/event-races-edit-modal';
 import {
-  createEventEdition,
   deleteEvent,
-  runEventImport,
   updateEvent,
 } from '@/lib/api/events';
 import type { EventRaceWriteInput } from '@/lib/api/events';
-import { OPENROUTER_SCRAPE_MODEL_IDS } from '@/lib/integrations/openrouter/scrape-models';
+import {
+  acceptEventDraft,
+  generateEventDraft,
+  rejectEventDraft,
+  updateEventDraft,
+} from '@/lib/api/event-drafts';
 import { formatEventDateRangeNumeric } from '@/lib/events/utils';
 import { cleanUrl } from '@/lib/utils/url';
 import type { TrailEventDetail } from '@/types/event.types';
-import type { EventImportResult } from '@/types/events-import-api.types';
+import type { EventDraft } from '@/types/event-draft.types';
 import type {
   TrailEventAgentEvent,
   TrailEventAgentRace,
@@ -51,6 +54,17 @@ interface AdminEventsContentProps {
 type SortColumn = 'name' | 'dates';
 type SortDirection = 'asc' | 'desc';
 
+function getPendingDraftsByEventId(
+  events: TrailEventDetail[],
+): Record<string, EventDraft> {
+  return Object.fromEntries(
+    events.flatMap((eventDetail) => {
+      const draft = eventDetail.pendingDraft;
+      return draft ? [[eventDetail.event.id, draft]] : [];
+    }),
+  );
+}
+
 export function AdminEventsContent({ events }: AdminEventsContentProps) {
   const t = useTranslations('adminEvents');
   const formT = useTranslations('adminEvents.form');
@@ -60,10 +74,12 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
   const [eventToEdit, setEventToEdit] = useState<TrailEventDetail | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSavingEdit, setIsSavingEdit] = useState(false);
-  const [loadingSuggestionIds, setLoadingSuggestionIds] = useState<Set<string>>(new Set());
-  const [suggestions, setSuggestions] = useState<Record<string, EventImportResult>>({});
+  const [generatingDraftEventIds, setGeneratingDraftEventIds] = useState<Set<string>>(new Set());
+  const [pendingDraftsByEventId, setPendingDraftsByEventId] = useState<
+    Record<string, EventDraft>
+  >(() => getPendingDraftsByEventId(events));
   const [reviewEventId, setReviewEventId] = useState<string | null>(null);
-  const [acceptingSuggestionId, setAcceptingSuggestionId] = useState<string | null>(null);
+  const [acceptingDraftId, setAcceptingDraftId] = useState<string | null>(null);
   const [sortColumn, setSortColumn] = useState<SortColumn>('dates');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
@@ -107,7 +123,9 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
   const reviewEventDetail = reviewEventId
     ? events.find((eventDetail) => eventDetail.event.id === reviewEventId) ?? null
     : null;
-  const reviewSuggestion = reviewEventId ? suggestions[reviewEventId] : null;
+  const reviewDraft = reviewEventId
+    ? pendingDraftsByEventId[reviewEventId] ?? null
+    : null;
   const editModalEvent = useMemo<TrailEventAgentEvent | null>(() => {
     if (!eventToEdit) return null;
 
@@ -132,6 +150,10 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
   }, [eventToEdit]);
 
   useEffect(() => {
+    setPendingDraftsByEventId(getPendingDraftsByEventId(events));
+  }, [events]);
+
+  useEffect(() => {
     if (!reviewEventId) return;
 
     const handleKeyDown = (event: KeyboardEvent): void => {
@@ -143,10 +165,10 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [reviewEventId]);
 
-  const setSuggestionLoading = (eventId: string, isLoading: boolean): void => {
-    setLoadingSuggestionIds((ids) => {
+  const setDraftGenerating = (eventId: string, isGenerating: boolean): void => {
+    setGeneratingDraftEventIds((ids) => {
       const nextIds = new Set(ids);
-      if (isLoading) {
+      if (isGenerating) {
         nextIds.add(eventId);
       } else {
         nextIds.delete(eventId);
@@ -155,35 +177,29 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
     });
   };
 
-  const handleGenerateSuggestion = async (
+  const handleGenerateDraft = async (
     eventDetail: TrailEventDetail,
   ): Promise<void> => {
-    const websiteUrl = eventDetail.event.websiteUrl;
-    if (!websiteUrl) {
+    if (!eventDetail.event.websiteUrl) {
       toast.error(t('updateSuggestion.missingUrl'));
       return;
     }
 
     const eventId = eventDetail.event.id;
-    setSuggestionLoading(eventId, true);
+    if (pendingDraftsByEventId[eventId]) {
+      setReviewEventId(eventId);
+      return;
+    }
+
+    setDraftGenerating(eventId, true);
 
     try {
-      const result = await runEventImport({
-        workflow: 'crawlSiteExtract',
-        websiteUrl,
-        model: OPENROUTER_SCRAPE_MODEL_IDS[0],
-        skipDuplicateCheck: true,
-      });
-
-      if (!result.ok) {
-        toast.error(t('updateSuggestion.extractError'));
-        return;
-      }
-
-      setSuggestions((current) => ({
+      const draft = await generateEventDraft(eventId);
+      setPendingDraftsByEventId((current) => ({
         ...current,
-        [eventId]: result.data,
+        [eventId]: draft,
       }));
+      setReviewEventId(eventId);
       toast.success(t('updateSuggestion.extractSuccess'));
     } catch (error) {
       toast.error(
@@ -192,52 +208,68 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
           : t('updateSuggestion.extractError'),
       );
     } finally {
-      setSuggestionLoading(eventId, false);
+      setDraftGenerating(eventId, false);
     }
   };
 
-  const handleSaveSuggestionReview = (
+  const handleSaveDraftReview = async (
     eventId: string,
     event: TrailEventAgentEvent,
     races: TrailEventAgentRace[],
-  ): void => {
-    setSuggestions((current) => {
-      const suggestion = current[eventId];
-      if (!suggestion) return current;
+  ): Promise<void> => {
+    const draft = pendingDraftsByEventId[eventId];
+    if (!draft) return;
 
-      return {
-        ...current,
-        [eventId]: {
-          ...suggestion,
-          event,
-          races,
-        },
-      };
-    });
-  };
-
-  const handleRejectSuggestion = (eventId: string): void => {
-    setSuggestions((current) => {
-      const remaining = { ...current };
-      delete remaining[eventId];
-      return remaining;
-    });
-    setReviewEventId(null);
-    toast.success(t('updateSuggestion.rejectSuccess'));
-  };
-
-  const handleAcceptSuggestion = async (eventId: string): Promise<void> => {
-    const suggestion = suggestions[eventId];
-    if (!suggestion?.event || suggestion.races.length === 0) return;
-
-    setAcceptingSuggestionId(eventId);
     try {
-      await createEventEdition(
-        eventId,
-        suggestion.event,
-        suggestion.races,
+      const updatedDraft = await updateEventDraft(draft.id, {
+        event,
+        races,
+      });
+      setPendingDraftsByEventId((current) => ({
+        ...current,
+        [eventId]: updatedDraft,
+      }));
+      toast.success(t('updateSuggestion.saveSuccess'));
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : t('updateSuggestion.saveError'),
       );
-      setSuggestions((current) => {
+      throw error;
+    }
+  };
+
+  const handleRejectDraft = async (eventId: string): Promise<void> => {
+    const draft = pendingDraftsByEventId[eventId];
+    if (!draft) return;
+
+    try {
+      await rejectEventDraft(draft.id);
+      setPendingDraftsByEventId((current) => {
+        const remaining = { ...current };
+        delete remaining[eventId];
+        return remaining;
+      });
+      setReviewEventId(null);
+      toast.success(t('updateSuggestion.rejectSuccess'));
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : t('updateSuggestion.rejectError'),
+      );
+    }
+  };
+
+  const handleAcceptDraft = async (eventId: string): Promise<void> => {
+    const draft = pendingDraftsByEventId[eventId];
+    if (!draft) return;
+
+    setAcceptingDraftId(draft.id);
+    try {
+      await acceptEventDraft(draft.id);
+      setPendingDraftsByEventId((current) => {
         const remaining = { ...current };
         delete remaining[eventId];
         return remaining;
@@ -252,7 +284,7 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
           : t('updateSuggestion.acceptError'),
       );
     } finally {
-      setAcceptingSuggestionId(null);
+      setAcceptingDraftId(null);
     }
   };
 
@@ -355,19 +387,33 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
           <TableBody>
             {sortedEvents.map((eventDetail) => {
               const { event } = eventDetail;
-              const isLoadingSuggestion = loadingSuggestionIds.has(event.id);
-              const hasSuggestion = suggestions[event.id] !== undefined;
+              const isGeneratingDraft = generatingDraftEventIds.has(event.id);
+              const pendingDraft = pendingDraftsByEventId[event.id] ?? null;
+              const hasPendingDraft = pendingDraft !== null;
 
               return (
-                <TableRow key={event.id} className="align-middle hover:bg-gray-100 transition-colors duration-150">
+                <TableRow
+                  key={event.id}
+                  className={`align-middle transition-colors duration-150 hover:bg-gray-100 ${
+                    hasPendingDraft ? 'bg-amber-50/35' : ''
+                  }`}
+                >
                   <TableCell className="max-w-[200px]">
-                    <Link
-                      href={`/${locale}/e/${event.slug}`}
-                      prefetch={false}
-                      className="block truncate text-sm font-medium text-gray-900 hover:underline"
-                    >
-                      {event.name}
-                    </Link>
+                    <div className="flex min-w-0 items-center gap-2">
+                      {hasPendingDraft && (
+                        <span
+                          title={t('updateSuggestion.pendingDraft')}
+                          className="size-1.5 shrink-0 rounded-full bg-amber-500"
+                        />
+                      )}
+                      <Link
+                        href={`/${locale}/e/${event.slug}`}
+                        prefetch={false}
+                        className="block min-w-0 truncate text-sm font-medium text-gray-900 hover:underline"
+                      >
+                        {event.name}
+                      </Link>
+                    </div>
                   </TableCell>
                   <TableCell className="max-w-[180px]">
                     {event.websiteUrl ? (
@@ -391,29 +437,31 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
                   </TableCell>
                   <TableCell align="right">
                     <div className="inline-flex items-center justify-end gap-1">
-                      {hasSuggestion && (
+                      {hasPendingDraft && (
                         <button
                           type="button"
                           onClick={() => setReviewEventId(event.id)}
-                          title={t('updateSuggestion.viewButton')}
-                          className="inline-flex size-8 items-center justify-center rounded text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-800 cursor-pointer"
+                          title={t('updateSuggestion.reviewPendingDraft')}
+                          className="inline-flex size-8 cursor-pointer items-center justify-center rounded text-amber-600 transition-colors hover:bg-amber-100 hover:text-amber-700"
                         >
                           <Eye className="size-4" strokeWidth={1.5} />
                         </button>
                       )}
                       <button
                         type="button"
-                        onClick={() => void handleGenerateSuggestion(eventDetail)}
-                        disabled={!event.websiteUrl || isLoadingSuggestion}
+                        onClick={() => void handleGenerateDraft(eventDetail)}
+                        disabled={!event.websiteUrl || isGeneratingDraft || hasPendingDraft}
                         title={
-                          event.websiteUrl
-                            ? t('updateSuggestion.button')
-                            : t('updateSuggestion.missingUrl')
+                          hasPendingDraft
+                            ? t('updateSuggestion.reviewPendingDraft')
+                            : event.websiteUrl
+                              ? t('updateSuggestion.button')
+                              : t('updateSuggestion.missingUrl')
                         }
                         className="inline-flex size-8 items-center justify-center rounded text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-800 disabled:pointer-events-none disabled:opacity-40 cursor-pointer"
                       >
                         <RefreshCw
-                          className={`size-4 ${isLoadingSuggestion ? 'animate-spin' : ''}`}
+                          className={`size-4 ${isGeneratingDraft ? 'animate-spin' : ''}`}
                           strokeWidth={1.5}
                         />
                       </button>
@@ -456,7 +504,7 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
         onSave={handleSaveEdit}
       />
 
-      {reviewEventDetail && reviewSuggestion && (
+      {reviewEventDetail && reviewDraft && (
         <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-gray-900/60 px-4 py-10 backdrop-blur-[1px] sm:py-14">
           <button
             type="button"
@@ -473,18 +521,17 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
               <X className="size-4" strokeWidth={1.5} />
             </button>
             <EventImportPreview
-              event={reviewSuggestion.event}
-              races={reviewSuggestion.races}
+              event={reviewDraft.data.event}
+              races={reviewDraft.data.races}
               isLoading={false}
               error={null}
-              emptyMessage={reviewSuggestion.errorMessage}
-              onAccept={() => handleAcceptSuggestion(reviewEventDetail.event.id)}
+              onAccept={() => handleAcceptDraft(reviewEventDetail.event.id)}
               isAccepted={false}
-              isAccepting={acceptingSuggestionId === reviewEventDetail.event.id}
-              onReject={() => handleRejectSuggestion(reviewEventDetail.event.id)}
+              isAccepting={acceptingDraftId === reviewDraft.id}
+              onReject={() => void handleRejectDraft(reviewEventDetail.event.id)}
               isRejected={false}
               onSaveReview={(event, races) =>
-                handleSaveSuggestionReview(reviewEventDetail.event.id, event, races)
+                handleSaveDraftReview(reviewEventDetail.event.id, event, races)
               }
             />
           </div>
