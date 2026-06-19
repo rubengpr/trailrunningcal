@@ -11,6 +11,7 @@ import type {
   TrailEventRace,
 } from '@/types/event.types';
 import { buildEventDetail } from '@/lib/events/utils';
+import { getPendingDraftsByEventIds } from '@/lib/db/event-drafts';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
@@ -75,12 +76,22 @@ export const getEvents = cache(async function getEvents(): Promise<TrailEventDet
     return [];
   }
 
-  return (data as EventWithRacesRow[]).map((row) => {
+  const events = (data as EventWithRacesRow[]).map((row) => {
     const event = toTrailEvent(row);
     const raceRows = getEventRaceRows(row.races);
     const races = raceRows.map(toTrailEventRace);
     return buildEventDetail(event, races);
   });
+
+  const drafts = await getPendingDraftsByEventIds(events.map(({ event }) => event.id));
+  const draftsByEventId = new Map(
+    drafts.map((draft) => [draft.eventId, draft]),
+  );
+
+  return events.map((eventDetail) => ({
+    ...eventDetail,
+    pendingDraft: draftsByEventId.get(eventDetail.event.id) ?? null,
+  }));
 });
 
 export async function getEventsByIds(

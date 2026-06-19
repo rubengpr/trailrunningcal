@@ -68,6 +68,7 @@ export interface TrailEventDetail {
   allRaceCount: number;
   dateRange: TrailEventDateRange;
   location: TrailEventLocation;
+  pendingDraft?: import('@/types/event-draft.types').EventDraft | null;
 }
 
 export type EventRaceWithEventIdRow = EventRaceRow & {
