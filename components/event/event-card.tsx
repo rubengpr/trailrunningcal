@@ -73,8 +73,8 @@ export function EventCard({ eventDetail, locale }: EventCardProps) {
               )}
             </div>
             {distances.length > 0 && (
-              <div className="mt-1.5 flex min-w-0 flex-wrap items-center gap-2">
-                <span className="inline-flex min-w-0 max-w-full flex-wrap items-baseline gap-x-1 rounded-sm bg-gray-100 px-2 py-0.5 text-[10px] sm:text-xs font-medium text-gray-600">
+              <div className="mt-1.5 min-w-0">
+                <span className="inline-block min-w-0 max-w-full truncate rounded-sm bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-600 sm:text-xs">
                   {distances.map((distance, index) => (
                     <span key={distance.id} className="inline-flex items-baseline gap-0.5">
                       {index > 0 && (
