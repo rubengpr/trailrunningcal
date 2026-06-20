@@ -54,6 +54,12 @@ export async function EventDistanceList({ races, locale }: EventDistanceListProp
                 </span>
               </div>
 
+              {race.name && (
+                <h3 className="min-w-[160px] flex-1 text-sm font-medium text-gray-900 sm:text-base">
+                  {race.name}
+                </h3>
+              )}
+
               <div className="flex items-center gap-2 text-sm text-gray-600">
                 <TrendingUp className="h-4 w-4 shrink-0 text-gray-400" />
                 <span className="font-medium text-gray-800">
