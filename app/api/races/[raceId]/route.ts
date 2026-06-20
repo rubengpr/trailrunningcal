@@ -132,7 +132,7 @@ export async function DELETE(
         revalidateProvincePage(organizerContext.race.province);
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, data: null });
   } catch (error) {
     return handleRouteError(error);
   }

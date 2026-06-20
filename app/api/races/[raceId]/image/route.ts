@@ -51,7 +51,7 @@ export async function POST(
       file,
     });
 
-    return NextResponse.json({ success: true, filename });
+    return NextResponse.json({ success: true, data: { filename } });
   } catch (error) {
     return handleRouteError(error);
   }
@@ -77,7 +77,7 @@ export async function DELETE(
       organizerContext.race.heroImageFilename?.trim() || null,
     );
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, data: null });
   } catch (error) {
     return handleRouteError(error);
   }

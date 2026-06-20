@@ -12,7 +12,7 @@ export async function DELETE(
     await requireAdmin();
     await deletePendingRace(id);
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, data: null });
   } catch (error) {
     return handleRouteError(error);
   }
