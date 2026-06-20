@@ -30,7 +30,7 @@ describe('EventDistanceList', () => {
       screen.getByRole('heading', { name: 'Garmin Epic Trail Marathon' }),
     ).toBeTruthy();
     expect(screen.getByText('42')).toBeTruthy();
-    expect(screen.getByText('2800')).toBeTruthy();
+    expect(screen.getAllByText('2800 m').length).toBeGreaterThan(0);
   });
 
   it('keeps unnamed races visible without an empty heading', async () => {
