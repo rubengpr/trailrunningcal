@@ -1,5 +1,3 @@
-import type { TrailRace } from '@/types/race.types';
-
 export const RACE_CATEGORY_SLUGS = [
   'ultra-trail',
   'maraton',

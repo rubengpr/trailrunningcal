@@ -29,36 +29,41 @@ export function EventFavoritesClient() {
     }
 
     const favoriteIds = Array.from(favorites);
-
-    if (favoriteIds.length === 0) {
-      setFavoriteEvents([]);
-      setIsLoading(false);
-      setHasError(false);
-      return;
-    }
-
     let isActive = true;
 
-    setIsLoading(true);
-    setHasError(false);
+    queueMicrotask(() => {
+      if (!isActive) {
+        return;
+      }
 
-    getFavoriteEvents(favoriteIds)
-      .then((events) => {
-        if (isActive) {
-          setFavoriteEvents(events);
-        }
-      })
-      .catch(() => {
-        if (isActive) {
-          setFavoriteEvents([]);
-          setHasError(true);
-        }
-      })
-      .finally(() => {
-        if (isActive) {
-          setIsLoading(false);
-        }
-      });
+      if (favoriteIds.length === 0) {
+        setFavoriteEvents([]);
+        setIsLoading(false);
+        setHasError(false);
+        return;
+      }
+
+      setIsLoading(true);
+      setHasError(false);
+
+      getFavoriteEvents(favoriteIds)
+        .then((events) => {
+          if (isActive) {
+            setFavoriteEvents(events);
+          }
+        })
+        .catch(() => {
+          if (isActive) {
+            setFavoriteEvents([]);
+            setHasError(true);
+          }
+        })
+        .finally(() => {
+          if (isActive) {
+            setIsLoading(false);
+          }
+        });
+    });
 
     return () => {
       isActive = false;

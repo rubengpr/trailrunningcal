@@ -97,6 +97,7 @@ export function RacesExplorerClient({
 
   useEffect(() => {
     if (!isEventMode || typeof window === 'undefined') return;
+    let isActive = true;
 
     const readStoredFilter = (key: string): string[] => {
       try {
@@ -107,10 +108,18 @@ export function RacesExplorerClient({
       }
     };
 
-    setSelectedMonth(readStoredFilter('filter_month'));
-    setSelectedProvince(readStoredFilter('filter_province'));
-    setSelectedDistance(readStoredFilter('filter_distance'));
-    setSelectedRaceType(readStoredFilter('filter_type'));
+    queueMicrotask(() => {
+      if (!isActive) return;
+
+      setSelectedMonth(readStoredFilter('filter_month'));
+      setSelectedProvince(readStoredFilter('filter_province'));
+      setSelectedDistance(readStoredFilter('filter_distance'));
+      setSelectedRaceType(readStoredFilter('filter_type'));
+    });
+
+    return () => {
+      isActive = false;
+    };
   }, [isEventMode]);
 
   useEffect(() => {
