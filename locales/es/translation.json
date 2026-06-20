@@ -136,6 +136,7 @@
     },
     "provincePageLinkText": "Ver todos los eventos en {province}",
     "racesTitle": "Distancias",
+    "elevationRatioTooltip": "Media de desnivel acumulado por kilómetro",
     "share": {
       "label": "Compartir",
       "message": "Mira este evento de trail: {eventName} {url}"

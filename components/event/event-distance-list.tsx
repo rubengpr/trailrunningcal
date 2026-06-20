@@ -6,6 +6,7 @@ import type { TrailEventRace } from '@/types/event.types';
 interface EventDistanceListProps {
   races: TrailEventRace[];
   locale: Locale;
+  ratioTooltip: string;
 }
 
 function formatDistance(distanceKm: number, locale: Locale): string {
@@ -27,6 +28,7 @@ function formatElevation(elevationGainM: number | null, locale: Locale): string 
 export function EventDistanceList({
   races,
   locale,
+  ratioTooltip,
 }: EventDistanceListProps) {
   return (
     <div className="px-4 sm:px-6">
@@ -57,6 +59,7 @@ export function EventDistanceList({
             <ElevationIntensity
               distanceKm={race.distanceKm}
               elevationGainM={race.elevationGainM}
+              tooltip={ratioTooltip}
             />
           </div>
         </article>

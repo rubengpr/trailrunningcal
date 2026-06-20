@@ -24,7 +24,13 @@ function race(overrides: Partial<TrailEventRace> = {}): TrailEventRace {
 
 describe('EventDistanceList', () => {
   it('renders each race name with its distance details', async () => {
-    render(await EventDistanceList({ races: [race()], locale: 'es' }));
+    render(
+      await EventDistanceList({
+        races: [race()],
+        locale: 'es',
+        ratioTooltip: 'Elevation per kilometer',
+      }),
+    );
 
     expect(
       screen.getByRole('heading', { name: 'Garmin Epic Trail Marathon' }),
@@ -34,7 +40,13 @@ describe('EventDistanceList', () => {
   });
 
   it('keeps unnamed races visible without an empty heading', async () => {
-    render(await EventDistanceList({ races: [race({ name: null })], locale: 'es' }));
+    render(
+      await EventDistanceList({
+        races: [race({ name: null })],
+        locale: 'es',
+        ratioTooltip: 'Elevation per kilometer',
+      }),
+    );
 
     expect(screen.queryByRole('heading')).toBeNull();
     expect(screen.getByText('42')).toBeTruthy();

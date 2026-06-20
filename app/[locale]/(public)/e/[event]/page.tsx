@@ -262,7 +262,11 @@ export default async function EventPage({
                 {tEvent('racesTitle')}
               </h2>
             </div>
-            <EventDistanceList races={eventData.races} locale={localeTyped} />
+            <EventDistanceList
+              races={eventData.races}
+              locale={localeTyped}
+              ratioTooltip={tEvent('elevationRatioTooltip')}
+            />
           </section>
 
           {provinceDestination && (

@@ -1,6 +1,9 @@
+import { Tooltip } from '@/components/ui/tooltip';
+
 interface ElevationIntensityProps {
   distanceKm: number;
   elevationGainM: number | null;
+  tooltip: string;
 }
 
 type Intensity = 'low' | 'medium' | 'high';
@@ -20,6 +23,7 @@ const badgeClasses: Record<Intensity, string> = {
 export function ElevationIntensity({
   distanceKm,
   elevationGainM,
+  tooltip,
 }: ElevationIntensityProps) {
   const ratio =
     elevationGainM !== null && distanceKm > 0
@@ -31,15 +35,17 @@ export function ElevationIntensity({
     : 'border-gray-200 bg-gray-50 text-gray-500';
 
   return (
-    <span
-      className={`inline-flex items-baseline justify-self-start gap-0.5 rounded-md border px-2 py-1 font-medium sm:justify-self-end ${colorClass}`}
-    >
-      <span className="text-xs leading-none">{ratio ?? '—'}</span>
-      {ratio !== null && (
-        <span className="text-[7px] uppercase tracking-[0.12em] opacity-75">
-          m/km
-        </span>
-      )}
-    </span>
+    <Tooltip text={tooltip} size="sm" className="justify-self-start sm:justify-self-end">
+      <span
+        className={`inline-flex items-baseline gap-0.5 rounded-md border px-2 py-1 font-medium ${colorClass}`}
+      >
+        <span className="text-xs leading-none">{ratio ?? '—'}</span>
+        {ratio !== null && (
+          <span className="text-[7px] uppercase tracking-[0.12em] opacity-75">
+            m/km
+          </span>
+        )}
+      </span>
+    </Tooltip>
   );
 }

@@ -136,6 +136,7 @@
     },
     "provincePageLinkText": "Veure tots els esdeveniments a {province}",
     "racesTitle": "Distàncies",
+    "elevationRatioTooltip": "Mitjana de desnivell acumulat per quilòmetre",
     "share": {
       "label": "Compartir",
       "message": "Mira aquest esdeveniment de trail: {eventName} {url}"
