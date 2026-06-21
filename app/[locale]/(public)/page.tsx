@@ -9,6 +9,7 @@ import {
 import type { Locale } from '@/i18n';
 import { buildHomeAlternateLinks } from '@/lib/content/alternate-links';
 import { getEvents } from '@/lib/db/events';
+import { toPublicEventDetail } from '@/lib/events/utils';
 import { getRacesMapData } from '@/lib/db/races-map';
 import { buildWebsiteJsonLd, buildOrganizationJsonLd } from '@/lib/seo/json-ld';
 import { buildFaqJsonLd } from '@/lib/seo/json-ld';
@@ -90,7 +91,7 @@ export default async function HomePage({
       />
       <div id="calendar" className="mx-auto w-full min-w-0 pt-6 pb-16 sm:pt-10 lg:pt-4 scroll-mt-18 sm:scroll-mt-20">
         <RacesExplorerClient
-          events={events}
+          events={events.map(toPublicEventDetail)}
           markers={markers}
           locale={locale}
           labels={labels}

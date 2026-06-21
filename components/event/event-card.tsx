@@ -1,10 +1,10 @@
 import Link from 'next/link';
 import type { Locale } from '@/i18n';
-import type { TrailEventDetail } from '@/types/event.types';
+import type { PublicEventDetail } from '@/types/event.types';
 import { formatEventLocationLabel } from '@/lib/events/utils';
 
 interface EventCardProps {
-  eventDetail: TrailEventDetail;
+  eventDetail: PublicEventDetail;
   locale: Locale;
 }
 

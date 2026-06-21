@@ -3,10 +3,11 @@ import type { Locale } from '@/i18n';
 import { getEvents } from '@/lib/db/events';
 import { getRacesMapData } from '@/lib/db/races-map';
 import type { MapPageLabels, RaceMapMarker } from '@/types/map.types';
-import type { TrailEventDetail } from '@/types/event.types';
+import type { PublicEventDetail } from '@/types/event.types';
+import { toPublicEventDetail } from '@/lib/events/utils';
 
 export interface CategoryPageData {
-  events: TrailEventDetail[];
+  events: PublicEventDetail[];
   markers: RaceMapMarker[];
   labels: MapPageLabels;
   calendarLabel: string;
@@ -26,5 +27,11 @@ export async function getCategoryPageData(locale: Locale): Promise<CategoryPageD
     notAvailable: tCommon('race.notAvailable'),
   };
 
-  return { events, markers, labels, calendarLabel: tNav('calendar'), year };
+  return {
+    events: events.map(toPublicEventDetail),
+    markers,
+    labels,
+    calendarLabel: tNav('calendar'),
+    year,
+  };
 }

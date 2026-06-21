@@ -16,7 +16,7 @@ import type {
   EventImportRequest,
   EventImportResult,
 } from '@/types/events-import-api.types';
-import type { TrailEvent, TrailEventDetail } from '@/types/event.types';
+import type { PublicEventDetail, TrailEvent, TrailEventDetail } from '@/types/event.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 import type { PageStats } from '@/types/races-scrape-api.types';
 import type {
@@ -45,7 +45,7 @@ export type TrailEventAgentRunOptions =
 
 export async function getFavoriteEvents(
   eventIds: string[],
-): Promise<TrailEventDetail[]> {
+): Promise<PublicEventDetail[]> {
   const response = await fetch('/api/events/favorites', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

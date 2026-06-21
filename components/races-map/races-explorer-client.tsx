@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useFeatureFlagVariantKey } from 'posthog-js/react';
-import type { TrailEventDetail } from '@/types/event.types';
+import type { PublicEventDetail } from '@/types/event.types';
 import type { TrailRace } from '@/types/race.types';
 import type { Locale } from '@/i18n';
 import type { MapPageLabels, RaceMapMarker } from '@/types/map.types';
@@ -42,7 +42,7 @@ type FiltersAppliedVariant =
 type FilterType = 'month' | 'province' | 'distance' | 'race_type' | 'apply';
 
 interface RacesExplorerClientProps {
-  events?: TrailEventDetail[];
+  events?: PublicEventDetail[];
   races?: TrailRace[];
   markers: RaceMapMarker[];
   locale: Locale;

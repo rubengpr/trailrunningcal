@@ -14,7 +14,7 @@ vi.mock('@/lib/db/event-drafts', () => ({
   getPendingDraftsByEventIds: mocks.getPendingDraftsByEventIds,
 }));
 
-import { getEvents } from './events';
+import { getEvents, getEventsForAdmin } from './events';
 
 const EVENT_ID_WITH_DRAFT = '7a0a4eb8-e4a4-4e8d-8d0c-1d0ed0e2cf11';
 const EVENT_ID_WITHOUT_DRAFT = '94e16324-c0cd-4f29-a43b-d09830c874a2';
@@ -23,8 +23,8 @@ beforeEach(() => {
   vi.resetAllMocks();
 });
 
-describe('getEvents pending drafts', () => {
-  it('attaches pending drafts to their event and returns null for other events', async () => {
+describe('event list visibility', () => {
+  it('keeps pending drafts out of the public event list', async () => {
     mocks.rpc.mockResolvedValue({
       data: [
         {
@@ -78,7 +78,13 @@ describe('getEvents pending drafts', () => {
     };
     mocks.getPendingDraftsByEventIds.mockResolvedValue([pendingDraft]);
 
-    const result = await getEvents();
+    const publicEvents = await getEvents();
+
+    expect(mocks.getPendingDraftsByEventIds).not.toHaveBeenCalled();
+    expect(publicEvents).toHaveLength(2);
+    expect(publicEvents.every((event) => !('pendingDraft' in event))).toBe(true);
+
+    const result = await getEventsForAdmin();
 
     expect(mocks.getPendingDraftsByEventIds).toHaveBeenCalledWith([
       EVENT_ID_WITH_DRAFT,

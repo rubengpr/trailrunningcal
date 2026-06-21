@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import { Heart } from 'lucide-react';
 import type { Locale } from '@/i18n';
-import type { TrailEventDetail } from '@/types/event.types';
+import type { PublicEventDetail } from '@/types/event.types';
 import { useEventFavorites } from '@/hooks/use-event-favorites';
 import { formatEventDateRange, formatEventLocationLabel } from '@/lib/events/utils';
 import { getFavoriteEvents } from '@/lib/api/events';
@@ -15,7 +15,7 @@ export function EventFavoritesClient() {
   const locale = useLocale() as Locale;
   const { favorites } = useEventFavorites();
   const [mounted, setMounted] = useState(false);
-  const [favoriteEvents, setFavoriteEvents] = useState<TrailEventDetail[]>([]);
+  const [favoriteEvents, setFavoriteEvents] = useState<PublicEventDetail[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
 

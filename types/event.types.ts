@@ -68,7 +68,22 @@ export interface TrailEventDetail {
   allRaceCount: number;
   dateRange: TrailEventDateRange;
   location: TrailEventLocation;
-  pendingDraft?: import('@/types/event-draft.types').EventDraft | null;
+}
+
+export interface PublicEventDetail {
+  event: Pick<TrailEvent, 'id' | 'name' | 'slug'>;
+  races: Array<
+    Pick<
+      TrailEventRace,
+      'id' | 'name' | 'date' | 'distanceKm' | 'elevationGainM' | 'city' | 'province'
+    >
+  >;
+  dateRange: TrailEventDateRange;
+  location: TrailEventLocation;
+}
+
+export interface AdminTrailEventDetail extends TrailEventDetail {
+  pendingDraft: import('@/types/event-draft.types').EventDraft | null;
 }
 
 export type EventRaceWithEventIdRow = EventRaceRow & {

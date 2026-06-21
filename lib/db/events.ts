@@ -6,6 +6,7 @@ import type {
   EventRaceWithEventIdRow,
   EventRow,
   EventWithRacesRow,
+  AdminTrailEventDetail,
   TrailEvent,
   TrailEventDetail,
   TrailEventRace,
@@ -76,13 +77,16 @@ export const getEvents = cache(async function getEvents(): Promise<TrailEventDet
     return [];
   }
 
-  const events = (data as EventWithRacesRow[]).map((row) => {
+  return (data as EventWithRacesRow[]).map((row) => {
     const event = toTrailEvent(row);
     const raceRows = getEventRaceRows(row.races);
     const races = raceRows.map(toTrailEventRace);
     return buildEventDetail(event, races);
   });
+});
 
+export const getEventsForAdmin = cache(async function getEventsForAdmin(): Promise<AdminTrailEventDetail[]> {
+  const events = await getEvents();
   const drafts = await getPendingDraftsByEventIds(events.map(({ event }) => event.id));
   const draftsByEventId = new Map(
     drafts.map((draft) => [draft.eventId, draft]),

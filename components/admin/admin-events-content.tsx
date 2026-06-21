@@ -40,7 +40,7 @@ import {
 } from '@/lib/api/event-drafts';
 import { formatEventDateRangeNumeric } from '@/lib/events/utils';
 import { cleanUrl } from '@/lib/utils/url';
-import type { TrailEventDetail } from '@/types/event.types';
+import type { AdminTrailEventDetail, TrailEventDetail } from '@/types/event.types';
 import type { EventDraft } from '@/types/event-draft.types';
 import type {
   TrailEventAgentEvent,
@@ -48,14 +48,14 @@ import type {
 } from '@/types/trail-event-agent.types';
 
 interface AdminEventsContentProps {
-  events: TrailEventDetail[];
+  events: AdminTrailEventDetail[];
 }
 
 type SortColumn = 'name' | 'dates';
 type SortDirection = 'asc' | 'desc';
 
 function getPendingDraftsByEventId(
-  events: TrailEventDetail[],
+  events: AdminTrailEventDetail[],
 ): Record<string, EventDraft> {
   return Object.fromEntries(
     events.flatMap((eventDetail) => {

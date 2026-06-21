@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { AdminEventsContent } from '@/components/admin/admin-events-content';
-import { getEvents } from '@/lib/db/events';
+import { getEventsForAdmin } from '@/lib/db/events';
 import { isAdminEmail } from '@/lib/auth';
 
 export default async function AdminEventosActivosPage({
@@ -18,7 +18,7 @@ export default async function AdminEventosActivosPage({
     redirect(`/${locale}/admin/login`);
   }
 
-  const events = await getEvents();
+  const events = await getEventsForAdmin();
 
   return <AdminEventsContent events={events} />;
 }

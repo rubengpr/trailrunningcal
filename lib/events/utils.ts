@@ -4,6 +4,7 @@ import type {
   TrailEventDetail,
   TrailEventLocation,
   TrailEventRace,
+  PublicEventDetail,
 } from '@/types/event.types';
 import type { Locale } from '@/i18n';
 import { formatDateToCatalan, formatDateToSpanish, formatIsoDateNumeric } from '@/lib/utils/date';
@@ -167,6 +168,27 @@ export function buildEventDetail(
   };
 }
 
+export function toPublicEventDetail(eventDetail: TrailEventDetail): PublicEventDetail {
+  return {
+    event: {
+      id: eventDetail.event.id,
+      name: eventDetail.event.name,
+      slug: eventDetail.event.slug,
+    },
+    races: eventDetail.races.map((race) => ({
+      id: race.id,
+      name: race.name,
+      date: race.date,
+      distanceKm: race.distanceKm,
+      elevationGainM: race.elevationGainM,
+      city: race.city,
+      province: race.province,
+    })),
+    dateRange: eventDetail.dateRange,
+    location: eventDetail.location,
+  };
+}
+
 function formatDay(date: Date): string {
   return new Intl.DateTimeFormat('es-ES', { day: 'numeric' }).format(date);
 }
@@ -325,7 +347,10 @@ function matchesDistance(distanceKm: number, selectedDistance: string[]): boolea
   });
 }
 
-function matchesRaceType(race: TrailEventRace, selectedRaceType: string[]): boolean {
+function matchesRaceType(
+  race: PublicEventDetail['races'][number],
+  selectedRaceType: string[],
+): boolean {
   if (selectedRaceType.length === 0) {
     return true;
   }
@@ -340,13 +365,13 @@ function monthIndexFromDateString(date: string): number {
 }
 
 export function filterHomeEvents(
-  events: TrailEventDetail[],
+  events: PublicEventDetail[],
   selectedMonth: string[],
   selectedProvince: string[],
   selectedDistance: string[] = [],
   selectedRaceType: string[] = [],
   referenceDate: string = new Date().toISOString().slice(0, 10),
-): TrailEventDetail[] {
+): PublicEventDetail[] {
   return events
     .filter((eventDetail) => eventDetail.dateRange.startDate !== null)
     .filter((eventDetail) => eventDetail.dateRange.startDate! > referenceDate)
@@ -393,6 +418,6 @@ export function filterHomeEvents(
     });
 }
 
-export function getEventRaceIds(events: TrailEventDetail[]): Set<string> {
+export function getEventRaceIds(events: PublicEventDetail[]): Set<string> {
   return new Set(events.flatMap((eventDetail) => eventDetail.races.map((race) => race.id)));
 }

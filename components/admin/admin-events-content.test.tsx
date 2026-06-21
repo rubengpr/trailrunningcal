@@ -5,7 +5,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import type { ReactNode } from 'react';
 
 import type { EventDraft } from '@/types/event-draft.types';
-import type { TrailEventDetail } from '@/types/event.types';
+import type { AdminTrailEventDetail } from '@/types/event.types';
 import type {
   TrailEventAgentEvent,
   TrailEventAgentRace,
@@ -133,7 +133,7 @@ function pendingDraft(data = draftData): EventDraft {
   };
 }
 
-function eventDetail(draft: EventDraft | null): TrailEventDetail {
+function eventDetail(draft: EventDraft | null): AdminTrailEventDetail {
   return {
     event: {
       id: EVENT_ID,
