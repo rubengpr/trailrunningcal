@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import {
   AuthError,
   DuplicateRaceError,
+  ForbiddenError,
   MarkdownTooLongError,
   MarkdownTooShortError,
   TimeoutError,
@@ -11,6 +12,10 @@ import {
 export function handleRouteError(error: unknown): NextResponse {
   if (error instanceof AuthError) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  if (error instanceof ForbiddenError) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
   if (error instanceof DuplicateRaceError) {

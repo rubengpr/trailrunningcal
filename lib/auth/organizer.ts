@@ -51,3 +51,33 @@ export async function getOrganizerRaceContext(
     race: toTrailRace(row),
   };
 }
+
+export async function getRaceAccessContext(
+  supabase: SupabaseClient,
+  raceId: string,
+  isAdmin: boolean,
+): Promise<OrganizerRaceContext | null> {
+  if (!isAdmin) {
+    return getOrganizerRaceContext(supabase, raceId);
+  }
+
+  const { data, error } = await supabase
+    .from('races')
+    .select('*')
+    .eq('id', raceId)
+    .single();
+
+  if (error || !data) {
+    return null;
+  }
+
+  const row = data as RaceRow;
+  if (!row.organizer_id) {
+    return null;
+  }
+
+  return {
+    organizerId: row.organizer_id,
+    race: toTrailRace(row),
+  };
+}

@@ -6,6 +6,12 @@ export class AuthError extends Error {
   }
 }
 
+export class ForbiddenError extends Error {
+  constructor() {
+    super('Forbidden');
+  }
+}
+
 export class ValidationError extends Error {
   constructor(
     message: string,

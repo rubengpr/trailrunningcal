@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { AuthError } from '@/lib/errors';
+import { AuthError, ForbiddenError } from '@/lib/errors';
 
 const mocks = vi.hoisted(() => ({
   requireAdmin: vi.fn(),
@@ -96,6 +96,16 @@ describe('PATCH /api/events/drafts/[draftId]', () => {
 
     expect(response.status).toBe(401);
     await expect(response.json()).resolves.toEqual({ error: 'Unauthorized' });
+    expect(mocks.rejectEventDraft).not.toHaveBeenCalled();
+  });
+
+  it('rejects a non-admin before dispatching an action', async () => {
+    mocks.requireAdmin.mockRejectedValue(new ForbiddenError());
+
+    const response = await PATCH(request({ action: 'reject' }), context);
+
+    expect(response.status).toBe(403);
+    await expect(response.json()).resolves.toEqual({ error: 'Forbidden' });
     expect(mocks.rejectEventDraft).not.toHaveBeenCalled();
   });
 

@@ -1,6 +1,6 @@
 import type { AuthUser } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/server';
-import { AuthError } from '@/lib/errors';
+import { AuthError, ForbiddenError } from '@/lib/errors';
 
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? '')
   .split(',')
@@ -27,6 +27,6 @@ export async function requireAuth(): Promise<{ user: AuthUser; isAdmin: boolean 
 export async function requireAdmin(): Promise<void> {
   const { isAdmin } = await requireAuth();
   if (!isAdmin) {
-    throw new AuthError();
+    throw new ForbiddenError();
   }
 }
