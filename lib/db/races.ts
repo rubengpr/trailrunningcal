@@ -5,7 +5,6 @@ import {
   createStaticClient,
 } from '@/lib/supabase/server';
 import type { TrailRace, RaceRow, ConflictingRace } from '@/types/race.types';
-import { generateRaceSlug } from '@/lib/races/utils';
 
 export function toTrailRace(row: RaceRow): TrailRace {
   return {
@@ -45,10 +44,10 @@ function getJoinedEventSlug(value: unknown): string | null {
 
 let racesCache: TrailRace[] | null = null;
 
-export const getRaces = cache(async function getRaces(): Promise<TrailRace[]> {
+export const getRacesForAdmin = cache(async function getRacesForAdmin(): Promise<TrailRace[]> {
   if (racesCache) return racesCache;
 
-  const supabase = createStaticClient();
+  const supabase = createAdminClient();
 
   const { data, error } = await supabase
     .from('races')
@@ -83,47 +82,6 @@ export const getRaces = cache(async function getRaces(): Promise<TrailRace[]> {
   return racesCache;
 });
 
-const RACE_SELECT = `
-  id, name, date, distance_km, elevation_gain_m,
-  city, province, organizer_id, description,
-  map_url, website_url, hero_image_filename,
-  race_tiers ( price_eur )
-` as const;
-
-export const getRaceBySlug = cache(async function getRaceBySlug(
-  slug: string,
-): Promise<TrailRace | null> {
-  const supabase = createStaticClient();
-
-  const { data: nameRows, error: nameError } = await supabase
-    .from('races')
-    .select('id, name');
-
-  if (nameError || !nameRows) {
-    console.error('Failed to fetch race names:', nameError);
-    return null;
-  }
-
-  const match = nameRows.find(
-    (r: { id: string; name: string }) => generateRaceSlug(r.name) === slug,
-  );
-
-  if (!match) return null;
-
-  const { data, error } = await supabase
-    .from('races')
-    .select(RACE_SELECT)
-    .eq('id', match.id)
-    .single();
-
-  if (error || !data) {
-    console.error('Failed to fetch race by id:', error);
-    return null;
-  }
-
-  return toTrailRace(data as RaceRow);
-});
-
 export const getEventSlugByRaceLegacySlug = cache(
   async function getEventSlugByRaceLegacySlug(
     legacySlug: string,
@@ -147,43 +105,10 @@ export const getEventSlugByRaceLegacySlug = cache(
   },
 );
 
-export const getRecommendedRaces = cache(async function getRecommendedRaces(
-  province: string,
-  excludeId: string,
-  afterDate: string | null,
-  limit: number = 3,
-): Promise<TrailRace[]> {
-  const supabase = createStaticClient();
-
-  let query = supabase
-    .from('races')
-    .select(
-      'id, name, date, distance_km, elevation_gain_m, city, province, organizer_id',
-    )
-    .eq('province', province)
-    .neq('id', excludeId)
-    .not('date', 'is', null)
-    .order('date', { ascending: true })
-    .limit(limit);
-
-  if (afterDate) {
-    query = query.gte('date', afterDate);
-  }
-
-  const { data, error } = await query;
-
-  if (error || !data) {
-    console.error('Failed to fetch recommended races:', error);
-    return [];
-  }
-
-  return (data as RaceRow[]).map(toTrailRace);
-});
-
 export async function getFutureRacesByUrl(
   urls: string[],
 ): Promise<ConflictingRace[]> {
-  const supabase = createStaticClient();
+  const supabase = createAdminClient();
   const today = new Date().toISOString().slice(0, 10);
 
   const { data, error } = await supabase

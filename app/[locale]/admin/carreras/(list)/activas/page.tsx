@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { AdminRacesContent } from '@/components/admin/admin-races-content';
-import { getRaces } from '@/lib/db/races';
+import { getRacesForAdmin } from '@/lib/db/races';
 import { isAdminEmail } from '@/lib/auth';
 
 export default async function AdminRacesActivasPage({
@@ -22,7 +22,7 @@ export default async function AdminRacesActivasPage({
         redirect(`/${locale}/admin/login`);
     }
 
-    const races = await getRaces();
+    const races = await getRacesForAdmin();
 
     return <AdminRacesContent races={races} />;
 }

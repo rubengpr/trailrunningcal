@@ -113,12 +113,7 @@ export async function getEventsByIds(
       `
       id,
       name,
-      slug,
-      website_url,
-      organizer_id,
-      description,
-      hero_image_filename,
-      updated_at
+      slug
     `,
     )
     .in('id', eventIds);
@@ -146,9 +141,7 @@ export async function getEventsByIds(
       elevation_gain_m,
       city,
       province,
-      map_url,
-      event_id,
-      race_tiers ( price_eur )
+      event_id
     `,
     )
     .in('event_id', fetchedEventIds);
@@ -184,7 +177,7 @@ export async function getEventsByUrl(
     return [];
   }
 
-  const supabase = createStaticClient();
+  const supabase = createAdminClient();
 
   const { data, error } = await supabase
     .from('events')
@@ -219,9 +212,7 @@ export const getEventBySlug = cache(async function getEventBySlug(
       slug,
       website_url,
       organizer_id,
-      description,
-      hero_image_filename,
-      updated_at
+      description
     `,
     )
     .eq('slug', slug)
