@@ -7,11 +7,12 @@ import type {
   EventRow,
   EventWithRacesRow,
   AdminTrailEventDetail,
+  PublicEventDetail,
   TrailEvent,
   TrailEventDetail,
   TrailEventRace,
 } from '@/types/event.types';
-import { buildEventDetail } from '@/lib/events/utils';
+import { buildEventDetail, toPublicEventDetail } from '@/lib/events/utils';
 import { getPendingDraftsByEventIds } from '@/lib/db/event-drafts';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -83,6 +84,55 @@ export const getEvents = cache(async function getEvents(): Promise<TrailEventDet
     const races = raceRows.map(toTrailEventRace);
     return buildEventDetail(event, races);
   });
+});
+
+export const getUpcomingEvents = cache(async function getUpcomingEvents(
+  afterDate: string,
+): Promise<PublicEventDetail[]> {
+  const supabase = createStaticClient();
+
+  const { data, error } = await supabase
+    .from('events')
+    .select(
+      `
+      id,
+      name,
+      slug,
+      races!inner (
+        id,
+        name,
+        date,
+        distance_km,
+        elevation_gain_m,
+        city,
+        province
+      )
+    `,
+    )
+    .gt('races.date', afterDate);
+
+  if (error || !data) {
+    console.error('Failed to fetch upcoming events:', error);
+    return [];
+  }
+
+  return (data as Array<Pick<EventRow, 'id' | 'name' | 'slug'> & { races: unknown }>).map(
+    (row) => {
+      const event: TrailEvent = {
+        id: row.id,
+        name: row.name,
+        slug: row.slug,
+        websiteUrl: null,
+        organizerId: null,
+        description: null,
+        heroImageFilename: null,
+        updatedAt: null,
+      };
+      const races = getEventRaceRows(row.races).map(toTrailEventRace);
+
+      return toPublicEventDetail(buildEventDetail(event, races));
+    },
+  );
 });
 
 export const getEventsForAdmin = cache(async function getEventsForAdmin(): Promise<AdminTrailEventDetail[]> {

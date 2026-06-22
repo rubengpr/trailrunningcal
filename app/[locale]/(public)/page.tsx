@@ -8,8 +8,7 @@ import {
 } from '@/lib/seo/meta-config';
 import type { Locale } from '@/i18n';
 import { buildHomeAlternateLinks } from '@/lib/content/alternate-links';
-import { getEvents } from '@/lib/db/events';
-import { toPublicEventDetail } from '@/lib/events/utils';
+import { getUpcomingEvents } from '@/lib/db/events';
 import { getRacesMapData } from '@/lib/db/races-map';
 import { buildWebsiteJsonLd, buildOrganizationJsonLd } from '@/lib/seo/json-ld';
 import { buildFaqJsonLd } from '@/lib/seo/json-ld';
@@ -49,10 +48,11 @@ export default async function HomePage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const today = new Date().toISOString().slice(0, 10);
 
   const [t, events, { markers }] = await Promise.all([
     getTranslations({ locale }),
-    getEvents(),
+    getUpcomingEvents(today),
     getRacesMapData(),
   ]);
 
@@ -91,7 +91,7 @@ export default async function HomePage({
       />
       <div id="calendar" className="mx-auto w-full min-w-0 pt-6 pb-16 sm:pt-10 lg:pt-4 scroll-mt-18 sm:scroll-mt-20">
         <RacesExplorerClient
-          events={events.map(toPublicEventDetail)}
+          events={events}
           markers={markers}
           locale={locale}
           labels={labels}

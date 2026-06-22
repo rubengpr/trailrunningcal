@@ -282,7 +282,7 @@ function applyMarkerFocus(
   };
 }
 
-interface RacesMapProps {
+export interface RacesMapProps {
   markers: RaceMapMarker[];
   locale: Locale;
   labels: MapPageLabels;

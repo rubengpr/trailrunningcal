@@ -18,7 +18,7 @@ import { SearchError } from '@/components/ui/error-message';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Button } from '@/components/ui/button';
 import type { DesktopLayout, LayoutToggleButton } from '@/components/ui/layout-toggle';
-import { RacesMap } from '@/components/races-map/races-map';
+import { DeferredRacesMap } from '@/components/races-map/deferred-races-map';
 import { MapToggleFab } from '@/components/races-map/map-toggle-fab';
 import { Search, RefreshCw, TriangleAlert } from 'lucide-react';
 import { useMinWidthLg } from '@/hooks/use-min-width-lg';
@@ -461,7 +461,7 @@ export function RacesExplorerClient({
                       </p>
                     ) : (
                       <div className="w-full lg:sticky lg:top-6">
-                        <RacesMap
+                        <DeferredRacesMap
                           markers={activeFilteredMarkers}
                           locale={locale}
                           labels={labels}
