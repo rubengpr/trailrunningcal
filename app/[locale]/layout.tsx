@@ -51,7 +51,7 @@ export default async function LocaleLayout({
     : 'https://ppmdbmyxgtqvmvtbptmg.supabase.co';
 
   return (
-    <html lang={locale}>
+    <html lang={locale} data-scroll-behavior="smooth">
       <head>
         <link rel="preconnect" href={supabaseHost} />
         <meta name="apple-mobile-web-app-title" content="Trailrunningcal" />
