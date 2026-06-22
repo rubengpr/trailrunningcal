@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Calendar, MapPin, Route } from 'lucide-react';
+import { Calendar, Globe, MapPin, Route } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { locales, type Locale } from '@/i18n';
@@ -217,8 +217,9 @@ export default async function EventPage({
                     eventName={ANALYTICS_EVENTS.EVENT_OFFICIAL_WEBSITE_CLICKED}
                     eventProperties={{ event_id: eventData.event.id, event_slug: event }}
                     external
-                    className="w-full bg-gray-900 text-white px-4 py-2 rounded-md font-medium hover:bg-gray-600 focus:outline-none transition-colors cursor-pointer text-center whitespace-nowrap"
+                    className="flex w-full items-center justify-center gap-2 bg-gray-900 px-4 py-2 text-center font-medium whitespace-nowrap text-white rounded-md transition-colors hover:bg-gray-600 focus:outline-none cursor-pointer"
                   >
+                    <Globe className="h-4 w-4" />
                     {tEvent('officialWebsite')}
                   </TrackedLink>
                 )}
