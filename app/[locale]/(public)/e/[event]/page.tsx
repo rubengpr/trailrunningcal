@@ -7,6 +7,7 @@ import { BASE_URL } from '@/lib/config';
 import { getEventBySlug, getRecommendedEvents } from '@/lib/db/events';
 import { buildEventAlternateLinks } from '@/lib/content/alternate-links';
 import { Breadcrumb } from '@/components/layout/breadcrumb';
+import { PromoBanner } from '@/components/home/promo-banner';
 import { EventCard } from '@/components/event/event-card';
 import { EventFavoriteButton } from '@/components/event/event-favorite-button';
 import { EventDistanceList } from '@/components/event/event-distance-list';
@@ -255,6 +256,8 @@ export default async function EventPage({
               </p>
             </div>
           )}
+
+          <PromoBanner alt="" />
 
           <section className="mt-8 sm:mt-10">
             <div className="mb-4 flex items-center gap-2">

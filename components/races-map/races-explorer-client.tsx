@@ -11,6 +11,7 @@ import type { MapPageLabels, RaceMapMarker } from '@/types/map.types';
 import { RacesExplorerFiltersSection } from '@/components/races-map/races-explorer-filters-section';
 import { MobileFiltersButton } from '@/components/filters/mobile-filters-button';
 import { MobileFiltersModal } from '@/components/filters/mobile-filters-modal';
+import { PromoBanner } from '@/components/home/promo-banner';
 import { EventCard } from '@/components/event/event-card';
 import { TrailRaceCard } from '@/components/race/trail-race-card';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
@@ -368,6 +369,7 @@ export function RacesExplorerClient({
                   <div
                     className={`min-w-0 w-full min-h-0 ${desktopLayout === 'both' ? 'lg:w-1/2 lg:max-h-[calc(100vh-12rem)] lg:overflow-y-auto lg:pr-1' : 'lg:w-full'} ${showMobileMapFab && mobileView === 'list' ? 'pb-20' : ''}`}
                   >
+                    <PromoBanner alt="" className="mb-4" />
                     <div className="grid min-h-[200px] min-w-0 grid-cols-1 gap-4">
                       {activeListCount === 0 ? (
                         <EmptyState
