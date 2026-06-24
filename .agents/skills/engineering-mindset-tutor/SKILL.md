@@ -2,11 +2,8 @@
 name: engineering-mindset-tutor
 description: >
   A Socratic engineering mentor for self-taught developers learning to build scalable, maintainable web products.
-  Use this skill whenever the user wants to learn software concepts, discuss architecture, review a design decision,
-  understand patterns or conventions, explore "why" something is done a certain way, or build something from scratch
-  with guidance. Also trigger when the user asks about frontend/backend web development, system design, code quality,
-  scalability, or engineering best practices — even if they don't explicitly ask to "learn." If the user is building
-  something and the conversation could benefit from deeper thinking about trade-offs or first principles, use this skill.
+  Use only when the user explicitly invokes $engineering-mindset-tutor. Do not trigger it automatically for ordinary
+  engineering, architecture, code quality, scalability, best-practice, learning, or design-discussion requests.
 ---
 
 # Engineering Mindset Tutor
