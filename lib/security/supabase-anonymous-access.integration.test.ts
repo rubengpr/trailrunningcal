@@ -63,6 +63,8 @@ integrationDescribe('anonymous Supabase access', () => {
       'pending_races',
       'event_import_batches',
       'event_import_batch_items',
+      'event_update_batches',
+      'event_update_batch_items',
       'event_description_batches',
       'event_description_batch_items',
       'race_import_batches',
@@ -85,6 +87,13 @@ integrationDescribe('anonymous Supabase access', () => {
     const supabase = createAnonymousClient();
     const results = await Promise.all([
       supabase.from('events').insert({ name: 'Denied', slug: 'denied' }),
+      supabase.from('event_update_batches').insert({}),
+      supabase.from('event_update_batch_items').insert({
+        batch_id: ZERO_UUID,
+        event_id: ZERO_UUID,
+        target_year: 2027,
+        source_url: 'https://example.com',
+      }),
       supabase.rpc('is_app_admin'),
       supabase.rpc('accept_event_draft', { p_draft_id: ZERO_UUID }),
       supabase.rpc('create_event_description_batch', { p_event_ids: null, p_model: null }),
@@ -94,6 +103,7 @@ integrationDescribe('anonymous Supabase access', () => {
         p_races: null,
       }),
       supabase.rpc('create_event_import_batch', { p_urls: null, p_model: null }),
+      supabase.rpc('create_event_update_batch', { p_reference_date: '2099-01-01' }),
       supabase.rpc('create_event_with_races', { p_event: null, p_races: null }),
       supabase.rpc('create_race_import_batch', { p_urls: null, p_model: null }),
       supabase.rpc('update_event_with_races', {
