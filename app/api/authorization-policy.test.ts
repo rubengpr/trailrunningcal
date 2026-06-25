@@ -313,6 +313,12 @@ describe('API authorization policy', () => {
         return hasGuard ? [`${handler.key} unexpectedly has a private guard`] : [];
       }
 
+      if (handler.access === 'cron') {
+        return calls.includes('requireCronSecret')
+          ? []
+          : [`${handler.key} must call requireCronSecret`];
+      }
+
       const expectedGuard =
         handler.access === 'admin' ? 'requireAdmin' : 'requireAuth';
       return calls.includes(expectedGuard)
@@ -326,6 +332,16 @@ describe('API authorization policy', () => {
   it('runs authentication before other function calls', () => {
     const violations = handlers.flatMap((handler) => {
       if (handler.access === 'public') return [];
+
+      if (handler.access === 'cron') {
+        const firstFunction = calledFunctions(handler)[0];
+
+        return firstFunction === 'requireCronSecret'
+          ? []
+          : [
+              `${handler.key} must call requireCronSecret before other functions`,
+            ];
+      }
 
       const expectedGuard =
         handler.access === 'admin' ? 'requireAdmin' : 'requireAuth';

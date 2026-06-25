@@ -1,10 +1,12 @@
 export type ApiAuthorization =
   | 'public'
+  | 'cron'
   | 'authenticated'
   | 'admin'
   | 'owner-or-admin';
 
 export const API_AUTHORIZATION_POLICY = {
+  'GET /api/cron/event-updates': 'cron',
   'POST /api/events/[eventId]/description-draft': 'admin',
   'PATCH /api/events/[eventId]/description': 'admin',
   'POST /api/events/[eventId]/drafts': 'admin',
