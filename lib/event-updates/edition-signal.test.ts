@@ -68,4 +68,29 @@ describe('evaluateEditionSignal', () => {
       previousYearCount: 0,
     });
   });
+
+  it('ignores crawl metadata frontmatter when counting year references', () => {
+    const result = evaluateEditionSignal({
+      markdown: `---
+seedUrl: "https://www.femsui.cat"
+generatedAt: "2026-06-25T21:58:35.280Z"
+sources:
+  - url: "https://www.femsui.cat/"
+    generatedAt: "2026-06-25T21:58:35.280Z"
+    status: 200
+---
+
+# Trail Fem Sui
+
+Resultats 2025 i galeria de fotos.`,
+      targetYear: 2026,
+    });
+
+    expect(result).toMatchObject({
+      eligible: false,
+      targetYearCount: 0,
+      previousYearCount: 1,
+      reason: 'Skipped: weak year signal: 2026=0, 2025=1',
+    });
+  });
 });

@@ -17,16 +17,21 @@ function countStandaloneYearReferences(text: string, year: number): number {
   return matches?.length ?? 0;
 }
 
+function stripLeadingFrontmatter(markdown: string): string {
+  return markdown.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, '');
+}
+
 export function evaluateEditionSignal(
   input: EditionSignalInput,
 ): EditionSignalResult {
+  const websiteContent = stripLeadingFrontmatter(input.markdown);
   const previousYear = input.targetYear - 1;
   const targetYearCount = countStandaloneYearReferences(
-    input.markdown,
+    websiteContent,
     input.targetYear,
   );
   const previousYearCount = countStandaloneYearReferences(
-    input.markdown,
+    websiteContent,
     previousYear,
   );
   const eligible = targetYearCount > previousYearCount;
