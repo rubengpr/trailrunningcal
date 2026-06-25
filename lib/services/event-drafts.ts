@@ -1,4 +1,6 @@
 import { OPENROUTER_SCRAPE_MODEL_IDS } from '@/lib/integrations/openrouter/scrape-models';
+import type { OpenRouterScrapeModelId } from '@/lib/integrations/openrouter/scrape-models';
+import { extractFromMarkdown } from '@/lib/integrations/openrouter/service';
 import { processCrawlSiteExtract } from '@/lib/services/event-import';
 import { getEventByIdForAdmin } from '@/lib/db/events';
 import {
@@ -19,14 +21,37 @@ import type {
 export const DEFAULT_EVENT_DRAFT_MODEL =
   OPENROUTER_SCRAPE_MODEL_IDS[0];
 
-export async function generateEventDraft(
-  eventId: string,
-): Promise<EventDraft> {
+async function assertNoPendingDraft(eventId: string): Promise<void> {
   const existingDraft = await getPendingDraftByEventId(eventId);
 
   if (existingDraft) {
     throw new ValidationError('Event already has a pending draft', 409);
   }
+}
+
+function validateExtractedDraftData(input: {
+  event: EventDraftData['event'] | null;
+  races: EventDraftData['races'];
+  errorMessage: string | null;
+}): EventDraftData {
+  if (input.errorMessage) {
+    throw new ValidationError(input.errorMessage, 422);
+  }
+
+  if (!input.event || input.races.length === 0) {
+    throw new ValidationError('No new edition data found', 422);
+  }
+
+  return {
+    event: input.event,
+    races: input.races,
+  };
+}
+
+export async function generateEventDraft(
+  eventId: string,
+): Promise<EventDraft> {
+  await assertNoPendingDraft(eventId);
 
   const eventDetail = await getEventByIdForAdmin(eventId);
 
@@ -44,20 +69,27 @@ export async function generateEventDraft(
     skipDuplicateCheck: true,
   });
 
-  if (result.errorMessage) {
-    throw new ValidationError(result.errorMessage, 422);
-  }
-
-  if (!result.event || result.races.length === 0) {
-    throw new ValidationError('No new edition data found', 422);
-  }
-
   return createEventDraft({
     eventId,
-    data: {
-      event: result.event,
-      races: result.races,
-    },
+    data: validateExtractedDraftData(result),
+  });
+}
+
+export async function generateEventDraftFromMarkdown(input: {
+  eventId: string;
+  markdown: string;
+  model?: OpenRouterScrapeModelId;
+}): Promise<EventDraft> {
+  await assertNoPendingDraft(input.eventId);
+
+  const result = await extractFromMarkdown(
+    input.markdown,
+    input.model ?? DEFAULT_EVENT_DRAFT_MODEL,
+  );
+
+  return createEventDraft({
+    eventId: input.eventId,
+    data: validateExtractedDraftData(result),
   });
 }
 

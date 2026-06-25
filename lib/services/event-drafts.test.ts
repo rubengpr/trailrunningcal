@@ -13,6 +13,7 @@ import type {
 
 const mocks = vi.hoisted(() => ({
   processCrawlSiteExtract: vi.fn(),
+  extractFromMarkdown: vi.fn(),
   getEventByIdForAdmin: vi.fn(),
   getPendingDraftByEventId: vi.fn(),
   getPendingDraftById: vi.fn(),
@@ -24,6 +25,10 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock('@/lib/services/event-import', () => ({
   processCrawlSiteExtract: mocks.processCrawlSiteExtract,
+}));
+
+vi.mock('@/lib/integrations/openrouter/service', () => ({
+  extractFromMarkdown: mocks.extractFromMarkdown,
 }));
 
 vi.mock('@/lib/db/events', () => ({
@@ -42,6 +47,7 @@ vi.mock('@/lib/db/event-drafts', () => ({
 import {
   acceptEventDraft,
   generateEventDraft,
+  generateEventDraftFromMarkdown,
   rejectEventDraft,
   updateEventDraft,
 } from './event-drafts';
@@ -238,6 +244,104 @@ describe('generateEventDraft', () => {
     });
 
     expect(mocks.processCrawlSiteExtract).not.toHaveBeenCalled();
+  });
+});
+
+describe('generateEventDraftFromMarkdown', () => {
+  it('persists successful markdown extraction as a pending draft', async () => {
+    const event = extractedEvent();
+    const races = [extractedRace()];
+    const createdDraft = draft({ event, races });
+    mocks.getPendingDraftByEventId.mockResolvedValue(null);
+    mocks.extractFromMarkdown.mockResolvedValue({
+      event,
+      races,
+      errorMessage: null,
+      rawModelOutput: JSON.stringify({ event, races, errorMessage: null }),
+      usage: null,
+    });
+    mocks.createEventDraft.mockResolvedValue(createdDraft);
+
+    await expect(
+      generateEventDraftFromMarkdown({
+        eventId: EVENT_ID,
+        markdown: 'Markdown content. '.repeat(100),
+      }),
+    ).resolves.toEqual(createdDraft);
+
+    expect(mocks.processCrawlSiteExtract).not.toHaveBeenCalled();
+    expect(mocks.extractFromMarkdown).toHaveBeenCalledWith(
+      'Markdown content. '.repeat(100),
+      expect.any(String),
+    );
+    expect(mocks.createEventDraft).toHaveBeenCalledWith({
+      eventId: EVENT_ID,
+      data: { event, races },
+    });
+  });
+
+  it('does not extract markdown when a pending draft exists', async () => {
+    mocks.getPendingDraftByEventId.mockResolvedValue(
+      draft({ event: extractedEvent(), races: [extractedRace()] }),
+    );
+
+    await expect(
+      generateEventDraftFromMarkdown({
+        eventId: EVENT_ID,
+        markdown: 'Markdown content. '.repeat(100),
+      }),
+    ).rejects.toMatchObject({ status: 409 });
+
+    expect(mocks.extractFromMarkdown).not.toHaveBeenCalled();
+    expect(mocks.createEventDraft).not.toHaveBeenCalled();
+  });
+
+  it('does not persist markdown extraction error messages', async () => {
+    mocks.getPendingDraftByEventId.mockResolvedValue(null);
+    mocks.extractFromMarkdown.mockResolvedValue({
+      event: null,
+      races: [],
+      errorMessage: 'No hay nueva edición publicada.',
+      rawModelOutput: JSON.stringify({
+        event: null,
+        races: [],
+        errorMessage: 'No hay nueva edición publicada.',
+      }),
+      usage: null,
+    });
+
+    await expect(
+      generateEventDraftFromMarkdown({
+        eventId: EVENT_ID,
+        markdown: 'Markdown content. '.repeat(100),
+      }),
+    ).rejects.toMatchObject({ status: 422 });
+
+    expect(mocks.createEventDraft).not.toHaveBeenCalled();
+  });
+
+  it('does not persist empty markdown extraction results', async () => {
+    mocks.getPendingDraftByEventId.mockResolvedValue(null);
+    mocks.extractFromMarkdown.mockResolvedValue({
+      event: null,
+      races: [],
+      errorMessage: null,
+      rawModelOutput: JSON.stringify({
+        event: null,
+        races: [],
+        errorMessage: null,
+      }),
+      usage: null,
+    });
+
+    await expect(
+      generateEventDraftFromMarkdown({
+        eventId: EVENT_ID,
+        markdown: 'Markdown content. '.repeat(100),
+      }),
+    ).rejects.toMatchObject({ status: 422 });
+
+    expect(mocks.createEventDraft).not.toHaveBeenCalled();
   });
 });
 

@@ -1,5 +1,6 @@
 import { start } from 'workflow/api';
 import { evaluateEditionSignal } from '@/lib/event-updates/edition-signal';
+import { ValidationError } from '@/lib/errors';
 import {
   createEventUpdateBatch,
   getEventUpdateBatch,
@@ -11,6 +12,7 @@ import {
   updateEventUpdateBatchStatus,
 } from '@/lib/db/event-update-batches';
 import { crawlSite } from '@/lib/integrations/spider-cloud/service';
+import { generateEventDraftFromMarkdown } from '@/lib/services/event-drafts';
 
 interface EventUpdateBatchWorkflowInput {
   batchId: string;
@@ -121,11 +123,30 @@ async function processEventUpdateItemStep(input: {
       targetYear: input.targetYear,
     });
 
+    if (!signal.eligible) {
+      await markEventUpdateItemCompleted(input.itemId, {
+        error: signal.reason,
+      });
+      return;
+    }
+
+    await generateEventDraftFromMarkdown({
+      eventId: input.eventId,
+      markdown: crawl.markdown,
+    });
+
     await markEventUpdateItemCompleted(input.itemId, {
-      error: signal.eligible ? null : signal.reason,
+      error: null,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
+
+    if (error instanceof ValidationError) {
+      await markEventUpdateItemCompleted(input.itemId, {
+        error: `Skipped: ${message}`,
+      });
+      return;
+    }
 
     console.error('Event update item failed', {
       itemId: input.itemId,

@@ -7,6 +7,7 @@ import type {
 const mocks = vi.hoisted(() => ({
   start: vi.fn(),
   crawlSite: vi.fn(),
+  generateEventDraftFromMarkdown: vi.fn(),
   createEventUpdateBatch: vi.fn(),
   getEventUpdateBatch: vi.fn(),
   getPendingEventUpdateBatchItems: vi.fn(),
@@ -25,6 +26,10 @@ vi.mock('@/lib/integrations/spider-cloud/service', () => ({
   crawlSite: mocks.crawlSite,
 }));
 
+vi.mock('@/lib/services/event-drafts', () => ({
+  generateEventDraftFromMarkdown: mocks.generateEventDraftFromMarkdown,
+}));
+
 vi.mock('@/lib/db/event-update-batches', () => ({
   createEventUpdateBatch: mocks.createEventUpdateBatch,
   getEventUpdateBatch: mocks.getEventUpdateBatch,
@@ -40,6 +45,7 @@ import {
   eventUpdateBatchWorkflow,
   startEventUpdateBatch,
 } from './event-update-batch';
+import { ValidationError } from '@/lib/errors';
 
 const batch: EventUpdateBatch = {
   id: 'batch-1',
@@ -71,6 +77,30 @@ beforeEach(() => {
     markdown: 'Nova edició 2027. Inscripcions 2027. Resultats 2026.',
     pageStats: { total: 1, successCount: 1, errorCount: 0 },
     usage: { totalCost: null },
+  });
+  mocks.generateEventDraftFromMarkdown.mockResolvedValue({
+    id: 'draft-1',
+    eventId: 'event-1',
+    status: 'pending',
+    data: {
+      event: {
+        name: 'Trail Event',
+        description: 'Event description',
+        websiteUrl: 'https://example.com/event',
+      },
+      races: [
+        {
+          name: 'Trail Event - 21K',
+          date: '2027-05-01',
+          city: 'Barcelona',
+          province: 'Barcelona',
+          distanceKm: 21,
+          elevationGainM: 900,
+        },
+      ],
+    },
+    createdAt: '2026-06-25T00:00:00.000Z',
+    updatedAt: '2026-06-25T00:00:00.000Z',
   });
 });
 
@@ -137,7 +167,7 @@ describe('startEventUpdateBatch', () => {
 });
 
 describe('eventUpdateBatchWorkflow', () => {
-  it('crawls and completes eligible pending items', async () => {
+  it('crawls, generates drafts, and completes eligible pending items', async () => {
     const firstItem = item('1');
     const secondItem = item('2');
     mocks.getPendingEventUpdateBatchItems.mockResolvedValue([
@@ -172,6 +202,14 @@ describe('eventUpdateBatchWorkflow', () => {
     );
     expect(mocks.crawlSite).toHaveBeenNthCalledWith(1, firstItem.sourceUrl);
     expect(mocks.crawlSite).toHaveBeenNthCalledWith(2, secondItem.sourceUrl);
+    expect(mocks.generateEventDraftFromMarkdown).toHaveBeenNthCalledWith(1, {
+      eventId: firstItem.eventId,
+      markdown: 'Nova edició 2027. Inscripcions 2027. Resultats 2026.',
+    });
+    expect(mocks.generateEventDraftFromMarkdown).toHaveBeenNthCalledWith(2, {
+      eventId: secondItem.eventId,
+      markdown: 'Nova edició 2027. Inscripcions 2027. Resultats 2026.',
+    });
     expect(mocks.updateEventUpdateBatchStatus).toHaveBeenLastCalledWith(
       batch.id,
       'completed',
@@ -196,7 +234,48 @@ describe('eventUpdateBatchWorkflow', () => {
       skippedItem.id,
       { error: 'Skipped: weak year signal: 2027=0, 2026=2' },
     );
+    expect(mocks.generateEventDraftFromMarkdown).not.toHaveBeenCalled();
     expect(mocks.markEventUpdateItemFailed).not.toHaveBeenCalled();
+  });
+
+  it('completes expected no-draft validation outcomes with a skip reason', async () => {
+    const noDraftItem = item('1');
+    mocks.getPendingEventUpdateBatchItems.mockResolvedValue([noDraftItem]);
+    mocks.generateEventDraftFromMarkdown.mockRejectedValue(
+      new ValidationError('No new edition data found', 422),
+    );
+
+    await eventUpdateBatchWorkflow({ batchId: batch.id });
+
+    expect(mocks.generateEventDraftFromMarkdown).toHaveBeenCalledWith({
+      eventId: noDraftItem.eventId,
+      markdown: 'Nova edició 2027. Inscripcions 2027. Resultats 2026.',
+    });
+    expect(mocks.markEventUpdateItemCompleted).toHaveBeenCalledWith(
+      noDraftItem.id,
+      { error: 'Skipped: No new edition data found' },
+    );
+    expect(mocks.markEventUpdateItemFailed).not.toHaveBeenCalled();
+  });
+
+  it('marks an item failed when draft generation fails unexpectedly', async () => {
+    const failedItem = item('1');
+    mocks.getPendingEventUpdateBatchItems.mockResolvedValue([failedItem]);
+    mocks.generateEventDraftFromMarkdown.mockRejectedValue(
+      new Error('OpenRouter unavailable'),
+    );
+
+    await eventUpdateBatchWorkflow({ batchId: batch.id });
+
+    expect(mocks.markEventUpdateItemFailed).toHaveBeenCalledWith(
+      failedItem.id,
+      'OpenRouter unavailable',
+    );
+    expect(mocks.markEventUpdateItemCompleted).not.toHaveBeenCalled();
+    expect(mocks.updateEventUpdateBatchStatus).toHaveBeenLastCalledWith(
+      batch.id,
+      'completed',
+    );
   });
 
   it('marks an item failed when crawling fails', async () => {
