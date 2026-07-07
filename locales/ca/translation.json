@@ -844,9 +844,9 @@
         "restart": "Recomençar",
         "costSummary": {
           "aiCostLabel": "Cost:",
-          "spiderCloudTitle": "Spider Cloud",
+          "crawlProviderTitle": "Crawler",
           "openRouterTitle": "OpenRouter",
-          "spiderTotalCost": "Cost total",
+          "crawlTotalCost": "Cost total",
           "openRouterCost": "Cost",
           "tokensTitle": "Tokens",
           "promptTokens": "Input",
@@ -1059,9 +1059,9 @@
         "restart": "Recomençar",
         "costSummary": {
           "aiCostLabel": "Cost:",
-          "spiderCloudTitle": "Spider Cloud",
+          "crawlProviderTitle": "Crawler",
           "openRouterTitle": "OpenRouter",
-          "spiderTotalCost": "Cost total",
+          "crawlTotalCost": "Cost total",
           "openRouterCost": "Cost",
           "tokensTitle": "Tokens",
           "promptTokens": "Input",

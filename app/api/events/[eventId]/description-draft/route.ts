@@ -4,7 +4,7 @@ import { handleRouteError } from '@/lib/utils/handle-error';
 import { DEFAULT_EVENT_DESCRIPTION_MODEL, generateEventDescriptionDraft } from '@/lib/services/event-description';
 import { parseImportModel } from '@/app/api/races/import/validation';
 
-export const maxDuration = 60;
+export const maxDuration = 120;
 
 export async function POST(
   request: NextRequest,

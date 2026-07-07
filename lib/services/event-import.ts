@@ -1,7 +1,9 @@
 import type { OpenRouterScrapeModelId } from '@/lib/integrations/openrouter/scrape-models';
 import { extractFromMarkdown } from '@/lib/integrations/openrouter/service';
-import { crawlSite, scrapePage } from '@/lib/integrations/spider-cloud/service';
+import { scrapePage } from '@/lib/integrations/spider-cloud/service';
 import type { SpiderServiceResult } from '@/lib/integrations/spider-cloud/service';
+import { crawlSite } from '@/lib/services/crawl';
+import type { CrawlResult } from '@/lib/services/crawl';
 import type {
   EventImportResult,
   EventImportStep,
@@ -32,7 +34,7 @@ async function timeStep<T>(fn: () => Promise<T>): Promise<TimedResult<T>> {
 
 function scrapeStep(
   name: EventImportStepName,
-  scrapeResult: SpiderServiceResult,
+  scrapeResult: SpiderServiceResult | CrawlResult,
   durationMs: number,
 ): EventImportStep {
   return {
@@ -76,7 +78,7 @@ export async function processCrawlSiteExtract(input: {
     usage: extract.result.usage,
     pageStats: crawl.result.pageStats,
     scrapeUsage: crawl.result.usage,
-    fallbackUsed: null,
+    fallbackUsed: crawl.result.fallbackUsed,
     steps: [
       scrapeStep('crawlSite', crawl.result, crawl.durationMs),
       extractStep(extract.result.races.length, extract.durationMs),
@@ -109,7 +111,7 @@ export async function processScrapePageExtract(input: {
     usage: extract.result.usage,
     pageStats: scrape.result.pageStats,
     scrapeUsage: scrape.result.usage,
-    fallbackUsed: null,
+    fallbackUsed: false,
     steps: [
       scrapeStep('scrapePage', scrape.result, scrape.durationMs),
       extractStep(extract.result.races.length, extract.durationMs),
@@ -133,7 +135,7 @@ export async function processCrawlSite(input: {
     usage: null,
     pageStats: crawl.result.pageStats,
     scrapeUsage: crawl.result.usage,
-    fallbackUsed: null,
+    fallbackUsed: crawl.result.fallbackUsed,
     steps: [scrapeStep('crawlSite', crawl.result, crawl.durationMs)],
   };
 }
@@ -154,7 +156,7 @@ export async function processScrapePage(input: {
     usage: null,
     pageStats: scrape.result.pageStats,
     scrapeUsage: scrape.result.usage,
-    fallbackUsed: null,
+    fallbackUsed: false,
     steps: [scrapeStep('scrapePage', scrape.result, scrape.durationMs)],
   };
 }

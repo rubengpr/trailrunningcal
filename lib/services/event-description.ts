@@ -1,7 +1,7 @@
 import { createOpenRouterClient } from '@/lib/integrations/openrouter/client';
 import { runEventDescriptionAgent } from '@/lib/integrations/openrouter/event-description';
 import type { OpenRouterScrapeModelId } from '@/lib/integrations/openrouter/scrape-models';
-import { crawlSite } from '@/lib/integrations/spider-cloud/service';
+import { crawlSite } from '@/lib/services/crawl';
 import { getEventByIdForAdmin } from '@/lib/db/events';
 import type { EventDescriptionDraftResult } from '@/types/event-description.types';
 import type { TrailEventDetail } from '@/types/event.types';

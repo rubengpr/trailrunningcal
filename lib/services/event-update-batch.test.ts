@@ -22,7 +22,7 @@ vi.mock('workflow/api', () => ({
   start: mocks.start,
 }));
 
-vi.mock('@/lib/integrations/spider-cloud/service', () => ({
+vi.mock('@/lib/services/crawl', () => ({
   crawlSite: mocks.crawlSite,
 }));
 
@@ -77,6 +77,7 @@ beforeEach(() => {
     markdown: 'Nova edició 2027. Inscripcions 2027. Resultats 2026.',
     pageStats: { total: 1, successCount: 1, errorCount: 0 },
     usage: { totalCost: null },
+    fallbackUsed: false,
   });
   mocks.generateEventDraftFromMarkdown.mockResolvedValue({
     id: 'draft-1',
@@ -223,6 +224,7 @@ describe('eventUpdateBatchWorkflow', () => {
       markdown: 'Resultats 2026. Classificacions 2026.',
       pageStats: { total: 1, successCount: 1, errorCount: 0 },
       usage: { totalCost: null },
+      fallbackUsed: false,
     });
 
     await eventUpdateBatchWorkflow({ batchId: batch.id });

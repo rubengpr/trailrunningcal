@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { OPENROUTER_SCRAPE_MODEL_IDS } from '@/lib/integrations/openrouter/scrape-models';
 import type { SpiderServiceResult } from '@/lib/integrations/spider-cloud/service';
+import type { CrawlResult } from '@/lib/services/crawl';
 import type { OpenRouterServiceResult } from '@/lib/integrations/openrouter/agents';
 import type {
   TrailEventAgentEvent,
@@ -17,6 +18,9 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock('@/lib/integrations/spider-cloud/service', () => ({
   scrapePage: mocks.scrapePage,
+}));
+
+vi.mock('@/lib/services/crawl', () => ({
   crawlSite: mocks.crawlSite,
 }));
 
@@ -71,6 +75,13 @@ function scrapeResult(markdown: string): SpiderServiceResult {
   };
 }
 
+function crawlResult(markdown: string): CrawlResult {
+  return {
+    ...scrapeResult(markdown),
+    fallbackUsed: false,
+  };
+}
+
 function extractResult(
   races: TrailEventAgentRace[],
   errorMessage: string | null = null,
@@ -101,7 +112,7 @@ afterEach(() => {
 
 describe('processCrawlSiteExtract', () => {
   it('checks duplicate events, crawls, and returns event-shaped extraction', async () => {
-    mocks.crawlSite.mockResolvedValue(scrapeResult('crawl markdown'));
+    mocks.crawlSite.mockResolvedValue(crawlResult('crawl markdown'));
     mocks.extractFromMarkdown.mockResolvedValue(extractResult([race()]));
 
     const result = await processCrawlSiteExtract({
@@ -126,7 +137,7 @@ describe('processCrawlSiteExtract', () => {
   });
 
   it('can skip duplicate checks for existing event update suggestions', async () => {
-    mocks.crawlSite.mockResolvedValue(scrapeResult('crawl markdown'));
+    mocks.crawlSite.mockResolvedValue(crawlResult('crawl markdown'));
     mocks.extractFromMarkdown.mockResolvedValue(extractResult([race()]));
 
     await processCrawlSiteExtract({
@@ -159,7 +170,7 @@ describe('processScrapePageExtract', () => {
 
 describe('processCrawlSite', () => {
   it('returns markdown and page stats without extracting event data', async () => {
-    mocks.crawlSite.mockResolvedValue(scrapeResult('crawl markdown'));
+    mocks.crawlSite.mockResolvedValue(crawlResult('crawl markdown'));
 
     const result = await processCrawlSite({
       url: 'https://example.com/event',
