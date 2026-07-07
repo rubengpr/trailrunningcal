@@ -1,5 +1,6 @@
 import { scrape, crawl } from '@/lib/integrations/spider-cloud/client';
 import type { Page } from '@/lib/integrations/spider-cloud/client';
+import { filterExcludedResultPages } from '@/lib/crawl/filters';
 import { mergePages } from '@/lib/integrations/spider-cloud/join-markdown';
 import type { PageStats, ScrapeUsage } from '@/types/races-scrape-api.types';
 
@@ -86,19 +87,6 @@ const BLACKLIST: readonly string[] = [
   'pages\\/create',
   'rss',
 ];
-
-const EXCLUDED_RESULT_URL_PATTERNS: readonly RegExp[] = [
-  /facebook\.com\/sharer/i,
-  /x\.com\/intent\/tweet/i,
-  /twitter\.com\/intent\/tweet/i,
-];
-
-function filterExcludedResultPages(pages: Page[]): Page[] {
-  return pages.filter(
-    (page) =>
-      !EXCLUDED_RESULT_URL_PATTERNS.some((pattern) => pattern.test(page.url)),
-  );
-}
 
 function summarizeStats(pages: Page[]): PageStats {
   const total = pages.length;
