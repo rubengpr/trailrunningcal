@@ -4,7 +4,7 @@ import { requireAdmin } from '@/lib/auth';
 import { generateEventDraft } from '@/lib/services/event-drafts';
 import { handleRouteError } from '@/lib/utils/handle-error';
 
-export const maxDuration = 120;
+export const maxDuration = 60;
 
 export async function POST(
   _request: Request,

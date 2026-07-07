@@ -9,7 +9,7 @@ import {
 import { parseInput } from './validation';
 import { handleRouteError } from '@/lib/utils/handle-error';
 
-export const maxDuration = 120;
+export const maxDuration = 60;
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {

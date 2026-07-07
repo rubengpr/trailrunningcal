@@ -5,7 +5,7 @@ import { parseInput } from './validation';
 import { scrapePage } from '@/lib/integrations/spider-cloud/service';
 import { crawlSite } from '@/lib/services/crawl';
 
-export const maxDuration = 90;
+export const maxDuration = 60;
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
