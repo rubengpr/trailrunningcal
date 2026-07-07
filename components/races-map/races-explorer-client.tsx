@@ -369,7 +369,10 @@ export function RacesExplorerClient({
                   <div
                     className={`min-w-0 w-full min-h-0 ${desktopLayout === 'both' ? 'lg:w-1/2 lg:max-h-[calc(100vh-12rem)] lg:overflow-y-auto lg:pr-1' : 'lg:w-full'} ${showMobileMapFab && mobileView === 'list' ? 'pb-20' : ''}`}
                   >
-                    <PromoBanner alt="" className="mb-4" />
+                    <PromoBanner
+                      alt=""
+                      className="sticky top-18 z-20 mb-4 bg-white py-2 sm:top-20 lg:top-0"
+                    />
                     <div className="grid min-h-[200px] min-w-0 grid-cols-1 gap-4">
                       {activeListCount === 0 ? (
                         <EmptyState

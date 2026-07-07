@@ -257,7 +257,7 @@ export default async function EventPage({
             </div>
           )}
 
-          <PromoBanner alt="" />
+          <PromoBanner alt="" className="my-6 sm:my-8" variant="wide" />
 
           <section className="mt-8 sm:mt-10">
             <div className="mb-4 flex items-center gap-2">

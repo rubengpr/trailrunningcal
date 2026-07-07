@@ -31,6 +31,7 @@ export default async function PublicLayout({
         <PromoTextStrip
           message={tBanner('announcement')}
           code={tBanner('code')}
+          locale={locale}
         />
         <div id="main-content" className="min-w-0">
           {children}
