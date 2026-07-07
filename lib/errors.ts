@@ -21,7 +21,7 @@ export class ValidationError extends Error {
   }
 }
 
-export type TimeoutSource = 'Spider Cloud' | 'Openrouter';
+export type TimeoutSource = 'Spider Cloud' | 'Context.dev' | 'Openrouter';
 
 export class TimeoutError extends Error {
   constructor(public readonly source: TimeoutSource) {

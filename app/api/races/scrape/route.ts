@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
 import { handleRouteError } from '@/lib/utils/handle-error';
 import { parseInput } from './validation';
-import { crawlSite, scrapePage } from '@/lib/integrations/spider-cloud/service';
+import { scrapePage } from '@/lib/integrations/spider-cloud/service';
+import { crawlSite } from '@/lib/services/crawl';
 
-export const maxDuration = 60;
+export const maxDuration = 90;
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {

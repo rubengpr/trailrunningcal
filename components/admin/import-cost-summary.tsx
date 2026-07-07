@@ -84,8 +84,8 @@ export function ImportCostSummary({
             </summary>
             <div className="mt-4 grid gap-4 border-t border-gray-100 pt-4">
                 <section className="grid gap-2">
-                    <h3 className="text-xs font-semibold text-gray-900">{t('costSummary.spiderCloudTitle')}</h3>
-                    <DetailRow label={t('costSummary.spiderTotalCost')} value={formatCost(scrapeUsage?.totalCost ?? null)} />
+                    <h3 className="text-xs font-semibold text-gray-900">{t('costSummary.crawlProviderTitle')}</h3>
+                    <DetailRow label={t('costSummary.crawlTotalCost')} value={formatCost(scrapeUsage?.totalCost ?? null)} />
                 </section>
                 <section className="grid gap-2">
                     <h3 className="text-xs font-semibold text-gray-900">{t('costSummary.openRouterTitle')}</h3>

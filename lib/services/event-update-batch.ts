@@ -11,7 +11,7 @@ import {
   setEventUpdateBatchWorkflowRunId,
   updateEventUpdateBatchStatus,
 } from '@/lib/db/event-update-batches';
-import { crawlSite } from '@/lib/integrations/spider-cloud/service';
+import { crawlSite } from '@/lib/services/crawl';
 import { generateEventDraftFromMarkdown } from '@/lib/services/event-drafts';
 
 interface EventUpdateBatchWorkflowInput {

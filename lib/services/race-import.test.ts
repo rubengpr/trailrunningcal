@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { OPENROUTER_SCRAPE_MODEL_IDS } from '@/lib/integrations/openrouter/scrape-models';
 import type { SpiderServiceResult } from '@/lib/integrations/spider-cloud/service';
+import type { CrawlResult } from '@/lib/services/crawl';
 import type { OpenRouterServiceResult } from '@/lib/integrations/openrouter/agents';
 import type { TrailRace } from '@/types/trail-race-agent.types';
 
@@ -14,6 +15,9 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock('@/lib/integrations/spider-cloud/service', () => ({
   scrapePage: mocks.scrapePage,
+}));
+
+vi.mock('@/lib/services/crawl', () => ({
   crawlSite: mocks.crawlSite,
 }));
 
@@ -62,6 +66,13 @@ function scrapeResult(markdown: string): SpiderServiceResult {
   };
 }
 
+function crawlResult(markdown: string): CrawlResult {
+  return {
+    ...scrapeResult(markdown),
+    fallbackUsed: false,
+  };
+}
+
 function extractResult(
   races: TrailRace[],
   errorMessage: string | null = null,
@@ -91,7 +102,7 @@ afterEach(() => {
 
 describe('processCrawlSiteExtract', () => {
   it('crawls and extracts once', async () => {
-    mocks.crawlSite.mockResolvedValue(scrapeResult('crawl markdown'));
+    mocks.crawlSite.mockResolvedValue(crawlResult('crawl markdown'));
     mocks.extractFromMarkdown.mockResolvedValue(extractResult([race()]));
 
     const result = await processCrawlSiteExtract({
@@ -102,7 +113,7 @@ describe('processCrawlSiteExtract', () => {
     expect(mocks.crawlSite).toHaveBeenCalledOnce();
     expect(mocks.extractFromMarkdown).toHaveBeenCalledOnce();
     expect(result.workflow).toBe('crawlSiteExtract');
-    expect(result.fallbackUsed).toBeNull();
+    expect(result.fallbackUsed).toBe(false);
     expect(result.steps.map((step) => step.name)).toEqual([
       'crawlSite',
       'extract',
@@ -111,7 +122,7 @@ describe('processCrawlSiteExtract', () => {
 
   it('propagates errorMessage from the extraction service when races is empty', async () => {
     const msg = 'La edición está cancelada.';
-    mocks.crawlSite.mockResolvedValue(scrapeResult('crawl markdown'));
+    mocks.crawlSite.mockResolvedValue(crawlResult('crawl markdown'));
     mocks.extractFromMarkdown.mockResolvedValue(extractResult([], msg));
 
     const result = await processCrawlSiteExtract({
@@ -124,7 +135,7 @@ describe('processCrawlSiteExtract', () => {
   });
 
   it('passes null errorMessage when races are found', async () => {
-    mocks.crawlSite.mockResolvedValue(scrapeResult('crawl markdown'));
+    mocks.crawlSite.mockResolvedValue(crawlResult('crawl markdown'));
     mocks.extractFromMarkdown.mockResolvedValue(extractResult([race()], null));
 
     const result = await processCrawlSiteExtract({
@@ -155,7 +166,7 @@ describe('processScrapePageExtract', () => {
       MODEL,
     );
     expect(result.workflow).toBe('scrapePageExtract');
-    expect(result.fallbackUsed).toBeNull();
+    expect(result.fallbackUsed).toBe(false);
     expect(result.steps.map((step) => step.name)).toEqual([
       'scrapePage',
       'extract',
@@ -179,7 +190,7 @@ describe('processScrapePageExtract', () => {
 
 describe('processCrawlSite', () => {
   it('returns markdown and page stats without extracting races', async () => {
-    mocks.crawlSite.mockResolvedValue(scrapeResult('crawl markdown'));
+    mocks.crawlSite.mockResolvedValue(crawlResult('crawl markdown'));
 
     const result = await processCrawlSite({
       url: 'https://example.com/race',
