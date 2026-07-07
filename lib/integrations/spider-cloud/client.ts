@@ -33,6 +33,7 @@ export interface Options {
   requestMode?: string;
   returnFormat?: string;
   blacklist?: readonly string[];
+  respectRobots?: boolean;
 }
 
 // --- Private helpers ---
@@ -162,6 +163,7 @@ export async function crawl(url: string, options?: Options): Promise<Page[]> {
     requestMode = 'smart',
     returnFormat = 'markdown',
     blacklist,
+    respectRobots,
   } = options ?? {};
   const body: Record<string, unknown> = {
     url,
@@ -170,6 +172,7 @@ export async function crawl(url: string, options?: Options): Promise<Page[]> {
     request: requestMode,
     return_format: returnFormat,
     blacklist,
+    respect_robots: respectRobots,
   };
 
   return postAndParse(CRAWL_ENDPOINT, url, body);

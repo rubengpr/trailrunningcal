@@ -147,7 +147,10 @@ export async function scrapePage(url: string): Promise<SpiderServiceResult> {
 }
 
 export async function crawlSite(url: string): Promise<SpiderServiceResult> {
-  const pages = await crawl(url, { blacklist: BLACKLIST });
+  const pages = await crawl(url, {
+    blacklist: BLACKLIST,
+    respectRobots: false,
+  });
   const filteredPages = filterExcludedResultPages(pages);
   const pageStats = summarizeStats(filteredPages);
   const usage = summarizeUsage(filteredPages);

@@ -67,6 +67,10 @@ describe('spider service result filtering', () => {
 
     const result = await crawlSite('https://caminsdefusta.wordpress.com');
 
+    expect(mocks.crawl).toHaveBeenCalledWith(
+      'https://caminsdefusta.wordpress.com',
+      expect.objectContaining({ respectRobots: false }),
+    );
     expect(result.pageStats).toEqual({
       total: 1,
       successCount: 1,
