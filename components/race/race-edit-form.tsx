@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { NumberInput } from '@/components/ui/number-input';
 import type { TrailRace } from '@/types/trail-race-agent.types';
 
 interface RaceEditFormProps {
@@ -45,8 +46,7 @@ export function RaceEditForm({ draft, onChange, onSave, onCancel, size = 'md' }:
                     </div>
                     <div className="flex flex-col gap-1">
                         <label className={labelClass}>{t('editFieldDistance')}</label>
-                        <input
-                            type="number"
+                        <NumberInput
                             step="0.1"
                             min="0"
                             className={inputClass}
@@ -58,8 +58,7 @@ export function RaceEditForm({ draft, onChange, onSave, onCancel, size = 'md' }:
                 <div className="grid grid-cols-3 gap-3">
                     <div className="flex flex-col gap-1">
                         <label className={labelClass}>{t('editFieldElevation')}</label>
-                        <input
-                            type="number"
+                        <NumberInput
                             min="0"
                             className={inputClass}
                             value={draft.elevationGainM ?? ''}

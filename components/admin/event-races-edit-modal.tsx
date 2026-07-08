@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Plus, Trash2 } from 'lucide-react';
 import { BaseModal } from '@/components/ui/base-modal';
+import { NumberInput } from '@/components/ui/number-input';
 import type { EventRaceWriteInput } from '@/lib/api/events';
 import type { TrailEventAgentEvent } from '@/types/trail-event-agent.types';
 
@@ -284,8 +285,7 @@ function EventRacesEditModalContent({
                     <label className={labelClass}>
                       {t('editFieldDistance')}
                     </label>
-                    <input
-                      type="number"
+                    <NumberInput
                       min="0"
                       step="0.1"
                       className={inputClass}
@@ -303,8 +303,7 @@ function EventRacesEditModalContent({
                     <label className={labelClass}>
                       {t('editFieldElevation')}
                     </label>
-                    <input
-                      type="number"
+                    <NumberInput
                       min="0"
                       className={inputClass}
                       value={race.elevationGainM ?? ''}
