@@ -60,15 +60,12 @@ integrationDescribe('anonymous Supabase access', () => {
       'profiles',
       'event_drafts',
       'pending_events',
-      'pending_races',
       'event_import_batches',
       'event_import_batch_items',
       'event_update_batches',
       'event_update_batch_items',
       'event_description_batches',
       'event_description_batch_items',
-      'race_import_batches',
-      'race_import_batch_items',
     ];
     const results = await Promise.all([
       ...sensitiveTables.map((table) => supabase.from(table).select('*').limit(1)),

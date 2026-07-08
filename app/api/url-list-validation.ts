@@ -1,6 +1,10 @@
-import { normalizeUrl } from '@/lib/validation';
 import { ValidationError } from '@/lib/errors';
-import type { SkippedUrl } from '@/types/pending-race.types';
+import { normalizeUrl } from '@/lib/validation';
+
+export interface SkippedUrl {
+  url: string;
+  reason: string;
+}
 
 const MAX_URLS = 100;
 

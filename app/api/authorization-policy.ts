@@ -28,8 +28,6 @@ export const API_AUTHORIZATION_POLICY = {
   'PATCH /api/organizers': 'authenticated',
   'DELETE /api/pending-events/[id]': 'admin',
   'POST /api/pending-events': 'admin',
-  'DELETE /api/pending-races/[id]': 'admin',
-  'POST /api/pending-races': 'admin',
   'PATCH /api/profiles': 'authenticated',
   'GET /api/races/[raceId]/image': 'owner-or-admin',
   'POST /api/races/[raceId]/image': 'owner-or-admin',

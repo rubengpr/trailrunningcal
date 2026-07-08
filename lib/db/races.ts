@@ -42,46 +42,6 @@ function getJoinedEventSlug(value: unknown): string | null {
   return null;
 }
 
-let racesCache: TrailRace[] | null = null;
-
-export const getRacesForAdmin = cache(async function getRacesForAdmin(): Promise<TrailRace[]> {
-  if (racesCache) return racesCache;
-
-  const supabase = createAdminClient();
-
-  const { data, error } = await supabase
-    .from('races')
-    .select(
-      `
-      id,
-      name,
-      date,
-      distance_km,
-      elevation_gain_m,
-      city,
-      province,
-      organizer_id,
-      description,
-      map_url,
-      website_url,
-      hero_image_filename,
-      race_tiers ( price_eur )
-    `,
-    )
-    .order('date', { ascending: true, nullsFirst: false })
-    .order('name', { ascending: true });
-
-  if (error) {
-    console.error('Failed to fetch races:', error);
-    racesCache = [];
-    return [];
-  }
-
-  const rows = (data ?? []) as RaceRow[];
-  racesCache = rows.map(toTrailRace);
-  return racesCache;
-});
-
 export const getEventSlugByRaceLegacySlug = cache(
   async function getEventSlugByRaceLegacySlug(
     legacySlug: string,

@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react';
 import { useLocale } from 'next-intl';
-import { Calendar, List, Trophy } from 'lucide-react';
+import { Calendar, Trophy } from 'lucide-react';
 import { AppSidebar } from '@/components/ui/app-sidebar';
 import type { NavItem } from '@/components/ui/app-sidebar';
 
@@ -23,11 +23,6 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             href: `/${locale}/admin/eventos`,
             label: locale === 'ca' ? 'Esdeveniments' : 'Eventos',
             icon: <Trophy className="size-4" strokeWidth={1.5} />,
-        },
-        {
-            href: `/${locale}/admin/carreras/activas`,
-            label: locale === 'ca' ? 'Curses' : 'Carreras',
-            icon: <List className="size-4" strokeWidth={1.5} />,
         },
     ];
 

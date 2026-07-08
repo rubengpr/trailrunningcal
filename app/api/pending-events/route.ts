@@ -5,7 +5,7 @@ import { handleRouteError } from '@/lib/utils/handle-error';
 import {
   validateUrlsPayload,
   validateAndNormalizeUrls,
-} from '@/app/api/pending-races/validation';
+} from '@/app/api/url-list-validation';
 
 export async function POST(request: NextRequest) {
   try {

@@ -66,7 +66,7 @@ export function AdminLoginForm({
       const checkRes = await fetch('/api/me', { credentials: 'include' });
       const { data: { isAdmin } } = (await checkRes.json()) as { data: { isAdmin: boolean } };
       if (isAdmin) {
-        router.push(`/${locale}/admin/carreras/activas`);
+        router.push(`/${locale}/admin/eventos/activos`);
         return;
       }
 
