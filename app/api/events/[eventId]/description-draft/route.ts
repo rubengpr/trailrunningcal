@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
 import { handleRouteError } from '@/lib/utils/handle-error';
 import { DEFAULT_EVENT_DESCRIPTION_MODEL, generateEventDescriptionDraft } from '@/lib/services/event-description';
-import { parseImportModel } from '@/app/api/races/import/validation';
+import { parseImportModel } from '@/app/api/events/import/validation';
 
 export const maxDuration = 60;
 

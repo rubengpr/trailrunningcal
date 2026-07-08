@@ -1,6 +1,9 @@
 import { isOpenRouterScrapeModelId } from '@/lib/integrations/openrouter/scrape-models';
 import type { OpenRouterScrapeModelId } from '@/lib/integrations/openrouter/scrape-models';
-import { ValidationError } from '@/lib/errors';
+import {
+  assertRequestBody,
+  ValidationError,
+} from '@/app/api/request-validation';
 import { normalizeUrl } from '@/lib/validation';
 import type { EventImportWorkflow } from '@/types/events-import-api.types';
 export { ValidationError };
@@ -28,14 +31,6 @@ function parseWorkflow(value: unknown): EventImportWorkflow {
     return value;
   }
   throw new ValidationError('Invalid workflow', 400);
-}
-
-export function assertRequestBody(
-  body: unknown,
-): asserts body is Record<string, unknown> {
-  if (typeof body !== 'object' || body === null) {
-    throw new ValidationError('Invalid request body', 400);
-  }
 }
 
 export function parseImportUrl(

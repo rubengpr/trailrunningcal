@@ -2,11 +2,11 @@
 
 import { useTranslations } from 'next-intl';
 import { IconActionMenu } from '@/components/ui/icon-action-menu';
-import type { RaceImportItemStatus } from '@/types/races-import-api.types';
+import type { EventImportItemStatus } from '@/types/events-import-api.types';
 import { triggerDownload } from '@/lib/utils/download';
 import { cleanUrl } from '@/lib/utils/url';
 
-export type BulkProcessState = RaceImportItemStatus;
+export type BulkProcessState = EventImportItemStatus;
 
 export interface BulkProcessTableRow {
     id: string;
@@ -35,13 +35,19 @@ const UPDATED_AT_FORMATTER = new Intl.DateTimeFormat(undefined, {
 
 interface BulkProcessTableProps {
     rows: BulkProcessTableRow[];
-    translationsNamespace?: 'admin.races.import.bulk' | 'admin.events.import.bulk';
+    translationsNamespace?: 'admin.events.import.bulk';
     viewingRowId?: string | null;
     onViewResult?: (rowId: string) => void;
 }
 
-function StateBadge({ state }: { state: BulkProcessState }) {
-    const t = useTranslations('admin.races.import.bulk');
+function StateBadge({
+    state,
+    translationsNamespace,
+}: {
+    state: BulkProcessState;
+    translationsNamespace: 'admin.events.import.bulk';
+}) {
+    const t = useTranslations(translationsNamespace);
     return (
         <span className="inline-flex items-center gap-1.5 rounded-full py-0.5 font-medium text-gray-700">
             <span className={`h-2 w-2 shrink-0 rounded-full ${STATE_DOT_COLOR[state]}`} aria-hidden />
@@ -62,7 +68,7 @@ function formatUpdatedAt(value: string): string {
 
 export function BulkProcessTable({
     rows,
-    translationsNamespace = 'admin.races.import.bulk',
+    translationsNamespace = 'admin.events.import.bulk',
     viewingRowId = null,
     onViewResult,
 }: BulkProcessTableProps) {
@@ -113,7 +119,7 @@ export function BulkProcessTable({
                                         </a>
                                     </td>
                                     <td className="border-b border-gray-50 py-2.5 group-last:border-b-0">
-                                        <StateBadge state={row.status} />
+                                        <StateBadge state={row.status} translationsNamespace={translationsNamespace} />
                                     </td>
                                     <td className="border-b border-gray-50 py-2.5 group-last:border-b-0">
                                         {row.status === 'failed' && row.error && (

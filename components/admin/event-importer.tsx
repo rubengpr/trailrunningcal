@@ -934,7 +934,7 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
         triggerDownload(rawModelOutput, `model-raw-${Date.now()}.json`, 'application/json;charset=utf-8');
     };
 
-    const showSuggestedRacesPreview =
+    const showImportPreview =
         workflow !== 'ingest'
             ? isScraping || hasScraped
             : hasScraped && scrapeError !== null;
@@ -1449,7 +1449,7 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                     className="self-start"
                 />
             )}
-            {showSuggestedRacesPreview && !jsonView && (
+            {showImportPreview && !jsonView && (
                 <EventImportPreview
                     event={scrapedEvent}
                     races={scrapedRaces}

@@ -1,6 +1,6 @@
 import type { OpenRouterScrapeModelId } from '@/lib/integrations/openrouter/scrape-models';
+import { assertRequestBody } from '@/app/api/request-validation';
 import {
-  assertRequestBody,
   parseImportModel,
   parseImportUrl,
   ValidationError,

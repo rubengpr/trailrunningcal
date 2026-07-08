@@ -37,12 +37,6 @@ export const API_AUTHORIZATION_POLICY = {
   'PATCH /api/races/[raceId]/tiers': 'owner-or-admin',
   'PATCH /api/races/[raceId]': 'owner-or-admin',
   'DELETE /api/races/[raceId]': 'owner-or-admin',
-  'POST /api/races/extract': 'admin',
-  'GET /api/races/import/batch-items/[itemId]': 'admin',
-  'GET /api/races/import/batches/[batchId]': 'admin',
-  'POST /api/races/import/batches': 'admin',
-  'POST /api/races/import': 'admin',
-  'POST /api/races/scrape': 'admin',
   'POST /api/races': 'authenticated',
 } as const satisfies Record<string, ApiAuthorization>;
 

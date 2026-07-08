@@ -1,7 +1,7 @@
 import {
   assertRequestBody,
   ValidationError,
-} from '@/app/api/races/import/validation';
+} from '@/app/api/request-validation';
 
 const MAX_FAVORITE_EVENT_IDS = 100;
 const UUID_PATTERN =

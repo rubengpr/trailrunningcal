@@ -2,9 +2,11 @@ import type { OpenRouterScrapeModelId } from '@/lib/integrations/openrouter/scra
 import { DEFAULT_EVENT_DESCRIPTION_MODEL } from '@/lib/services/event-description';
 import {
   assertRequestBody,
-  parseImportModel,
   ValidationError,
-} from '@/app/api/races/import/validation';
+} from '@/app/api/request-validation';
+import {
+  parseImportModel,
+} from '@/app/api/events/import/validation';
 
 export { ValidationError };
 

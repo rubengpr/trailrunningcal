@@ -5,14 +5,12 @@ import { useTranslations } from 'next-intl';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 import type { ScrapeUsage } from '@/types/races-scrape-api.types';
 
-type ImportCostSummaryNamespace = 'admin.races.import' | 'admin.events.import';
-
 const NUMBER_FORMATTER = new Intl.NumberFormat('es-ES');
 
 interface ImportCostSummaryProps {
     openRouterUsage: OpenRouterScrapeUsage | null;
     scrapeUsage: ScrapeUsage | null;
-    translationsNamespace: ImportCostSummaryNamespace;
+    translationsNamespace: 'admin.events.import';
 }
 
 function formatCost(value: number | null): string {

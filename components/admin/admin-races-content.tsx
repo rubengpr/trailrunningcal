@@ -36,14 +36,9 @@ export function AdminRacesContent({ races }: AdminRacesContentProps) {
                     : t('raceCount', { count: races.length })
             }
             headerAction={
-                <div className="flex gap-2">
-                    <Button variant="secondary" onClick={() => router.push(`/${locale}/admin/carreras/import`)}>
-                        {t('scrapeButton')}
-                    </Button>
-                    <Button onClick={() => router.push(`/${locale}/admin/carreras/new`)}>
-                        {t('newRaceButton')}
-                    </Button>
-                </div>
+                <Button onClick={() => router.push(`/${locale}/admin/carreras/new`)}>
+                    {t('newRaceButton')}
+                </Button>
             }
         />
     );
