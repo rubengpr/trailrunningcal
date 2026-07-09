@@ -11,7 +11,7 @@ import type { MapPageLabels, RaceMapMarker } from '@/types/map.types';
 import { RacesExplorerFiltersSection } from '@/components/races-map/races-explorer-filters-section';
 import { MobileFiltersButton } from '@/components/filters/mobile-filters-button';
 import { MobileFiltersModal } from '@/components/filters/mobile-filters-modal';
-import { PromoBanner } from '@/components/home/promo-banner';
+import { SponsorBannerSlot } from '@/components/sponsors/sponsor-banner-slot';
 import { EventCard } from '@/components/event/event-card';
 import { TrailRaceCard } from '@/components/race/trail-race-card';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
@@ -369,8 +369,10 @@ export function RacesExplorerClient({
                   <div
                     className={`min-w-0 w-full min-h-0 ${desktopLayout === 'both' ? 'lg:w-1/2 lg:max-h-[calc(100vh-12rem)] lg:overflow-y-auto lg:pr-1' : 'lg:w-full'} ${showMobileMapFab && mobileView === 'list' ? 'pb-20' : ''}`}
                   >
-                    <PromoBanner
-                      alt=""
+                    <SponsorBannerSlot
+                      page="homepage"
+                      locale={locale}
+                      bannerType="image_banner"
                       className="sticky top-18 z-20 mb-4 bg-white py-2 sm:top-20 lg:top-0"
                     />
                     <div className="grid min-h-[200px] min-w-0 grid-cols-1 gap-4">

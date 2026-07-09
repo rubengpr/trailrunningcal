@@ -109,6 +109,9 @@
     "verifiedOrganizer": "Organitzador verificat"
   },
   "event": {
+    "banner": {
+      "otsoAlt": "Promoció d'OTSO per a esdeveniments de trail running"
+    },
     "dateTbd": "Data per confirmar",
     "favorite": {
       "label": "Preferit",
@@ -204,7 +207,28 @@
   "banner": {
     "alt": "Banner",
     "announcement": "2 mesos gratuïts de TRC Pro amb el codi",
-    "code": "TRC2M"
+    "code": "TRC2M",
+    "otsoHomepageAlt": "Promoció d'OTSO per a corredors de trail running",
+    "sponsors": {
+      "salssa": {
+        "homepage": {
+          "alt": "Promoció de Salssa per a corredors de trail running"
+        },
+        "event_page": {
+          "alt": "Promoció de Salssa per a esdeveniments de trail running"
+        },
+        "stickyMessage": "15% descompte en nutrició esportiva natural amb el codi"
+      },
+      "otso": {
+        "homepage": {
+          "alt": "Promoció d'OTSO per a corredors de trail running"
+        },
+        "event_page": {
+          "alt": "Promoció d'OTSO per a esdeveniments de trail running"
+        },
+        "stickyMessage": "Descompte per a corredors de trail running a OTSO amb el codi"
+      }
+    }
   },
   "contact": {
     "title": "Contacta amb Trail Running Calendar",

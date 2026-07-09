@@ -19,7 +19,11 @@ import {
 } from '@/lib/geography/destinations';
 import { Menu, Heart, ChevronDown, CircleUser, SlidersHorizontal } from 'lucide-react';
 
-export function Navbar() {
+interface NavbarProps {
+  sticky?: boolean;
+}
+
+export function Navbar({ sticky = true }: NavbarProps) {
   const t = useTranslations('navigation');
   const locale = useLocale();
 
@@ -103,7 +107,7 @@ export function Navbar() {
     }), 0);
 
   return (
-    <header className="sticky top-0 z-30 w-full h-18 sm:h-20 bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8 flex items-center">
+    <header className={`${sticky ? 'sticky top-0 z-30' : ''} w-full h-18 sm:h-20 bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8 flex items-center`}>
       <div className="w-full flex items-center justify-between relative">
 
         {/* LEFT: hamburger (mobile) / logo (desktop) */}

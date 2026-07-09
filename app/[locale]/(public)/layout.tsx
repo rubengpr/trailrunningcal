@@ -1,7 +1,7 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
-import { PromoTextStrip } from '@/components/home/promo-banner';
+import { SponsorStickyBannerSlot } from '@/components/sponsors/sponsor-banner-slot';
 import { MobileFiltersProvider } from '@/components/providers/mobile-filters-provider';
 import type { Locale } from '@/i18n';
 
@@ -16,7 +16,6 @@ export default async function PublicLayout({
   const locale = localeParam as Locale;
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'navigation' });
-  const tBanner = await getTranslations({ locale, namespace: 'banner' });
 
   return (
     <MobileFiltersProvider>
@@ -27,12 +26,10 @@ export default async function PublicLayout({
         >
           {t('skipToContent')}
         </a>
-        <Navbar />
-        <PromoTextStrip
-          message={tBanner('announcement')}
-          code={tBanner('code')}
-          locale={locale}
-        />
+        <div className="sticky top-0 z-30 w-full">
+          <Navbar sticky={false} />
+          <SponsorStickyBannerSlot locale={locale} />
+        </div>
         <div id="main-content" className="min-w-0">
           {children}
         </div>

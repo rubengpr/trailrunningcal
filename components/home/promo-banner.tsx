@@ -8,48 +8,96 @@ import type { Locale } from '@/i18n';
 interface PromoBannerProps {
   alt: string;
   className?: string;
+  desktopImage?: {
+    src: string;
+    width: number;
+    height: number;
+  };
+  href?: string;
   isVisible?: boolean;
-  variant?: 'card' | 'wide';
+  mobileImage?: {
+    src: string;
+    width: number;
+    height: number;
+  };
+  onClick?: () => void;
 }
 
 interface PromoTextStripProps {
   message: string;
-  code: string;
+  backgroundColor?: string;
+  code?: string;
+  href?: string;
   locale?: Locale;
   isVisible?: boolean;
+  onClick?: () => void;
 }
 
 export function PromoBanner({
   alt,
   className = '',
+  desktopImage = {
+    src: '/assets/sponsors/trc-banner-desktop.webp',
+    width: 1800,
+    height: 300,
+  },
+  href,
   isVisible = false,
-  variant = 'card',
+  mobileImage,
+  onClick,
 }: PromoBannerProps) {
   if (!isVisible) return null;
 
-  const aspectClass = variant === 'wide' ? 'aspect-8/1' : 'aspect-6/1';
+  const content = (
+    <div className="w-full min-w-0 overflow-hidden rounded-[10px] bg-white shadow-sm">
+      {mobileImage && (
+        <Image
+          src={mobileImage.src}
+          width={mobileImage.width}
+          height={mobileImage.height}
+          alt={alt}
+          sizes="100vw"
+          className="block h-auto w-full sm:hidden"
+          priority={false}
+        />
+      )}
+      <Image
+        src={desktopImage.src}
+        width={desktopImage.width}
+        height={desktopImage.height}
+        alt={alt}
+        sizes="(min-width: 1024px) 50vw, 100vw"
+        className={`${mobileImage ? 'hidden sm:block' : 'block'} h-auto w-full`}
+        priority={false}
+      />
+    </div>
+  );
 
   return (
     <aside className={`w-full min-w-0 ${className}`}>
-      <div className={`relative ${aspectClass} w-full min-w-0 overflow-hidden rounded-[10px] bg-white shadow-sm`}>
-        <Image
-          src="/assets/sponsors/trc-banner-desktop.webp"
-          alt={alt}
-          fill
-          sizes="(min-width: 1024px) 50vw, 100vw"
-          className="object-cover"
-          priority={false}
-        />
-      </div>
+      {href ? (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={onClick}
+          className="block w-full min-w-0"
+        >
+          {content}
+        </a>
+      ) : content}
     </aside>
   );
 }
 
 export function PromoTextStrip({
   message,
+  backgroundColor = '#010101',
   code,
+  href,
   locale,
   isVisible = false,
+  onClick,
 }: PromoTextStripProps) {
   const pathname = usePathname();
   const isSupportedPage = locale ? pathname === `/${locale}` : true;
@@ -57,13 +105,32 @@ export function PromoTextStrip({
   if (!isVisible) return null;
   if (!isSupportedPage) return null;
 
+  const content = (
+    <p className="flex min-w-0 items-center justify-center gap-1 truncate text-sm font-semibold leading-4 text-[#ffffff] sm:text-xs">
+      <span className="min-w-0 truncate">{message}</span>
+      {code && <span className="min-w-0 truncate font-bold underline">{code}</span>}
+      <ExternalLink className="size-3 shrink-0" strokeWidth={2} />
+    </p>
+  );
+
   return (
-    <aside className="sticky top-18 z-20 w-full border-b border-black bg-[#010101] px-3 py-2 text-center sm:top-20">
-      <p className="flex min-w-0 items-center justify-center gap-1 truncate text-sm font-semibold leading-4 text-[#ffffff] sm:text-xs">
-        <span className="min-w-0 truncate">{message}</span>
-        <span className="min-w-0 truncate font-bold underline">{code}</span>
-        <ExternalLink className="size-3 shrink-0" strokeWidth={2} />
-      </p>
+    <aside
+      className="w-full border-b border-black text-center"
+      style={{ backgroundColor }}
+    >
+      {href ? (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={onClick}
+          className="block w-full px-3 py-2"
+        >
+          {content}
+        </a>
+      ) : (
+        <div className="w-full px-3 py-2">{content}</div>
+      )}
     </aside>
   );
 }

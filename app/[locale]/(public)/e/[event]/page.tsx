@@ -7,7 +7,7 @@ import { BASE_URL } from '@/lib/config';
 import { getEventBySlug, getRecommendedEvents } from '@/lib/db/events';
 import { buildEventAlternateLinks } from '@/lib/content/alternate-links';
 import { Breadcrumb } from '@/components/layout/breadcrumb';
-import { PromoBanner } from '@/components/home/promo-banner';
+import { SponsorBannerSlot } from '@/components/sponsors/sponsor-banner-slot';
 import { EventCard } from '@/components/event/event-card';
 import { EventFavoriteButton } from '@/components/event/event-favorite-button';
 import { EventDistanceList } from '@/components/event/event-distance-list';
@@ -110,9 +110,11 @@ export default async function EventPage({
   }
 
   const localeTyped = locale as Locale;
-  const tEvent = await getTranslations({ locale, namespace: 'event' });
-  const tNav = await getTranslations({ locale, namespace: 'navigation' });
-  const tProvincia = await getTranslations({ locale, namespace: 'provincia' });
+  const [tEvent, tNav, tProvincia] = await Promise.all([
+    getTranslations({ locale, namespace: 'event' }),
+    getTranslations({ locale, namespace: 'navigation' }),
+    getTranslations({ locale, namespace: 'provincia' }),
+  ]);
 
   const formattedDate = formatEventDateRange(
     eventData.dateRange,
@@ -257,7 +259,12 @@ export default async function EventPage({
             </div>
           )}
 
-          <PromoBanner alt="" className="my-6 sm:my-8" variant="wide" />
+          <SponsorBannerSlot
+            page="event_page"
+            locale={localeTyped}
+            bannerType="image_banner"
+            className="my-6 sm:my-8"
+          />
 
           <section className="mt-8 sm:mt-10">
             <div className="mb-4 flex items-center gap-2">

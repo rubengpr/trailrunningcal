@@ -22,6 +22,8 @@ export const ANALYTICS_EVENTS = {
   RACE_PROVINCE_INLINE_CLICKED: 'race_province_inline_clicked',
   RACE_PROVINCE_LINK_CLICKED: 'race_province_link_clicked',
   RACE_SHARE_CLICKED: 'race_share_clicked',
+  SPONSOR_BANNER_CLICKED: 'sponsor_banner_clicked',
+  SPONSOR_BANNER_IMPRESSION: 'sponsor_banner_impression',
 } as const;
 
 export type AnalyticsEventName =
@@ -125,5 +127,19 @@ export interface AnalyticsEventProperties {
   [ANALYTICS_EVENTS.RACE_SHARE_CLICKED]: {
     race_id?: string;
     race_slug?: string;
+  };
+  [ANALYTICS_EVENTS.SPONSOR_BANNER_CLICKED]: {
+    brand: 'salssa' | 'otso';
+    page: 'homepage' | 'event_page';
+    banner_type: 'image_banner' | 'sticky_banner';
+    locale: string;
+    destination_url: string;
+  };
+  [ANALYTICS_EVENTS.SPONSOR_BANNER_IMPRESSION]: {
+    brand: 'salssa' | 'otso';
+    page: 'homepage' | 'event_page';
+    banner_type: 'image_banner' | 'sticky_banner';
+    locale: string;
+    destination_url: string;
   };
 }
