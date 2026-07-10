@@ -187,6 +187,12 @@
     "lleida": "Lleida",
     "tarragona": "Tarragona"
   },
+  "sidebar": {
+    "calendar": "Calendari",
+    "events": "Esdeveniments",
+    "profile": "Perfil",
+    "sponsors": "Sponsors"
+  },
   "favorites": {
     "pageTitle": "Els meus esdeveniments desats",
     "empty": "No tens esdeveniments desats",

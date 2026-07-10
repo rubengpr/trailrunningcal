@@ -187,6 +187,12 @@
     "lleida": "Lleida",
     "tarragona": "Tarragona"
   },
+  "sidebar": {
+    "calendar": "Calendario",
+    "events": "Eventos",
+    "profile": "Perfil",
+    "sponsors": "Sponsors"
+  },
   "favorites": {
     "pageTitle": "Mis eventos guardados",
     "empty": "No tienes eventos guardados",

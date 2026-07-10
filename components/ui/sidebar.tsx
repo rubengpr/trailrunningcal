@@ -8,23 +8,30 @@ export interface NavItem {
     href: string;
     label: string;
     icon: ReactNode;
+    match?: 'exact' | 'prefix';
 }
 
-interface AppSidebarProps {
+interface SidebarProps {
     navItems: NavItem[];
 }
 
-export function AppSidebar({ navItems }: AppSidebarProps) {
+export function Sidebar({ navItems }: SidebarProps) {
     const pathname = usePathname();
 
-    const isActive = (path: string) => pathname === path;
+    const isActive = ({ href, match = 'exact' }: NavItem) => {
+        if (match === 'prefix') {
+            return pathname === href || pathname.startsWith(`${href}/`);
+        }
+
+        return pathname === href;
+    };
 
     return (
         <>
-            {/* Mobile: horizontal tab bar below the main navbar */}
+            {/* Mobile: horizontal tab bar */}
             <nav className="flex md:hidden w-full bg-white border-b border-gray-100 overflow-x-auto shrink-0">
                 {navItems.map((item) => {
-                    const active = isActive(item.href);
+                    const active = isActive(item);
                     return (
                         <Link
                             key={item.href}
@@ -49,7 +56,7 @@ export function AppSidebar({ navItems }: AppSidebarProps) {
             <aside className="hidden md:flex flex-col h-screen sticky top-0 w-64 bg-white border-r border-gray-100 shrink-0">
                 <nav className="flex flex-col flex-1 px-4 py-6 gap-1">
                     {navItems.map((item) => {
-                        const active = isActive(item.href);
+                        const active = isActive(item);
                         return (
                             <Link
                                 key={item.href}

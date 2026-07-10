@@ -1,10 +1,10 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Calendar, Trophy } from 'lucide-react';
-import { AppSidebar } from '@/components/ui/app-sidebar';
-import type { NavItem } from '@/components/ui/app-sidebar';
+import { Sidebar } from '@/components/ui/sidebar';
+import type { NavItem } from '@/components/ui/sidebar';
 
 interface AdminLayoutProps {
     children: ReactNode;
@@ -12,23 +12,26 @@ interface AdminLayoutProps {
 
 export function AdminLayout({ children }: AdminLayoutProps) {
     const locale = useLocale();
+    const t = useTranslations('sidebar');
 
     const navItems: NavItem[] = [
         {
             href: `/${locale}`,
-            label: locale === 'ca' ? 'Calendari' : 'Calendario',
+            label: t('calendar'),
             icon: <Calendar className="size-4" strokeWidth={1.5} />,
+            match: 'exact',
         },
         {
             href: `/${locale}/admin/eventos`,
-            label: locale === 'ca' ? 'Esdeveniments' : 'Eventos',
+            label: t('events'),
             icon: <Trophy className="size-4" strokeWidth={1.5} />,
+            match: 'prefix',
         },
     ];
 
     return (
         <div className="flex flex-col md:flex-row">
-            <AppSidebar navItems={navItems} />
+            <Sidebar navItems={navItems} />
             <div className="flex flex-col w-full p-6">
                 {children}
             </div>
