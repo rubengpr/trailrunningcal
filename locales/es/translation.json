@@ -426,6 +426,7 @@
       "eventCount": "{count} eventos",
       "eventCountOne": "1 evento",
       "empty": "Todavía no tienes eventos reclamados.",
+      "editButton": "Editar evento",
       "missingWebsite": "Sin sitio web",
       "missingLocation": "Sin ubicación",
       "noDates": "Sin fecha",
@@ -434,7 +435,8 @@
         "website": "Sitio web",
         "location": "Ubicación",
         "dates": "Fechas",
-        "races": "Carreras"
+        "races": "Carreras",
+        "actions": "Acciones"
       }
     },
     "races": {

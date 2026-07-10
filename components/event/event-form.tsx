@@ -9,7 +9,12 @@ import { FormInput } from '@/components/ui/form-input';
 import { FormTextarea } from '@/components/ui/form-textarea';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { useModal } from '@/hooks/use-modal';
-import { acceptScrapedEvent, deleteEvent, updateEvent } from '@/lib/api/events';
+import {
+  acceptScrapedEvent,
+  deleteEvent,
+  updateEvent,
+  updateOrganizerEvent,
+} from '@/lib/api/events';
 import type { EventRaceWriteInput } from '@/lib/api/events';
 import type { TrailEventDetail } from '@/types/event.types';
 
@@ -60,12 +65,14 @@ interface EventFormProps {
   eventId?: string;
   initialData?: TrailEventDetail | null;
   isEditMode?: boolean;
+  apiMode?: 'admin' | 'organizer';
 }
 
 export function EventForm({
   eventId,
   initialData = null,
   isEditMode = false,
+  apiMode = 'admin',
 }: EventFormProps): React.ReactElement {
   const t = useTranslations('adminEvents.form');
   const deleteT = useTranslations('adminEvents.delete');
@@ -79,6 +86,7 @@ export function EventForm({
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const { isOpen: isDeleteModalOpen, open: openDeleteModal, close: closeDeleteModal } = useModal();
+  const canDelete = apiMode === 'admin' && isEditMode;
 
   const updateRace = (
     index: number,
@@ -150,7 +158,9 @@ export function EventForm({
       }));
 
       if (isEditMode && eventId) {
-        await updateEvent(
+        const update = apiMode === 'organizer' ? updateOrganizerEvent : updateEvent;
+
+        await update(
           eventId,
           {
             name: name.trim(),
@@ -313,7 +323,7 @@ export function EventForm({
       )}
 
       <div className="flex items-center justify-end gap-3">
-        {isEditMode && (
+        {canDelete && (
           <button
             type="button"
             onClick={openDeleteModal}

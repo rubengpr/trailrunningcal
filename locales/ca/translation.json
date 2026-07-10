@@ -429,6 +429,7 @@
       "eventCount": "{count} esdeveniments",
       "eventCountOne": "1 esdeveniment",
       "empty": "Encara no tens esdeveniments reclamats.",
+      "editButton": "Editar esdeveniment",
       "missingWebsite": "Sense lloc web",
       "missingLocation": "Sense ubicació",
       "noDates": "Sense data",
@@ -437,7 +438,8 @@
         "website": "Lloc web",
         "location": "Ubicació",
         "dates": "Dates",
-        "races": "Curses"
+        "races": "Curses",
+        "actions": "Accions"
       }
     },
     "races": {

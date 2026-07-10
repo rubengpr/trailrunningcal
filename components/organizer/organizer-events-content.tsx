@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
+import { Pencil } from 'lucide-react';
 import { SectionHeader } from '@/components/ui/section-header';
 import {
   Table,
@@ -47,6 +48,7 @@ export function OrganizerEventsContent({
             <TableCell header>{t('columns.location')}</TableCell>
             <TableCell header>{t('columns.dates')}</TableCell>
             <TableCell header align="right">{t('columns.races')}</TableCell>
+            <TableCell header align="right">{t('columns.actions')}</TableCell>
           </TableHeader>
           <TableBody>
             {events.map((eventDetail) => {
@@ -90,6 +92,15 @@ export function OrganizerEventsContent({
                   </TableCell>
                   <TableCell align="right" className="text-sm tabular-nums text-gray-700">
                     {eventDetail.allRaceCount}
+                  </TableCell>
+                  <TableCell align="right">
+                    <Link
+                      href={`/${locale}/org/eventos/${eventDetail.event.id}`}
+                      title={t('editButton')}
+                      className="inline-flex size-8 items-center justify-center rounded text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-800"
+                    >
+                      <Pencil className="size-4" strokeWidth={1.5} />
+                    </Link>
                   </TableCell>
                 </TableRow>
               );

@@ -99,6 +99,26 @@ export async function updateEvent(
   return responseData.data;
 }
 
+export async function updateOrganizerEvent(
+  eventId: string,
+  event: TrailEventAgentEvent,
+  races: EventRaceWriteInput[],
+): Promise<TrailEventDetail> {
+  const response = await fetch(`/api/organizer/events/${eventId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ mode: 'update-races', event, races }),
+  });
+
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(responseData.error || 'Failed to update event');
+  }
+
+  return responseData.data;
+}
+
 export async function createEventEdition(
   eventId: string,
   event: TrailEventAgentEvent,
