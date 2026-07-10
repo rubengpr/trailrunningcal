@@ -1,5 +1,9 @@
 import { cache } from 'react';
-import { createAdminClient, createClient, createStaticClient } from '@/lib/supabase/server';
+import {
+  createAdminClient,
+  createClient,
+  createStaticClient,
+} from '@/lib/supabase/server';
 import { ValidationError } from '@/lib/errors';
 import type {
   EventRaceRow,
@@ -26,10 +30,13 @@ function isEventRaceRow(value: unknown): value is EventRaceRow {
     (typeof value.name === 'string' || value.name === null) &&
     (typeof value.date === 'string' || value.date === null) &&
     typeof value.distance_km === 'number' &&
-    (typeof value.elevation_gain_m === 'number' || value.elevation_gain_m === null) &&
+    (typeof value.elevation_gain_m === 'number' ||
+      value.elevation_gain_m === null) &&
     typeof value.city === 'string' &&
     typeof value.province === 'string' &&
-    (typeof value.map_url === 'string' || value.map_url === null || value.map_url === undefined)
+    (typeof value.map_url === 'string' ||
+      value.map_url === null ||
+      value.map_url === undefined)
   );
 }
 
@@ -68,7 +75,9 @@ export function toTrailEventRace(row: EventRaceRow): TrailEventRace {
   };
 }
 
-export const getEvents = cache(async function getEvents(): Promise<TrailEventDetail[]> {
+export const getEvents = cache(async function getEvents(): Promise<
+  TrailEventDetail[]
+> {
   const supabase = createStaticClient();
 
   const { data, error } = await supabase.rpc('get_events_with_races');
@@ -116,37 +125,41 @@ export const getUpcomingEvents = cache(async function getUpcomingEvents(
     return [];
   }
 
-  return (data as Array<Pick<EventRow, 'id' | 'name' | 'slug'> & { races: unknown }>).map(
-    (row) => {
-      const event: TrailEvent = {
-        id: row.id,
-        name: row.name,
-        slug: row.slug,
-        websiteUrl: null,
-        organizerId: null,
-        description: null,
-        heroImageFilename: null,
-        updatedAt: null,
-      };
-      const races = getEventRaceRows(row.races).map(toTrailEventRace);
+  return (
+    data as Array<Pick<EventRow, 'id' | 'name' | 'slug'> & { races: unknown }>
+  ).map((row) => {
+    const event: TrailEvent = {
+      id: row.id,
+      name: row.name,
+      slug: row.slug,
+      websiteUrl: null,
+      organizerId: null,
+      description: null,
+      heroImageFilename: null,
+      updatedAt: null,
+    };
+    const races = getEventRaceRows(row.races).map(toTrailEventRace);
 
-      return toPublicEventDetail(buildEventDetail(event, races));
-    },
-  );
+    return toPublicEventDetail(buildEventDetail(event, races));
+  });
 });
 
-export const getEventsForAdmin = cache(async function getEventsForAdmin(): Promise<AdminTrailEventDetail[]> {
-  const events = await getEvents();
-  const drafts = await getPendingDraftsByEventIds(events.map(({ event }) => event.id));
-  const draftsByEventId = new Map(
-    drafts.map((draft) => [draft.eventId, draft]),
-  );
+export const getEventsForAdmin = cache(
+  async function getEventsForAdmin(): Promise<AdminTrailEventDetail[]> {
+    const events = await getEvents();
+    const drafts = await getPendingDraftsByEventIds(
+      events.map(({ event }) => event.id),
+    );
+    const draftsByEventId = new Map(
+      drafts.map((draft) => [draft.eventId, draft]),
+    );
 
-  return events.map((eventDetail) => ({
-    ...eventDetail,
-    pendingDraft: draftsByEventId.get(eventDetail.event.id) ?? null,
-  }));
-});
+    return events.map((eventDetail) => ({
+      ...eventDetail,
+      pendingDraft: draftsByEventId.get(eventDetail.event.id) ?? null,
+    }));
+  },
+);
 
 export async function getEventsForOrganizer(
   organizerId: string,
@@ -196,8 +209,9 @@ export async function getEventsForOrganizer(
     )
     .sort(
       (a, b) =>
-        (a.dateRange.startDate ?? '').localeCompare(b.dateRange.startDate ?? '') ||
-        a.event.name.localeCompare(b.event.name),
+        (a.dateRange.startDate ?? '').localeCompare(
+          b.dateRange.startDate ?? '',
+        ) || a.event.name.localeCompare(b.event.name),
     );
 }
 
@@ -252,11 +266,17 @@ export async function getEventByIdForOrganizer(
     .eq('event_id', event.id);
 
   if (raceError || !raceData) {
-    console.error('Failed to fetch organizer event races by event id:', raceError);
+    console.error(
+      'Failed to fetch organizer event races by event id:',
+      raceError,
+    );
     return null;
   }
 
-  return buildEventDetail(event, (raceData as EventRaceRow[]).map(toTrailEventRace));
+  return buildEventDetail(
+    event,
+    (raceData as EventRaceRow[]).map(toTrailEventRace),
+  );
 }
 
 export async function getEventsByIds(
@@ -320,7 +340,9 @@ export async function getEventsByIds(
     racesByEventId.set(race.event_id, eventRaces);
   }
 
-  const eventOrder = new Map(eventIds.map((eventId, index) => [eventId, index]));
+  const eventOrder = new Map(
+    eventIds.map((eventId, index) => [eventId, index]),
+  );
 
   return events
     .map((event) => buildEventDetail(event, racesByEventId.get(event.id) ?? []))
@@ -410,7 +432,10 @@ export const getEventBySlug = cache(async function getEventBySlug(
     return null;
   }
 
-  return buildEventDetail(event, (raceData as EventRaceRow[]).map(toTrailEventRace));
+  return buildEventDetail(
+    event,
+    (raceData as EventRaceRow[]).map(toTrailEventRace),
+  );
 });
 
 export async function getEventByIdForAdmin(
@@ -466,7 +491,10 @@ export async function getEventByIdForAdmin(
     return null;
   }
 
-  return buildEventDetail(event, (raceData as EventRaceRow[]).map(toTrailEventRace));
+  return buildEventDetail(
+    event,
+    (raceData as EventRaceRow[]).map(toTrailEventRace),
+  );
 }
 
 export async function updateEventDescriptionForAdmin(
