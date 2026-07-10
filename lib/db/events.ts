@@ -201,6 +201,64 @@ export async function getEventsForOrganizer(
     );
 }
 
+export async function getEventByIdForOrganizer(
+  eventId: string,
+  organizerId: string,
+): Promise<TrailEventDetail | null> {
+  const supabase = await createClient();
+
+  const { data: eventData, error: eventError } = await supabase
+    .from('events')
+    .select(
+      `
+      id,
+      name,
+      slug,
+      website_url,
+      organizer_id,
+      description,
+      hero_image_filename,
+      updated_at
+    `,
+    )
+    .eq('id', eventId)
+    .eq('organizer_id', organizerId)
+    .single();
+
+  if (eventError || !eventData) {
+    if (eventError) {
+      console.error('Failed to fetch organizer event by id:', eventError);
+    }
+    return null;
+  }
+
+  const event = toTrailEvent(eventData as EventRow);
+
+  const { data: raceData, error: raceError } = await supabase
+    .from('races')
+    .select(
+      `
+      id,
+      name,
+      date,
+      distance_km,
+      elevation_gain_m,
+      city,
+      province,
+      map_url,
+      race_tiers ( price_eur )
+    `,
+    )
+    .eq('event_id', event.id);
+
+  if (raceError || !raceData) {
+    console.error('Failed to fetch organizer event races by event id:', raceError);
+    return null;
+  }
+
+  return buildEventDetail(event, (raceData as EventRaceRow[]).map(toTrailEventRace));
+}
+
 export async function getEventsByIds(
   eventIds: string[],
 ): Promise<TrailEventDetail[]> {

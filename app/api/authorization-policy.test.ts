@@ -19,6 +19,7 @@ const HTTP_METHODS = new Set([
   'OPTIONS',
 ]);
 const OWNERSHIP_CHECKS = new Set([
+  'getOrganizerEventContext',
   'getOrganizerRaceContext',
   'getRaceAccessContext',
 ]);
@@ -359,7 +360,7 @@ describe('API authorization policy', () => {
 
   it('checks ownership before protected operations', () => {
     const violations = handlers
-      .filter(({ access }) => access === 'owner-or-admin')
+      .filter(({ access }) => access === 'owner' || access === 'owner-or-admin')
       .flatMap(ownershipOrderViolations);
 
     expect(violations).toEqual([]);

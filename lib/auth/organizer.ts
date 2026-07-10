@@ -1,6 +1,8 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { getEventByIdForOrganizer } from '@/lib/db/events';
 import type { TrailRace } from '@/types/race.types';
 import { toTrailRace } from '@/lib/db/races';
+import type { TrailEventDetail } from '@/types/event.types';
 import type { RaceRow } from '@/types/race.types';
 
 export interface OrganizerRaceContext {
@@ -8,10 +10,14 @@ export interface OrganizerRaceContext {
   race: TrailRace;
 }
 
-export async function getOrganizerRaceContext(
+export interface OrganizerEventContext {
+  organizerId: string;
+  event: TrailEventDetail;
+}
+
+async function getOrganizerIdForUser(
   supabase: SupabaseClient,
-  raceId: string,
-): Promise<OrganizerRaceContext | null> {
+): Promise<string | null> {
   const {
     data: { user },
     error: authError,
@@ -31,6 +37,18 @@ export async function getOrganizerRaceContext(
     return null;
   }
 
+  return organizer.id;
+}
+
+export async function getOrganizerRaceContext(
+  supabase: SupabaseClient,
+  raceId: string,
+): Promise<OrganizerRaceContext | null> {
+  const organizerId = await getOrganizerIdForUser(supabase);
+  if (!organizerId) {
+    return null;
+  }
+
   const { data: raceRow, error: raceError } = await supabase
     .from('races')
     .select('*')
@@ -42,13 +60,33 @@ export async function getOrganizerRaceContext(
   }
 
   const row = raceRow as RaceRow;
-  if (row.organizer_id !== organizer.id) {
+  if (row.organizer_id !== organizerId) {
     return null;
   }
 
   return {
-    organizerId: organizer.id,
+    organizerId,
     race: toTrailRace(row),
+  };
+}
+
+export async function getOrganizerEventContext(
+  supabase: SupabaseClient,
+  eventId: string,
+): Promise<OrganizerEventContext | null> {
+  const organizerId = await getOrganizerIdForUser(supabase);
+  if (!organizerId) {
+    return null;
+  }
+
+  const event = await getEventByIdForOrganizer(eventId, organizerId);
+  if (!event) {
+    return null;
+  }
+
+  return {
+    organizerId,
+    event,
   };
 }
 

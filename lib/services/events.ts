@@ -1,6 +1,6 @@
-import { createAdminClient } from '@/lib/supabase/server';
+import { createAdminClient, createClient } from '@/lib/supabase/server';
 import { ValidationError } from '@/lib/errors';
-import { getEventByIdForAdmin } from '@/lib/db/events';
+import { getEventByIdForAdmin, getEventByIdForOrganizer } from '@/lib/db/events';
 import type { TrailEventDetail } from '@/types/event.types';
 import type {
   TrailEventAgentEvent,
@@ -89,6 +89,58 @@ export async function updateEventWithRaces(
   }
 
   const detail = await getEventByIdForAdmin(data as string);
+
+  if (!detail) {
+    throw new ValidationError('Event not found', 404);
+  }
+
+  return detail;
+}
+
+export async function updateOrganizerEventWithRaces(
+  eventId: string,
+  organizerId: string,
+  input: UpdateEventWithRacesInput,
+): Promise<TrailEventDetail> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase.rpc('update_organizer_event_with_races', {
+    p_event_id: eventId,
+    p_organizer_id: organizerId,
+    p_event: {
+      name: input.event.name,
+      description: input.event.description,
+      website_url: input.event.websiteUrl,
+    },
+    p_races: input.races.map((race) => ({
+      id: race.id ?? null,
+      name: race.name,
+      date: race.date,
+      city: race.city,
+      province: race.province,
+      distance_km: race.distanceKm,
+      elevation_gain_m: race.elevationGainM,
+    })),
+  });
+
+  if (error || !data) {
+    if (error?.code === 'P0002') {
+      throw new ValidationError('Event not found', 404);
+    }
+
+    if (error?.code === 'P0003') {
+      throw new ValidationError('Race does not belong to event', 400);
+    }
+
+    if (error?.code === 'P0004') {
+      throw new ValidationError('Forbidden', 403);
+    }
+
+    console.error('Update organizer event with races transaction error:', error);
+    throw new Error('Failed to update event');
+  }
+
+  const detail = await getEventByIdForOrganizer(data as string, organizerId);
 
   if (!detail) {
     throw new ValidationError('Event not found', 404);

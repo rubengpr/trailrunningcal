@@ -1,9 +1,42 @@
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { getRaceAccessContext } from '@/lib/auth/organizer';
+import {
+  getOrganizerEventContext,
+  getRaceAccessContext,
+} from '@/lib/auth/organizer';
 import type { RaceRow } from '@/types/race.types';
 
+const mocks = vi.hoisted(() => ({
+  getEventByIdForOrganizer: vi.fn(),
+}));
+
+vi.mock('@/lib/db/events', () => ({
+  getEventByIdForOrganizer: mocks.getEventByIdForOrganizer,
+}));
+
 const RACE_ID = 'race-1';
+const EVENT_ID = 'event-1';
+const eventDetail = {
+  event: {
+    id: EVENT_ID,
+    name: 'Trail Event',
+    slug: 'trail-event',
+    websiteUrl: 'https://example.com',
+    organizerId: 'organizer-1',
+    description: null,
+    heroImageFilename: null,
+    updatedAt: null,
+  },
+  races: [],
+  allRaceCount: 0,
+  dateRange: { startDate: null, endDate: null },
+  location: {
+    city: null,
+    province: null,
+    groups: [],
+    isMultipleLocations: false,
+  },
+};
 
 function raceRow(organizerId: string): RaceRow {
   return {
@@ -27,6 +60,10 @@ function queryResult(data: unknown, error: unknown = null) {
   const select = vi.fn().mockReturnValue({ eq });
   return { select, eq, single };
 }
+
+beforeEach(() => {
+  vi.resetAllMocks();
+});
 
 describe('getRaceAccessContext', () => {
   it('loads an organizer-backed race for an admin client', async () => {
@@ -82,5 +119,48 @@ describe('getRaceAccessContext', () => {
     await expect(
       getRaceAccessContext(client, RACE_ID, false),
     ).resolves.toBeNull();
+  });
+});
+
+describe('getOrganizerEventContext', () => {
+  it('allows an organizer to access their own event', async () => {
+    const organizerQuery = queryResult({ id: 'organizer-1' });
+    const client = {
+      auth: {
+        getUser: vi.fn().mockResolvedValue({
+          data: { user: { id: 'user-1' } },
+          error: null,
+        }),
+      },
+      from: vi.fn(() => organizerQuery),
+    } as unknown as SupabaseClient;
+    mocks.getEventByIdForOrganizer.mockResolvedValue(eventDetail);
+
+    const result = await getOrganizerEventContext(client, EVENT_ID);
+
+    expect(result).toEqual({
+      organizerId: 'organizer-1',
+      event: eventDetail,
+    });
+    expect(mocks.getEventByIdForOrganizer).toHaveBeenCalledWith(
+      EVENT_ID,
+      'organizer-1',
+    );
+  });
+
+  it('rejects a missing organizer event', async () => {
+    const organizerQuery = queryResult({ id: 'organizer-1' });
+    const client = {
+      auth: {
+        getUser: vi.fn().mockResolvedValue({
+          data: { user: { id: 'user-1' } },
+          error: null,
+        }),
+      },
+      from: vi.fn(() => organizerQuery),
+    } as unknown as SupabaseClient;
+    mocks.getEventByIdForOrganizer.mockResolvedValue(null);
+
+    await expect(getOrganizerEventContext(client, EVENT_ID)).resolves.toBeNull();
   });
 });
