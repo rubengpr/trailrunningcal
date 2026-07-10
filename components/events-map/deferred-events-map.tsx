@@ -1,14 +1,14 @@
 'use client';
 
 import { lazy, Suspense } from 'react';
-import type { RacesMapProps } from '@/components/races-map/races-map';
+import type { EventsMapProps } from '@/components/events-map/events-map';
 
-const LazyRacesMap = lazy(async () => {
-  const racesMapModule = await import('@/components/races-map/races-map');
-  return { default: racesMapModule.RacesMap };
+const LazyEventsMap = lazy(async () => {
+  const eventsMapModule = await import('@/components/events-map/events-map');
+  return { default: eventsMapModule.EventsMap };
 });
 
-function MapPlaceholder({ className }: Pick<RacesMapProps, 'className'>) {
+function MapPlaceholder({ className }: Pick<EventsMapProps, 'className'>) {
   const rootClassName = className
     ? `w-full rounded-lg border border-gray-200 overflow-hidden bg-gray-100 ${className}`
     : 'w-full h-[min(78vh,640px)] rounded-lg border border-gray-200 overflow-hidden bg-gray-100';
@@ -16,10 +16,10 @@ function MapPlaceholder({ className }: Pick<RacesMapProps, 'className'>) {
   return <div className={rootClassName} />;
 }
 
-export function DeferredRacesMap(props: RacesMapProps) {
+export function DeferredEventsMap(props: EventsMapProps) {
   return (
     <Suspense fallback={<MapPlaceholder className={props.className} />}>
-      <LazyRacesMap {...props} />
+      <LazyEventsMap {...props} />
     </Suspense>
   );
 }

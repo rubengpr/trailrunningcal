@@ -282,7 +282,7 @@ function applyMarkerFocus(
   };
 }
 
-export interface RacesMapProps {
+export interface EventsMapProps {
   markers: RaceMapMarker[];
   locale: Locale;
   labels: MapPageLabels;
@@ -298,7 +298,7 @@ export interface RacesMapProps {
   onMarkerPinClick?: (raceId: string) => void;
 }
 
-export function RacesMap({
+export function EventsMap({
   markers,
   locale,
   labels,
@@ -306,7 +306,7 @@ export function RacesMap({
   focusRaceId = null,
   focusRaceNonce = 0,
   onMarkerPinClick,
-}: RacesMapProps) {
+}: EventsMapProps) {
   const tMap = useTranslations('map');
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);

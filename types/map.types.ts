@@ -15,7 +15,7 @@ export interface RaceMapMarker {
   races: RaceMapPinRace[];
 }
 
-export interface RacesMapResponse {
+export interface EventsMapResponse {
   markers: RaceMapMarker[];
 }
 

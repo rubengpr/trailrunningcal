@@ -1,7 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import type { Locale } from '@/i18n';
 import { getUpcomingEvents } from '@/lib/db/events';
-import { getRacesMapData } from '@/lib/db/races-map';
+import { getEventsMapData } from '@/lib/db/events-map';
 import type { MapPageLabels, RaceMapMarker } from '@/types/map.types';
 import type { PublicEventDetail } from '@/types/event.types';
 
@@ -20,7 +20,7 @@ export async function getCategoryPageData(locale: Locale): Promise<CategoryPageD
   const today = new Date().toISOString().slice(0, 10);
   const [events, { markers }] = await Promise.all([
     getUpcomingEvents(today),
-    getRacesMapData(),
+    getEventsMapData(),
   ]);
 
   const labels: MapPageLabels = {

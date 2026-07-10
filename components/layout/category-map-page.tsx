@@ -5,7 +5,7 @@ import type { RaceMapMarker, MapPageLabels } from '@/types/map.types';
 import { buildFaqJsonLd, type FaqItem } from '@/lib/seo/json-ld';
 import { HeroSection } from '@/components/layout/hero-section';
 import { FaqSection } from '@/components/layout/faq-section';
-import { RacesExplorerClient } from '@/components/races-map/races-explorer-client';
+import { EventsExplorerClient } from '@/components/events-map/events-explorer-client';
 
 interface BreadcrumbItem {
   name: string;
@@ -61,7 +61,7 @@ export async function CategoryMapPage({
         breadcrumbItems={breadcrumbItems}
       />
       <div id="calendar" className="mx-auto w-full pt-6 pb-16 sm:pt-10 lg:pt-4 scroll-mt-18 sm:scroll-mt-20">
-        <RacesExplorerClient
+        <EventsExplorerClient
           events={events}
           markers={markers}
           locale={locale}

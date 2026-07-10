@@ -33,7 +33,7 @@ interface FilterAnalyticsCallbacks {
   onApplyFilters?: (payload: ApplyFiltersPayload) => void;
 }
 
-interface UseRaceFiltersParams {
+interface UseEventFiltersParams {
   races: TrailRace[];
   markers: RaceMapMarker[];
   persistence?: PersistenceConfig;
@@ -57,12 +57,12 @@ const readStorageValues = (key: string): string[] => {
   }
 };
 
-export function useRaceFilters({
+export function useEventFilters({
   races,
   markers,
   persistence,
   analytics,
-}: UseRaceFiltersParams) {
+}: UseEventFiltersParams) {
   const persistenceEnabled = persistence?.enabled ?? true;
   const storageKeys: FilterStorageKeys = {
     month: persistence?.keys?.month ?? DEFAULT_FILTER_STORAGE_KEYS.month,

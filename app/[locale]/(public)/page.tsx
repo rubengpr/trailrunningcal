@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { HeroSection } from '@/components/layout/hero-section';
-import { RacesExplorerClient } from '@/components/races-map/races-explorer-client';
+import { EventsExplorerClient } from '@/components/events-map/events-explorer-client';
 import {
   getSeoMetaConfig,
   generateMetadataFromOptions,
@@ -9,7 +9,7 @@ import {
 import type { Locale } from '@/i18n';
 import { buildHomeAlternateLinks } from '@/lib/content/alternate-links';
 import { getUpcomingEvents } from '@/lib/db/events';
-import { getRacesMapData } from '@/lib/db/races-map';
+import { getEventsMapData } from '@/lib/db/events-map';
 import { buildWebsiteJsonLd, buildOrganizationJsonLd } from '@/lib/seo/json-ld';
 import { buildFaqJsonLd } from '@/lib/seo/json-ld';
 import type { MapPageLabels } from '@/types/map.types';
@@ -53,7 +53,7 @@ export default async function HomePage({
   const [t, events, { markers }] = await Promise.all([
     getTranslations({ locale }),
     getUpcomingEvents(today),
-    getRacesMapData(),
+    getEventsMapData(),
   ]);
 
   const labels: MapPageLabels = {
@@ -90,7 +90,7 @@ export default async function HomePage({
         ctaLabel={t('landing.cta')}
       />
       <div id="calendar" className="mx-auto w-full min-w-0 pt-6 pb-16 sm:pt-10 lg:pt-4 scroll-mt-18 sm:scroll-mt-20">
-        <RacesExplorerClient
+        <EventsExplorerClient
           events={events}
           markers={markers}
           locale={locale}

@@ -5,7 +5,7 @@ import { FilterBar } from '@/components/filters/filter-bar';
 import { LayoutToggle } from '@/components/ui/layout-toggle';
 import type { DesktopLayout, LayoutToggleButton } from '@/components/ui/layout-toggle';
 
-interface RacesExplorerFiltersSectionProps {
+interface EventsExplorerFiltersSectionProps {
   filterLayout: string;
   canScrollLeft: boolean;
   canScrollRight: boolean;
@@ -26,7 +26,7 @@ interface RacesExplorerFiltersSectionProps {
   pillsScrollRef: RefObject<HTMLDivElement | null>;
 }
 
-export function RacesExplorerFiltersSection({
+export function EventsExplorerFiltersSection({
   filterLayout,
   canScrollLeft,
   canScrollRight,
@@ -45,7 +45,7 @@ export function RacesExplorerFiltersSection({
   desktopLayout,
   onDesktopLayoutChange,
   pillsScrollRef,
-}: RacesExplorerFiltersSectionProps) {
+}: EventsExplorerFiltersSectionProps) {
   const isPillVariant = filterLayout === 'pill';
   const isControlVariant = filterLayout === 'control';
   const showInlineFilters = isControlVariant || isPillVariant;

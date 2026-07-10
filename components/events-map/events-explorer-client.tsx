@@ -8,7 +8,7 @@ import type { PublicEventDetail } from '@/types/event.types';
 import type { TrailRace } from '@/types/race.types';
 import type { Locale } from '@/i18n';
 import type { MapPageLabels, RaceMapMarker } from '@/types/map.types';
-import { RacesExplorerFiltersSection } from '@/components/races-map/races-explorer-filters-section';
+import { EventsExplorerFiltersSection } from '@/components/events-map/events-explorer-filters-section';
 import { MobileFiltersButton } from '@/components/filters/mobile-filters-button';
 import { MobileFiltersModal } from '@/components/filters/mobile-filters-modal';
 import { SponsorBannerSlot } from '@/components/sponsors/sponsor-banner-slot';
@@ -19,15 +19,15 @@ import { SearchError } from '@/components/ui/error-message';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Button } from '@/components/ui/button';
 import type { DesktopLayout, LayoutToggleButton } from '@/components/ui/layout-toggle';
-import { DeferredRacesMap } from '@/components/races-map/deferred-races-map';
-import { MapToggleFab } from '@/components/races-map/map-toggle-fab';
+import { DeferredEventsMap } from '@/components/events-map/deferred-events-map';
+import { MapToggleFab } from '@/components/events-map/map-toggle-fab';
 import { Search, RefreshCw, TriangleAlert } from 'lucide-react';
 import { useMinWidthLg } from '@/hooks/use-min-width-lg';
 import { useScrollEdges } from '@/hooks/use-scroll-edges';
 import { useMobileFilters } from '@/components/providers/mobile-filters-provider';
 import { filterMapMarkersByRaceIds } from '@/lib/races/home-filters';
 import { filterHomeEvents, getEventRaceIds } from '@/lib/events/utils';
-import { useRaceFilters } from '@/hooks/use-race-filters';
+import { useEventFilters } from '@/hooks/use-event-filters';
 import { generateRaceSlug } from '@/lib/races/utils';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { track } from '@/lib/analytics/track';
@@ -42,7 +42,7 @@ type FiltersAppliedVariant =
   | 'pill-black';
 type FilterType = 'month' | 'province' | 'distance' | 'race_type' | 'apply';
 
-interface RacesExplorerClientProps {
+interface EventsExplorerClientProps {
   events?: PublicEventDetail[];
   races?: TrailRace[];
   markers: RaceMapMarker[];
@@ -52,7 +52,7 @@ interface RacesExplorerClientProps {
   showDistanceFilter?: boolean;
 }
 
-export function RacesExplorerClient({
+export function EventsExplorerClient({
   events,
   races,
   markers,
@@ -60,7 +60,7 @@ export function RacesExplorerClient({
   labels,
   showProvinceFilter = true,
   showDistanceFilter = true,
-}: RacesExplorerClientProps) {
+}: EventsExplorerClientProps) {
   const tResults = useTranslations('results');
   const tFilters = useTranslations('filters');
   const tErrors = useTranslations('errors');
@@ -141,7 +141,7 @@ export function RacesExplorerClient({
     return filterMapMarkersByRaceIds(markers, raceIds);
   }, [filteredEvents, markers]);
 
-  const raceFilters = useRaceFilters({
+  const raceFilters = useEventFilters({
     races: races ?? [],
     markers,
     persistence: { enabled: !isEventMode },
@@ -328,7 +328,7 @@ export function RacesExplorerClient({
 
   return (
     <>
-      <RacesExplorerFiltersSection
+      <EventsExplorerFiltersSection
         filterLayout={filterLayout}
         canScrollLeft={canScrollLeft}
         canScrollRight={canScrollRight}
@@ -468,7 +468,7 @@ export function RacesExplorerClient({
                       </p>
                     ) : (
                       <div className="w-full lg:sticky lg:top-6">
-                        <DeferredRacesMap
+          <DeferredEventsMap
                           markers={activeFilteredMarkers}
                           locale={locale}
                           labels={labels}

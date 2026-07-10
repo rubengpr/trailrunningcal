@@ -1,7 +1,7 @@
 import { cache } from 'react';
 import { createStaticClient } from '@/lib/supabase/server';
 import { generateRaceSlug } from '@/lib/races/utils';
-import type { RaceMapMarker, RaceMapPinRace, RacesMapResponse } from '@/types/map.types';
+import type { EventsMapResponse, RaceMapMarker, RaceMapPinRace } from '@/types/map.types';
 
 function getTodayDateString(): string {
   return new Date().toISOString().slice(0, 10);
@@ -27,7 +27,7 @@ type GroupValue = {
   races: RaceMapPinRace[];
 };
 
-export const getRacesMapData = cache(async function getRacesMapData(): Promise<RacesMapResponse> {
+export const getEventsMapData = cache(async function getEventsMapData(): Promise<EventsMapResponse> {
   const supabase = createStaticClient();
 
   const { data: locationRows, error: locError } = await supabase
