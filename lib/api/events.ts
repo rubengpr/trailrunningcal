@@ -5,8 +5,8 @@ import type {
 import type {
   ConflictResult,
   MarkdownRejectedResult,
-} from '@/lib/api/races';
-import { parseConflict, parseMarkdownRejected } from '@/lib/api/races';
+} from '@/lib/api/import-results';
+import { parseConflict, parseMarkdownRejected } from '@/lib/api/import-results';
 import type {
   EventDescriptionBatchSnapshot,
   EventDescriptionDraftResult,

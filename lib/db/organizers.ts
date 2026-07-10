@@ -92,20 +92,3 @@ export async function updateOrganizer(
 
   return data;
 }
-
-export async function getOrganizerRaceCount(
-  organizerId: string,
-): Promise<number> {
-  const supabase = await createClient();
-
-  const { count, error } = await supabase
-    .from('races')
-    .select('id', { count: 'exact', head: true })
-    .eq('organizer_id', organizerId);
-
-  if (error) {
-    throw new Error('Failed to count organizer races');
-  }
-
-  return count ?? 0;
-}

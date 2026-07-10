@@ -35,9 +35,6 @@ export const API_AUTHORIZATION_POLICY = {
   'POST /api/races/[raceId]/image': 'owner-or-admin',
   'DELETE /api/races/[raceId]/image': 'owner-or-admin',
   'PATCH /api/races/[raceId]/tiers': 'owner-or-admin',
-  'PATCH /api/races/[raceId]': 'owner-or-admin',
-  'DELETE /api/races/[raceId]': 'owner-or-admin',
-  'POST /api/races': 'authenticated',
 } as const satisfies Record<string, ApiAuthorization>;
 
 export const PUBLIC_API_REASONS = {
