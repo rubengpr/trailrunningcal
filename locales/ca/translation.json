@@ -424,6 +424,22 @@
         "general": "Alguna cosa ha anat malament en desar els canvis. Si us plau, torna-ho a intentar."
       }
     },
+    "events": {
+      "title": "Els teus esdeveniments",
+      "eventCount": "{count} esdeveniments",
+      "eventCountOne": "1 esdeveniment",
+      "empty": "Encara no tens esdeveniments reclamats.",
+      "missingWebsite": "Sense lloc web",
+      "missingLocation": "Sense ubicació",
+      "noDates": "Sense data",
+      "columns": {
+        "name": "Nom",
+        "website": "Lloc web",
+        "location": "Ubicació",
+        "dates": "Dates",
+        "races": "Curses"
+      }
+    },
     "races": {
       "noRacesMessage": "Encara no tens cap cursa reclamada. Troba i reclama la teva cursa a",
       "noRacesMessageLink": "trailrunningcal.com",

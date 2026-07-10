@@ -421,6 +421,22 @@
         "general": "Algo salió mal al guardar los cambios. Por favor, intenta de nuevo."
       }
     },
+    "events": {
+      "title": "Tus eventos",
+      "eventCount": "{count} eventos",
+      "eventCountOne": "1 evento",
+      "empty": "Todavía no tienes eventos reclamados.",
+      "missingWebsite": "Sin sitio web",
+      "missingLocation": "Sin ubicación",
+      "noDates": "Sin fecha",
+      "columns": {
+        "name": "Nombre",
+        "website": "Sitio web",
+        "location": "Ubicación",
+        "dates": "Fechas",
+        "races": "Carreras"
+      }
+    },
     "races": {
       "noRacesMessage": "Todavía no tienes ninguna carrera reclamada. Encuentra y reclama tu carrera en",
       "noRacesMessageLink": "trailrunningcal.com",

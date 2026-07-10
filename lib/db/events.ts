@@ -1,5 +1,5 @@
 import { cache } from 'react';
-import { createAdminClient, createStaticClient } from '@/lib/supabase/server';
+import { createAdminClient, createClient, createStaticClient } from '@/lib/supabase/server';
 import { ValidationError } from '@/lib/errors';
 import type {
   EventRaceRow,
@@ -147,6 +147,59 @@ export const getEventsForAdmin = cache(async function getEventsForAdmin(): Promi
     pendingDraft: draftsByEventId.get(eventDetail.event.id) ?? null,
   }));
 });
+
+export async function getEventsForOrganizer(
+  organizerId: string,
+): Promise<TrailEventDetail[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('events')
+    .select(
+      `
+      id,
+      name,
+      slug,
+      website_url,
+      organizer_id,
+      description,
+      hero_image_filename,
+      updated_at,
+      races (
+        id,
+        name,
+        date,
+        distance_km,
+        elevation_gain_m,
+        city,
+        province,
+        map_url,
+        race_tiers ( price_eur )
+      )
+    `,
+    )
+    .eq('organizer_id', organizerId);
+
+  if (error || !data) {
+    if (error) {
+      console.error('Failed to fetch organizer events:', error);
+    }
+    return [];
+  }
+
+  return (data as EventWithRacesRow[])
+    .map((row) =>
+      buildEventDetail(
+        toTrailEvent(row),
+        getEventRaceRows(row.races).map(toTrailEventRace),
+      ),
+    )
+    .sort(
+      (a, b) =>
+        (a.dateRange.startDate ?? '').localeCompare(b.dateRange.startDate ?? '') ||
+        a.event.name.localeCompare(b.event.name),
+    );
+}
 
 export async function getEventsByIds(
   eventIds: string[],
