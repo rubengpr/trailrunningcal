@@ -2,27 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { OrganizerLayout } from '@/components/organizer/organizer-layout';
 import { RaceForm } from '@/components/race/race-form';
-import { toTrailRace } from '@/lib/db/races';
-import type { RaceRow } from '@/types/race.types';
-
-async function getRaceById(raceId: string) {
-    const supabase = await createClient();
-
-    const { data, error } = await supabase
-        .from('races')
-        .select('*')
-        .eq('id', raceId);
-
-    if (error) {
-        console.error('Failed to fetch race:', error);
-        return null;
-    }
-
-    const row = data?.[0] as RaceRow | undefined;
-    if (!row) return null;
-
-    return toTrailRace(row);
-}
+import { getOrganizerRaceContext } from '@/lib/auth/organizer';
 
 async function getRacePrice(raceId: string) {
     const supabase = await createClient();
@@ -59,9 +39,15 @@ export default async function RaceFormPage({
 
     const isEditMode = raceId !== 'new';
 
-    const race = isEditMode
-        ? await getRaceById(raceId)
+    const organizerContext = isEditMode
+        ? await getOrganizerRaceContext(supabase, raceId)
         : null;
+
+    if (isEditMode && !organizerContext) {
+        redirect(`/${locale}/org/carreras`);
+    }
+
+    const race = organizerContext?.race ?? null;
 
     const priceEur = isEditMode ? await getRacePrice(raceId) : null;
 
