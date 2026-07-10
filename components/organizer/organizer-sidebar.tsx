@@ -1,7 +1,7 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import { Calendar, CircleUser, List, Sparkles } from 'lucide-react';
+import { Calendar, CircleUser, Sparkles, Trophy } from 'lucide-react';
 import { AppSidebar } from '@/components/ui/app-sidebar';
 import type { NavItem } from '@/components/ui/app-sidebar';
 
@@ -20,9 +20,9 @@ export function OrganizerSidebar() {
             icon: <CircleUser className="w-5 h-5" strokeWidth={1.5} />,
         },
         {
-            href: `/${locale}/org/carreras`,
-            label: locale === 'ca' ? 'Curses' : 'Carreras',
-            icon: <List className="w-5 h-5" strokeWidth={1.5} />,
+            href: `/${locale}/org/eventos`,
+            label: locale === 'ca' ? 'Esdeveniments' : 'Eventos',
+            icon: <Trophy className="w-5 h-5" strokeWidth={1.5} />,
         },
         {
             href: `/${locale}/org/sponsors`,
