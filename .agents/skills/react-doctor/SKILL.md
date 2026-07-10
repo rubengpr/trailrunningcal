@@ -1,14 +1,15 @@
 ---
 name: react-doctor
-description: Use when finishing a feature, fixing a bug, before committing React code, or when the user types `/doctor`, asks to scan, triage, or clean up React diagnostics. Covers lint, accessibility, bundle size, architecture. Includes a regression check and a full local-triage workflow that fetches the canonical playbook.
-version: "1.1.0"
+description: Run React Doctor diagnostics for lint, accessibility, bundle size, and architecture. Use only when the user explicitly invokes `$react-doctor` or `/doctor`, or explicitly asks to run React Doctor. Do not trigger for ordinary React work, generic scan or cleanup requests, feature completion, bug fixes, reviews, or pre-commit checks.
 ---
 
 # React Doctor
 
 Scans React codebases for security, performance, correctness, and architecture issues. Outputs a 0–100 health score.
 
-## After making React code changes:
+Only run React Doctor after an explicit user invocation. Never run it automatically because React code changed or as part of feature completion, bug fixing, review, cleanup, or pre-commit validation.
+
+## Explicit regression scan
 
 Run `npx react-doctor@latest --verbose --diff` and check the score did not regress.
 
