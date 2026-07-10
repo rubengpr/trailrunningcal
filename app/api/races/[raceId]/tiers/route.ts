@@ -3,11 +3,9 @@ import { createClient } from '@/lib/supabase/server';
 import { getOrganizerRaceContext } from '@/lib/auth/organizer';
 import { requireAuth } from '@/lib/auth';
 import { handleRouteError } from '@/lib/utils/handle-error';
-import { generateRaceSlug } from '@/lib/races/utils';
-import { locales } from '@/i18n';
-import { revalidatePath } from 'next/cache';
+import { revalidateEventPages, revalidateHomepages } from '@/lib/cache/revalidation';
 import { updateTierPrice } from '@/lib/db/race-tiers';
-import { getRaceName } from '@/lib/db/races';
+import { getEventSlugForRace } from '@/lib/db/races';
 
 export async function PATCH(
   request: NextRequest,
@@ -36,13 +34,10 @@ export async function PATCH(
 
     const data = await updateTierPrice(raceId, priceEur, isAdmin);
 
-    const raceName = await getRaceName(raceId, isAdmin);
-    const slug = raceName ? generateRaceSlug(raceName) : null;
-    for (const locale of locales) {
-      revalidatePath(`/${locale}`, 'page');
-      if (slug) {
-        revalidatePath(`/${locale}/carrera/${slug}`, 'page');
-      }
+    revalidateHomepages();
+    const eventSlug = await getEventSlugForRace(raceId, isAdmin);
+    if (eventSlug) {
+      revalidateEventPages(eventSlug);
     }
 
     return NextResponse.json({ success: true, data });

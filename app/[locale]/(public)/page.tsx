@@ -59,7 +59,7 @@ export default async function HomePage({
   const labels: MapPageLabels = {
     previousRace: t('map.previousRace'),
     nextRace: t('map.nextRace'),
-    racePageLink: t('map.racePageLink'),
+    eventPageLink: t('map.eventPageLink'),
     notAvailable: t('race.notAvailable'),
   };
 

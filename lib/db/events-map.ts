@@ -1,6 +1,5 @@
 import { cache } from 'react';
 import { createStaticClient } from '@/lib/supabase/server';
-import { generateRaceSlug } from '@/lib/races/utils';
 import type { EventsMapResponse, RaceMapMarker, RaceMapPinRace } from '@/types/map.types';
 
 function getTodayDateString(): string {
@@ -11,6 +10,21 @@ function cityProvinceKey(city: string, province: string): string {
   return `${city}|${province}`;
 }
 
+function getJoinedEventSlug(value: unknown): string | null {
+  const event = Array.isArray(value) ? value[0] : value;
+
+  if (
+    typeof event === 'object' &&
+    event !== null &&
+    'slug' in event &&
+    typeof event.slug === 'string'
+  ) {
+    return event.slug;
+  }
+
+  return null;
+}
+
 type RaceMapQueryRow = {
   id: string;
   name: string;
@@ -19,6 +33,7 @@ type RaceMapQueryRow = {
   elevation_gain_m: number | null;
   city: string;
   province: string;
+  events: unknown;
 };
 
 type GroupValue = {
@@ -43,7 +58,7 @@ export const getEventsMapData = cache(async function getEventsMapData(): Promise
 
   const { data: raceRows, error: raceError } = await supabase
     .from('races')
-    .select('id, name, date, distance_km, elevation_gain_m, city, province')
+    .select('id, name, date, distance_km, elevation_gain_m, city, province, events ( slug )')
     .not('date', 'is', null)
     .gte('date', today)
     .order('date', { ascending: true });
@@ -65,7 +80,8 @@ export const getEventsMapData = cache(async function getEventsMapData(): Promise
 
   for (const row of (raceRows ?? []) as RaceMapQueryRow[]) {
     const key = cityProvinceKey(row.city, row.province);
-    if (!locationMap.has(key)) continue;
+    const eventSlug = getJoinedEventSlug(row.events);
+    if (!locationMap.has(key) || !eventSlug) continue;
 
     const pinRace: RaceMapPinRace = {
       id: row.id,
@@ -73,7 +89,7 @@ export const getEventsMapData = cache(async function getEventsMapData(): Promise
       date: row.date,
       distanceKm: row.distance_km,
       elevationGainM: row.elevation_gain_m ?? null,
-      pathSegment: generateRaceSlug(row.name),
+      eventSlug,
     };
 
     const existing = grouped.get(key);

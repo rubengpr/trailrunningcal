@@ -170,21 +170,21 @@ function MarkerPopupBody({
       <div className="flex min-w-0 items-center gap-1.5">
         <h3 className="min-w-0 wrap-break-word text-base font-bold tracking-tight leading-snug text-gray-900">
           <Link
-            href={`/${locale}/carrera/${race.pathSegment}`}
+            href={`/${locale}/e/${race.eventSlug}`}
             prefetch={false}
             target="_blank"
             rel="noopener noreferrer"
-            title={labels.racePageLink}
+            title={labels.eventPageLink}
             className="cursor-pointer underline-offset-2 hover:underline focus:outline-none"
           >
             {race.name}
           </Link>
         </h3>
         <Link
-          href={`/${locale}/carrera/${race.pathSegment}`}
+          href={`/${locale}/e/${race.eventSlug}`}
           target="_blank"
           rel="noopener noreferrer"
-          title={labels.racePageLink}
+          title={labels.eventPageLink}
           className="inline-flex shrink-0 cursor-pointer rounded-sm p-0.5 text-gray-900 underline-offset-2 transition-colors hover:underline focus:outline-none"
         >
           <ArrowUpRightIcon className="h-3.5 w-3.5" />
@@ -288,14 +288,6 @@ export interface EventsMapProps {
   labels: MapPageLabels;
   /** When set, merged after base map container styles (include height utilities as needed). */
   className?: string;
-  /** Open the map popup for this race id (use `focusRaceNonce` to repeat the same id). */
-  focusRaceId?: string | null;
-  focusRaceNonce?: number;
-  /**
-   * Called when a map pin is clicked (first race at that location). Use with `focusRaceId` / `focusRaceNonce`
-   * in the parent so pin clicks use the same fly + popup flow as list selection.
-   */
-  onMarkerPinClick?: (raceId: string) => void;
 }
 
 export function EventsMap({
@@ -303,14 +295,9 @@ export function EventsMap({
   locale,
   labels,
   className,
-  focusRaceId = null,
-  focusRaceNonce = 0,
-  onMarkerPinClick,
 }: EventsMapProps) {
   const tMap = useTranslations('map');
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const mapRef = useRef<maplibregl.Map | null>(null);
-  const markerRegistryRef = useRef<MarkerRegistryEntry[]>([]);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -326,8 +313,6 @@ export function EventsMap({
         'NavigationControl.ZoomOut': tMap('zoomOut'),
       },
     });
-    mapRef.current = map;
-
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right');
 
     map.on('load', () => {
@@ -340,8 +325,6 @@ export function EventsMap({
       el: HTMLElement;
       fn: (e: MouseEvent) => void;
     }> = [];
-    markerRegistryRef.current = registry;
-
     for (const marker of markers) {
       const popupContainer = document.createElement('div');
       const root = createRoot(popupContainer);
@@ -391,19 +374,15 @@ export function EventsMap({
         if (!firstRace) {
           return;
         }
-        if (onMarkerPinClick) {
-          onMarkerPinClick(firstRace.id);
-        } else {
-          applyMarkerFocus(
-            map,
-            registry,
-            entry,
-            0,
-            locale,
-            labels,
-            `pin-click-${marker.city}-${marker.province}-${Date.now()}`,
-          );
-        }
+        applyMarkerFocus(
+          map,
+          registry,
+          entry,
+          0,
+          locale,
+          labels,
+          `pin-click-${marker.city}-${marker.province}-${Date.now()}`,
+        );
       };
       markerEl.addEventListener('click', handlePinClick);
       pinClickListeners.push({ el: markerEl, fn: handlePinClick });
@@ -416,40 +395,9 @@ export function EventsMap({
       for (const root of roots) {
         setTimeout(() => root.unmount(), 0);
       }
-      markerRegistryRef.current = [];
-      mapRef.current = null;
       map.remove();
     };
-  }, [markers, locale, labels, onMarkerPinClick, tMap]);
-
-  useEffect(() => {
-    if (!focusRaceId) return;
-    const map = mapRef.current;
-    const registry = markerRegistryRef.current;
-    if (!map || registry.length === 0) return;
-
-    let target: MarkerRegistryEntry | undefined;
-    let raceIndex = -1;
-    for (const entry of registry) {
-      const idx = entry.mapMarker.races.findIndex((r) => r.id === focusRaceId);
-      if (idx >= 0) {
-        target = entry;
-        raceIndex = idx;
-        break;
-      }
-    }
-    if (!target || raceIndex < 0) return;
-
-    return applyMarkerFocus(
-      map,
-      registry,
-      target,
-      raceIndex,
-      locale,
-      labels,
-      `${focusRaceId}-${focusRaceNonce}`,
-    );
-  }, [focusRaceId, focusRaceNonce, markers, locale, labels]);
+  }, [markers, locale, labels, tMap]);
 
   const rootClassName =
     className !== undefined

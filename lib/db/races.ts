@@ -1,8 +1,6 @@
-import { cache } from 'react';
 import {
   createAdminClient,
   createClient,
-  createStaticClient,
 } from '@/lib/supabase/server';
 import type { TrailRace, RaceRow, ConflictingRace } from '@/types/race.types';
 
@@ -29,41 +27,19 @@ export function toTrailRace(row: RaceRow): TrailRace {
 }
 
 function getJoinedEventSlug(value: unknown): string | null {
+  const event = Array.isArray(value) ? value[0] : value;
+
   if (
-    typeof value === 'object' &&
-    value !== null &&
-    !Array.isArray(value) &&
-    'slug' in value &&
-    typeof value.slug === 'string'
+    typeof event === 'object' &&
+    event !== null &&
+    'slug' in event &&
+    typeof event.slug === 'string'
   ) {
-    return value.slug;
+    return event.slug;
   }
 
   return null;
 }
-
-export const getEventSlugByRaceLegacySlug = cache(
-  async function getEventSlugByRaceLegacySlug(
-    legacySlug: string,
-  ): Promise<string | null> {
-    const supabase = createStaticClient();
-
-    const { data, error } = await supabase
-      .from('races')
-      .select('events ( slug )')
-      .eq('legacy_slug', legacySlug)
-      .maybeSingle();
-
-    if (error || !data) {
-      if (error) {
-        console.error('Failed to fetch event slug by race legacy slug:', error);
-      }
-      return null;
-    }
-
-    return getJoinedEventSlug((data as { events?: unknown }).events);
-  },
-);
 
 export async function getFutureRacesByUrl(
   urls: string[],
@@ -92,17 +68,21 @@ export async function getFutureRacesByUrl(
   );
 }
 
-export async function getRaceName(
+export async function getEventSlugForRace(
   raceId: string,
   useAdmin: boolean,
 ): Promise<string | null> {
   const dbClient = useAdmin ? createAdminClient() : await createClient();
 
-  const { data } = await dbClient
+  const { data, error } = await dbClient
     .from('races')
-    .select('name')
+    .select('events ( slug )')
     .eq('id', raceId)
     .single();
 
-  return data?.name ?? null;
+  if (error || !data) {
+    return null;
+  }
+
+  return getJoinedEventSlug((data as { events?: unknown }).events);
 }

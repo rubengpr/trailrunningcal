@@ -26,7 +26,7 @@ export async function getCategoryPageData(locale: Locale): Promise<CategoryPageD
   const labels: MapPageLabels = {
     previousRace: tCommon('map.previousRace'),
     nextRace: tCommon('map.nextRace'),
-    racePageLink: tCommon('map.racePageLink'),
+    eventPageLink: tCommon('map.eventPageLink'),
     notAvailable: tCommon('race.notAvailable'),
   };
 

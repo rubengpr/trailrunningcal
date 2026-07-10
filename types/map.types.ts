@@ -4,7 +4,7 @@ export interface RaceMapPinRace {
   date: string;
   distanceKm: number;
   elevationGainM: number | null;
-  pathSegment: string;
+  eventSlug: string;
 }
 
 export interface RaceMapMarker {
@@ -22,6 +22,6 @@ export interface EventsMapResponse {
 export interface MapPageLabels {
   previousRace: string;
   nextRace: string;
-  racePageLink: string;
+  eventPageLink: string;
   notAvailable: string;
 }

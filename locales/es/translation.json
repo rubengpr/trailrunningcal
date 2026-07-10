@@ -7,7 +7,7 @@
     "empty": "No hay carreras con ubicación en el mapa. Cuando haya coordenadas para las ciudades del calendario, aparecerán aquí.",
     "previousRace": "Anterior",
     "nextRace": "Siguiente",
-    "racePageLink": "Ver carrera",
+    "eventPageLink": "Ver evento",
     "viewMap": "Mapa",
     "viewList": "Lista",
     "zoomIn": "Acercar",
@@ -102,9 +102,6 @@
       "confirmButton": "Confirmar",
       "cancelButton": "Cancelar",
       "successMessage": "Carrera reclamada correctamente"
-    },
-    "provincia": {
-      "racePageLinkText": "Ver todas las carreras en {province}"
     },
     "verifiedOrganizer": "Organizador verificado"
   },

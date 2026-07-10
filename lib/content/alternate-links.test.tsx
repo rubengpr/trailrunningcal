@@ -5,7 +5,6 @@ import {
   buildBlogPostAlternateLinks,
   buildContactAlternateLinks,
   buildEventAlternateLinks,
-  buildRaceAlternateLinks,
   buildTypeAlternateLinks,
   buildDestinationAlternateLinks,
   getDestinationPath,
@@ -305,74 +304,6 @@ describe('buildContactAlternateLinks', () => {
     expect(result.es).toContain('/contacto');
     expect(result.ca).toContain('/contacte');
     expect(result['x-default']).toContain('/contacto');
-  });
-});
-
-describe('buildRaceAlternateLinks', () => {
-  it('should return correct alternate links for race page', () => {
-    const raceSlug = 'test-race';
-    const result = buildRaceAlternateLinks(raceSlug);
-
-    expect(result).toEqual({
-      es: `${BASE_URL}/es/carrera/${raceSlug}`,
-      ca: `${BASE_URL}/ca/carrera/${raceSlug}`,
-      'x-default': `${BASE_URL}/es/carrera/${raceSlug}`,
-    });
-  });
-
-  it('should always set x-default to Spanish', () => {
-    const raceSlug = 'any-race';
-    const result = buildRaceAlternateLinks(raceSlug);
-    expect(result['x-default']).toBe(result.es);
-  });
-
-  it('should include all required locales (es, ca, x-default)', () => {
-    const raceSlug = 'test-race';
-    const result = buildRaceAlternateLinks(raceSlug);
-
-    expect(result.es).toBeDefined();
-    expect(result.ca).toBeDefined();
-    expect(result['x-default']).toBeDefined();
-  });
-
-  it('should use correct BASE_URL in all links', () => {
-    const raceSlug = 'test-race';
-    const result = buildRaceAlternateLinks(raceSlug);
-
-    expect(result.es).toContain(BASE_URL);
-    expect(result.ca).toContain(BASE_URL);
-    expect(result['x-default']).toContain(BASE_URL);
-  });
-
-  it('should include /carrera path in all URLs', () => {
-    const raceSlug = 'test-race';
-    const result = buildRaceAlternateLinks(raceSlug);
-
-    expect(result.es).toContain('/carrera');
-    expect(result.ca).toContain('/carrera');
-    expect(result['x-default']).toContain('/carrera');
-  });
-
-  it('should use the provided raceSlug in all URLs', () => {
-    const raceSlug = 'ultra-trail-mont-blanc';
-    const result = buildRaceAlternateLinks(raceSlug);
-
-    expect(result.es).toContain(raceSlug);
-    expect(result.ca).toContain(raceSlug);
-    expect(result['x-default']).toContain(raceSlug);
-  });
-
-  it('should work with different race slugs', () => {
-    const raceSlug1 = 'race-one';
-    const raceSlug2 = 'race-two';
-
-    const result1 = buildRaceAlternateLinks(raceSlug1);
-    const result2 = buildRaceAlternateLinks(raceSlug2);
-
-    expect(result1.es).toContain(raceSlug1);
-    expect(result1.ca).toContain(raceSlug1);
-    expect(result2.es).toContain(raceSlug2);
-    expect(result2.ca).toContain(raceSlug2);
   });
 });
 

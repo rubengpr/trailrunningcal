@@ -3,7 +3,6 @@ import { locales } from '@/i18n';
 import { getRaceCategorySlugsForRace } from '@/lib/races/race-types';
 import { getTypePath } from '@/lib/races/race-types';
 import { getDestinationPath, getProvinceByDbName } from '@/lib/geography/destinations';
-import { generateRaceSlug } from '@/lib/races/utils';
 import type { TrailEventDetail } from '@/types/event.types';
 
 type RaceForRevalidation = {
@@ -41,17 +40,6 @@ export function revalidateCategoryPages(race: RaceForRevalidation) {
   }
 }
 
-export function revalidateRacePages(raceName: string | null) {
-  if (!raceName) {
-    return;
-  }
-
-  const slug = generateRaceSlug(raceName);
-  for (const locale of locales) {
-    revalidatePath(`/${locale}/carrera/${slug}`);
-  }
-}
-
 export function revalidateEventPages(eventSlug: string) {
   for (const locale of locales) {
     revalidatePath(`/${locale}/e/${eventSlug}`);
@@ -62,7 +50,6 @@ export function revalidateEventRelatedPages(detail: TrailEventDetail): void {
   revalidateEventPages(detail.event.slug);
 
   for (const race of detail.races) {
-    revalidateRacePages(race.name);
     revalidateCategoryPages(race);
     if (race.province) revalidateProvincePage(race.province);
   }

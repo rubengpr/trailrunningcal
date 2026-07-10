@@ -68,17 +68,6 @@ export function buildTypeAlternateLinks(
   return alternates;
 }
 
-export function buildRaceAlternateLinks(
-  raceSlug: string,
-): Record<string, string> {
-  const alternates: Record<string, string> = {};
-  for (const locale of locales) {
-    alternates[locale] = `${BASE_URL}/${locale}/carrera/${raceSlug}`;
-  }
-  alternates['x-default'] = `${BASE_URL}/es/carrera/${raceSlug}`;
-  return alternates;
-}
-
 export function buildEventAlternateLinks(
   eventSlug: string,
 ): Record<string, string> {

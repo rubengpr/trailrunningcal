@@ -1,11 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useFeatureFlagVariantKey } from 'posthog-js/react';
 import type { PublicEventDetail } from '@/types/event.types';
-import type { TrailRace } from '@/types/race.types';
 import type { Locale } from '@/i18n';
 import type { MapPageLabels, RaceMapMarker } from '@/types/map.types';
 import { EventsExplorerFiltersSection } from '@/components/events-map/events-explorer-filters-section';
@@ -13,7 +11,6 @@ import { MobileFiltersButton } from '@/components/filters/mobile-filters-button'
 import { MobileFiltersModal } from '@/components/filters/mobile-filters-modal';
 import { SponsorBannerSlot } from '@/components/sponsors/sponsor-banner-slot';
 import { EventCard } from '@/components/event/event-card';
-import { TrailRaceCard } from '@/components/race/trail-race-card';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
 import { SearchError } from '@/components/ui/error-message';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -27,8 +24,6 @@ import { useScrollEdges } from '@/hooks/use-scroll-edges';
 import { useMobileFilters } from '@/components/providers/mobile-filters-provider';
 import { filterMapMarkersByRaceIds } from '@/lib/races/home-filters';
 import { filterHomeEvents, getEventRaceIds } from '@/lib/events/utils';
-import { useEventFilters } from '@/hooks/use-event-filters';
-import { generateRaceSlug } from '@/lib/races/utils';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { track } from '@/lib/analytics/track';
 
@@ -43,8 +38,7 @@ type FiltersAppliedVariant =
 type FilterType = 'month' | 'province' | 'distance' | 'race_type' | 'apply';
 
 interface EventsExplorerClientProps {
-  events?: PublicEventDetail[];
-  races?: TrailRace[];
+  events: PublicEventDetail[];
   markers: RaceMapMarker[];
   locale: Locale;
   labels: MapPageLabels;
@@ -54,7 +48,6 @@ interface EventsExplorerClientProps {
 
 export function EventsExplorerClient({
   events,
-  races,
   markers,
   locale,
   labels,
@@ -67,13 +60,9 @@ export function EventsExplorerClient({
   const tMap = useTranslations('map');
   const [mobileView, setMobileView] = useState<MobileView>('list');
   const [desktopLayout, setDesktopLayout] = useState<DesktopLayout>('both');
-  const [focusRaceId, setFocusRaceId] = useState<string | null>(null);
-  const [focusRaceNonce, setFocusRaceNonce] = useState(0);
   const pillsScrollRef = useRef<HTMLDivElement>(null);
 
   const isDesktopMap = useMinWidthLg();
-  const router = useRouter();
-  const isEventMode = events !== undefined;
   const v2Variant = useFeatureFlagVariantKey('filter-flag-v2');
   const v2VariantStr = typeof v2Variant === 'string' ? v2Variant : null;
   const filterLayout = v2VariantStr?.includes('-') ? v2VariantStr.slice(0, v2VariantStr.lastIndexOf('-')) : (v2VariantStr ?? 'control');
@@ -97,7 +86,7 @@ export function EventsExplorerClient({
   const [selectedRaceType, setSelectedRaceType] = useState<string[]>([]);
 
   useEffect(() => {
-    if (!isEventMode || typeof window === 'undefined') return;
+    if (typeof window === 'undefined') return;
     let isActive = true;
 
     const readStoredFilter = (key: string): string[] => {
@@ -121,61 +110,31 @@ export function EventsExplorerClient({
     return () => {
       isActive = false;
     };
-  }, [isEventMode]);
+  }, []);
 
   useEffect(() => {
-    if (!isEventMode || typeof window === 'undefined') return;
+    if (typeof window === 'undefined') return;
     sessionStorage.setItem('filter_month', JSON.stringify(selectedMonth));
     sessionStorage.setItem('filter_province', JSON.stringify(selectedProvince));
     sessionStorage.setItem('filter_distance', JSON.stringify(selectedDistance));
     sessionStorage.setItem('filter_type', JSON.stringify(selectedRaceType));
-  }, [isEventMode, selectedMonth, selectedProvince, selectedDistance, selectedRaceType]);
+  }, [selectedMonth, selectedProvince, selectedDistance, selectedRaceType]);
 
   const filteredEvents = useMemo(
-    () => filterHomeEvents(events ?? [], selectedMonth, selectedProvince, selectedDistance, selectedRaceType),
+    () => filterHomeEvents(events, selectedMonth, selectedProvince, selectedDistance, selectedRaceType),
     [events, selectedMonth, selectedProvince, selectedDistance, selectedRaceType],
   );
 
-  const eventFilteredMarkers = useMemo(() => {
+  const filteredMarkers = useMemo(() => {
     const raceIds = getEventRaceIds(filteredEvents);
     return filterMapMarkersByRaceIds(markers, raceIds);
   }, [filteredEvents, markers]);
 
-  const raceFilters = useEventFilters({
-    races: races ?? [],
-    markers,
-    persistence: { enabled: !isEventMode },
-    analytics: {
-      onMonthSelect: () => {
-        trackFiltersApplied('month');
-      },
-      onProvinceSelect: () => {
-        trackFiltersApplied('province');
-      },
-      onDistanceSelect: () => {
-        trackFiltersApplied('distance');
-      },
-      onRaceTypeSelect: () => {
-        trackFiltersApplied('race_type');
-      },
-      onClearFilters: () => {
-        track(ANALYTICS_EVENTS.RACE_FILTERS_CLEARED);
-      },
-      onApplyFilters: () => {
-        trackFiltersApplied('apply');
-      },
-    },
-  });
-
-  const activeSelectedMonth = isEventMode ? selectedMonth : raceFilters.selectedMonth;
-  const activeSelectedProvince = isEventMode ? selectedProvince : raceFilters.selectedProvince;
-  const activeSelectedDistance = isEventMode ? selectedDistance : raceFilters.selectedDistance;
-  const activeSelectedRaceType = isEventMode ? selectedRaceType : raceFilters.selectedRaceType;
-  const activeFiltersCount = isEventMode
-    ? selectedMonth.length + selectedProvince.length + selectedDistance.length + selectedRaceType.length
-    : raceFilters.activeFiltersCount;
-  const activeFilteredMarkers = isEventMode ? eventFilteredMarkers : raceFilters.filteredMarkers;
-  const activeListCount = isEventMode ? filteredEvents.length : raceFilters.filteredRaces.length;
+  const activeFiltersCount =
+    selectedMonth.length +
+    selectedProvince.length +
+    selectedDistance.length +
+    selectedRaceType.length;
 
   const { canScrollLeft, canScrollRight } = useScrollEdges(pillsScrollRef, isPillVariant);
   const { isOpen: isFiltersModalOpen, open: openFiltersModal, close: closeFiltersModal, register, unregister, updateFilterCount, updateFilterVariant, filterCount } = useMobileFilters();
@@ -195,100 +154,49 @@ export function EventsExplorerClient({
   }, [activeFiltersCount, updateFilterCount]);
 
   const handleRetry = () => {
-    if (isEventMode) {
-      setSelectedMonth([]);
-      setSelectedProvince([]);
-      setSelectedDistance([]);
-      setSelectedRaceType([]);
-    } else {
-      raceFilters.handleClearFilters();
-    }
+    setSelectedMonth([]);
+    setSelectedProvince([]);
+    setSelectedDistance([]);
+    setSelectedRaceType([]);
     window.location.reload();
   };
 
   const handleMonthSelect = useCallback((month: string[]) => {
-    if (isEventMode) {
-      setSelectedMonth(month);
-      trackFiltersApplied('month');
-      return;
-    }
-
-    raceFilters.handleMonthSelect(month);
-  }, [isEventMode, raceFilters, trackFiltersApplied]);
+    setSelectedMonth(month);
+    trackFiltersApplied('month');
+  }, [trackFiltersApplied]);
 
   const handleProvinceSelect = useCallback((province: string[]) => {
-    if (isEventMode) {
-      setSelectedProvince(province);
-      trackFiltersApplied('province');
-      return;
-    }
-
-    raceFilters.handleProvinceSelect(province);
-  }, [isEventMode, raceFilters, trackFiltersApplied]);
+    setSelectedProvince(province);
+    trackFiltersApplied('province');
+  }, [trackFiltersApplied]);
 
   const handleDistanceSelect = useCallback((distance: string[]) => {
-    if (isEventMode) {
-      setSelectedDistance(distance);
-      trackFiltersApplied('distance');
-      return;
-    }
-
-    raceFilters.handleDistanceSelect(distance);
-  }, [isEventMode, raceFilters, trackFiltersApplied]);
+    setSelectedDistance(distance);
+    trackFiltersApplied('distance');
+  }, [trackFiltersApplied]);
 
   const handleRaceTypeSelect = useCallback((raceType: string[]) => {
-    if (isEventMode) {
-      setSelectedRaceType(raceType);
-      trackFiltersApplied('race_type');
-      return;
-    }
-
-    raceFilters.handleRaceTypeSelect(raceType);
-  }, [isEventMode, raceFilters, trackFiltersApplied]);
+    setSelectedRaceType(raceType);
+    trackFiltersApplied('race_type');
+  }, [trackFiltersApplied]);
 
   const handleClearFilters = useCallback(() => {
-    if (isEventMode) {
-      setSelectedMonth([]);
-      setSelectedProvince([]);
-      setSelectedDistance([]);
-      setSelectedRaceType([]);
-      track(ANALYTICS_EVENTS.RACE_FILTERS_CLEARED);
-      return;
-    }
-
-    raceFilters.handleClearFilters();
-  }, [isEventMode, raceFilters]);
+    setSelectedMonth([]);
+    setSelectedProvince([]);
+    setSelectedDistance([]);
+    setSelectedRaceType([]);
+    track(ANALYTICS_EVENTS.RACE_FILTERS_CLEARED);
+  }, []);
 
   const handleFiltersApplyAndClose = (month: string[], province: string[], distance: string[], raceType: string[]) => {
-    if (isEventMode) {
-      setSelectedMonth(month);
-      setSelectedProvince(province);
-      setSelectedDistance(distance);
-      setSelectedRaceType(raceType);
-      trackFiltersApplied('apply');
-    } else {
-      raceFilters.handleFiltersApply(month, province, distance, raceType);
-    }
+    setSelectedMonth(month);
+    setSelectedProvince(province);
+    setSelectedDistance(distance);
+    setSelectedRaceType(raceType);
+    trackFiltersApplied('apply');
     closeFiltersModal();
   };
-
-  const focusRaceOnMap = useCallback((raceId: string): void => {
-    setFocusRaceId(raceId);
-    setFocusRaceNonce((nonce) => nonce + 1);
-    if (!isDesktopMap) {
-      setMobileView('map');
-      window.scrollTo({ top: 0, behavior: 'instant' });
-    }
-  }, [isDesktopMap]);
-
-  const handleRaceCardClick = useCallback((raceId: string, raceSlug: string): void => {
-    if (desktopLayout === 'list') {
-      router.push(`/${locale}/carrera/${raceSlug}`);
-      return;
-    }
-
-    focusRaceOnMap(raceId);
-  }, [desktopLayout, focusRaceOnMap, locale, router]);
 
   const handleDesktopLayoutChange = (layout: DesktopLayout, button: LayoutToggleButton): void => {
     setDesktopLayout(layout);
@@ -332,10 +240,10 @@ export function EventsExplorerClient({
         filterLayout={filterLayout}
         canScrollLeft={canScrollLeft}
         canScrollRight={canScrollRight}
-        selectedMonth={activeSelectedMonth}
-        selectedProvince={activeSelectedProvince}
-        selectedDistance={activeSelectedDistance}
-        selectedRaceType={activeSelectedRaceType}
+        selectedMonth={selectedMonth}
+        selectedProvince={selectedProvince}
+        selectedDistance={selectedDistance}
+        selectedRaceType={selectedRaceType}
         onMonthSelect={handleMonthSelect}
         onProvinceSelect={handleProvinceSelect}
         onDistanceSelect={handleDistanceSelect}
@@ -376,7 +284,7 @@ export function EventsExplorerClient({
                       className="sticky top-18 z-20 mb-4 bg-white py-2 sm:top-20 lg:top-0"
                     />
                     <div className="grid min-h-[200px] min-w-0 grid-cols-1 gap-4">
-                      {activeListCount === 0 ? (
+                      {filteredEvents.length === 0 ? (
                         <EmptyState
                           icon={
                             <Search className="mx-auto size-16 text-gray-400" strokeWidth={1.5} />
@@ -390,7 +298,7 @@ export function EventsExplorerClient({
                             </Button>
                           }
                         />
-                      ) : isEventMode ? (
+                      ) : (
                         filteredEvents.map((eventDetail) => {
                           return (
                             <div key={eventDetail.event.id} className="min-w-0">
@@ -416,45 +324,6 @@ export function EventsExplorerClient({
                             </div>
                           );
                         })
-                      ) : (
-                        raceFilters.filteredRaces.map((race) => {
-                          const raceSlug = generateRaceSlug(race.name);
-
-                          return (
-                            <div key={race.id} className="min-w-0">
-                              <ErrorBoundary
-                                fallback={
-                                  <div className="bg-white rounded-lg shadow-sm border border-red-200 p-6">
-                                    <div className="text-center">
-                                      <div className="mb-2">
-                                        <TriangleAlert className="mx-auto size-8 text-red-500" strokeWidth={2} />
-                                      </div>
-                                      <h4 className="text-sm font-semibold text-gray-900 mb-1">
-                                        {tErrors('raceLoadError')}
-                                      </h4>
-                                      <p className="text-xs text-gray-600">
-                                        {tErrors('raceLoadErrorMessage')}
-                                      </p>
-                                    </div>
-                                  </div>
-                                }
-                              >
-                                <TrailRaceCard
-                                  date={race.date}
-                                  name={race.name}
-                                  distanceKm={race.distanceKm}
-                                  elevationGainM={race.elevationGainM}
-                                  priceEur={race.priceEur}
-                                  city={race.city}
-                                  province={race.province}
-                                  raceSlug={raceSlug}
-                                  organizerId={race.organizerId}
-                                  onCardClick={() => handleRaceCardClick(race.id, raceSlug)}
-                                />
-                              </ErrorBoundary>
-                            </div>
-                          );
-                        })
                       )}
                     </div>
                   </div>
@@ -468,8 +337,8 @@ export function EventsExplorerClient({
                       </p>
                     ) : (
                       <div className="w-full lg:sticky lg:top-6">
-          <DeferredEventsMap
-                          markers={activeFilteredMarkers}
+                        <DeferredEventsMap
+                          markers={filteredMarkers}
                           locale={locale}
                           labels={labels}
                           className={
@@ -477,9 +346,6 @@ export function EventsExplorerClient({
                               ? mapPanelClassNameDesktop
                               : mapPanelClassNameMobile
                           }
-                          focusRaceId={isEventMode ? null : focusRaceId}
-                          focusRaceNonce={isEventMode ? 0 : focusRaceNonce}
-                          onMarkerPinClick={isEventMode ? undefined : focusRaceOnMap}
                         />
                       </div>
                     )}
@@ -497,10 +363,10 @@ export function EventsExplorerClient({
           onClose={closeFiltersModal}
           onApply={handleFiltersApplyAndClose}
           onClear={handleClearFilters}
-          initialMonth={activeSelectedMonth}
-          initialProvince={activeSelectedProvince}
-          initialDistance={activeSelectedDistance}
-          initialRaceType={activeSelectedRaceType}
+          initialMonth={selectedMonth}
+          initialProvince={selectedProvince}
+          initialDistance={selectedDistance}
+          initialRaceType={selectedRaceType}
         />
       )}
 
