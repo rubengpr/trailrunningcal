@@ -28,7 +28,7 @@ const FEATURE_FLAG_VARIANT_TO_BANNER_TYPE: Record<string, SponsorBannerType> = {
 
 // Manual rollout switch. Set a page to a sponsor brand and redeploy to activate it.
 const ACTIVE_SPONSOR_BY_PAGE: Record<SponsorPage, SponsorBrand | null> = {
-  homepage: null,
+  homepage: 'salssa',
   event_page: null,
 };
 
