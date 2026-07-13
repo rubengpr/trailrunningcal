@@ -26,6 +26,7 @@ describe('EventDistanceList', () => {
   it('renders each race name with its distance details', async () => {
     render(
       await EventDistanceList({
+        eventName: 'Garmin Epic Trail',
         races: [race()],
         locale: 'es',
         ratioTooltip: 'Elevation per kilometer',
@@ -39,16 +40,20 @@ describe('EventDistanceList', () => {
     expect(screen.getAllByText('2800 m').length).toBeGreaterThan(0);
   });
 
-  it('keeps unnamed races visible without an empty heading', async () => {
+  it('uses the event name and distance when the race has no name', async () => {
     render(
       await EventDistanceList({
-        races: [race({ name: null })],
+        eventName: 'Garmin Epic Trail',
+        races: [race(), race({ id: 'race-2', name: null })],
         locale: 'es',
         ratioTooltip: 'Elevation per kilometer',
       }),
     );
 
-    expect(screen.queryByRole('heading')).toBeNull();
-    expect(screen.getByText('42')).toBeTruthy();
+    expect(screen.getAllByRole('heading')).toHaveLength(2);
+    expect(
+      screen.getByRole('heading', { name: 'Garmin Epic Trail - 42 km' }),
+    ).toBeTruthy();
+    expect(screen.getAllByText('42')).toHaveLength(2);
   });
 });

@@ -4,6 +4,7 @@ import type { Locale } from '@/i18n';
 import type { TrailEventRace } from '@/types/event.types';
 
 interface EventDistanceListProps {
+  eventName: string;
   races: TrailEventRace[];
   locale: Locale;
   ratioTooltip: string;
@@ -26,6 +27,7 @@ function formatElevation(elevationGainM: number | null, locale: Locale): string 
 }
 
 export function EventDistanceList({
+  eventName,
   races,
   locale,
   ratioTooltip,
@@ -37,11 +39,12 @@ export function EventDistanceList({
           key={race.id}
           className="flex flex-col gap-2 border-b border-gray-200 py-4 last:border-b-0 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:border-b-0"
         >
-          {race.name && (
-            <h3 className="min-w-0 text-base font-medium leading-snug text-gray-950 sm:flex-1">
-              {race.name}
+          <div className="min-w-0 sm:flex-1">
+            <h3 className="text-base font-medium leading-snug text-gray-950">
+              {race.name ??
+                `${eventName} - ${formatDistance(race.distanceKm, locale)} km`}
             </h3>
-          )}
+          </div>
 
           <div className="grid shrink-0 grid-cols-[3.75rem_6rem_4.5rem] items-center gap-x-2 text-sm sm:grid-cols-[4.5rem_6rem_5.5rem] sm:gap-x-6">
             <span className="inline-flex items-baseline justify-self-start gap-1 font-semibold text-gray-950 sm:justify-self-end">
