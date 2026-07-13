@@ -8,8 +8,11 @@ import { createRoot, type Root } from 'react-dom/client';
 import maplibregl, { type StyleSpecification } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type { Locale } from '@/i18n';
-import { formatDateToCatalan, formatDateToSpanish } from '@/lib/utils/date';
-import type { MapPageLabels, RaceMapMarker } from '@/types/map.types';
+import {
+  formatEventDateRange,
+  formatEventLocationLabel,
+} from '@/lib/events/utils';
+import type { EventMapMarker, MapPageLabels } from '@/types/map.types';
 import { ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react';
 
 /** OpenStreetMap Standard (raster) — attribution shown via MapLibre AttributionControl. */
@@ -43,17 +46,17 @@ const SPAIN_CCAA_GEOJSON_URL = '/geo/spain-communities.geojson';
 const SPAIN_PROVINCES_GEOJSON_URL = '/geo/spain-provinces.geojson';
 
 /** 16px circle marker; offset is uniform [x, y] so the tip stays centered (not `number`, which skews corners). */
-const RACE_MARKER_RADIUS_PX = 8;
+const EVENT_MARKER_RADIUS_PX = 8;
 const POPUP_GAP_FROM_MARKER_PX = 4;
 const POPUP_OFFSET_FROM_MARKER: [number, number] = [
   0,
-  -(RACE_MARKER_RADIUS_PX + POPUP_GAP_FROM_MARKER_PX),
+  -(EVENT_MARKER_RADIUS_PX + POPUP_GAP_FROM_MARKER_PX),
 ];
 
 /** Same value passed to MapLibre `Popup` and the body so long titles / date+location can widen the card. */
 const POPUP_CONTENT_MAX_WIDTH = 'min(90vw, 480px)';
 
-function createRaceMapMarkerElement(): HTMLDivElement {
+function createEventMapMarkerElement(): HTMLDivElement {
   const el = document.createElement('div');
   el.style.width = '16px';
   el.style.height = '16px';
@@ -115,27 +118,32 @@ function addSpainBoundaryLayers(map: maplibregl.Map): void {
 }
 
 interface MarkerPopupBodyProps {
-  marker: RaceMapMarker;
+  marker: EventMapMarker;
   locale: Locale;
   labels: MapPageLabels;
-  /** Which race in the marker stack to show (e.g. when opening from the list). */
-  initialRaceIndex?: number;
+  initialEventIndex?: number;
+}
+
+function formatDistance(distanceKm: number, locale: Locale): string {
+  return new Intl.NumberFormat(locale === 'ca' ? 'ca-ES' : 'es-ES', {
+    maximumFractionDigits: 1,
+  }).format(distanceKm);
 }
 
 function MarkerPopupBody({
   marker,
   locale,
   labels,
-  initialRaceIndex = 0,
+  initialEventIndex = 0,
 }: MarkerPopupBodyProps) {
-  const count = marker.races.length;
+  const count = marker.events.length;
   const clampedInitial = Math.min(
-    Math.max(0, initialRaceIndex),
+    Math.max(0, initialEventIndex),
     Math.max(0, count - 1),
   );
   const [index, setIndex] = useState(clampedInitial);
-  const race = marker.races[index];
-  if (!race) {
+  const event = marker.events[index];
+  if (!event) {
     return null;
   }
 
@@ -152,36 +160,33 @@ function MarkerPopupBody({
     setIndex((i) => Math.min(count - 1, i + 1));
   };
 
-  const parsedRaceDate = race.date ? new Date(race.date) : null;
-  const hasValidDate =
-    parsedRaceDate !== null && !Number.isNaN(parsedRaceDate.getTime());
-
-  const formattedDate = hasValidDate
-    ? locale === 'ca'
-      ? formatDateToCatalan(race.date)
-      : formatDateToSpanish(race.date)
-    : '-';
+  const formattedDate = formatEventDateRange(
+    event.dateRange,
+    locale,
+    labels.dateTbd,
+  );
+  const formattedLocation = formatEventLocationLabel(event.location, locale);
 
   return (
     <div
-      className="race-map-popup-body min-w-0 p-4 text-sm text-gray-900"
+      className="event-map-popup-body min-w-0 p-4 text-sm text-gray-900"
       style={{ maxWidth: POPUP_CONTENT_MAX_WIDTH }}
     >
       <div className="flex min-w-0 items-center gap-1.5">
-        <h3 className="min-w-0 wrap-break-word text-base font-bold tracking-tight leading-snug text-gray-900">
+        <h3 className="min-w-0 wrap-break-word text-base font-bold leading-snug text-gray-900">
           <Link
-            href={`/${locale}/e/${race.eventSlug}`}
+            href={`/${locale}/e/${event.slug}`}
             prefetch={false}
             target="_blank"
             rel="noopener noreferrer"
             title={labels.eventPageLink}
             className="cursor-pointer underline-offset-2 hover:underline focus:outline-none"
           >
-            {race.name}
+            {event.name}
           </Link>
         </h3>
         <Link
-          href={`/${locale}/e/${race.eventSlug}`}
+          href={`/${locale}/e/${event.slug}`}
           target="_blank"
           rel="noopener noreferrer"
           title={labels.eventPageLink}
@@ -194,26 +199,32 @@ function MarkerPopupBody({
         <span className="text-[10px] sm:text-xs font-medium text-gray-900">
           {formattedDate}
         </span>
-        <span className="text-gray-400">·</span>
-        <span className="text-[10px] sm:text-xs text-gray-500">
-          {marker.city}, {marker.province}
-        </span>
+        {formattedLocation ? (
+          <>
+            <span className="text-gray-400">·</span>
+            <span className="text-[10px] text-gray-500 sm:text-xs">
+              {formattedLocation}
+            </span>
+          </>
+        ) : null}
       </div>
-      <div className="flex w-full min-w-0 gap-2">
-        <span className="flex min-w-0 flex-1 items-center justify-center rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-900 tabular-nums">
-          {race.distanceKm} km
-        </span>
-        <span className="flex min-w-0 flex-1 items-center justify-center rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-900 tabular-nums">
-          {race.elevationGainM != null
-            ? `${race.elevationGainM} m`
-            : labels.notAvailable}
-        </span>
-      </div>
+      {event.distances.length > 0 ? (
+        <div className="flex w-full min-w-0 flex-wrap gap-1.5">
+          {event.distances.map((distance) => (
+            <span
+              key={distance.id}
+              className="inline-flex items-baseline justify-center rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-900 tabular-nums"
+            >
+              {formatDistance(distance.distanceKm, locale)} km
+            </span>
+          ))}
+        </div>
+      ) : null}
       {count > 1 ? (
         <div className="mt-3 flex w-full min-w-0 gap-0.5">
           <button
             type="button"
-            title={labels.previousRace}
+            title={labels.previousEvent}
             disabled={!canGoPrev}
             className="flex min-w-0 flex-1 items-center justify-center rounded-md py-1 text-gray-700 transition-colors focus:outline-none enabled:cursor-pointer enabled:hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-35"
             onClick={handlePrev}
@@ -222,7 +233,7 @@ function MarkerPopupBody({
           </button>
           <button
             type="button"
-            title={labels.nextRace}
+            title={labels.nextEvent}
             disabled={!canGoNext}
             className="flex min-w-0 flex-1 items-center justify-center rounded-md py-1 text-gray-700 transition-colors focus:outline-none enabled:cursor-pointer enabled:hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-35"
             onClick={handleNext}
@@ -236,7 +247,7 @@ function MarkerPopupBody({
 }
 
 interface MarkerRegistryEntry {
-  mapMarker: RaceMapMarker;
+  mapMarker: EventMapMarker;
   mlMarker: maplibregl.Marker;
   popup: maplibregl.Popup;
   root: Root;
@@ -246,7 +257,7 @@ function applyMarkerFocus(
   map: maplibregl.Map,
   registry: MarkerRegistryEntry[],
   target: MarkerRegistryEntry,
-  raceIndex: number,
+  eventIndex: number,
   locale: Locale,
   labels: MapPageLabels,
   popupKey: string,
@@ -263,7 +274,7 @@ function applyMarkerFocus(
       marker={target.mapMarker}
       locale={locale}
       labels={labels}
-      initialRaceIndex={raceIndex}
+      initialEventIndex={eventIndex}
     />,
   );
   const { longitude, latitude } = target.mapMarker;
@@ -283,7 +294,7 @@ function applyMarkerFocus(
 }
 
 export interface EventsMapProps {
-  markers: RaceMapMarker[];
+  markers: EventMapMarker[];
   locale: Locale;
   labels: MapPageLabels;
   /** When set, merged after base map container styles (include height utilities as needed). */
@@ -335,7 +346,7 @@ export function EventsMap({
           marker={marker}
           locale={locale}
           labels={labels}
-          initialRaceIndex={0}
+          initialEventIndex={0}
         />,
       );
 
@@ -352,7 +363,7 @@ export function EventsMap({
       });
 
       const mlMarker = new maplibregl.Marker({
-        element: createRaceMapMarkerElement(),
+        element: createEventMapMarkerElement(),
         anchor: 'center',
       })
         .setLngLat([marker.longitude, marker.latitude])
@@ -370,8 +381,8 @@ export function EventsMap({
       const markerEl = mlMarker.getElement();
       const handlePinClick = (e: MouseEvent): void => {
         e.stopPropagation();
-        const firstRace = marker.races[0];
-        if (!firstRace) {
+        const firstEvent = marker.events[0];
+        if (!firstEvent) {
           return;
         }
         applyMarkerFocus(

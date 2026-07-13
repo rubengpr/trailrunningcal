@@ -1,7 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import type { Locale } from '@/i18n';
 import type { PublicEventDetail } from '@/types/event.types';
-import type { RaceMapMarker, MapPageLabels } from '@/types/map.types';
+import type { EventMapMarker, MapPageLabels } from '@/types/map.types';
 import { buildFaqJsonLd, type FaqItem } from '@/lib/seo/json-ld';
 import { HeroSection } from '@/components/layout/hero-section';
 import { FaqSection } from '@/components/layout/faq-section';
@@ -15,7 +15,7 @@ interface BreadcrumbItem {
 interface CategoryMapPageProps {
   locale: Locale;
   events: PublicEventDetail[];
-  markers: RaceMapMarker[];
+  markers: EventMapMarker[];
   breadcrumbJsonLd: object;
   heroBody: string;
   heroTitleStart: string;

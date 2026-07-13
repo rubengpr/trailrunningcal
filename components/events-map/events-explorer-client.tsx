@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useFeatureFlagVariantKey } from 'posthog-js/react';
 import type { PublicEventDetail } from '@/types/event.types';
 import type { Locale } from '@/i18n';
-import type { MapPageLabels, RaceMapMarker } from '@/types/map.types';
+import type { EventMapMarker, MapPageLabels } from '@/types/map.types';
 import { EventsExplorerFiltersSection } from '@/components/events-map/events-explorer-filters-section';
 import { MobileFiltersButton } from '@/components/filters/mobile-filters-button';
 import { MobileFiltersModal } from '@/components/filters/mobile-filters-modal';
@@ -22,8 +22,8 @@ import { Search, RefreshCw, TriangleAlert } from 'lucide-react';
 import { useMinWidthLg } from '@/hooks/use-min-width-lg';
 import { useScrollEdges } from '@/hooks/use-scroll-edges';
 import { useMobileFilters } from '@/components/providers/mobile-filters-provider';
-import { filterMapMarkersByRaceIds } from '@/lib/races/home-filters';
-import { filterHomeEvents, getEventRaceIds } from '@/lib/events/utils';
+import { filterHomeEvents } from '@/lib/events/utils';
+import { filterEventMapMarkersByEventIds } from '@/lib/events/map';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { track } from '@/lib/analytics/track';
 
@@ -39,7 +39,7 @@ type FilterType = 'month' | 'province' | 'distance' | 'race_type' | 'apply';
 
 interface EventsExplorerClientProps {
   events: PublicEventDetail[];
-  markers: RaceMapMarker[];
+  markers: EventMapMarker[];
   locale: Locale;
   labels: MapPageLabels;
   showProvinceFilter?: boolean;
@@ -126,8 +126,8 @@ export function EventsExplorerClient({
   );
 
   const filteredMarkers = useMemo(() => {
-    const raceIds = getEventRaceIds(filteredEvents);
-    return filterMapMarkersByRaceIds(markers, raceIds);
+    const eventIds = new Set(filteredEvents.map(({ event }) => event.id));
+    return filterEventMapMarkersByEventIds(markers, eventIds);
   }, [filteredEvents, markers]);
 
   const activeFiltersCount =

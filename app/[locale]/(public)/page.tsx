@@ -9,7 +9,8 @@ import {
 import type { Locale } from '@/i18n';
 import { buildHomeAlternateLinks } from '@/lib/content/alternate-links';
 import { getUpcomingEvents } from '@/lib/db/events';
-import { getEventsMapData } from '@/lib/db/events-map';
+import { getEventMapLocations } from '@/lib/db/events-map';
+import { buildEventMapMarkers } from '@/lib/events/map';
 import { buildWebsiteJsonLd, buildOrganizationJsonLd } from '@/lib/seo/json-ld';
 import { buildFaqJsonLd } from '@/lib/seo/json-ld';
 import type { MapPageLabels } from '@/types/map.types';
@@ -50,17 +51,18 @@ export default async function HomePage({
   setRequestLocale(locale);
   const today = new Date().toISOString().slice(0, 10);
 
-  const [t, events, { markers }] = await Promise.all([
+  const [t, events, locations] = await Promise.all([
     getTranslations({ locale }),
     getUpcomingEvents(today),
-    getEventsMapData(),
+    getEventMapLocations(),
   ]);
+  const markers = buildEventMapMarkers(events, locations);
 
   const labels: MapPageLabels = {
-    previousRace: t('map.previousRace'),
-    nextRace: t('map.nextRace'),
+    previousEvent: t('map.previousEvent'),
+    nextEvent: t('map.nextEvent'),
     eventPageLink: t('map.eventPageLink'),
-    notAvailable: t('race.notAvailable'),
+    dateTbd: t('event.dateTbd'),
   };
 
   const websiteJsonLd = buildWebsiteJsonLd();

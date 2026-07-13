@@ -1,33 +1,35 @@
 import { getTranslations } from 'next-intl/server';
 import type { Locale } from '@/i18n';
 import { getUpcomingEvents } from '@/lib/db/events';
-import { getEventsMapData } from '@/lib/db/events-map';
-import type { MapPageLabels, RaceMapMarker } from '@/types/map.types';
+import { getEventMapLocations } from '@/lib/db/events-map';
+import { buildEventMapMarkers } from '@/lib/events/map';
+import type { EventMapMarker, MapPageLabels } from '@/types/map.types';
 import type { PublicEventDetail } from '@/types/event.types';
 
 export interface CategoryPageData {
   events: PublicEventDetail[];
-  markers: RaceMapMarker[];
+  markers: EventMapMarker[];
   labels: MapPageLabels;
   calendarLabel: string;
   year: number;
 }
 
 export async function getCategoryPageData(locale: Locale): Promise<CategoryPageData> {
-  const tNav = await getTranslations({ locale, namespace: 'navigation' });
-  const tCommon = await getTranslations({ locale });
   const year = new Date().getFullYear();
   const today = new Date().toISOString().slice(0, 10);
-  const [events, { markers }] = await Promise.all([
+  const [tNav, tCommon, events, locations] = await Promise.all([
+    getTranslations({ locale, namespace: 'navigation' }),
+    getTranslations({ locale }),
     getUpcomingEvents(today),
-    getEventsMapData(),
+    getEventMapLocations(),
   ]);
+  const markers = buildEventMapMarkers(events, locations);
 
   const labels: MapPageLabels = {
-    previousRace: tCommon('map.previousRace'),
-    nextRace: tCommon('map.nextRace'),
+    previousEvent: tCommon('map.previousEvent'),
+    nextEvent: tCommon('map.nextEvent'),
     eventPageLink: tCommon('map.eventPageLink'),
-    notAvailable: tCommon('race.notAvailable'),
+    dateTbd: tCommon('event.dateTbd'),
   };
 
   return {

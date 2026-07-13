@@ -5,7 +5,6 @@ import {
   filterHomeEvents,
   formatEventDateRange,
   formatEventLocationLabel,
-  getEventRaceIds,
   selectRecommendedEvents,
   selectRelevantEventRaces,
 } from '@/lib/events/utils';
@@ -546,21 +545,5 @@ describe('filterHomeEvents', () => {
     );
 
     expect(result.map((event) => event.event.id)).toEqual(['ultra']);
-  });
-});
-
-describe('getEventRaceIds', () => {
-  it('returns selected child race ids', () => {
-    const result = getEventRaceIds([
-      eventDetail({
-        id: 'event',
-        races: [
-          race({ id: 'one', date: '2026-07-01', distanceKm: 10 }),
-          race({ id: 'two', date: '2026-07-01', distanceKm: 20 }),
-        ],
-      }),
-    ]);
-
-    expect([...result]).toEqual(['one', 'two']);
   });
 });

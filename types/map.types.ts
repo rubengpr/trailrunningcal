@@ -1,27 +1,31 @@
-export interface RaceMapPinRace {
+import type {
+  TrailEventDateRange,
+  TrailEventLocation,
+} from '@/types/event.types';
+
+export interface EventMapPin {
   id: string;
   name: string;
-  date: string;
-  distanceKm: number;
-  elevationGainM: number | null;
-  eventSlug: string;
+  slug: string;
+  dateRange: TrailEventDateRange;
+  location: TrailEventLocation;
+  distances: Array<{ id: string; distanceKm: number }>;
 }
 
-export interface RaceMapMarker {
+export interface EventMapLocation {
   city: string;
   province: string;
   latitude: number;
   longitude: number;
-  races: RaceMapPinRace[];
 }
 
-export interface EventsMapResponse {
-  markers: RaceMapMarker[];
+export interface EventMapMarker extends EventMapLocation {
+  events: EventMapPin[];
 }
 
 export interface MapPageLabels {
-  previousRace: string;
-  nextRace: string;
+  previousEvent: string;
+  nextEvent: string;
   eventPageLink: string;
-  notAvailable: string;
+  dateTbd: string;
 }

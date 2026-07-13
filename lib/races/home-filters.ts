@@ -1,5 +1,4 @@
 import type { TrailRace } from '@/types/race.types';
-import type { RaceMapMarker } from '@/types/map.types';
 import {
   getRaceCategoryConfig,
   RACE_CATEGORY_CONFIGS,
@@ -69,16 +68,4 @@ export function filterHomeRaces(
       return selectedRaceType.some((type) => matchesRaceType(race, type as RaceType));
     })
     .map(({ race }) => race);
-}
-
-export function filterMapMarkersByRaceIds(
-  markers: RaceMapMarker[],
-  raceIds: ReadonlySet<string>,
-): RaceMapMarker[] {
-  return markers
-    .map((marker) => ({
-      ...marker,
-      races: marker.races.filter((r) => raceIds.has(r.id)),
-    }))
-    .filter((m) => m.races.length > 0);
 }

@@ -417,7 +417,3 @@ export function filterHomeEvents(
       return a.event.name.localeCompare(b.event.name);
     });
 }
-
-export function getEventRaceIds(events: PublicEventDetail[]): Set<string> {
-  return new Set(events.flatMap((eventDetail) => eventDetail.races.map((race) => race.id)));
-}
