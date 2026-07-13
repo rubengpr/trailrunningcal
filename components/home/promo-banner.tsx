@@ -106,10 +106,22 @@ export function PromoTextStrip({
   if (!isSupportedPage) return null;
 
   const content = (
-    <p className="flex min-w-0 items-center justify-center gap-1 truncate text-sm font-semibold leading-4 text-[#ffffff] sm:text-xs">
-      <span className="min-w-0 truncate">{message}</span>
-      {code && <span className="min-w-0 truncate font-bold underline">{code}</span>}
-      <ExternalLink className="size-3 shrink-0" strokeWidth={2} />
+    <p className="text-center text-xs font-normal leading-4 text-[#ffffff]">
+      <span>{message}</span>
+      {code ? (
+        <>
+          {' '}
+          <span className="inline-flex items-center gap-1 whitespace-nowrap align-[-0.125em]">
+            <span className="font-bold underline">{code}</span>
+            <ExternalLink className="size-3" strokeWidth={2} />
+          </span>
+        </>
+      ) : (
+        <ExternalLink
+          className="ml-1 inline-block size-3 align-[-0.125em]"
+          strokeWidth={2}
+        />
+      )}
     </p>
   );
 
