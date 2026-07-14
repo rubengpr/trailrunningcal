@@ -111,9 +111,14 @@ export function PromoTextStrip({
       {code ? (
         <>
           {' '}
-          <span className="inline-flex items-center gap-1 whitespace-nowrap align-[-0.125em]">
-            <span className="font-bold underline">{code}</span>
-            <ExternalLink className="size-3" strokeWidth={2} />
+          <span className="whitespace-nowrap">
+            <span className="font-semibold underline decoration-1 underline-offset-2">
+              {code}
+            </span>
+            <ExternalLink
+              className="ml-1 inline-block size-[0.9em] align-[-0.08em]"
+              strokeWidth={2}
+            />
           </span>
         </>
       ) : (
