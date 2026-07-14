@@ -34,7 +34,7 @@ const ACTIVE_SPONSOR_BY_PAGE: Record<SponsorPage, SponsorBrand | null> = {
 
 const SPONSOR_DESTINATION_URLS: Record<SponsorBrand, string> = {
   salssa: 'https://salssa.com/discount/TRC15?redirect=/ca/products/perform',
-  otso: 'https://www.otsosport.com',
+  otso: 'https://otsosport.com/',
   asics: 'https://www.asics.com/es/es-es/metafuji-campaign/',
 };
 
