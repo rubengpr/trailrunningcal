@@ -230,6 +230,15 @@
           "alt": "Promoción de OTSO para eventos de trail running"
         },
         "stickyMessage": "25% descuento en toda la tienda OTSO con el código"
+      },
+      "asics": {
+        "homepage": {
+          "alt": "Promoción de ASICS METAFUJI Trail 2"
+        },
+        "event_page": {
+          "alt": "Lanzamiento de las zapatillas ASICS METAFUJI Trail 2"
+        },
+        "stickyMessage": "Descubre el lanzamiento de las nuevas METAFUJI™ TRAIL 2 de ASICS"
       }
     }
   },

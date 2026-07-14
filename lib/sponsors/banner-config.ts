@@ -1,6 +1,6 @@
 export type SponsorPage = 'homepage' | 'event_page';
 export type SponsorBannerType = 'image_banner' | 'sticky_banner';
-export type SponsorBrand = 'salssa' | 'otso';
+export type SponsorBrand = 'salssa' | 'otso' | 'asics';
 
 export interface SponsorImage {
   src: string;
@@ -29,12 +29,13 @@ const FEATURE_FLAG_VARIANT_TO_BANNER_TYPE: Record<string, SponsorBannerType> = {
 // Manual rollout switch. Set a page to a sponsor brand and redeploy to activate it.
 const ACTIVE_SPONSOR_BY_PAGE: Record<SponsorPage, SponsorBrand | null> = {
   homepage: 'salssa',
-  event_page: null,
+  event_page: 'asics',
 };
 
 const SPONSOR_DESTINATION_URLS: Record<SponsorBrand, string> = {
   salssa: 'https://salssa.com/discount/TRC15?redirect=/ca/products/perform',
   otso: 'https://www.otsosport.com',
+  asics: 'https://www.asics.com/es/es-es/metafuji-campaign/',
 };
 
 const SPONSOR_CODES: Partial<Record<SponsorBrand, string>> = {
@@ -45,6 +46,7 @@ const SPONSOR_CODES: Partial<Record<SponsorBrand, string>> = {
 const SPONSOR_STICKY_COLORS: Record<SponsorBrand, string> = {
   salssa: '#812b33',
   otso: '#FF4713',
+  asics: '#001e62',
 };
 
 const SPONSOR_IMAGES: Record<
@@ -106,6 +108,32 @@ const SPONSOR_IMAGES: Record<
         src: '/assets/sponsors/otso-event-mobile.jpg',
         width: 900,
         height: 112,
+      },
+    },
+  },
+  asics: {
+    homepage: {
+      desktop: {
+        src: '/assets/sponsors/asics.png',
+        width: 1800,
+        height: 300,
+      },
+      mobile: {
+        src: '/assets/sponsors/asics.png',
+        width: 1800,
+        height: 300,
+      },
+    },
+    event_page: {
+      desktop: {
+        src: '/assets/sponsors/asics.png',
+        width: 1800,
+        height: 300,
+      },
+      mobile: {
+        src: '/assets/sponsors/asics.png',
+        width: 1800,
+        height: 300,
       },
     },
   },

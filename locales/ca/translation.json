@@ -230,6 +230,15 @@
           "alt": "Promoció d'OTSO per a esdeveniments de trail running"
         },
         "stickyMessage": "Descompte per a corredors de trail running a OTSO amb el codi"
+      },
+      "asics": {
+        "homepage": {
+          "alt": "Promoció de les ASICS METAFUJI Trail 2"
+        },
+        "event_page": {
+          "alt": "Llançament de les sabatilles ASICS METAFUJI Trail 2"
+        },
+        "stickyMessage": "Descobreix el llançament de les noves METAFUJI™ TRAIL 2 d'ASICS"
       }
     }
   },

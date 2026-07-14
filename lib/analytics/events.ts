@@ -129,14 +129,14 @@ export interface AnalyticsEventProperties {
     race_slug?: string;
   };
   [ANALYTICS_EVENTS.SPONSOR_BANNER_CLICKED]: {
-    brand: 'salssa' | 'otso';
+    brand: 'salssa' | 'otso' | 'asics';
     page: 'homepage' | 'event_page';
     banner_type: 'image_banner' | 'sticky_banner';
     locale: string;
     destination_url: string;
   };
   [ANALYTICS_EVENTS.SPONSOR_BANNER_IMPRESSION]: {
-    brand: 'salssa' | 'otso';
+    brand: 'salssa' | 'otso' | 'asics';
     page: 'homepage' | 'event_page';
     banner_type: 'image_banner' | 'sticky_banner';
     locale: string;
