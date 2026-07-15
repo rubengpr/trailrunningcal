@@ -212,6 +212,10 @@
     "announcement": "2 mesos gratuïts de TRC Pro amb el codi",
     "code": "TRC2M",
     "otsoHomepageAlt": "Promoció d'OTSO per a corredors de trail running",
+    "preview": {
+      "alt": "Banner promocional de {brand}",
+      "stickyMessage": "15% de descompte a {brand} amb el codi"
+    },
     "sponsors": {
       "salssa": {
         "homepage": {

@@ -40,6 +40,9 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
+# Local sponsor mockups — never commit or deploy prospect assets
+/public/assets/sponsors/previews/
+
 # env files (can opt-in for committing if needed)
 .env*
 

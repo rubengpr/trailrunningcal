@@ -13,6 +13,7 @@ import {
   type SponsorBannerConfig,
   type SponsorPage,
 } from '@/lib/sponsors/banner-config';
+import { getSponsorPreviewConfig } from '@/lib/sponsors/preview-config';
 import type { Locale } from '@/i18n';
 
 interface SponsorBannerSlotProps {
@@ -44,6 +45,14 @@ export function SponsorBannerSlot({
   const posthogVariant = useFeatureFlagVariantKey(SPONSOR_BANNER_FLAG_KEY);
   const impressionTrackedRef = useRef(false);
   const bannerRef = useRef<HTMLDivElement>(null);
+  const previewConfig = useMemo(
+    () =>
+      getSponsorPreviewConfig({
+        page,
+        bannerType: bannerType ?? 'image_banner',
+      }),
+    [page, bannerType],
+  );
   const config = useMemo(
     () => getSponsorBannerConfig({ page, posthogVariant }),
     [page, posthogVariant],
@@ -54,7 +63,7 @@ export function SponsorBannerSlot({
   }, [config?.brand, config?.page, config?.bannerType]);
 
   useEffect(() => {
-    if (!config || impressionTrackedRef.current) return;
+    if (previewConfig || !config || impressionTrackedRef.current) return;
 
     const bannerElement = bannerRef.current;
     if (!bannerElement) return;
@@ -85,7 +94,7 @@ export function SponsorBannerSlot({
     observer.observe(bannerElement);
 
     return () => observer.disconnect();
-  }, [config, locale]);
+  }, [config, locale, previewConfig]);
 
   const handleClick = useCallback(() => {
     if (!config) return;
@@ -94,6 +103,33 @@ export function SponsorBannerSlot({
       getAnalyticsProperties(config, locale),
     );
   }, [config, locale]);
+
+  if (previewConfig) {
+    return (
+      <div>
+        {previewConfig.bannerType === 'image_banner' ? (
+          <PromoBanner
+            alt={tBanner('preview.alt', { brand: previewConfig.brand })}
+            className={className}
+            desktopImage={previewConfig.image}
+            mobileImage={previewConfig.image}
+            href={previewConfig.destinationUrl}
+            isVisible
+          />
+        ) : (
+          <PromoTextStrip
+            message={tBanner('preview.stickyMessage', {
+              brand: previewConfig.brand,
+            })}
+            backgroundColor={previewConfig.stickyColor}
+            code="TRC15"
+            href={previewConfig.destinationUrl}
+            isVisible
+          />
+        )}
+      </div>
+    );
+  }
 
   if (!config) return null;
   if (bannerType && config.bannerType !== bannerType) return null;
