@@ -27,7 +27,6 @@ function toRacePayload(race: EventRaceWriteInput): Record<string, unknown> {
     elevation_gain_m: race.elevationGainM,
     tiers: race.tiers.map((tier) => ({
       price_eur: tier.priceEur,
-      starts_at: tier.startsAt,
       ends_at: tier.endsAt,
     })),
   };

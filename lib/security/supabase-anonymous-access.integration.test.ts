@@ -30,7 +30,7 @@ integrationDescribe('anonymous Supabase access', () => {
         .limit(1),
       supabase
         .from('races')
-        .select('id, name, date, distance_km, elevation_gain_m, city, province, map_url, event_id, race_tiers ( starts_at, ends_at, price_eur )')
+        .select('id, name, date, distance_km, elevation_gain_m, city, province, map_url, event_id, race_tiers ( ends_at, price_eur )')
         .limit(1),
       supabase
         .from('city_locations')

@@ -77,16 +77,13 @@ export function toTrailEventRace(row: EventRaceRow): TrailEventRace {
         ? []
         : [{
             ...(typeof tier.id === 'string' ? { id: tier.id } : {}),
-            startsAt: tier.starts_at ?? null,
             endsAt: tier.ends_at ?? null,
             priceEur: tier.price_eur,
           }],
     )
-    .sort((a, b) => {
-      const aDate = a.startsAt ?? a.endsAt ?? '9999-12-31';
-      const bDate = b.startsAt ?? b.endsAt ?? '9999-12-31';
-      return aDate.localeCompare(bDate);
-    });
+    .sort((a, b) =>
+      (a.endsAt ?? '9999-12-31').localeCompare(b.endsAt ?? '9999-12-31'),
+    );
 
   return {
     id: row.id,
@@ -189,7 +186,7 @@ export const getEventsForAdmin = cache(
           city,
           province,
           map_url,
-          race_tiers ( id, starts_at, ends_at, price_eur )
+          race_tiers ( id, ends_at, price_eur )
         )
       `,
       )
@@ -241,7 +238,7 @@ export async function getEventsForOrganizer(
         city,
         province,
         map_url,
-        race_tiers ( id, starts_at, ends_at, price_eur )
+        race_tiers ( id, ends_at, price_eur )
       )
     `,
     )
@@ -476,7 +473,7 @@ export const getEventBySlug = cache(async function getEventBySlug(
       city,
       province,
       map_url,
-      race_tiers ( starts_at, ends_at, price_eur )
+      race_tiers ( ends_at, price_eur )
     `,
     )
     .eq('event_id', event.id);
@@ -535,7 +532,7 @@ export async function getEventByIdForAdmin(
       city,
       province,
       map_url,
-      race_tiers ( id, starts_at, ends_at, price_eur )
+      race_tiers ( id, ends_at, price_eur )
     `,
     )
     .eq('event_id', event.id);

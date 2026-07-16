@@ -146,9 +146,8 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
       province: race.province,
       distanceKm: race.distanceKm,
       elevationGainM: race.elevationGainM,
-      tiers: race.tiers.map(({ priceEur, startsAt, endsAt }) => ({
+      tiers: race.tiers.map(({ priceEur, endsAt }) => ({
         priceEur,
-        startsAt,
         endsAt,
       })),
     }));

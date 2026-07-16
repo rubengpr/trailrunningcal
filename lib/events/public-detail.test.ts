@@ -27,7 +27,6 @@ describe('toPublicEventDetail', () => {
         tiers: [{
           id: 'tier-id',
           priceEur: 30,
-          startsAt: null,
           endsAt: null,
         }],
       }],

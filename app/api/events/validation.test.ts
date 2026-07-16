@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
+import { ValidationError } from '@/lib/errors';
 import { parseEventInput, parseEventPatchInput } from './validation';
+
+type PatchMode = 'update-races' | 'insert-races';
 
 function body(tiers: unknown): Record<string, unknown> {
   return {
@@ -20,56 +23,109 @@ function body(tiers: unknown): Record<string, unknown> {
   };
 }
 
+function parseTiers(tiers: unknown, mode?: PatchMode) {
+  if (mode) {
+    return parseEventPatchInput({ ...body(tiers), mode }).races[0].tiers;
+  }
+
+  return parseEventInput(body(tiers)).races[0].tiers;
+}
+
+function expectValidationError(
+  callback: () => unknown,
+  message: string,
+): void {
+  let thrown: unknown;
+
+  try {
+    callback();
+  } catch (error) {
+    thrown = error;
+  }
+
+  expect(thrown).toBeInstanceOf(ValidationError);
+  expect(thrown).toMatchObject({ message, status: 400 });
+}
+
 describe('event race tier validation', () => {
-  it('accepts no tiers, a default price, and dated tiers', () => {
-    expect(parseEventInput(body([])).races[0].tiers).toEqual([]);
-    expect(
-      parseEventInput(body([{
-        priceEur: 0,
-        startsAt: null,
-        endsAt: null,
-      }])).races[0].tiers,
-    ).toEqual([{ priceEur: 0, startsAt: null, endsAt: null }]);
-    expect(
-      parseEventPatchInput({
-        ...body([{
-          priceEur: 35,
-          startsAt: '2026-09-01',
-          endsAt: '2026-12-31',
-        }]),
-        mode: 'update-races',
-      }).races[0].tiers,
-    ).toEqual([{
+  it('accepts no tiers and free or paid single tiers', () => {
+    expect(parseTiers([])).toEqual([]);
+    expect(parseTiers([{
+      priceEur: 0,
+      startsAt: null,
+      endsAt: null,
+    }])).toEqual([{ priceEur: 0, endsAt: null }]);
+    expect(parseTiers([{
       priceEur: 35,
-      startsAt: '2026-09-01',
-      endsAt: '2026-12-31',
+      endsAt: '2027-05-01',
+    }])).toEqual([{
+      priceEur: 35,
+      endsAt: '2027-05-01',
+    }]);
+  });
+
+  it.each<PatchMode | undefined>([
+    undefined,
+    'update-races',
+    'insert-races',
+  ])('accepts ordered deadline tiers for mode %#', (mode) => {
+    expect(parseTiers([
+      { priceEur: 35, endsAt: '2027-01-31' },
+      { priceEur: 40, endsAt: '2027-02-28' },
+    ], mode)).toEqual([
+      { priceEur: 35, endsAt: '2027-01-31' },
+      { priceEur: 40, endsAt: '2027-02-28' },
+    ]);
+  });
+
+  it('tolerates and discards a legacy startsAt field', () => {
+    expect(parseTiers([{
+      priceEur: 35,
+      startsAt: 'not-a-date',
+      endsAt: null,
+    }])).toEqual([{
+      priceEur: 35,
+      endsAt: null,
     }]);
   });
 
   it('accepts five tiers and rejects six tiers', () => {
-    const tier = { priceEur: 35, startsAt: null, endsAt: null };
+    const tiers = Array.from({ length: 5 }, (_, index) => ({
+      priceEur: 35 + index,
+      endsAt: `2027-0${index + 1}-28`,
+    }));
 
-    expect(parseEventInput(body(Array.from({ length: 5 }, () => tier))).races[0].tiers)
-      .toHaveLength(5);
-    expect(() => parseEventInput(body(Array.from({ length: 6 }, () => tier))))
-      .toThrow('Too many tiers');
-    expect(() => parseEventPatchInput({
-      ...body(Array.from({ length: 6 }, () => tier)),
-      mode: 'insert-races',
-    })).toThrow('Too many tiers');
+    expect(parseTiers(tiers)).toHaveLength(5);
+    expectValidationError(
+      () => parseTiers([
+        ...tiers,
+        { priceEur: 40, endsAt: '2027-06-28' },
+      ], 'insert-races'),
+      'Too many tiers',
+    );
   });
 
   it.each([
     [undefined, 'Invalid tiers'],
     [{}, 'Invalid tiers'],
     [[{ startsAt: null, endsAt: null }], 'Invalid tier price'],
-    [[{ priceEur: 10.5, startsAt: null, endsAt: null }], 'Invalid tier price'],
-    [[{ priceEur: -1, startsAt: null, endsAt: null }], 'Invalid tier price'],
-    [[{ priceEur: 10000, startsAt: null, endsAt: null }], 'Invalid tier price'],
-    [[{ priceEur: 20, startsAt: '2026-09-01', endsAt: null }], 'Invalid tier date range'],
-    [[{ priceEur: 20, startsAt: '2026-02-30', endsAt: '2026-03-01' }], 'Invalid tier date'],
-    [[{ priceEur: 20, startsAt: '2026-12-31', endsAt: '2026-09-01' }], 'Invalid tier date range'],
-  ])('rejects invalid tiers %#', (tiers, message) => {
-    expect(() => parseEventInput(body(tiers))).toThrow(message);
+    [[{ priceEur: 10.5, endsAt: null }], 'Invalid tier price'],
+    [[{ priceEur: -1, endsAt: null }], 'Invalid tier price'],
+    [[{ priceEur: 10000, endsAt: null }], 'Invalid tier price'],
+    [[{ priceEur: 20, endsAt: '2027-02-30' }], 'Invalid tier date'],
+    [[
+      { priceEur: 20, endsAt: '2027-01-31' },
+      { priceEur: 25, endsAt: null },
+    ], 'Tier deadline required'],
+    [[
+      { priceEur: 20, endsAt: '2027-01-31' },
+      { priceEur: 25, endsAt: '2027-01-31' },
+    ], 'Tier deadlines must be strictly increasing'],
+    [[
+      { priceEur: 20, endsAt: '2027-02-28' },
+      { priceEur: 25, endsAt: '2027-01-31' },
+    ], 'Tier deadlines must be strictly increasing'],
+  ])('rejects invalid tiers with HTTP 400 metadata %#', (tiers, message) => {
+    expectValidationError(() => parseTiers(tiers), message as string);
   });
 });

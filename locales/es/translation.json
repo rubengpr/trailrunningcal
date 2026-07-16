@@ -1023,11 +1023,10 @@
       "elevationGainM": "Desnivel (m)",
       "tiers": {
         "title": "Precios de inscripción",
-        "description": "Añade un precio único o varios precios por fechas. Máximo {count} precios por carrera.",
+        "description": "Añade un precio único o varios precios con fechas límite inclusivas y en orden. Máximo {count} precios por carrera.",
         "add": "Añadir precio",
         "empty": "No hay precios añadidos.",
         "price": "Precio (€)",
-        "startsAt": "Desde",
         "endsAt": "Hasta",
         "remove": "Eliminar precio"
       },
@@ -1045,8 +1044,9 @@
         "elevation": "El desnivel debe ser un número entero válido",
         "tierLimit": "Cada carrera puede tener un máximo de 5 precios",
         "tierPrice": "El precio debe ser un número entero entre 0 y 9999 €",
-        "tierDates": "Indica las dos fechas del precio o deja ambas vacías",
-        "tierDateOrder": "La fecha de inicio del precio no puede ser posterior a la fecha de fin",
+        "tierDeadlineRequired": "Indica una fecha límite para cada precio cuando haya más de uno",
+        "tierDeadline": "La fecha límite debe ser válida",
+        "tierDeadlineOrder": "Las fechas límite deben ser únicas y estar ordenadas de menor a mayor",
         "save": "Error al guardar el evento"
       }
     }

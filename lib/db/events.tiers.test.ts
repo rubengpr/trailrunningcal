@@ -15,25 +15,21 @@ describe('toTrailEventRace tiers', () => {
         {
           id: 'tier-final',
           price_eur: 45,
-          starts_at: null,
           ends_at: null,
         },
         {
           id: 'tier-null',
           price_eur: null,
-          starts_at: null,
           ends_at: null,
         },
         {
           id: 'tier-two',
           price_eur: 40,
-          starts_at: '2027-01-01',
           ends_at: '2027-03-31',
         },
         {
           id: 'tier-one',
           price_eur: 35,
-          starts_at: '2026-09-01',
           ends_at: '2026-12-31',
         },
       ],
@@ -43,19 +39,16 @@ describe('toTrailEventRace tiers', () => {
       {
         id: 'tier-one',
         priceEur: 35,
-        startsAt: '2026-09-01',
         endsAt: '2026-12-31',
       },
       {
         id: 'tier-two',
         priceEur: 40,
-        startsAt: '2027-01-01',
         endsAt: '2027-03-31',
       },
       {
         id: 'tier-final',
         priceEur: 45,
-        startsAt: null,
         endsAt: null,
       },
     ]);
@@ -72,14 +65,12 @@ describe('toTrailEventRace tiers', () => {
       province: 'Barcelona',
       race_tiers: [{
         price_eur: 35,
-        starts_at: '2026-09-01',
         ends_at: '2026-12-31',
       }],
     });
 
     expect(race.tiers).toEqual([{
       priceEur: 35,
-      startsAt: '2026-09-01',
       endsAt: '2026-12-31',
     }]);
   });

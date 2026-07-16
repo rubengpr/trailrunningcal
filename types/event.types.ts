@@ -24,20 +24,17 @@ export type EventRaceRow = {
 
 export interface EventRaceTierRow {
   id?: string;
-  starts_at?: string | null;
   ends_at?: string | null;
   price_eur: number | null;
 }
 
 export interface EventRaceTier {
   id?: string;
-  startsAt: string | null;
   endsAt: string | null;
   priceEur: number;
 }
 
 export interface EventRaceTierWriteInput {
-  startsAt: string | null;
   endsAt: string | null;
   priceEur: number;
 }

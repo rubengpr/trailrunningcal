@@ -40,10 +40,9 @@ const input = {
     tiers: [
       {
         priceEur: 35,
-        startsAt: '2026-09-01',
         endsAt: '2026-12-31',
       },
-      { priceEur: 40, startsAt: null, endsAt: null },
+      { priceEur: 40, endsAt: '2027-03-31' },
     ],
   }],
 };
@@ -58,10 +57,9 @@ const expectedRacePayload = {
   tiers: [
     {
       price_eur: 35,
-      starts_at: '2026-09-01',
       ends_at: '2026-12-31',
     },
-    { price_eur: 40, starts_at: null, ends_at: null },
+    { price_eur: 40, ends_at: '2027-03-31' },
   ],
 };
 

@@ -4,6 +4,10 @@ import { Plus, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { NumberInput } from '@/components/ui/number-input';
 import { MAX_RACE_TIERS } from '@/lib/events/constants';
+import {
+  validateRaceTierSchedule,
+  type RaceTierScheduleValidationError,
+} from '@/lib/events/tier-validation';
 import type {
   EventRaceTier,
   EventRaceTierWriteInput,
@@ -12,15 +16,10 @@ import type {
 export interface RaceTierDraft {
   id?: string;
   priceEur: string;
-  startsAt: string;
   endsAt: string;
 }
 
-export type RaceTierValidationError =
-  | 'tierLimit'
-  | 'tierPrice'
-  | 'tierDates'
-  | 'tierDateOrder';
+export type RaceTierValidationError = RaceTierScheduleValidationError;
 
 interface RaceTierFieldsProps {
   idPrefix: string;
@@ -31,61 +30,36 @@ interface RaceTierFieldsProps {
 
 const inputClass =
   'h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-400 disabled:cursor-not-allowed disabled:opacity-50';
-const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
-
 export function emptyRaceTierDraft(): RaceTierDraft {
   return {
     priceEur: '',
-    startsAt: '',
     endsAt: '',
   };
 }
 
 export function toRaceTierDrafts(tiers: EventRaceTier[]): RaceTierDraft[] {
-  return tiers.map((tier) => ({
-    id: tier.id,
-    priceEur: String(tier.priceEur),
-    startsAt: tier.startsAt ?? '',
-    endsAt: tier.endsAt ?? '',
-  }));
-}
-
-function isValidIsoDate(value: string): boolean {
-  if (!ISO_DATE_PATTERN.test(value)) return false;
-
-  const [year, month, day] = value.split('-').map(Number);
-  const date = new Date(Date.UTC(year, month - 1, day));
-  return (
-    date.getUTCFullYear() === year &&
-    date.getUTCMonth() === month - 1 &&
-    date.getUTCDate() === day
-  );
+  return [...tiers]
+    .sort((a, b) =>
+      (a.endsAt ?? '9999-12-31').localeCompare(b.endsAt ?? '9999-12-31'),
+    )
+    .map((tier) => ({
+      id: tier.id,
+      priceEur: String(tier.priceEur),
+      endsAt: tier.endsAt ?? '',
+    }));
 }
 
 export function validateRaceTierDrafts(
   tiers: RaceTierDraft[],
 ): RaceTierValidationError | null {
-  if (tiers.length > MAX_RACE_TIERS) return 'tierLimit';
-
-  for (const tier of tiers) {
-    if (!/^\d+$/.test(tier.priceEur)) return 'tierPrice';
-
-    const priceEur = Number(tier.priceEur);
-    if (!Number.isInteger(priceEur) || priceEur < 0 || priceEur > 9999) {
-      return 'tierPrice';
-    }
-
-    const hasStart = tier.startsAt.length > 0;
-    const hasEnd = tier.endsAt.length > 0;
-    if (hasStart !== hasEnd) return 'tierDates';
-    if (!hasStart || !hasEnd) continue;
-    if (!isValidIsoDate(tier.startsAt) || !isValidIsoDate(tier.endsAt)) {
-      return 'tierDates';
-    }
-    if (tier.startsAt > tier.endsAt) return 'tierDateOrder';
-  }
-
-  return null;
+  return validateRaceTierSchedule(
+    tiers.map((tier) => ({
+      priceEur: /^\d+$/.test(tier.priceEur)
+        ? Number(tier.priceEur)
+        : Number.NaN,
+      endsAt: tier.endsAt || null,
+    })),
+  );
 }
 
 export function toRaceTierWriteInputs(
@@ -93,7 +67,6 @@ export function toRaceTierWriteInputs(
 ): EventRaceTierWriteInput[] {
   return tiers.map((tier) => ({
     priceEur: Number(tier.priceEur),
-    startsAt: tier.startsAt || null,
     endsAt: tier.endsAt || null,
   }));
 }
@@ -108,7 +81,7 @@ export function RaceTierFields({
 
   const updateTier = (
     index: number,
-    field: keyof Pick<RaceTierDraft, 'priceEur' | 'startsAt' | 'endsAt'>,
+    field: keyof Pick<RaceTierDraft, 'priceEur' | 'endsAt'>,
     value: string,
   ): void => {
     onChange(
@@ -151,7 +124,7 @@ export function RaceTierFields({
           {tiers.map((tier, index) => (
             <div
               key={tier.id ?? `new-tier-${index}`}
-              className="grid gap-3 rounded-md border border-gray-200 bg-white p-3 sm:grid-cols-[minmax(7rem,0.75fr)_minmax(9rem,1fr)_minmax(9rem,1fr)_2.5rem] sm:items-end"
+              className="grid gap-3 rounded-md border border-gray-200 bg-white p-3 sm:grid-cols-[minmax(7rem,0.75fr)_minmax(9rem,1fr)_2.5rem] sm:items-end"
             >
               <label className="flex flex-col gap-1 text-xs font-medium text-gray-600">
                 {t('price')}
@@ -166,19 +139,6 @@ export function RaceTierFields({
                   disabled={disabled}
                   onChange={(event) =>
                     updateTier(index, 'priceEur', event.target.value)
-                  }
-                />
-              </label>
-              <label className="flex flex-col gap-1 text-xs font-medium text-gray-600">
-                {t('startsAt')}
-                <input
-                  id={`${idPrefix}-tier-start-${index}`}
-                  type="date"
-                  className={inputClass}
-                  value={tier.startsAt}
-                  disabled={disabled}
-                  onChange={(event) =>
-                    updateTier(index, 'startsAt', event.target.value)
                   }
                 />
               </label>

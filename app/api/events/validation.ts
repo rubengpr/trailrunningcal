@@ -1,6 +1,10 @@
 import { ValidationError } from '@/lib/errors';
+import {
+  isValidRaceTierDate,
+  validateRaceTierSchedule,
+  type RaceTierScheduleValidationError,
+} from '@/lib/events/tier-validation';
 import { normalizeRaceName } from '@/lib/races/utils';
-import { MAX_RACE_TIERS } from '@/lib/events/constants';
 import type { EventRaceTierWriteInput } from '@/types/event.types';
 import type {
   TrailEventAgentEvent,
@@ -99,23 +103,11 @@ function parseRaceName(value: unknown): string | null {
   return normalizeRaceName(value);
 }
 
-const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
-
 function parseTierDate(value: unknown): string | null {
   const parsed = parseNullableString(value);
   if (parsed === null) return null;
 
-  if (!ISO_DATE_PATTERN.test(parsed)) {
-    throw new ValidationError('Invalid tier date', 400);
-  }
-
-  const [year, month, day] = parsed.split('-').map(Number);
-  const date = new Date(Date.UTC(year, month - 1, day));
-  if (
-    date.getUTCFullYear() !== year ||
-    date.getUTCMonth() !== month - 1 ||
-    date.getUTCDate() !== day
-  ) {
+  if (!isValidRaceTierDate(parsed)) {
     throw new ValidationError('Invalid tier date', 400);
   }
 
@@ -127,45 +119,43 @@ function parseTier(value: unknown): EventRaceTierWriteInput {
     throw new ValidationError('Invalid tier', 400);
   }
 
-  const { priceEur, startsAt, endsAt } = value as Record<string, unknown>;
-  if (
-    typeof priceEur !== 'number' ||
-    !Number.isInteger(priceEur) ||
-    priceEur < 0 ||
-    priceEur > 9999
-  ) {
+  const { priceEur, endsAt } = value as Record<string, unknown>;
+  if (typeof priceEur !== 'number') {
     throw new ValidationError('Invalid tier price', 400);
   }
 
-  const parsedStartsAt = parseTierDate(startsAt);
   const parsedEndsAt = parseTierDate(endsAt);
-  if ((parsedStartsAt === null) !== (parsedEndsAt === null)) {
-    throw new ValidationError('Invalid tier date range', 400);
-  }
-  if (
-    parsedStartsAt !== null &&
-    parsedEndsAt !== null &&
-    parsedStartsAt > parsedEndsAt
-  ) {
-    throw new ValidationError('Invalid tier date range', 400);
-  }
 
   return {
     priceEur,
-    startsAt: parsedStartsAt,
     endsAt: parsedEndsAt,
   };
 }
+
+const TIER_VALIDATION_MESSAGES: Record<
+  RaceTierScheduleValidationError,
+  string
+> = {
+  tierLimit: 'Too many tiers',
+  tierPrice: 'Invalid tier price',
+  tierDeadlineRequired: 'Tier deadline required',
+  tierDeadline: 'Invalid tier date',
+  tierDeadlineOrder: 'Tier deadlines must be strictly increasing',
+};
 
 function parseTiers(value: unknown): EventRaceTierWriteInput[] {
   if (!Array.isArray(value)) {
     throw new ValidationError('Invalid tiers', 400);
   }
-  if (value.length > MAX_RACE_TIERS) {
-    throw new ValidationError('Too many tiers', 400);
+
+  const tiers = value.map(parseTier);
+  const validationError = validateRaceTierSchedule(tiers);
+
+  if (validationError) {
+    throw new ValidationError(TIER_VALIDATION_MESSAGES[validationError], 400);
   }
 
-  return value.map(parseTier);
+  return tiers;
 }
 
 function parseRace(value: unknown, allowId = false): ParsedEventRaceInput {

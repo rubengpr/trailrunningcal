@@ -87,7 +87,6 @@ const updateBody = {
       elevationGainM: 900,
       tiers: [{
         priceEur: 35,
-        startsAt: '2026-09-01',
         endsAt: '2026-12-31',
       }],
     },
@@ -145,6 +144,28 @@ describe('PATCH /api/organizer/events/[eventId]', () => {
 
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toEqual({ error: 'Invalid mode' });
+    expect(mocks.updateOrganizerEventWithRaces).not.toHaveBeenCalled();
+  });
+
+  it('returns the existing error envelope for an invalid tier schedule', async () => {
+    const response = await PATCH(
+      request({
+        ...updateBody,
+        races: [{
+          ...updateBody.races[0],
+          tiers: [
+            { priceEur: 35, endsAt: '2027-01-31' },
+            { priceEur: 40, endsAt: null },
+          ],
+        }],
+      }),
+      context,
+    );
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({
+      error: 'Tier deadline required',
+    });
     expect(mocks.updateOrganizerEventWithRaces).not.toHaveBeenCalled();
   });
 

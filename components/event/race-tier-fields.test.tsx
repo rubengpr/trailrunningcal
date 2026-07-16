@@ -53,37 +53,41 @@ describe('RaceTierFields', () => {
   it('hydrates existing tiers and converts them back to write inputs', () => {
     const drafts = toRaceTierDrafts([
       {
-        id: 'tier-1',
-        priceEur: 35,
-        startsAt: '2026-09-01',
-        endsAt: '2026-12-31',
-      },
-      {
         id: 'tier-2',
         priceEur: 40,
-        startsAt: null,
-        endsAt: null,
+        endsAt: '2027-03-31',
+      },
+      {
+        id: 'tier-1',
+        priceEur: 35,
+        endsAt: '2026-12-31',
       },
     ]);
 
     render(<Harness initial={drafts} />);
 
     expect(screen.getAllByLabelText('price')).toHaveLength(2);
+    expect(screen.queryByLabelText('startsAt')).toBeNull();
+    expect(screen.getAllByLabelText('endsAt')[0]).toHaveProperty(
+      'value',
+      '2026-12-31',
+    );
     expect(toRaceTierWriteInputs(drafts)).toEqual([
       {
         priceEur: 35,
-        startsAt: '2026-09-01',
         endsAt: '2026-12-31',
       },
-      { priceEur: 40, startsAt: null, endsAt: null },
+      { priceEur: 40, endsAt: '2027-03-31' },
     ]);
+    expect(toRaceTierWriteInputs([
+      { priceEur: '0', endsAt: '' },
+    ])).toEqual([{ priceEur: 0, endsAt: null }]);
   });
 
   it('disables adding at five tiers and re-enables it after removal', () => {
     const initial = Array.from({ length: MAX_RACE_TIERS }, (_, index) => ({
       id: `tier-${index}`,
       priceEur: String(30 + index),
-      startsAt: '',
       endsAt: '',
     }));
 
@@ -99,31 +103,66 @@ describe('RaceTierFields', () => {
     fireEvent.click(addButton);
     expect(screen.getAllByLabelText('price')).toHaveLength(MAX_RACE_TIERS);
   });
+
+  it('preserves the remaining deadline when a tier is removed', () => {
+    render(<Harness initial={[
+      { id: 'tier-1', priceEur: '35', endsAt: '2027-01-31' },
+      { id: 'tier-2', priceEur: '40', endsAt: '2027-02-28' },
+    ]} />);
+
+    fireEvent.click(screen.getAllByTitle('remove')[0]);
+
+    expect(screen.getByLabelText('endsAt')).toHaveProperty(
+      'value',
+      '2027-02-28',
+    );
+  });
 });
 
-describe('race tier limit translations', () => {
-  it('defines the limit error in Spanish and Catalan', () => {
+describe('race tier translations', () => {
+  it('defines the helper and deadline errors in Spanish and Catalan', () => {
+    expect(es.adminEvents.form.tiers.description).toContain('inclusivas');
+    expect(ca.adminEvents.form.tiers.description).toContain('inclusives');
     expect(es.adminEvents.form.errors.tierLimit).toContain('5');
     expect(ca.adminEvents.form.errors.tierLimit).toContain('5');
+    expect(es.adminEvents.form.errors.tierDeadlineRequired).toContain(
+      'fecha límite',
+    );
+    expect(ca.adminEvents.form.errors.tierDeadlineRequired).toContain(
+      'data límit',
+    );
+    expect(es.adminEvents.form.errors.tierDeadline).toContain('válida');
+    expect(ca.adminEvents.form.errors.tierDeadline).toContain('vàlida');
+    expect(es.adminEvents.form.errors.tierDeadlineOrder).toContain('únicas');
+    expect(ca.adminEvents.form.errors.tierDeadlineOrder).toContain('úniques');
   });
 });
 
 describe('validateRaceTierDrafts', () => {
-  it('accepts zero, multiple tiers, and optional date pairs', () => {
+  it('accepts zero, single tiers, and ordered deadline tiers', () => {
+    expect(validateRaceTierDrafts([])).toBeNull();
+    expect(validateRaceTierDrafts([{ priceEur: '0', endsAt: '' }])).toBeNull();
     expect(validateRaceTierDrafts([
-      { priceEur: '0', startsAt: '', endsAt: '' },
+      { priceEur: '35', endsAt: '2026-12-31' },
       {
-        priceEur: '35',
-        startsAt: '2026-09-01',
-        endsAt: '2026-12-31',
+        priceEur: '40',
+        endsAt: '2027-03-31',
       },
     ])).toBeNull();
+  });
+
+  it('accepts five ascending deadline tiers', () => {
+    const tiers = Array.from({ length: MAX_RACE_TIERS }, (_, index) => ({
+      priceEur: String(30 + index),
+      endsAt: `2027-0${index + 1}-28`,
+    }));
+
+    expect(validateRaceTierDrafts(tiers)).toBeNull();
   });
 
   it('rejects more than five tiers', () => {
     const tiers = Array.from({ length: MAX_RACE_TIERS + 1 }, () => ({
       priceEur: '35',
-      startsAt: '',
       endsAt: '',
     }));
 
@@ -131,13 +170,23 @@ describe('validateRaceTierDrafts', () => {
   });
 
   it.each([
-    [{ priceEur: '', startsAt: '', endsAt: '' }, 'tierPrice'],
-    [{ priceEur: '10.5', startsAt: '', endsAt: '' }, 'tierPrice'],
-    [{ priceEur: '10000', startsAt: '', endsAt: '' }, 'tierPrice'],
-    [{ priceEur: '20', startsAt: '2026-09-01', endsAt: '' }, 'tierDates'],
-    [{ priceEur: '20', startsAt: '2026-02-30', endsAt: '2026-03-01' }, 'tierDates'],
-    [{ priceEur: '20', startsAt: '2026-12-31', endsAt: '2026-09-01' }, 'tierDateOrder'],
-  ])('returns the expected validation error %#', (tier, error) => {
-    expect(validateRaceTierDrafts([tier])).toBe(error);
+    [[{ priceEur: '', endsAt: '' }], 'tierPrice'],
+    [[{ priceEur: '10.5', endsAt: '' }], 'tierPrice'],
+    [[{ priceEur: '10000', endsAt: '' }], 'tierPrice'],
+    [[{ priceEur: '20', endsAt: '2026-02-30' }], 'tierDeadline'],
+    [[
+      { priceEur: '20', endsAt: '2026-12-31' },
+      { priceEur: '25', endsAt: '' },
+    ], 'tierDeadlineRequired'],
+    [[
+      { priceEur: '20', endsAt: '2026-12-31' },
+      { priceEur: '25', endsAt: '2026-12-31' },
+    ], 'tierDeadlineOrder'],
+    [[
+      { priceEur: '20', endsAt: '2027-03-31' },
+      { priceEur: '25', endsAt: '2026-12-31' },
+    ], 'tierDeadlineOrder'],
+  ])('returns the expected validation error %#', (tiers, error) => {
+    expect(validateRaceTierDrafts(tiers)).toBe(error);
   });
 });
