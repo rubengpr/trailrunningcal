@@ -8,6 +8,13 @@ import { Plus, Trash2 } from 'lucide-react';
 import { FormInput } from '@/components/ui/form-input';
 import { FormTextarea } from '@/components/ui/form-textarea';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
+import {
+  RaceTierFields,
+  toRaceTierDrafts,
+  toRaceTierWriteInputs,
+  validateRaceTierDrafts,
+} from '@/components/event/race-tier-fields';
+import type { RaceTierDraft } from '@/components/event/race-tier-fields';
 import { useModal } from '@/hooks/use-modal';
 import {
   acceptScrapedEvent,
@@ -26,7 +33,10 @@ interface RaceDraft {
   province: string;
   distanceKm: string;
   elevationGainM: string;
+  tiers: RaceTierDraft[];
 }
+
+type RaceTextField = Exclude<keyof RaceDraft, 'tiers'>;
 
 const emptyRace = (): RaceDraft => ({
   name: '',
@@ -35,6 +45,7 @@ const emptyRace = (): RaceDraft => ({
   province: '',
   distanceKm: '',
   elevationGainM: '',
+  tiers: [],
 });
 
 function toRaceDrafts(initialData: TrailEventDetail | null): RaceDraft[] {
@@ -50,6 +61,7 @@ function toRaceDrafts(initialData: TrailEventDetail | null): RaceDraft[] {
     province: race.province,
     distanceKm: String(race.distanceKm),
     elevationGainM: race.elevationGainM != null ? String(race.elevationGainM) : '',
+    tiers: toRaceTierDrafts(race.tiers),
   }));
 }
 
@@ -90,12 +102,20 @@ export function EventForm({
 
   const updateRace = (
     index: number,
-    field: keyof RaceDraft,
+    field: RaceTextField,
     value: string,
   ): void => {
     setRaces((current) =>
       current.map((race, raceIndex) =>
         raceIndex === index ? { ...race, [field]: value } : race,
+      ),
+    );
+  };
+
+  const updateRaceTiers = (index: number, tiers: RaceTierDraft[]): void => {
+    setRaces((current) =>
+      current.map((race, raceIndex) =>
+        raceIndex === index ? { ...race, tiers } : race,
       ),
     );
   };
@@ -131,6 +151,8 @@ export function EventForm({
       ) {
         return t('errors.elevation');
       }
+      const tierError = validateRaceTierDrafts(race.tiers);
+      if (tierError) return t(`errors.${tierError}`);
     }
 
     return null;
@@ -155,6 +177,7 @@ export function EventForm({
         province: race.province.trim(),
         distanceKm: Number(race.distanceKm),
         elevationGainM: parseOptionalInteger(race.elevationGainM),
+        tiers: toRaceTierWriteInputs(race.tiers),
       }));
 
       if (isEditMode && eventId) {
@@ -312,6 +335,12 @@ export function EventForm({
                 onChange={(e) => updateRace(index, 'elevationGainM', e.target.value)}
               />
             </div>
+            <RaceTierFields
+              idPrefix={`race-${index}`}
+              tiers={race.tiers}
+              disabled={isSaving}
+              onChange={(tiers) => updateRaceTiers(index, tiers)}
+            />
           </div>
         ))}
       </div>

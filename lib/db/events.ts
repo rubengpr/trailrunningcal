@@ -15,6 +15,7 @@ import type {
   TrailEvent,
   TrailEventDetail,
   TrailEventRace,
+  EventRaceTier,
 } from '@/types/event.types';
 import { buildEventDetail, toPublicEventDetail } from '@/lib/events/utils';
 import { getPendingDraftsByEventIds } from '@/lib/db/event-drafts';
@@ -48,6 +49,14 @@ function getEventRaceRows(races: unknown): EventRaceRow[] {
   return races.filter(isEventRaceRow);
 }
 
+function toEventDetails(rows: EventWithRacesRow[]): TrailEventDetail[] {
+  return rows.map((row) => {
+    const event = toTrailEvent(row);
+    const races = getEventRaceRows(row.races).map(toTrailEventRace);
+    return buildEventDetail(event, races);
+  });
+}
+
 export function toTrailEvent(row: EventRow): TrailEvent {
   return {
     id: row.id,
@@ -62,6 +71,23 @@ export function toTrailEvent(row: EventRow): TrailEvent {
 }
 
 export function toTrailEventRace(row: EventRaceRow): TrailEventRace {
+  const tiers = (row.race_tiers ?? [])
+    .flatMap<EventRaceTier>((tier) =>
+      tier.price_eur === null
+        ? []
+        : [{
+            ...(typeof tier.id === 'string' ? { id: tier.id } : {}),
+            startsAt: tier.starts_at ?? null,
+            endsAt: tier.ends_at ?? null,
+            priceEur: tier.price_eur,
+          }],
+    )
+    .sort((a, b) => {
+      const aDate = a.startsAt ?? a.endsAt ?? '9999-12-31';
+      const bDate = b.startsAt ?? b.endsAt ?? '9999-12-31';
+      return aDate.localeCompare(bDate);
+    });
+
   return {
     id: row.id,
     name: row.name,
@@ -71,7 +97,7 @@ export function toTrailEventRace(row: EventRaceRow): TrailEventRace {
     city: row.city,
     province: row.province,
     mapUrl: row.map_url ?? null,
-    priceEur: row.race_tiers ?? null,
+    tiers,
   };
 }
 
@@ -87,12 +113,7 @@ export const getEvents = cache(async function getEvents(): Promise<
     return [];
   }
 
-  return (data as EventWithRacesRow[]).map((row) => {
-    const event = toTrailEvent(row);
-    const raceRows = getEventRaceRows(row.races);
-    const races = raceRows.map(toTrailEventRace);
-    return buildEventDetail(event, races);
-  });
+  return toEventDetails(data as EventWithRacesRow[]);
 });
 
 export const getUpcomingEvents = cache(async function getUpcomingEvents(
@@ -146,7 +167,40 @@ export const getUpcomingEvents = cache(async function getUpcomingEvents(
 
 export const getEventsForAdmin = cache(
   async function getEventsForAdmin(): Promise<AdminTrailEventDetail[]> {
-    const events = await getEvents();
+    const supabase = createAdminClient();
+    const { data, error } = await supabase
+      .from('events')
+      .select(
+        `
+        id,
+        name,
+        slug,
+        website_url,
+        organizer_id,
+        description,
+        hero_image_filename,
+        updated_at,
+        races (
+          id,
+          name,
+          date,
+          distance_km,
+          elevation_gain_m,
+          city,
+          province,
+          map_url,
+          race_tiers ( id, starts_at, ends_at, price_eur )
+        )
+      `,
+      )
+      .order('name');
+
+    if (error || !data) {
+      console.error('Failed to fetch events for admin:', error);
+      return [];
+    }
+
+    const events = toEventDetails(data as EventWithRacesRow[]);
     const drafts = await getPendingDraftsByEventIds(
       events.map(({ event }) => event.id),
     );
@@ -187,7 +241,7 @@ export async function getEventsForOrganizer(
         city,
         province,
         map_url,
-        race_tiers ( price_eur )
+        race_tiers ( id, starts_at, ends_at, price_eur )
       )
     `,
     )
@@ -422,7 +476,7 @@ export const getEventBySlug = cache(async function getEventBySlug(
       city,
       province,
       map_url,
-      race_tiers ( price_eur )
+      race_tiers ( starts_at, ends_at, price_eur )
     `,
     )
     .eq('event_id', event.id);
@@ -481,7 +535,7 @@ export async function getEventByIdForAdmin(
       city,
       province,
       map_url,
-      race_tiers ( price_eur )
+      race_tiers ( id, starts_at, ends_at, price_eur )
     `,
     )
     .eq('event_id', event.id);

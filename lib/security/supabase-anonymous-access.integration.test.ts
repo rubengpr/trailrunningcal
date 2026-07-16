@@ -30,7 +30,7 @@ integrationDescribe('anonymous Supabase access', () => {
         .limit(1),
       supabase
         .from('races')
-        .select('id, name, date, distance_km, elevation_gain_m, city, province, map_url, event_id, race_tiers ( price_eur )')
+        .select('id, name, date, distance_km, elevation_gain_m, city, province, map_url, event_id, race_tiers ( starts_at, ends_at, price_eur )')
         .limit(1),
       supabase
         .from('city_locations')
@@ -72,7 +72,7 @@ integrationDescribe('anonymous Supabase access', () => {
       supabase.from('organizers').select('owner_id').limit(1),
       supabase.from('events').select('created_at').limit(1),
       supabase.from('races').select('organizer_id, created_at, updated_at').limit(1),
-      supabase.from('race_tiers').select('id, starts_at, ends_at').limit(1),
+      supabase.from('race_tiers').select('id').limit(1),
     ]);
 
     for (const result of results) {

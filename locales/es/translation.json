@@ -1021,6 +1021,16 @@
       "province": "Provincia",
       "distanceKm": "Distancia (km)",
       "elevationGainM": "Desnivel (m)",
+      "tiers": {
+        "title": "Precios de inscripción",
+        "description": "Añade un precio único o varios precios por fechas. Máximo {count} precios por carrera.",
+        "add": "Añadir precio",
+        "empty": "No hay precios añadidos.",
+        "price": "Precio (€)",
+        "startsAt": "Desde",
+        "endsAt": "Hasta",
+        "remove": "Eliminar precio"
+      },
       "save": "Guardar evento",
       "saving": "Guardando...",
       "cancel": "Cancelar",
@@ -1033,6 +1043,10 @@
         "province": "La provincia es obligatoria",
         "distance": "La distancia debe ser un número válido",
         "elevation": "El desnivel debe ser un número entero válido",
+        "tierLimit": "Cada carrera puede tener un máximo de 5 precios",
+        "tierPrice": "El precio debe ser un número entero entre 0 y 9999 €",
+        "tierDates": "Indica las dos fechas del precio o deja ambas vacías",
+        "tierDateOrder": "La fecha de inicio del precio no puede ser posterior a la fecha de fin",
         "save": "Error al guardar el evento"
       }
     }

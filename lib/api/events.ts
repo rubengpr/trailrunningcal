@@ -16,7 +16,12 @@ import type {
   EventImportRequest,
   EventImportResult,
 } from '@/types/events-import-api.types';
-import type { PublicEventDetail, TrailEvent, TrailEventDetail } from '@/types/event.types';
+import type {
+  EventRaceTierWriteInput,
+  PublicEventDetail,
+  TrailEvent,
+  TrailEventDetail,
+} from '@/types/event.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 import type { PageStats } from '@/types/races-scrape-api.types';
 import type {
@@ -27,6 +32,7 @@ import type {
 export type EventRaceWriteInput = Omit<TrailEventAgentRace, 'name'> & {
   name: string | null;
   id?: string;
+  tiers?: EventRaceTierWriteInput[];
 };
 
 export interface TrailEventAgentRunResult {

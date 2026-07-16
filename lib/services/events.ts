@@ -1,7 +1,10 @@
 import { createAdminClient, createClient } from '@/lib/supabase/server';
 import { ValidationError } from '@/lib/errors';
 import { getEventByIdForAdmin, getEventByIdForOrganizer } from '@/lib/db/events';
-import type { TrailEventDetail } from '@/types/event.types';
+import type {
+  EventRaceTierWriteInput,
+  TrailEventDetail,
+} from '@/types/event.types';
 import type {
   TrailEventAgentEvent,
   TrailEventAgentRace,
@@ -10,7 +13,25 @@ import type {
 export type EventRaceWriteInput = Omit<TrailEventAgentRace, 'name'> & {
   name: string | null;
   id?: string;
+  tiers: EventRaceTierWriteInput[];
 };
+
+function toRacePayload(race: EventRaceWriteInput): Record<string, unknown> {
+  return {
+    ...(race.id ? { id: race.id } : {}),
+    name: race.name,
+    date: race.date,
+    city: race.city,
+    province: race.province,
+    distance_km: race.distanceKm,
+    elevation_gain_m: race.elevationGainM,
+    tiers: race.tiers.map((tier) => ({
+      price_eur: tier.priceEur,
+      starts_at: tier.startsAt,
+      ends_at: tier.endsAt,
+    })),
+  };
+}
 
 export interface EventWithRacesInput {
   event: TrailEventAgentEvent;
@@ -33,14 +54,7 @@ export async function createEventWithRaces(
       description: input.event.description,
       website_url: input.event.websiteUrl,
     },
-    p_races: input.races.map((race) => ({
-      name: race.name,
-      date: race.date,
-      city: race.city,
-      province: race.province,
-      distance_km: race.distanceKm,
-      elevation_gain_m: race.elevationGainM,
-    })),
+    p_races: input.races.map(toRacePayload),
   });
 
   if (error || !data) {
@@ -64,15 +78,7 @@ export async function updateEventWithRaces(
       description: input.event.description,
       website_url: input.event.websiteUrl,
     },
-    p_races: input.races.map((race) => ({
-      id: race.id ?? null,
-      name: race.name,
-      date: race.date,
-      city: race.city,
-      province: race.province,
-      distance_km: race.distanceKm,
-      elevation_gain_m: race.elevationGainM,
-    })),
+    p_races: input.races.map(toRacePayload),
   });
 
   if (error || !data) {
@@ -112,15 +118,7 @@ export async function updateOrganizerEventWithRaces(
       description: input.event.description,
       website_url: input.event.websiteUrl,
     },
-    p_races: input.races.map((race) => ({
-      id: race.id ?? null,
-      name: race.name,
-      date: race.date,
-      city: race.city,
-      province: race.province,
-      distance_km: race.distanceKm,
-      elevation_gain_m: race.elevationGainM,
-    })),
+    p_races: input.races.map(toRacePayload),
   });
 
   if (error || !data) {
@@ -162,14 +160,7 @@ export async function createEventEdition(
       description: input.event.description,
       website_url: input.event.websiteUrl,
     },
-    p_races: input.races.map((race) => ({
-      name: race.name,
-      date: race.date,
-      city: race.city,
-      province: race.province,
-      distance_km: race.distanceKm,
-      elevation_gain_m: race.elevationGainM,
-    })),
+    p_races: input.races.map(toRacePayload),
   });
 
   if (error || !data) {

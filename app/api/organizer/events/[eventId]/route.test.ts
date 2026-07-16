@@ -49,6 +49,7 @@ const previousDetail = {
       province: 'Barcelona',
       distanceKm: 21,
       elevationGainM: 900,
+      tiers: [],
     },
   ],
   allRaceCount: 1,
@@ -84,6 +85,11 @@ const updateBody = {
       province: 'Barcelona',
       distanceKm: 21,
       elevationGainM: 900,
+      tiers: [{
+        priceEur: 35,
+        startsAt: '2026-09-01',
+        endsAt: '2026-12-31',
+      }],
     },
   ],
 };

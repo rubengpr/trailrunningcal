@@ -821,7 +821,7 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                         ? normalizeUrl(reviewedWebsiteUrl)
                         : scrapedEvent.websiteUrl,
                 },
-                scrapedRaces,
+                scrapedRaces.map((race) => ({ ...race, tiers: [] })),
             );
             dispatch({ type: 'RACE_ACCEPT', index: 0 });
             toast.success(t('results.acceptSuccess'));

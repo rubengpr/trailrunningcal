@@ -19,7 +19,7 @@ function race(
     city: 'Bagà',
     province: 'Barcelona',
     mapUrl: null,
-    priceEur: null,
+    tiers: [],
     ...overrides,
   };
 }

@@ -989,6 +989,16 @@
       "province": "Província",
       "distanceKm": "Distància (km)",
       "elevationGainM": "Desnivell (m)",
+      "tiers": {
+        "title": "Preus d’inscripció",
+        "description": "Afegeix un preu únic o diversos preus per dates. Màxim {count} preus per cursa.",
+        "add": "Afegir preu",
+        "empty": "No hi ha preus afegits.",
+        "price": "Preu (€)",
+        "startsAt": "Des de",
+        "endsAt": "Fins a",
+        "remove": "Eliminar preu"
+      },
       "save": "Desar esdeveniment",
       "saving": "Desant...",
       "cancel": "Cancel·lar",
@@ -1001,6 +1011,10 @@
         "province": "La província és obligatòria",
         "distance": "La distància ha de ser un número vàlid",
         "elevation": "El desnivell ha de ser un número enter vàlid",
+        "tierLimit": "Cada cursa pot tenir un màxim de 5 preus",
+        "tierPrice": "El preu ha de ser un número enter entre 0 i 9999 €",
+        "tierDates": "Indica les dues dates del preu o deixa-les totes dues buides",
+        "tierDateOrder": "La data d’inici del preu no pot ser posterior a la data de fi",
         "save": "Error en desar l’esdeveniment"
       }
     }

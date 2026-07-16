@@ -146,6 +146,11 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
       province: race.province,
       distanceKm: race.distanceKm,
       elevationGainM: race.elevationGainM,
+      tiers: race.tiers.map(({ priceEur, startsAt, endsAt }) => ({
+        priceEur,
+        startsAt,
+        endsAt,
+      })),
     }));
   }, [eventToEdit]);
 
@@ -502,6 +507,7 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
           if (!isSavingEdit) setEventToEdit(null);
         }}
         onSave={handleSaveEdit}
+        showTiers
       />
 
       {reviewEventDetail && reviewDraft && (

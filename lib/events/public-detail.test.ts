@@ -24,7 +24,12 @@ describe('toPublicEventDetail', () => {
         city: 'Barcelona',
         province: 'Barcelona',
         mapUrl: 'https://example.com/private-map',
-        priceEur: [{ price_eur: 30 }],
+        tiers: [{
+          id: 'tier-id',
+          priceEur: 30,
+          startsAt: null,
+          endsAt: null,
+        }],
       }],
       allRaceCount: 2,
       dateRange: { startDate: '2027-05-01', endDate: '2027-05-01' },

@@ -5,6 +5,13 @@ import { useTranslations } from 'next-intl';
 import { Plus, Trash2 } from 'lucide-react';
 import { BaseModal } from '@/components/ui/base-modal';
 import { NumberInput } from '@/components/ui/number-input';
+import {
+  RaceTierFields,
+  toRaceTierDrafts,
+  toRaceTierWriteInputs,
+  validateRaceTierDrafts,
+} from '@/components/event/race-tier-fields';
+import type { RaceTierDraft } from '@/components/event/race-tier-fields';
 import type { EventRaceWriteInput } from '@/lib/api/events';
 import type { TrailEventAgentEvent } from '@/types/trail-event-agent.types';
 
@@ -16,6 +23,7 @@ interface EventRacesEditModalProps {
   isSaving?: boolean;
   saveLabel?: string;
   savingLabel?: string;
+  showTiers?: boolean;
   onClose: () => void;
   onSave: (
     event: TrailEventAgentEvent,
@@ -30,8 +38,9 @@ type EventRacesEditModalContentProps = Omit<
   event: TrailEventAgentEvent;
 };
 
-type ModalRaceDraft = Omit<EventRaceWriteInput, 'distanceKm'> & {
+type ModalRaceDraft = Omit<EventRaceWriteInput, 'distanceKm' | 'tiers'> & {
   distanceKm: string;
+  tierDrafts: RaceTierDraft[];
 };
 
 const inputClass =
@@ -46,6 +55,7 @@ function emptyRaceDraft(): ModalRaceDraft {
     province: '',
     distanceKm: '',
     elevationGainM: null,
+    tierDrafts: [],
   };
 }
 
@@ -91,6 +101,7 @@ export function EventRacesEditModal({
   isSaving = false,
   saveLabel,
   savingLabel,
+  showTiers = false,
   onClose,
   onSave,
 }: EventRacesEditModalProps): React.ReactElement {
@@ -106,6 +117,7 @@ export function EventRacesEditModal({
       isSaving={isSaving}
       saveLabel={saveLabel}
       savingLabel={savingLabel}
+      showTiers={showTiers}
       onClose={onClose}
       onSave={onSave}
     />
@@ -119,6 +131,7 @@ function EventRacesEditModalContent({
   isSaving = false,
   saveLabel,
   savingLabel,
+  showTiers = false,
   onClose,
   onSave,
 }: EventRacesEditModalContentProps): React.ReactElement {
@@ -131,6 +144,12 @@ function EventRacesEditModalContent({
     () => races.map((race) => ({
       ...race,
       distanceKm: String(race.distanceKm),
+      tierDrafts: toRaceTierDrafts(
+        race.tiers?.map((tier, index) => ({
+          id: `tier-${index}`,
+          ...tier,
+        })) ?? [],
+      ),
     })),
   );
   const [error, setError] = useState('');
@@ -147,7 +166,8 @@ function EventRacesEditModalContent({
   };
 
   const addRaceDraft = (): void => {
-    setRaceDrafts((drafts) => [...drafts, emptyRaceDraft()]);
+    const race = emptyRaceDraft();
+    setRaceDrafts((drafts) => [...drafts, race]);
   };
 
   const removeRaceDraft = (index: number): void => {
@@ -173,11 +193,26 @@ function EventRacesEditModalContent({
       }
     }
 
+    if (showTiers) {
+      for (const race of raceDrafts) {
+        const tierError = validateRaceTierDrafts(race.tierDrafts);
+        if (tierError) {
+          setError(formT(`errors.${tierError}`));
+          return;
+        }
+      }
+    }
+
     setError('');
-    const racesToSave: EventRaceWriteInput[] = raceDrafts.map((race) => ({
-      ...race,
-      distanceKm: Number(race.distanceKm),
-    }));
+    const racesToSave: EventRaceWriteInput[] = raceDrafts.map(
+      ({ tierDrafts, ...race }) => ({
+        ...race,
+        distanceKm: Number(race.distanceKm),
+        ...(showTiers
+          ? { tiers: toRaceTierWriteInputs(tierDrafts) }
+          : {}),
+      }),
+    );
 
     void onSave(eventDraft, racesToSave);
   };
@@ -382,6 +417,18 @@ function EventRacesEditModalContent({
                     />
                   </div>
                 </div>
+                {showTiers ? (
+                  <div className="mt-4">
+                    <RaceTierFields
+                      idPrefix={`modal-race-${index}`}
+                      tiers={race.tierDrafts}
+                      disabled={isSaving}
+                      onChange={(tierDrafts) =>
+                        updateRaceDraft(index, { ...race, tierDrafts })
+                      }
+                    />
+                  </div>
+                ) : null}
               </div>
             ))}
           </div>

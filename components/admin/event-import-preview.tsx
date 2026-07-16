@@ -54,6 +54,7 @@ function toPreviewRace(
     elevationGainM: race.elevationGainM,
     city: race.city,
     province: race.province,
+    tiers: [],
   };
 }
 

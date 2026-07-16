@@ -2,13 +2,18 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   rpc: vi.fn(),
+  adminOrder: vi.fn(),
   getPendingDraftsByEventIds: vi.fn(),
 }));
 
 vi.mock('react', () => ({ cache: <T>(callback: T): T => callback }));
 vi.mock('@/lib/supabase/server', () => ({
   createStaticClient: () => ({ rpc: mocks.rpc }),
-  createAdminClient: vi.fn(),
+  createAdminClient: () => ({
+    from: () => ({
+      select: () => ({ order: mocks.adminOrder }),
+    }),
+  }),
 }));
 vi.mock('@/lib/db/event-drafts', () => ({
   getPendingDraftsByEventIds: mocks.getPendingDraftsByEventIds,
@@ -77,6 +82,33 @@ describe('event list visibility', () => {
       updatedAt: '2026-06-19T00:00:00.000Z',
     };
     mocks.getPendingDraftsByEventIds.mockResolvedValue([pendingDraft]);
+    mocks.adminOrder.mockResolvedValue({
+      data: [
+        {
+          id: EVENT_ID_WITH_DRAFT,
+          name: 'Event With Draft',
+          slug: 'event-with-draft',
+          website_url: 'https://example.com/with-draft',
+          organizer_id: null,
+          description: null,
+          hero_image_filename: null,
+          updated_at: null,
+          races: [],
+        },
+        {
+          id: EVENT_ID_WITHOUT_DRAFT,
+          name: 'Event Without Draft',
+          slug: 'event-without-draft',
+          website_url: 'https://example.com/without-draft',
+          organizer_id: null,
+          description: null,
+          hero_image_filename: null,
+          updated_at: null,
+          races: [],
+        },
+      ],
+      error: null,
+    });
 
     const publicEvents = await getEvents();
 

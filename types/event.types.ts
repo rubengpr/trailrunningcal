@@ -19,8 +19,28 @@ export type EventRaceRow = {
   city: string;
   province: string;
   map_url?: string | null;
-  race_tiers?: Array<{ price_eur: number | null }> | null;
+  race_tiers?: EventRaceTierRow[] | null;
 };
+
+export interface EventRaceTierRow {
+  id?: string;
+  starts_at?: string | null;
+  ends_at?: string | null;
+  price_eur: number | null;
+}
+
+export interface EventRaceTier {
+  id?: string;
+  startsAt: string | null;
+  endsAt: string | null;
+  priceEur: number;
+}
+
+export interface EventRaceTierWriteInput {
+  startsAt: string | null;
+  endsAt: string | null;
+  priceEur: number;
+}
 
 export interface TrailEvent {
   id: string;
@@ -42,7 +62,7 @@ export interface TrailEventRace {
   city: string;
   province: string;
   mapUrl?: string | null;
-  priceEur?: Array<{ price_eur: number | null }> | null;
+  tiers: EventRaceTier[];
 }
 
 export interface TrailEventDateRange {

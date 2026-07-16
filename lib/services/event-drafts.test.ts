@@ -392,6 +392,7 @@ describe('acceptEventDraft', () => {
           province: 'Barcelona',
           distanceKm: 21,
           elevationGainM: 900,
+          tiers: [],
         },
       ],
       allRaceCount: 1,
