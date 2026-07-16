@@ -30,17 +30,21 @@ type EventRacesEditModalContentProps = Omit<
   event: TrailEventAgentEvent;
 };
 
+type ModalRaceDraft = Omit<EventRaceWriteInput, 'distanceKm'> & {
+  distanceKm: string;
+};
+
 const inputClass =
   'w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-400';
 const labelClass = 'text-xs font-medium text-gray-600';
 
-function emptyRaceDraft(): EventRaceWriteInput {
+function emptyRaceDraft(): ModalRaceDraft {
   return {
     name: null,
     date: null,
     city: '',
     province: '',
-    distanceKm: 0,
+    distanceKm: '',
     elevationGainM: null,
   };
 }
@@ -122,13 +126,18 @@ function EventRacesEditModalContent({
   const [eventDraft, setEventDraft] = useState<TrailEventAgentEvent>(
     () => ({ ...event }),
   );
-  const [raceDrafts, setRaceDrafts] = useState<EventRaceWriteInput[]>(
-    () => races.map((race) => ({ ...race })),
+  const formT = useTranslations('adminEvents.form');
+  const [raceDrafts, setRaceDrafts] = useState<ModalRaceDraft[]>(
+    () => races.map((race) => ({
+      ...race,
+      distanceKm: String(race.distanceKm),
+    })),
   );
+  const [error, setError] = useState('');
 
   const updateRaceDraft = (
     index: number,
-    race: EventRaceWriteInput,
+    race: ModalRaceDraft,
   ): void => {
     setRaceDrafts((drafts) =>
       drafts.map((draft, draftIndex) => (
@@ -152,7 +161,25 @@ function EventRacesEditModalContent({
   const handleSave = (): void => {
     if (isSaving) return;
 
-    void onSave(eventDraft, raceDrafts);
+    for (const race of raceDrafts) {
+      const distanceKm = Number(race.distanceKm);
+      if (
+        !Number.isFinite(distanceKm) ||
+        distanceKm <= 0 ||
+        distanceKm >= 1000
+      ) {
+        setError(formT('errors.distance'));
+        return;
+      }
+    }
+
+    setError('');
+    const racesToSave: EventRaceWriteInput[] = raceDrafts.map((race) => ({
+      ...race,
+      distanceKm: Number(race.distanceKm),
+    }));
+
+    void onSave(eventDraft, racesToSave);
   };
 
   return (
@@ -294,7 +321,7 @@ function EventRacesEditModalContent({
                       onChange={(e) =>
                         updateRaceDraft(index, {
                           ...race,
-                          distanceKm: Number.parseFloat(e.target.value) || 0,
+                          distanceKm: e.target.value,
                         })
                       }
                     />
@@ -359,6 +386,12 @@ function EventRacesEditModalContent({
             ))}
           </div>
         </section>
+
+        {error ? (
+          <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {error}
+          </p>
+        ) : null}
 
         <div className="flex justify-end gap-2">
           <button
