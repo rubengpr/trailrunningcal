@@ -135,6 +135,12 @@
       "successMessage": "Evento reclamado correctamente"
     },
     "provincePageLinkText": "Ver todos los eventos en {province}",
+    "pricing": {
+      "close": "Cerrar",
+      "free": "Gratis",
+      "title": "Precios",
+      "until": "hasta {date}"
+    },
     "racesTitle": "Distancias",
     "elevationRatioTooltip": "Media de desnivel acumulado por kilómetro",
     "share": {

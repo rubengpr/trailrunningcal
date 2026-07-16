@@ -135,6 +135,12 @@
       "successMessage": "Esdeveniment reclamat correctament"
     },
     "provincePageLinkText": "Veure tots els esdeveniments a {province}",
+    "pricing": {
+      "close": "Tancar",
+      "free": "Gratuïta",
+      "title": "Preus",
+      "until": "fins al {date}"
+    },
     "racesTitle": "Distàncies",
     "elevationRatioTooltip": "Mitjana de desnivell acumulat per quilòmetre",
     "share": {

@@ -18,6 +18,7 @@ export const ANALYTICS_EVENTS = {
   RACE_ORGANIZER_CLAIM_CLICKED: 'race_organizer_claim_clicked',
   RACE_ORGANIZER_SOCIAL_CLICKED: 'race_organizer_social_clicked',
   RACE_OFFICIAL_WEBSITE_CLICKED: 'race_official_website_clicked',
+  RACE_TIERS_OPENED: 'race_tiers_opened',
   RACE_CATEGORY_LINK_CLICKED: 'race_category_link_clicked',
   RACE_PROVINCE_INLINE_CLICKED: 'race_province_inline_clicked',
   RACE_PROVINCE_LINK_CLICKED: 'race_province_link_clicked',
@@ -109,6 +110,11 @@ export interface AnalyticsEventProperties {
   [ANALYTICS_EVENTS.RACE_OFFICIAL_WEBSITE_CLICKED]: {
     race_id: string;
     race_slug: string;
+  };
+  [ANALYTICS_EVENTS.RACE_TIERS_OPENED]: {
+    race_id: string;
+    surface: 'desktop_popover' | 'mobile_modal';
+    tier_count: number;
   };
   [ANALYTICS_EVENTS.RACE_CATEGORY_LINK_CLICKED]: {
     race_id: string;
