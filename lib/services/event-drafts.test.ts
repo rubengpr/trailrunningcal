@@ -76,6 +76,7 @@ function extractedRace(
     province: 'Barcelona',
     distanceKm: 21,
     elevationGainM: 900,
+    tiers: [],
     ...overrides,
   };
 }
@@ -147,7 +148,13 @@ afterEach(() => {
 
 describe('generateEventDraft', () => {
   it('persists successful extraction as a pending draft', async () => {
-    const result = importResult();
+    const result = importResult({
+      races: [
+        extractedRace({
+          tiers: [{ priceEur: 25, endsAt: null }],
+        }),
+      ],
+    });
     const createdDraft = draft({
       event: result.event!,
       races: result.races,

@@ -17,6 +17,10 @@ const draftData = {
       province: 'Barcelona',
       distanceKm: 21,
       elevationGainM: 900,
+      tiers: [
+        { priceEur: 35, endsAt: '2027-01-31' },
+        { priceEur: 45, endsAt: '2027-02-28' },
+      ],
     },
   ],
 };
@@ -30,6 +34,27 @@ describe('parseDraftActionInput', () => {
     expect(
       parseDraftActionInput({ action: 'update', data: draftData }),
     ).toEqual({ action: 'update', data: draftData });
+  });
+
+  it('normalizes legacy draft races without tiers', () => {
+    const legacyData = {
+      ...draftData,
+      races: draftData.races.map((race) => {
+        const legacyRace: Partial<typeof race> = { ...race };
+        delete legacyRace.tiers;
+        return legacyRace;
+      }),
+    };
+
+    const parsed = parseDraftActionInput({
+      action: 'update',
+      data: legacyData,
+    });
+
+    expect(parsed).toMatchObject({
+      action: 'update',
+      data: { races: [{ tiers: [] }] },
+    });
   });
 
   it('rejects an invalid action', () => {

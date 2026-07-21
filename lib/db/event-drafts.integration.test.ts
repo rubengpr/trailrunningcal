@@ -10,6 +10,42 @@ const integrationDescribe = RUN_INTEGRATION_TESTS ? describe : describe.skip;
 
 let supabase: SupabaseClient;
 const eventIds: string[] = [];
+const invalidTierSchedules: Array<{ label: string; tiers: unknown[] }> = [
+  {
+    label: 'six tiers',
+    tiers: Array.from({ length: 6 }, (_, index) => ({
+      priceEur: 20 + index,
+      endsAt: `2027-0${index + 1}-01`,
+    })),
+  },
+  { label: 'a missing price', tiers: [{ endsAt: null }] },
+  { label: 'a decimal price', tiers: [{ priceEur: 20.5, endsAt: null }] },
+  {
+    label: 'a missing multi-tier deadline',
+    tiers: [
+      { priceEur: 20, endsAt: '2027-04-01' },
+      { priceEur: 30, endsAt: null },
+    ],
+  },
+  {
+    label: 'an invalid deadline',
+    tiers: [{ priceEur: 20, endsAt: '2027-02-30' }],
+  },
+  {
+    label: 'duplicate deadlines',
+    tiers: [
+      { priceEur: 20, endsAt: '2027-05-01' },
+      { priceEur: 30, endsAt: '2027-05-01' },
+    ],
+  },
+  {
+    label: 'descending deadlines',
+    tiers: [
+      { priceEur: 20, endsAt: '2027-05-01' },
+      { priceEur: 30, endsAt: '2027-04-01' },
+    ],
+  },
+];
 
 function projectRefFromUrl(url: string): string {
   return new URL(url).hostname.split('.')[0] ?? '';
@@ -39,7 +75,17 @@ async function createEventFixture(label: string): Promise<string> {
 async function createDraftFixture(
   eventId: string,
   distanceKm: number | string,
+  tiers?: unknown,
 ): Promise<string> {
+  const race = {
+    name: 'Integration Race 21K',
+    date: '2027-05-01',
+    city: 'Barcelona',
+    province: 'Barcelona',
+    distanceKm,
+    elevationGainM: 900,
+    ...(tiers === undefined ? {} : { tiers }),
+  };
   const { data, error } = await supabase
     .from('event_drafts')
     .insert({
@@ -51,16 +97,7 @@ async function createDraftFixture(
           websiteUrl: 'https://example.com/updated',
           description: 'Updated description',
         },
-        races: [
-          {
-            name: 'Integration Race 21K',
-            date: '2027-05-01',
-            city: 'Barcelona',
-            province: 'Barcelona',
-            distanceKm,
-            elevationGainM: 900,
-          },
-        ],
+        races: [race],
       },
     })
     .select('id')
@@ -149,6 +186,124 @@ integrationDescribe('accept_event_draft integration', () => {
     expect(draftResult.data).toEqual({ status: 'accepted' });
   });
 
+  it('inserts zero, one, and five tiers', async () => {
+    const eventId = await createEventFixture('Tier schedules');
+    const fiveTiers = [
+      { priceEur: 10, endsAt: '2027-01-01' },
+      { priceEur: 20, endsAt: '2027-02-01' },
+      { priceEur: 30, endsAt: '2027-03-01' },
+      { priceEur: 40, endsAt: '2027-04-01' },
+      { priceEur: 50, endsAt: '2027-05-01' },
+    ];
+    const { data: draft, error: draftError } = await supabase
+      .from('event_drafts')
+      .insert({
+        event_id: eventId,
+        status: 'pending',
+        data: {
+          event: {
+            name: 'Tier schedule event',
+            websiteUrl: 'https://example.com/tiers',
+            description: null,
+          },
+          races: [
+            {
+              name: 'No price',
+              date: '2027-05-01',
+              city: 'Barcelona',
+              province: 'Barcelona',
+              distanceKm: 10,
+              elevationGainM: 300,
+              tiers: [],
+            },
+            {
+              name: 'One price',
+              date: '2027-05-01',
+              city: 'Barcelona',
+              province: 'Barcelona',
+              distanceKm: 21,
+              elevationGainM: 900,
+              tiers: [{ priceEur: 25, endsAt: null }],
+            },
+            {
+              name: 'Five prices',
+              date: '2027-05-01',
+              city: 'Barcelona',
+              province: 'Barcelona',
+              distanceKm: 42,
+              elevationGainM: 1800,
+              tiers: fiveTiers,
+            },
+          ],
+        },
+      })
+      .select('id')
+      .single();
+
+    expect(draftError).toBeNull();
+    const { error: acceptError } = await supabase.rpc('accept_event_draft', {
+      p_draft_id: draft?.id,
+    });
+    expect(acceptError).toBeNull();
+
+    const { data: races, error: racesError } = await supabase
+      .from('races')
+      .select('name, race_tiers(price_eur, ends_at)')
+      .eq('event_id', eventId)
+      .order('name');
+
+    expect(racesError).toBeNull();
+    expect(races).toEqual([
+      {
+        name: 'Five prices',
+        race_tiers: fiveTiers.map((tier) => ({
+          price_eur: tier.priceEur,
+          ends_at: tier.endsAt,
+        })),
+      },
+      { name: 'No price', race_tiers: [] },
+      {
+        name: 'One price',
+        race_tiers: [{ price_eur: 25, ends_at: null }],
+      },
+    ]);
+  });
+
+  it.each(invalidTierSchedules)(
+    'rejects $label before changing any rows',
+    async ({ tiers }) => {
+      const eventId = await createEventFixture('Invalid tier rollback');
+      const draftId = await createDraftFixture(eventId, 21, tiers);
+
+      const { error: acceptError } = await supabase.rpc('accept_event_draft', {
+        p_draft_id: draftId,
+      });
+
+      expect(acceptError?.code).toBe('P0001');
+
+      const [eventResult, racesResult, draftResult] = await Promise.all([
+        supabase
+          .from('events')
+          .select('website_url, description')
+          .eq('id', eventId)
+          .single(),
+        supabase.from('races').select('id').eq('event_id', eventId),
+        supabase
+          .from('event_drafts')
+          .select('status')
+          .eq('id', draftId)
+          .single(),
+      ]);
+
+      expect(eventResult.data).toEqual({
+        website_url: 'https://example.com/original',
+        description: 'Original description',
+      });
+      expect(racesResult.data).toEqual([]);
+      expect(draftResult.data).toEqual({ status: 'pending' });
+    },
+  );
+
   it('rolls back every write when a race cannot be inserted', async () => {
     const eventId = await createEventFixture('Rollback');
     const draftId = await createDraftFixture(eventId, 'invalid-distance');
@@ -198,6 +353,7 @@ integrationDescribe('accept_event_draft integration', () => {
           province: 'Girona',
           distanceKm: 42,
           elevationGainM: 1800,
+          tiers: [],
         },
       ],
     };

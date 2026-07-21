@@ -25,7 +25,14 @@ export function parseDraftActionInput(body: unknown): DraftActionInput {
       races: Array.isArray(races)
         ? races.map((race) =>
             typeof race === 'object' && race !== null
-              ? { ...race, tiers: [] }
+              ? {
+                  ...race,
+                  tiers: Array.isArray(
+                    (race as Record<string, unknown>).tiers,
+                  )
+                    ? (race as Record<string, unknown>).tiers
+                    : [],
+                }
               : race,
           )
         : races,
@@ -42,6 +49,7 @@ export function parseDraftActionInput(body: unknown): DraftActionInput {
           province: race.province,
           distanceKm: race.distanceKm,
           elevationGainM: race.elevationGainM,
+          tiers: race.tiers,
         })),
       },
     };

@@ -6,12 +6,22 @@ import type {
   EventDraftRow,
 } from '@/types/event-draft.types';
 
+function normalizeDraftData(data: EventDraftData): EventDraftData {
+  return {
+    ...data,
+    races: data.races.map((race) => ({
+      ...race,
+      tiers: Array.isArray(race.tiers) ? race.tiers : [],
+    })),
+  };
+}
+
 function toDraft(row: EventDraftRow): EventDraft {
   return {
     id: row.id,
     eventId: row.event_id,
     status: row.status,
-    data: row.data,
+    data: normalizeDraftData(row.data),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
