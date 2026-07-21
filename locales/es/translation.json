@@ -116,6 +116,26 @@
       "save": "Guardar en favoritos",
       "savedToast": "Evento guardado en favoritos"
     },
+    "featureFeedback": {
+      "title": "¿Qué información buscas?",
+      "titleMoreInformation": "¿Qué más información te gustaría ver?",
+      "description": "Elige qué te gustaría encontrar aquí.",
+      "options": {
+        "route_map": "Mapa",
+        "photos": "Fotos",
+        "services": "Servicios",
+        "aid_stations": "Avituallamientos",
+        "schedule": "Horarios",
+        "results": "Resultados",
+        "reviews": "Opiniones",
+        "other": "Otra"
+      },
+      "commentLabel": "¿Algo más? (opcional)",
+      "commentPlaceholder": "Cuéntanoslo…",
+      "submit": "Enviar",
+      "successTitle": "¡Gracias!",
+      "successDescription": "Nos ayuda a decidir qué añadir después."
+    },
     "multipleLocations": "Varias ubicaciones",
     "officialWebsite": "Web oficial",
     "organizerCard": {

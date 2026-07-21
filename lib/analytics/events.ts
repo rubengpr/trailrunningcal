@@ -5,6 +5,8 @@ export const ANALYTICS_EVENTS = {
   ERROR_BOUNDARY_CAUGHT_ERROR: 'error_boundary_caught_error',
   ERROR_FALLBACK_RETRY_CLICKED: 'error_fallback_retry_clicked',
   EVENT_FAVORITE_CLICKED: 'event_favorite_clicked',
+  EVENT_FEATURE_FEEDBACK_OPTION_TOGGLED: 'event_feature_feedback_option_toggled',
+  EVENT_FEATURE_FEEDBACK_SUBMITTED: 'event_feature_feedback_submitted',
   EVENT_OFFICIAL_WEBSITE_CLICKED: 'event_official_website_clicked',
   EVENT_ORGANIZER_CLAIM_CLICKED: 'event_organizer_claim_clicked',
   EVENT_PROVINCE_LINK_CLICKED: 'event_province_link_clicked',
@@ -54,6 +56,20 @@ export interface AnalyticsEventProperties {
     event_id: string;
     event_slug: string;
     action: 'save' | 'remove';
+  };
+  [ANALYTICS_EVENTS.EVENT_FEATURE_FEEDBACK_OPTION_TOGGLED]: {
+    event_id: string;
+    event_slug: string;
+    feature: 'route_map' | 'photos' | 'services' | 'aid_stations' | 'schedule' | 'results' | 'reviews' | 'other';
+    action: 'select' | 'remove';
+    prompt_variant: 'control' | 'more_information';
+  };
+  [ANALYTICS_EVENTS.EVENT_FEATURE_FEEDBACK_SUBMITTED]: {
+    event_id: string;
+    event_slug: string;
+    features: Array<'route_map' | 'photos' | 'services' | 'aid_stations' | 'schedule' | 'results' | 'reviews' | 'other'>;
+    comment?: string;
+    prompt_variant: 'control' | 'more_information';
   };
   [ANALYTICS_EVENTS.EVENT_OFFICIAL_WEBSITE_CLICKED]: {
     event_id: string;

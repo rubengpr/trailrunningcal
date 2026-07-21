@@ -116,6 +116,26 @@
       "save": "Desar als preferits",
       "savedToast": "Esdeveniment desat als preferits"
     },
+    "featureFeedback": {
+      "title": "Quina informació busques?",
+      "titleMoreInformation": "Quina altra informació t'agradaria veure?",
+      "description": "Tria què t'agradaria trobar aquí.",
+      "options": {
+        "route_map": "Mapa",
+        "photos": "Fotos",
+        "services": "Serveis",
+        "aid_stations": "Avituallaments",
+        "schedule": "Horaris",
+        "results": "Resultats",
+        "reviews": "Opinions",
+        "other": "Una altra"
+      },
+      "commentLabel": "Alguna cosa més? (opcional)",
+      "commentPlaceholder": "Explica'ns-ho…",
+      "submit": "Enviar",
+      "successTitle": "Gràcies!",
+      "successDescription": "Ens ajuda a decidir què afegim després."
+    },
     "multipleLocations": "Diverses ubicacions",
     "officialWebsite": "Web oficial",
     "organizerCard": {

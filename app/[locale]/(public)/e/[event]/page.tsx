@@ -12,6 +12,7 @@ import { EventCard } from '@/components/event/event-card';
 import { EventFavoriteButton } from '@/components/event/event-favorite-button';
 import { EventDistanceList } from '@/components/event/event-distance-list';
 import { EventShareWhatsappButton } from '@/components/event/event-share-whatsapp-button';
+import { EventFeatureFeedback } from '@/components/event/event-feature-feedback';
 import { ConfirmedDateBadge } from '@/components/race/confirmed-date-badge';
 import { RaceOrganizerClaimCard } from '@/components/race/race-organizer-claim-card';
 import { TrackedLink } from '@/components/ui/tracked-link';
@@ -280,6 +281,13 @@ export default async function EventPage({
               ratioTooltip={tEvent('elevationRatioTooltip')}
             />
           </section>
+
+          <div className="mt-10 sm:mt-12">
+            <EventFeatureFeedback
+              eventId={eventData.event.id}
+              eventSlug={event}
+            />
+          </div>
 
           {provinceDestination && (
             <div className="mt-12 flex flex-col gap-3">
