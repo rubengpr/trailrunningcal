@@ -118,6 +118,7 @@ const draftData = {
       province: 'Barcelona',
       distanceKm: 21,
       elevationGainM: 900,
+      tiers: [],
     },
   ],
 };

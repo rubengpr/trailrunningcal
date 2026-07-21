@@ -199,6 +199,15 @@ interface ScrapeState {
     persistedPipelineRows: PersistedPipelineRow[];
 }
 
+function normalizeRaceTierArrays(
+    races: TrailEventAgentRace[],
+): TrailEventAgentRace[] {
+    return races.map((race) => ({
+        ...race,
+        tiers: Array.isArray(race.tiers) ? race.tiers : [],
+    }));
+}
+
 type ScrapeAction =
     // Workflow start
     | { type: 'SCRAPE_START' }
@@ -308,7 +317,7 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
             return {
                 ...state,
                 scrapedEvent: action.event,
-                scrapedRaces: action.races,
+                scrapedRaces: normalizeRaceTierArrays(action.races),
                 scrapeEmptyMessage: action.event === null || action.races.length === 0 ? action.errorMessage : null,
                 rawModelOutput: action.rawModelOutput,
                 scrapeUsage: action.usage,
@@ -320,7 +329,7 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
             return {
                 ...state,
                 scrapedEvent: action.result.event,
-                scrapedRaces: action.result.races,
+                scrapedRaces: normalizeRaceTierArrays(action.result.races),
                 scrapeEmptyMessage: action.result.event === null || action.result.races.length === 0 ? action.result.errorMessage : null,
                 rawModelOutput: action.result.rawModelOutput,
                 scrapeUsage: action.result.usage,
@@ -379,7 +388,7 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
                 rejectedIndexes: new Set(),
                 lastRunDurationMs: action.durationMs,
                 scrapedEvent: action.scrapedEvent,
-                scrapedRaces: action.scrapedRaces,
+                scrapedRaces: normalizeRaceTierArrays(action.scrapedRaces),
                 scrapeMarkdown: action.markdown,
                 rawModelOutput: action.rawModelOutput,
                 scrapeUsage: action.usage,
@@ -407,7 +416,7 @@ function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
             return {
                 ...state,
                 scrapedEvent: action.event,
-                scrapedRaces: action.races,
+                scrapedRaces: normalizeRaceTierArrays(action.races),
                 acceptedIndexes: new Set(),
                 rejectedIndexes: new Set(),
             };
@@ -821,7 +830,7 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                         ? normalizeUrl(reviewedWebsiteUrl)
                         : scrapedEvent.websiteUrl,
                 },
-                scrapedRaces.map((race) => ({ ...race, tiers: [] })),
+                scrapedRaces,
             );
             dispatch({ type: 'RACE_ACCEPT', index: 0 });
             toast.success(t('results.acceptSuccess'));

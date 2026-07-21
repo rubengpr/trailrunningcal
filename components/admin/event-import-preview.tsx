@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import {
   Calendar,
   Check,
+  Coins,
   Globe,
   MapPin,
   TextCursor,
@@ -54,8 +55,29 @@ function toPreviewRace(
     elevationGainM: race.elevationGainM,
     city: race.city,
     province: race.province,
-    tiers: [],
+    tiers: race.tiers,
   };
+}
+
+function formatTierPrice(priceEur: number, locale: Locale): string {
+  return new Intl.NumberFormat(locale === 'ca' ? 'ca-ES' : 'es-ES', {
+    currency: 'EUR',
+    maximumFractionDigits: 0,
+    minimumFractionDigits: 0,
+    style: 'currency',
+  }).format(priceEur);
+}
+
+function formatTierDeadline(endsAt: string, locale: Locale): string {
+  const [year, month, day] = endsAt.split('-').map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+
+  return new Intl.DateTimeFormat(locale === 'ca' ? 'ca-ES' : 'es-ES', {
+    day: '2-digit',
+    month: '2-digit',
+    timeZone: 'UTC',
+    year: 'numeric',
+  }).format(date);
 }
 
 function parseLocalDate(dateString: string): Date | null {
@@ -157,6 +179,7 @@ export function EventImportPreview({
   onSaveReview,
 }: EventImportPreviewProps): React.ReactElement {
   const t = useTranslations('admin.events.import.results');
+  const pricingT = useTranslations('event.pricing');
   const locale = useLocale() as Locale;
   const [isEditing, setIsEditing] = useState(false);
   const [isSavingReview, setIsSavingReview] = useState(false);
@@ -379,6 +402,26 @@ export function EventImportPreview({
                         </span>
                       ))}
                     </div>
+                    {race.tiers.length > 0 ? (
+                      <div className="flex flex-wrap items-center gap-1.5 text-xs text-gray-600 sm:col-span-2">
+                        <Coins className="size-3.5 shrink-0 text-gray-400" />
+                        {race.tiers.map((tier, tierIndex) => (
+                          <span
+                            className="rounded-md border border-gray-200 bg-gray-50 px-2 py-0.5 tabular-nums"
+                            key={`${tier.endsAt ?? 'default'}-${tierIndex}`}
+                          >
+                            {tier.priceEur === 0
+                              ? pricingT('free')
+                              : formatTierPrice(tier.priceEur, locale)}
+                            {tier.endsAt
+                              ? ` ${pricingT('until', {
+                                  date: formatTierDeadline(tier.endsAt, locale),
+                                })}`
+                              : ''}
+                          </span>
+                        ))}
+                      </div>
+                    ) : null}
                   </div>
                 </article>
               );
@@ -393,6 +436,7 @@ export function EventImportPreview({
         title={t('editReview')}
         isSaving={isSavingReview}
         savingLabel={t('savingReview')}
+        showTiers
         onClose={handleCancelEdit}
         onSave={handleSaveReview}
       />

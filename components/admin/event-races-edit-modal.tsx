@@ -208,9 +208,7 @@ function EventRacesEditModalContent({
       ({ tierDrafts, ...race }) => ({
         ...race,
         distanceKm: Number(race.distanceKm),
-        ...(showTiers
-          ? { tiers: toRaceTierWriteInputs(tierDrafts) }
-          : {}),
+        tiers: toRaceTierWriteInputs(tierDrafts),
       }),
     );
 

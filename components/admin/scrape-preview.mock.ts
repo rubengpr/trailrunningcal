@@ -21,6 +21,10 @@ export const DUMMY_SCRAPED_EVENT_RACES: TrailEventAgentRace[] = [
     province: 'Barcelona',
     distanceKm: 42,
     elevationGainM: 2800,
+    tiers: [
+      { priceEur: 45, endsAt: '2026-07-31' },
+      { priceEur: 55, endsAt: '2026-08-31' },
+    ],
   },
   {
     name: 'La curta',
@@ -29,6 +33,7 @@ export const DUMMY_SCRAPED_EVENT_RACES: TrailEventAgentRace[] = [
     province: 'Barcelona',
     distanceKm: 21,
     elevationGainM: 1200,
+    tiers: [],
   },
   {
     name: 'Caminada',
@@ -37,6 +42,7 @@ export const DUMMY_SCRAPED_EVENT_RACES: TrailEventAgentRace[] = [
     province: 'Barcelona',
     distanceKm: 10,
     elevationGainM: null,
+    tiers: [{ priceEur: 0, endsAt: null }],
   },
 ];
 

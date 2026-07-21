@@ -32,7 +32,7 @@ import type {
 export type EventRaceWriteInput = Omit<TrailEventAgentRace, 'name'> & {
   name: string | null;
   id?: string;
-  tiers?: EventRaceTierWriteInput[];
+  tiers: EventRaceTierWriteInput[];
 };
 
 export interface TrailEventAgentRunResult {
