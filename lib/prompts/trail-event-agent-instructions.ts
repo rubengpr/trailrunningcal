@@ -32,6 +32,10 @@ Return structured JSON with event, races, and errorMessage.
 - **race.province**: the city name explicit in the event data. If missing, infer it from race.city.
 - **race.distanceKm**: parse in kilometers and integer (e.g. 21 instead of 21.3, 21.4)
 - **race.elevationGainM**: number in meters, or null if not stated. Parse forms like +1200m, 1200m, 1.200, 1500 m+.
+- **race.tiers**: up to 5 {priceEur, endsAt} registration prices in source order; use [] when pricing is absent, ambiguous, or unreliable—never guess.
+  - Use the general-public base price only; exclude member/federation discounts, licenses, insurance, merchandise, extras, and platform/payment fees. Copy a shared schedule only when the source explicitly applies it to those races.
+  - Use 0 only when explicitly free; otherwise round to the nearest whole euro (.5 upward).
+  - One tier may set endsAt null. Multiple tiers require an inclusive, unique, strictly increasing YYYY-MM-DD endsAt on every row; never sort or repair an unclear schedule.
 - **races**: one object for each unique race matched. If nothing qualifies, return races as an empty array.
 - **errorMessage**: null when event is not null and at least one race is returned. When event is null or races is empty, set errorMessage to a concise Spanish sentence explaining why—e.g. the edition is cancelled, there are no trail race distances found, all dates are in the past, etc.
 
@@ -51,7 +55,11 @@ Return structured JSON with event, races, and errorMessage.
       "city": "Arbúcies",
       "province": "Girona",
       "distanceKm": 42,
-      "elevationGainM": 2100
+      "elevationGainM": 2100,
+      "tiers": [
+        { "priceEur": 45, "endsAt": "2026-02-28" },
+        { "priceEur": 55, "endsAt": "2026-03-31" }
+      ]
     },
     {
       "name": "Challenge",
@@ -59,7 +67,8 @@ Return structured JSON with event, races, and errorMessage.
       "city": "Arbúcies",
       "province": "Girona",
       "distanceKm": 21,
-      "elevationGainM": 1100
+      "elevationGainM": 1100,
+      "tiers": []
     },
     {
       "name": "Sprint",
@@ -67,7 +76,8 @@ Return structured JSON with event, races, and errorMessage.
       "city": "Arbúcies",
       "province": "Girona",
       "distanceKm": 10,
-      "elevationGainM": 450
+      "elevationGainM": 450,
+      "tiers": [{ "priceEur": 0, "endsAt": null }]
     },
     {
       "name": "Marcha",
@@ -75,7 +85,8 @@ Return structured JSON with event, races, and errorMessage.
       "city": "Arbúcies",
       "province": "Girona",
       "distanceKm": 10,
-      "elevationGainM": 450
+      "elevationGainM": 450,
+      "tiers": []
     }
   ],
   "errorMessage": null

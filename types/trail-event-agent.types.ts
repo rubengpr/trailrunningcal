@@ -4,6 +4,11 @@ export interface TrailEventAgentEvent {
   websiteUrl: string | null;
 }
 
+export interface TrailEventAgentRaceTier {
+  priceEur: number;
+  endsAt: string | null;
+}
+
 export interface TrailEventAgentRace {
   name: string | null;
   date: string | null;
@@ -11,6 +16,7 @@ export interface TrailEventAgentRace {
   province: string;
   distanceKm: number;
   elevationGainM: number | null;
+  tiers: TrailEventAgentRaceTier[];
 }
 
 export interface TrailEventAgentParsed {

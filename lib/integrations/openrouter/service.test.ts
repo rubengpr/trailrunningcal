@@ -59,6 +59,7 @@ function race(overrides: Partial<TrailEventAgentRace> = {}): TrailEventAgentRace
     province: 'Barcelona',
     distanceKm: 21,
     elevationGainM: 1000,
+    tiers: [],
     ...overrides,
   };
 }
@@ -201,7 +202,12 @@ describe('extractFromMarkdown description translation', () => {
           description: 'La Cursa de la Guineu es una cursa de muntanya.',
         }),
       ),
-      races: [race({ date: '2000-06-01' })],
+      races: [
+        race({
+          date: '2000-06-01',
+          tiers: [{ priceEur: 20, endsAt: null }],
+        }),
+      ],
     };
     mocks.createOpenRouterClient.mockReturnValue(client);
     mocks.runMarkdownAgent.mockResolvedValue(extracted);
@@ -214,6 +220,30 @@ describe('extractFromMarkdown description translation', () => {
     expect(rawOutput.races).toEqual([]);
     expect(rawOutput.errorMessage).toBe(output.errorMessage);
     expect(rawOutput.event.description).toBe(output.event?.description);
+  });
+
+  it('preserves tiers while translating the event description', async () => {
+    const tiers = [
+      { priceEur: 20, endsAt: '2099-04-01' },
+      { priceEur: 30, endsAt: '2099-05-01' },
+    ];
+    const client = clientWithCompletion(VALID_DESCRIPTION);
+    const extracted = {
+      ...result(
+        event({
+          description: 'La Cursa de la Guineu es una cursa de muntanya.',
+        }),
+      ),
+      races: [race({ tiers })],
+    };
+    mocks.createOpenRouterClient.mockReturnValue(client);
+    mocks.runMarkdownAgent.mockResolvedValue(extracted);
+    mocks.franc.mockReturnValue('cat');
+
+    const output = await extractFromMarkdown(MARKDOWN, MODEL);
+
+    expect(output.races[0]?.tiers).toEqual(tiers);
+    expect(JSON.parse(output.rawModelOutput).races[0].tiers).toEqual(tiers);
   });
 });
 

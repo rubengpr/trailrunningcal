@@ -43,6 +43,31 @@ export const TRAIL_EVENT_AGENT_JSON_SCHEMA = {
           elevationGainM: {
             anyOf: [{ type: 'integer' }, { type: 'null' }],
           },
+          tiers: {
+            type: 'array',
+            maxItems: 5,
+            items: {
+              type: 'object',
+              additionalProperties: false,
+              properties: {
+                priceEur: {
+                  type: 'number',
+                  minimum: 0,
+                  maximum: 9999,
+                },
+                endsAt: {
+                  anyOf: [
+                    {
+                      type: 'string',
+                      pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}$',
+                    },
+                    { type: 'null' },
+                  ],
+                },
+              },
+              required: ['priceEur', 'endsAt'],
+            },
+          },
         },
         required: [
           'name',
@@ -51,6 +76,7 @@ export const TRAIL_EVENT_AGENT_JSON_SCHEMA = {
           'province',
           'distanceKm',
           'elevationGainM',
+          'tiers',
         ],
       },
     },

@@ -57,6 +57,7 @@ function race(overrides: Partial<TrailEventAgentRace> = {}): TrailEventAgentRace
     province: 'Barcelona',
     distanceKm: 21,
     elevationGainM: 1000,
+    tiers: [],
     ...overrides,
   };
 }
@@ -112,8 +113,14 @@ afterEach(() => {
 
 describe('processCrawlSiteExtract', () => {
   it('checks duplicate events, crawls, and returns event-shaped extraction', async () => {
+    const extractedRace = race({
+      tiers: [
+        { priceEur: 20, endsAt: '2026-04-01' },
+        { priceEur: 30, endsAt: '2026-05-01' },
+      ],
+    });
     mocks.crawlSite.mockResolvedValue(crawlResult('crawl markdown'));
-    mocks.extractFromMarkdown.mockResolvedValue(extractResult([race()]));
+    mocks.extractFromMarkdown.mockResolvedValue(extractResult([extractedRace]));
 
     const result = await processCrawlSiteExtract({
       url: 'https://example.com/event',
@@ -129,7 +136,7 @@ describe('processCrawlSiteExtract', () => {
       MODEL,
     );
     expect(result.event).toEqual(event());
-    expect(result.races).toEqual([race()]);
+    expect(result.races).toEqual([extractedRace]);
     expect(result.steps.map((step) => step.name)).toEqual([
       'crawlSite',
       'extract',
