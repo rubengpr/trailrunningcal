@@ -52,6 +52,14 @@ function normalizedName(race: Pick<RaceCategoryInput, 'name'>): string {
   return race.name?.toLowerCase() ?? '';
 }
 
+export function isNonCompetitiveRace(
+  race: Pick<RaceCategoryInput, 'name'>,
+): boolean {
+  return MARCHA_KEYWORDS.some((keyword) =>
+    normalizedName(race).includes(keyword),
+  );
+}
+
 function isVkRace(race: RaceCategoryInput): boolean {
   const lowerName = normalizedName(race);
   const hasKeyword =
@@ -72,7 +80,7 @@ export const RACE_CATEGORY_CONFIGS: Record<RaceCategorySlug, RaceCategoryConfig>
     slug: 'marcha',
     namespace: 'marcha',
     labelKey: 'marcha',
-    matches: (race) => MARCHA_KEYWORDS.some((keyword) => normalizedName(race).includes(keyword)),
+    matches: isNonCompetitiveRace,
   },
   backyard: {
     slug: 'backyard',

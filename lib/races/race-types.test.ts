@@ -4,6 +4,7 @@ import {
   getRaceDisplayCategoryKey,
   getRaceCategoryConfig,
   getRaceCategorySlugsForRace,
+  isNonCompetitiveRace,
   isRaceCategorySlug,
 } from '@/lib/races/race-types';
 import type { TrailRace } from '@/types/race.types';
@@ -40,6 +41,14 @@ describe('isRaceCategorySlug', () => {
 });
 
 describe('race category predicates', () => {
+  it('identifies non-competitive walks by name', () => {
+    expect(isNonCompetitiveRace(race({ name: 'Marcha popular' }))).toBe(true);
+    expect(isNonCompetitiveRace(race({ name: 'MARXA popular' }))).toBe(true);
+    expect(isNonCompetitiveRace(race({ name: 'Caminada popular' }))).toBe(true);
+    expect(isNonCompetitiveRace(race({ name: 'Trail de muntanya' }))).toBe(false);
+    expect(isNonCompetitiveRace({ name: null })).toBe(false);
+  });
+
   it('matches ultra trail races at 50 km and above', () => {
     const config = getRaceCategoryConfig('ultra-trail');
 

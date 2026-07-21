@@ -129,6 +129,45 @@ describe('selectRelevantEventRaces', () => {
 
     expect(result.map((r) => r.id)).toEqual(['long', 'medium', 'short']);
   });
+
+  it('sorts non-competitive walks after competitive races', () => {
+    const result = selectRelevantEventRaces(
+      [
+        race({
+          id: 'long-walk',
+          name: 'MARXA popular',
+          date: '2026-05-01',
+          distanceKm: 30,
+        }),
+        race({
+          id: 'short-race',
+          name: 'Trail Short',
+          date: '2026-05-01',
+          distanceKm: 10,
+        }),
+        race({
+          id: 'short-walk',
+          name: 'Caminada familiar',
+          date: '2026-05-01',
+          distanceKm: 10,
+        }),
+        race({
+          id: 'long-race',
+          name: 'Trail Long',
+          date: '2026-05-01',
+          distanceKm: 20,
+        }),
+      ],
+      '2026-01-01',
+    );
+
+    expect(result.map((r) => r.id)).toEqual([
+      'long-race',
+      'short-race',
+      'long-walk',
+      'short-walk',
+    ]);
+  });
 });
 
 describe('buildEventDateRange', () => {

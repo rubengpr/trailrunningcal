@@ -10,6 +10,7 @@ import type { Locale } from '@/i18n';
 import { formatDateToCatalan, formatDateToSpanish, formatIsoDateNumeric } from '@/lib/utils/date';
 import {
   getRaceCategoryConfig,
+  isNonCompetitiveRace,
   type RaceCategorySlug,
 } from '@/lib/races/race-types';
 
@@ -29,7 +30,9 @@ function yearFromDate(date: string): number {
 function sortByDistanceDescending(races: TrailEventRace[]): TrailEventRace[] {
   return [...races].sort(
     (a, b) =>
-      b.distanceKm - a.distanceKm || (a.name ?? '').localeCompare(b.name ?? ''),
+      Number(isNonCompetitiveRace(a)) - Number(isNonCompetitiveRace(b)) ||
+      b.distanceKm - a.distanceKm ||
+      (a.name ?? '').localeCompare(b.name ?? ''),
   );
 }
 
