@@ -258,6 +258,29 @@ export async function getEventImportItemResult(
   return responseData.data;
 }
 
+export async function updateEventImportItemResult(
+  itemId: string,
+  input: {
+    event: TrailEventAgentEvent;
+    races: TrailEventAgentRace[];
+  },
+): Promise<EventImportResult> {
+  const response = await fetch(`/api/events/import/batch-items/${itemId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  });
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      responseData.error || 'Failed to update event import item result',
+    );
+  }
+
+  return responseData.data;
+}
+
 export async function generateEventDescriptionDraft(
   eventId: string,
   model: OpenRouterScrapeModelId,

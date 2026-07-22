@@ -1,15 +1,21 @@
 import { start } from 'workflow/api';
 import type { OpenRouterScrapeModelId } from '@/lib/integrations/openrouter/scrape-models';
 import { checkDuplicateEvents } from '@/lib/guards/duplicate-events';
-import { MarkdownTooLongError, MarkdownTooShortError } from '@/lib/errors';
+import {
+  MarkdownTooLongError,
+  MarkdownTooShortError,
+  ValidationError,
+} from '@/lib/errors';
 import {
   createEventImportBatch,
   getBatchSnapshotData,
+  getItemResult,
   getPendingBatchItems,
   getEventImportBatch,
   markBatchItemCompleted,
   markBatchItemFailed,
   markBatchItemRunning,
+  saveItemResult,
   setBatchWorkflowRunId,
   updateBatchStatus,
 } from '@/lib/db/event-import-batches';
@@ -17,7 +23,12 @@ import { processCrawlSiteExtract } from '@/lib/services/event-import';
 import type {
   EventImportBatchItem,
   EventImportBatchSnapshot,
+  EventImportResult,
 } from '@/types/events-import-api.types';
+import type {
+  TrailEventAgentEvent,
+  TrailEventAgentRace,
+} from '@/types/trail-event-agent.types';
 
 interface EventImportBatchWorkflowInput {
   batchId: string;
@@ -53,6 +64,32 @@ export async function getBatchStatus(
     summary: buildSummary(data.items),
     items: data.items,
   };
+}
+
+export async function updateItemResult(
+  itemId: string,
+  input: {
+    event: TrailEventAgentEvent;
+    races: TrailEventAgentRace[];
+  },
+): Promise<EventImportResult> {
+  const current = await getItemResult(itemId);
+
+  if (!current) {
+    throw new ValidationError('Item not found', 404);
+  }
+
+  const updated = await saveItemResult(itemId, {
+    ...current,
+    event: input.event,
+    races: input.races,
+  });
+
+  if (!updated) {
+    throw new ValidationError('Item not found', 404);
+  }
+
+  return updated;
 }
 
 export async function startEventImportBatch(input: {

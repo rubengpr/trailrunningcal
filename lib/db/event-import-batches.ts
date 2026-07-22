@@ -263,3 +263,30 @@ export async function getItemResult(
 
   return (data?.result as EventImportResult | null) ?? null;
 }
+
+export async function saveItemResult(
+  itemId: string,
+  result: EventImportResult,
+): Promise<EventImportResult | null> {
+  const supabase = createAdminClient();
+
+  const { data, error } = await supabase
+    .from('event_import_batch_items')
+    .update({
+      result,
+      race_count: result.races.length,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', itemId)
+    .eq('status', 'completed')
+    .not('result', 'is', null)
+    .select('result')
+    .maybeSingle();
+
+  if (error) {
+    console.error('Event import item result update error:', error);
+    throw new Error('Failed to update event import item result');
+  }
+
+  return (data?.result as EventImportResult | null) ?? null;
+}

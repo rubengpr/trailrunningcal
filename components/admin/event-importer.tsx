@@ -35,6 +35,7 @@ import {
     startEventImportBatch,
     getEventImportBatchStatus,
     getEventImportItemResult,
+    updateEventImportItemResult,
 } from '@/lib/api/events';
 import { OPENROUTER_SCRAPE_MODEL_IDS, OPENROUTER_VISION_MODEL_IDS } from '@/lib/integrations/openrouter/scrape-models';
 import type { OpenRouterScrapeModelId, OpenRouterVisionModelId } from '@/lib/integrations/openrouter/scrape-models';
@@ -490,6 +491,7 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
     const [batchSnapshot, setBatchSnapshot] = useState<EventImportBatchSnapshot | null>(null);
     const [isStartingBatch, setIsStartingBatch] = useState(false);
     const [viewingBatchItemId, setViewingBatchItemId] = useState<string | null>(null);
+    const [reviewingBatchItemId, setReviewingBatchItemId] = useState<string | null>(null);
     const [isAddingToPending, setIsAddingToPending] = useState(false);
     const fetchedBatchItemIds = useRef<Set<string>>(new Set());
     const [importConflicts, setImportConflicts] = useState<ConflictingRace[]>([]);
@@ -597,6 +599,9 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
             dispatch({ type: 'PIPELINE_HIDDEN' });
             clearFullPipelineStepRefs();
         }
+        if (next !== 'bulk') {
+            setReviewingBatchItemId(null);
+        }
         setWorkflow(next);
         if (next !== 'llmFromFile') {
             fileUpload.clearUpload();
@@ -636,6 +641,7 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
         setIsStartingBatch(true);
         setBatchSnapshot(null);
         setActiveBatchId(null);
+        setReviewingBatchItemId(null);
         resetScrapeResults();
 
         try {
@@ -810,6 +816,7 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                 persistedRows: [],
                 showPipeline: false,
             });
+            setReviewingBatchItemId(itemId);
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : t('bulk.resultError');
             toast.error(errorMessage);
@@ -847,11 +854,52 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
         toast.success(t('results.reviewRejected'));
     };
 
-    const handleSaveReview = (
+    const handleSaveReview = async (
         event: TrailEventAgentEvent,
         races: TrailEventAgentRace[],
-    ): void => {
-        dispatch({ type: 'REVIEW_EDITED', event, races });
+    ): Promise<void> => {
+        if (!reviewingBatchItemId) {
+            dispatch({ type: 'REVIEW_EDITED', event, races });
+            return;
+        }
+
+        try {
+            const result = await updateEventImportItemResult(
+                reviewingBatchItemId,
+                { event, races },
+            );
+            dispatch({
+                type: 'REVIEW_EDITED',
+                event: result.event ?? event,
+                races: result.races,
+            });
+            setWebsiteUrl(result.event?.websiteUrl ?? '');
+            setBatchSnapshot((current) => {
+                if (!current) return current;
+
+                const updatedAt = new Date().toISOString();
+                return {
+                    ...current,
+                    items: current.items.map((item) =>
+                        item.id === reviewingBatchItemId
+                            ? {
+                                ...item,
+                                raceCount: result.races.length,
+                                updatedAt,
+                            }
+                            : item,
+                    ),
+                };
+            });
+            toast.success(t('bulk.reviewSaveSuccess'));
+        } catch (error) {
+            toast.error(
+                error instanceof Error
+                    ? error.message
+                    : t('bulk.reviewSaveError'),
+            );
+            throw error;
+        }
     };
 
     const handleSwitchToJsonView = (): void => {
@@ -919,6 +967,7 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
         setActiveBatchId(null);
         setBatchSnapshot(null);
         setViewingBatchItemId(null);
+        setReviewingBatchItemId(null);
         fetchedBatchItemIds.current.clear();
         fileUpload.clearUpload();
         runStartedAtRef.current = null;
