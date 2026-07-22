@@ -93,6 +93,7 @@ integrationDescribe('anonymous Supabase access', () => {
       }),
       supabase.rpc('is_app_admin'),
       supabase.rpc('accept_event_draft', { p_draft_id: ZERO_UUID }),
+      supabase.rpc('accept_event_import_item', { p_item_id: ZERO_UUID }),
       supabase.rpc('create_event_description_batch', { p_event_ids: null, p_model: null }),
       supabase.rpc('create_event_edition', {
         p_event_id: ZERO_UUID,

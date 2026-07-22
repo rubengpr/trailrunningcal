@@ -21,6 +21,7 @@ export const API_AUTHORIZATION_POLICY = {
   'POST /api/events/favorites': 'public',
   'GET /api/events/import/batch-items/[itemId]': 'admin',
   'PATCH /api/events/import/batch-items/[itemId]': 'admin',
+  'POST /api/events/import/batch-items/[itemId]': 'admin',
   'GET /api/events/import/batches/[batchId]': 'admin',
   'POST /api/events/import/batches': 'admin',
   'POST /api/events/import': 'admin',

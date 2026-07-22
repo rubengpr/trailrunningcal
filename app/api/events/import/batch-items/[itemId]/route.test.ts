@@ -5,6 +5,7 @@ import type { EventImportResult } from '@/types/events-import-api.types';
 const mocks = vi.hoisted(() => ({
   requireAdmin: vi.fn(),
   getItemResult: vi.fn(),
+  acceptItem: vi.fn(),
   updateItemResult: vi.fn(),
 }));
 
@@ -13,10 +14,11 @@ vi.mock('@/lib/db/event-import-batches', () => ({
   getItemResult: mocks.getItemResult,
 }));
 vi.mock('@/lib/services/event-import-batch', () => ({
+  acceptItem: mocks.acceptItem,
   updateItemResult: mocks.updateItemResult,
 }));
 
-import { PATCH } from './route';
+import { PATCH, POST } from './route';
 
 const ITEM_ID = '8e40792f-1a1a-4d30-8d15-ec70a12a04d5';
 const input = {
@@ -133,5 +135,71 @@ describe('PATCH /api/events/import/batch-items/[itemId]', () => {
 
     expect(response.status).toBe(404);
     await expect(response.json()).resolves.toEqual({ error: 'Item not found' });
+  });
+
+  it('returns 409 when the item was already accepted', async () => {
+    mocks.updateItemResult.mockRejectedValue(
+      new ValidationError('Accepted items cannot be edited', 409),
+    );
+
+    const response = await PATCH(request(input), context());
+
+    expect(response.status).toBe(409);
+  });
+});
+
+describe('POST /api/events/import/batch-items/[itemId]', () => {
+  const postRequest = new Request(
+    `http://localhost/api/events/import/batch-items/${ITEM_ID}`,
+    { method: 'POST' },
+  );
+
+  it('requires an admin', async () => {
+    mocks.requireAdmin.mockRejectedValue(new AuthError());
+
+    const response = await POST(postRequest, context());
+
+    expect(response.status).toBe(401);
+    expect(mocks.acceptItem).not.toHaveBeenCalled();
+  });
+
+  it('rejects non-admin users', async () => {
+    mocks.requireAdmin.mockRejectedValue(new ForbiddenError());
+
+    const response = await POST(postRequest, context());
+
+    expect(response.status).toBe(403);
+    expect(mocks.acceptItem).not.toHaveBeenCalled();
+  });
+
+  it('rejects malformed item ids', async () => {
+    const response = await POST(postRequest, context('not-a-uuid'));
+
+    expect(response.status).toBe(400);
+    expect(mocks.acceptItem).not.toHaveBeenCalled();
+  });
+
+  it('accepts a completed item and returns its event id', async () => {
+    mocks.acceptItem.mockResolvedValue({ eventId: 'event-1' });
+
+    const response = await POST(postRequest, context());
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({
+      success: true,
+      data: { eventId: 'event-1' },
+    });
+  });
+
+  it.each([
+    [404, 'Item not found'],
+    [409, 'Accepted event not found'],
+  ])('returns %s for an unavailable item', async (status, message) => {
+    mocks.acceptItem.mockRejectedValue(new ValidationError(message, status));
+
+    const response = await POST(postRequest, context());
+
+    expect(response.status).toBe(status);
+    await expect(response.json()).resolves.toEqual({ error: message });
   });
 });

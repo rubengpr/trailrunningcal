@@ -281,6 +281,21 @@ export async function updateEventImportItemResult(
   return responseData.data;
 }
 
+export async function acceptEventImportItem(
+  itemId: string,
+): Promise<{ eventId: string }> {
+  const response = await fetch(`/api/events/import/batch-items/${itemId}`, {
+    method: 'POST',
+  });
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(responseData.error || 'Failed to accept event import item');
+  }
+
+  return responseData.data;
+}
+
 export async function generateEventDescriptionDraft(
   eventId: string,
   model: OpenRouterScrapeModelId,

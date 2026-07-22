@@ -865,6 +865,7 @@
           "resultError": "Error en carregar el resultat",
           "reviewSaveSuccess": "Canvis del lot desats",
           "reviewSaveError": "Error en desar els canvis del lot",
+          "acceptError": "Error en acceptar l'element del lot",
           "statusSummary": "{completed} completades · {failed} fallides",
           "columns": {
             "url": "URL",
@@ -882,6 +883,7 @@
           },
           "actions": {
             "viewResult": "Veure resultat",
+            "openEvent": "Veure esdeveniment",
             "loading": "Carregant...",
             "downloadMarkdown": "Markdown",
             "downloadJson": "JSON"

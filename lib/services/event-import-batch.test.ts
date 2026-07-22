@@ -2,7 +2,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { EventImportResult } from '@/types/events-import-api.types';
 
 const mocks = vi.hoisted(() => ({
-  getItemResult: vi.fn(),
+  acceptItem: vi.fn(),
+  getItemResultState: vi.fn(),
   saveItemResult: vi.fn(),
 }));
 
@@ -15,10 +16,11 @@ vi.mock('@/lib/services/event-import', () => ({
 }));
 vi.mock('@/lib/db/event-import-batches', () => ({
   createEventImportBatch: vi.fn(),
+  acceptItem: mocks.acceptItem,
   getBatchSnapshotData: vi.fn(),
   getPendingBatchItems: vi.fn(),
   getEventImportBatch: vi.fn(),
-  getItemResult: mocks.getItemResult,
+  getItemResultState: mocks.getItemResultState,
   markBatchItemCompleted: vi.fn(),
   markBatchItemFailed: vi.fn(),
   markBatchItemRunning: vi.fn(),
@@ -27,7 +29,7 @@ vi.mock('@/lib/db/event-import-batches', () => ({
   updateBatchStatus: vi.fn(),
 }));
 
-import { updateItemResult } from './event-import-batch';
+import { acceptItem, updateItemResult } from './event-import-batch';
 
 const ITEM_ID = '8e40792f-1a1a-4d30-8d15-ec70a12a04d5';
 const original: EventImportResult = {
@@ -98,7 +100,10 @@ beforeEach(() => {
 describe('updateItemResult', () => {
   it('replaces review fields while preserving all extraction metadata', async () => {
     const persisted = { ...original, ...edited };
-    mocks.getItemResult.mockResolvedValue(original);
+    mocks.getItemResultState.mockResolvedValue({
+      result: original,
+      reviewStatus: 'pending',
+    });
     mocks.saveItemResult.mockResolvedValue(persisted);
 
     await expect(updateItemResult(ITEM_ID, edited)).resolves.toEqual(persisted);
@@ -121,7 +126,7 @@ describe('updateItemResult', () => {
   });
 
   it('returns 404 when there is no completed stored result', async () => {
-    mocks.getItemResult.mockResolvedValue(null);
+    mocks.getItemResultState.mockResolvedValue(null);
 
     await expect(updateItemResult(ITEM_ID, edited)).rejects.toMatchObject({
       message: 'Item not found',
@@ -131,12 +136,49 @@ describe('updateItemResult', () => {
   });
 
   it('returns 404 if the item stops matching before the update', async () => {
-    mocks.getItemResult.mockResolvedValue(original);
+    mocks.getItemResultState.mockResolvedValue({
+      result: original,
+      reviewStatus: 'pending',
+    });
     mocks.saveItemResult.mockResolvedValue(null);
 
     await expect(updateItemResult(ITEM_ID, edited)).rejects.toMatchObject({
       message: 'Item not found',
       status: 404,
     });
+  });
+
+  it('returns 409 when an accepted item is edited', async () => {
+    mocks.getItemResultState.mockResolvedValue({
+      result: original,
+      reviewStatus: 'accepted',
+    });
+
+    await expect(updateItemResult(ITEM_ID, edited)).rejects.toMatchObject({
+      message: 'Accepted items cannot be edited',
+      status: 409,
+    });
+    expect(mocks.saveItemResult).not.toHaveBeenCalled();
+  });
+
+  it('returns 409 if acceptance wins a concurrent edit', async () => {
+    mocks.getItemResultState
+      .mockResolvedValueOnce({ result: original, reviewStatus: 'pending' })
+      .mockResolvedValueOnce({ result: original, reviewStatus: 'accepted' });
+    mocks.saveItemResult.mockResolvedValue(null);
+
+    await expect(updateItemResult(ITEM_ID, edited)).rejects.toMatchObject({
+      message: 'Accepted items cannot be edited',
+      status: 409,
+    });
+  });
+});
+
+describe('acceptItem', () => {
+  it('returns the event id created by the atomic database operation', async () => {
+    mocks.acceptItem.mockResolvedValue('event-1');
+
+    await expect(acceptItem(ITEM_ID)).resolves.toEqual({ eventId: 'event-1' });
+    expect(mocks.acceptItem).toHaveBeenCalledWith(ITEM_ID);
   });
 });

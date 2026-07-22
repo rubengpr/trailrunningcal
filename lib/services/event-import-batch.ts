@@ -8,8 +8,9 @@ import {
 } from '@/lib/errors';
 import {
   createEventImportBatch,
+  acceptItem as acceptItemInDatabase,
   getBatchSnapshotData,
-  getItemResult,
+  getItemResultState,
   getPendingBatchItems,
   getEventImportBatch,
   markBatchItemCompleted,
@@ -73,23 +74,37 @@ export async function updateItemResult(
     races: TrailEventAgentRace[];
   },
 ): Promise<EventImportResult> {
-  const current = await getItemResult(itemId);
+  const current = await getItemResultState(itemId);
 
   if (!current) {
     throw new ValidationError('Item not found', 404);
   }
 
+  if (current.reviewStatus === 'accepted') {
+    throw new ValidationError('Accepted items cannot be edited', 409);
+  }
+
   const updated = await saveItemResult(itemId, {
-    ...current,
+    ...current.result,
     event: input.event,
     races: input.races,
   });
 
   if (!updated) {
+    const latest = await getItemResultState(itemId);
+
+    if (latest?.reviewStatus === 'accepted') {
+      throw new ValidationError('Accepted items cannot be edited', 409);
+    }
+
     throw new ValidationError('Item not found', 404);
   }
 
   return updated;
+}
+
+export async function acceptItem(itemId: string): Promise<{ eventId: string }> {
+  return { eventId: await acceptItemInDatabase(itemId) };
 }
 
 export async function startEventImportBatch(input: {

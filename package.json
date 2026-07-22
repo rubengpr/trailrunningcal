@@ -9,7 +9,7 @@
     "lint": "eslint",
     "test": "vitest",
     "perf:homepage": "node scripts/measure-homepage-build.mjs",
-    "test:db": "RUN_SUPABASE_INTEGRATION_TESTS=true node --env-file=.env.local node_modules/vitest/vitest.mjs --run lib/db/event-drafts.integration.test.ts lib/db/event-update-batches.integration.test.ts",
+    "test:db": "RUN_SUPABASE_INTEGRATION_TESTS=true node --env-file=.env.local node_modules/vitest/vitest.mjs --run lib/db/event-drafts.integration.test.ts lib/db/event-import-batches.integration.test.ts lib/db/event-update-batches.integration.test.ts",
     "migrate:races": "tsx scripts/migrate-races.ts",
     "migrate:price-eur": "tsx scripts/migrate-price-eur.ts",
     "migrate:price-eur:dry": "tsx scripts/migrate-price-eur.ts --dry-run",

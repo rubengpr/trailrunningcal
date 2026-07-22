@@ -63,6 +63,8 @@ export type EventImportItemStatus =
   | 'completed'
   | 'failed';
 
+export type EventImportItemReviewStatus = 'pending' | 'accepted';
+
 export interface EventImportBatch {
   id: string;
   status: EventImportBatchStatus;
@@ -77,6 +79,9 @@ export interface EventImportBatchItem {
   batchId: string;
   url: string;
   status: EventImportItemStatus;
+  reviewStatus: EventImportItemReviewStatus;
+  acceptedEventId: string | null;
+  reviewedAt: string | null;
   raceCount: number | null;
   error: string | null;
   markdown: string | null;
@@ -113,6 +118,9 @@ export interface EventImportItemRow {
   batch_id: string;
   url: string;
   status: EventImportItemStatus;
+  review_status: EventImportItemReviewStatus;
+  accepted_event_id: string | null;
+  reviewed_at: string | null;
   result: EventImportResult | null;
   race_count: number | null;
   error: string | null;

@@ -1,8 +1,13 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+import { useLocale, useTranslations } from 'next-intl';
+import { ArrowUpRight } from 'lucide-react';
 import { IconActionMenu } from '@/components/ui/icon-action-menu';
-import type { EventImportItemStatus } from '@/types/events-import-api.types';
+import type {
+    EventImportItemReviewStatus,
+    EventImportItemStatus,
+} from '@/types/events-import-api.types';
 import { triggerDownload } from '@/lib/utils/download';
 import { cleanUrl } from '@/lib/utils/url';
 
@@ -12,6 +17,8 @@ export interface BulkProcessTableRow {
     id: string;
     url: string;
     status: BulkProcessState;
+    reviewStatus: EventImportItemReviewStatus;
+    acceptedEventId: string | null;
     raceCount: number | null;
     error: string | null;
     updatedAt: string;
@@ -73,6 +80,7 @@ export function BulkProcessTable({
     onViewResult,
 }: BulkProcessTableProps) {
     const t = useTranslations(translationsNamespace);
+    const locale = useLocale();
 
     if (rows.length === 0) {
         return null;
@@ -81,17 +89,17 @@ export function BulkProcessTable({
     return (
         <div className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-2 shadow-sm">
             <div className="overflow-x-auto">
-                <table className="w-full border-separate border-spacing-x-8 text-left text-xs">
+                <table className="w-full border-separate border-spacing-0 text-left text-xs">
                     <thead>
                         <tr className="text-[11px] font-medium uppercase tracking-wide text-gray-500">
-                            <th className="w-[45%] border-b border-gray-100 py-2 font-medium">{t('columns.url')}</th>
-                            <th className="border-b border-gray-100 py-2 font-medium">{t('columns.status')}</th>
-                            <th className="border-b border-gray-100 py-2">
+                            <th className="w-[45%] border-b border-gray-100 px-4 py-2 font-medium">{t('columns.url')}</th>
+                            <th className="border-b border-gray-100 px-4 py-2 font-medium">{t('columns.status')}</th>
+                            <th className="border-b border-gray-100 px-4 py-2">
                                 <span className="sr-only">{t('columns.error')}</span>
                             </th>
-                            <th className="w-16 border-b border-gray-100 py-2 text-right font-medium">{t('columns.suggestedRaces')}</th>
-                            <th className="border-b border-gray-100 py-2 font-medium">{t('columns.updatedAt')}</th>
-                            <th className="border-b border-gray-100 py-2">
+                            <th className="w-16 border-b border-gray-100 px-4 py-2 text-right font-medium">{t('columns.suggestedRaces')}</th>
+                            <th className="border-b border-gray-100 px-4 py-2 font-medium">{t('columns.updatedAt')}</th>
+                            <th className="border-b border-gray-100 px-4 py-2">
                                 <span className="sr-only">{t('columns.actions')}</span>
                             </th>
                         </tr>
@@ -107,32 +115,47 @@ export function BulkProcessTable({
                             })();
 
                             return (
-                                <tr key={row.id} className="group align-middle">
-                                    <td className="max-w-[260px] truncate border-b border-gray-50 py-2.5 group-last:border-b-0">
-                                        <a
-                                            href={row.url}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-gray-700 hover:underline"
-                                        >
-                                            {cleanUrl(row.url)}
-                                        </a>
+                                <tr
+                                    key={row.id}
+                                    className={`group align-middle ${row.reviewStatus === 'accepted' ? 'bg-green-50' : ''}`}
+                                >
+                                    <td className="max-w-[260px] truncate border-b border-gray-50 px-4 py-2.5 group-last:border-b-0">
+                                        <div className="flex min-w-0 items-center gap-2">
+                                            <a
+                                                href={row.url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="min-w-0 truncate text-gray-700 hover:underline"
+                                            >
+                                                {cleanUrl(row.url)}
+                                            </a>
+                                            {row.acceptedEventId ? (
+                                                <Link
+                                                    href={`/${locale}/admin/eventos/${row.acceptedEventId}`}
+                                                    title={t('actions.openEvent')}
+                                                    aria-label={t('actions.openEvent')}
+                                                    className="inline-flex size-6 shrink-0 items-center justify-center rounded-md text-green-800 transition-colors hover:bg-green-100"
+                                                >
+                                                    <ArrowUpRight className="size-3.5" strokeWidth={2} aria-hidden />
+                                                </Link>
+                                            ) : null}
+                                        </div>
                                     </td>
-                                    <td className="border-b border-gray-50 py-2.5 group-last:border-b-0">
+                                    <td className="border-b border-gray-50 px-4 py-2.5 group-last:border-b-0">
                                         <StateBadge state={row.status} translationsNamespace={translationsNamespace} />
                                     </td>
-                                    <td className="border-b border-gray-50 py-2.5 group-last:border-b-0">
+                                    <td className="border-b border-gray-50 px-4 py-2.5 group-last:border-b-0">
                                         {row.status === 'failed' && row.error && (
                                             <span className="text-xs text-red-600">{row.error}</span>
                                         )}
                                     </td>
-                                    <td className="border-b border-gray-50 py-2.5 text-right group-last:border-b-0">
+                                    <td className="border-b border-gray-50 px-4 py-2.5 text-right group-last:border-b-0">
                                         <RaceCountCell raceCount={row.raceCount} />
                                     </td>
-                                    <td className="border-b border-gray-50 py-2.5 text-gray-500 tabular-nums group-last:border-b-0">
+                                    <td className="border-b border-gray-50 px-4 py-2.5 text-gray-500 tabular-nums group-last:border-b-0">
                                         {(row.status === 'completed' || row.status === 'failed') && formatUpdatedAt(row.updatedAt)}
                                     </td>
-                                    <td className="border-b border-gray-50 py-2.5 text-right group-last:border-b-0">
+                                    <td className="border-b border-gray-50 px-4 py-2.5 text-right group-last:border-b-0">
                                         {row.status === 'completed' ? (
                                             <IconActionMenu
                                                 triggerAriaLabel={t('columns.actions')}

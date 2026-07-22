@@ -1,4 +1,5 @@
 import { createAdminClient } from '@/lib/supabase/server';
+import { ValidationError } from '@/lib/errors';
 import type { OpenRouterScrapeModelId } from '@/lib/integrations/openrouter/scrape-models';
 import type {
   EventImportBatch,
@@ -26,6 +27,9 @@ function toItem(row: EventImportItemRow): EventImportBatchItem {
     batchId: row.batch_id,
     url: row.url,
     status: row.status,
+    reviewStatus: row.review_status,
+    acceptedEventId: row.accepted_event_id,
+    reviewedAt: row.reviewed_at,
     raceCount: row.race_count,
     error: row.error,
     markdown: row.result?.markdown ?? null,
@@ -101,7 +105,7 @@ export async function getPendingBatchItems(
   const { data, error } = await supabase
     .from('event_import_batch_items')
     .select(
-      'id, batch_id, url, status, result, race_count, error, created_at, updated_at',
+      'id, batch_id, url, status, review_status, accepted_event_id, reviewed_at, result, race_count, error, created_at, updated_at',
     )
     .eq('batch_id', batchId)
     .eq('status', 'pending')
@@ -144,7 +148,7 @@ export async function getBatchItems(
   const { data, error } = await supabase
     .from('event_import_batch_items')
     .select(
-      'id, batch_id, url, status, result, race_count, error, created_at, updated_at',
+      'id, batch_id, url, status, review_status, accepted_event_id, reviewed_at, result, race_count, error, created_at, updated_at',
     )
     .eq('batch_id', batchId)
     .order('created_at', { ascending: true });
@@ -264,6 +268,34 @@ export async function getItemResult(
   return (data?.result as EventImportResult | null) ?? null;
 }
 
+export async function getItemResultState(itemId: string): Promise<{
+  result: EventImportResult;
+  reviewStatus: EventImportItemRow['review_status'];
+} | null> {
+  const supabase = createAdminClient();
+
+  const { data, error } = await supabase
+    .from('event_import_batch_items')
+    .select('result, review_status')
+    .eq('id', itemId)
+    .eq('status', 'completed')
+    .maybeSingle();
+
+  if (error) {
+    console.error('Event import item result state fetch error:', error);
+    throw new Error('Failed to fetch event import item result');
+  }
+
+  if (!data?.result) {
+    return null;
+  }
+
+  return {
+    result: data.result as EventImportResult,
+    reviewStatus: data.review_status as EventImportItemRow['review_status'],
+  };
+}
+
 export async function saveItemResult(
   itemId: string,
   result: EventImportResult,
@@ -279,6 +311,7 @@ export async function saveItemResult(
     })
     .eq('id', itemId)
     .eq('status', 'completed')
+    .eq('review_status', 'pending')
     .not('result', 'is', null)
     .select('result')
     .maybeSingle();
@@ -289,4 +322,27 @@ export async function saveItemResult(
   }
 
   return (data?.result as EventImportResult | null) ?? null;
+}
+
+export async function acceptItem(itemId: string): Promise<string> {
+  const supabase = createAdminClient();
+
+  const { data, error } = await supabase.rpc('accept_event_import_item', {
+    p_item_id: itemId,
+  });
+
+  if (error || !data) {
+    if (error?.code === 'P0002') {
+      throw new ValidationError('Item not found', 404);
+    }
+
+    if (error?.code === 'P0003') {
+      throw new ValidationError('Accepted event not found', 409);
+    }
+
+    console.error('Event import item accept rpc error:', error);
+    throw new Error('Failed to accept event import item');
+  }
+
+  return data as string;
 }

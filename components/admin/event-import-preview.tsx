@@ -37,6 +37,7 @@ interface EventImportPreviewProps {
   isAccepting: boolean;
   onReject: () => void;
   isRejected: boolean;
+  showReject?: boolean;
   onSaveReview: (
     event: TrailEventAgentEvent,
     races: TrailEventAgentRace[],
@@ -176,6 +177,7 @@ export function EventImportPreview({
   isAccepting,
   onReject,
   isRejected,
+  showReject = true,
   onSaveReview,
 }: EventImportPreviewProps): React.ReactElement {
   const t = useTranslations('admin.events.import.results');
@@ -279,13 +281,15 @@ export function EventImportPreview({
                 )}
               </div>
               <div className="pointer-events-none flex shrink-0 items-center gap-1 opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
-                <ReviewActionButton
-                  title={isRejected ? t('reviewRejected') : t('rejectEvent')}
-                  disabled={isActionDisabled}
-                  onClick={onReject}
-                >
-                  <X className="h-4 w-4" aria-hidden="true" />
-                </ReviewActionButton>
+                {showReject && (
+                  <ReviewActionButton
+                    title={isRejected ? t('reviewRejected') : t('rejectEvent')}
+                    disabled={isActionDisabled}
+                    onClick={onReject}
+                  >
+                    <X className="h-4 w-4" aria-hidden="true" />
+                  </ReviewActionButton>
+                )}
                 <ReviewActionButton
                   title={t('editReview')}
                   disabled={isActionDisabled}

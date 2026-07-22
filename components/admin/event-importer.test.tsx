@@ -15,10 +15,17 @@ interface PreviewProps {
     event: TrailEventAgentEvent,
     races: TrailEventAgentRace[],
   ) => Promise<void> | void;
+  onAccept: () => Promise<void>;
+  isAccepted: boolean;
+  showReject?: boolean;
 }
 
 interface BulkTableProps {
-  rows: Array<{ id: string }>;
+  rows: Array<{
+    id: string;
+    reviewStatus: 'pending' | 'accepted';
+    acceptedEventId: string | null;
+  }>;
   onViewResult?: (itemId: string) => void;
 }
 
@@ -27,6 +34,8 @@ const mocks = vi.hoisted(() => ({
   getEventImportBatchStatus: vi.fn(),
   getEventImportItemResult: vi.fn(),
   updateEventImportItemResult: vi.fn(),
+  acceptEventImportItem: vi.fn(),
+  acceptScrapedEvent: vi.fn(),
   toastSuccess: vi.fn(),
   toastError: vi.fn(),
 }));
@@ -43,11 +52,12 @@ vi.mock('react-hot-toast', () => ({
 vi.mock('@/lib/api/events', () => ({
   runTrailEventAgent: vi.fn(),
   runEventImport: vi.fn(),
-  acceptScrapedEvent: vi.fn(),
+  acceptScrapedEvent: mocks.acceptScrapedEvent,
   startEventImportBatch: mocks.startEventImportBatch,
   getEventImportBatchStatus: mocks.getEventImportBatchStatus,
   getEventImportItemResult: mocks.getEventImportItemResult,
   updateEventImportItemResult: mocks.updateEventImportItemResult,
+  acceptEventImportItem: mocks.acceptEventImportItem,
 }));
 vi.mock('@/lib/api/pending-events', () => ({ addPendingEvents: vi.fn() }));
 vi.mock('@/components/admin/import-cost-summary', () => ({
@@ -58,18 +68,31 @@ vi.mock('@/components/ui/race-conflict-modal', () => ({
 }));
 vi.mock('@/components/admin/bulk-process-table', () => ({
   BulkProcessTable: ({ rows, onViewResult }: BulkTableProps) => (
-    <button type="button" onClick={() => onViewResult?.(rows[0].id)}>
-      open-batch-result
-    </button>
+    <div>
+      <span>{rows[0].reviewStatus}</span>
+      {rows[0].acceptedEventId ? <span>{rows[0].acceptedEventId}</span> : null}
+      <button type="button" onClick={() => onViewResult?.(rows[0].id)}>
+        open-batch-result
+      </button>
+    </div>
   ),
 }));
 vi.mock('@/components/admin/event-import-preview', () => ({
-  EventImportPreview: ({ event, races, onSaveReview }: PreviewProps) => {
+  EventImportPreview: ({
+    event,
+    races,
+    onSaveReview,
+    onAccept,
+    isAccepted,
+    showReject,
+  }: PreviewProps) => {
     if (!event) return null;
 
     return (
       <div>
         <span>{event.description}</span>
+        <span>{isAccepted ? 'preview-accepted' : 'preview-pending'}</span>
+        <span>{showReject === false ? 'reject-hidden' : 'reject-visible'}</span>
         <button
           type="button"
           onClick={() =>
@@ -80,6 +103,9 @@ vi.mock('@/components/admin/event-import-preview', () => ({
           }
         >
           save-batch-review
+        </button>
+        <button type="button" onClick={() => void onAccept()}>
+          accept-batch-result
         </button>
       </div>
     );
@@ -146,6 +172,9 @@ beforeEach(() => {
         batchId: 'batch-1',
         url: originalResult.url,
         status: 'completed',
+        reviewStatus: 'pending',
+        acceptedEventId: null,
+        reviewedAt: null,
         raceCount: 1,
         error: null,
         markdown: originalResult.markdown,
@@ -162,6 +191,8 @@ beforeEach(() => {
       ...input,
     }),
   );
+  mocks.acceptEventImportItem.mockResolvedValue({ eventId: 'event-1' });
+  mocks.acceptScrapedEvent.mockResolvedValue({ id: 'single-event-1' });
 });
 
 afterEach(cleanup);
@@ -196,6 +227,48 @@ describe('EventImporter batch review', () => {
       });
       expect(screen.getByText('Persisted edited description')).toBeTruthy();
       expect(mocks.toastSuccess).toHaveBeenCalledWith('bulk.reviewSaveSuccess');
+    });
+  });
+
+  it('accepts the persisted batch item, stays in the batch, and restores its accepted state', async () => {
+    render(<EventImporter pendingEntries={[]} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'workflowBulk' }));
+    fireEvent.change(screen.getByLabelText('bulk.urlsLabel'), {
+      target: { value: originalResult.url },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'runWorkflowButton' }));
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'open-batch-result' })).toBeTruthy();
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'open-batch-result' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('reject-hidden')).toBeTruthy();
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'accept-batch-result' }));
+
+    await waitFor(() => {
+      expect(mocks.acceptEventImportItem).toHaveBeenCalledWith(ITEM_ID);
+      expect(screen.getAllByText('accepted').length).toBeGreaterThan(0);
+      expect(screen.getByText('event-1')).toBeTruthy();
+      expect(screen.getByText('preview-accepted')).toBeTruthy();
+      expect(screen.getByRole('button', { name: 'open-batch-result' })).toBeTruthy();
+    });
+  });
+
+  it('keeps single imports on the existing create-event flow with rejection visible', async () => {
+    render(<EventImporter pendingEntries={[]} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'loadDummyPreview' }));
+
+    expect(screen.getByText('reject-visible')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'accept-batch-result' }));
+
+    await waitFor(() => {
+      expect(mocks.acceptScrapedEvent).toHaveBeenCalledOnce();
+      expect(mocks.acceptEventImportItem).not.toHaveBeenCalled();
     });
   });
 });

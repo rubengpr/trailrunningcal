@@ -67,4 +67,36 @@ describe('EventImportPreview race tiers', () => {
     expect(screen.getByText('Gratis')).toBeTruthy();
     expect(screen.getByText('5K')).toBeTruthy();
   });
+
+  it('can hide rejection while keeping accepted previews immutable', () => {
+    render(
+      <NextIntlClientProvider locale="es" messages={es}>
+        <EventImportPreview
+          event={{ name: 'Accepted Event', description: null, websiteUrl: null }}
+          races={[{
+            name: '10K',
+            date: '2027-05-01',
+            city: 'Girona',
+            province: 'Girona',
+            distanceKm: 10,
+            elevationGainM: 300,
+            tiers: [],
+          }]}
+          isLoading={false}
+          error={null}
+          onAccept={vi.fn()}
+          isAccepted
+          isAccepting={false}
+          onReject={vi.fn()}
+          isRejected={false}
+          showReject={false}
+          onSaveReview={vi.fn()}
+        />
+      </NextIntlClientProvider>,
+    );
+
+    expect(screen.queryByTitle('Rechazar evento')).toBeNull();
+    expect(screen.getByTitle('Editar')).toHaveProperty('disabled', true);
+    expect(screen.getByTitle('Evento aceptado')).toHaveProperty('disabled', true);
+  });
 });

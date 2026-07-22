@@ -897,6 +897,7 @@
           "resultError": "Error al cargar el resultado",
           "reviewSaveSuccess": "Cambios del lote guardados",
           "reviewSaveError": "Error al guardar los cambios del lote",
+          "acceptError": "Error al aceptar el elemento del lote",
           "statusSummary": "{completed} completadas · {failed} fallidas",
           "columns": {
             "url": "URL",
@@ -914,6 +915,7 @@
           },
           "actions": {
             "viewResult": "Ver resultado",
+            "openEvent": "Ver evento",
             "loading": "Cargando...",
             "downloadMarkdown": "Markdown",
             "downloadJson": "JSON"

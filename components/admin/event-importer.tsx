@@ -32,6 +32,7 @@ import {
     runTrailEventAgent,
     runEventImport,
     acceptScrapedEvent,
+    acceptEventImportItem,
     startEventImportBatch,
     getEventImportBatchStatus,
     getEventImportItemResult,
@@ -829,6 +830,33 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
         if (!scrapedEvent) return;
         dispatch({ type: 'ACCEPTING_INDEX', index: 0 });
         try {
+            if (reviewingBatchItemId) {
+                const { eventId } = await acceptEventImportItem(reviewingBatchItemId);
+                const updatedAt = new Date().toISOString();
+
+                setBatchSnapshot((current) => {
+                    if (!current) return current;
+
+                    return {
+                        ...current,
+                        items: current.items.map((item) =>
+                            item.id === reviewingBatchItemId
+                                ? {
+                                    ...item,
+                                    reviewStatus: 'accepted',
+                                    acceptedEventId: eventId,
+                                    reviewedAt: updatedAt,
+                                    updatedAt,
+                                }
+                                : item,
+                        ),
+                    };
+                });
+                dispatch({ type: 'RACE_ACCEPT', index: 0 });
+                toast.success(t('results.acceptSuccess'));
+                return;
+            }
+
             const reviewedWebsiteUrl = websiteUrl.trim();
             await acceptScrapedEvent(
                 {
@@ -842,7 +870,11 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
             dispatch({ type: 'RACE_ACCEPT', index: 0 });
             toast.success(t('results.acceptSuccess'));
         } catch (err) {
-            const errorMessage = err instanceof Error ? err.message : t('results.acceptError');
+            const errorMessage = reviewingBatchItemId
+                ? t('bulk.acceptError')
+                : err instanceof Error
+                    ? err.message
+                    : t('results.acceptError');
             toast.error(errorMessage);
         } finally {
             dispatch({ type: 'ACCEPTING_INDEX', index: null });
@@ -1106,6 +1138,8 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
             id: item.id,
             url: item.url,
             status: item.status,
+            reviewStatus: item.reviewStatus,
+            acceptedEventId: item.acceptedEventId,
             raceCount: item.raceCount,
             error: item.error,
             updatedAt: item.updatedAt,
@@ -1527,10 +1561,18 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                         ) : undefined
                     }
                     onAccept={handleAccept}
-                    isAccepted={acceptedIndexes.has(0)}
+                    isAccepted={
+                        acceptedIndexes.has(0) ||
+                        batchSnapshot?.items.some(
+                            (item) =>
+                                item.id === reviewingBatchItemId &&
+                                item.reviewStatus === 'accepted',
+                        ) === true
+                    }
                     isAccepting={acceptingIndex === 0}
                     onReject={handleReject}
                     isRejected={rejectedIndexes.has(0)}
+                    showReject={reviewingBatchItemId === null}
                     onSaveReview={handleSaveReview}
                 />
             )}
