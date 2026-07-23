@@ -66,6 +66,11 @@ describe('EventImportPreview race tiers', () => {
     expect(screen.getByText(/45/).textContent).toContain('hasta 28/02/2027');
     expect(screen.getByText('Gratis')).toBeTruthy();
     expect(screen.getByText('5K')).toBeTruthy();
+
+    const actions = screen.getByTitle('Aceptar evento').parentElement;
+    expect(
+      Array.from(actions?.querySelectorAll('button') ?? []).map((button) => button.title),
+    ).toEqual(['Aceptar evento', 'Rechazar evento', 'Editar']);
   });
 
   it('can hide rejection while keeping accepted previews immutable', () => {

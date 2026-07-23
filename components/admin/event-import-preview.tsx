@@ -250,6 +250,8 @@ export function EventImportPreview({
     try {
       await onSaveReview(nextEvent, nextRaces);
       setIsEditing(false);
+    } catch {
+      // The parent owns user feedback. Keep the edit form open with its values.
     } finally {
       setIsSavingReview(false);
     }
@@ -281,6 +283,18 @@ export function EventImportPreview({
                 )}
               </div>
               <div className="pointer-events-none flex shrink-0 items-center gap-1 opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
+                <ReviewActionButton
+                  title={isAccepted ? t('reviewAccepted') : t('acceptEvent')}
+                  disabled={isActionDisabled}
+                  onClick={() => void onAccept()}
+                  variant="primary"
+                >
+                  {isAccepting ? (
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                  ) : (
+                    <Check className="h-4 w-4" aria-hidden="true" />
+                  )}
+                </ReviewActionButton>
                 {showReject && (
                   <ReviewActionButton
                     title={isRejected ? t('reviewRejected') : t('rejectEvent')}
@@ -296,18 +310,6 @@ export function EventImportPreview({
                   onClick={handleStartEdit}
                 >
                   <TextCursor className="h-3.5 w-3.5" aria-hidden="true" />
-                </ReviewActionButton>
-                <ReviewActionButton
-                  title={isAccepted ? t('reviewAccepted') : t('acceptEvent')}
-                  disabled={isActionDisabled}
-                  onClick={() => void onAccept()}
-                  variant="primary"
-                >
-                  {isAccepting ? (
-                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                  ) : (
-                    <Check className="h-4 w-4" aria-hidden="true" />
-                  )}
                 </ReviewActionButton>
               </div>
             </div>

@@ -895,6 +895,7 @@
           "runError": "Error al ejecutar el proceso automático",
           "pollError": "Error al actualizar el estado del lote",
           "resultError": "Error al cargar el resultado",
+          "closePreview": "Cerrar vista previa",
           "reviewSaveSuccess": "Cambios del lote guardados",
           "reviewSaveError": "Error al guardar los cambios del lote",
           "acceptError": "Error al aceptar el elemento del lote",

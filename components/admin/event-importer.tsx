@@ -14,6 +14,7 @@ import { IconActionMenu } from '@/components/ui/icon-action-menu';
 import { TabSwitcher } from '@/components/ui/tab-switcher';
 import { SectionHeader } from '@/components/ui/section-header';
 import { EventImportPreview } from '@/components/admin/event-import-preview';
+import { EventImportPreviewModal } from '@/components/admin/event-import-preview-modal';
 import { ImportCostSummary } from '@/components/admin/import-cost-summary';
 import { cleanUrl } from '@/lib/utils/url';
 import {
@@ -493,6 +494,8 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
     const [isStartingBatch, setIsStartingBatch] = useState(false);
     const [viewingBatchItemId, setViewingBatchItemId] = useState<string | null>(null);
     const [reviewingBatchItemId, setReviewingBatchItemId] = useState<string | null>(null);
+    const [reviewingBatchResult, setReviewingBatchResult] = useState<EventImportResult | null>(null);
+    const [isAcceptingBatchItem, setIsAcceptingBatchItem] = useState(false);
     const [isAddingToPending, setIsAddingToPending] = useState(false);
     const fetchedBatchItemIds = useRef<Set<string>>(new Set());
     const [importConflicts, setImportConflicts] = useState<ConflictingRace[]>([]);
@@ -528,6 +531,11 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
     const resetScrapeResults = (): void => {
         dispatch({ type: 'RESULTS_CLEARED' });
     };
+
+    const closeBatchReview = useCallback((): void => {
+        setReviewingBatchItemId(null);
+        setReviewingBatchResult(null);
+    }, []);
 
     const handleAddToPending = async (): Promise<void> => {
         if (isAddingToPending || !websiteUrl) return;
@@ -601,7 +609,7 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
             clearFullPipelineStepRefs();
         }
         if (next !== 'bulk') {
-            setReviewingBatchItemId(null);
+            closeBatchReview();
         }
         setWorkflow(next);
         if (next !== 'llmFromFile') {
@@ -642,7 +650,7 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
         setIsStartingBatch(true);
         setBatchSnapshot(null);
         setActiveBatchId(null);
-        setReviewingBatchItemId(null);
+        closeBatchReview();
         resetScrapeResults();
 
         try {
@@ -809,14 +817,7 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
 
         try {
             const result = await getEventImportItemResult(itemId);
-            setWebsiteUrl(result.url);
-            setCompletedImportStepRefs(result);
-            dispatch({
-                type: 'IMPORT_SUCCESS',
-                result,
-                persistedRows: [],
-                showPipeline: false,
-            });
+            setReviewingBatchResult(result);
             setReviewingBatchItemId(itemId);
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : t('bulk.resultError');
@@ -830,33 +831,6 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
         if (!scrapedEvent) return;
         dispatch({ type: 'ACCEPTING_INDEX', index: 0 });
         try {
-            if (reviewingBatchItemId) {
-                const { eventId } = await acceptEventImportItem(reviewingBatchItemId);
-                const updatedAt = new Date().toISOString();
-
-                setBatchSnapshot((current) => {
-                    if (!current) return current;
-
-                    return {
-                        ...current,
-                        items: current.items.map((item) =>
-                            item.id === reviewingBatchItemId
-                                ? {
-                                    ...item,
-                                    reviewStatus: 'accepted',
-                                    acceptedEventId: eventId,
-                                    reviewedAt: updatedAt,
-                                    updatedAt,
-                                }
-                                : item,
-                        ),
-                    };
-                });
-                dispatch({ type: 'RACE_ACCEPT', index: 0 });
-                toast.success(t('results.acceptSuccess'));
-                return;
-            }
-
             const reviewedWebsiteUrl = websiteUrl.trim();
             await acceptScrapedEvent(
                 {
@@ -870,11 +844,9 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
             dispatch({ type: 'RACE_ACCEPT', index: 0 });
             toast.success(t('results.acceptSuccess'));
         } catch (err) {
-            const errorMessage = reviewingBatchItemId
-                ? t('bulk.acceptError')
-                : err instanceof Error
-                    ? err.message
-                    : t('results.acceptError');
+            const errorMessage = err instanceof Error
+                ? err.message
+                : t('results.acceptError');
             toast.error(errorMessage);
         } finally {
             dispatch({ type: 'ACCEPTING_INDEX', index: null });
@@ -886,26 +858,61 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
         toast.success(t('results.reviewRejected'));
     };
 
-    const handleSaveReview = async (
+    const handleSaveReview = (
+        event: TrailEventAgentEvent,
+        races: TrailEventAgentRace[],
+    ): void => {
+        dispatch({ type: 'REVIEW_EDITED', event, races });
+    };
+
+    const handleAcceptBatchItem = async (): Promise<void> => {
+        if (!reviewingBatchItemId || isAcceptingBatchItem) return;
+
+        setIsAcceptingBatchItem(true);
+
+        try {
+            const { eventId } = await acceptEventImportItem(reviewingBatchItemId);
+            const updatedAt = new Date().toISOString();
+
+            setBatchSnapshot((current) => {
+                if (!current) return current;
+
+                return {
+                    ...current,
+                    items: current.items.map((item) =>
+                        item.id === reviewingBatchItemId
+                            ? {
+                                ...item,
+                                reviewStatus: 'accepted',
+                                acceptedEventId: eventId,
+                                reviewedAt: updatedAt,
+                                updatedAt,
+                            }
+                            : item,
+                    ),
+                };
+            });
+            closeBatchReview();
+            toast.success(t('results.acceptSuccess'));
+        } catch {
+            toast.error(t('bulk.acceptError'));
+        } finally {
+            setIsAcceptingBatchItem(false);
+        }
+    };
+
+    const handleSaveBatchReview = async (
         event: TrailEventAgentEvent,
         races: TrailEventAgentRace[],
     ): Promise<void> => {
-        if (!reviewingBatchItemId) {
-            dispatch({ type: 'REVIEW_EDITED', event, races });
-            return;
-        }
+        if (!reviewingBatchItemId) return;
 
         try {
             const result = await updateEventImportItemResult(
                 reviewingBatchItemId,
                 { event, races },
             );
-            dispatch({
-                type: 'REVIEW_EDITED',
-                event: result.event ?? event,
-                races: result.races,
-            });
-            setWebsiteUrl(result.event?.websiteUrl ?? '');
+            setReviewingBatchResult(result);
             setBatchSnapshot((current) => {
                 if (!current) return current;
 
@@ -999,7 +1006,7 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
         setActiveBatchId(null);
         setBatchSnapshot(null);
         setViewingBatchItemId(null);
-        setReviewingBatchItemId(null);
+        closeBatchReview();
         fetchedBatchItemIds.current.clear();
         fileUpload.clearUpload();
         runStartedAtRef.current = null;
@@ -1025,7 +1032,9 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
     };
 
     const showImportPreview =
-        workflow !== 'ingest'
+        workflow === 'bulk'
+            ? false
+            : workflow !== 'ingest'
             ? isScraping || hasScraped
             : hasScraped && scrapeError !== null;
 
@@ -1038,7 +1047,7 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                     ? t('crawlingMarkdown')
                     : t('scraping');
 
-    const showLlmMetricsUi = workflow !== 'ingest';
+    const showLlmMetricsUi = workflow !== 'ingest' && workflow !== 'bulk';
 
     const fullPipelineSteps = useMemo((): {
         row1: FullPipelineRowConfig;
@@ -1147,6 +1156,10 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
             rawModelOutput: item.rawModelOutput,
         })) ?? [];
     }, [batchSnapshot]);
+
+    const reviewingBatchItem = reviewingBatchItemId
+        ? batchSnapshot?.items.find((item) => item.id === reviewingBatchItemId) ?? null
+        : null;
 
     return (
         <div className="flex flex-col gap-8">
@@ -1418,7 +1431,8 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                                 {t('runWorkflowButton')}
                             </span>
                         </Button>
-                        {(scrapeMarkdown || (rawModelOutput !== null && rawModelOutput !== '')) && (
+                        {workflow !== 'bulk' &&
+                            (scrapeMarkdown || (rawModelOutput !== null && rawModelOutput !== '')) && (
                             <IconActionMenu
                                 triggerAriaLabel={t('downloadMenuTriggerLabel')}
                                 disabled={isScraping}
@@ -1561,18 +1575,10 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                         ) : undefined
                     }
                     onAccept={handleAccept}
-                    isAccepted={
-                        acceptedIndexes.has(0) ||
-                        batchSnapshot?.items.some(
-                            (item) =>
-                                item.id === reviewingBatchItemId &&
-                                item.reviewStatus === 'accepted',
-                        ) === true
-                    }
+                    isAccepted={acceptedIndexes.has(0)}
                     isAccepting={acceptingIndex === 0}
                     onReject={handleReject}
                     isRejected={rejectedIndexes.has(0)}
-                    showReject={reviewingBatchItemId === null}
                     onSaveReview={handleSaveReview}
                 />
             )}
@@ -1596,7 +1602,28 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                     />
                 </div>
             )}
-            {jsonView && hasScraped && !isScraping && scrapeError === null && (
+            <EventImportPreviewModal
+                isOpen={reviewingBatchResult !== null && reviewingBatchItem !== null}
+                closeLabel={t('bulk.closePreview')}
+                onClose={closeBatchReview}
+            >
+                {reviewingBatchResult && reviewingBatchItem ? (
+                    <EventImportPreview
+                        event={reviewingBatchResult.event}
+                        races={reviewingBatchResult.races}
+                        isLoading={false}
+                        error={null}
+                        onAccept={handleAcceptBatchItem}
+                        isAccepted={reviewingBatchItem.reviewStatus === 'accepted'}
+                        isAccepting={isAcceptingBatchItem}
+                        onReject={() => undefined}
+                        isRejected={false}
+                        showReject={false}
+                        onSaveReview={handleSaveBatchReview}
+                    />
+                ) : null}
+            </EventImportPreviewModal>
+            {workflow !== 'bulk' && jsonView && hasScraped && !isScraping && scrapeError === null && (
                 <div className="max-w-3xl flex flex-col gap-3">
                     <textarea
                         value={jsonEditorValue}

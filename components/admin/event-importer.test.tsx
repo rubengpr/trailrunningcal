@@ -214,6 +214,7 @@ describe('EventImporter batch review', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Original description')).toBeTruthy();
+      expect(screen.getByTestId('event-import-preview-backdrop')).toBeTruthy();
     });
     fireEvent.click(screen.getByRole('button', { name: 'save-batch-review' }));
 
@@ -230,7 +231,7 @@ describe('EventImporter batch review', () => {
     });
   });
 
-  it('accepts the persisted batch item, stays in the batch, and restores its accepted state', async () => {
+  it('accepts the persisted batch item, closes the modal, and restores read-only state when reopened', async () => {
     render(<EventImporter pendingEntries={[]} />);
 
     fireEvent.click(screen.getByRole('button', { name: 'workflowBulk' }));
@@ -253,8 +254,42 @@ describe('EventImporter batch review', () => {
       expect(mocks.acceptEventImportItem).toHaveBeenCalledWith(ITEM_ID);
       expect(screen.getAllByText('accepted').length).toBeGreaterThan(0);
       expect(screen.getByText('event-1')).toBeTruthy();
-      expect(screen.getByText('preview-accepted')).toBeTruthy();
+      expect(screen.queryByTestId('event-import-preview-backdrop')).toBeNull();
       expect(screen.getByRole('button', { name: 'open-batch-result' })).toBeTruthy();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'open-batch-result' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('preview-accepted')).toBeTruthy();
+      expect(screen.getByText('reject-hidden')).toBeTruthy();
+    });
+  });
+
+  it('keeps the batch preview open when acceptance fails', async () => {
+    mocks.acceptEventImportItem.mockRejectedValue(new Error('accept failed'));
+    render(<EventImporter pendingEntries={[]} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'workflowBulk' }));
+    fireEvent.change(screen.getByLabelText('bulk.urlsLabel'), {
+      target: { value: originalResult.url },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'runWorkflowButton' }));
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'open-batch-result' })).toBeTruthy();
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'open-batch-result' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('preview-pending')).toBeTruthy();
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'accept-batch-result' }));
+
+    await waitFor(() => {
+      expect(mocks.toastError).toHaveBeenCalledWith('bulk.acceptError');
+      expect(screen.getByTestId('event-import-preview-backdrop')).toBeTruthy();
+      expect(screen.getByText('preview-pending')).toBeTruthy();
     });
   });
 
@@ -264,6 +299,7 @@ describe('EventImporter batch review', () => {
     fireEvent.click(screen.getByRole('button', { name: 'loadDummyPreview' }));
 
     expect(screen.getByText('reject-visible')).toBeTruthy();
+    expect(screen.queryByTestId('event-import-preview-backdrop')).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: 'accept-batch-result' }));
 
     await waitFor(() => {

@@ -863,6 +863,7 @@
           "runError": "Error en executar el procés automàtic",
           "pollError": "Error en actualitzar l'estat del lot",
           "resultError": "Error en carregar el resultat",
+          "closePreview": "Tancar vista prèvia",
           "reviewSaveSuccess": "Canvis del lot desats",
           "reviewSaveError": "Error en desar els canvis del lot",
           "acceptError": "Error en acceptar l'element del lot",

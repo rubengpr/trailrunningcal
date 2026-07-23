@@ -13,7 +13,6 @@ import {
   RefreshCw,
   TextCursor,
   Trash2,
-  X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { BaseModal } from '@/components/ui/base-modal';
@@ -26,6 +25,7 @@ import {
   TableCell,
 } from '@/components/ui/table';
 import { EventImportPreview } from '@/components/admin/event-import-preview';
+import { EventImportPreviewModal } from '@/components/admin/event-import-preview-modal';
 import { EventRacesEditModal } from '@/components/admin/event-races-edit-modal';
 import {
   deleteEvent,
@@ -156,18 +156,6 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
   useEffect(() => {
     setPendingDraftsByEventId(getPendingDraftsByEventId(events));
   }, [events]);
-
-  useEffect(() => {
-    if (!reviewEventId) return;
-
-    const handleKeyDown = (event: KeyboardEvent): void => {
-      if (event.key === 'Escape') setReviewEventId(null);
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [reviewEventId]);
 
   const setDraftGenerating = (eventId: string, isGenerating: boolean): void => {
     setGeneratingDraftEventIds((ids) => {
@@ -510,37 +498,26 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
       />
 
       {reviewEventDetail && reviewDraft && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-gray-900/60 px-4 py-10 backdrop-blur-[1px] sm:py-14">
-          <button
-            type="button"
-            className="absolute inset-0 cursor-default"
-            onClick={() => setReviewEventId(null)}
+        <EventImportPreviewModal
+          isOpen
+          closeLabel={t('updateSuggestion.closeButton')}
+          onClose={() => setReviewEventId(null)}
+        >
+          <EventImportPreview
+            event={reviewDraft.data.event}
+            races={reviewDraft.data.races}
+            isLoading={false}
+            error={null}
+            onAccept={() => handleAcceptDraft(reviewEventDetail.event.id)}
+            isAccepted={false}
+            isAccepting={acceptingDraftId === reviewDraft.id}
+            onReject={() => void handleRejectDraft(reviewEventDetail.event.id)}
+            isRejected={false}
+            onSaveReview={(event, races) =>
+              handleSaveDraftReview(reviewEventDetail.event.id, event, races)
+            }
           />
-          <div className="relative z-10 w-full max-w-4xl">
-            <button
-              type="button"
-              onClick={() => setReviewEventId(null)}
-              title={t('updateSuggestion.closeButton')}
-              className="absolute -top-3 -right-3 z-20 inline-flex size-9 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 shadow-sm transition-colors hover:text-gray-900 cursor-pointer"
-            >
-              <X className="size-4" strokeWidth={1.5} />
-            </button>
-            <EventImportPreview
-              event={reviewDraft.data.event}
-              races={reviewDraft.data.races}
-              isLoading={false}
-              error={null}
-              onAccept={() => handleAcceptDraft(reviewEventDetail.event.id)}
-              isAccepted={false}
-              isAccepting={acceptingDraftId === reviewDraft.id}
-              onReject={() => void handleRejectDraft(reviewEventDetail.event.id)}
-              isRejected={false}
-              onSaveReview={(event, races) =>
-                handleSaveDraftReview(reviewEventDetail.event.id, event, races)
-              }
-            />
-          </div>
-        </div>
+        </EventImportPreviewModal>
       )}
 
       <BaseModal
