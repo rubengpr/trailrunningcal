@@ -295,6 +295,13 @@ export function EventImportPreview({
                     <Check className="h-4 w-4" aria-hidden="true" />
                   )}
                 </ReviewActionButton>
+                <ReviewActionButton
+                  title={t('editReview')}
+                  disabled={isActionDisabled}
+                  onClick={handleStartEdit}
+                >
+                  <TextCursor className="h-3.5 w-3.5" aria-hidden="true" />
+                </ReviewActionButton>
                 {showReject && (
                   <ReviewActionButton
                     title={isRejected ? t('reviewRejected') : t('rejectEvent')}
@@ -304,13 +311,6 @@ export function EventImportPreview({
                     <X className="h-4 w-4" aria-hidden="true" />
                   </ReviewActionButton>
                 )}
-                <ReviewActionButton
-                  title={t('editReview')}
-                  disabled={isActionDisabled}
-                  onClick={handleStartEdit}
-                >
-                  <TextCursor className="h-3.5 w-3.5" aria-hidden="true" />
-                </ReviewActionButton>
               </div>
             </div>
             <dl className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">

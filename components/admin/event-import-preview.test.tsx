@@ -70,7 +70,7 @@ describe('EventImportPreview race tiers', () => {
     const actions = screen.getByTitle('Aceptar evento').parentElement;
     expect(
       Array.from(actions?.querySelectorAll('button') ?? []).map((button) => button.title),
-    ).toEqual(['Aceptar evento', 'Rechazar evento', 'Editar']);
+    ).toEqual(['Aceptar evento', 'Editar', 'Rechazar evento']);
   });
 
   it('can hide rejection while keeping accepted previews immutable', () => {
