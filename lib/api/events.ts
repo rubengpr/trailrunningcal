@@ -283,7 +283,7 @@ export async function updateEventImportItemResult(
 
 export async function acceptEventImportItem(
   itemId: string,
-): Promise<{ eventId: string }> {
+): Promise<{ eventId: string; eventSlug: string }> {
   const response = await fetch(`/api/events/import/batch-items/${itemId}`, {
     method: 'POST',
   });

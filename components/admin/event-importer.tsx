@@ -871,7 +871,7 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
         setIsAcceptingBatchItem(true);
 
         try {
-            const { eventId } = await acceptEventImportItem(reviewingBatchItemId);
+            const { eventId, eventSlug } = await acceptEventImportItem(reviewingBatchItemId);
             const updatedAt = new Date().toISOString();
 
             setBatchSnapshot((current) => {
@@ -885,6 +885,7 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                                 ...item,
                                 reviewStatus: 'accepted',
                                 acceptedEventId: eventId,
+                                acceptedEventSlug: eventSlug,
                                 reviewedAt: updatedAt,
                                 updatedAt,
                             }
@@ -1149,6 +1150,7 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
             status: item.status,
             reviewStatus: item.reviewStatus,
             acceptedEventId: item.acceptedEventId,
+            acceptedEventSlug: item.acceptedEventSlug,
             raceCount: item.raceCount,
             error: item.error,
             updatedAt: item.updatedAt,

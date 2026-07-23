@@ -175,10 +175,16 @@ describe('updateItemResult', () => {
 });
 
 describe('acceptItem', () => {
-  it('returns the event id created by the atomic database operation', async () => {
-    mocks.acceptItem.mockResolvedValue('event-1');
+  it('returns the public identity created by the atomic database operation', async () => {
+    mocks.acceptItem.mockResolvedValue({
+      eventId: 'event-1',
+      eventSlug: 'accepted-event',
+    });
 
-    await expect(acceptItem(ITEM_ID)).resolves.toEqual({ eventId: 'event-1' });
+    await expect(acceptItem(ITEM_ID)).resolves.toEqual({
+      eventId: 'event-1',
+      eventSlug: 'accepted-event',
+    });
     expect(mocks.acceptItem).toHaveBeenCalledWith(ITEM_ID);
   });
 });

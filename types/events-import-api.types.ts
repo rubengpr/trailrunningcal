@@ -81,6 +81,7 @@ export interface EventImportBatchItem {
   status: EventImportItemStatus;
   reviewStatus: EventImportItemReviewStatus;
   acceptedEventId: string | null;
+  acceptedEventSlug: string | null;
   reviewedAt: string | null;
   raceCount: number | null;
   error: string | null;

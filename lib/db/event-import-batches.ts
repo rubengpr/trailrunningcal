@@ -21,7 +21,10 @@ function toBatch(row: EventImportRow): EventImportBatch {
   };
 }
 
-function toItem(row: EventImportItemRow): EventImportBatchItem {
+function toItem(
+  row: EventImportItemRow,
+  acceptedEventSlug: string | null = null,
+): EventImportBatchItem {
   return {
     id: row.id,
     batchId: row.batch_id,
@@ -29,6 +32,7 @@ function toItem(row: EventImportItemRow): EventImportBatchItem {
     status: row.status,
     reviewStatus: row.review_status,
     acceptedEventId: row.accepted_event_id,
+    acceptedEventSlug,
     reviewedAt: row.reviewed_at,
     raceCount: row.race_count,
     error: row.error,
@@ -116,7 +120,7 @@ export async function getPendingBatchItems(
     throw new Error('Failed to fetch event import batch items');
   }
 
-  return ((data ?? []) as EventImportItemRow[]).map(toItem);
+  return ((data ?? []) as EventImportItemRow[]).map((row) => toItem(row));
 }
 
 export async function getBatchSnapshotData(
@@ -158,7 +162,37 @@ export async function getBatchItems(
     throw new Error('Failed to fetch event import batch items');
   }
 
-  return ((data ?? []) as EventImportItemRow[]).map(toItem);
+  const rows = (data ?? []) as EventImportItemRow[];
+  const acceptedEventIds = rows.flatMap((row) =>
+    row.accepted_event_id ? [row.accepted_event_id] : [],
+  );
+
+  if (acceptedEventIds.length === 0) {
+    return rows.map((row) => toItem(row));
+  }
+
+  const { data: acceptedEvents, error: acceptedEventsError } = await supabase
+    .from('events')
+    .select('id, slug')
+    .in('id', acceptedEventIds);
+
+  if (acceptedEventsError) {
+    console.error('Accepted event slugs fetch error:', acceptedEventsError);
+    throw new Error('Failed to fetch accepted event slugs');
+  }
+
+  const acceptedEventSlugs = new Map(
+    (acceptedEvents ?? []).map((event) => [event.id, event.slug]),
+  );
+
+  return rows.map((row) =>
+    toItem(
+      row,
+      row.accepted_event_id
+        ? acceptedEventSlugs.get(row.accepted_event_id) ?? null
+        : null,
+    ),
+  );
 }
 
 export async function updateBatchStatus(
@@ -324,7 +358,9 @@ export async function saveItemResult(
   return (data?.result as EventImportResult | null) ?? null;
 }
 
-export async function acceptItem(itemId: string): Promise<string> {
+export async function acceptItem(
+  itemId: string,
+): Promise<{ eventId: string; eventSlug: string }> {
   const supabase = createAdminClient();
 
   const { data, error } = await supabase.rpc('accept_event_import_item', {
@@ -344,5 +380,18 @@ export async function acceptItem(itemId: string): Promise<string> {
     throw new Error('Failed to accept event import item');
   }
 
-  return data as string;
+  if (
+    typeof data !== 'object' ||
+    Array.isArray(data) ||
+    typeof data.event_id !== 'string' ||
+    typeof data.event_slug !== 'string'
+  ) {
+    console.error('Event import item accept rpc returned invalid data');
+    throw new Error('Failed to accept event import item');
+  }
+
+  return {
+    eventId: data.event_id,
+    eventSlug: data.event_slug,
+  };
 }

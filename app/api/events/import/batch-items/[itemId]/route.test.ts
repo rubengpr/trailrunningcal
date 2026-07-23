@@ -180,14 +180,20 @@ describe('POST /api/events/import/batch-items/[itemId]', () => {
   });
 
   it('accepts a completed item and returns its event id', async () => {
-    mocks.acceptItem.mockResolvedValue({ eventId: 'event-1' });
+    mocks.acceptItem.mockResolvedValue({
+      eventId: 'event-1',
+      eventSlug: 'accepted-event',
+    });
 
     const response = await POST(postRequest, context());
 
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
       success: true,
-      data: { eventId: 'event-1' },
+      data: {
+        eventId: 'event-1',
+        eventSlug: 'accepted-event',
+      },
     });
   });
 

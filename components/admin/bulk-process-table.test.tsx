@@ -22,6 +22,7 @@ const rows: BulkProcessTableRow[] = [
     status: 'completed',
     reviewStatus: 'pending',
     acceptedEventId: null,
+    acceptedEventSlug: null,
     raceCount: 1,
     error: null,
     updatedAt: '2026-07-22T10:00:00.000Z',
@@ -34,6 +35,7 @@ const rows: BulkProcessTableRow[] = [
     status: 'completed',
     reviewStatus: 'accepted',
     acceptedEventId: 'event-1',
+    acceptedEventSlug: 'accepted-event',
     raceCount: 2,
     error: null,
     updatedAt: '2026-07-22T11:00:00.000Z',
@@ -46,6 +48,7 @@ const rows: BulkProcessTableRow[] = [
     status: 'failed',
     reviewStatus: 'pending',
     acceptedEventId: null,
+    acceptedEventSlug: null,
     raceCount: null,
     error: 'Extraction failed',
     updatedAt: '2026-07-22T12:00:00.000Z',
@@ -80,7 +83,7 @@ describe('BulkProcessTable', () => {
     const acceptedRow = screen.getByText('example.com/accepted').closest('tr');
     expect(acceptedRow?.className).toContain('bg-green-50');
     const eventLink = screen.getByRole('link', { name: 'Ver evento' });
-    expect(eventLink.getAttribute('href')).toBe('/es/admin/eventos/event-1');
+    expect(eventLink.getAttribute('href')).toBe('/es/e/accepted-event');
     expect(eventLink.querySelector('svg')).toBeTruthy();
   });
 

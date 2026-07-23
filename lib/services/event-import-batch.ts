@@ -103,8 +103,10 @@ export async function updateItemResult(
   return updated;
 }
 
-export async function acceptItem(itemId: string): Promise<{ eventId: string }> {
-  return { eventId: await acceptItemInDatabase(itemId) };
+export async function acceptItem(
+  itemId: string,
+): Promise<{ eventId: string; eventSlug: string }> {
+  return acceptItemInDatabase(itemId);
 }
 
 export async function startEventImportBatch(input: {

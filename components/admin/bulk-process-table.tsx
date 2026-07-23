@@ -26,6 +26,7 @@ export interface BulkProcessTableRow {
   status: BulkProcessState;
   reviewStatus: EventImportItemReviewStatus;
   acceptedEventId: string | null;
+  acceptedEventSlug: string | null;
   raceCount: number | null;
   error: string | null;
   updatedAt: string;
@@ -135,9 +136,9 @@ export function BulkProcessTable({
                   >
                     {cleanUrl(row.url)}
                   </a>
-                  {row.acceptedEventId ? (
+                  {row.acceptedEventSlug ? (
                     <Link
-                      href={`/${locale}/admin/eventos/${row.acceptedEventId}`}
+                      href={`/${locale}/e/${row.acceptedEventSlug}`}
                       title={t('actions.openEvent')}
                       aria-label={t('actions.openEvent')}
                       className="inline-flex size-6 shrink-0 items-center justify-center rounded-md text-green-800 transition-colors hover:bg-green-100"

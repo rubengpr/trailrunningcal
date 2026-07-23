@@ -25,6 +25,7 @@ interface BulkTableProps {
     id: string;
     reviewStatus: 'pending' | 'accepted';
     acceptedEventId: string | null;
+    acceptedEventSlug: string | null;
   }>;
   onViewResult?: (itemId: string) => void;
 }
@@ -71,6 +72,7 @@ vi.mock('@/components/admin/bulk-process-table', () => ({
     <div>
       <span>{rows[0].reviewStatus}</span>
       {rows[0].acceptedEventId ? <span>{rows[0].acceptedEventId}</span> : null}
+      {rows[0].acceptedEventSlug ? <span>{rows[0].acceptedEventSlug}</span> : null}
       <button type="button" onClick={() => onViewResult?.(rows[0].id)}>
         open-batch-result
       </button>
@@ -174,6 +176,7 @@ beforeEach(() => {
         status: 'completed',
         reviewStatus: 'pending',
         acceptedEventId: null,
+        acceptedEventSlug: null,
         reviewedAt: null,
         raceCount: 1,
         error: null,
@@ -191,7 +194,10 @@ beforeEach(() => {
       ...input,
     }),
   );
-  mocks.acceptEventImportItem.mockResolvedValue({ eventId: 'event-1' });
+  mocks.acceptEventImportItem.mockResolvedValue({
+    eventId: 'event-1',
+    eventSlug: 'accepted-event',
+  });
   mocks.acceptScrapedEvent.mockResolvedValue({ id: 'single-event-1' });
 });
 
@@ -254,6 +260,7 @@ describe('EventImporter batch review', () => {
       expect(mocks.acceptEventImportItem).toHaveBeenCalledWith(ITEM_ID);
       expect(screen.getAllByText('accepted').length).toBeGreaterThan(0);
       expect(screen.getByText('event-1')).toBeTruthy();
+      expect(screen.getByText('accepted-event')).toBeTruthy();
       expect(screen.queryByTestId('event-import-preview-backdrop')).toBeNull();
       expect(screen.getByRole('button', { name: 'open-batch-result' })).toBeTruthy();
     });

@@ -143,9 +143,13 @@ integrationDescribe('accept_event_import_item integration', () => {
     ]);
 
     expect(attempts.every(({ error }) => error === null)).toBe(true);
-    const acceptedEventId = attempts[0].data as string;
+    const accepted = attempts[0].data as {
+      event_id: string;
+      event_slug: string;
+    };
+    const acceptedEventId = accepted.event_id;
     eventIds.push(acceptedEventId);
-    expect(attempts[1].data).toBe(acceptedEventId);
+    expect(attempts[1].data).toEqual(accepted);
 
     const [itemResult, eventResult, racesResult] = await Promise.all([
       supabase
@@ -215,11 +219,12 @@ integrationDescribe('accept_event_import_item integration', () => {
 
   it('retains accepted history and clears the link when its event is deleted', async () => {
     const itemId = await createCompletedItem(resultFixture(randomUUID()));
-    const { data: eventId, error: acceptError } = await supabase.rpc(
+    const { data: accepted, error: acceptError } = await supabase.rpc(
       'accept_event_import_item',
       { p_item_id: itemId },
     );
     expect(acceptError).toBeNull();
+    const eventId = (accepted as { event_id: string }).event_id;
 
     const { error: deleteError } = await supabase
       .from('events')
