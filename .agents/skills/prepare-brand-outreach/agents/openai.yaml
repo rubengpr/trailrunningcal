@@ -1,0 +1,17 @@
+interface:
+  display_name: "Prepare Brand Outreach"
+  short_description: "Research leads and draft brand outreach"
+  default_prompt: "Use $prepare-brand-outreach to research a brand URL, update the Leads CRM, select a contact, and create a Gmail draft."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "prospeo"
+      description: "Primary provider for verified professional email enrichment"
+      transport: "streamable_http"
+      url: "https://mcp.prospeo.io"
+    - type: "mcp"
+      value: "hunter"
+      description: "Fallback provider for professional email finding and verification"
+      transport: "streamable_http"
+      url: "https://mcp.hunter.io/mcp"
