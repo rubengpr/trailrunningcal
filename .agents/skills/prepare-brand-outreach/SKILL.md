@@ -26,10 +26,11 @@ Prepare one reviewable outreach opportunity from one company URL. Complete the r
 ### 2. Research and qualify
 
 1. Identify the precise company, official domain, market, corporate LinkedIn, products, target customers, geographic footprint, and evidence of activity in Spain or Iberia.
-2. Look for a timely, specific reason to contact the company now: a launch, expansion, distribution change, campaign, category focus, retail presence, event activity, or another relevant signal.
-3. Prefer official company sources and reliable public sources. Record the source URL and publication or access date for every dynamic claim used in the email.
-4. Apply the `brand-sponsor-fit` rubric. Treat 65 as the minimum FitScore for automatically spending contact-provider credits and creating a draft.
-5. If FitScore is below 65, update the supported CRM research fields, preserve the existing commercial state, and stop before paid contact lookup or Gmail drafting. Do not infer `Cerrado sin éxito`.
+2. Identify one current business priority the company is visibly investing in and that Trail Running Cal can credibly support through repeated visibility among trail runners in Catalonia or Spain. Look for expansion into Spain, a relevant product launch, distribution growth, a category push, or an active event or community strategy.
+3. Find a recent, concrete signal proving that priority is active. Prefer the initiative with the clearest connection to awareness, consideration, adoption, or market entry over a merely recent company announcement.
+4. Prefer official company sources and reliable public sources. Record the source URL and publication or access date for every dynamic claim used in the email.
+5. Apply the `brand-sponsor-fit` rubric. Treat 65 as the minimum FitScore for automatically spending contact-provider credits and creating a draft.
+6. If FitScore is below 65, update the supported CRM research fields, preserve the existing commercial state, and stop before paid contact lookup or Gmail drafting. Do not infer `Cerrado sin éxito`.
 
 ### 3. Upsert the CRM record
 
@@ -71,13 +72,12 @@ Default credit ceiling: at most one person lookup per provider per company. Do n
 Use the approved structure in [references/email-template.md](references/email-template.md).
 
 - Write in Spanish by default; adapt only when the contact's working language is clearly different.
-- Keep one factual, company-specific personalization.
-- Introduce Ruben as founder, explain briefly what Trailrunningcal is, how its premium promotional placements help brands, and the concrete repeated brand impact received by site users.
-- Mention only approved Trail Running Cal metrics.
-- Describe collaborative measurement of impressions, clicks, and conversions.
+- Follow this progression: important company objective → Trail Running Cal as an easy way to strengthen recognition and presence in the Spanish trail community → relevant scale and growth metrics → social proof → CTA.
+- Open by explaining naturally how Ruben found the company and name the active initiatives that demonstrate the objective. Do not substitute generic praise or unrelated recent news.
+- Preserve the template's approved figures: approximately 12,000 monthly runners in Catalonia, a forecast of 60–100k across Spain by year-end, and two existing Spanish brand relationships.
+- Keep the availability framing tentative. Ask whether it would make sense to consider the company when new spaces or commercial actions open, then offer a Media Kit or call.
 - Do not name existing partner brands.
-- Use one simple CTA.
-- Keep the message concise and natural; do not add unsupported praise or generic advice.
+- Keep the message concise, clear, conversational, and founder-led.
 
 ### 7. Create the Gmail draft
 
