@@ -176,5 +176,17 @@ describe('race tier extraction normalization', () => {
     expect(TRAIL_EVENT_AGENT_INSTRUCTIONS).toContain(
       'exclude member/federation discounts',
     );
+    expect(TRAIL_EVENT_AGENT_INSTRUCTIONS).toContain(
+      'An omitted year alone is not ambiguity',
+    );
+    expect(TRAIL_EVENT_AGENT_INSTRUCTIONS).toContain(
+      'A missing final deadline alone is not ambiguity',
+    );
+    expect(TRAIL_EVENT_AGENT_INSTRUCTIONS).toContain(
+      'subtract that surcharge to obtain the general-public base price',
+    );
+    expect(TRAIL_EVENT_AGENT_INSTRUCTIONS).toContain(
+      'For one flat price, use the explicit registration closing date',
+    );
   });
 });

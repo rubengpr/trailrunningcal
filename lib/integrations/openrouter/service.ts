@@ -8,6 +8,7 @@ import type { OpenRouterServiceResult } from '@/lib/integrations/openrouter/agen
 import { checkDescriptionLang } from '@/lib/integrations/openrouter/description-language';
 import { checkDescriptionFormat } from '@/lib/integrations/openrouter/description-format';
 import { filterFutureRaces } from '@/lib/integrations/openrouter/filter-future-races';
+import { recoverMissingRaceTiers } from '@/lib/integrations/openrouter/race-tier-recovery';
 import type {
   OpenRouterScrapeModelId,
   OpenRouterVisionModelId,
@@ -32,7 +33,8 @@ export async function extractFromMarkdown(
   validateMarkdownLength(markdown);
   const client = createOpenRouterClient();
   const result = await runMarkdownAgent(client, markdown, model);
-  const languageChecked = await checkDescriptionLang(client, result);
+  const tierChecked = await recoverMissingRaceTiers(client, markdown, result);
+  const languageChecked = await checkDescriptionLang(client, tierChecked);
   const formatChecked = await checkDescriptionFormat(client, languageChecked);
   return filterFutureRaces(formatChecked);
 }

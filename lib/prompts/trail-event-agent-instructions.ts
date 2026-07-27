@@ -34,7 +34,9 @@ Return structured JSON with event, races, and errorMessage.
 - **race.elevationGainM**: number in meters, or null if not stated. Parse forms like +1200m, 1200m, 1.200, 1500 m+.
 - **race.tiers**: up to 5 {priceEur, endsAt} registration prices in source order; use [] when pricing is absent, ambiguous, or unreliable—never guess.
   - Use the general-public base price only; exclude member/federation discounts, licenses, insurance, merchandise, extras, and platform/payment fees. Copy a shared schedule only when the source explicitly applies it to those races.
+  - When a non-federated price includes a stated mandatory license or insurance surcharge, subtract that surcharge to obtain the general-public base price. Use the federated price only when it equals that calculated base; never include the surcharge.
   - Use 0 only when explicitly free; otherwise round to the nearest whole euro (.5 upward).
+  - For one flat price, use the explicit registration closing date as endsAt; otherwise use null.
   - One tier may set endsAt null. Multiple tiers require an inclusive, unique, strictly increasing YYYY-MM-DD endsAt on every row; never sort or repair an unclear schedule.
   - When a tier deadline omits the year and race.date is known, infer it from the race date: use the race year unless the deadline would fall after the race date, then use the previous year. An omitted year alone is not ambiguity.
   - When the last tier has a start date but no end date, use the stated registration closing date as endsAt; otherwise use race.date. A missing final deadline alone is not ambiguity when race.date is known.

@@ -11,6 +11,9 @@ const mocks = vi.hoisted(() => ({
   createOpenRouterClient: vi.fn(),
   runMarkdownAgent: vi.fn(),
   runImagesAgent: vi.fn(),
+  recoverMissingRaceTiers: vi.fn(
+    async (_client: unknown, _markdown: string, result: unknown) => result,
+  ),
   franc: vi.fn(),
 }));
 
@@ -25,6 +28,10 @@ vi.mock('@/lib/integrations/openrouter/client', () => ({
 vi.mock('@/lib/integrations/openrouter/agents', () => ({
   runMarkdownAgent: mocks.runMarkdownAgent,
   runImagesAgent: mocks.runImagesAgent,
+}));
+
+vi.mock('@/lib/integrations/openrouter/race-tier-recovery', () => ({
+  recoverMissingRaceTiers: mocks.recoverMissingRaceTiers,
 }));
 
 import { extractFromMarkdown } from './service';
@@ -105,6 +112,30 @@ afterEach(() => {
 });
 
 describe('extractFromMarkdown description translation', () => {
+  it('runs tier recovery before description checks', async () => {
+    const client = clientWithCompletion('unused');
+    const extracted = result(event());
+    const recovered = {
+      ...extracted,
+      races: [race({ tiers: [{ priceEur: 30, endsAt: null }] })],
+    };
+    mocks.createOpenRouterClient.mockReturnValue(client);
+    mocks.runMarkdownAgent.mockResolvedValue(extracted);
+    mocks.recoverMissingRaceTiers.mockResolvedValueOnce(recovered);
+    mocks.franc.mockReturnValue('spa');
+
+    const output = await extractFromMarkdown(MARKDOWN, MODEL);
+
+    expect(mocks.recoverMissingRaceTiers).toHaveBeenCalledWith(
+      client,
+      MARKDOWN,
+      extracted,
+    );
+    expect(output.races[0].tiers).toEqual([
+      { priceEur: 30, endsAt: null },
+    ]);
+  });
+
   it('keeps Spanish descriptions unchanged', async () => {
     const client = clientWithCompletion('unused');
     const extracted = result(event());

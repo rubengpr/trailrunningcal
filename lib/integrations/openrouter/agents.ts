@@ -13,9 +13,8 @@ import type {
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 import { TRAIL_EVENT_AGENT_INSTRUCTIONS } from '@/lib/prompts/trail-event-agent-instructions';
 import { TimeoutError } from '@/lib/errors';
-import { validateRaceTierSchedule } from '@/lib/events/tier-validation';
+import { normalizeRaceTiers } from '@/lib/events/tier-normalization';
 import { normalizeRaceName } from '@/lib/races/utils';
-import type { TrailEventAgentRaceTier } from '@/types/trail-event-agent.types';
 
 export interface OpenRouterServiceResult {
   event: TrailEventAgentEvent | null;
@@ -25,34 +24,11 @@ export interface OpenRouterServiceResult {
   usage: OpenRouterScrapeUsage | null;
 }
 
-function normalizeTiers(value: unknown): TrailEventAgentRaceTier[] {
-  if (!Array.isArray(value)) return [];
-
-  const tiers: TrailEventAgentRaceTier[] = [];
-
-  for (const item of value) {
-    if (typeof item !== 'object' || item === null) return [];
-
-    const { priceEur, endsAt } = item as Record<string, unknown>;
-    if (typeof priceEur !== 'number' || !Number.isFinite(priceEur)) return [];
-    if (endsAt !== null && typeof endsAt !== 'string') return [];
-
-    tiers.push({
-      priceEur: Math.round(priceEur),
-      endsAt: typeof endsAt === 'string' && endsAt.trim() !== ''
-        ? endsAt.trim()
-        : null,
-    });
-  }
-
-  return validateRaceTierSchedule(tiers) === null ? tiers : [];
-}
-
 function normalizeRaces(races: TrailEventAgentRace[]): TrailEventAgentRace[] {
   return races.map((race) => ({
     ...race,
     name: normalizeRaceName(race.name),
-    tiers: normalizeTiers(
+    tiers: normalizeRaceTiers(
       (race as TrailEventAgentRace & { tiers?: unknown }).tiers,
     ),
   }));
@@ -92,7 +68,7 @@ function parseAgentOutput(outputText: string): TrailEventAgentParsed | null {
   return null;
 }
 
-function mapCompletionUsageToScrapeUsage(
+export function mapCompletionUsageToScrapeUsage(
   usage: unknown,
 ): OpenRouterScrapeUsage | null {
   if (usage === null || usage === undefined || typeof usage !== 'object') {
