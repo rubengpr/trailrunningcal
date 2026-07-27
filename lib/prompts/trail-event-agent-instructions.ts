@@ -37,6 +37,7 @@ Return structured JSON with event, races, and errorMessage.
   - Use 0 only when explicitly free; otherwise round to the nearest whole euro (.5 upward).
   - One tier may set endsAt null. Multiple tiers require an inclusive, unique, strictly increasing YYYY-MM-DD endsAt on every row; never sort or repair an unclear schedule.
   - When a tier deadline omits the year and race.date is known, infer it from the race date: use the race year unless the deadline would fall after the race date, then use the previous year. An omitted year alone is not ambiguity.
+  - When the last tier has a start date but no end date, use the stated registration closing date as endsAt; otherwise use race.date. A missing final deadline alone is not ambiguity when race.date is known.
 - **races**: one object for each unique race matched. If nothing qualifies, return races as an empty array.
 - **errorMessage**: null when event is not null and at least one race is returned. When event is null or races is empty, set errorMessage to a concise Spanish sentence explaining why—e.g. the edition is cancelled, there are no trail race distances found, all dates are in the past, etc.
 
