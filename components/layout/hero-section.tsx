@@ -38,7 +38,7 @@ export function HeroSection({
 
   return (
     <section
-      className="relative min-w-0 overflow-hidden h-[62svh] min-h-[360px] max-h-[680px] lg:h-[72svh] lg:max-h-[800px] bg-white bg-[url(/contour-lines-classic.jpg)] bg-cover bg-center"
+      className="relative min-w-0 overflow-hidden h-[62svh] min-h-[360px] max-h-[680px] lg:h-[72svh] lg:max-h-[800px] bg-white bg-[url(/contour-lines-classic.webp)] bg-cover bg-center"
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={() => setActive(false)}
