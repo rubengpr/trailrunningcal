@@ -82,6 +82,52 @@ Les inscripcions es tancaran l'1 de setembre de 2026.
 La samarreta opcional costa 18€.
 `;
 
+const OLLA_DE_NURIA_NOISY_PRICING = `
+## Mitja Olla
+**Data:** 21 de setembre del 2025
+### Inscripcions
+**PREU INSCRIPCIÓ: **30€
+* -5€ Socis Unió Excursionista de Vic
+* 10€ NO federats
+
+## Valls de L'Olla
+**Data:** 20 de setembre del 2026
+### Categories i premis
+1r classificat: 1500€
+2n classificat: 800€
+3r classificat: 300€
+### Inscripcions
+Del 19/05 a les 20:00h fins el 22/05 a les 23:59h: INSCRIPCIONS
+PREU INSCRIPCIÓ: 49€
+* -5€ Socis Unió Excursionista de Vic
+* 10€ NO federats
+* 10€ assegurança devolució
+Fins el 31 de maig es retornarà el 100 % menys 5€ per gestió.
+
+## Olla Vertical
+**Data:** 19 de setembre del 2026
+### Inscripcions
+**DATA INICI INSCRIPCIONS: **19 de maig
+**PREU INSCRIPCIÓ: **27€
+* -5€ Socis Unió Excursionista de Vic
+* 10€ NO federats
+* 5€ assegurança devolució
+
+## Mitja Olla
+**Data:** 20 de setembre del 2026
+### Inscripcions
+**DATA INICI INSCRIPCIONS: **19 de maig
+**PREU INSCRIPCIÓ: **32€
+* -5€ Socis Unió Excursionista de Vic
+* 10€ NO federats
+* 5€ assegurança devolució
+
+## Olletes
+Cursa per a infants i joves de 4 a 15 anys.
+**PREU INSCRIPCIÓ: **22€
+* 5€ NO federats
+`;
+
 function race(
   overrides: Partial<TrailEventAgentRace> = {},
 ): TrailEventAgentRace {
@@ -420,6 +466,50 @@ describe('race tier recovery', () => {
     );
     expect(prompt).toContain(
       'For one flat price, use the explicit registration closing date',
+    );
+  });
+
+  it('recovers adult Olla de Núria prices from noisy mixed evidence', async () => {
+    const { client, create } = clientWithOutput({
+      races: [
+        {
+          raceIndex: 0,
+          tiers: [{ priceEur: 49, endsAt: '2026-05-22' }],
+        },
+        {
+          raceIndex: 1,
+          tiers: [{ priceEur: 27, endsAt: null }],
+        },
+        {
+          raceIndex: 2,
+          tiers: [{ priceEur: 32, endsAt: null }],
+        },
+      ],
+    });
+    const initial = result([
+      race({ name: "Valls de L'Olla", date: '2026-09-20', distanceKm: 24 }),
+      race({ name: 'Olla Vertical', date: '2026-09-19', distanceKm: 3.78 }),
+      race({ name: 'Mitja Olla', date: '2026-09-20', distanceKm: 12.5 }),
+    ]);
+
+    const output = await recoverMissingRaceTiers(
+      client,
+      OLLA_DE_NURIA_NOISY_PRICING,
+      initial,
+    );
+    const prompt = create.mock.calls[0][0].messages[0].content as string;
+
+    expect(output.races.map(({ tiers }) => tiers)).toEqual([
+      [{ priceEur: 49, endsAt: '2026-05-22' }],
+      [{ priceEur: 27, endsAt: null }],
+      [{ priceEur: 32, endsAt: null }],
+    ]);
+    expect(prompt).toContain('1r classificat: 1500€');
+    expect(prompt).toContain('**PREU INSCRIPCIÓ: **30€');
+    expect(prompt).toContain('**PREU INSCRIPCIÓ: **22€');
+    expect(prompt).toContain("Don't use prices for child/youth races");
+    expect(prompt).toContain(
+      'exclude member/federation discounts, licenses, insurance',
     );
   });
 
