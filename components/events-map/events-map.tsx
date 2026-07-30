@@ -42,8 +42,7 @@ const DEFAULT_CENTER: [number, number] = [2.1734, 41.3851];
 const DEFAULT_ZOOM = 7;
 
 /** GeoJSON from codeforgermany/click_that_hood (OpenStreetMap-derived boundaries). */
-const SPAIN_CCAA_GEOJSON_URL = '/geo/spain-communities.geojson';
-const SPAIN_PROVINCES_GEOJSON_URL = '/geo/spain-provinces.geojson';
+const SPAIN_BOUNDARIES_GEOJSON_URL = '/geo/spain-boundaries.geojson';
 
 /** 16px circle marker; offset is uniform [x, y] so the tip stays centered (not `number`, which skews corners). */
 const EVENT_MARKER_RADIUS_PX = 8;
@@ -82,36 +81,33 @@ function ArrowUpRightIcon({ className }: { className?: string }): ReactElement {
 
 function addSpainBoundaryLayers(map: maplibregl.Map): void {
   try {
-    // Pass URLs so MapLibre loads GeoJSON in the worker (efficient for ~2.6MB total).
-    map.addSource('spain-ccaa', {
+    map.addSource('spain-boundaries', {
       type: 'geojson',
-      data: SPAIN_CCAA_GEOJSON_URL,
+      data: SPAIN_BOUNDARIES_GEOJSON_URL,
     });
     map.addLayer({
       id: 'spain-ccaa-outline',
       type: 'line',
-      source: 'spain-ccaa',
+      source: 'spain-boundaries',
+      filter: ['==', ['get', 'level'], 'community'],
       paint: {
         'line-color': '#334155',
         'line-width': 2,
         'line-opacity': 0.92,
       },
     });
-
-    map.addSource('spain-provinces', {
-      type: 'geojson',
-      data: SPAIN_PROVINCES_GEOJSON_URL,
-    });
     map.addLayer({
       id: 'spain-provinces-outline',
       type: 'line',
-      source: 'spain-provinces',
+      source: 'spain-boundaries',
+      filter: ['==', ['get', 'level'], 'province'],
       paint: {
         'line-color': '#94a3b8',
         'line-width': 0.85,
         'line-opacity': 0.88,
       },
     });
+    map.getContainer().dataset.boundaryLevels = '2';
   } catch (error) {
     console.error('Failed to add Spain boundary layers:', error);
   }
