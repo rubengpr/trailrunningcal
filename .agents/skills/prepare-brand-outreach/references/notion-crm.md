@@ -16,7 +16,7 @@ Fetch the database before writing in case its schema has changed.
 | `FitScore` | number | 0–100 using `brand-sponsor-fit` |
 | `Industria` | select | Use an existing option only |
 | `Prioridad` | select | `Alta` at 80+, `Media` at 65–79, `Baja` below 65 |
-| `HQ` | place | Municipality and province/state only; no street address |
+| `HQ` | text | Best evidence-backed headquarters location available; prefer `City, region/state, country`, but keep partial or less structured location data rather than leaving it blank |
 | `LinkedIn` | URL | Corporate LinkedIn |
 | `Facturación anual` | select | Evidence-backed bracket only |
 | `Empleados` | select | Evidence-backed bracket only |
