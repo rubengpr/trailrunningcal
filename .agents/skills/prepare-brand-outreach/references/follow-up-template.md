@@ -1,6 +1,6 @@
-# Approved follow-up outreach
+# Approved daily follow-up outreach
 
-Use this reference only after the skill establishes `follow-up` mode from the complete Gmail thread and Notion history.
+Use this reference only in `daily-follow-up-review` mode. Apply its rules independently to each candidate after reading the complete Gmail thread and Notion history.
 
 ## Eligibility and cadence
 
@@ -103,4 +103,4 @@ Never send more than three unanswered follow-ups without explicit user approval 
 
 ## Draft-only rule
 
-Create a reviewable Gmail reply draft. Never send, schedule, or enroll it in an automated sequence. Creating a draft must not change the Notion commercial state or contact dates.
+Before creating a draft, confirm that no equivalent reply draft already exists in the thread and refresh the thread for new activity. Create a reviewable Gmail reply draft only. Never send, schedule, or enroll it in an automated sequence. Creating a draft must not change the Notion commercial state or contact dates.

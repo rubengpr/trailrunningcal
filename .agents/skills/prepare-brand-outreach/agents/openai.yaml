@@ -1,7 +1,7 @@
 interface:
   display_name: "Prepare Brand Outreach"
-  short_description: "Research and draft initial or follow-up outreach"
-  default_prompt: "Use $prepare-brand-outreach to prepare a brand's initial outreach or decide whether an existing lead needs a personalized Gmail follow-up draft."
+  short_description: "Draft initial and daily follow-up outreach"
+  default_prompt: "Use $prepare-brand-outreach to prepare initial outreach for one brand or run the daily follow-up review and create eligible Gmail drafts."
 
 dependencies:
   tools:
