@@ -1,0 +1,4 @@
+interface:
+  display_name: "Brand Sponsor Fit"
+  short_description: "Qualify sponsorship leads for Trail Running Cal"
+  default_prompt: "Use $brand-sponsor-fit to assess [brand] as a Trail Running Cal sponsor."
