@@ -33,13 +33,16 @@ An existing commercial thread blocks an 'initial' draft. Do not fall back to a s
 
 Apply this method only when a draft is otherwise eligible.
 
-1. Identify one current business priority the company is visibly investing in and that Trail Running Cal can credibly support through repeated visibility among trail runners in Catalonia or Spain.
-2. Select exactly one strategic signal from the allowed categories: Spanish or European expansion; relevant product launch or category push; trail-running positioning or investment; athlete, race, team, or circuit sponsorship; distributor, store, or channel entry; or a relevant campaign or activation.
-3. Prefer the initiative with the clearest connection to awareness, consideration, adoption, distribution, or market entry.
-4. Translate the evidence using: verifiable fact → strategic objective → how Trail Running Cal helps.
-5. Prefer official company sources and reliable public sources. Use the company's own terminology where practical. Record the source URL and publication or access date for every dynamic claim used.
-6. Reject a strategic point that could be sent unchanged to a direct competitor. Never invent or exaggerate a launch, expansion, priority, objective, or source.
-7. If no sufficiently specific and verifiable point exists, classify the opportunity as 'research needed' and do not create a draft.
+1. Identify one current business priority the company is visibly investing in and that Trail Running Cal can credibly support among trail runners in Catalonia or Spain.
+2. Select exactly one objective: enter or grow in Spain; build awareness for a new product, range, or category; strengthen trail-running positioning; extend the value of a sponsorship or activation; or support a new Spanish distributor, store, or sales channel.
+3. Select the strongest verifiable signal supporting that objective: a launch or category push; Spanish expansion; trail-running investment; athlete, race, team, or circuit sponsorship; channel entry; or a relevant campaign or activation.
+4. Translate the evidence internally using: verifiable signal → likely strategic objective → credible Trail Running Cal contribution. Lead the email with the objective and contribution; use the signal only as supporting context.
+5. Frame an inferred objective as a commercial hypothesis, such as `creo que podemos ayudaros a...`, rather than claiming to know an unconfirmed internal plan.
+6. Prefer awareness, discovery, consideration, adoption, or Spanish market entry outcomes. Mention increasing sales only when a concrete, measurable conversion or affiliate format supports the claim; never promise sales.
+7. Treat a wider European, French, or Southern European expansion only as context. Describe Trail Running Cal's contribution specifically to Spain; never imply reach in markets the product does not serve.
+8. Prefer official company sources and reliable public sources. Use the company's own terminology where practical. Record the source URL and publication or access date for every dynamic claim used.
+9. Reject a strategic point that could be sent unchanged to a direct competitor. Never invent or exaggerate a launch, expansion, priority, objective, outcome, or source.
+10. If no sufficiently specific and verifiable point exists, classify the opportunity as 'research needed' and do not create a draft.
 
 ## Initial outreach workflow
 
@@ -98,9 +101,11 @@ Default credit ceiling: at most one person lookup per provider per company. Do n
 
 1. Use [references/email-template.md](references/email-template.md).
 2. Write in Spanish by default; adapt only when the contact's working language is clearly different.
-3. Repeat the Gmail duplicate check after resolving the final recipient.
-4. Create one draft addressed only to the selected contact.
-5. Never send, schedule, or enroll the contact in a sequence.
+3. Put the selected strategic objective in the first substantive sentence after Ruben's introduction. Do not open with how the company was discovered or with a generic observation about it.
+4. Read the current audience and market metrics from the installed `product-context` skill. Do not reuse figures from memory, older drafts, or other skills, and do not include an unverified forecast.
+5. Repeat the Gmail duplicate check after resolving the final recipient.
+6. Create one draft addressed only to the selected contact.
+7. Never send, schedule, or enroll the contact in a sequence.
 
 ### 7. Finalize Notion after the initial draft
 

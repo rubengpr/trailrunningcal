@@ -24,7 +24,7 @@ Never treat an automated acknowledgement, delivery notification, newsletter, or 
 
 Select exactly one verifiable signal from:
 
-- Spanish or European expansion;
+- Spanish expansion, or the Spanish part of a wider European expansion;
 - a relevant product launch or category push;
 - trail-running positioning or investment;
 - an athlete, race, team, or circuit sponsorship;
@@ -50,6 +50,8 @@ Confidence: high | medium | low
 ```
 
 Draft only at high or medium confidence. The final sentence must state an outcome for the company, not merely mention an event. If the sentence could be sent unchanged to a direct competitor, it is too generic. If no valid point exists, return `RESEARCH NEEDED` rather than inventing one.
+
+Frame an inferred objective as a hypothesis rather than a known internal plan. Limit Trail Running Cal's contribution to Catalonia or Spain; never imply reach in France, Europe, or Southern Europe. Mention sales only when a concrete measurable conversion or affiliate format supports the claim, and never promise increased sales.
 
 Examples of valid outcomes:
 
