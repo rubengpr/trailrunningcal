@@ -26,6 +26,7 @@ function rpcParameters(offset: number) {
     p_race_types: [],
     p_scope_province: 'Codex Automated Pagination',
     p_scope_race_type: null,
+    p_include_locations: false,
   };
 }
 
@@ -113,6 +114,8 @@ integrationDescribe('get_public_events_page integration', () => {
     expect(firstPage.data).toHaveLength(100);
     expect(firstPage.data?.[0].total_count).toBe(105);
     expect(firstPage.data?.[0].name).toBe('Pagination 000');
+    expect(firstPage.data?.[0].races?.[0]).not.toHaveProperty('latitude');
+    expect(firstPage.data?.[0].races?.[0]).not.toHaveProperty('longitude');
     expect(firstPage.data?.[99].name).toBe('Pagination 099');
     expect(secondPage.data).toHaveLength(5);
     expect(secondPage.data?.[0].name).toBe('Pagination 100');
@@ -136,5 +139,27 @@ integrationDescribe('get_public_events_page integration', () => {
     expect(emptyPage.events).toHaveLength(0);
     expect(emptyPage.total).toBe(105);
     expect(emptyPage.hasMore).toBe(false);
+  });
+
+  it('returns only requested public event locations to anonymous users', async () => {
+    const { data: knownLocation, error: locationError } = await admin
+      .from('city_locations')
+      .select('city, province, latitude, longitude')
+      .limit(1)
+      .single();
+    if (locationError || !knownLocation) {
+      throw locationError ?? new Error('No location fixture available');
+    }
+
+    const { data, error } = await anonymous.rpc('get_public_event_locations', {
+      p_locations: [
+        { city: knownLocation.city, province: knownLocation.province },
+        { city: knownLocation.city, province: knownLocation.province },
+        { city: 'Missing fixture', province: 'Missing fixture' },
+      ],
+    });
+    if (error) throw error;
+
+    expect(data).toEqual([knownLocation]);
   });
 });
