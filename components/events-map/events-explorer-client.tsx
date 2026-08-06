@@ -3,9 +3,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useFeatureFlagVariantKey } from 'posthog-js/react';
-import type { PublicEventDetail } from '@/types/event.types';
 import type { Locale } from '@/i18n';
-import type { EventMapMarker, MapPageLabels } from '@/types/map.types';
+import type { MapPageLabels } from '@/types/map.types';
+import type {
+  PublicEventFilters,
+  PublicEventPage,
+  PublicEventScope,
+} from '@/types/public-events.types';
 import { EventsExplorerFiltersSection } from '@/components/events-map/events-explorer-filters-section';
 import { MobileFiltersButton } from '@/components/filters/mobile-filters-button';
 import { MobileFiltersModal } from '@/components/filters/mobile-filters-modal';
@@ -22,8 +26,9 @@ import { Search, RefreshCw, TriangleAlert } from 'lucide-react';
 import { useMinWidthLg } from '@/hooks/use-min-width-lg';
 import { useScrollEdges } from '@/hooks/use-scroll-edges';
 import { useMobileFilters } from '@/components/providers/mobile-filters-provider';
-import { filterHomeEvents } from '@/lib/events/utils';
-import { filterEventMapMarkersByEventIds } from '@/lib/events/map';
+import { mergeEventMapMarkers } from '@/lib/events/map';
+import { getPublicEventPage } from '@/lib/api/events';
+import { isRaceCategorySlug } from '@/lib/races/race-types';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { track } from '@/lib/analytics/track';
 
@@ -38,8 +43,8 @@ type FiltersAppliedVariant =
 type FilterType = 'month' | 'province' | 'distance' | 'race_type' | 'apply';
 
 interface EventsExplorerClientProps {
-  events: PublicEventDetail[];
-  markers: EventMapMarker[];
+  initialPage: PublicEventPage;
+  scope?: PublicEventScope;
   locale: Locale;
   labels: MapPageLabels;
   showProvinceFilter?: boolean;
@@ -47,8 +52,8 @@ interface EventsExplorerClientProps {
 }
 
 export function EventsExplorerClient({
-  events,
-  markers,
+  initialPage,
+  scope,
   locale,
   labels,
   showProvinceFilter = true,
@@ -60,7 +65,19 @@ export function EventsExplorerClient({
   const tMap = useTranslations('map');
   const [mobileView, setMobileView] = useState<MobileView>('list');
   const [desktopLayout, setDesktopLayout] = useState<DesktopLayout>('both');
+  const [events, setEvents] = useState(initialPage.events);
+  const [markers, setMarkers] = useState(initialPage.markers);
+  const [page, setPage] = useState(initialPage.page);
+  const [total, setTotal] = useState(initialPage.total);
+  const [hasMore, setHasMore] = useState(initialPage.hasMore);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [requestError, setRequestError] = useState<'refresh' | 'load-more' | null>(null);
+  const [filtersHydrated, setFiltersHydrated] = useState(false);
+  const [retryToken, setRetryToken] = useState(0);
   const pillsScrollRef = useRef<HTMLDivElement>(null);
+  const skippedInitialEmptyFiltersRef = useRef(false);
+  const loadMoreControllerRef = useRef<AbortController | null>(null);
 
   const isDesktopMap = useMinWidthLg();
   const v2Variant = useFeatureFlagVariantKey('filter-flag-v2');
@@ -102,33 +119,108 @@ export function EventsExplorerClient({
       if (!isActive) return;
 
       setSelectedMonth(readStoredFilter('filter_month'));
-      setSelectedProvince(readStoredFilter('filter_province'));
+      setSelectedProvince(
+        showProvinceFilter ? readStoredFilter('filter_province') : [],
+      );
       setSelectedDistance(readStoredFilter('filter_distance'));
       setSelectedRaceType(readStoredFilter('filter_type'));
+      setFiltersHydrated(true);
     });
 
     return () => {
       isActive = false;
     };
-  }, []);
+  }, [showProvinceFilter]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
     sessionStorage.setItem('filter_month', JSON.stringify(selectedMonth));
-    sessionStorage.setItem('filter_province', JSON.stringify(selectedProvince));
+    if (showProvinceFilter) {
+      sessionStorage.setItem('filter_province', JSON.stringify(selectedProvince));
+    }
     sessionStorage.setItem('filter_distance', JSON.stringify(selectedDistance));
     sessionStorage.setItem('filter_type', JSON.stringify(selectedRaceType));
-  }, [selectedMonth, selectedProvince, selectedDistance, selectedRaceType]);
+  }, [
+    selectedMonth,
+    selectedProvince,
+    selectedDistance,
+    selectedRaceType,
+    showProvinceFilter,
+  ]);
 
-  const filteredEvents = useMemo(
-    () => filterHomeEvents(events, selectedMonth, selectedProvince, selectedDistance, selectedRaceType),
-    [events, selectedMonth, selectedProvince, selectedDistance, selectedRaceType],
-  );
+  const filters = useMemo<PublicEventFilters>(() => ({
+    months: selectedMonth.map(Number),
+    provinces: showProvinceFilter ? selectedProvince : [],
+    distanceRanges: selectedDistance,
+    raceTypes: selectedRaceType.filter(isRaceCategorySlug),
+  }), [
+    selectedMonth,
+    selectedProvince,
+    selectedDistance,
+    selectedRaceType,
+    showProvinceFilter,
+  ]);
+  useEffect(() => {
+    if (!filtersHydrated) return;
 
-  const filteredMarkers = useMemo(() => {
-    const eventIds = new Set(filteredEvents.map(({ event }) => event.id));
-    return filterEventMapMarkersByEventIds(markers, eventIds);
-  }, [filteredEvents, markers]);
+    loadMoreControllerRef.current?.abort();
+    loadMoreControllerRef.current = null;
+    setIsLoadingMore(false);
+
+    const hasFilters =
+      filters.months.length > 0 ||
+      filters.provinces.length > 0 ||
+      filters.distanceRanges.length > 0 ||
+      filters.raceTypes.length > 0;
+
+    if (!skippedInitialEmptyFiltersRef.current && !hasFilters) {
+      skippedInitialEmptyFiltersRef.current = true;
+      return;
+    }
+    skippedInitialEmptyFiltersRef.current = true;
+
+    const controller = new AbortController();
+    setIsRefreshing(true);
+    setRequestError(null);
+
+    void getPublicEventPage({
+      page: 1,
+      referenceDate: initialPage.referenceDate,
+      filters,
+      scope,
+    }, controller.signal)
+      .then((nextPage) => {
+        setEvents(nextPage.events);
+        setMarkers(nextPage.markers);
+        setPage(nextPage.page);
+        setTotal(nextPage.total);
+        setHasMore(nextPage.hasMore);
+      })
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === 'AbortError') return;
+        setEvents([]);
+        setMarkers([]);
+        setPage(1);
+        setTotal(0);
+        setHasMore(false);
+        setRequestError('refresh');
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setIsRefreshing(false);
+      });
+
+    return () => controller.abort();
+  }, [
+    filtersHydrated,
+    filters,
+    initialPage.referenceDate,
+    retryToken,
+    scope,
+  ]);
+
+  useEffect(() => () => {
+    loadMoreControllerRef.current?.abort();
+  }, []);
 
   const activeFiltersCount =
     selectedMonth.length +
@@ -154,11 +246,53 @@ export function EventsExplorerClient({
   }, [activeFiltersCount, updateFilterCount]);
 
   const handleRetry = () => {
-    setSelectedMonth([]);
-    setSelectedProvince([]);
-    setSelectedDistance([]);
-    setSelectedRaceType([]);
-    window.location.reload();
+    setRetryToken((current) => current + 1);
+  };
+
+  const handleLoadMore = async (): Promise<void> => {
+    if (!hasMore || isLoadingMore || isRefreshing) return;
+
+    setIsLoadingMore(true);
+    setRequestError(null);
+    const nextPageNumber = page + 1;
+    const controller = new AbortController();
+    loadMoreControllerRef.current?.abort();
+    loadMoreControllerRef.current = controller;
+
+    try {
+      const nextPage = await getPublicEventPage({
+        page: nextPageNumber,
+        referenceDate: initialPage.referenceDate,
+        filters,
+        scope,
+      }, controller.signal);
+
+      if (controller.signal.aborted) return;
+
+      setEvents((current) => {
+        const eventsById = new Map(
+          current.map((event) => [event.event.id, event]),
+        );
+        for (const event of nextPage.events) {
+          eventsById.set(event.event.id, event);
+        }
+        return [...eventsById.values()];
+      });
+      setMarkers((current) =>
+        mergeEventMapMarkers(current, nextPage.markers),
+      );
+      setPage(nextPage.page);
+      setTotal(nextPage.total);
+      setHasMore(nextPage.hasMore);
+    } catch (error: unknown) {
+      if (error instanceof DOMException && error.name === 'AbortError') return;
+      setRequestError('load-more');
+    } finally {
+      if (loadMoreControllerRef.current === controller) {
+        loadMoreControllerRef.current = null;
+        setIsLoadingMore(false);
+      }
+    }
   };
 
   const handleMonthSelect = useCallback((month: string[]) => {
@@ -284,7 +418,14 @@ export function EventsExplorerClient({
                       className="sticky top-18 z-20 mb-4 bg-white py-2 sm:top-20 lg:top-0"
                     />
                     <div className="grid min-h-[200px] min-w-0 grid-cols-1 gap-4">
-                      {filteredEvents.length === 0 ? (
+                      {isRefreshing ? (
+                        <p className="py-3 text-center text-sm text-gray-500">
+                          {tResults('loading')}
+                        </p>
+                      ) : null}
+                      {requestError === 'refresh' ? (
+                        <SearchError onRetry={handleRetry} />
+                      ) : events.length === 0 ? (
                         <EmptyState
                           icon={
                             <Search className="mx-auto size-16 text-gray-400" strokeWidth={1.5} />
@@ -299,7 +440,7 @@ export function EventsExplorerClient({
                           }
                         />
                       ) : (
-                        filteredEvents.map((eventDetail) => {
+                        events.map((eventDetail) => {
                           return (
                             <div key={eventDetail.event.id} className="min-w-0">
                               <ErrorBoundary
@@ -326,6 +467,31 @@ export function EventsExplorerClient({
                         })
                       )}
                     </div>
+                    {requestError === 'load-more' ? (
+                      <div className="mt-4">
+                        <SearchError onRetry={() => void handleLoadMore()} />
+                      </div>
+                    ) : null}
+                    {events.length > 0 ? (
+                      <div className="mt-6 flex flex-col items-center gap-2">
+                        {hasMore && requestError !== 'load-more' ? (
+                          <Button
+                            onClick={() => void handleLoadMore()}
+                            disabled={isLoadingMore || isRefreshing}
+                          >
+                            {isLoadingMore
+                              ? tResults('loadingMore')
+                              : tResults('loadMore')}
+                          </Button>
+                        ) : null}
+                        <p className="text-xs text-gray-500">
+                          {tResults('showingCount', {
+                            count: events.length,
+                            total,
+                          })}
+                        </p>
+                      </div>
+                    ) : null}
                   </div>
                 )}
 
@@ -338,7 +504,7 @@ export function EventsExplorerClient({
                     ) : (
                       <div className="w-full lg:sticky lg:top-6">
                         <DeferredEventsMap
-                          markers={filteredMarkers}
+                          markers={markers}
                           locale={locale}
                           labels={labels}
                           className={
@@ -367,6 +533,8 @@ export function EventsExplorerClient({
           initialProvince={selectedProvince}
           initialDistance={selectedDistance}
           initialRaceType={selectedRaceType}
+          showProvinceFilter={showProvinceFilter}
+          showDistanceFilter={showDistanceFilter}
         />
       )}
 

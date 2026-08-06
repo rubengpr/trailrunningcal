@@ -52,12 +52,12 @@ export default async function TypePage({
   }
 
   const config = getRaceCategoryConfig(type);
-  const { events, markers, labels, calendarLabel } = await getCategoryPageData(locale);
-  const t = await getTranslations({ locale, namespace: config.namespace });
-
-  const typeEvents = events.filter((eventDetail) =>
-    eventDetail.races.some(config.matches),
+  const scope = { raceType: config.slug };
+  const { eventsPage, labels, calendarLabel } = await getCategoryPageData(
+    locale,
+    scope,
   );
+  const t = await getTranslations({ locale, namespace: config.namespace });
 
   const contentSections = Object.values(
     t.raw('contentSections') as Record<string, FaqItem>,
@@ -66,8 +66,8 @@ export default async function TypePage({
   return (
     <CategoryMapPage
       locale={locale}
-      events={typeEvents}
-      markers={markers}
+      initialPage={eventsPage}
+      scope={scope}
       breadcrumbJsonLd={buildBreadcrumbJsonLd([
         { name: calendarLabel, url: `${BASE_URL}/${locale}` },
         { name: t('breadcrumb'), url: `${BASE_URL}${getTypePath(locale, config.slug)}` },

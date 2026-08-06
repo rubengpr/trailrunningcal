@@ -25,6 +25,7 @@ export const API_AUTHORIZATION_POLICY = {
   'GET /api/events/import/batches/[batchId]': 'admin',
   'POST /api/events/import/batches': 'admin',
   'POST /api/events/import': 'admin',
+  'GET /api/events': 'public',
   'POST /api/events': 'admin',
   'GET /api/health': 'public',
   'GET /api/me': 'public',
@@ -40,6 +41,7 @@ export const API_AUTHORIZATION_POLICY = {
 } as const satisfies Record<string, ApiAuthorization>;
 
 export const PUBLIC_API_REASONS = {
+  'GET /api/events': 'Returns paginated public calendar event data.',
   'POST /api/events/favorites': 'Returns public event data for locally stored favorites.',
   'GET /api/health': 'Exposes operational health data without protected records.',
   'GET /api/me': 'Reports anonymous users as non-admin without exposing identity data.',

@@ -107,14 +107,51 @@ export function buildEventMapMarkers(
   }));
 }
 
-export function filterEventMapMarkersByEventIds(
-  markers: EventMapMarker[],
-  eventIds: ReadonlySet<string>,
+export function mergeEventMapMarkers(
+  current: EventMapMarker[],
+  incoming: EventMapMarker[],
 ): EventMapMarker[] {
-  return markers
-    .map((marker) => ({
-      ...marker,
-      events: marker.events.filter((event) => eventIds.has(event.id)),
-    }))
-    .filter((marker) => marker.events.length > 0);
+  const markersByCoordinate = new Map<string, EventMapMarker>();
+
+  for (const marker of [...current, ...incoming]) {
+    const key = coordinateKey(marker.latitude, marker.longitude);
+    const existingMarker = markersByCoordinate.get(key);
+
+    if (!existingMarker) {
+      markersByCoordinate.set(key, {
+        ...marker,
+        events: marker.events.map((event) => ({
+          ...event,
+          distances: [...event.distances],
+        })),
+      });
+      continue;
+    }
+
+    for (const event of marker.events) {
+      const existingEvent = existingMarker.events.find(
+        (candidate) => candidate.id === event.id,
+      );
+
+      if (!existingEvent) {
+        existingMarker.events.push({
+          ...event,
+          distances: [...event.distances],
+        });
+        continue;
+      }
+
+      const distanceIds = new Set(
+        existingEvent.distances.map((distance) => distance.id),
+      );
+      existingEvent.distances.push(
+        ...event.distances.filter((distance) => !distanceIds.has(distance.id)),
+      );
+    }
+  }
+
+  return [...markersByCoordinate.values()].map((marker) => ({
+    ...marker,
+    events: marker.events.toSorted(compareEventPins),
+  }));
 }

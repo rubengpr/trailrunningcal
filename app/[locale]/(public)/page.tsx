@@ -8,9 +8,7 @@ import {
 } from '@/lib/seo/meta-config';
 import type { Locale } from '@/i18n';
 import { buildHomeAlternateLinks } from '@/lib/content/alternate-links';
-import { getUpcomingEvents } from '@/lib/db/events';
-import { getEventMapLocations } from '@/lib/db/events-map';
-import { buildEventMapMarkers } from '@/lib/events/map';
+import { getUpcomingEventsPage } from '@/lib/db/events';
 import { buildWebsiteJsonLd, buildOrganizationJsonLd } from '@/lib/seo/json-ld';
 import { buildFaqJsonLd } from '@/lib/seo/json-ld';
 import type { MapPageLabels } from '@/types/map.types';
@@ -51,12 +49,19 @@ export default async function HomePage({
   setRequestLocale(locale);
   const today = new Date().toISOString().slice(0, 10);
 
-  const [t, events, locations] = await Promise.all([
+  const [t, eventsPage] = await Promise.all([
     getTranslations({ locale }),
-    getUpcomingEvents(today),
-    getEventMapLocations(),
+    getUpcomingEventsPage({
+      page: 1,
+      referenceDate: today,
+      filters: {
+        months: [],
+        provinces: [],
+        distanceRanges: [],
+        raceTypes: [],
+      },
+    }),
   ]);
-  const markers = buildEventMapMarkers(events, locations);
 
   const labels: MapPageLabels = {
     previousEvent: t('map.previousEvent'),
@@ -93,8 +98,7 @@ export default async function HomePage({
       />
       <div id="calendar" className="mx-auto w-full min-w-0 pt-6 pb-16 sm:pt-10 lg:pt-4 scroll-mt-18 sm:scroll-mt-20">
         <EventsExplorerClient
-          events={events}
-          markers={markers}
+          initialPage={eventsPage}
           locale={locale}
           labels={labels}
         />

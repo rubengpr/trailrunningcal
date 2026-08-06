@@ -55,7 +55,11 @@
     "noRacesMessage": "No hay carreras que coincidan con los filtros seleccionados. Prueba a ajustar tu búsqueda o selección de mes.",
     "racesFound": "Se encontraron {{count}} carreras",
     "noRacesFiltered": "No se encontraron carreras con los filtros seleccionados",
-    "racesList": "Carreras de trail running"
+    "racesList": "Carreras de trail running",
+    "loading": "Actualizando resultados...",
+    "loadMore": "Cargar más",
+    "loadingMore": "Cargando...",
+    "showingCount": "Mostrando {count} de {total} eventos"
   },
   "race": {
     "confirmedDate": "Fecha confirmada",

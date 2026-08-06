@@ -1,7 +1,10 @@
 import { getTranslations } from 'next-intl/server';
 import type { Locale } from '@/i18n';
-import type { PublicEventDetail } from '@/types/event.types';
-import type { EventMapMarker, MapPageLabels } from '@/types/map.types';
+import type { MapPageLabels } from '@/types/map.types';
+import type {
+  PublicEventPage,
+  PublicEventScope,
+} from '@/types/public-events.types';
 import { buildFaqJsonLd, type FaqItem } from '@/lib/seo/json-ld';
 import { HeroSection } from '@/components/layout/hero-section';
 import { FaqSection } from '@/components/layout/faq-section';
@@ -14,8 +17,8 @@ interface BreadcrumbItem {
 
 interface CategoryMapPageProps {
   locale: Locale;
-  events: PublicEventDetail[];
-  markers: EventMapMarker[];
+  initialPage: PublicEventPage;
+  scope: PublicEventScope;
   breadcrumbJsonLd: object;
   heroBody: string;
   heroTitleStart: string;
@@ -31,8 +34,8 @@ interface CategoryMapPageProps {
 
 export async function CategoryMapPage({
   locale,
-  events,
-  markers,
+  initialPage,
+  scope,
   breadcrumbJsonLd,
   heroBody,
   heroTitleStart,
@@ -62,8 +65,8 @@ export async function CategoryMapPage({
       />
       <div id="calendar" className="mx-auto w-full pt-6 pb-16 sm:pt-10 lg:pt-4 scroll-mt-18 sm:scroll-mt-20">
         <EventsExplorerClient
-          events={events}
-          markers={markers}
+          initialPage={initialPage}
+          scope={scope}
           locale={locale}
           labels={labels}
           showProvinceFilter={showProvinceFilter}

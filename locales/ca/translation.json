@@ -55,7 +55,11 @@
     "noRacesMessage": "No hi ha curses que coincideixin amb els filtres seleccionats. Prova d'ajustar la teva cerca o selecció de mes.",
     "racesFound": "S'han trobat {{count}} curses",
     "noRacesFiltered": "No s'han trobat curses amb els filtres seleccionats",
-    "racesList": "Curses de trail running"
+    "racesList": "Curses de trail running",
+    "loading": "Actualitzant resultats...",
+    "loadMore": "Carrega'n més",
+    "loadingMore": "Carregant...",
+    "showingCount": "Es mostren {count} de {total} esdeveniments"
   },
   "race": {
     "confirmedDate": "Data confirmada",

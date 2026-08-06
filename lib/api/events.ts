@@ -28,6 +28,10 @@ import type {
   TrailEventAgentEvent,
   TrailEventAgentRace,
 } from '@/types/trail-event-agent.types';
+import type {
+  PublicEventPage,
+  PublicEventPageRequest,
+} from '@/types/public-events.types';
 
 export type EventRaceWriteInput = Omit<TrailEventAgentRace, 'name'> & {
   name: string | null;
@@ -43,6 +47,44 @@ export interface TrailEventAgentRunResult {
   rawModelOutput: string;
   usage: OpenRouterScrapeUsage | null;
   pageStats: PageStats;
+}
+
+export async function getPublicEventPage(
+  input: PublicEventPageRequest,
+  signal?: AbortSignal,
+): Promise<PublicEventPage> {
+  const searchParams = new URLSearchParams({
+    page: input.page.toString(),
+    referenceDate: input.referenceDate,
+  });
+
+  for (const month of input.filters.months) {
+    searchParams.append('month', month.toString());
+  }
+  for (const province of input.filters.provinces) {
+    searchParams.append('province', province);
+  }
+  for (const distance of input.filters.distanceRanges) {
+    searchParams.append('distance', distance);
+  }
+  for (const raceType of input.filters.raceTypes) {
+    searchParams.append('type', raceType);
+  }
+  if (input.scope?.province) {
+    searchParams.set('scopeProvince', input.scope.province);
+  }
+  if (input.scope?.raceType) {
+    searchParams.set('scopeType', input.scope.raceType);
+  }
+
+  const response = await fetch(`/api/events?${searchParams}`, { signal });
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(responseData.error || 'Failed to fetch events');
+  }
+
+  return responseData.data;
 }
 
 export type TrailEventAgentRunOptions =

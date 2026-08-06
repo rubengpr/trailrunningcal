@@ -9,19 +9,8 @@ import type {
 import type { Locale } from '@/i18n';
 import { formatDateToCatalan, formatDateToSpanish, formatIsoDateNumeric } from '@/lib/utils/date';
 import {
-  getRaceCategoryConfig,
   isNonCompetitiveRace,
-  type RaceCategorySlug,
 } from '@/lib/races/race-types';
-
-const DISTANCE_RANGES: Record<string, [number, number]> = {
-  '0-10': [0, 10],
-  '10-20': [10, 20],
-  '20-30': [20, 30],
-  '30-40': [30, 40],
-  '40-50': [40, 50],
-  '50+': [50, Infinity],
-};
 
 function yearFromDate(date: string): number {
   return Number.parseInt(date.slice(0, 4), 10);
@@ -332,91 +321,4 @@ export function selectRecommendedEvents(
       return a.event.name.localeCompare(b.event.name);
     })
     .slice(0, limit);
-}
-
-function matchesDistance(distanceKm: number, selectedDistance: string[]): boolean {
-  if (selectedDistance.length === 0) {
-    return true;
-  }
-
-  return selectedDistance.some((distance) => {
-    const range = DISTANCE_RANGES[distance];
-    if (!range) {
-      return false;
-    }
-
-    const [min, max] = range;
-    return distanceKm >= min && distanceKm < max;
-  });
-}
-
-function matchesRaceType(
-  race: PublicEventDetail['races'][number],
-  selectedRaceType: string[],
-): boolean {
-  if (selectedRaceType.length === 0) {
-    return true;
-  }
-
-  return selectedRaceType.some((type) =>
-    getRaceCategoryConfig(type as RaceCategorySlug).matches(race),
-  );
-}
-
-function monthIndexFromDateString(date: string): number {
-  return Number.parseInt(date.slice(5, 7), 10) - 1;
-}
-
-export function filterHomeEvents(
-  events: PublicEventDetail[],
-  selectedMonth: string[],
-  selectedProvince: string[],
-  selectedDistance: string[] = [],
-  selectedRaceType: string[] = [],
-  referenceDate: string = new Date().toISOString().slice(0, 10),
-): PublicEventDetail[] {
-  return events
-    .filter((eventDetail) => eventDetail.dateRange.startDate !== null)
-    .filter((eventDetail) => eventDetail.dateRange.startDate! > referenceDate)
-    .filter((eventDetail) => {
-      if (selectedMonth.length === 0) {
-        return true;
-      }
-
-      const month = monthIndexFromDateString(eventDetail.dateRange.startDate!);
-
-      return selectedMonth.some((selected) => Number.parseInt(selected, 10) === month);
-    })
-    .filter((eventDetail) =>
-      selectedProvince.length === 0 ||
-      eventDetail.location.groups.some((group) =>
-        selectedProvince.includes(group.province),
-      ),
-    )
-    .filter((eventDetail) => {
-      if (selectedDistance.length === 0) {
-        return true;
-      }
-
-      return eventDetail.races.some((race) =>
-        matchesDistance(race.distanceKm, selectedDistance),
-      );
-    })
-    .filter((eventDetail) => {
-      if (selectedRaceType.length === 0) {
-        return true;
-      }
-
-      return eventDetail.races.some((race) =>
-        matchesRaceType(race, selectedRaceType),
-      );
-    })
-    .sort((a, b) => {
-      const dateComparison = a.dateRange.startDate!.localeCompare(b.dateRange.startDate!);
-      if (dateComparison !== 0) {
-        return dateComparison;
-      }
-
-      return a.event.name.localeCompare(b.event.name);
-    });
 }

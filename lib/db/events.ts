@@ -11,14 +11,31 @@ import type {
   EventRow,
   EventWithRacesRow,
   AdminTrailEventDetail,
-  PublicEventDetail,
   TrailEvent,
   TrailEventDetail,
   TrailEventRace,
   EventRaceTier,
 } from '@/types/event.types';
+import type {
+  PublicEventPage,
+  PublicEventPageRequest,
+} from '@/types/public-events.types';
 import { buildEventDetail, toPublicEventDetail } from '@/lib/events/utils';
+import { buildEventMapMarkers } from '@/lib/events/map';
 import { getPendingDraftsByEventIds } from '@/lib/db/event-drafts';
+import { PUBLIC_EVENTS_PAGE_SIZE } from '@/lib/db/public-events-pagination';
+
+type PublicEventPageRaceRow = EventRaceWithEventIdRow & {
+  latitude: number | null;
+  longitude: number | null;
+};
+
+type PublicEventPageRow = Pick<EventRow, 'id' | 'name' | 'slug'> & {
+  start_date: string;
+  end_date: string;
+  total_count: number | string;
+  races: PublicEventPageRaceRow[];
+};
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
@@ -113,39 +130,55 @@ export const getEvents = cache(async function getEvents(): Promise<
   return toEventDetails(data as EventWithRacesRow[]);
 });
 
-export const getUpcomingEvents = cache(async function getUpcomingEvents(
-  afterDate: string,
-): Promise<PublicEventDetail[]> {
+export async function getUpcomingEventsPage({
+  page,
+  referenceDate,
+  filters,
+  scope,
+}: PublicEventPageRequest): Promise<PublicEventPage> {
   const supabase = createStaticClient();
 
-  const { data, error } = await supabase
-    .from('events')
-    .select(
-      `
-      id,
-      name,
-      slug,
-      races!inner (
-        id,
-        name,
-        date,
-        distance_km,
-        elevation_gain_m,
-        city,
-        province
-      )
-    `,
-    )
-    .gt('races.date', afterDate);
+  const offset = (page - 1) * PUBLIC_EVENTS_PAGE_SIZE;
+  const rpcInput = {
+    p_reference_date: referenceDate,
+    p_months: filters.months.map((month) => month + 1),
+    p_provinces: filters.provinces,
+    p_distance_ranges: filters.distanceRanges,
+    p_race_types: filters.raceTypes,
+    p_scope_province: scope?.province ?? null,
+    p_scope_race_type: scope?.raceType ?? null,
+  };
+  const { data, error } = await supabase.rpc('get_public_events_page', {
+    ...rpcInput,
+    p_offset: offset,
+  });
 
-  if (error || !data) {
-    console.error('Failed to fetch upcoming events:', error);
-    return [];
+  if (error) {
+    console.error('Failed to fetch upcoming event page:', error);
+    throw new Error('Failed to fetch upcoming event page');
   }
 
-  return (
-    data as Array<Pick<EventRow, 'id' | 'name' | 'slug'> & { races: unknown }>
-  ).map((row) => {
+  const rows = (data ?? []) as PublicEventPageRow[];
+  let total = rows.length > 0 ? Number(rows[0].total_count) : 0;
+
+  if (rows.length === 0 && offset > 0) {
+    const { data: firstPageData, error: firstPageError } = await supabase.rpc(
+      'get_public_events_page',
+      { ...rpcInput, p_offset: 0 },
+    );
+
+    if (firstPageError) {
+      console.error('Failed to fetch upcoming event total:', firstPageError);
+      throw new Error('Failed to fetch upcoming event page');
+    }
+
+    const firstPageRows = (firstPageData ?? []) as PublicEventPageRow[];
+    total = firstPageRows.length > 0
+      ? Number(firstPageRows[0].total_count)
+      : 0;
+  }
+
+  const events = rows.map((row) => {
     const event: TrailEvent = {
       id: row.id,
       name: row.name,
@@ -160,7 +193,27 @@ export const getUpcomingEvents = cache(async function getUpcomingEvents(
 
     return toPublicEventDetail(buildEventDetail(event, races));
   });
-});
+  const locations = rows.flatMap((row) =>
+    row.races.flatMap((race) =>
+      typeof race.latitude === 'number' && typeof race.longitude === 'number'
+        ? [{
+            city: race.city,
+            province: race.province,
+            latitude: race.latitude,
+            longitude: race.longitude,
+          }]
+        : [],
+    ),
+  );
+  return {
+    events,
+    markers: buildEventMapMarkers(events, locations),
+    page,
+    total,
+    hasMore: events.length > 0 && offset + events.length < total,
+    referenceDate,
+  };
+}
 
 export const getEventsForAdmin = cache(
   async function getEventsForAdmin(): Promise<AdminTrailEventDetail[]> {

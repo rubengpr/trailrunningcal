@@ -65,7 +65,11 @@ export default async function DestinationPage({
     notFound();
   }
 
-  const { events, markers, labels, calendarLabel } = await getCategoryPageData(locale);
+  const scope = { province: destination.province.dbName };
+  const { eventsPage, labels, calendarLabel } = await getCategoryPageData(
+    locale,
+    scope,
+  );
   const t = await getTranslations({ locale, namespace: 'provincia' });
   const provinceName = t(`names.${destination.province.slug}`);
   const destinationPath = getDestinationPath(
@@ -74,17 +78,11 @@ export default async function DestinationPage({
     destination.provinceId,
   );
 
-  const destinationEvents = events.filter((eventDetail) =>
-    eventDetail.location.groups.some(
-      (group) => group.province === destination.province.dbName,
-    ),
-  );
-
   return (
     <CategoryMapPage
       locale={locale}
-      events={destinationEvents}
-      markers={markers}
+      initialPage={eventsPage}
+      scope={scope}
       breadcrumbJsonLd={buildBreadcrumbJsonLd([
         { name: calendarLabel, url: `${BASE_URL}/${locale}` },
         { name: provinceName, url: `${BASE_URL}${destinationPath}` },

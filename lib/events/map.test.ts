@@ -3,7 +3,7 @@ import type { PublicEventDetail } from '@/types/event.types';
 import type { EventMapLocation } from '@/types/map.types';
 import {
   buildEventMapMarkers,
-  filterEventMapMarkersByEventIds,
+  mergeEventMapMarkers,
 } from './map';
 
 const locations: EventMapLocation[] = [
@@ -158,17 +158,22 @@ describe('buildEventMapMarkers', () => {
   });
 });
 
-describe('filterEventMapMarkersByEventIds', () => {
-  it('keeps selected events and removes empty markers', () => {
-    const markers = buildEventMapMarkers([
-      eventDetail('one', [race('one-race', 'Bagà', 'Barcelona', 42)]),
-      eventDetail('two', [race('two-race', 'La Molina', 'Girona', 21)]),
+describe('mergeEventMapMarkers', () => {
+  it('merges page markers sharing coordinates and deduplicates events', () => {
+    const firstPage = buildEventMapMarkers([
+      eventDetail('one', [race('one-race', 'La Molina', 'Girona', 42)]),
+    ], locations);
+    const secondPage = buildEventMapMarkers([
+      eventDetail('one', [race('one-race', 'La Molina', 'Girona', 42)]),
+      eventDetail('two', [race('two-race', 'Alp', 'Girona', 21)]),
     ], locations);
 
-    const filtered = filterEventMapMarkersByEventIds(markers, new Set(['two']));
+    const merged = mergeEventMapMarkers(firstPage, secondPage);
 
-    expect(filtered).toHaveLength(1);
-    expect(filtered[0].city).toBe('La Molina');
-    expect(filtered[0].events.map((event) => event.id)).toEqual(['two']);
+    expect(merged).toHaveLength(1);
+    expect(merged[0].events.map((event) => event.id)).toEqual(['one', 'two']);
+    expect(merged[0].events[0].distances).toEqual([
+      { id: 'one-race', distanceKm: 42 },
+    ]);
   });
 });

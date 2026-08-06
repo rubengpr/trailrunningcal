@@ -18,6 +18,8 @@ interface MobileFiltersModalProps {
   initialProvince: string[];
   initialDistance: string[];
   initialRaceType: string[];
+  showProvinceFilter?: boolean;
+  showDistanceFilter?: boolean;
 }
 
 export function MobileFiltersModal({
@@ -29,6 +31,8 @@ export function MobileFiltersModal({
   initialProvince,
   initialDistance,
   initialRaceType,
+  showProvinceFilter = true,
+  showDistanceFilter = true,
 }: MobileFiltersModalProps) {
   const tFilters = useTranslations('filters');
   const tDistanceGroups = useTranslations('distanceGroups');
@@ -118,33 +122,37 @@ export function MobileFiltersModal({
             onMonthSelect={setDraftMonth}
           />
         </div>
-        <div>
-          <p className="mb-3 text-sm font-semibold text-gray-700 tracking-wide">
-            {tFilters('provinceLabel')}
-          </p>
-          <ProvinceFilter
-            selectedProvince={draftProvince}
-            onProvinceSelect={setDraftProvince}
-          />
-        </div>
-        <div>
-          <p className="mb-3 text-sm font-semibold text-gray-700 tracking-wide">
-            {tFilters('distanceLabel')}
-          </p>
-          <div className="flex flex-wrap gap-1.5 sm:gap-2 justify-center">
-            {DISTANCE_GROUPS.map((group) => (
-              <button
-                key={group}
-                onClick={() => toggleDraftDistance(group)}
-                className={`px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-md text-xs sm:text-sm font-medium transition-all duration-200
-                  border border-gray-300 hover:border-gray-400 cursor-pointer focus:outline-none
-                  ${draftDistance.includes(group) ? 'bg-black text-white border-black shadow-md' : 'bg-white text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}
-              >
-                {tDistanceGroups(group)}
-              </button>
-            ))}
+        {showProvinceFilter ? (
+          <div>
+            <p className="mb-3 text-sm font-semibold text-gray-700 tracking-wide">
+              {tFilters('provinceLabel')}
+            </p>
+            <ProvinceFilter
+              selectedProvince={draftProvince}
+              onProvinceSelect={setDraftProvince}
+            />
           </div>
-        </div>
+        ) : null}
+        {showDistanceFilter ? (
+          <div>
+            <p className="mb-3 text-sm font-semibold text-gray-700 tracking-wide">
+              {tFilters('distanceLabel')}
+            </p>
+            <div className="flex flex-wrap gap-1.5 sm:gap-2 justify-center">
+              {DISTANCE_GROUPS.map((group) => (
+                <button
+                  key={group}
+                  onClick={() => toggleDraftDistance(group)}
+                  className={`px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-md text-xs sm:text-sm font-medium transition-all duration-200
+                    border border-gray-300 hover:border-gray-400 cursor-pointer focus:outline-none
+                    ${draftDistance.includes(group) ? 'bg-black text-white border-black shadow-md' : 'bg-white text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}
+                >
+                  {tDistanceGroups(group)}
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : null}
         <div>
           <p className="mb-3 text-sm font-semibold text-gray-700 tracking-wide">
             {tFilters('raceTypeLabel')}
