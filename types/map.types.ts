@@ -19,6 +19,19 @@ export interface EventMapLocation {
   longitude: number;
 }
 
+export type EventMapLocationKey = Pick<
+  EventMapLocation,
+  'city' | 'province'
+>;
+
+export interface EventMapLocationsRequest {
+  locations: EventMapLocationKey[];
+}
+
+export interface EventMapLocationsResult {
+  locations: EventMapLocation[];
+}
+
 export interface EventMapMarker extends EventMapLocation {
   events: EventMapPin[];
 }

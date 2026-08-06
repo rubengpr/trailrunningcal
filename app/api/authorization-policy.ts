@@ -8,6 +8,7 @@ export type ApiAuthorization =
 
 export const API_AUTHORIZATION_POLICY = {
   'GET /api/cron/event-updates': 'cron',
+  'POST /api/event-locations': 'public',
   'POST /api/events/[eventId]/description-draft': 'admin',
   'PATCH /api/events/[eventId]/description': 'admin',
   'POST /api/events/[eventId]/drafts': 'admin',
@@ -41,6 +42,7 @@ export const API_AUTHORIZATION_POLICY = {
 } as const satisfies Record<string, ApiAuthorization>;
 
 export const PUBLIC_API_REASONS = {
+  'POST /api/event-locations': 'Returns coordinates for public calendar locations.',
   'GET /api/events': 'Returns paginated public calendar event data.',
   'POST /api/events/favorites': 'Returns public event data for locally stored favorites.',
   'GET /api/health': 'Exposes operational health data without protected records.',

@@ -21,20 +21,14 @@ import type {
   PublicEventPageRequest,
 } from '@/types/public-events.types';
 import { buildEventDetail, toPublicEventDetail } from '@/lib/events/utils';
-import { buildEventMapMarkers } from '@/lib/events/map';
 import { getPendingDraftsByEventIds } from '@/lib/db/event-drafts';
 import { PUBLIC_EVENTS_PAGE_SIZE } from '@/lib/db/public-events-pagination';
-
-type PublicEventPageRaceRow = EventRaceWithEventIdRow & {
-  latitude: number | null;
-  longitude: number | null;
-};
 
 type PublicEventPageRow = Pick<EventRow, 'id' | 'name' | 'slug'> & {
   start_date: string;
   end_date: string;
   total_count: number | string;
-  races: PublicEventPageRaceRow[];
+  races: EventRaceWithEventIdRow[];
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -147,6 +141,7 @@ export async function getUpcomingEventsPage({
     p_race_types: filters.raceTypes,
     p_scope_province: scope?.province ?? null,
     p_scope_race_type: scope?.raceType ?? null,
+    p_include_locations: false,
   };
   const { data, error } = await supabase.rpc('get_public_events_page', {
     ...rpcInput,
@@ -193,21 +188,8 @@ export async function getUpcomingEventsPage({
 
     return toPublicEventDetail(buildEventDetail(event, races));
   });
-  const locations = rows.flatMap((row) =>
-    row.races.flatMap((race) =>
-      typeof race.latitude === 'number' && typeof race.longitude === 'number'
-        ? [{
-            city: race.city,
-            province: race.province,
-            latitude: race.latitude,
-            longitude: race.longitude,
-          }]
-        : [],
-    ),
-  );
   return {
     events,
-    markers: buildEventMapMarkers(events, locations),
     page,
     total,
     hasMore: events.length > 0 && offset + events.length < total,

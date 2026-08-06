@@ -3,7 +3,7 @@ import type { PublicEventDetail } from '@/types/event.types';
 import type { EventMapLocation } from '@/types/map.types';
 import {
   buildEventMapMarkers,
-  mergeEventMapMarkers,
+  getEventMapLocationKeys,
 } from './map';
 
 const locations: EventMapLocation[] = [
@@ -158,22 +158,11 @@ describe('buildEventMapMarkers', () => {
   });
 });
 
-describe('mergeEventMapMarkers', () => {
-  it('merges page markers sharing coordinates and deduplicates events', () => {
-    const firstPage = buildEventMapMarkers([
-      eventDetail('one', [race('one-race', 'La Molina', 'Girona', 42)]),
-    ], locations);
-    const secondPage = buildEventMapMarkers([
-      eventDetail('one', [race('one-race', 'La Molina', 'Girona', 42)]),
-      eventDetail('two', [race('two-race', 'Alp', 'Girona', 21)]),
-    ], locations);
-
-    const merged = mergeEventMapMarkers(firstPage, secondPage);
-
-    expect(merged).toHaveLength(1);
-    expect(merged[0].events.map((event) => event.id)).toEqual(['one', 'two']);
-    expect(merged[0].events[0].distances).toEqual([
-      { id: 'one-race', distanceKm: 42 },
-    ]);
+describe('getEventMapLocationKeys', () => {
+  it('deduplicates city and province pairs across loaded events', () => {
+    expect(getEventMapLocationKeys([
+      eventDetail('one', [race('one-race', ' Girona ', 'Girona', 21)]),
+      eventDetail('two', [race('two-race', 'Girona', 'Girona', 42)]),
+    ])).toEqual([{ city: 'Girona', province: 'Girona' }]);
   });
 });

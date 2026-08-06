@@ -5,10 +5,27 @@ import type { EventsMapProps } from '@/components/events-map/events-map';
 
 const MAP_VISIBILITY_THRESHOLD = 0.25;
 
-const LazyEventsMap = lazy(async () => {
-  const eventsMapModule = await import('@/components/events-map/events-map');
-  return { default: eventsMapModule.EventsMap };
-});
+let eventsMapModulePromise: Promise<{
+  default: typeof import('@/components/events-map/events-map').EventsMap;
+}> | null = null;
+
+function loadEventsMap() {
+  eventsMapModulePromise ??= import('@/components/events-map/events-map')
+    .then((eventsMapModule) => ({ default: eventsMapModule.EventsMap }));
+  return eventsMapModulePromise;
+}
+
+function preloadEventsMap() {
+  const promise = loadEventsMap();
+
+  void promise.catch(() => {
+    if (eventsMapModulePromise === promise) {
+      eventsMapModulePromise = null;
+    }
+  });
+}
+
+const LazyEventsMap = lazy(loadEventsMap);
 
 function getPlaceholderClassName(className: EventsMapProps['className']): string {
   return className
@@ -20,7 +37,16 @@ function MapPlaceholder({ className }: Pick<EventsMapProps, 'className'>) {
   return <div className={getPlaceholderClassName(className)} />;
 }
 
-export function DeferredEventsMap(props: EventsMapProps) {
+interface DeferredEventsMapProps extends EventsMapProps {
+  isReady?: boolean;
+  onVisible?: () => void;
+}
+
+export function DeferredEventsMap({
+  isReady = true,
+  onVisible,
+  ...props
+}: DeferredEventsMapProps) {
   const [shouldLoad, setShouldLoad] = useState(false);
   const placeholderRef = useRef<HTMLDivElement>(null);
 
@@ -29,7 +55,11 @@ export function DeferredEventsMap(props: EventsMapProps) {
     if (!placeholder) return;
 
     if (typeof IntersectionObserver === 'undefined') {
-      const timeoutId = setTimeout(() => setShouldLoad(true), 0);
+      const timeoutId = setTimeout(() => {
+        preloadEventsMap();
+        setShouldLoad(true);
+        onVisible?.();
+      }, 0);
       return () => clearTimeout(timeoutId);
     }
 
@@ -39,7 +69,9 @@ export function DeferredEventsMap(props: EventsMapProps) {
           entry?.isIntersecting &&
           entry.intersectionRatio >= MAP_VISIBILITY_THRESHOLD
         ) {
+          preloadEventsMap();
           setShouldLoad(true);
+          onVisible?.();
           observer.disconnect();
         }
       },
@@ -47,9 +79,9 @@ export function DeferredEventsMap(props: EventsMapProps) {
     );
     observer.observe(placeholder);
     return () => observer.disconnect();
-  }, []);
+  }, [onVisible]);
 
-  if (!shouldLoad) {
+  if (!shouldLoad || !isReady) {
     return (
       <div
         ref={placeholderRef}

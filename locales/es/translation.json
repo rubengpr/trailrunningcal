@@ -4,6 +4,7 @@
   "map": {
     "title": "Mapa de eventos",
     "description": "Próximos eventos por ubicación. Haz clic en un punto para ver los detalles.",
+    "loading": "Cargando ubicaciones del mapa...",
     "empty": "No hay eventos con ubicación en el mapa. Cuando haya coordenadas para las ciudades del calendario, aparecerán aquí.",
     "previousEvent": "Anterior",
     "nextEvent": "Siguiente",

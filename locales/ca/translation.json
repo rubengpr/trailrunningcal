@@ -4,6 +4,7 @@
   "map": {
     "title": "Mapa d'esdeveniments",
     "description": "Propers esdeveniments per ubicació. Fes clic en un punt per veure'n els detalls.",
+    "loading": "Carregant ubicacions del mapa...",
     "empty": "No hi ha esdeveniments amb ubicació al mapa. Quan hi hagi coordenades per les ciutats del calendari, apareixeran aquí.",
     "previousEvent": "Anterior",
     "nextEvent": "Següent",

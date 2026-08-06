@@ -24,9 +24,9 @@ import { DeferredEventsMap } from '@/components/events-map/deferred-events-map';
 import { MapToggleFab } from '@/components/events-map/map-toggle-fab';
 import { Search, RefreshCw, TriangleAlert } from 'lucide-react';
 import { useMinWidthLg } from '@/hooks/use-min-width-lg';
+import { useEventMapLocations } from '@/hooks/use-event-map-locations';
 import { useScrollEdges } from '@/hooks/use-scroll-edges';
 import { useMobileFilters } from '@/components/providers/mobile-filters-provider';
-import { mergeEventMapMarkers } from '@/lib/events/map';
 import { getPublicEventPage } from '@/lib/api/events';
 import { isRaceCategorySlug } from '@/lib/races/race-types';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
@@ -66,7 +66,6 @@ export function EventsExplorerClient({
   const [mobileView, setMobileView] = useState<MobileView>('list');
   const [desktopLayout, setDesktopLayout] = useState<DesktopLayout>('both');
   const [events, setEvents] = useState(initialPage.events);
-  const [markers, setMarkers] = useState(initialPage.markers);
   const [page, setPage] = useState(initialPage.page);
   const [total, setTotal] = useState(initialPage.total);
   const [hasMore, setHasMore] = useState(initialPage.hasMore);
@@ -78,6 +77,12 @@ export function EventsExplorerClient({
   const pillsScrollRef = useRef<HTMLDivElement>(null);
   const skippedInitialEmptyFiltersRef = useRef(false);
   const loadMoreControllerRef = useRef<AbortController | null>(null);
+  const {
+    activate: activateMap,
+    markers,
+    retry: retryMap,
+    status: mapStatus,
+  } = useEventMapLocations(events);
 
   const isDesktopMap = useMinWidthLg();
   const v2Variant = useFeatureFlagVariantKey('filter-flag-v2');
@@ -191,7 +196,6 @@ export function EventsExplorerClient({
     }, controller.signal)
       .then((nextPage) => {
         setEvents(nextPage.events);
-        setMarkers(nextPage.markers);
         setPage(nextPage.page);
         setTotal(nextPage.total);
         setHasMore(nextPage.hasMore);
@@ -199,7 +203,6 @@ export function EventsExplorerClient({
       .catch((error: unknown) => {
         if (error instanceof DOMException && error.name === 'AbortError') return;
         setEvents([]);
-        setMarkers([]);
         setPage(1);
         setTotal(0);
         setHasMore(false);
@@ -278,9 +281,6 @@ export function EventsExplorerClient({
         }
         return [...eventsById.values()];
       });
-      setMarkers((current) =>
-        mergeEventMapMarkers(current, nextPage.markers),
-      );
       setPage(nextPage.page);
       setTotal(nextPage.total);
       setHasMore(nextPage.hasMore);
@@ -338,6 +338,7 @@ export function EventsExplorerClient({
   };
 
   const handleViewMapClick = (): void => {
+    activateMap();
     setMobileView('map');
     window.scrollTo({ top: 0, behavior: 'instant' });
     setTimeout(() => track(ANALYTICS_EVENTS.CALENDAR_VIEW_MAP_CLICKED, { locale }), 0);
@@ -357,12 +358,10 @@ export function EventsExplorerClient({
   const mapPanelClassNameMobile =
     'h-[min(85dvh,720px)] min-h-[280px]';
 
-  const hasServerMarkers = markers.length > 0;
-
   const showListPanel = isDesktopMap ? desktopLayout !== 'map' : mobileView === 'list';
   const showMapPanel = isDesktopMap ? desktopLayout !== 'list' : mobileView === 'map';
 
-  const showMobileMapFab = !isDesktopMap && hasServerMarkers;
+  const showMobileMapFab = !isDesktopMap && events.length > 0;
 
   /** Capsule / pill: override Button `rounded-md`; generous horizontal padding. */
   const mapToggleFabClassName =
@@ -497,22 +496,36 @@ export function EventsExplorerClient({
 
                 {showMapPanel && (
                   <div className={`min-w-0 w-full min-h-0 shrink-0 ${desktopLayout === 'both' ? 'lg:w-1/2' : 'lg:w-full'} lg:self-start`}>
-                    {!hasServerMarkers ? (
+                    {mapStatus === 'error' && markers.length === 0 ? (
+                      <SearchError onRetry={retryMap} />
+                    ) : mapStatus === 'ready' && markers.length === 0 ? (
                       <p className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-6 text-center text-sm text-gray-600">
                         {tMap('empty')}
                       </p>
                     ) : (
-                      <div className="w-full lg:sticky lg:top-6">
+                      <div className="relative w-full lg:sticky lg:top-6">
+                        {mapStatus === 'error' ? (
+                          <div className="mb-3">
+                            <SearchError onRetry={retryMap} />
+                          </div>
+                        ) : null}
                         <DeferredEventsMap
                           markers={markers}
                           locale={locale}
                           labels={labels}
+                          isReady={markers.length > 0}
+                          onVisible={activateMap}
                           className={
                             isDesktopMap
                               ? mapPanelClassNameDesktop
                               : mapPanelClassNameMobile
                           }
                         />
+                        {mapStatus === 'loading' && markers.length === 0 ? (
+                          <p className="pointer-events-none absolute inset-0 flex items-center justify-center text-sm text-gray-600">
+                            {tMap('loading')}
+                          </p>
+                        ) : null}
                       </div>
                     )}
                   </div>

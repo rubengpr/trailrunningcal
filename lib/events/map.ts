@@ -1,12 +1,39 @@
 import type { PublicEventDetail } from '@/types/event.types';
 import type {
   EventMapLocation,
+  EventMapLocationKey,
   EventMapMarker,
   EventMapPin,
 } from '@/types/map.types';
 
-function locationKey(city: string, province: string): string {
-  return `${city.trim()}|${province.trim()}`;
+export const PUBLIC_EVENT_LOCATION_BATCH_SIZE = 500;
+
+export function eventMapLocationKey(
+  city: string,
+  province: string,
+): string {
+  return `${city.trim()}\u0000${province.trim()}`;
+}
+
+export function getEventMapLocationKeys(
+  events: PublicEventDetail[],
+): EventMapLocationKey[] {
+  const locationsByKey = new Map<string, EventMapLocationKey>();
+
+  for (const eventDetail of events) {
+    for (const race of eventDetail.races) {
+      const city = race.city.trim();
+      const province = race.province.trim();
+      if (city.length === 0 || province.length === 0) continue;
+
+      locationsByKey.set(eventMapLocationKey(city, province), {
+        city,
+        province,
+      });
+    }
+  }
+
+  return [...locationsByKey.values()];
 }
 
 function coordinateKey(latitude: number, longitude: number): string {
@@ -44,7 +71,7 @@ export function buildEventMapMarkers(
 ): EventMapMarker[] {
   const locationsByKey = new Map(
     locations.map((location) => [
-      locationKey(location.city, location.province),
+      eventMapLocationKey(location.city, location.province),
       location,
     ]),
   );
@@ -57,7 +84,7 @@ export function buildEventMapMarkers(
         continue;
       }
 
-      const key = locationKey(race.city, race.province);
+      const key = eventMapLocationKey(race.city, race.province);
       const locationRaces = racesByLocation.get(key);
       if (locationRaces) {
         locationRaces.push(race);
@@ -102,55 +129,6 @@ export function buildEventMapMarkers(
   }
 
   return [...markersByKey.values()].map((marker) => ({
-    ...marker,
-    events: marker.events.toSorted(compareEventPins),
-  }));
-}
-
-export function mergeEventMapMarkers(
-  current: EventMapMarker[],
-  incoming: EventMapMarker[],
-): EventMapMarker[] {
-  const markersByCoordinate = new Map<string, EventMapMarker>();
-
-  for (const marker of [...current, ...incoming]) {
-    const key = coordinateKey(marker.latitude, marker.longitude);
-    const existingMarker = markersByCoordinate.get(key);
-
-    if (!existingMarker) {
-      markersByCoordinate.set(key, {
-        ...marker,
-        events: marker.events.map((event) => ({
-          ...event,
-          distances: [...event.distances],
-        })),
-      });
-      continue;
-    }
-
-    for (const event of marker.events) {
-      const existingEvent = existingMarker.events.find(
-        (candidate) => candidate.id === event.id,
-      );
-
-      if (!existingEvent) {
-        existingMarker.events.push({
-          ...event,
-          distances: [...event.distances],
-        });
-        continue;
-      }
-
-      const distanceIds = new Set(
-        existingEvent.distances.map((distance) => distance.id),
-      );
-      existingEvent.distances.push(
-        ...event.distances.filter((distance) => !distanceIds.has(distance.id)),
-      );
-    }
-  }
-
-  return [...markersByCoordinate.values()].map((marker) => ({
     ...marker,
     events: marker.events.toSorted(compareEventPins),
   }));

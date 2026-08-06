@@ -32,7 +32,7 @@ beforeEach(() => {
 });
 
 describe('getUpcomingEventsPage', () => {
-  it('calls the RPC and returns public events with page-scoped markers', async () => {
+  it('calls the RPC and returns public events without map coordinates', async () => {
     mocks.rpc.mockResolvedValue({
       data: [{
         id: 'event-id',
@@ -50,8 +50,6 @@ describe('getUpcomingEventsPage', () => {
           elevation_gain_m: 900,
           city: 'Barcelona',
           province: 'Barcelona',
-          latitude: 41.38,
-          longitude: 2.17,
         }],
       }],
       error: null,
@@ -68,6 +66,7 @@ describe('getUpcomingEventsPage', () => {
       p_race_types: ['media-maraton'],
       p_scope_province: 'Barcelona',
       p_scope_race_type: null,
+      p_include_locations: false,
     });
     expect(result).toMatchObject({
       page: 2,
@@ -77,13 +76,6 @@ describe('getUpcomingEventsPage', () => {
       events: [{
         event: { id: 'event-id', name: 'Trail Event', slug: 'trail-event' },
         dateRange: { startDate: '2027-05-01', endDate: '2027-05-01' },
-      }],
-      markers: [{
-        city: 'Barcelona',
-        province: 'Barcelona',
-        latitude: 41.38,
-        longitude: 2.17,
-        events: [{ id: 'event-id' }],
       }],
     });
   });
@@ -98,7 +90,6 @@ describe('getUpcomingEventsPage', () => {
 
     await expect(getUpcomingEventsPage(request)).resolves.toEqual({
       events: [],
-      markers: [],
       page: 2,
       total: 202,
       hasMore: false,
@@ -113,6 +104,7 @@ describe('getUpcomingEventsPage', () => {
       p_race_types: ['media-maraton'],
       p_scope_province: 'Barcelona',
       p_scope_race_type: null,
+      p_include_locations: false,
     });
   });
 

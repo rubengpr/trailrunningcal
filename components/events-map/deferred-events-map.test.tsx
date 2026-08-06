@@ -50,11 +50,13 @@ afterEach(() => {
 
 describe('DeferredEventsMap', () => {
   it('loads the map only after at least a quarter is visible', async () => {
+    const onVisible = vi.fn();
     const { container } = render(
       <DeferredEventsMap
         markers={[]}
         locale="es"
         labels={labels}
+        onVisible={onVisible}
         className="h-[640px]"
       />,
     );
@@ -78,6 +80,38 @@ describe('DeferredEventsMap', () => {
     });
 
     expect(await screen.findByTestId('events-map')).toBeDefined();
+    expect(onVisible).toHaveBeenCalledTimes(1);
     expect(disconnect).toHaveBeenCalled();
+  });
+
+  it('keeps the placeholder until map data is ready', async () => {
+    const { container, rerender } = render(
+      <DeferredEventsMap
+        markers={[]}
+        locale="es"
+        labels={labels}
+        isReady={false}
+      />,
+    );
+
+    act(() => {
+      intersectionCallback(
+        [{ isIntersecting: true, intersectionRatio: 1 } as IntersectionObserverEntry],
+        {} as IntersectionObserver,
+      );
+    });
+    expect(container.querySelector('[data-map-placeholder]')).not.toBeNull();
+    expect(screen.queryByTestId('events-map')).toBeNull();
+
+    rerender(
+      <DeferredEventsMap
+        markers={[]}
+        locale="es"
+        labels={labels}
+        isReady
+      />,
+    );
+
+    expect(await screen.findByTestId('events-map')).toBeDefined();
   });
 });

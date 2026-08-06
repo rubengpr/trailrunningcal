@@ -96,7 +96,6 @@ function event(id: string): PublicEventDetail {
 function page(overrides: Partial<PublicEventPage> = {}): PublicEventPage {
   return {
     events: [event('one')],
-    markers: [],
     page: 1,
     total: 101,
     hasMore: true,

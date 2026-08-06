@@ -25,7 +25,6 @@ beforeEach(() => {
   vi.resetAllMocks();
   mocks.getUpcomingEventsPage.mockResolvedValue({
     events: [],
-    markers: [],
     page: 1,
     total: 0,
     hasMore: false,
