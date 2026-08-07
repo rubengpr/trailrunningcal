@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { Locale } from '@/i18n';
 import type { PublicEventDetail } from '@/types/event.types';
 import { formatEventLocationLabel } from '@/lib/events/utils';
+import EventCardPending from '@/components/event/event-card-pending';
 
 interface EventCardProps {
   eventDetail: PublicEventDetail;
@@ -53,6 +54,7 @@ export function EventCard({ eventDetail, locale }: EventCardProps) {
         prefetch={false}
         className="block px-2 py-2.5 sm:px-4 sm:py-4"
       >
+        <EventCardPending />
         <div className="flex min-w-0 items-start gap-4">
           <div className="flex min-w-[50px] flex-col items-center justify-center rounded-sm bg-amber-50 px-3 py-2 text-gray-800">
             <span className="text-[9px] font-medium uppercase tracking-wide sm:text-[10px]">
