@@ -20,9 +20,14 @@ import type {
   PublicEventPage,
   PublicEventPageRequest,
 } from '@/types/public-events.types';
+import type {
+  AdminEventPage,
+  AdminEventPageRequest,
+} from '@/types/admin-events.types';
 import { buildEventDetail, toPublicEventDetail } from '@/lib/events/utils';
 import { getPendingDraftsByEventIds } from '@/lib/db/event-drafts';
 import { PUBLIC_EVENTS_PAGE_SIZE } from '@/lib/db/public-events-pagination';
+import { ADMIN_EVENTS_PAGE_SIZE } from '@/lib/events/admin-pagination';
 
 type PublicEventPageRow = Pick<EventRow, 'id' | 'name' | 'slug'> & {
   start_date: string;
@@ -30,6 +35,11 @@ type PublicEventPageRow = Pick<EventRow, 'id' | 'name' | 'slug'> & {
   total_count: number | string;
   races: EventRaceWithEventIdRow[];
 };
+
+interface AdminEventPageIndexRow {
+  event_ids: string[];
+  total_count: number | string;
+}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
@@ -197,10 +207,52 @@ export async function getUpcomingEventsPage({
   };
 }
 
-export const getEventsForAdmin = cache(
-  async function getEventsForAdmin(): Promise<AdminTrailEventDetail[]> {
-    const supabase = createAdminClient();
-    const { data, error } = await supabase
+export async function getAdminEventsPage({
+  page,
+  search,
+  sortColumn,
+  sortDirection,
+}: AdminEventPageRequest): Promise<AdminEventPage> {
+  const supabase = createAdminClient();
+  const offset = (page - 1) * ADMIN_EVENTS_PAGE_SIZE;
+
+  const { data: indexData, error: indexError } = await supabase.rpc(
+    'get_admin_events_page',
+    {
+      p_limit: ADMIN_EVENTS_PAGE_SIZE,
+      p_offset: offset,
+      p_search: search || null,
+      p_sort_column: sortColumn,
+      p_sort_direction: sortDirection,
+    },
+  );
+
+  if (indexError || !indexData?.[0]) {
+    console.error('Failed to fetch admin event page index:', indexError);
+    throw new Error('Failed to fetch admin event page');
+  }
+
+  const indexRow = indexData[0] as AdminEventPageIndexRow;
+  const eventIds = indexRow.event_ids;
+  const total = Number(indexRow.total_count);
+
+  if (!Number.isSafeInteger(total) || total < 0) {
+    console.error('Invalid admin event total:', indexRow.total_count);
+    throw new Error('Failed to fetch admin event page');
+  }
+
+  if (eventIds.length === 0) {
+    return {
+      events: [],
+      page,
+      pageSize: ADMIN_EVENTS_PAGE_SIZE,
+      total,
+      totalPages: Math.ceil(total / ADMIN_EVENTS_PAGE_SIZE),
+    };
+  }
+
+  const [eventResult, drafts] = await Promise.all([
+    supabase
       .from('events')
       .select(
         `
@@ -225,27 +277,40 @@ export const getEventsForAdmin = cache(
         )
       `,
       )
-      .order('name');
+      .in('id', eventIds),
+    getPendingDraftsByEventIds(eventIds),
+  ]);
 
-    if (error || !data) {
-      console.error('Failed to fetch events for admin:', error);
-      return [];
-    }
+  if (eventResult.error || !eventResult.data) {
+    console.error('Failed to fetch admin event page details:', eventResult.error);
+    throw new Error('Failed to fetch admin event page');
+  }
 
-    const events = toEventDetails(data as EventWithRacesRow[]);
-    const drafts = await getPendingDraftsByEventIds(
-      events.map(({ event }) => event.id),
-    );
-    const draftsByEventId = new Map(
-      drafts.map((draft) => [draft.eventId, draft]),
-    );
-
-    return events.map((eventDetail) => ({
+  const eventOrder = new Map(
+    eventIds.map((eventId, index) => [eventId, index]),
+  );
+  const draftsByEventId = new Map(
+    drafts.map((draft) => [draft.eventId, draft]),
+  );
+  const events = toEventDetails(eventResult.data as EventWithRacesRow[])
+    .map<AdminTrailEventDetail>((eventDetail) => ({
       ...eventDetail,
       pendingDraft: draftsByEventId.get(eventDetail.event.id) ?? null,
-    }));
-  },
-);
+    }))
+    .sort(
+      (a, b) =>
+        (eventOrder.get(a.event.id) ?? Number.MAX_SAFE_INTEGER) -
+        (eventOrder.get(b.event.id) ?? Number.MAX_SAFE_INTEGER),
+    );
+
+  return {
+    events,
+    page,
+    pageSize: ADMIN_EVENTS_PAGE_SIZE,
+    total,
+    totalPages: Math.ceil(total / ADMIN_EVENTS_PAGE_SIZE),
+  };
+}
 
 export async function getEventsForOrganizer(
   organizerId: string,

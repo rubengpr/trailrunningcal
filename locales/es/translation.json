@@ -997,6 +997,15 @@
     "eventCountOne": "1 evento",
     "generateDescriptions": "Generar descripciones",
     "empty": "No hay eventos.",
+    "search": {
+      "placeholder": "Nombre o URL del evento",
+      "empty": "No hay eventos que coincidan con la búsqueda."
+    },
+    "pagination": {
+      "previous": "Página anterior",
+      "next": "Página siguiente",
+      "page": "Página {page}"
+    },
     "missingUrl": "Sin URL",
     "noDescription": "Sin descripción",
     "noDates": "Sin fecha",

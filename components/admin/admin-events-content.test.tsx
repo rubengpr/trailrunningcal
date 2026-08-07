@@ -6,6 +6,7 @@ import type { ReactNode } from 'react';
 
 import type { EventDraft } from '@/types/event-draft.types';
 import type { AdminTrailEventDetail } from '@/types/event.types';
+import type { AdminEventPageRequest } from '@/types/admin-events.types';
 import type {
   TrailEventAgentEvent,
   TrailEventAgentRace,
@@ -104,6 +105,12 @@ import { AdminEventsContent } from './admin-events-content';
 
 const EVENT_ID = '7a0a4eb8-e4a4-4e8d-8d0c-1d0ed0e2cf11';
 const DRAFT_ID = '8e40792f-1a1a-4d30-8d15-ec70a12a04d5';
+const query: AdminEventPageRequest = {
+  page: 1,
+  search: '',
+  sortColumn: 'dates',
+  sortDirection: 'asc',
+};
 const draftData = {
   event: {
     name: 'Trail Event',
@@ -171,6 +178,21 @@ function generationButton(): HTMLButtonElement {
   ) as HTMLButtonElement;
 }
 
+function renderContent(events: AdminTrailEventDetail[]): void {
+  render(
+    <AdminEventsContent
+      page={{
+        events,
+        page: 1,
+        pageSize: 50,
+        total: events.length,
+        totalPages: events.length > 0 ? 1 : 0,
+      }}
+      query={query}
+    />,
+  );
+}
+
 beforeEach(() => {
   vi.resetAllMocks();
 });
@@ -181,7 +203,7 @@ afterEach(() => {
 
 describe('AdminEventsContent event drafts', () => {
   it('signals a pending draft, disables generation, and opens review', () => {
-    render(<AdminEventsContent events={[eventDetail(pendingDraft())]} />);
+    renderContent([eventDetail(pendingDraft())]);
 
     expect(screen.getByTitle('updateSuggestion.pendingDraft')).toBeTruthy();
     const draftButtons = screen.getAllByTitle(
@@ -199,7 +221,7 @@ describe('AdminEventsContent event drafts', () => {
 
   it('generates a draft and immediately opens it for review', async () => {
     mocks.generateEventDraft.mockResolvedValue(pendingDraft());
-    render(<AdminEventsContent events={[eventDetail(null)]} />);
+    renderContent([eventDetail(null)]);
 
     fireEvent.click(generationButton());
 
@@ -215,7 +237,7 @@ describe('AdminEventsContent event drafts', () => {
       event: { ...draftData.event, description: 'Edited description' },
     });
     mocks.updateEventDraft.mockResolvedValue(editedDraft);
-    render(<AdminEventsContent events={[eventDetail(pendingDraft())]} />);
+    renderContent([eventDetail(pendingDraft())]);
     fireEvent.click(pendingReviewButton());
 
     fireEvent.click(screen.getByText('save-draft'));
@@ -234,7 +256,7 @@ describe('AdminEventsContent event drafts', () => {
       ...pendingDraft(),
       status: 'rejected',
     });
-    render(<AdminEventsContent events={[eventDetail(pendingDraft())]} />);
+    renderContent([eventDetail(pendingDraft())]);
     fireEvent.click(pendingReviewButton());
 
     fireEvent.click(screen.getByText('reject-draft'));
@@ -249,7 +271,7 @@ describe('AdminEventsContent event drafts', () => {
 
   it('removes an accepted draft and refreshes server data', async () => {
     mocks.acceptEventDraft.mockResolvedValue(eventDetail(null));
-    render(<AdminEventsContent events={[eventDetail(pendingDraft())]} />);
+    renderContent([eventDetail(pendingDraft())]);
     fireEvent.click(pendingReviewButton());
 
     fireEvent.click(screen.getByText('accept-draft'));
@@ -259,5 +281,33 @@ describe('AdminEventsContent event drafts', () => {
       expect(screen.queryByTestId('event-import-preview')).toBeNull();
       expect(mocks.routerRefresh).toHaveBeenCalledOnce();
     });
+  });
+});
+
+describe('AdminEventsContent pagination', () => {
+  it('preserves search and sorting in numbered page links', () => {
+    render(
+      <AdminEventsContent
+        page={{
+          events: [eventDetail(null)],
+          page: 3,
+          pageSize: 50,
+          total: 400,
+          totalPages: 8,
+        }}
+        query={{
+          page: 3,
+          search: 'ultra',
+          sortColumn: 'name',
+          sortDirection: 'desc',
+        }}
+      />,
+    );
+
+    const pageFourLink = screen.getByRole('link', { name: '4' }) as HTMLAnchorElement;
+    expect(pageFourLink.getAttribute('href')).toBe(
+      '/es/admin/eventos/activos?page=4&q=ultra&sort=name&direction=desc',
+    );
+    expect((screen.getByRole('searchbox') as HTMLInputElement).value).toBe('ultra');
   });
 });

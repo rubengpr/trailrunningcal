@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   rpc: vi.fn(),
-  adminOrder: vi.fn(),
+  adminIn: vi.fn(),
   getPendingDraftsByEventIds: vi.fn(),
 }));
 
@@ -10,8 +10,9 @@ vi.mock('react', () => ({ cache: <T>(callback: T): T => callback }));
 vi.mock('@/lib/supabase/server', () => ({
   createStaticClient: () => ({ rpc: mocks.rpc }),
   createAdminClient: () => ({
+    rpc: mocks.rpc,
     from: () => ({
-      select: () => ({ order: mocks.adminOrder }),
+      select: () => ({ in: mocks.adminIn }),
     }),
   }),
 }));
@@ -19,7 +20,7 @@ vi.mock('@/lib/db/event-drafts', () => ({
   getPendingDraftsByEventIds: mocks.getPendingDraftsByEventIds,
 }));
 
-import { getEvents, getEventsForAdmin } from './events';
+import { getAdminEventsPage, getEvents } from './events';
 
 const EVENT_ID_WITH_DRAFT = '7a0a4eb8-e4a4-4e8d-8d0c-1d0ed0e2cf11';
 const EVENT_ID_WITHOUT_DRAFT = '94e16324-c0cd-4f29-a43b-d09830c874a2';
@@ -30,7 +31,7 @@ beforeEach(() => {
 
 describe('event list visibility', () => {
   it('keeps pending drafts out of the public event list', async () => {
-    mocks.rpc.mockResolvedValue({
+    mocks.rpc.mockResolvedValueOnce({
       data: [
         {
           id: EVENT_ID_WITH_DRAFT,
@@ -82,7 +83,14 @@ describe('event list visibility', () => {
       updatedAt: '2026-06-19T00:00:00.000Z',
     };
     mocks.getPendingDraftsByEventIds.mockResolvedValue([pendingDraft]);
-    mocks.adminOrder.mockResolvedValue({
+    mocks.rpc.mockResolvedValueOnce({
+      data: [{
+        event_ids: [EVENT_ID_WITH_DRAFT, EVENT_ID_WITHOUT_DRAFT],
+        total_count: 2,
+      }],
+      error: null,
+    });
+    mocks.adminIn.mockResolvedValue({
       data: [
         {
           id: EVENT_ID_WITH_DRAFT,
@@ -116,13 +124,18 @@ describe('event list visibility', () => {
     expect(publicEvents).toHaveLength(2);
     expect(publicEvents.every((event) => !('pendingDraft' in event))).toBe(true);
 
-    const result = await getEventsForAdmin();
+    const result = await getAdminEventsPage({
+      page: 1,
+      search: '',
+      sortColumn: 'dates',
+      sortDirection: 'asc',
+    });
 
     expect(mocks.getPendingDraftsByEventIds).toHaveBeenCalledWith([
       EVENT_ID_WITH_DRAFT,
       EVENT_ID_WITHOUT_DRAFT,
     ]);
-    expect(result[0].pendingDraft).toEqual(pendingDraft);
-    expect(result[1].pendingDraft).toBeNull();
+    expect(result.events[0].pendingDraft).toEqual(pendingDraft);
+    expect(result.events[1].pendingDraft).toBeNull();
   });
 });

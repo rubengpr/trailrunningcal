@@ -7,10 +7,13 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import {
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   ChevronUp,
   ChevronsUpDown,
   Eye,
   RefreshCw,
+  Search,
   TextCursor,
   Trash2,
 } from 'lucide-react';
@@ -40,19 +43,48 @@ import {
 } from '@/lib/api/event-drafts';
 import { formatEventDateRangeNumeric } from '@/lib/events/utils';
 import { cleanUrl } from '@/lib/utils/url';
+import { buildAdminEventsHref } from '@/lib/events/admin-pagination';
 import type { AdminTrailEventDetail, TrailEventDetail } from '@/types/event.types';
 import type { EventDraft } from '@/types/event-draft.types';
+import type {
+  AdminEventPage,
+  AdminEventPageRequest,
+  AdminEventSortColumn,
+} from '@/types/admin-events.types';
 import type {
   TrailEventAgentEvent,
   TrailEventAgentRace,
 } from '@/types/trail-event-agent.types';
 
 interface AdminEventsContentProps {
-  events: AdminTrailEventDetail[];
+  page: AdminEventPage;
+  query: AdminEventPageRequest;
 }
 
-type SortColumn = 'name' | 'dates';
-type SortDirection = 'asc' | 'desc';
+type PaginationItem = number | 'start-ellipsis' | 'end-ellipsis';
+
+function getPaginationItems(page: number, totalPages: number): PaginationItem[] {
+  const visiblePages = new Set([1, totalPages]);
+
+  for (let candidate = page - 2; candidate <= page + 2; candidate += 1) {
+    if (candidate >= 1 && candidate <= totalPages) {
+      visiblePages.add(candidate);
+    }
+  }
+
+  const pages = [...visiblePages].sort((a, b) => a - b);
+  const items: PaginationItem[] = [];
+
+  for (const [index, visiblePage] of pages.entries()) {
+    const previousPage = pages[index - 1];
+    if (previousPage !== undefined && visiblePage - previousPage > 1) {
+      items.push(index === 1 ? 'start-ellipsis' : 'end-ellipsis');
+    }
+    items.push(visiblePage);
+  }
+
+  return items;
+}
 
 function getPendingDraftsByEventId(
   events: AdminTrailEventDetail[],
@@ -65,11 +97,12 @@ function getPendingDraftsByEventId(
   );
 }
 
-export function AdminEventsContent({ events }: AdminEventsContentProps) {
+export function AdminEventsContent({ page, query }: AdminEventsContentProps) {
   const t = useTranslations('adminEvents');
   const formT = useTranslations('adminEvents.form');
   const locale = useLocale();
   const router = useRouter();
+  const { events, total, totalPages } = page;
   const [eventToDelete, setEventToDelete] = useState<TrailEventDetail | null>(null);
   const [eventToEdit, setEventToEdit] = useState<TrailEventDetail | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -80,45 +113,35 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
   >(() => getPendingDraftsByEventId(events));
   const [reviewEventId, setReviewEventId] = useState<string | null>(null);
   const [acceptingDraftId, setAcceptingDraftId] = useState<string | null>(null);
-  const [sortColumn, setSortColumn] = useState<SortColumn>('dates');
-  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
-
-  const subtitle = events.length === 1
+  const subtitle = total === 1
     ? t('eventCountOne')
-    : t('eventCount', { count: events.length });
+    : t('eventCount', { count: total });
 
-  const sortedEvents = useMemo(() => {
-    const directionFactor = sortDirection === 'asc' ? 1 : -1;
-
-    return [...events].sort((a, b) => {
-      const comparison =
-        sortColumn === 'name'
-          ? a.event.name.localeCompare(b.event.name, locale)
-          : (a.dateRange.startDate ?? '').localeCompare(b.dateRange.startDate ?? '');
-
-      return comparison * directionFactor;
-    });
-  }, [events, sortColumn, sortDirection, locale]);
-
-  const handleSort = (column: SortColumn): void => {
-    if (column === sortColumn) {
-      setSortDirection((direction) => (direction === 'asc' ? 'desc' : 'asc'));
-      return;
-    }
-    setSortColumn(column);
-    setSortDirection('asc');
-  };
-
-  const renderSortIcon = (column: SortColumn) => {
-    if (column !== sortColumn) {
+  const renderSortIcon = (column: AdminEventSortColumn) => {
+    if (column !== query.sortColumn) {
       return <ChevronsUpDown className="size-3.5 text-gray-300" strokeWidth={1.5} />;
     }
-    return sortDirection === 'asc' ? (
+    return query.sortDirection === 'asc' ? (
       <ChevronUp className="size-3.5" strokeWidth={2} />
     ) : (
       <ChevronDown className="size-3.5" strokeWidth={2} />
     );
   };
+
+  const getSortHref = (column: AdminEventSortColumn): string => {
+    const sortDirection = query.sortColumn === column && query.sortDirection === 'asc'
+      ? 'desc'
+      : 'asc';
+
+    return buildAdminEventsHref(locale, {
+      ...query,
+      page: 1,
+      sortColumn: column,
+      sortDirection,
+    });
+  };
+
+  const paginationItems = getPaginationItems(page.page, totalPages);
 
   const reviewEventDetail = reviewEventId
     ? events.find((eventDetail) => eventDetail.event.id === reviewEventId) ?? null
@@ -345,39 +368,66 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
         }
       />
 
+      <form
+        action={`/${locale}/admin/eventos/activos`}
+        method="get"
+        className="relative ml-auto flex w-full max-w-64"
+      >
+        <label htmlFor="admin-event-search" className="sr-only">
+          {t('search.placeholder')}
+        </label>
+        <Search
+          className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-gray-400"
+          strokeWidth={1.5}
+        />
+        <input
+          id="admin-event-search"
+          key={query.search}
+          type="search"
+          name="q"
+          defaultValue={query.search}
+          maxLength={200}
+          className="h-10 min-w-0 flex-1 rounded-xl border border-gray-300 bg-white py-2 pl-3 pr-9 text-sm font-normal text-gray-900 outline-none transition-colors focus:border-gray-500 [&::-webkit-search-cancel-button]:appearance-none"
+        />
+        {query.sortColumn !== 'dates' ? (
+          <input type="hidden" name="sort" value={query.sortColumn} />
+        ) : null}
+        {query.sortDirection !== 'asc' ? (
+          <input type="hidden" name="direction" value={query.sortDirection} />
+        ) : null}
+      </form>
+
       {events.length === 0 ? (
         <p className="rounded-lg border border-gray-200 bg-white p-6 text-sm text-gray-600">
-          {t('empty')}
+          {query.search ? t('search.empty') : t('empty')}
         </p>
       ) : (
         <Table>
           <TableHeader>
-            <TableCell
-              header
-              className="cursor-pointer select-none transition-colors hover:text-gray-800"
-              onClick={() => handleSort('name')}
-            >
-              <span className="inline-flex items-center gap-1">
+            <TableCell header>
+              <Link
+                href={getSortHref('name')}
+                className="inline-flex items-center gap-1 transition-colors hover:text-gray-800"
+              >
                 {t('columns.name')}
                 {renderSortIcon('name')}
-              </span>
+              </Link>
             </TableCell>
             <TableCell header>{t('columns.website')}</TableCell>
             <TableCell header align="right">{t('columns.races')}</TableCell>
-            <TableCell
-              header
-              className="cursor-pointer select-none transition-colors hover:text-gray-800"
-              onClick={() => handleSort('dates')}
-            >
-              <span className="inline-flex items-center gap-1">
+            <TableCell header>
+              <Link
+                href={getSortHref('dates')}
+                className="inline-flex items-center gap-1 transition-colors hover:text-gray-800"
+              >
                 {t('columns.dates')}
                 {renderSortIcon('dates')}
-              </span>
+              </Link>
             </TableCell>
             <TableCell header align="right">{t('columns.actions')}</TableCell>
           </TableHeader>
           <TableBody>
-            {sortedEvents.map((eventDetail) => {
+            {events.map((eventDetail) => {
               const { event } = eventDetail;
               const isGeneratingDraft = generatingDraftEventIds.has(event.id);
               const pendingDraft = pendingDraftsByEventId[event.id] ?? null;
@@ -482,6 +532,73 @@ export function AdminEventsContent({ events }: AdminEventsContentProps) {
           </TableBody>
         </Table>
       )}
+
+      {totalPages > 1 ? (
+        <nav className="flex flex-wrap items-center justify-center gap-1">
+          {page.page > 1 ? (
+            <Link
+              href={buildAdminEventsHref(locale, {
+                ...query,
+                page: page.page - 1,
+              })}
+              title={t('pagination.previous')}
+              className="inline-flex size-9 items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-700 transition-colors hover:bg-gray-50"
+            >
+              <ChevronLeft className="size-4" />
+            </Link>
+          ) : (
+            <span className="inline-flex size-9 items-center justify-center rounded-lg border border-gray-200 bg-gray-50 text-gray-300">
+              <ChevronLeft className="size-4" />
+            </span>
+          )}
+
+          {paginationItems.map((item) =>
+            typeof item === 'number' ? (
+              item === page.page ? (
+                <span
+                  key={item}
+                  className="inline-flex size-9 items-center justify-center rounded-lg bg-black text-sm font-medium text-white"
+                >
+                  {item}
+                </span>
+              ) : (
+                <Link
+                  key={item}
+                  href={buildAdminEventsHref(locale, { ...query, page: item })}
+                  title={t('pagination.page', { page: item })}
+                  className="inline-flex size-9 items-center justify-center rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                >
+                  {item}
+                </Link>
+              )
+            ) : (
+              <span
+                key={item}
+                className="inline-flex size-9 items-center justify-center text-sm text-gray-400"
+              >
+                …
+              </span>
+            ),
+          )}
+
+          {page.page < totalPages ? (
+            <Link
+              href={buildAdminEventsHref(locale, {
+                ...query,
+                page: page.page + 1,
+              })}
+              title={t('pagination.next')}
+              className="inline-flex size-9 items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-700 transition-colors hover:bg-gray-50"
+            >
+              <ChevronRight className="size-4" />
+            </Link>
+          ) : (
+            <span className="inline-flex size-9 items-center justify-center rounded-lg border border-gray-200 bg-gray-50 text-gray-300">
+              <ChevronRight className="size-4" />
+            </span>
+          )}
+        </nav>
+      ) : null}
 
       <EventRacesEditModal
         isOpen={eventToEdit !== null}
