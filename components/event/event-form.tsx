@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Plus, Trash2 } from 'lucide-react';
 import { FormInput } from '@/components/ui/form-input';
+import { FormSelect } from '@/components/ui/form-select';
 import { FormTextarea } from '@/components/ui/form-textarea';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import {
@@ -24,6 +25,7 @@ import {
 } from '@/lib/api/events';
 import type { EventRaceWriteInput } from '@/lib/api/events';
 import type { TrailEventDetail } from '@/types/event.types';
+import { PROVINCES, isValidProvince } from '@/lib/geography/provinces';
 
 interface RaceDraft {
   id?: string;
@@ -137,7 +139,7 @@ export function EventForm({
 
     for (const race of races) {
       if (!race.city.trim()) return t('errors.city');
-      if (!race.province.trim()) return t('errors.province');
+      if (!isValidProvince(race.province)) return t('errors.province');
       const distance = Number(race.distanceKm);
       if (!Number.isFinite(distance) || distance <= 0 || distance >= 1000) {
         return t('errors.distance');
@@ -174,7 +176,7 @@ export function EventForm({
         name: race.name.trim() || null,
         date: race.date.trim() || null,
         city: race.city.trim(),
-        province: race.province.trim(),
+        province: race.province,
         distanceKm: Number(race.distanceKm),
         elevationGainM: parseOptionalInteger(race.elevationGainM),
         tiers: toRaceTierWriteInputs(race.tiers),
@@ -314,12 +316,19 @@ export function EventForm({
                 value={race.city}
                 onChange={(e) => updateRace(index, 'city', e.target.value)}
               />
-              <FormInput
+              <FormSelect
                 id={`race-province-${index}`}
                 label={t('province')}
                 value={race.province}
                 onChange={(e) => updateRace(index, 'province', e.target.value)}
-              />
+              >
+                <option value="">{t('provincePlaceholder')}</option>
+                {PROVINCES.map((province) => (
+                  <option key={province} value={province}>
+                    {province}
+                  </option>
+                ))}
+              </FormSelect>
               <FormInput
                 id={`race-distance-${index}`}
                 label={t('distanceKm')}

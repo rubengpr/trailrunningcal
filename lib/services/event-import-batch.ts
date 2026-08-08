@@ -30,6 +30,7 @@ import type {
   TrailEventAgentEvent,
   TrailEventAgentRace,
 } from '@/types/trail-event-agent.types';
+import { isValidProvince } from '@/lib/geography/provinces';
 
 interface EventImportBatchWorkflowInput {
   batchId: string;
@@ -106,6 +107,16 @@ export async function updateItemResult(
 export async function acceptItem(
   itemId: string,
 ): Promise<{ eventId: string; eventSlug: string }> {
+  const current = await getItemResultState(itemId);
+
+  if (!current) {
+    throw new ValidationError('Item not found', 404);
+  }
+
+  if (current.result.races.some((race) => !isValidProvince(race.province))) {
+    throw new ValidationError('Invalid province', 400);
+  }
+
   return acceptItemInDatabase(itemId);
 }
 

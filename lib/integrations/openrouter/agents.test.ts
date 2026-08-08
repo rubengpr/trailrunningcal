@@ -6,10 +6,11 @@ import { TRAIL_EVENT_AGENT_INSTRUCTIONS } from '@/lib/prompts/trail-event-agent-
 import { normalizeRaceName } from '@/lib/races/utils';
 import { OPENROUTER_SCRAPE_MODEL_IDS } from '@/lib/integrations/openrouter/scrape-models';
 import { runMarkdownAgent } from '@/lib/integrations/openrouter/agents';
+import { PROVINCES } from '@/lib/geography/provinces';
 
 const MODEL = OPENROUTER_SCRAPE_MODEL_IDS[0];
 
-function agentOutput(tiers?: unknown): string {
+function agentOutput(tiers?: unknown, province = 'Barcelona'): string {
   return JSON.stringify({
     event: {
       name: 'Trail Event',
@@ -21,7 +22,7 @@ function agentOutput(tiers?: unknown): string {
         name: '21K',
         date: '2027-05-01',
         city: 'Barcelona',
-        province: 'Barcelona',
+        province,
         distanceKm: 21,
         elevationGainM: 900,
         ...(tiers === undefined ? {} : { tiers }),
@@ -86,6 +87,34 @@ describe('TRAIL_EVENT_AGENT_JSON_SCHEMA', () => {
     expect(tiers.maxItems).toBe(5);
     expect(tiers.items.required).toEqual(['priceEur', 'endsAt']);
     expect(tiers.items.properties.priceEur.type).toBe('number');
+  });
+
+  it('uses the complete canonical province catalogue as its enum', () => {
+    const races = TRAIL_EVENT_AGENT_JSON_SCHEMA.properties.races;
+
+    expect(races.items.properties.province.enum).toEqual(PROVINCES);
+  });
+});
+
+describe('province extraction validation', () => {
+  it('rejects non-canonical provider output after parsing', async () => {
+    await expect(runMarkdownAgent(
+      clientWithOutput(agentOutput([], 'Gerona')),
+      'markdown',
+      MODEL,
+    )).rejects.toMatchObject({
+      message: 'Invalid province',
+      status: 422,
+    });
+  });
+
+  it('instructs the agent to return exact canonical province values', () => {
+    expect(TRAIL_EVENT_AGENT_INSTRUCTIONS).toContain(
+      'exact canonical values allowed by the output schema',
+    );
+    expect(TRAIL_EVENT_AGENT_INSTRUCTIONS).toContain(
+      'except province names',
+    );
   });
 });
 

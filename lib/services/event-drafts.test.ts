@@ -430,6 +430,21 @@ describe('acceptEventDraft', () => {
     expect(mocks.getEventByIdForAdmin).not.toHaveBeenCalled();
   });
 
+  it('rejects an invalid province stored in a pending draft', async () => {
+    mocks.getPendingDraftById.mockResolvedValue(draft({
+      event: extractedEvent(),
+      races: [extractedRace({ province: 'Gerona' })],
+    }));
+
+    await expect(acceptEventDraft(DRAFT_ID)).rejects.toMatchObject({
+      message: 'Invalid province',
+      status: 400,
+    });
+
+    expect(mocks.acceptEventDraft).not.toHaveBeenCalled();
+    expect(mocks.getEventByIdForAdmin).not.toHaveBeenCalled();
+  });
+
   it('rejects when the accepted event cannot be reloaded', async () => {
     mocks.getPendingDraftById.mockResolvedValue(
       draft({ event: extractedEvent(), races: [extractedRace()] }),

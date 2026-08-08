@@ -176,6 +176,10 @@ describe('updateItemResult', () => {
 
 describe('acceptItem', () => {
   it('returns the public identity created by the atomic database operation', async () => {
+    mocks.getItemResultState.mockResolvedValue({
+      result: original,
+      reviewStatus: 'pending',
+    });
     mocks.acceptItem.mockResolvedValue({
       eventId: 'event-1',
       eventSlug: 'accepted-event',
@@ -186,5 +190,21 @@ describe('acceptItem', () => {
       eventSlug: 'accepted-event',
     });
     expect(mocks.acceptItem).toHaveBeenCalledWith(ITEM_ID);
+  });
+
+  it('rejects an invalid province stored in a completed batch item', async () => {
+    mocks.getItemResultState.mockResolvedValue({
+      result: {
+        ...original,
+        races: [{ ...original.races[0], province: 'Gerona' }],
+      },
+      reviewStatus: 'pending',
+    });
+
+    await expect(acceptItem(ITEM_ID)).rejects.toMatchObject({
+      message: 'Invalid province',
+      status: 400,
+    });
+    expect(mocks.acceptItem).not.toHaveBeenCalled();
   });
 });

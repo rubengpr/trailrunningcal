@@ -12,9 +12,10 @@ import type {
 } from '@/types/trail-event-agent.types';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 import { TRAIL_EVENT_AGENT_INSTRUCTIONS } from '@/lib/prompts/trail-event-agent-instructions';
-import { TimeoutError } from '@/lib/errors';
+import { TimeoutError, ValidationError } from '@/lib/errors';
 import { normalizeRaceTiers } from '@/lib/events/tier-normalization';
 import { normalizeRaceName } from '@/lib/races/utils';
+import { isValidProvince } from '@/lib/geography/provinces';
 
 export interface OpenRouterServiceResult {
   event: TrailEventAgentEvent | null;
@@ -25,13 +26,19 @@ export interface OpenRouterServiceResult {
 }
 
 function normalizeRaces(races: TrailEventAgentRace[]): TrailEventAgentRace[] {
-  return races.map((race) => ({
-    ...race,
-    name: normalizeRaceName(race.name),
-    tiers: normalizeRaceTiers(
-      (race as TrailEventAgentRace & { tiers?: unknown }).tiers,
-    ),
-  }));
+  return races.map((race) => {
+    if (!isValidProvince(race.province)) {
+      throw new ValidationError('Invalid province', 422);
+    }
+
+    return {
+      ...race,
+      name: normalizeRaceName(race.name),
+      tiers: normalizeRaceTiers(
+        (race as TrailEventAgentRace & { tiers?: unknown }).tiers,
+      ),
+    };
+  });
 }
 
 function stripMarkdownJsonCodeFence(text: string): string {

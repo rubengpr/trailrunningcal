@@ -9,6 +9,7 @@ import type {
   TrailEventAgentEvent,
   TrailEventAgentRace,
 } from '@/types/trail-event-agent.types';
+import { isValidProvince } from '@/lib/geography/provinces';
 
 export type EventRaceWriteInput = Omit<TrailEventAgentRace, 'name'> & {
   name: string | null;
@@ -17,6 +18,10 @@ export type EventRaceWriteInput = Omit<TrailEventAgentRace, 'name'> & {
 };
 
 function toRacePayload(race: EventRaceWriteInput): Record<string, unknown> {
+  if (!isValidProvince(race.province)) {
+    throw new ValidationError('Invalid province', 400);
+  }
+
   return {
     ...(race.id ? { id: race.id } : {}),
     name: race.name,

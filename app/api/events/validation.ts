@@ -5,6 +5,7 @@ import {
   type RaceTierScheduleValidationError,
 } from '@/lib/events/tier-validation';
 import { normalizeRaceName } from '@/lib/races/utils';
+import { isValidProvince } from '@/lib/geography/provinces';
 import type { EventRaceTierWriteInput } from '@/types/event.types';
 import type {
   TrailEventAgentEvent,
@@ -184,11 +185,7 @@ function parseRace(value: unknown, allowId = false): ParsedEventRaceInput {
     throw new ValidationError('Invalid city', 400);
   }
 
-  if (
-    typeof province !== 'string' ||
-    province.trim().length === 0 ||
-    province.trim().length > 100
-  ) {
+  if (!isValidProvince(province)) {
     throw new ValidationError('Invalid province', 400);
   }
 
@@ -214,7 +211,7 @@ function parseRace(value: unknown, allowId = false): ParsedEventRaceInput {
     name: parseRaceName(name),
     date: parsedDate,
     city: city.trim(),
-    province: province.trim(),
+    province,
     distanceKm,
     elevationGainM,
     tiers: parseTiers(tiers),

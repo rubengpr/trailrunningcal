@@ -107,4 +107,16 @@ describe('event services race tiers', () => {
       },
     );
   });
+
+  it('rejects a non-canonical province before any database write', async () => {
+    await expect(createEventWithRaces({
+      ...input,
+      races: [{ ...input.races[0], province: 'Gerona' }],
+    })).rejects.toMatchObject({
+      message: 'Invalid province',
+      status: 400,
+    });
+
+    expect(mocks.rpc).not.toHaveBeenCalled();
+  });
 });

@@ -31,6 +31,13 @@ function parseTiers(tiers: unknown, mode?: PatchMode) {
   return parseEventInput(body(tiers)).races[0].tiers;
 }
 
+function bodyWithProvince(province: unknown): Record<string, unknown> {
+  const input = body([]);
+  const races = input.races as Array<Record<string, unknown>>;
+  races[0].province = province;
+  return input;
+}
+
 function expectValidationError(
   callback: () => unknown,
   message: string,
@@ -128,4 +135,37 @@ describe('event race tier validation', () => {
   ])('rejects invalid tiers with HTTP 400 metadata %#', (tiers, message) => {
     expectValidationError(() => parseTiers(tiers), message as string);
   });
+});
+
+describe('event race province validation', () => {
+  it.each<PatchMode | undefined>([
+    undefined,
+    'update-races',
+    'insert-races',
+  ])('accepts an exact canonical province for mode %#', (mode) => {
+    const input = bodyWithProvince('A Coruña');
+
+    const parsed = mode
+      ? parseEventPatchInput({ ...input, mode })
+      : parseEventInput(input);
+
+    expect(parsed.races[0].province).toBe('A Coruña');
+  });
+
+  it.each(['Gerona', 'girona', ' Girona', 'Barcleona', ''])(
+    'rejects the non-canonical province %j for create, update and new editions',
+    (province) => {
+      const input = bodyWithProvince(province);
+
+      expectValidationError(() => parseEventInput(input), 'Invalid province');
+      expectValidationError(
+        () => parseEventPatchInput({ ...input, mode: 'update-races' }),
+        'Invalid province',
+      );
+      expectValidationError(
+        () => parseEventPatchInput({ ...input, mode: 'insert-races' }),
+        'Invalid province',
+      );
+    },
+  );
 });

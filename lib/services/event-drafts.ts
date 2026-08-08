@@ -17,6 +17,7 @@ import type {
   EventDraft,
   EventDraftData,
 } from '@/types/event-draft.types';
+import { isValidProvince } from '@/lib/geography/provinces';
 
 export const DEFAULT_EVENT_DRAFT_MODEL =
   OPENROUTER_SCRAPE_MODEL_IDS[0];
@@ -116,6 +117,10 @@ export async function acceptEventDraft(
 
   if (!draft) {
     throw new ValidationError('Draft not found', 404);
+  }
+
+  if (draft.data.races.some((race) => !isValidProvince(race.province))) {
+    throw new ValidationError('Invalid province', 400);
   }
 
   const previousDetail = await getEventByIdForAdmin(draft.eventId);

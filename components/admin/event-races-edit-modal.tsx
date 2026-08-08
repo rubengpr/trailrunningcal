@@ -14,6 +14,7 @@ import {
 import type { RaceTierDraft } from '@/components/event/race-tier-fields';
 import type { EventRaceWriteInput } from '@/lib/api/events';
 import type { TrailEventAgentEvent } from '@/types/trail-event-agent.types';
+import { PROVINCES, isValidProvince } from '@/lib/geography/provinces';
 
 interface EventRacesEditModalProps {
   isOpen: boolean;
@@ -182,6 +183,11 @@ function EventRacesEditModalContent({
     if (isSaving) return;
 
     for (const race of raceDrafts) {
+      if (!isValidProvince(race.province)) {
+        setError(formT('errors.province'));
+        return;
+      }
+
       const distanceKm = Number(race.distanceKm);
       if (
         !Number.isFinite(distanceKm) ||
@@ -401,8 +407,7 @@ function EventRacesEditModalContent({
                     <label className={labelClass}>
                       {t('editFieldProvince')}
                     </label>
-                    <input
-                      type="text"
+                    <select
                       className={inputClass}
                       value={race.province}
                       disabled={isSaving}
@@ -412,7 +417,14 @@ function EventRacesEditModalContent({
                           province: e.target.value,
                         })
                       }
-                    />
+                    >
+                      <option value="">{formT('provincePlaceholder')}</option>
+                      {PROVINCES.map((province) => (
+                        <option key={province} value={province}>
+                          {province}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
                 {showTiers ? (

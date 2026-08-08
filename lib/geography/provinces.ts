@@ -1,0 +1,70 @@
+export const PROVINCES = [
+  'A Coruña',
+  'Albacete',
+  'Alicante',
+  'Almería',
+  'Andorra',
+  'Araba/Álava',
+  'Asturias',
+  'Ávila',
+  'Badajoz',
+  'Barcelona',
+  'Bizkaia',
+  'Burgos',
+  'Cáceres',
+  'Cádiz',
+  'Cantabria',
+  'Castellón',
+  'Ceuta',
+  'Ciudad Real',
+  'Córdoba',
+  'Cuenca',
+  'Gipuzkoa',
+  'Girona',
+  'Granada',
+  'Guadalajara',
+  'Huelva',
+  'Huesca',
+  'Illes Balears',
+  'Jaén',
+  'La Rioja',
+  'Las Palmas',
+  'León',
+  'Lleida',
+  'Lugo',
+  'Madrid',
+  'Málaga',
+  'Melilla',
+  'Murcia',
+  'Navarra',
+  'Ourense',
+  'Palencia',
+  'Pontevedra',
+  'Salamanca',
+  'Santa Cruz de Tenerife',
+  'Segovia',
+  'Sevilla',
+  'Soria',
+  'Tarragona',
+  'Teruel',
+  'Toledo',
+  'Valencia',
+  'Valladolid',
+  'Zamora',
+  'Zaragoza',
+] as const;
+
+export type Province = (typeof PROVINCES)[number];
+
+const provinceSet: ReadonlySet<string> = new Set(PROVINCES);
+
+export function isValidProvince(value: unknown): value is Province {
+  return typeof value === 'string' && provinceSet.has(value);
+}
+
+export const PUBLIC_PROVINCES = [
+  'Barcelona',
+  'Girona',
+  'Lleida',
+  'Tarragona',
+] as const satisfies readonly Province[];

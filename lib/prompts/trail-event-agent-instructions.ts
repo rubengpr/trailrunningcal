@@ -7,7 +7,7 @@ Your mission is to read the provided context and output structured data about a 
 
 ## Critical rules
 
-- Always translate output strings to Spanish.
+- Translate output strings to Spanish, except province names, which must use one of the exact canonical values allowed by the output schema.
 - Don't make things up. If data like distance (km) or elevation gain (m) are not provided, set value to null.
 - If a value can't be determined with certainty, use null.
 - Some event websites contain more than one event with, for example, different location or dates. For these cases, focus on parsing the data of the event related with the provided website url.
@@ -29,7 +29,7 @@ Return structured JSON with event, races, and errorMessage.
 - **race.name**: explicit race name without including distance. Not all races have a specific name. Set value to null if no race names are mentioned. If there's one or more walk modalities, set name to 'Marcha'.
 - **race.date**: YYYY-MM-DD, or null if the date is not stated.
 - **race.city**: the city name explicit in the event data.
-- **race.province**: the city name explicit in the event data. If missing, infer it from race.city.
+- **race.province**: the province explicit in the event data. If missing, infer it from race.city. Always use the exact canonical value allowed by the output schema; never translate, alias, or alter it.
 - **race.distanceKm**: parse in kilometers and integer (e.g. 21 instead of 21.3, 21.4)
 - **race.elevationGainM**: number in meters, or null if not stated. Parse forms like +1200m, 1200m, 1.200, 1500 m+.
 - **race.tiers**: up to 5 {priceEur, endsAt} registration prices in source order; use [] when pricing is absent, ambiguous, or unreliable—never guess.

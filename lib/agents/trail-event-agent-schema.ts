@@ -1,3 +1,5 @@
+import { PROVINCES } from '@/lib/geography/provinces';
+
 /**
  * Shared JSON Schema for trail event agent structured output (OpenAI Responses + OpenRouter Chat).
  */
@@ -38,7 +40,7 @@ export const TRAIL_EVENT_AGENT_JSON_SCHEMA = {
             anyOf: [{ type: 'string' }, { type: 'null' }],
           },
           city: { type: 'string' },
-          province: { type: 'string' },
+          province: { type: 'string', enum: [...PROVINCES] },
           distanceKm: { type: 'integer' },
           elevationGainM: {
             anyOf: [{ type: 'integer' }, { type: 'null' }],

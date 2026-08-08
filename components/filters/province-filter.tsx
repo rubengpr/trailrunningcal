@@ -1,6 +1,6 @@
 'use client';
 
-import { PROVINCES } from '@/lib/constants';
+import { PUBLIC_PROVINCES } from '@/lib/geography/provinces';
 
 interface ProvinceFilterProps {
   selectedProvince: string[];
@@ -20,7 +20,7 @@ export function ProvinceFilter({
 
   return (
     <div className="flex flex-wrap gap-1.5 sm:gap-2 justify-center">
-      {PROVINCES.map((province) => (
+      {PUBLIC_PROVINCES.map((province) => (
         <button
           key={province}
           onClick={() => handleProvinceClick(province)}

@@ -1032,6 +1032,7 @@
       "date": "Data",
       "city": "Ciutat",
       "province": "Província",
+      "provincePlaceholder": "Selecciona una província",
       "distanceKm": "Distància (km)",
       "elevationGainM": "Desnivell (m)",
       "tiers": {
@@ -1052,7 +1053,7 @@
         "websiteUrl": "Format d’URL no vàlid",
         "races": "Afegeix almenys una cursa",
         "city": "La ciutat és obligatòria",
-        "province": "La província és obligatòria",
+        "province": "Selecciona una província vàlida",
         "distance": "La distància ha de ser un número vàlid",
         "elevation": "El desnivell ha de ser un número enter vàlid",
         "tierLimit": "Cada cursa pot tenir un màxim de 5 preus",

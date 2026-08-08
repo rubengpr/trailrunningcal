@@ -1064,6 +1064,7 @@
       "date": "Fecha",
       "city": "Ciudad",
       "province": "Provincia",
+      "provincePlaceholder": "Selecciona una provincia",
       "distanceKm": "Distancia (km)",
       "elevationGainM": "Desnivel (m)",
       "tiers": {
@@ -1084,7 +1085,7 @@
         "websiteUrl": "Formato de URL no válido",
         "races": "Añade al menos una carrera",
         "city": "La ciudad es obligatoria",
-        "province": "La provincia es obligatoria",
+        "province": "Selecciona una provincia válida",
         "distance": "La distancia debe ser un número válido",
         "elevation": "El desnivel debe ser un número entero válido",
         "tierLimit": "Cada carrera puede tener un máximo de 5 precios",
