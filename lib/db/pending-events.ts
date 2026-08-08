@@ -20,6 +20,7 @@ export async function getPendingEvents(): Promise<PendingEvent[]> {
   const { data, error } = await supabase
     .from('pending_events')
     .select('id, url, status, created_at, updated_at')
+    .eq('status', 'pending')
     .order('created_at', { ascending: false });
 
   if (error) {

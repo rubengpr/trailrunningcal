@@ -18,8 +18,7 @@ export default async function AdminEventosPendientesPage({
     redirect(`/${locale}/admin/login`);
   }
 
-  const allEntries = await getPendingEvents();
-  const entries = allEntries.filter((e) => e.status === 'pending');
+  const entries = await getPendingEvents();
 
   return <AdminPendingEventsContent entries={entries} />;
 }

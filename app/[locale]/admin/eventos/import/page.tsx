@@ -19,8 +19,7 @@ export default async function AdminEventImportPage({
     redirect(`/${locale}/admin/login`);
   }
 
-  const queueEntries = await getPendingEvents();
-  const pendingEntries = queueEntries.filter((e) => e.status === 'pending');
+  const pendingEntries = await getPendingEvents();
 
   return (
     <AdminLayout>
