@@ -6,9 +6,9 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Plus, Trash2 } from 'lucide-react';
 import { FormInput } from '@/components/ui/form-input';
-import { FormSelect } from '@/components/ui/form-select';
 import { FormTextarea } from '@/components/ui/form-textarea';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
+import { SelectMenu } from '@/components/ui/select-menu';
 import {
   RaceTierFields,
   toRaceTierDrafts,
@@ -37,6 +37,11 @@ interface RaceDraft {
   elevationGainM: string;
   tiers: RaceTierDraft[];
 }
+
+const provinceOptions = PROVINCES.map((province) => ({
+  value: province,
+  label: province,
+}));
 
 type RaceTextField = Exclude<keyof RaceDraft, 'tiers'>;
 
@@ -316,19 +321,14 @@ export function EventForm({
                 value={race.city}
                 onChange={(e) => updateRace(index, 'city', e.target.value)}
               />
-              <FormSelect
+              <SelectMenu
                 id={`race-province-${index}`}
                 label={t('province')}
                 value={race.province}
-                onChange={(e) => updateRace(index, 'province', e.target.value)}
-              >
-                <option value="">{t('provincePlaceholder')}</option>
-                {PROVINCES.map((province) => (
-                  <option key={province} value={province}>
-                    {province}
-                  </option>
-                ))}
-              </FormSelect>
+                options={provinceOptions}
+                placeholder={t('provincePlaceholder')}
+                onValueChange={(value) => updateRace(index, 'province', value)}
+              />
               <FormInput
                 id={`race-distance-${index}`}
                 label={t('distanceKm')}

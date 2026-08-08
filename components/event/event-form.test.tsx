@@ -65,20 +65,21 @@ describe('EventForm province selection', () => {
   it('renders the canonical catalogue and preserves the stored value', () => {
     render(<EventForm eventId="event-1" initialData={initialData} isEditMode />);
 
-    const select = screen.getByLabelText('province') as HTMLSelectElement;
-    expect(select.value).toBe('Girona');
-    expect(Array.from(select.options).map((option) => option.value)).toEqual([
-      '',
-      ...PROVINCES,
-    ]);
+    const select = screen.getByLabelText('province');
+    expect(select.tagName).toBe('BUTTON');
+    expect(select.textContent).toContain('Girona');
+
+    fireEvent.click(select);
+    expect(screen.getAllByRole('option').map((option) => (
+      option.getAttribute('data-value')
+    ))).toEqual(['', ...PROVINCES]);
   });
 
   it('shows the custom validation error when province is empty', () => {
     render(<EventForm eventId="event-1" initialData={initialData} isEditMode />);
 
-    fireEvent.change(screen.getByLabelText('province'), {
-      target: { value: '' },
-    });
+    fireEvent.click(screen.getByLabelText('province'));
+    fireEvent.click(screen.getByRole('option', { name: 'provincePlaceholder' }));
     fireEvent.click(screen.getByRole('button', { name: 'save' }));
 
     expect(screen.getByText('errors.province')).toBeTruthy();

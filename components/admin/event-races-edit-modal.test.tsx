@@ -42,12 +42,14 @@ describe('EventRacesEditModal province selection', () => {
       />,
     );
 
-    const select = screen.getByRole('combobox') as HTMLSelectElement;
-    expect(select.value).toBe('Girona');
-    expect(Array.from(select.options).map((option) => option.value)).toEqual([
-      '',
-      ...PROVINCES,
-    ]);
+    const select = screen.getByRole('combobox');
+    expect(select.tagName).toBe('BUTTON');
+    expect(select.textContent).toContain('Girona');
+
+    fireEvent.click(select);
+    expect(screen.getAllByRole('option').map((option) => (
+      option.getAttribute('data-value')
+    ))).toEqual(['', ...PROVINCES]);
   });
 
   it('blocks saving an empty province with the custom error', () => {
@@ -63,9 +65,8 @@ describe('EventRacesEditModal province selection', () => {
       />,
     );
 
-    fireEvent.change(screen.getByRole('combobox'), {
-      target: { value: '' },
-    });
+    fireEvent.click(screen.getByRole('combobox'));
+    fireEvent.click(screen.getByRole('option', { name: 'provincePlaceholder' }));
     fireEvent.click(screen.getByRole('button', { name: 'saveReview' }));
 
     expect(screen.getByText('errors.province')).toBeTruthy();

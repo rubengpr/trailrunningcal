@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Plus, Trash2 } from 'lucide-react';
 import { BaseModal } from '@/components/ui/base-modal';
 import { NumberInput } from '@/components/ui/number-input';
+import { SelectMenu } from '@/components/ui/select-menu';
 import {
   RaceTierFields,
   toRaceTierDrafts,
@@ -47,6 +48,10 @@ type ModalRaceDraft = Omit<EventRaceWriteInput, 'distanceKm' | 'tiers'> & {
 const inputClass =
   'w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-400';
 const labelClass = 'text-xs font-medium text-gray-600';
+const provinceOptions = PROVINCES.map((province) => ({
+  value: province,
+  label: province,
+}));
 
 function emptyRaceDraft(): ModalRaceDraft {
   return {
@@ -407,24 +412,19 @@ function EventRacesEditModalContent({
                     <label className={labelClass}>
                       {t('editFieldProvince')}
                     </label>
-                    <select
-                      className={inputClass}
+                    <SelectMenu
                       value={race.province}
+                      options={provinceOptions}
                       disabled={isSaving}
-                      onChange={(e) =>
+                      placeholder={formT('provincePlaceholder')}
+                      variant="modal"
+                      onValueChange={(value) =>
                         updateRaceDraft(index, {
                           ...race,
-                          province: e.target.value,
+                          province: value,
                         })
                       }
-                    >
-                      <option value="">{formT('provincePlaceholder')}</option>
-                      {PROVINCES.map((province) => (
-                        <option key={province} value={province}>
-                          {province}
-                        </option>
-                      ))}
-                    </select>
+                    />
                   </div>
                 </div>
                 {showTiers ? (
