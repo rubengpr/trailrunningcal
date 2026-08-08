@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 import { afterEach, describe, expect, it } from 'vitest';
 import type { TrailEventRace } from '@/types/event.types';
@@ -10,6 +10,11 @@ afterEach(cleanup);
 
 const messages = {
   event: {
+    map: {
+      button: 'Ver mapa',
+      iframeTitle: 'Mapa del recorrido de {raceName}',
+      title: 'Mapa de {raceName}',
+    },
     pricing: {
       free: 'Gratis',
       until: 'hasta el {date}',
@@ -34,7 +39,9 @@ function race(overrides: Partial<TrailEventRace> = {}): TrailEventRace {
 
 async function renderList(races: TrailEventRace[]) {
   const list = EventDistanceList({
+    eventId: 'event-1',
     eventName: 'Garmin Epic Trail',
+    eventSlug: 'garmin-epic-trail',
     races,
     locale: 'es',
     ratioTooltip: 'Elevation per kilometer',
@@ -105,5 +112,28 @@ describe('EventDistanceList', () => {
         ?.querySelector('[data-testid="race-price"]')
         ?.closest('[data-testid="race-metrics"]'),
     ).toBeNull();
+  });
+
+  it('loads only the selected race map after the visitor opens it', async () => {
+    const mapUrl =
+      'https://es.wikiloc.com/wikiloc/embedv2.do?id=200387293&elevation=on';
+    await renderList([race({ mapUrl })]);
+
+    const iframeTitle = 'Mapa del recorrido de Garmin Epic Trail Marathon';
+    expect(screen.queryByTitle(iframeTitle)).toBeNull();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Ver mapa' }));
+
+    expect(screen.getByTitle(iframeTitle).getAttribute('src')).toBe(mapUrl);
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+
+    expect(screen.queryByTitle(iframeTitle)).toBeNull();
+  });
+
+  it('does not render a trigger for unsupported map URLs', async () => {
+    await renderList([race({ mapUrl: 'https://example.com/map' })]);
+
+    expect(screen.queryByRole('button', { name: 'Ver mapa' })).toBeNull();
   });
 });

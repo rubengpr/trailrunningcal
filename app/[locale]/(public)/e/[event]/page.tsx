@@ -275,7 +275,9 @@ export default async function EventPage({
               </h2>
             </div>
             <EventDistanceList
+              eventId={eventData.event.id}
               eventName={eventData.event.name}
+              eventSlug={event}
               races={eventData.races}
               locale={localeTyped}
               ratioTooltip={tEvent('elevationRatioTooltip')}

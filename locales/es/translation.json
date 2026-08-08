@@ -142,6 +142,11 @@
       "successDescription": "Nos ayuda a decidir qué añadir después."
     },
     "multipleLocations": "Varias ubicaciones",
+    "map": {
+      "button": "Ver mapa",
+      "iframeTitle": "Mapa del recorrido de {raceName}",
+      "title": "Mapa de {raceName}"
+    },
     "officialWebsite": "Web oficial",
     "organizerCard": {
       "claimButton": "Reclamar",

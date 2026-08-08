@@ -10,6 +10,7 @@ export const ANALYTICS_EVENTS = {
   EVENT_OFFICIAL_WEBSITE_CLICKED: 'event_official_website_clicked',
   EVENT_ORGANIZER_CLAIM_CLICKED: 'event_organizer_claim_clicked',
   EVENT_PROVINCE_LINK_CLICKED: 'event_province_link_clicked',
+  EVENT_RACE_MAP_OPENED: 'event_race_map_opened',
   EVENT_SHARE_CLICKED: 'event_share_clicked',
   FILTERS_APPLIED: 'filters_applied',
   MAP_VIEW_LIST_CLICKED: 'map_view_list_clicked',
@@ -82,6 +83,12 @@ export interface AnalyticsEventProperties {
     event_id: string;
     event_slug: string;
     province: string;
+  };
+  [ANALYTICS_EVENTS.EVENT_RACE_MAP_OPENED]: {
+    event_id: string;
+    event_slug: string;
+    provider: 'komoot' | 'wikiloc';
+    race_id: string;
   };
   [ANALYTICS_EVENTS.EVENT_SHARE_CLICKED]: {
     event_id: string;

@@ -1,7 +1,18 @@
 'use client';
 
-import { ReactNode, useEffect } from 'react';
+import { useEffect } from 'react';
 import { X } from 'lucide-react';
+import type { ReactNode } from 'react';
+
+export type BaseModalMaxWidth =
+  | 'sm'
+  | 'md'
+  | 'lg'
+  | 'xl'
+  | '2xl'
+  | '3xl'
+  | '5xl'
+  | '7xl';
 
 interface BaseModalProps {
   isOpen: boolean;
@@ -9,7 +20,7 @@ interface BaseModalProps {
   title: string;
   description?: string;
   children: ReactNode;
-  maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
+  maxWidth?: BaseModalMaxWidth;
 }
 
 export function BaseModal({
@@ -38,6 +49,8 @@ export function BaseModal({
     xl: 'max-w-xl',
     '2xl': 'max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl',
     '3xl': 'max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-3xl',
+    '5xl': 'max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-5xl',
+    '7xl': 'max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-7xl',
   };
 
   return (
