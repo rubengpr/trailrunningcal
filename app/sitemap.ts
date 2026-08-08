@@ -4,7 +4,7 @@ import { locales, type Locale } from '@/i18n';
 import { getAllBlogPosts } from '@/lib/content/blog-utils';
 import { RACE_CATEGORY_SLUGS } from '@/lib/races/race-types';
 import { DESTINATION_PROVINCE_IDS } from '@/lib/geography/destinations';
-import { getEvents } from '@/lib/db/events';
+import { getSitemapEvents } from '@/lib/db/sitemap-events';
 import {
   buildHomeAlternateLinks,
   buildBlogListingAlternateLinks,
@@ -25,8 +25,7 @@ const CONTACT_PATHS: Record<Locale, string> = {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const currentDate = new Date();
 
-  // Use static client for static generation (sitemap is always generated at build time)
-  const events = await getEvents();
+  const events = await getSitemapEvents();
 
   const urls: MetadataRoute.Sitemap = [];
 
@@ -121,12 +120,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   // Add event pages (all locales)
-  for (const eventDetail of events) {
-    const eventSlug = eventDetail.event.slug;
+  for (const event of events) {
+    const eventSlug = event.slug;
     for (const locale of locales) {
       urls.push({
         url: `${BASE_URL}/${locale}/e/${eventSlug}`,
-        lastModified: currentDate,
+        lastModified: event.updatedAt ?? currentDate,
         changeFrequency: 'monthly',
         priority: 0.8,
         alternates: {

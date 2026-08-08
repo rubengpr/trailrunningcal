@@ -6,8 +6,8 @@ vi.mock('@/lib/db/races', () => ({
   getRaces: vi.fn().mockResolvedValue([]),
 }));
 
-vi.mock('@/lib/db/events', () => ({
-  getEvents: vi.fn().mockResolvedValue([]),
+vi.mock('@/lib/db/sitemap-events', () => ({
+  getSitemapEvents: vi.fn().mockResolvedValue([]),
 }));
 
 vi.mock('@/lib/content/blog-utils', () => ({
@@ -52,23 +52,11 @@ describe('sitemap destination URLs', () => {
 
 describe('sitemap event URLs', () => {
   it('includes canonical /e event URLs', async () => {
-    const { getEvents } = await import('@/lib/db/events');
-    vi.mocked(getEvents).mockResolvedValueOnce([
+    const { getSitemapEvents } = await import('@/lib/db/sitemap-events');
+    vi.mocked(getSitemapEvents).mockResolvedValueOnce([
       {
-        event: {
-          id: 'event-1',
-          name: 'Cursa Cassoles de Tros',
-          slug: 'cursa-cassoles-de-tros',
-          websiteUrl: null,
-          organizerId: null,
-          description: null,
-          heroImageFilename: null,
-          updatedAt: null,
-        },
-        races: [],
-        allRaceCount: 0,
-        dateRange: { startDate: null, endDate: null },
-        location: { city: null, province: null, groups: [], isMultipleLocations: false },
+        slug: 'cursa-cassoles-de-tros',
+        updatedAt: '2026-08-08T10:00:00.000Z',
       },
     ]);
 
@@ -77,26 +65,17 @@ describe('sitemap event URLs', () => {
 
     expect(sitemapUrls).toContain(`${BASE_URL}/es/e/cursa-cassoles-de-tros`);
     expect(sitemapUrls).toContain(`${BASE_URL}/ca/e/cursa-cassoles-de-tros`);
+    expect(urls.find(
+      (entry) => entry.url === `${BASE_URL}/es/e/cursa-cassoles-de-tros`,
+    )?.lastModified).toBe('2026-08-08T10:00:00.000Z');
   });
 
   it('does not include legacy /carrera URLs', async () => {
-    const { getEvents } = await import('@/lib/db/events');
-    vi.mocked(getEvents).mockResolvedValueOnce([
+    const { getSitemapEvents } = await import('@/lib/db/sitemap-events');
+    vi.mocked(getSitemapEvents).mockResolvedValueOnce([
       {
-        event: {
-          id: 'event-1',
-          name: 'Cursa Cassoles de Tros',
-          slug: 'cursa-cassoles-de-tros',
-          websiteUrl: null,
-          organizerId: null,
-          description: null,
-          heroImageFilename: null,
-          updatedAt: null,
-        },
-        races: [],
-        allRaceCount: 0,
-        dateRange: { startDate: null, endDate: null },
-        location: { city: null, province: null, groups: [], isMultipleLocations: false },
+        slug: 'cursa-cassoles-de-tros',
+        updatedAt: null,
       },
     ]);
 

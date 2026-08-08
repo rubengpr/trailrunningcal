@@ -50,6 +50,8 @@ export interface TrailEvent {
   updatedAt: string | null;
 }
 
+export type SitemapEvent = Pick<TrailEvent, 'slug' | 'updatedAt'>;
+
 export interface TrailEventRace {
   id: string;
   name: string | null;
