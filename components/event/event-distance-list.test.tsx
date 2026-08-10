@@ -12,6 +12,7 @@ const messages = {
   event: {
     map: {
       button: 'Ver mapa',
+      close: 'Cerrar',
       iframeTitle: 'Mapa del recorrido de {raceName}',
       title: 'Mapa de {raceName}',
     },
@@ -125,6 +126,12 @@ describe('EventDistanceList', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Ver mapa' }));
 
     expect(screen.getByTitle(iframeTitle).getAttribute('src')).toBe(mapUrl);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Cerrar' }));
+
+    expect(screen.queryByTitle(iframeTitle)).toBeNull();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Ver mapa' }));
 
     fireEvent.keyDown(document, { key: 'Escape' });
 

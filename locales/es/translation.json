@@ -144,6 +144,7 @@
     "multipleLocations": "Varias ubicaciones",
     "map": {
       "button": "Ver mapa",
+      "close": "Cerrar",
       "iframeTitle": "Mapa del recorrido de {raceName}",
       "title": "Mapa de {raceName}"
     },

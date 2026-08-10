@@ -50,7 +50,8 @@ export function RaceMapButton({
       </button>
 
       <EmbedModal
-        className="h-[65vh] min-h-96 w-full rounded-md border-0 bg-gray-100 lg:h-[75vh]"
+        className="block h-full min-h-0 w-full border-0 bg-gray-100 sm:h-[65vh] sm:min-h-96 sm:rounded-md lg:h-[75vh]"
+        closeLabel={t('close')}
         embedTitle={t('iframeTitle', { raceName })}
         isOpen={isOpen}
         maxWidth="7xl"

@@ -6,6 +6,7 @@ import type { BaseModalMaxWidth } from '@/components/ui/base-modal';
 
 interface EmbedModalProps {
   className?: string;
+  closeLabel: string;
   embedTitle: string;
   isOpen: boolean;
   maxWidth?: BaseModalMaxWidth;
@@ -16,6 +17,7 @@ interface EmbedModalProps {
 
 export function EmbedModal({
   className,
+  closeLabel,
   embedTitle,
   isOpen,
   maxWidth,
@@ -36,8 +38,10 @@ export function EmbedModal({
 
   return (
     <BaseModal
+      closeLabel={closeLabel}
       isOpen={isOpen}
       maxWidth={maxWidth}
+      mobileFullscreen
       onClose={onClose}
       title={title}
     >
