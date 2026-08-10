@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { getSponsorBannerConfig } from '@/lib/sponsors/banner-config';
 
 describe('getSponsorBannerConfig', () => {
-  it('assigns Salssa to event pages and Otso to the homepage', () => {
+  it('assigns Otso to event pages and leaves the homepage empty', () => {
     const eventConfig = getSponsorBannerConfig({
       page: 'event_page',
       posthogVariant: 'control',
@@ -13,27 +13,23 @@ describe('getSponsorBannerConfig', () => {
     });
 
     expect(eventConfig).toMatchObject({
-      brand: 'salssa',
+      brand: 'otso',
       bannerType: 'image_banner',
       page: 'event_page',
     });
-    expect(homepageConfig).toMatchObject({
-      brand: 'otso',
-      bannerType: 'image_banner',
-      page: 'homepage',
-    });
+    expect(homepageConfig).toBeNull();
   });
 
-  it('builds the Salssa sticky banner destination for event pages', () => {
+  it('builds the Otso sticky banner destination for event pages', () => {
     const config = getSponsorBannerConfig({
       page: 'event_page',
       posthogVariant: 'sticky_banner',
     });
 
     expect(config).toMatchObject({
-      brand: 'salssa',
+      brand: 'otso',
       bannerType: 'sticky_banner',
-      code: 'TRC15',
+      code: 'TRC25',
     });
     expect(config?.destinationUrl).toContain(
       'utm_campaign=event_page_sticky_banner',
