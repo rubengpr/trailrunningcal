@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { useFeatureFlagVariantKey } from 'posthog-js/react';
 import type { Locale } from '@/i18n';
+import { useFeatureFlagVariant } from '@/hooks/use-feature-flag-variant';
 import type { MapPageLabels } from '@/types/map.types';
 import type {
   PublicEventFilters,
@@ -85,7 +85,7 @@ export function EventsExplorerClient({
   } = useEventMapLocations(events);
 
   const isDesktopMap = useMinWidthLg();
-  const v2Variant = useFeatureFlagVariantKey('filter-flag-v2');
+  const v2Variant = useFeatureFlagVariant('filter-flag-v2');
   const v2VariantStr = typeof v2Variant === 'string' ? v2Variant : null;
   const filterLayout = v2VariantStr?.includes('-') ? v2VariantStr.slice(0, v2VariantStr.lastIndexOf('-')) : (v2VariantStr ?? 'control');
   const filterColor: 'white' | 'black' = v2VariantStr?.endsWith('-black') ? 'black' : 'white';

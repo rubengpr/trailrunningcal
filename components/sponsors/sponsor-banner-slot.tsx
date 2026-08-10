@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslations } from 'next-intl';
-import { useFeatureFlagVariantKey } from 'posthog-js/react';
 import { usePathname } from 'next/navigation';
 import { PromoBanner, PromoTextStrip } from '@/components/home/promo-banner';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
@@ -14,6 +13,7 @@ import {
   type SponsorPage,
 } from '@/lib/sponsors/banner-config';
 import { getSponsorPreviewConfig } from '@/lib/sponsors/preview-config';
+import { useFeatureFlagVariant } from '@/hooks/use-feature-flag-variant';
 import type { Locale } from '@/i18n';
 
 interface SponsorBannerSlotProps {
@@ -42,7 +42,7 @@ export function SponsorBannerSlot({
   bannerType,
 }: SponsorBannerSlotProps) {
   const tBanner = useTranslations('banner');
-  const posthogVariant = useFeatureFlagVariantKey(SPONSOR_BANNER_FLAG_KEY);
+  const flagVariant = useFeatureFlagVariant(SPONSOR_BANNER_FLAG_KEY);
   const impressionTrackedRef = useRef(false);
   const bannerRef = useRef<HTMLDivElement>(null);
   const previewConfig = useMemo(
@@ -54,8 +54,8 @@ export function SponsorBannerSlot({
     [page, bannerType],
   );
   const config = useMemo(
-    () => getSponsorBannerConfig({ page, posthogVariant }),
-    [page, posthogVariant],
+    () => getSponsorBannerConfig({ page, posthogVariant: flagVariant }),
+    [page, flagVariant],
   );
 
   useEffect(() => {

@@ -13,9 +13,9 @@ import {
   Trophy,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useFeatureFlagVariantKey } from 'posthog-js/react';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { track } from '@/lib/analytics/track';
+import { useFeatureFlagVariant } from '@/hooks/use-feature-flag-variant';
 
 const FEEDBACK_COPY_FLAG_KEY = 'event-feature-feedback-copy';
 
@@ -43,7 +43,7 @@ export function EventFeatureFeedback({
   eventSlug,
 }: EventFeatureFeedbackProps) {
   const t = useTranslations('event.featureFeedback');
-  const flagVariant = useFeatureFlagVariantKey(FEEDBACK_COPY_FLAG_KEY);
+  const flagVariant = useFeatureFlagVariant(FEEDBACK_COPY_FLAG_KEY);
   const [selectedFeatures, setSelectedFeatures] = useState<FeatureId[]>([]);
   const [comment, setComment] = useState('');
   const [submitted, setSubmitted] = useState(false);
