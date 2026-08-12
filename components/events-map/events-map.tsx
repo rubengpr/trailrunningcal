@@ -5,7 +5,7 @@ import type { ReactElement } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { createRoot, type Root } from 'react-dom/client';
-import maplibregl, { type StyleSpecification } from 'maplibre-gl';
+import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type { Locale } from '@/i18n';
 import {
@@ -14,30 +14,7 @@ import {
 } from '@/lib/events/utils';
 import type { EventMapMarker, MapPageLabels } from '@/types/map.types';
 import { ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react';
-
-/** OpenStreetMap Standard (raster) — attribution shown via MapLibre AttributionControl. */
-const OSM_STANDARD_STYLE: StyleSpecification = {
-  version: 8,
-  name: 'OpenStreetMap Standard',
-  sources: {
-    osm: {
-      type: 'raster',
-      tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
-      tileSize: 256,
-      attribution: '© OpenStreetMap contributors',
-      maxzoom: 19,
-    },
-  },
-  layers: [
-    {
-      id: 'osm',
-      type: 'raster',
-      source: 'osm',
-      minzoom: 0,
-      maxzoom: 24,
-    },
-  ],
-};
+import { OSM_STANDARD_STYLE } from '@/lib/maps/style';
 const DEFAULT_CENTER: [number, number] = [2.1734, 41.3851];
 const DEFAULT_ZOOM = 7;
 
