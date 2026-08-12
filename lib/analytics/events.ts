@@ -12,6 +12,9 @@ export const ANALYTICS_EVENTS = {
   EVENT_PROVINCE_LINK_CLICKED: 'event_province_link_clicked',
   EVENT_RACE_MAP_OPENED: 'event_race_map_opened',
   EVENT_SHARE_CLICKED: 'event_share_clicked',
+  EVENT_TRACK_MAP_INTERACTED: 'event_track_map_interacted',
+  EVENT_TRACK_MAP_TERRAIN_TOGGLED: 'event_track_map_terrain_toggled',
+  EVENT_TRACK_MAP_VIEWED: 'event_track_map_viewed',
   FILTERS_APPLIED: 'filters_applied',
   MAP_VIEW_LIST_CLICKED: 'map_view_list_clicked',
   NAVBAR_FILTER_ICON_CLICKED: 'navbar_filter_icon_clicked',
@@ -93,6 +96,24 @@ export interface AnalyticsEventProperties {
   [ANALYTICS_EVENTS.EVENT_SHARE_CLICKED]: {
     event_id: string;
     event_slug: string;
+  };
+  [ANALYTICS_EVENTS.EVENT_TRACK_MAP_INTERACTED]: {
+    event_id: string;
+    event_slug: string;
+    interaction: 'pan' | 'rotate' | 'zoom';
+    route_count: number;
+    race_count: number;
+  };
+  [ANALYTICS_EVENTS.EVENT_TRACK_MAP_TERRAIN_TOGGLED]: {
+    event_id: string;
+    event_slug: string;
+    mode: '2d' | '3d';
+  };
+  [ANALYTICS_EVENTS.EVENT_TRACK_MAP_VIEWED]: {
+    event_id: string;
+    event_slug: string;
+    route_count: number;
+    race_count: number;
   };
   [ANALYTICS_EVENTS.FILTERS_APPLIED]: {
     variant:
