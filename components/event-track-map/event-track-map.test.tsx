@@ -22,6 +22,7 @@ const mocks = vi.hoisted(() => ({
   handlers: new Map<string, (event?: MapMockEvent) => void>(),
   addSource: vi.fn(),
   addLayer: vi.fn(),
+  addImage: vi.fn(),
   addControl: vi.fn(),
   easeTo: vi.fn(),
   fitBounds: vi.fn(),
@@ -89,6 +90,11 @@ vi.mock('maplibre-gl', () => {
     addSource(id: string, source: unknown) {
       mocks.addSource(id, source);
       this.sources.add(id);
+      return this;
+    }
+
+    addImage(id: string, image: unknown, options: unknown) {
+      mocks.addImage(id, image, options);
       return this;
     }
 
@@ -322,6 +328,36 @@ describe('EventTrackMap', () => {
       showZoom: true,
       visualizePitch: false,
     });
+  });
+
+  it('adds repeated direction chevrons that follow the GPX line', () => {
+    render(<EventTrackMap {...props} />);
+
+    act(() => mocks.handlers.get('load')?.());
+
+    expect(mocks.addImage).toHaveBeenCalledWith(
+      'event-track-direction-arrow',
+      expect.objectContaining({
+        width: 24,
+        height: 24,
+        data: expect.any(Uint8Array),
+      }),
+      { pixelRatio: 2 },
+    );
+    expect(mocks.addLayer).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 'event-track-direction-0',
+        type: 'symbol',
+        layout: expect.objectContaining({
+          'symbol-placement': 'line',
+          'symbol-spacing': 140,
+          'icon-image': 'event-track-direction-arrow',
+          'icon-keep-upright': false,
+          'icon-pitch-alignment': 'map',
+          'icon-rotation-alignment': 'map',
+        }),
+      }),
+    );
   });
 
   it('enters and exits viewport fullscreen and resizes the map', async () => {

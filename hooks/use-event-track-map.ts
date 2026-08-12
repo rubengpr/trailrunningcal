@@ -22,6 +22,7 @@ const HILLSHADE_SOURCE_ID = 'event-terrain-hillshade';
 const HILLSHADE_LAYER_ID = 'event-terrain-hillshade';
 const ORTHOPHOTO_SOURCE_ID = 'event-orthophoto';
 const ORTHOPHOTO_LAYER_ID = 'event-orthophoto';
+const DIRECTION_ARROW_IMAGE_ID = 'event-track-direction-arrow';
 const ORTHOPHOTO_TILE_URL =
   'https://geoserveis.icgc.cat/servei/catalunya/mapa-base/wmts/orto/MON3857NW/{z}/{x}/{y}.png';
 const DEFAULT_HILLSHADE_INTENSITY = 0.18;
@@ -68,6 +69,58 @@ interface EndpointMarkerEntry {
   popup: maplibregl.Popup;
   root: Root;
   showPopup: () => void;
+}
+
+function distanceToSegment(
+  x: number,
+  y: number,
+  startX: number,
+  startY: number,
+  endX: number,
+  endY: number,
+): number {
+  const deltaX = endX - startX;
+  const deltaY = endY - startY;
+  const lengthSquared = deltaX * deltaX + deltaY * deltaY;
+  const position = lengthSquared === 0
+    ? 0
+    : clamp(
+        ((x - startX) * deltaX + (y - startY) * deltaY) / lengthSquared,
+        0,
+        1,
+      );
+  const nearestX = startX + position * deltaX;
+  const nearestY = startY + position * deltaY;
+  return Math.hypot(x - nearestX, y - nearestY);
+}
+
+function createDirectionArrowImage(): {
+  width: number;
+  height: number;
+  data: Uint8Array;
+} {
+  const width = 24;
+  const height = 24;
+  const data = new Uint8Array(width * height * 4);
+
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const distance = Math.min(
+        distanceToSegment(x, y, 7, 5, 17, 12),
+        distanceToSegment(x, y, 17, 12, 7, 19),
+      );
+      const offset = (y * width + x) * 4;
+
+      if (distance <= 3.4) {
+        data[offset] = distance <= 1.65 ? 255 : 41;
+        data[offset + 1] = distance <= 1.65 ? 255 : 37;
+        data[offset + 2] = distance <= 1.65 ? 255 : 36;
+        data[offset + 3] = distance <= 1.65 ? 245 : 155;
+      }
+    }
+  }
+
+  return { width, height, data };
 }
 
 function getEndpointText(
@@ -441,6 +494,11 @@ export function useEventTrackMap({
             })),
           };
           map.addSource('event-tracks', { type: 'geojson', data });
+          map.addImage(
+            DIRECTION_ARROW_IMAGE_ID,
+            createDirectionArrowImage(),
+            { pixelRatio: 2 },
+          );
 
           const renderRoutes = routes
             .map((route, routeIndex) => ({ route, routeIndex }))
@@ -482,6 +540,37 @@ export function useEventTrackMap({
               });
             });
           }
+
+          renderRoutes.forEach(({ routeIndex }) => {
+            map!.addLayer({
+              id: `event-track-direction-${routeIndex}`,
+              type: 'symbol',
+              source: 'event-tracks',
+              filter: ['==', ['get', 'routeIndex'], routeIndex],
+              layout: {
+                'symbol-placement': 'line',
+                'symbol-spacing': 140,
+                'icon-image': DIRECTION_ARROW_IMAGE_ID,
+                'icon-size': [
+                  'interpolate',
+                  ['linear'],
+                  ['zoom'],
+                  8,
+                  0.8,
+                  14,
+                  1,
+                  17,
+                  1.15,
+                ],
+                'icon-allow-overlap': true,
+                'icon-ignore-placement': true,
+                'icon-keep-upright': false,
+                'icon-pitch-alignment': 'map',
+                'icon-rotation-alignment': 'map',
+              },
+              paint: { 'icon-opacity': 0.92 },
+            });
+          });
 
           const endpointLabels: EndpointLabels = {
             finish: finishLabel,
