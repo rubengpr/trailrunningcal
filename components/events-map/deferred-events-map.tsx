@@ -1,7 +1,8 @@
 'use client';
 
-import { lazy, Suspense, useEffect, useRef, useState } from 'react';
+import { lazy, Suspense } from 'react';
 import type { EventsMapProps } from '@/components/events-map/events-map';
+import { useDeferredVisibility } from '@/hooks/use-deferred-visibility';
 
 const MAP_VISIBILITY_THRESHOLD = 0.25;
 
@@ -47,44 +48,16 @@ export function DeferredEventsMap({
   onVisible,
   ...props
 }: DeferredEventsMapProps) {
-  const [shouldLoad, setShouldLoad] = useState(false);
-  const placeholderRef = useRef<HTMLDivElement>(null);
+  const { isVisible, targetRef } = useDeferredVisibility<HTMLDivElement>({
+    onVisible,
+    preload: preloadEventsMap,
+    threshold: MAP_VISIBILITY_THRESHOLD,
+  });
 
-  useEffect(() => {
-    const placeholder = placeholderRef.current;
-    if (!placeholder) return;
-
-    if (typeof IntersectionObserver === 'undefined') {
-      const timeoutId = setTimeout(() => {
-        preloadEventsMap();
-        setShouldLoad(true);
-        onVisible?.();
-      }, 0);
-      return () => clearTimeout(timeoutId);
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (
-          entry?.isIntersecting &&
-          entry.intersectionRatio >= MAP_VISIBILITY_THRESHOLD
-        ) {
-          preloadEventsMap();
-          setShouldLoad(true);
-          onVisible?.();
-          observer.disconnect();
-        }
-      },
-      { threshold: MAP_VISIBILITY_THRESHOLD },
-    );
-    observer.observe(placeholder);
-    return () => observer.disconnect();
-  }, [onVisible]);
-
-  if (!shouldLoad || !isReady) {
+  if (!isVisible || !isReady) {
     return (
       <div
-        ref={placeholderRef}
+        ref={targetRef}
         data-map-placeholder
         className={getPlaceholderClassName(props.className)}
       />
