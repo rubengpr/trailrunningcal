@@ -104,7 +104,9 @@ export function AdminEventsContent({ page, query }: AdminEventsContentProps) {
   const router = useRouter();
   const { events, total, totalPages } = page;
   const [eventToDelete, setEventToDelete] = useState<TrailEventDetail | null>(null);
-  const [eventToEdit, setEventToEdit] = useState<TrailEventDetail | null>(null);
+  const [eventToEdit, setEventToEdit] = useState<AdminTrailEventDetail | null>(
+    null,
+  );
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSavingEdit, setIsSavingEdit] = useState(false);
   const [generatingDraftEventIds, setGeneratingDraftEventIds] = useState<Set<string>>(new Set());
@@ -324,6 +326,17 @@ export function AdminEventsContent({ page, query }: AdminEventsContentProps) {
     } finally {
       setIsSavingEdit(false);
     }
+  };
+
+  const handleTrackUploaded = (raceId: string): void => {
+    setEventToEdit((current) => {
+      if (!current || current.trackedRaceIds.includes(raceId)) return current;
+      return {
+        ...current,
+        trackedRaceIds: [...current.trackedRaceIds, raceId],
+      };
+    });
+    router.refresh();
   };
 
   const handleDeleteConfirm = async (): Promise<void> => {
@@ -612,6 +625,9 @@ export function AdminEventsContent({ page, query }: AdminEventsContentProps) {
         }}
         onSave={handleSaveEdit}
         showTiers
+        showTrackUploads
+        trackedRaceIds={eventToEdit?.trackedRaceIds ?? []}
+        onTrackUploaded={handleTrackUploaded}
       />
 
       {reviewEventDetail && reviewDraft && (

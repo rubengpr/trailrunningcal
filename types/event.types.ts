@@ -114,6 +114,7 @@ export interface PublicEventDetail {
 
 export interface AdminTrailEventDetail extends TrailEventDetail {
   pendingDraft: import('@/types/event-draft.types').EventDraft | null;
+  trackedRaceIds: string[];
 }
 
 export type EventRaceWithEventIdRow = EventRaceRow & {

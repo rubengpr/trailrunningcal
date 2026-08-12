@@ -4,6 +4,7 @@ const mocks = vi.hoisted(() => ({
   rpc: vi.fn(),
   adminIn: vi.fn(),
   getPendingDraftsByEventIds: vi.fn(),
+  getTrackedRaceIdsByEventIds: vi.fn(),
 }));
 
 vi.mock('react', () => ({ cache: <T>(callback: T): T => callback }));
@@ -18,6 +19,9 @@ vi.mock('@/lib/supabase/server', () => ({
 }));
 vi.mock('@/lib/db/event-drafts', () => ({
   getPendingDraftsByEventIds: mocks.getPendingDraftsByEventIds,
+}));
+vi.mock('@/lib/db/race-tracks', () => ({
+  getTrackedRaceIdsByEventIds: mocks.getTrackedRaceIdsByEventIds,
 }));
 
 import { getAdminEventsPage, getEvents } from './events';
@@ -83,6 +87,7 @@ describe('event list visibility', () => {
       updatedAt: '2026-06-19T00:00:00.000Z',
     };
     mocks.getPendingDraftsByEventIds.mockResolvedValue([pendingDraft]);
+    mocks.getTrackedRaceIdsByEventIds.mockResolvedValue(new Map());
     mocks.rpc.mockResolvedValueOnce({
       data: [{
         event_ids: [EVENT_ID_WITH_DRAFT, EVENT_ID_WITHOUT_DRAFT],

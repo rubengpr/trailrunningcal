@@ -4,6 +4,7 @@ const mocks = vi.hoisted(() => ({
   rpc: vi.fn(),
   in: vi.fn(),
   getPendingDraftsByEventIds: vi.fn(),
+  getTrackedRaceIdsByEventIds: vi.fn(),
 }));
 
 vi.mock('react', () => ({ cache: <T>(callback: T): T => callback }));
@@ -19,6 +20,9 @@ vi.mock('@/lib/supabase/server', () => ({
 }));
 vi.mock('@/lib/db/event-drafts', () => ({
   getPendingDraftsByEventIds: mocks.getPendingDraftsByEventIds,
+}));
+vi.mock('@/lib/db/race-tracks', () => ({
+  getTrackedRaceIdsByEventIds: mocks.getTrackedRaceIdsByEventIds,
 }));
 
 import { getAdminEventsPage } from '@/lib/db/events';
@@ -55,6 +59,9 @@ describe('getAdminEventsPage', () => {
       error: null,
     });
     mocks.getPendingDraftsByEventIds.mockResolvedValue([]);
+    mocks.getTrackedRaceIdsByEventIds.mockResolvedValue(
+      new Map([[FIRST_ID, ['race-1']]]),
+    );
 
     const result = await getAdminEventsPage({
       page: 2,
@@ -79,6 +86,8 @@ describe('getAdminEventsPage', () => {
       SECOND_ID,
       FIRST_ID,
     ]);
+    expect(result.events[0].trackedRaceIds).toEqual([]);
+    expect(result.events[1].trackedRaceIds).toEqual(['race-1']);
     expect(result.totalPages).toBe(3);
   });
 
@@ -99,6 +108,7 @@ describe('getAdminEventsPage', () => {
     expect(result.totalPages).toBe(0);
     expect(mocks.in).not.toHaveBeenCalled();
     expect(mocks.getPendingDraftsByEventIds).not.toHaveBeenCalled();
+    expect(mocks.getTrackedRaceIdsByEventIds).not.toHaveBeenCalled();
   });
 
   it('surfaces database failures', async () => {

@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Plus, Trash2 } from 'lucide-react';
+import { RaceTrackUpload } from '@/components/admin/race-track-upload';
 import { FormInput } from '@/components/ui/form-input';
 import { FormTextarea } from '@/components/ui/form-textarea';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
@@ -85,6 +86,7 @@ interface EventFormProps {
   initialData?: TrailEventDetail | null;
   isEditMode?: boolean;
   apiMode?: 'admin' | 'organizer';
+  trackedRaceIds?: string[];
 }
 
 export function EventForm({
@@ -92,6 +94,7 @@ export function EventForm({
   initialData = null,
   isEditMode = false,
   apiMode = 'admin',
+  trackedRaceIds = [],
 }: EventFormProps): React.ReactElement {
   const t = useTranslations('adminEvents.form');
   const deleteT = useTranslations('adminEvents.delete');
@@ -350,6 +353,14 @@ export function EventForm({
               disabled={isSaving}
               onChange={(tiers) => updateRaceTiers(index, tiers)}
             />
+            {apiMode === 'admin' && isEditMode && (
+              <RaceTrackUpload
+                raceId={race.id}
+                raceName={race.name}
+                initialHasTrack={race.id ? trackedRaceIds.includes(race.id) : false}
+                disabled={isSaving || isDeleting}
+              />
+            )}
           </div>
         ))}
       </div>

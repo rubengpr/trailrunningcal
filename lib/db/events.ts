@@ -28,6 +28,7 @@ import type {
 } from '@/types/admin-events.types';
 import { buildEventDetail, toPublicEventDetail } from '@/lib/events/utils';
 import { getPendingDraftsByEventIds } from '@/lib/db/event-drafts';
+import { getTrackedRaceIdsByEventIds } from '@/lib/db/race-tracks';
 import { PUBLIC_EVENTS_PAGE_SIZE } from '@/lib/db/public-events-pagination';
 import { ADMIN_EVENTS_PAGE_SIZE } from '@/lib/events/admin-pagination';
 import { toTrackGeometry } from '@/lib/race-tracks/routes';
@@ -256,7 +257,7 @@ export async function getAdminEventsPage({
     };
   }
 
-  const [eventResult, drafts] = await Promise.all([
+  const [eventResult, drafts, trackedRaceIdsByEventId] = await Promise.all([
     supabase
       .from('events')
       .select(
@@ -284,6 +285,7 @@ export async function getAdminEventsPage({
       )
       .in('id', eventIds),
     getPendingDraftsByEventIds(eventIds),
+    getTrackedRaceIdsByEventIds(eventIds),
   ]);
 
   if (eventResult.error || !eventResult.data) {
@@ -301,6 +303,8 @@ export async function getAdminEventsPage({
     .map<AdminTrailEventDetail>((eventDetail) => ({
       ...eventDetail,
       pendingDraft: draftsByEventId.get(eventDetail.event.id) ?? null,
+      trackedRaceIds:
+        trackedRaceIdsByEventId.get(eventDetail.event.id) ?? [],
     }))
     .sort(
       (a, b) =>

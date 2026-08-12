@@ -86,3 +86,50 @@ describe('EventForm province selection', () => {
     expect(mocks.updateEvent).not.toHaveBeenCalled();
   });
 });
+
+describe('EventForm race-track visibility', () => {
+  it('shows track uploads only in admin edit mode', () => {
+    const { unmount } = render(
+      <EventForm eventId="event-1" initialData={initialData} isEditMode />,
+    );
+    expect(screen.getByLabelText('inputLabel')).toBeTruthy();
+    unmount();
+
+    const organizer = render(
+      <EventForm
+        eventId="event-1"
+        initialData={initialData}
+        isEditMode
+        apiMode="organizer"
+      />,
+    );
+    expect(screen.queryByLabelText('inputLabel')).toBeNull();
+    organizer.unmount();
+
+    render(<EventForm initialData={initialData} />);
+    expect(screen.queryByLabelText('inputLabel')).toBeNull();
+  });
+
+  it('uses tracked race IDs to show the replace state', () => {
+    render(
+      <EventForm
+        eventId="event-1"
+        initialData={initialData}
+        isEditMode
+        trackedRaceIds={['race-1']}
+      />,
+    );
+
+    expect(screen.getByRole('button', { name: 'replace' })).toBeTruthy();
+  });
+
+  it('explains that newly added races must be saved before upload', () => {
+    render(
+      <EventForm eventId="event-1" initialData={initialData} isEditMode />,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'addRace' }));
+
+    expect(screen.getByText('saveFirst')).toBeTruthy();
+  });
+});

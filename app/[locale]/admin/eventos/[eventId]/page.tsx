@@ -3,6 +3,7 @@ import { AdminLayout } from '@/components/admin/admin-layout';
 import { EventForm } from '@/components/event/event-form';
 import { isAdminEmail } from '@/lib/auth';
 import { getEventByIdForAdmin } from '@/lib/db/events';
+import { getTrackedRaceIdsForEvent } from '@/lib/db/race-tracks';
 import { createClient } from '@/lib/supabase/server';
 
 export default async function AdminEventEditPage({
@@ -19,7 +20,10 @@ export default async function AdminEventEditPage({
     redirect(`/${locale}/admin/login`);
   }
 
-  const eventDetail = await getEventByIdForAdmin(eventId);
+  const [eventDetail, trackedRaceIds] = await Promise.all([
+    getEventByIdForAdmin(eventId),
+    getTrackedRaceIdsForEvent(eventId),
+  ]);
 
   if (!eventDetail) {
     redirect(`/${locale}/admin/eventos/activos`);
@@ -31,6 +35,7 @@ export default async function AdminEventEditPage({
         eventId={eventId}
         initialData={eventDetail}
         isEditMode
+        trackedRaceIds={trackedRaceIds}
       />
     </AdminLayout>
   );

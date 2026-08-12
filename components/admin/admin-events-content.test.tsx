@@ -32,6 +32,7 @@ const mocks = vi.hoisted(() => ({
   routerRefresh: vi.fn(),
   toastSuccess: vi.fn(),
   toastError: vi.fn(),
+  eventRacesEditModalProps: vi.fn(),
 }));
 
 vi.mock('next-intl', () => ({
@@ -66,7 +67,14 @@ vi.mock('@/lib/api/events', () => ({
   updateEvent: vi.fn(),
 }));
 vi.mock('@/components/admin/event-races-edit-modal', () => ({
-  EventRacesEditModal: () => null,
+  EventRacesEditModal: (props: {
+    isOpen: boolean;
+    showTrackUploads?: boolean;
+    trackedRaceIds?: string[];
+  }) => {
+    mocks.eventRacesEditModalProps(props);
+    return props.isOpen ? <div data-testid="event-edit-modal" /> : null;
+  },
 }));
 vi.mock('@/components/ui/base-modal', () => ({ BaseModal: () => null }));
 vi.mock('@/components/admin/event-import-preview', () => ({
@@ -163,6 +171,7 @@ function eventDetail(draft: EventDraft | null): AdminTrailEventDetail {
       isMultipleLocations: false,
     },
     pendingDraft: draft,
+    trackedRaceIds: [],
   };
 }
 
@@ -309,5 +318,24 @@ describe('AdminEventsContent pagination', () => {
       '/es/admin/eventos/activos?page=4&q=ultra&sort=name&direction=desc',
     );
     expect((screen.getByRole('searchbox') as HTMLInputElement).value).toBe('ultra');
+  });
+});
+
+describe('AdminEventsContent editing', () => {
+  it('enables track uploads and passes stored track status to the edit modal', () => {
+    const detail = eventDetail(null);
+    detail.trackedRaceIds = ['race-1'];
+    renderContent([detail]);
+
+    fireEvent.click(screen.getByTitle('edit.button'));
+
+    expect(screen.getByTestId('event-edit-modal')).toBeTruthy();
+    expect(mocks.eventRacesEditModalProps).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        isOpen: true,
+        showTrackUploads: true,
+        trackedRaceIds: ['race-1'],
+      }),
+    );
   });
 });

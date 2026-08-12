@@ -18,6 +18,7 @@ const event: TrailEventAgentEvent = {
   websiteUrl: 'https://example.com',
 };
 const races: EventRaceWriteInput[] = [{
+  id: 'race-1',
   name: '21K',
   date: '2027-05-01',
   city: 'Girona',
@@ -71,5 +72,38 @@ describe('EventRacesEditModal province selection', () => {
 
     expect(screen.getByText('errors.province')).toBeTruthy();
     expect(onSave).not.toHaveBeenCalled();
+  });
+});
+
+describe('EventRacesEditModal track uploads', () => {
+  it('shows uploads only when enabled for an admin event edit', () => {
+    const { unmount } = render(
+      <EventRacesEditModal
+        isOpen
+        event={event}
+        races={races}
+        title="Edit"
+        showTrackUploads
+        trackedRaceIds={['race-1']}
+        onClose={vi.fn()}
+        onSave={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByLabelText('inputLabel')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'replace' })).toBeTruthy();
+    unmount();
+
+    render(
+      <EventRacesEditModal
+        isOpen
+        event={event}
+        races={races}
+        title="Review"
+        onClose={vi.fn()}
+        onSave={vi.fn()}
+      />,
+    );
+    expect(screen.queryByLabelText('inputLabel')).toBeNull();
   });
 });

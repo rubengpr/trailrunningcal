@@ -33,6 +33,7 @@ export function ConfirmationModal({
             <p className="text-sm sm:text-base text-gray-700 mb-6">{message}</p>
             <div className="flex flex-row justify-end gap-3">
                 <Button
+                    type="button"
                     variant="secondary"
                     onClick={onClose}
                     disabled={isSubmitting}
@@ -40,6 +41,7 @@ export function ConfirmationModal({
                     {cancelButtonText}
                 </Button>
                 <Button
+                    type="button"
                     variant="primary"
                     onClick={onConfirm}
                     disabled={isSubmitting}

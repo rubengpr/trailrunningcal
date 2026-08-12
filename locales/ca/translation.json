@@ -1073,6 +1073,35 @@
         "endsAt": "Fins a",
         "remove": "Eliminar preu"
       },
+      "track": {
+        "title": "Recorregut GPX",
+        "add": "Afegir GPX",
+        "replace": "Reemplaçar GPX",
+        "uploading": "Pujant...",
+        "inputLabel": "Seleccionar fitxer GPX",
+        "stored": "Hi ha un recorregut desat",
+        "saveFirst": "Desa l’esdeveniment abans d’afegir un recorregut a aquesta cursa.",
+        "success": "Recorregut GPX desat correctament",
+        "summary": "{geometryType} · {pointCount} punts · {segmentCount, plural, one {1 segment} other {# segments}}",
+        "errorTitle": "No s’ha pogut desar el recorregut",
+        "unnamed": "aquesta cursa",
+        "geometry": {
+          "LineString": "Línia",
+          "MultiLineString": "Multilínia"
+        },
+        "confirm": {
+          "title": "Reemplaçar recorregut GPX",
+          "message": "El fitxer nou reemplaçarà el recorregut desat de {raceName}.",
+          "replace": "Reemplaçar",
+          "cancel": "Cancel·lar"
+        },
+        "errors": {
+          "type": "Selecciona un fitxer amb extensió .gpx",
+          "empty": "El fitxer GPX està buit",
+          "size": "El fitxer GPX no pot superar els 4 MiB",
+          "upload": "No s’ha pogut pujar el fitxer GPX"
+        }
+      },
       "save": "Desar esdeveniment",
       "saving": "Desant...",
       "cancel": "Cancel·lar",

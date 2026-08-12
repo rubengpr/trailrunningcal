@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Plus, Trash2 } from 'lucide-react';
+import { RaceTrackUpload } from '@/components/admin/race-track-upload';
 import { BaseModal } from '@/components/ui/base-modal';
 import { NumberInput } from '@/components/ui/number-input';
 import { SelectMenu } from '@/components/ui/select-menu';
@@ -26,6 +27,9 @@ interface EventRacesEditModalProps {
   saveLabel?: string;
   savingLabel?: string;
   showTiers?: boolean;
+  showTrackUploads?: boolean;
+  trackedRaceIds?: string[];
+  onTrackUploaded?: (raceId: string) => void;
   onClose: () => void;
   onSave: (
     event: TrailEventAgentEvent,
@@ -108,6 +112,9 @@ export function EventRacesEditModal({
   saveLabel,
   savingLabel,
   showTiers = false,
+  showTrackUploads = false,
+  trackedRaceIds = [],
+  onTrackUploaded,
   onClose,
   onSave,
 }: EventRacesEditModalProps): React.ReactElement {
@@ -124,6 +131,9 @@ export function EventRacesEditModal({
       saveLabel={saveLabel}
       savingLabel={savingLabel}
       showTiers={showTiers}
+      showTrackUploads={showTrackUploads}
+      trackedRaceIds={trackedRaceIds}
+      onTrackUploaded={onTrackUploaded}
       onClose={onClose}
       onSave={onSave}
     />
@@ -138,6 +148,9 @@ function EventRacesEditModalContent({
   saveLabel,
   savingLabel,
   showTiers = false,
+  showTrackUploads = false,
+  trackedRaceIds = [],
+  onTrackUploaded,
   onClose,
   onSave,
 }: EventRacesEditModalContentProps): React.ReactElement {
@@ -427,6 +440,19 @@ function EventRacesEditModalContent({
                     />
                   </div>
                 </div>
+                {showTrackUploads ? (
+                  <div className="mt-4">
+                    <RaceTrackUpload
+                      raceId={race.id}
+                      raceName={race.name ?? ''}
+                      initialHasTrack={
+                        race.id ? trackedRaceIds.includes(race.id) : false
+                      }
+                      disabled={isSaving}
+                      onUploaded={(result) => onTrackUploaded?.(result.raceId)}
+                    />
+                  </div>
+                ) : null}
                 {showTiers ? (
                   <div className="mt-4">
                     <RaceTierFields

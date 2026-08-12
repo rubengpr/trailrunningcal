@@ -1105,6 +1105,35 @@
         "endsAt": "Hasta",
         "remove": "Eliminar precio"
       },
+      "track": {
+        "title": "Recorrido GPX",
+        "add": "Añadir GPX",
+        "replace": "Reemplazar GPX",
+        "uploading": "Subiendo...",
+        "inputLabel": "Seleccionar archivo GPX",
+        "stored": "Hay un recorrido guardado",
+        "saveFirst": "Guarda el evento antes de añadir un recorrido a esta carrera.",
+        "success": "Recorrido GPX guardado correctamente",
+        "summary": "{geometryType} · {pointCount} puntos · {segmentCount, plural, one {1 segmento} other {# segmentos}}",
+        "errorTitle": "No se ha podido guardar el recorrido",
+        "unnamed": "esta carrera",
+        "geometry": {
+          "LineString": "Línea",
+          "MultiLineString": "Multilínea"
+        },
+        "confirm": {
+          "title": "Reemplazar recorrido GPX",
+          "message": "El nuevo archivo reemplazará el recorrido guardado de {raceName}.",
+          "replace": "Reemplazar",
+          "cancel": "Cancelar"
+        },
+        "errors": {
+          "type": "Selecciona un archivo con extensión .gpx",
+          "empty": "El archivo GPX está vacío",
+          "size": "El archivo GPX no puede superar los 4 MiB",
+          "upload": "No se ha podido subir el archivo GPX"
+        }
+      },
       "save": "Guardar evento",
       "saving": "Guardando...",
       "cancel": "Cancelar",
