@@ -1,3 +1,5 @@
+import type { TrackGeometry } from '@/types/race-track.types';
+
 export type EventRow = {
   id: string;
   name: string;
@@ -64,6 +66,10 @@ export interface TrailEventRace {
   tiers: EventRaceTier[];
 }
 
+export interface TrailEventRaceWithTrack extends TrailEventRace {
+  trackGeometry: TrackGeometry | null;
+}
+
 export interface TrailEventDateRange {
   startDate: string | null;
   endDate: string | null;
@@ -87,6 +93,11 @@ export interface TrailEventDetail {
   allRaceCount: number;
   dateRange: TrailEventDateRange;
   location: TrailEventLocation;
+}
+
+export interface TrailEventDetailWithTracks
+  extends Omit<TrailEventDetail, 'races'> {
+  races: TrailEventRaceWithTrack[];
 }
 
 export interface PublicEventDetail {

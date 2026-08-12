@@ -15,6 +15,8 @@ import type {
   TrailEventDetail,
   TrailEventRace,
   EventRaceTier,
+  TrailEventDetailWithTracks,
+  TrailEventRaceWithTrack,
 } from '@/types/event.types';
 import type {
   PublicEventPage,
@@ -28,6 +30,9 @@ import { buildEventDetail, toPublicEventDetail } from '@/lib/events/utils';
 import { getPendingDraftsByEventIds } from '@/lib/db/event-drafts';
 import { PUBLIC_EVENTS_PAGE_SIZE } from '@/lib/db/public-events-pagination';
 import { ADMIN_EVENTS_PAGE_SIZE } from '@/lib/events/admin-pagination';
+import { toTrackGeometry } from '@/lib/race-tracks/routes';
+
+type EventRaceTrackRow = EventRaceRow & { track_geometry: unknown };
 
 type PublicEventPageRow = Pick<EventRow, 'id' | 'name' | 'slug'> & {
   start_date: string;
@@ -534,7 +539,7 @@ export async function getEventsByUrl(
 
 export const getEventBySlug = cache(async function getEventBySlug(
   slug: string,
-): Promise<TrailEventDetail | null> {
+): Promise<TrailEventDetailWithTracks | null> {
   const supabase = createStaticClient();
 
   const { data: eventData, error: eventError } = await supabase
@@ -573,6 +578,7 @@ export const getEventBySlug = cache(async function getEventBySlug(
       city,
       province,
       map_url,
+      track_geometry,
       race_tiers ( ends_at, price_eur )
     `,
     )
@@ -583,10 +589,22 @@ export const getEventBySlug = cache(async function getEventBySlug(
     return null;
   }
 
-  return buildEventDetail(
-    event,
-    (raceData as EventRaceRow[]).map(toTrailEventRace),
+  const races = (raceData as EventRaceTrackRow[]).map<TrailEventRaceWithTrack>(
+    (row) => ({
+      ...toTrailEventRace(row),
+      trackGeometry: toTrackGeometry(row.track_geometry),
+    }),
   );
+  const detail = buildEventDetail(event, races);
+  const racesById = new Map(races.map((race) => [race.id, race]));
+
+  return {
+    ...detail,
+    races: detail.races.flatMap((race) => {
+      const raceWithTrack = racesById.get(race.id);
+      return raceWithTrack ? [raceWithTrack] : [];
+    }),
+  };
 });
 
 export async function getEventByIdForAdmin(
