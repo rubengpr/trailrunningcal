@@ -13,7 +13,8 @@
     "migrate:races": "tsx scripts/migrate-races.ts",
     "migrate:price-eur": "tsx scripts/migrate-price-eur.ts",
     "migrate:price-eur:dry": "tsx scripts/migrate-price-eur.ts --dry-run",
-    "geocode:city-locations": "tsx scripts/geocode-city-locations.ts"
+    "geocode:city-locations": "tsx scripts/geocode-city-locations.ts",
+    "track:import": "node --env-file=.env.local --import tsx scripts/import-race-track.ts"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.1",
@@ -22,9 +23,11 @@
     "@next/mdx": "^16.0.7",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.91.1",
+    "@tmcw/togeojson": "7.1.2",
     "@types/mdx": "^2.0.13",
     "@vercel/analytics": "^1.6.1",
     "@vercel/functions": "^3.5.1",
+    "@xmldom/xmldom": "0.9.10",
     "franc": "^6.2.0",
     "gray-matter": "^4.0.3",
     "lucide-react": "^1.11.0",
@@ -45,6 +48,7 @@
     "@tailwindcss/postcss": "^4",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/react": "^16.3.2",
+    "@types/geojson": "7946.0.16",
     "@types/mdast": "^4.0.4",
     "@types/node": "^20",
     "@types/react": "^19",
