@@ -46,7 +46,7 @@ describe('track routes', () => {
     });
     expect(routes[1]).toMatchObject({
       raceIds: ['short'],
-      color: '#16a34a',
+      color: '#15803d',
       lineWidth: 4,
       lineStyle: 'solid',
     });
@@ -85,11 +85,32 @@ describe('track routes', () => {
       { raceIds: ['medium'], color: '#2563eb', lineWidth: 5.5, lineStyle: 'solid' },
       {
         raceIds: ['short', 'short-2'],
-        color: '#16a34a',
+        color: '#15803d',
         lineWidth: 4,
         lineStyle: 'solid',
       },
       { raceIds: ['walk'], color: '#eab308', lineWidth: 3, lineStyle: 'dashed' },
+    ]);
+  });
+
+  it('uses related secondary colors for distinct routes in one category', () => {
+    const geometry = (offset: number) => ({
+      type: 'LineString' as const,
+      coordinates: [[1.7 + offset, 42.2], [1.8 + offset, 42.3]],
+    });
+
+    const routes = buildTrackRoutes([
+      { raceId: 'medium-long', raceName: 'Trail 30K', distanceKm: 30, geometry: geometry(0) },
+      { raceId: 'medium-short', raceName: 'Trail 22K', distanceKm: 22, geometry: geometry(1) },
+      { raceId: 'short-long', raceName: 'Trail 15K', distanceKm: 15, geometry: geometry(2) },
+      { raceId: 'short-short', raceName: 'Trail 8K', distanceKm: 8, geometry: geometry(3) },
+    ]);
+
+    expect(routes.map(({ raceIds, color }) => ({ raceIds, color }))).toEqual([
+      { raceIds: ['medium-long'], color: '#2563eb' },
+      { raceIds: ['medium-short'], color: '#7c3aed' },
+      { raceIds: ['short-long'], color: '#15803d' },
+      { raceIds: ['short-short'], color: '#84cc16' },
     ]);
   });
 

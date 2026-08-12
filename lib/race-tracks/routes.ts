@@ -11,16 +11,18 @@ import type {
 
 const SHARED_ENDPOINT_COLOR = '#292524';
 
-const TRACK_COLORS = {
-  nonCompetitive: '#eab308',
-  ultra: '#171717',
-  marathon: '#dc2626',
-  medium: '#2563eb',
-  short: '#16a34a',
+const TRACK_COLOR_PALETTES = {
+  nonCompetitive: ['#eab308', '#f59e0b'],
+  ultra: ['#171717', '#4b5563'],
+  marathon: ['#dc2626', '#be123c'],
+  medium: ['#2563eb', '#7c3aed'],
+  short: ['#15803d', '#84cc16'],
 } as const;
 
+type TrackCategory = keyof typeof TRACK_COLOR_PALETTES;
+
 interface TrackPresentation {
-  color: string;
+  category: TrackCategory;
   lineWidth: number;
   lineStyle: TrackLineStyle;
 }
@@ -28,21 +30,21 @@ interface TrackPresentation {
 function getTrackPresentation(race: TrackRaceInput): TrackPresentation {
   if (isNonCompetitiveRace({ name: race.raceName })) {
     return {
-      color: TRACK_COLORS.nonCompetitive,
+      category: 'nonCompetitive',
       lineWidth: 3,
       lineStyle: 'dashed',
     };
   }
   if (race.distanceKm >= 50) {
-    return { color: TRACK_COLORS.ultra, lineWidth: 10, lineStyle: 'solid' };
+    return { category: 'ultra', lineWidth: 10, lineStyle: 'solid' };
   }
   if (race.distanceKm >= 40) {
-    return { color: TRACK_COLORS.marathon, lineWidth: 8, lineStyle: 'solid' };
+    return { category: 'marathon', lineWidth: 8, lineStyle: 'solid' };
   }
   if (race.distanceKm >= 20) {
-    return { color: TRACK_COLORS.medium, lineWidth: 5.5, lineStyle: 'solid' };
+    return { category: 'medium', lineWidth: 5.5, lineStyle: 'solid' };
   }
-  return { color: TRACK_COLORS.short, lineWidth: 4, lineStyle: 'solid' };
+  return { category: 'short', lineWidth: 4, lineStyle: 'solid' };
 }
 
 function isPosition(value: unknown): value is Position {
@@ -90,7 +92,10 @@ export function toTrackGeometry(value: unknown): TrackGeometry | null {
 }
 
 export function buildTrackRoutes(races: TrackRaceInput[]): TrackRoute[] {
-  const grouped = new Map<string, Omit<TrackRoute, 'id'>>();
+  const grouped = new Map<
+    string,
+    Omit<TrackRoute, 'id' | 'color'> & { category: TrackCategory }
+  >();
 
   for (const race of [...races].sort(
     (left, right) =>
@@ -116,6 +121,8 @@ export function buildTrackRoutes(races: TrackRaceInput[]): TrackRoute[] {
     }
   }
 
+  const categoryCounts = new Map<TrackCategory, number>();
+
   return [...grouped.values()]
     .sort(
       (left, right) =>
@@ -124,10 +131,17 @@ export function buildTrackRoutes(races: TrackRaceInput[]): TrackRoute[] {
         right.distanceKm - left.distanceKm ||
         left.raceNames[0]!.localeCompare(right.raceNames[0]!),
     )
-    .map((route, index) => ({
-      ...route,
-      id: `route-${index + 1}`,
-    }));
+    .map(({ category, ...route }, index) => {
+      const categoryIndex = categoryCounts.get(category) ?? 0;
+      categoryCounts.set(category, categoryIndex + 1);
+      const palette = TRACK_COLOR_PALETTES[category];
+
+      return {
+        ...route,
+        color: palette[categoryIndex % palette.length]!,
+        id: `route-${index + 1}`,
+      };
+    });
 }
 
 interface MutableEndpointGroup {
