@@ -320,6 +320,12 @@ describe('API authorization policy', () => {
           : [`${handler.key} must call requireCronSecret`];
       }
 
+      if (handler.access === 'import-track') {
+        return calls.includes('requireImportTrackSecret')
+          ? []
+          : [`${handler.key} must call requireImportTrackSecret`];
+      }
+
       const expectedGuard =
         handler.access === 'admin' ? 'requireAdmin' : 'requireAuth';
       return calls.includes(expectedGuard)
@@ -341,6 +347,17 @@ describe('API authorization policy', () => {
           ? []
           : [
               `${handler.key} must call requireCronSecret before other functions`,
+            ];
+      }
+
+
+      if (handler.access === 'import-track') {
+        const firstFunction = calledFunctions(handler)[0];
+
+        return firstFunction === 'requireImportTrackSecret'
+          ? []
+          : [
+              `${handler.key} must call requireImportTrackSecret before other functions`,
             ];
       }
 

@@ -1,6 +1,7 @@
 export type ApiAuthorization =
   | 'public'
   | 'cron'
+  | 'import-track'
   | 'authenticated'
   | 'admin'
   | 'owner'
@@ -30,6 +31,7 @@ export const API_AUTHORIZATION_POLICY = {
   'POST /api/events': 'admin',
   'GET /api/health': 'public',
   'GET /api/me': 'public',
+  'POST /api/race-tracks': 'import-track',
   'PATCH /api/organizer/events/[eventId]': 'owner',
   'PATCH /api/organizers': 'authenticated',
   'DELETE /api/pending-events/[id]': 'admin',
