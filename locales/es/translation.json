@@ -11,8 +11,25 @@
     "eventPageLink": "Ver evento",
     "viewMap": "Mapa",
     "viewList": "Lista",
+    "enterFullscreen": "Ver mapa a pantalla completa",
+    "exitFullscreen": "Salir de pantalla completa",
+    "chooseRotationDirection": "Elegir sentido de giro",
+    "rotateLeft": "Girar a la izquierda",
+    "rotateRight": "Girar a la derecha",
+    "rotateHintDesktop": "Usa las flechas para girar",
+    "rotateHintMobile": "Usa dos dedos para girar",
+    "routeStart": "Salida",
+    "routeFinish": "Meta",
     "zoomIn": "Acercar",
-    "zoomOut": "Alejar"
+    "zoomOut": "Alejar",
+    "terrainSettings": "Ajustes 3D",
+    "terrainAngle": "Ángulo",
+    "terrainRelief": "Relieve",
+    "terrainHillshade": "Sombreado",
+    "terrainReset": "Restablecer",
+    "view3D": "Ver en 3D",
+    "view2D": "Volver a 2D",
+    "terrainUnavailable": "Vista 3D no disponible"
   },
   "filters": {
     "clearFilters": "Limpiar filtros",
@@ -174,6 +191,12 @@
     },
     "racesTitle": "Distancias",
     "elevationRatioTooltip": "Media de desnivel acumulado por kilómetro",
+    "trackMap": {
+      "title": "Recorridos",
+      "errorTitle": "No se ha podido cargar el mapa",
+      "errorMessage": "Puedes consultar los mapas individuales de cada distancia.",
+      "unnamedRoute": "{eventName} - {distance} km"
+    },
     "share": {
       "label": "Compartir",
       "message": "Mira este evento de trail: {eventName} {url}"

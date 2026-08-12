@@ -11,8 +11,25 @@
     "eventPageLink": "Veure esdeveniment",
     "viewMap": "Mapa",
     "viewList": "Llista",
+    "enterFullscreen": "Veure el mapa a pantalla completa",
+    "exitFullscreen": "Sortir de pantalla completa",
+    "chooseRotationDirection": "Triar el sentit de gir",
+    "rotateLeft": "Girar a l'esquerra",
+    "rotateRight": "Girar a la dreta",
+    "rotateHintDesktop": "Fes servir les fletxes per girar",
+    "rotateHintMobile": "Fes servir dos dits per girar",
+    "routeStart": "Sortida",
+    "routeFinish": "Meta",
     "zoomIn": "Apropar",
-    "zoomOut": "Allunyar"
+    "zoomOut": "Allunyar",
+    "terrainSettings": "Ajustos 3D",
+    "terrainAngle": "Angle",
+    "terrainRelief": "Relleu",
+    "terrainHillshade": "Ombrejat",
+    "terrainReset": "Restablir",
+    "view3D": "Veure en 3D",
+    "view2D": "Tornar a 2D",
+    "terrainUnavailable": "Vista 3D no disponible"
   },
   "filters": {
     "clearFilters": "Netejar filtres",
@@ -174,6 +191,12 @@
     },
     "racesTitle": "Distàncies",
     "elevationRatioTooltip": "Mitjana de desnivell acumulat per quilòmetre",
+    "trackMap": {
+      "title": "Recorreguts",
+      "errorTitle": "No s'ha pogut carregar el mapa",
+      "errorMessage": "Pots consultar els mapes individuals de cada distància.",
+      "unnamedRoute": "{eventName} - {distance} km"
+    },
     "share": {
       "label": "Compartir",
       "message": "Mira aquest esdeveniment de trail: {eventName} {url}"
