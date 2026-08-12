@@ -1,5 +1,5 @@
 import { ValidationError } from '@/lib/errors';
-import { MAX_TRACK_FILE_SIZE_BYTES } from '@/lib/race-tracks/parse';
+import { MAX_TRACK_FILE_SIZE_BYTES } from '@/lib/race-tracks/limits';
 import type { TrackImportMode } from '@/types/race-track.types';
 
 const MAX_EVENT_SLUG_LENGTH = 200;
@@ -13,6 +13,10 @@ export interface RaceTrackRequestInput {
   raceName: string;
   file: File;
   mode: TrackImportMode;
+}
+
+export interface AdminRaceTrackRequestInput {
+  file: File;
 }
 
 export function validateRaceTrackRequestSize(headers: Headers): void {
@@ -57,23 +61,38 @@ export function validateRaceTrackRequest(
     MAX_RACE_NAME_LENGTH,
   );
   const modeValue = formData.get('mode');
-  const file = formData.get('file');
+  const file = validateTrackFile(formData.get('file'));
 
   if (modeValue !== 'dry-run' && modeValue !== 'apply') {
     throw new ValidationError('Invalid input', 400);
   }
 
-  if (!(file instanceof File) || !file.name.toLowerCase().endsWith('.gpx')) {
+  return { eventSlug, raceName, mode: modeValue, file };
+}
+
+function validateTrackFile(value: FormDataEntryValue | null): File {
+  if (!(value instanceof File) || !value.name.toLowerCase().endsWith('.gpx')) {
     throw new ValidationError('Invalid input', 400);
   }
 
-  if (file.size === 0) {
+  if (value.size === 0) {
     throw new ValidationError('Invalid input', 400);
   }
 
-  if (file.size > MAX_TRACK_FILE_SIZE_BYTES) {
+  if (value.size > MAX_TRACK_FILE_SIZE_BYTES) {
     throw new ValidationError('Invalid track file', 413);
   }
 
-  return { eventSlug, raceName, mode: modeValue, file };
+  return value;
+}
+
+export function validateAdminRaceTrackRequest(
+  formData: FormData,
+): AdminRaceTrackRequestInput {
+  const entries = Array.from(formData.entries());
+  if (entries.length !== 1 || entries[0]?.[0] !== 'file') {
+    throw new ValidationError('Invalid input', 400);
+  }
+
+  return { file: validateTrackFile(formData.get('file')) };
 }

@@ -32,6 +32,7 @@ export const API_AUTHORIZATION_POLICY = {
   'GET /api/health': 'public',
   'GET /api/me': 'public',
   'POST /api/race-tracks': 'import-track',
+  'POST /api/race-tracks/[raceId]': 'admin',
   'PATCH /api/organizer/events/[eventId]': 'owner',
   'PATCH /api/organizers': 'authenticated',
   'DELETE /api/pending-events/[id]': 'admin',

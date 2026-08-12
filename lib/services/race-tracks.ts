@@ -1,4 +1,5 @@
 import {
+  findRaceTrackTargetById,
   findRaceTrackTargets,
   updateRaceTrackGeometry,
 } from '@/lib/db/race-tracks';
@@ -8,6 +9,8 @@ import { requireLocalTrackImportProject } from '@/lib/race-tracks/project';
 import type {
   RaceTrackImportInput,
   RaceTrackImportResult,
+  RaceTrackSaveInput,
+  RaceTrackSaveResult,
 } from '@/types/race-track.types';
 
 export async function importRaceTrack(
@@ -37,6 +40,28 @@ export async function importRaceTrack(
     mode: input.mode,
     raceId: race.id,
     eventSlug: input.eventSlug,
+    geometryType: parsed.geometryType,
+    segmentCount: parsed.segmentCount,
+    pointCount: parsed.pointCount,
+    normalizedSizeBytes: parsed.normalizedSizeBytes,
+  };
+}
+
+export async function saveRaceTrack(
+  input: RaceTrackSaveInput,
+): Promise<RaceTrackSaveResult> {
+  const parsed = parseTrackFile(input.bytes);
+  const race = await findRaceTrackTargetById(input.raceId);
+
+  if (!race) {
+    throw new ValidationError('Race not found', 404);
+  }
+
+  await updateRaceTrackGeometry(race.id, parsed.geometry);
+
+  return {
+    raceId: race.id,
+    eventSlug: race.eventSlug,
     geometryType: parsed.geometryType,
     segmentCount: parsed.segmentCount,
     pointCount: parsed.pointCount,

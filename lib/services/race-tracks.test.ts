@@ -2,16 +2,18 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ValidationError } from '@/lib/errors';
 
 const mocks = vi.hoisted(() => ({
+  findRaceTrackTargetById: vi.fn(),
   findRaceTrackTargets: vi.fn(),
   updateRaceTrackGeometry: vi.fn(),
 }));
 
 vi.mock('@/lib/db/race-tracks', () => ({
+  findRaceTrackTargetById: mocks.findRaceTrackTargetById,
   findRaceTrackTargets: mocks.findRaceTrackTargets,
   updateRaceTrackGeometry: mocks.updateRaceTrackGeometry,
 }));
 
-import { importRaceTrack } from '@/lib/services/race-tracks';
+import { importRaceTrack, saveRaceTrack } from '@/lib/services/race-tracks';
 
 const originalUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const validTrack = new TextEncoder().encode(
@@ -27,6 +29,50 @@ beforeEach(() => {
   mocks.findRaceTrackTargets.mockResolvedValue([
     { id: 'race-1', name: 'Short' },
   ]);
+  mocks.findRaceTrackTargetById.mockResolvedValue({
+    id: 'race-1',
+    eventSlug: 'pedraforca-xtrail',
+  });
+});
+
+describe('saveRaceTrack', () => {
+  it('updates the selected race and returns its event slug and summary', async () => {
+    const result = await saveRaceTrack({ raceId: 'race-1', bytes: validTrack });
+
+    expect(result).toMatchObject({
+      raceId: 'race-1',
+      eventSlug: 'pedraforca-xtrail',
+      geometryType: 'LineString',
+      pointCount: 2,
+      segmentCount: 1,
+    });
+    expect(mocks.updateRaceTrackGeometry).toHaveBeenCalledOnce();
+    expect(mocks.updateRaceTrackGeometry).toHaveBeenCalledWith(
+      'race-1',
+      expect.objectContaining({ type: 'LineString' }),
+    );
+  });
+
+  it('returns 404 without updating when the race does not exist', async () => {
+    mocks.findRaceTrackTargetById.mockResolvedValue(null);
+
+    await expect(
+      saveRaceTrack({ raceId: 'race-1', bytes: validTrack }),
+    ).rejects.toEqual(
+      expect.objectContaining<Partial<ValidationError>>({ status: 404 }),
+    );
+    expect(mocks.updateRaceTrackGeometry).not.toHaveBeenCalled();
+  });
+
+  it('does not query or update the database for malformed GPX', async () => {
+    await expect(
+      saveRaceTrack({ raceId: 'race-1', bytes: new TextEncoder().encode('bad') }),
+    ).rejects.toEqual(
+      expect.objectContaining<Partial<ValidationError>>({ status: 422 }),
+    );
+    expect(mocks.findRaceTrackTargetById).not.toHaveBeenCalled();
+    expect(mocks.updateRaceTrackGeometry).not.toHaveBeenCalled();
+  });
 });
 
 afterEach(() => {

@@ -1,0 +1,1 @@
+export const MAX_TRACK_FILE_SIZE_BYTES = 4 * 1024 * 1024;

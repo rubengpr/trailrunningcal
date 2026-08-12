@@ -51,3 +51,17 @@ export interface RaceTrackImportResult {
   pointCount: number;
   normalizedSizeBytes: number;
 }
+
+export interface RaceTrackSaveInput {
+  raceId: string;
+  bytes: Uint8Array;
+}
+
+export interface RaceTrackSaveResult {
+  raceId: string;
+  eventSlug: string;
+  geometryType: TrackGeometry['type'];
+  segmentCount: number;
+  pointCount: number;
+  normalizedSizeBytes: number;
+}

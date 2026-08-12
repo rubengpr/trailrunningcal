@@ -2,9 +2,10 @@ import { gpx } from '@tmcw/togeojson';
 import { DOMParser } from '@xmldom/xmldom';
 import type { LineString, MultiLineString, Position } from 'geojson';
 import { ValidationError } from '@/lib/errors';
+import { MAX_TRACK_FILE_SIZE_BYTES } from '@/lib/race-tracks/limits';
 import type { TrackGeometry } from '@/types/race-track.types';
 
-export const MAX_TRACK_FILE_SIZE_BYTES = 4 * 1024 * 1024;
+export { MAX_TRACK_FILE_SIZE_BYTES } from '@/lib/race-tracks/limits';
 export const MAX_TRACK_GEOMETRY_SIZE_BYTES = 2 * 1024 * 1024;
 export const MAX_TRACK_POINTS = 50_000;
 
