@@ -315,13 +315,13 @@ describe('EventTrackMap', () => {
     expect(mocks.easeTo).toHaveBeenLastCalledWith({ bearing: -30, duration: 350 });
   });
 
-  it('renders the terrain control only for the Pedraforca prototype', () => {
-    render(<EventTrackMap {...props} eventSlug="another-event" />);
+  it('renders the terrain controls for every event', () => {
+    render(<EventTrackMap {...props} eventSlug="trail-moixero" />);
 
-    expect(screen.queryByTestId('event-track-map-terrain-toggle')).toBeNull();
-    expect(screen.queryByTestId('event-track-map-rotation-button')).toBeNull();
-    expect(screen.queryByTestId('event-track-map-rotate-left')).toBeNull();
-    expect(screen.queryByTestId('event-track-map-rotate-right')).toBeNull();
+    expect(screen.getByTestId('event-track-map-terrain-toggle')).toBeDefined();
+    expect(screen.getByTestId('event-track-map-rotation-button')).toBeDefined();
+    expect(screen.getByTestId('event-track-map-rotate-left')).toBeDefined();
+    expect(screen.getByTestId('event-track-map-rotate-right')).toBeDefined();
     expect(screen.getByTestId('event-track-map-fullscreen-toggle')).toBeDefined();
     expect(mocks.navigationControl).toHaveBeenCalledWith({
       showCompass: false,

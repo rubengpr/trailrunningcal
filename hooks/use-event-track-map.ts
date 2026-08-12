@@ -15,7 +15,6 @@ import type {
   TrackRoute,
 } from '@/types/race-track.types';
 
-const TERRAIN_PROTOTYPE_EVENT_SLUG = 'pedraforca-xtrail';
 const TERRAIN_TILEJSON_URL = 'https://tiles.mapterhorn.com/tilejson.json';
 const TERRAIN_SOURCE_ID = 'event-terrain';
 const HILLSHADE_SOURCE_ID = 'event-terrain-hillshade';
@@ -278,7 +277,6 @@ export function useEventTrackMap({
     DEFAULT_TERRAIN_EXAGGERATION,
   );
   const [terrainPitch, setTerrainPitchState] = useState(DEFAULT_TERRAIN_PITCH);
-  const terrainSupported = eventSlug === TERRAIN_PROTOTYPE_EVENT_SLUG;
 
   useEffect(() => {
     const container = containerRef.current;
@@ -757,7 +755,6 @@ export function useEventTrackMap({
     finishLabel,
     routes,
     startLabel,
-    terrainSupported,
     zoomInLabel,
     zoomOutLabel,
   ]);
@@ -809,7 +806,7 @@ export function useEventTrackMap({
     showRotationHint,
     terrainExaggeration,
     terrainPitch,
-    terrainSupported,
+    terrainSupported: true,
     toggleTerrain: () => toggleTerrainRef.current(),
   };
 }
