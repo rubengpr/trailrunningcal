@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import {
   Compass,
   LoaderCircle,
@@ -24,6 +24,7 @@ import {
 } from '@/hooks/use-event-track-map';
 import { useMapFullscreen } from '@/hooks/use-map-fullscreen';
 import { useTerrainSettingsDisclosure } from '@/hooks/use-terrain-settings-disclosure';
+import { getBrowserTerrainAutoLoadDecision } from '@/lib/maps/terrain-loading';
 import type {
   ElevationProfileCursorPoint,
   TrackRoute,
@@ -449,6 +450,7 @@ export function EventTrackMap({
   onFullscreenChange,
 }: EventTrackMapProps) {
   const tMap = useTranslations('map');
+  const autoTerrainAttemptedRef = useRef(false);
   const terrainSettingsEnabled = process.env.NODE_ENV !== 'production';
   const {
     cancelTerrain,
@@ -504,6 +506,19 @@ export function EventTrackMap({
   useEffect(() => {
     onFullscreenChange?.(isFullscreen);
   }, [isFullscreen, onFullscreenChange]);
+
+  useEffect(() => {
+    if (!isMapReady || autoTerrainAttemptedRef.current) return;
+    autoTerrainAttemptedRef.current = true;
+    const timeoutId = window.setTimeout(() => {
+      const decision = getBrowserTerrainAutoLoadDecision();
+      performance.mark(
+        `event-track-map-terrain-auto-${decision.enabled ? 'requested' : decision.reason}`,
+      );
+      if (decision.enabled) requestTerrain({ includeHillshade: false });
+    }, 500);
+    return () => window.clearTimeout(timeoutId);
+  }, [isMapReady, requestTerrain]);
 
   const mapContent = hasError ? (
     <div

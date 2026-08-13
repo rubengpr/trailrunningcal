@@ -54,6 +54,10 @@ interface TerrainSettings {
   pitch: number;
 }
 
+export interface TerrainRequestOptions {
+  includeHillshade?: boolean;
+}
+
 interface EventTrackMapOptions {
   activePoint: ElevationProfileCursorPoint | null;
   eventId: string;
@@ -290,7 +294,10 @@ export function useEventTrackMap({
   >(() => undefined);
   const cancelTerrainRef = useRef<() => void>(() => undefined);
   const disableTerrainRef = useRef<() => void>(() => undefined);
-  const requestTerrainRef = useRef<() => void>(() => undefined);
+  const requestTerrainRef = useRef<(options?: TerrainRequestOptions) => void>(
+    () => undefined,
+  );
+  const retryTerrainRef = useRef<() => void>(() => undefined);
   const [hasError, setHasError] = useState(false);
   const [isMapReady, setIsMapReady] = useState(false);
   const [terrainStatus, setTerrainStatus] = useState<TerrainStatus>('2d');
@@ -347,6 +354,7 @@ export function useEventTrackMap({
     let terrainSlowTimeoutId: number | null = null;
     let terrainLoadingTimeoutId: number | null = null;
     const endpointMarkers: EndpointMarkerEntry[] = [];
+    const activeTerrainSourceIds = new Set<string>();
     const loadedTerrainSources = new Set<string>();
     let disposed = false;
     let activeTerrainAttemptId = 0;
@@ -357,6 +365,9 @@ export function useEventTrackMap({
     let terrainInitialized = false;
     let currentTerrainStatus: TerrainStatus = '2d';
     let terrainLoadStartedAt: number | null = null;
+    let lastTerrainRequestOptions: Required<TerrainRequestOptions> = {
+      includeHillshade: true,
+    };
     let rotationHintShown = false;
     let settingsAnimationFrameId: number | null = null;
     let currentHillshadeIntensity = DEFAULT_HILLSHADE_INTENSITY;
@@ -411,6 +422,7 @@ export function useEventTrackMap({
 
     const trackTerrainLoadFinished = (outcome: TerrainLoadOutcome) => {
       if (terrainLoadStartedAt === null) return;
+      performance.mark(`event-track-map-terrain-load-${outcome}`);
       track(ANALYTICS_EVENTS.EVENT_TRACK_MAP_TERRAIN_LOAD_FINISHED, {
         event_id: eventId,
         event_slug: eventSlug,
@@ -742,7 +754,9 @@ export function useEventTrackMap({
           for (const route of routes) extendBounds(routeBounds, route.geometry);
           fitRouteBounds(map, routeBounds, '2d', 0);
 
-          const initializeTerrain = (): boolean => {
+          const initializeTerrain = ({
+            includeHillshade,
+          }: Required<TerrainRequestOptions>): boolean => {
             if (!map) return false;
             try {
               const terrainSource = map.getSource(TERRAIN_SOURCE_ID);
@@ -759,19 +773,21 @@ export function useEventTrackMap({
                   maxzoom: 17,
                 });
               }
-              const hillshadeSource = map.getSource(HILLSHADE_SOURCE_ID);
-              if (hillshadeSource) {
-                (hillshadeSource as maplibregl.RasterDEMTileSource).setUrl(
-                  TERRAIN_TILEJSON_URL,
-                );
-              } else {
-                map.addSource(HILLSHADE_SOURCE_ID, {
-                  type: 'raster-dem',
-                  url: TERRAIN_TILEJSON_URL,
-                  tileSize: 512,
-                  encoding: 'terrarium',
-                  maxzoom: 17,
-                });
+              if (includeHillshade) {
+                const hillshadeSource = map.getSource(HILLSHADE_SOURCE_ID);
+                if (hillshadeSource) {
+                  (hillshadeSource as maplibregl.RasterDEMTileSource).setUrl(
+                    TERRAIN_TILEJSON_URL,
+                  );
+                } else {
+                  map.addSource(HILLSHADE_SOURCE_ID, {
+                    type: 'raster-dem',
+                    url: TERRAIN_TILEJSON_URL,
+                    tileSize: 512,
+                    encoding: 'terrarium',
+                    maxzoom: 17,
+                  });
+                }
               }
               const orthophotoSource = map.getSource(ORTHOPHOTO_SOURCE_ID);
               if (orthophotoSource) {
@@ -804,7 +820,7 @@ export function useEventTrackMap({
                   'visible',
                 );
               }
-              if (!map.getLayer(HILLSHADE_LAYER_ID)) {
+              if (includeHillshade && !map.getLayer(HILLSHADE_LAYER_ID)) {
                 map.addLayer(
                   {
                     id: HILLSHADE_LAYER_ID,
@@ -819,11 +835,11 @@ export function useEventTrackMap({
                   },
                   'osm',
                 );
-              } else {
+              } else if (map.getLayer(HILLSHADE_LAYER_ID)) {
                 map.setLayoutProperty(
                   HILLSHADE_LAYER_ID,
                   'visibility',
-                  'visible',
+                  includeHillshade ? 'visible' : 'none',
                 );
               }
 
@@ -880,7 +896,7 @@ export function useEventTrackMap({
               pendingTerrainIdleHandler ||
               (currentTerrainStatus !== 'loading' &&
                 currentTerrainStatus !== 'slow') ||
-              ![...TERRAIN_LOADING_SOURCE_IDS].every((sourceId) =>
+              ![...activeTerrainSourceIds].every((sourceId) =>
                 loadedTerrainSources.has(sourceId),
               )
             ) {
@@ -893,7 +909,7 @@ export function useEventTrackMap({
 
           map.on('sourcedata', scheduleTerrainCommitIfReady);
 
-          requestTerrainRef.current = () => {
+          requestTerrainRef.current = (options = {}) => {
             if (
               !map ||
               !routeBounds ||
@@ -905,12 +921,22 @@ export function useEventTrackMap({
             }
 
             const attemptId = ++activeTerrainAttemptId;
+            lastTerrainRequestOptions = {
+              includeHillshade: options.includeHillshade ?? true,
+            };
             clearPendingTerrainIdle();
             clearTerrainLoadTimers();
             loadedTerrainSources.clear();
+            activeTerrainSourceIds.clear();
+            activeTerrainSourceIds.add(TERRAIN_SOURCE_ID);
+            activeTerrainSourceIds.add(ORTHOPHOTO_SOURCE_ID);
+            if (lastTerrainRequestOptions.includeHillshade) {
+              activeTerrainSourceIds.add(HILLSHADE_SOURCE_ID);
+            }
             terrainLoadStartedAt = performance.now();
+            performance.mark('event-track-map-terrain-load-start');
             updateTerrainStatus('loading');
-            if (!initializeTerrain()) return;
+            if (!initializeTerrain(lastTerrainRequestOptions)) return;
             scheduleTerrainCommitIfReady();
 
             terrainSlowTimeoutId = window.setTimeout(() => {
@@ -927,6 +953,10 @@ export function useEventTrackMap({
                 stopTerrainAttempt('timeout', 'failed');
               }
             }, TERRAIN_LOADING_TIMEOUT_MS);
+          };
+
+          retryTerrainRef.current = () => {
+            requestTerrainRef.current(lastTerrainRequestOptions);
           };
 
           cancelTerrainRef.current = () => {
@@ -967,6 +997,7 @@ export function useEventTrackMap({
       cancelTerrainRef.current = () => undefined;
       disableTerrainRef.current = () => undefined;
       requestTerrainRef.current = () => undefined;
+      retryTerrainRef.current = () => undefined;
       rotateMapRef.current = () => undefined;
       resizeMapRef.current = () => undefined;
       updateTerrainSettingsRef.current = () => undefined;
@@ -1003,6 +1034,11 @@ export function useEventTrackMap({
   ]);
 
   const resizeMap = useCallback(() => resizeMapRef.current(), []);
+  const requestTerrain = useCallback(
+    (options?: TerrainRequestOptions) => requestTerrainRef.current(options),
+    [],
+  );
+  const retryTerrain = useCallback(() => retryTerrainRef.current(), []);
 
   return {
     cancelTerrain: () => cancelTerrainRef.current(),
@@ -1022,8 +1058,8 @@ export function useEventTrackMap({
       });
     },
     resizeMap,
-    requestTerrain: () => requestTerrainRef.current(),
-    retryTerrain: () => requestTerrainRef.current(),
+    requestTerrain,
+    retryTerrain,
     rotateMap: (direction: -1 | 1) => rotateMapRef.current(direction),
     setHillshadeIntensity: (value: number) => {
       const nextValue = clamp(

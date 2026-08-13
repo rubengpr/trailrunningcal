@@ -308,6 +308,7 @@ function finishTerrainLoading(): void {
 beforeEach(() => {
   mocks.handlers.clear();
   vi.resetAllMocks();
+  window.history.replaceState({}, '', '/');
   window.matchMedia = vi.fn().mockReturnValue({ matches: false });
   window.scrollTo = vi.fn();
   Object.defineProperty(window, 'scrollY', {
@@ -322,6 +323,190 @@ afterEach(() => {
 });
 
 describe('EventTrackMap', () => {
+  it('automatically requests lightweight 3D after showing the 2D fallback', () => {
+    vi.useFakeTimers();
+    try {
+      window.history.replaceState({}, '', '/?event-map-3d=auto');
+      Object.defineProperty(navigator, 'connection', {
+        configurable: true,
+        value: { effectiveType: '4g', saveData: false },
+      });
+      Object.defineProperty(navigator, 'deviceMemory', {
+        configurable: true,
+        value: 4,
+      });
+
+      render(<EventTrackMap {...props} />);
+      act(() => mocks.handlers.get('load')?.());
+      expect(
+        screen
+          .getByTestId('event-track-map')
+          .parentElement?.getAttribute('data-terrain-status'),
+      ).toBe('2d');
+
+      act(() => vi.advanceTimersByTime(500));
+
+      expect(
+        screen
+          .getByTestId('event-track-map')
+          .parentElement?.getAttribute('data-terrain-status'),
+      ).toBe('loading');
+      expect(mocks.addSource).toHaveBeenCalledWith(
+        'event-terrain',
+        expect.objectContaining({ type: 'raster-dem' }),
+      );
+      expect(mocks.addSource).toHaveBeenCalledWith(
+        'event-orthophoto',
+        expect.objectContaining({ type: 'raster' }),
+      );
+      expect(mocks.addSource).not.toHaveBeenCalledWith(
+        'event-terrain-hillshade',
+        expect.anything(),
+      );
+
+      act(() => {
+        mocks.handlers.get('sourcedata')?.({
+          sourceId: 'event-terrain',
+          isSourceLoaded: true,
+        });
+        mocks.handlers.get('sourcedata')?.({
+          sourceId: 'event-orthophoto',
+          isSourceLoaded: true,
+        });
+        mocks.handlers.get('idle')?.();
+      });
+
+      expect(
+        screen
+          .getByTestId('event-track-map')
+          .parentElement?.getAttribute('data-terrain-status'),
+      ).toBe('3d');
+      expect(mocks.track).toHaveBeenCalledWith(
+        'event_track_map_terrain_load_finished',
+        expect.objectContaining({ outcome: 'ready' }),
+      );
+      expect(mocks.track).toHaveBeenCalledWith(
+        'event_track_map_terrain_toggled',
+        expect.objectContaining({ mode: '3d' }),
+      );
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('keeps automatic 3D off on 3G but honors an explicit request', () => {
+    vi.useFakeTimers();
+    try {
+      window.history.replaceState({}, '', '/?event-map-3d=auto');
+      Object.defineProperty(navigator, 'connection', {
+        configurable: true,
+        value: { effectiveType: '3g', saveData: false },
+      });
+
+      render(<EventTrackMap {...props} />);
+      act(() => mocks.handlers.get('load')?.());
+      act(() => vi.advanceTimersByTime(500));
+
+      expect(
+        screen
+          .getByTestId('event-track-map')
+          .parentElement?.getAttribute('data-terrain-status'),
+      ).toBe('2d');
+      expect(mocks.addSource).not.toHaveBeenCalledWith(
+        'event-terrain',
+        expect.anything(),
+      );
+
+      fireEvent.click(screen.getByTestId('event-track-map-terrain-toggle'));
+
+      expect(mocks.addSource).toHaveBeenCalledWith(
+        'event-terrain-hillshade',
+        expect.objectContaining({ type: 'raster-dem' }),
+      );
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('does not enable the automatic 3D preview in production', () => {
+    vi.useFakeTimers();
+    vi.stubEnv('NODE_ENV', 'production');
+    try {
+      window.history.replaceState({}, '', '/?event-map-3d=auto');
+      Object.defineProperty(navigator, 'connection', {
+        configurable: true,
+        value: { effectiveType: '4g', saveData: false },
+      });
+
+      render(<EventTrackMap {...props} />);
+      act(() => mocks.handlers.get('load')?.());
+      act(() => vi.advanceTimersByTime(500));
+
+      expect(
+        screen
+          .getByTestId('event-track-map')
+          .parentElement?.getAttribute('data-terrain-status'),
+      ).toBe('2d');
+      expect(mocks.addSource).not.toHaveBeenCalledWith(
+        'event-terrain',
+        expect.anything(),
+      );
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('keeps timeout and retry recovery for lightweight automatic 3D', () => {
+    vi.useFakeTimers();
+    try {
+      window.history.replaceState({}, '', '/?event-map-3d=auto');
+      Object.defineProperty(navigator, 'connection', {
+        configurable: true,
+        value: { effectiveType: '4g', saveData: false },
+      });
+
+      render(<EventTrackMap {...props} />);
+      act(() => mocks.handlers.get('load')?.());
+      act(() => vi.advanceTimersByTime(20_500));
+
+      expect(
+        screen.getByTestId('event-track-map-terrain-status').textContent,
+      ).toContain('terrainLoadFailed');
+      expect(mocks.track).toHaveBeenCalledWith(
+        'event_track_map_terrain_load_finished',
+        expect.objectContaining({ outcome: 'timeout' }),
+      );
+
+      fireEvent.click(
+        screen
+          .getByTestId('event-track-map-terrain-status')
+          .querySelector('button')!,
+      );
+
+      expect(mocks.setSourceUrl).toHaveBeenCalledOnce();
+      expect(mocks.setSourceTiles).toHaveBeenCalledOnce();
+      act(() => {
+        mocks.handlers.get('sourcedata')?.({
+          sourceId: 'event-terrain',
+          isSourceLoaded: true,
+        });
+        mocks.handlers.get('sourcedata')?.({
+          sourceId: 'event-orthophoto',
+          isSourceLoaded: true,
+        });
+        mocks.handlers.get('idle')?.();
+      });
+
+      expect(
+        screen
+          .getByTestId('event-track-map')
+          .parentElement?.getAttribute('data-terrain-status'),
+      ).toBe('3d');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('updates a profile point source without recreating the map', () => {
     const view = render(<EventTrackMap {...props} />);
     act(() => mocks.handlers.get('load')?.());
