@@ -199,6 +199,12 @@ export function parseTrackFile(bytes: Uint8Array): ParsedTrack {
       segmentIndex += segmentCount;
       return [stage];
     });
+  } else if (tracks.length === 1 && segments.length > 1) {
+    stages = segments.map((_, segmentIndex) => ({
+      name: null,
+      segmentIndex,
+      segmentCount: 1,
+    }));
   }
 
   const pointCount = segments.reduce(

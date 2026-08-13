@@ -45,13 +45,20 @@ describe('parseTrackFile', () => {
     });
   });
 
-  it('combines multiple segments into a MultiLineString', () => {
+  it('preserves multiple segments as separately rendered stages', () => {
     const input = bytes(
       `<gpx version="1.1"><trk><trkseg>${point(1, 42)}${point(2, 43)}</trkseg>` +
         `<trkseg>${point(3, 44)}${point(4, 45)}</trkseg></trk></gpx>`,
     );
 
     expect(parseTrackFile(input)).toMatchObject({
+      geometry: {
+        type: 'MultiLineString',
+        stages: [
+          { name: null, segmentIndex: 0, segmentCount: 1 },
+          { name: null, segmentIndex: 1, segmentCount: 1 },
+        ],
+      },
       geometryType: 'MultiLineString',
       pointCount: 4,
       segmentCount: 2,
