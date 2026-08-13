@@ -299,10 +299,7 @@ export function useEventTrackMap({
     let currentTerrainExaggeration = DEFAULT_TERRAIN_EXAGGERATION;
     let currentTerrainPitch = DEFAULT_TERRAIN_PITCH;
     let pendingTerrainSettings: Partial<TerrainSettings> = {};
-    const raceCount = routes.reduce(
-      (total, route) => total + route.raceIds.length,
-      0,
-    );
+    const raceCount = new Set(routes.flatMap((route) => route.raceIds)).size;
 
     const handleMapError = () => {
       if (disposed) return;

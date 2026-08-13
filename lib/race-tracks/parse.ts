@@ -3,7 +3,7 @@ import { DOMParser } from '@xmldom/xmldom';
 import type { LineString, MultiLineString, Position } from 'geojson';
 import { ValidationError } from '@/lib/errors';
 import { MAX_TRACK_FILE_SIZE_BYTES } from '@/lib/race-tracks/limits';
-import type { TrackGeometry } from '@/types/race-track.types';
+import type { TrackGeometry, TrackStage } from '@/types/race-track.types';
 
 export { MAX_TRACK_FILE_SIZE_BYTES } from '@/lib/race-tracks/limits';
 export const MAX_TRACK_GEOMETRY_SIZE_BYTES = 2 * 1024 * 1024;
@@ -88,6 +88,15 @@ function getSegments(geometry: LineString | MultiLineString): Position[][] {
   });
 }
 
+function getTrackName(track: Element): string | null {
+  const name = Array.from(track.childNodes).find(
+    (node) =>
+      node.nodeType === 1 && node.nodeName.toLowerCase() === 'name',
+  )?.textContent?.trim();
+
+  return name ? name.slice(0, 200) : null;
+}
+
 function validateSourcePoints(document: Document): void {
   const points = [
     ...Array.from(document.getElementsByTagName('trkpt')),
@@ -166,12 +175,31 @@ export function parseTrackFile(bytes: Uint8Array): ParsedTrack {
     throw invalidTrack();
   }
 
-  const segments = collection.features.flatMap((feature) => {
+  const featureSegments = collection.features.flatMap((feature) => {
     const geometry = feature.geometry;
     return geometry?.type === 'LineString' || geometry?.type === 'MultiLineString'
-      ? getSegments(geometry)
+      ? [getSegments(geometry)]
       : [];
   });
+  const segments = featureSegments.flat();
+
+  const tracks = Array.from(document.getElementsByTagName('trk'));
+  let stages: TrackStage[] | undefined;
+  if (tracks.length > 1 && tracks.length === featureSegments.length) {
+    let segmentIndex = 0;
+    stages = tracks.flatMap((track, index) => {
+      const segmentCount = featureSegments[index]!.length;
+      if (segmentCount === 0) return [];
+
+      const stage = {
+        name: getTrackName(track),
+        segmentIndex,
+        segmentCount,
+      };
+      segmentIndex += segmentCount;
+      return [stage];
+    });
+  }
 
   const pointCount = segments.reduce(
     (total, coordinates) => total + coordinates.length,
@@ -189,7 +217,11 @@ export function parseTrackFile(bytes: Uint8Array): ParsedTrack {
   const geometry: TrackGeometry =
     segments.length === 1
       ? { type: 'LineString', coordinates: segments[0]! }
-      : { type: 'MultiLineString', coordinates: segments };
+      : {
+          type: 'MultiLineString',
+          coordinates: segments,
+          ...(stages && stages.length > 1 ? { stages } : {}),
+        };
   const normalizedSizeBytes = new TextEncoder().encode(
     JSON.stringify(geometry),
   ).byteLength;

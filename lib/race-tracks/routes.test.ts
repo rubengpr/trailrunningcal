@@ -22,6 +22,68 @@ describe('track routes', () => {
     ).toBeNull();
   });
 
+  it('validates stored stage metadata and ignores malformed metadata', () => {
+    const geometry = {
+      type: 'MultiLineString',
+      coordinates: [
+        [[1.7, 42.2], [1.8, 42.3]],
+        [[1.8, 42.3], [1.9, 42.4]],
+      ],
+      stages: [
+        { name: 'ST1', segmentIndex: 0, segmentCount: 1 },
+        { name: 'ST2', segmentIndex: 1, segmentCount: 1 },
+      ],
+    };
+
+    expect(toTrackGeometry(geometry)).toEqual(geometry);
+    expect(
+      toTrackGeometry({
+        ...geometry,
+        stages: [{ name: 'Broken', segmentIndex: 1, segmentCount: 2 }],
+      }),
+    ).toEqual({
+      type: 'MultiLineString',
+      coordinates: geometry.coordinates,
+    });
+  });
+
+  it('renders GPX stages as separately colored routes', () => {
+    const routes = buildTrackRoutes([
+      {
+        raceId: 'stage-race',
+        raceName: 'Stage race',
+        distanceKm: 100,
+        geometry: {
+          type: 'MultiLineString',
+          coordinates: [
+            [[1.7, 42.2], [1.8, 42.3]],
+            [[1.8, 42.3], [1.9, 42.4]],
+            [[1.9, 42.4], [2, 42.5]],
+          ],
+          stages: [
+            { name: 'ST1: First', segmentIndex: 0, segmentCount: 1 },
+            { name: 'ST2: Second', segmentIndex: 1, segmentCount: 2 },
+          ],
+        },
+      },
+    ]);
+
+    expect(routes).toMatchObject([
+      {
+        raceIds: ['stage-race'],
+        raceNames: ['ST1: First'],
+        color: '#2563eb',
+        geometry: { type: 'LineString' },
+      },
+      {
+        raceIds: ['stage-race'],
+        raceNames: ['ST2: Second'],
+        color: '#ea580c',
+        geometry: { type: 'MultiLineString' },
+      },
+    ]);
+  });
+
   it('sorts routes and keeps identical geometry separate across categories', () => {
     const routes = buildTrackRoutes([
       { raceId: 'short', raceName: 'Short', distanceKm: 10, geometry: short },

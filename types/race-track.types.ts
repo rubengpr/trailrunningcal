@@ -1,6 +1,14 @@
 import type { LineString, MultiLineString } from 'geojson';
 
-export type TrackGeometry = LineString | MultiLineString;
+export interface TrackStage {
+  name: string | null;
+  segmentIndex: number;
+  segmentCount: number;
+}
+
+export type TrackGeometry = (LineString | MultiLineString) & {
+  stages?: TrackStage[];
+};
 export type TrackImportMode = 'dry-run' | 'apply';
 export type TrackEndpointKind = 'start' | 'finish';
 export type TrackLineStyle = 'solid' | 'dashed';

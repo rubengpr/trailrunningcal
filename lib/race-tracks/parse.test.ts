@@ -58,6 +58,26 @@ describe('parseTrackFile', () => {
     });
   });
 
+  it('preserves separately named tracks as stages', () => {
+    const input = bytes(
+      `<gpx version="1.1"><trk><name>ST1: First</name><trkseg>${point(1, 42)}${point(2, 43)}</trkseg></trk>` +
+        `<trk><name>ST2: Second</name><trkseg>${point(3, 44)}${point(4, 45)}</trkseg>` +
+        `<trkseg>${point(5, 46)}${point(6, 47)}</trkseg></trk></gpx>`,
+    );
+
+    expect(parseTrackFile(input)).toMatchObject({
+      geometry: {
+        type: 'MultiLineString',
+        stages: [
+          { name: 'ST1: First', segmentIndex: 0, segmentCount: 1 },
+          { name: 'ST2: Second', segmentIndex: 1, segmentCount: 2 },
+        ],
+      },
+      pointCount: 6,
+      segmentCount: 3,
+    });
+  });
+
   it.each([
     '',
     '<html />',

@@ -7,6 +7,7 @@ import type {
   TrackLineStyle,
   TrackRaceInput,
   TrackRoute,
+  TrackStage,
 } from '@/types/race-track.types';
 
 const SHARED_ENDPOINT_COLOR = '#292524';
@@ -18,6 +19,17 @@ const TRACK_COLOR_PALETTES = {
   medium: ['#2563eb', '#7c3aed'],
   short: ['#15803d', '#84cc16'],
 } as const;
+
+const STAGE_COLOR_PALETTE = [
+  '#2563eb',
+  '#ea580c',
+  '#7c3aed',
+  '#16a34a',
+  '#dc2626',
+  '#0891b2',
+  '#db2777',
+  '#4d7c0f',
+] as const;
 
 type TrackCategory = keyof typeof TRACK_COLOR_PALETTES;
 
@@ -85,21 +97,94 @@ export function toTrackGeometry(value: unknown): TrackGeometry | null {
     candidate.coordinates.length > 0 &&
     candidate.coordinates.every(isLine)
   ) {
-    return { type: 'MultiLineString', coordinates: candidate.coordinates };
+    const stages = getStoredStages(
+      (candidate as { stages?: unknown }).stages,
+      candidate.coordinates.length,
+    );
+    return {
+      type: 'MultiLineString',
+      coordinates: candidate.coordinates,
+      ...(stages ? { stages } : {}),
+    };
   }
 
   return null;
 }
 
+function getStoredStages(
+  value: unknown,
+  segmentCount: number,
+): TrackStage[] | null {
+  if (!Array.isArray(value) || value.length < 2) return null;
+
+  let expectedSegmentIndex = 0;
+  const stages: TrackStage[] = [];
+  for (const candidate of value) {
+    if (typeof candidate !== 'object' || candidate === null) return null;
+    const stage = candidate as Record<string, unknown>;
+    if (
+      (stage.name !== null && typeof stage.name !== 'string') ||
+      stage.segmentIndex !== expectedSegmentIndex ||
+      typeof stage.segmentCount !== 'number' ||
+      !Number.isInteger(stage.segmentCount) ||
+      stage.segmentCount < 1
+    ) {
+      return null;
+    }
+    stages.push({
+      name: stage.name as string | null,
+      segmentIndex: expectedSegmentIndex,
+      segmentCount: stage.segmentCount,
+    });
+    expectedSegmentIndex += stage.segmentCount;
+  }
+
+  return expectedSegmentIndex === segmentCount ? stages : null;
+}
+
+interface TrackRouteCandidate extends TrackRaceInput {
+  stageIndex?: number;
+}
+
+function expandStages(race: TrackRaceInput): TrackRouteCandidate[] {
+  if (race.geometry.type !== 'MultiLineString' || !race.geometry.stages) {
+    return [race];
+  }
+
+  return race.geometry.stages.map((stage, stageIndex) => {
+    const coordinates = race.geometry.type === 'MultiLineString'
+      ? race.geometry.coordinates.slice(
+          stage.segmentIndex,
+          stage.segmentIndex + stage.segmentCount,
+        )
+      : [];
+    const geometry: TrackGeometry = coordinates.length === 1
+      ? { type: 'LineString', coordinates: coordinates[0]! }
+      : { type: 'MultiLineString', coordinates };
+
+    return {
+      ...race,
+      raceName: stage.name ?? `${race.raceName} · ${stageIndex + 1}`,
+      geometry,
+      stageIndex,
+    };
+  });
+}
+
 export function buildTrackRoutes(races: TrackRaceInput[]): TrackRoute[] {
   const grouped = new Map<
     string,
-    Omit<TrackRoute, 'id' | 'color'> & { category: TrackCategory }
+    Omit<TrackRoute, 'id' | 'color'> & {
+      category: TrackCategory;
+      stageIndex?: number;
+    }
   >();
 
-  for (const race of [...races].sort(
+  const candidates = races.flatMap(expandStages);
+  for (const race of candidates.sort(
     (left, right) =>
       right.distanceKm - left.distanceKm ||
+      (left.stageIndex ?? -1) - (right.stageIndex ?? -1) ||
       left.raceName.localeCompare(right.raceName),
   )) {
     const presentation = getTrackPresentation(race);
@@ -117,6 +202,9 @@ export function buildTrackRoutes(races: TrackRaceInput[]): TrackRoute[] {
         distanceKm: race.distanceKm,
         ...presentation,
         geometry: race.geometry,
+        ...(race.stageIndex === undefined
+          ? {}
+          : { stageIndex: race.stageIndex }),
       });
     }
   }
@@ -129,16 +217,20 @@ export function buildTrackRoutes(races: TrackRaceInput[]): TrackRoute[] {
         Number(left.lineStyle === 'dashed') -
           Number(right.lineStyle === 'dashed') ||
         right.distanceKm - left.distanceKm ||
+        (left.stageIndex ?? -1) - (right.stageIndex ?? -1) ||
         left.raceNames[0]!.localeCompare(right.raceNames[0]!),
     )
-    .map(({ category, ...route }, index) => {
+    .map(({ category, stageIndex, ...route }, index) => {
       const categoryIndex = categoryCounts.get(category) ?? 0;
       categoryCounts.set(category, categoryIndex + 1);
       const palette = TRACK_COLOR_PALETTES[category];
 
       return {
         ...route,
-        color: palette[categoryIndex % palette.length]!,
+        color:
+          stageIndex === undefined
+            ? palette[categoryIndex % palette.length]!
+            : STAGE_COLOR_PALETTE[stageIndex % STAGE_COLOR_PALETTE.length]!,
         id: `route-${index + 1}`,
       };
     });
