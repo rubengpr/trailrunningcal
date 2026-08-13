@@ -2,7 +2,6 @@
 
 import {
   useEffect,
-  useId,
   useRef,
   useState,
   type PointerEvent as ReactPointerEvent,
@@ -11,6 +10,7 @@ import {
   downsampleElevationPoints,
   getElevationCursorPoint,
 } from '@/lib/race-tracks/elevation-profile';
+import { useScrollEdges } from '@/hooks/use-scroll-edges';
 import type {
   ElevationProfile,
   ElevationProfileCursorPoint,
@@ -27,6 +27,7 @@ interface ElevationProfileChartProps {
   onActivePointChange: (point: ElevationProfileCursorPoint | null) => void;
   onSelectedIdChange: (id: string) => void;
   selectedId: string;
+  variant?: 'embedded' | 'fullscreen';
 }
 
 function formatDistance(value: number): string {
@@ -88,14 +89,19 @@ export function ElevationProfileChart({
   onActivePointChange,
   onSelectedIdChange,
   selectedId,
+  variant = 'embedded',
 }: ElevationProfileChartProps) {
   const selected = profiles.find(({ id }) => id === selectedId) ?? profiles[0];
-  const gradientId = `elevation-profile-${useId().replaceAll(':', '')}`;
   const plotRef = useRef<HTMLDivElement>(null);
+  const pickerRef = useRef<HTMLDivElement>(null);
   const pointerFrameRef = useRef<number | null>(null);
   const pendingClientXRef = useRef<number | null>(null);
   const touchPointerIdRef = useRef<number | null>(null);
   const [hasPersistentTouchPoint, setHasPersistentTouchPoint] = useState(false);
+  const { canScrollLeft, canScrollRight } = useScrollEdges(
+    pickerRef,
+    profiles.length > 1,
+  );
 
   useEffect(() => {
     if (!hasPersistentTouchPoint) return;
@@ -123,6 +129,8 @@ export function ElevationProfileChart({
 
   if (!selected) return null;
 
+  const isFullscreen = variant === 'fullscreen';
+  const gradientId = `elevation-profile-${variant}-${selected.id.replace(/[^a-zA-Z0-9_-]/g, '-')}`;
   const paths = getProfilePaths(selected);
   const activeForSelected = activePoint?.routeId === selected.id
     ? activePoint
@@ -215,42 +223,69 @@ export function ElevationProfileChart({
 
   return (
     <div
-      className="border-t border-stone-200 bg-[linear-gradient(180deg,#fafaf9_0%,#ffffff_100%)] pb-4 pt-4 sm:pb-5"
+      className={`border-t border-stone-200 bg-[linear-gradient(180deg,#fafaf9_0%,#ffffff_100%)] ${
+        isFullscreen
+          ? 'pb-2 pt-2 sm:pb-5 sm:pt-4'
+          : 'pb-4 pt-4 sm:pb-5'
+      }`}
       data-testid="elevation-profile"
     >
       {profiles.length > 1 ? (
-        <div
-          className="event-track-profile-picker flex max-w-full gap-1.5 overflow-x-auto px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:px-6"
-          aria-label={chartDescription}
-        >
-          {profiles.map((profile) => {
-            const isSelected = profile.id === selected.id;
-            return (
-              <button
-                key={profile.id}
-                type="button"
-                className={`shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
-                  isSelected
-                    ? 'border-stone-900 bg-stone-900 text-white'
-                    : 'border-stone-200 bg-white text-stone-600 hover:border-stone-400 hover:text-stone-900'
-                }`}
-                aria-pressed={isSelected}
-                onClick={() => {
-                  setHasPersistentTouchPoint(false);
-                  onActivePointChange(null);
-                  onSelectedIdChange(profile.id);
-                }}
-              >
-                {profile.raceNames.join(' · ')}
-              </button>
-            );
-          })}
+        <div className="relative max-w-full overflow-hidden">
+          {canScrollLeft ? (
+            <span
+              className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-linear-to-r from-white via-white/80 to-transparent"
+              data-testid="elevation-profile-picker-left-fade"
+            />
+          ) : null}
+          {canScrollRight ? (
+            <span
+              className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-linear-to-l from-white via-white/80 to-transparent"
+              data-testid="elevation-profile-picker-right-fade"
+            />
+          ) : null}
+          <div
+            ref={pickerRef}
+            className="event-track-profile-picker flex max-w-full snap-x snap-mandatory gap-1.5 overflow-x-auto overscroll-x-contain scroll-px-4 px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:scroll-px-6 sm:px-6"
+            aria-label={chartDescription}
+          >
+            {profiles.map((profile) => {
+              const isSelected = profile.id === selected.id;
+              return (
+                <button
+                  key={profile.id}
+                  type="button"
+                  className={`shrink-0 snap-start snap-always rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
+                    isSelected
+                      ? 'border-stone-900 bg-stone-900 text-white'
+                      : 'border-stone-200 bg-white text-stone-600 hover:border-stone-400 hover:text-stone-900'
+                  }`}
+                  aria-pressed={isSelected}
+                  onClick={() => {
+                    setHasPersistentTouchPoint(false);
+                    onActivePointChange(null);
+                    onSelectedIdChange(profile.id);
+                  }}
+                >
+                  {profile.raceNames.join(' · ')}
+                </button>
+              );
+            })}
+          </div>
         </div>
       ) : null}
 
       <div
         ref={plotRef}
-        className={`${profiles.length > 1 ? 'mt-4' : ''} relative h-32 w-full overflow-hidden sm:h-36`}
+        className={`${
+          profiles.length > 1
+            ? isFullscreen
+              ? 'mt-2 sm:mt-4'
+              : 'mt-4'
+            : ''
+        } relative w-full overflow-hidden ${
+          isFullscreen ? 'h-[86px] sm:h-[130px]' : 'h-32 sm:h-36'
+        }`}
         data-testid="elevation-profile-plot"
         style={{ touchAction: 'pan-y' }}
         onPointerCancel={handlePointerCancel}

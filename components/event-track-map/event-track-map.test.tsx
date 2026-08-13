@@ -561,6 +561,41 @@ describe('EventTrackMap', () => {
     expect(mocks.mapConstructor).toHaveBeenCalledTimes(1);
   });
 
+  it('shows the elevation profile at the bottom and moves the legend in fullscreen', () => {
+    render(
+      <EventTrackMap
+        {...props}
+        fullscreenProfile={
+          <div data-testid="fullscreen-elevation-profile">Profile</div>
+        }
+      />,
+    );
+
+    expect(
+      screen.queryByTestId('event-track-map-fullscreen-profile'),
+    ).toBeNull();
+
+    fireEvent.click(screen.getByTestId('event-track-map-fullscreen-toggle'));
+
+    const profilePanel = screen.getByTestId(
+      'event-track-map-fullscreen-profile',
+    );
+    const legend = screen.getByTestId('event-track-map-legend');
+    expect(profilePanel.className).toContain('inset-x-0');
+    expect(profilePanel.className).toContain('bottom-0');
+    expect(profilePanel.className).toContain('w-full');
+    expect(profilePanel.className).toContain('max-w-none');
+    expect(screen.getByTestId('fullscreen-elevation-profile')).toBeDefined();
+    expect(legend.dataset.fullscreen).toBe('true');
+    expect(legend.className).toContain('top-3');
+    expect(legend.className).not.toContain('bottom-3');
+
+    fireEvent.click(screen.getByTestId('event-track-map-fullscreen-toggle'));
+    expect(
+      screen.queryByTestId('event-track-map-fullscreen-profile'),
+    ).toBeNull();
+  });
+
   it('preserves 3D settings and cleans up a fullscreen portal on unmount', () => {
     const view = render(<EventTrackMap {...props} />);
     act(() => mocks.handlers.get('load')?.());

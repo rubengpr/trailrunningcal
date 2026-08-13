@@ -477,11 +477,14 @@ input[type='number'] {
   right: calc(max(0.75rem, env(safe-area-inset-right)) + 3rem) !important;
 }
 
-[data-map-fullscreen='true'] .event-track-map-legend {
-  bottom: max(0.75rem, env(safe-area-inset-bottom)) !important;
-  max-width: calc(
-    100% - max(0.75rem, env(safe-area-inset-left)) -
-      max(0.75rem, env(safe-area-inset-right))
+[data-map-fullscreen='true'] .event-track-map-fullscreen-legend {
+  bottom: auto !important;
+  max-width: min(
+    24rem,
+    calc(
+      100% - max(0.75rem, env(safe-area-inset-left)) -
+        max(5.5rem, env(safe-area-inset-right))
+    )
   ) !important;
 }
 

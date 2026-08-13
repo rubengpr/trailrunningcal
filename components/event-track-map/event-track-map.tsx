@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { useEffect } from 'react';
 import {
   Compass,
   LoaderCircle,
@@ -10,7 +11,7 @@ import {
   Redo,
   Undo,
 } from 'lucide-react';
-import type { RefObject } from 'react';
+import type { ReactNode, RefObject } from 'react';
 import { createPortal } from 'react-dom';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import {
@@ -35,13 +36,31 @@ export interface EventTrackMapProps {
   routes: TrackRoute[];
   errorTitle: string;
   errorMessage: string;
+  fullscreenProfile?: ReactNode;
+  onFullscreenChange?: (fullscreen: boolean) => void;
 }
 
-function TrackLegend({ routes }: Pick<EventTrackMapProps, 'routes'>) {
+interface TrackLegendProps extends Pick<EventTrackMapProps, 'routes'> {
+  fullscreen: boolean;
+  offsetForHint: boolean;
+}
+
+function TrackLegend({
+  routes,
+  fullscreen,
+  offsetForHint,
+}: TrackLegendProps) {
   return (
     <ul
-      className="event-track-map-legend absolute bottom-3 left-1/2 z-10 flex w-max max-w-[calc(100%-1.5rem)] -translate-x-1/2 flex-wrap items-center justify-center gap-x-4 gap-y-2 rounded-2xl border border-white/60 bg-white/70 px-3 py-2.5 text-center text-xs leading-4 text-stone-900 sm:px-4 sm:text-sm"
+      className={`${fullscreen ? 'event-track-map-fullscreen-legend' : 'event-track-map-legend'} absolute z-10 flex w-max rounded-2xl border border-white/60 bg-white/75 px-3 py-2.5 text-xs leading-4 text-stone-900 shadow-sm backdrop-blur-sm sm:px-4 sm:text-sm ${
+        fullscreen
+          ? `left-3 max-w-[calc(100%-5.5rem)] flex-col items-start justify-start gap-2 text-left sm:max-w-sm ${
+              offsetForHint ? 'top-16' : 'top-3'
+            }`
+          : 'bottom-3 left-1/2 max-w-[calc(100%-1.5rem)] -translate-x-1/2 flex-wrap items-center justify-center gap-x-4 gap-y-2 text-center'
+      }`}
       data-testid="event-track-map-legend"
+      data-fullscreen={fullscreen ? 'true' : undefined}
     >
       {routes.map((route) => (
         <li
@@ -62,6 +81,18 @@ function TrackLegend({ routes }: Pick<EventTrackMapProps, 'routes'>) {
         </li>
       ))}
     </ul>
+  );
+}
+
+function FullscreenProfilePanel({ children }: { children: ReactNode }) {
+  return (
+    <div
+      className="event-track-map-profile-overlay absolute inset-x-0 bottom-0 z-20 w-full max-w-none overflow-hidden rounded-t-xl border border-x-0 border-b-0 border-white/70 bg-white/95 shadow-2xl backdrop-blur-md"
+      data-testid="event-track-map-fullscreen-profile"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+    >
+      {children}
+    </div>
   );
 }
 
@@ -414,6 +445,8 @@ export function EventTrackMap({
   routes,
   errorTitle,
   errorMessage,
+  fullscreenProfile,
+  onFullscreenChange,
 }: EventTrackMapProps) {
   const tMap = useTranslations('map');
   const terrainSettingsEnabled = process.env.NODE_ENV !== 'production';
@@ -468,6 +501,10 @@ export function EventTrackMap({
   } = useMapFullscreen(resizeMap);
   const terrainSettings = useTerrainSettingsDisclosure(is3D);
 
+  useEffect(() => {
+    onFullscreenChange?.(isFullscreen);
+  }, [isFullscreen, onFullscreenChange]);
+
   const mapContent = hasError ? (
     <div
       className={`relative h-full w-full bg-stone-100 ${
@@ -485,12 +522,17 @@ export function EventTrackMap({
         className="h-full"
       />
       {isFullscreen ? (
-        <FullscreenToggle
-          active
-          label={tMap('exitFullscreen')}
-          onToggle={toggleFullscreen}
-          terrainSupported={false}
-        />
+        <>
+          <FullscreenToggle
+            active
+            label={tMap('exitFullscreen')}
+            onToggle={toggleFullscreen}
+            terrainSupported={false}
+          />
+          {fullscreenProfile ? (
+            <FullscreenProfilePanel>{fullscreenProfile}</FullscreenProfilePanel>
+          ) : null}
+        </>
       ) : null}
     </div>
   ) : (
@@ -587,7 +629,14 @@ export function EventTrackMap({
           mobileLabel={tMap('rotateHintMobile')}
         />
       ) : null}
-      <TrackLegend routes={routes} />
+      <TrackLegend
+        routes={routes}
+        fullscreen={isFullscreen}
+        offsetForHint={isFullscreen && is3D && showRotationHint}
+      />
+      {isFullscreen && fullscreenProfile ? (
+        <FullscreenProfilePanel>{fullscreenProfile}</FullscreenProfilePanel>
+      ) : null}
     </div>
   );
 

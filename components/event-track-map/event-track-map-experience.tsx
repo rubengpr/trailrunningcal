@@ -30,6 +30,15 @@ export function EventTrackMapExperience({
   const [selectedId, setSelectedId] = useState(profiles[0]?.id ?? '');
   const [activePoint, setActivePoint] =
     useState<ElevationProfileCursorPoint | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const chartProps = {
+    activePoint,
+    chartDescription,
+    onActivePointChange: setActivePoint,
+    onSelectedIdChange: setSelectedId,
+    profiles,
+    selectedId,
+  };
 
   return (
     <>
@@ -40,15 +49,14 @@ export function EventTrackMapExperience({
         routes={routes}
         errorTitle={errorTitle}
         errorMessage={errorMessage}
+        fullscreenProfile={
+          profiles.length > 0 ? (
+            <ElevationProfileChart {...chartProps} variant="fullscreen" />
+          ) : null
+        }
+        onFullscreenChange={setIsFullscreen}
       />
-      <ElevationProfileChart
-        activePoint={activePoint}
-        profiles={profiles}
-        selectedId={selectedId}
-        chartDescription={chartDescription}
-        onActivePointChange={setActivePoint}
-        onSelectedIdChange={setSelectedId}
-      />
+      {!isFullscreen ? <ElevationProfileChart {...chartProps} /> : null}
     </>
   );
 }

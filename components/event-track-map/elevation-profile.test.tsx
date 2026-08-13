@@ -35,7 +35,13 @@ const labels = {
   chartDescription: 'Gráfico del perfil de elevación',
 };
 
-function ChartHarness({ profiles }: { profiles: ElevationProfile[] }) {
+function ChartHarness({
+  profiles,
+  variant,
+}: {
+  profiles: ElevationProfile[];
+  variant?: 'embedded' | 'fullscreen';
+}) {
   const [selectedId, setSelectedId] = useState(profiles[0]?.id ?? '');
   const [activePoint, setActivePoint] =
     useState<ElevationProfileCursorPoint | null>(null);
@@ -48,6 +54,7 @@ function ChartHarness({ profiles }: { profiles: ElevationProfile[] }) {
       selectedId={selectedId}
       onActivePointChange={setActivePoint}
       onSelectedIdChange={setSelectedId}
+      variant={variant}
     />
   );
 }
@@ -93,6 +100,26 @@ describe('ElevationProfileChart', () => {
     expect(screen.getByTestId('elevation-profile-plot').className).toContain('w-full');
   });
 
+  it('uses a shorter plot and tighter spacing on mobile fullscreen', () => {
+    render(
+      <ChartHarness
+        profiles={buildElevationProfiles([
+          route('long', 0.2, [800, 1_200, 950]),
+        ])}
+        variant="fullscreen"
+      />,
+    );
+
+    expect(screen.getByTestId('elevation-profile').className).toContain('pt-2');
+    expect(screen.getByTestId('elevation-profile').className).toContain('pb-2');
+    expect(screen.getByTestId('elevation-profile-plot').className).toContain(
+      'h-[86px]',
+    );
+    expect(screen.getByTestId('elevation-profile-plot').className).toContain(
+      'sm:h-[130px]',
+    );
+  });
+
   it('defaults to the longest profile and switches routes', () => {
     render(
       <ChartHarness
@@ -110,12 +137,64 @@ describe('ElevationProfileChart', () => {
     expect(screen.getByLabelText(labels.chartDescription).className).toContain(
       '[&::-webkit-scrollbar]:hidden',
     );
+    expect(screen.getByLabelText(labels.chartDescription).className).toContain(
+      'snap-mandatory',
+    );
+    expect(screen.getByRole('button', { name: 'Marató' }).className).toContain(
+      'snap-start',
+    );
+    expect(screen.getByRole('button', { name: 'Marató' }).className).toContain(
+      'snap-always',
+    );
     expect(screen.getAllByText('1500').length).toBeGreaterThan(0);
 
     fireEvent.click(screen.getByRole('button', { name: 'Trail curt' }));
 
     expect(screen.getByRole('button', { name: 'Trail curt' }).getAttribute('aria-pressed')).toBe('true');
     expect(screen.getAllByText('600').length).toBeGreaterThan(0);
+  });
+
+  it('shows carousel edge fades only where more routes can be revealed', () => {
+    render(
+      <ChartHarness
+        profiles={buildElevationProfiles([
+          route('long', 0.2, [900, 1_500]),
+          route('short', 0.05, [500, 600]),
+        ])}
+      />,
+    );
+    const picker = screen.getByLabelText(labels.chartDescription);
+    Object.defineProperties(picker, {
+      clientWidth: { configurable: true, value: 100 },
+      scrollWidth: { configurable: true, value: 300 },
+      scrollLeft: { configurable: true, writable: true, value: 0 },
+    });
+
+    fireEvent.scroll(picker);
+    expect(
+      screen.queryByTestId('elevation-profile-picker-left-fade'),
+    ).toBeNull();
+    expect(
+      screen.getByTestId('elevation-profile-picker-right-fade'),
+    ).toBeDefined();
+
+    picker.scrollLeft = 100;
+    fireEvent.scroll(picker);
+    expect(
+      screen.getByTestId('elevation-profile-picker-left-fade'),
+    ).toBeDefined();
+    expect(
+      screen.getByTestId('elevation-profile-picker-right-fade'),
+    ).toBeDefined();
+
+    picker.scrollLeft = 200;
+    fireEvent.scroll(picker);
+    expect(
+      screen.getByTestId('elevation-profile-picker-left-fade'),
+    ).toBeDefined();
+    expect(
+      screen.queryByTestId('elevation-profile-picker-right-fade'),
+    ).toBeNull();
   });
 
   it('shows a synchronized cursor and clears it after mouse leave', () => {
