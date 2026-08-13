@@ -398,6 +398,11 @@ describe('EventTrackMap', () => {
       }),
       { pixelRatio: 2 },
     );
+    const legendLabel = screen.getByText('Marató');
+    expect(legendLabel.className).toContain('truncate');
+    expect(legendLabel.getAttribute('title')).toBe('Marató');
+    expect(legendLabel.parentElement?.className).toContain('max-w-full');
+    expect(legendLabel.parentElement?.className).not.toContain('max-w-60');
     expect(mocks.addLayer).toHaveBeenCalledWith(
       expect.objectContaining({
         id: 'event-track-direction-0',

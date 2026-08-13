@@ -40,13 +40,19 @@ function TrackLegend({ routes }: Pick<EventTrackMapProps, 'routes'>) {
       data-testid="event-track-map-legend"
     >
       {routes.map((route) => (
-        <li key={route.id} className="flex shrink-0 items-center gap-2">
+        <li
+          key={route.id}
+          className="flex min-w-0 max-w-full shrink items-center gap-2"
+        >
           <span
             className="h-2.5 w-2.5 shrink-0 rounded-full ring-2 ring-white/90"
             data-testid={`event-track-map-legend-dot-${route.id}`}
             style={{ backgroundColor: route.color }}
           />
-          <span className="whitespace-nowrap font-medium">
+          <span
+            className="min-w-0 truncate font-medium"
+            title={route.raceNames.join(' · ')}
+          >
             {route.raceNames.join(' · ')}
           </span>
         </li>
