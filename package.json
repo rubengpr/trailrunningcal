@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest",
+    "perf:event-map": "node scripts/benchmark-event-map.mjs",
     "perf:homepage": "node scripts/measure-homepage-build.mjs",
     "test:db": "RUN_SUPABASE_INTEGRATION_TESTS=true node --env-file=.env.local node_modules/vitest/vitest.mjs --run lib/db/event-drafts.integration.test.ts lib/db/event-import-batches.integration.test.ts lib/db/event-update-batches.integration.test.ts lib/db/public-events-pagination.integration.test.ts lib/db/admin-events-pagination.integration.test.ts",
     "migrate:races": "tsx scripts/migrate-races.ts",
@@ -62,6 +63,7 @@
     "tsx": "^4.21.0",
     "typescript": "^5",
     "vite-tsconfig-paths": "^6.0.5",
-    "vitest": "^4.0.18"
+    "vitest": "^4.0.18",
+    "ws": "8.19.0"
   }
 }
