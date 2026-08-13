@@ -58,6 +58,7 @@ describe('DeferredEventTrackMap', () => {
   it('loads only after a quarter of the placeholder is visible', async () => {
     const { container } = render(
       <DeferredEventTrackMap
+        activePoint={null}
         eventId="event-1"
         eventSlug="pedraforca-xtrail"
         routes={routes}

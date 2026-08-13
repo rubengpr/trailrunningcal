@@ -30,6 +30,7 @@ const mocks = vi.hoisted(() => ({
   setPaintProperty: vi.fn(),
   setSourceTiles: vi.fn(),
   setSourceUrl: vi.fn(),
+  setSourceData: vi.fn(),
   setTerrain: vi.fn(),
   remove: vi.fn(),
   resize: vi.fn(),
@@ -72,7 +73,11 @@ vi.mock('maplibre-gl', () => {
     private layers = new Set<string>(['osm']);
     private sources = new Map<
       string,
-      { setTiles: typeof mocks.setSourceTiles; setUrl: typeof mocks.setSourceUrl }
+      {
+        setData: typeof mocks.setSourceData;
+        setTiles: typeof mocks.setSourceTiles;
+        setUrl: typeof mocks.setSourceUrl;
+      }
     >();
     private terrain: unknown = null;
 
@@ -99,6 +104,7 @@ vi.mock('maplibre-gl', () => {
     addSource(id: string, source: unknown) {
       mocks.addSource(id, source);
       this.sources.set(id, {
+        setData: mocks.setSourceData,
         setTiles: mocks.setSourceTiles,
         setUrl: mocks.setSourceUrl,
       });
@@ -258,6 +264,7 @@ vi.mock('maplibre-gl', () => {
 });
 
 const props = {
+  activePoint: null,
   eventId: 'event-1',
   eventSlug: 'pedraforca-xtrail',
   errorTitle: 'Map failed',
@@ -315,6 +322,85 @@ afterEach(() => {
 });
 
 describe('EventTrackMap', () => {
+  it('updates a profile point source without recreating the map', () => {
+    const view = render(<EventTrackMap {...props} />);
+    act(() => mocks.handlers.get('load')?.());
+
+    expect(mocks.addSource).toHaveBeenCalledWith(
+      'event-track-profile-point',
+      expect.objectContaining({ type: 'geojson' }),
+    );
+    expect(mocks.addLayer).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 'event-track-profile-point',
+        source: 'event-track-profile-point',
+        type: 'circle',
+      }),
+    );
+
+    view.rerender(
+      <EventTrackMap
+        {...props}
+        activePoint={{
+          color: '#c026d3',
+          coordinate: [1.75, 42.25],
+          distanceKm: 12.3,
+          elevationM: 1_420,
+          routeId: 'route-1',
+          slopePercent: 8.4,
+        }}
+      />,
+    );
+
+    expect(mocks.setSourceData).toHaveBeenLastCalledWith({
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          properties: { color: '#c026d3' },
+          geometry: { type: 'Point', coordinates: [1.75, 42.25] },
+        },
+      ],
+    });
+    expect(mocks.mapConstructor).toHaveBeenCalledTimes(1);
+
+    view.rerender(<EventTrackMap {...props} activePoint={null} />);
+    expect(mocks.setSourceData).toHaveBeenLastCalledWith({
+      type: 'FeatureCollection',
+      features: [],
+    });
+    expect(mocks.mapConstructor).toHaveBeenCalledTimes(1);
+  });
+
+  it('applies a pending profile point when the deferred map loads', () => {
+    render(
+      <EventTrackMap
+        {...props}
+        activePoint={{
+          color: '#c026d3',
+          coordinate: [1.76, 42.26],
+          distanceKm: 14,
+          elevationM: 1_500,
+          routeId: 'route-1',
+          slopePercent: -6.2,
+        }}
+      />,
+    );
+
+    expect(mocks.setSourceData).not.toHaveBeenCalled();
+    act(() => mocks.handlers.get('load')?.());
+
+    expect(mocks.setSourceData).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        features: [
+          expect.objectContaining({
+            geometry: { type: 'Point', coordinates: [1.76, 42.26] },
+          }),
+        ],
+      }),
+    );
+  });
+
   it('renders a translucent in-map legend with color dots', () => {
     render(<EventTrackMap {...props} />);
 
@@ -543,11 +629,11 @@ describe('EventTrackMap', () => {
     act(() => mocks.handlers.get('load')?.());
     expect(button.disabled).toBe(false);
     expect(button.title).toBe('view3D');
-    expect(mocks.addSource).toHaveBeenCalledTimes(1);
+    expect(mocks.addSource).toHaveBeenCalledTimes(2);
 
     fireEvent.click(button);
 
-    expect(mocks.addSource).toHaveBeenCalledTimes(4);
+    expect(mocks.addSource).toHaveBeenCalledTimes(5);
     expect(mocks.addSource).toHaveBeenCalledWith(
       'event-terrain',
       expect.objectContaining({
@@ -655,7 +741,7 @@ describe('EventTrackMap', () => {
     expect(screen.getByTestId('event-track-map-terrain-settings')).toBeDefined();
     fireEvent.click(screen.getByRole('button', { name: 'view2D' }));
 
-    expect(mocks.addSource).toHaveBeenCalledTimes(4);
+    expect(mocks.addSource).toHaveBeenCalledTimes(5);
     expect(mocks.setTerrain).toHaveBeenLastCalledWith(null);
     expect(mocks.setLayoutProperty).toHaveBeenCalledWith(
       'event-terrain-hillshade',
@@ -749,14 +835,14 @@ describe('EventTrackMap', () => {
         'event_track_map_terrain_load_finished',
         expect.objectContaining({ outcome: 'timeout' }),
       );
-      expect(mocks.addSource).toHaveBeenCalledTimes(4);
+      expect(mocks.addSource).toHaveBeenCalledTimes(5);
 
       fireEvent.click(
         screen
           .getByTestId('event-track-map-terrain-status')
           .querySelector('button')!,
       );
-      expect(mocks.addSource).toHaveBeenCalledTimes(4);
+      expect(mocks.addSource).toHaveBeenCalledTimes(5);
       expect(mocks.setSourceUrl).toHaveBeenCalledTimes(2);
       expect(mocks.setSourceUrl).toHaveBeenCalledWith(
         'https://tiles.mapterhorn.com/tilejson.json',
@@ -893,7 +979,7 @@ describe('EventTrackMap', () => {
         .getByTestId('event-track-map-terrain-status')
         .querySelector('button')!,
     );
-    expect(mocks.addSource).toHaveBeenCalledTimes(4);
+    expect(mocks.addSource).toHaveBeenCalledTimes(5);
     expect(mocks.setSourceUrl).toHaveBeenCalledTimes(2);
     expect(mocks.setSourceTiles).toHaveBeenCalledOnce();
     finishTerrainLoading();

@@ -3,13 +3,19 @@
 import { createElement, useCallback, useEffect, useRef, useState } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import maplibregl from 'maplibre-gl';
-import type { FeatureCollection, LineString, MultiLineString } from 'geojson';
+import type {
+  FeatureCollection,
+  LineString,
+  MultiLineString,
+  Point,
+} from 'geojson';
 import { Flag, Play } from 'lucide-react';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { track } from '@/lib/analytics/track';
 import { OSM_STANDARD_STYLE } from '@/lib/maps/style';
 import { buildTrackEndpointGroups } from '@/lib/race-tracks/routes';
 import type {
+  ElevationProfileCursorPoint,
   TrackEndpointGroup,
   TrackEndpointKind,
   TrackRoute,
@@ -22,6 +28,8 @@ const HILLSHADE_LAYER_ID = 'event-terrain-hillshade';
 const ORTHOPHOTO_SOURCE_ID = 'event-orthophoto';
 const ORTHOPHOTO_LAYER_ID = 'event-orthophoto';
 const DIRECTION_ARROW_IMAGE_ID = 'event-track-direction-arrow';
+const PROFILE_POINT_SOURCE_ID = 'event-track-profile-point';
+const PROFILE_POINT_LAYER_ID = 'event-track-profile-point';
 const ORTHOPHOTO_TILE_URL =
   'https://geoserveis.icgc.cat/servei/catalunya/mapa-base/wmts/orto/MON3857NW/{z}/{x}/{y}.png';
 const DEFAULT_HILLSHADE_INTENSITY = 0.18;
@@ -47,6 +55,7 @@ interface TerrainSettings {
 }
 
 interface EventTrackMapOptions {
+  activePoint: ElevationProfileCursorPoint | null;
   eventId: string;
   eventSlug: string;
   finishLabel: string;
@@ -262,6 +271,7 @@ function isTerrainError(event: TerrainMapError): boolean {
 }
 
 export function useEventTrackMap({
+  activePoint,
   eventId,
   eventSlug,
   finishLabel,
@@ -271,6 +281,8 @@ export function useEventTrackMap({
   zoomOutLabel,
 }: EventTrackMapOptions) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<maplibregl.Map | null>(null);
+  const activePointRef = useRef(activePoint);
   const resizeMapRef = useRef<() => void>(() => undefined);
   const rotateMapRef = useRef<(direction: -1 | 1) => void>(() => undefined);
   const updateTerrainSettingsRef = useRef<
@@ -290,6 +302,40 @@ export function useEventTrackMap({
     DEFAULT_TERRAIN_EXAGGERATION,
   );
   const [terrainPitch, setTerrainPitchState] = useState(DEFAULT_TERRAIN_PITCH);
+
+  activePointRef.current = activePoint;
+
+  const updateProfilePoint = useCallback(
+    (
+      map: maplibregl.Map,
+      point: ElevationProfileCursorPoint | null,
+    ): void => {
+      const source = map.getSource(PROFILE_POINT_SOURCE_ID) as
+        | maplibregl.GeoJSONSource
+        | undefined;
+      if (!source) return;
+
+      const data: FeatureCollection<Point> = {
+        type: 'FeatureCollection',
+        features: point
+          ? [
+              {
+                type: 'Feature',
+                properties: { color: point.color },
+                geometry: { type: 'Point', coordinates: point.coordinate },
+              },
+            ]
+          : [],
+      };
+      source.setData(data);
+    },
+    [],
+  );
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (map) updateProfilePoint(map, activePoint);
+  }, [activePoint, updateProfilePoint]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -430,6 +476,7 @@ export function useEventTrackMap({
         },
         attributionControl: false,
       });
+      mapRef.current = map;
       resizeMapRef.current = () => map?.resize();
       map.addControl(
         new maplibregl.NavigationControl({
@@ -555,6 +602,10 @@ export function useEventTrackMap({
             })),
           };
           map.addSource('event-tracks', { type: 'geojson', data });
+          map.addSource(PROFILE_POINT_SOURCE_ID, {
+            type: 'geojson',
+            data: { type: 'FeatureCollection', features: [] },
+          });
           map.addImage(
             DIRECTION_ARROW_IMAGE_ID,
             createDirectionArrowImage(),
@@ -632,6 +683,19 @@ export function useEventTrackMap({
               paint: { 'icon-opacity': 0.92 },
             });
           });
+
+          map.addLayer({
+            id: PROFILE_POINT_LAYER_ID,
+            type: 'circle',
+            source: PROFILE_POINT_SOURCE_ID,
+            paint: {
+              'circle-color': ['get', 'color'],
+              'circle-radius': 6,
+              'circle-stroke-color': '#ffffff',
+              'circle-stroke-width': 3,
+            },
+          });
+          updateProfilePoint(map, activePointRef.current);
 
           const endpointLabels: EndpointLabels = {
             finish: finishLabel,
@@ -906,6 +970,7 @@ export function useEventTrackMap({
       rotateMapRef.current = () => undefined;
       resizeMapRef.current = () => undefined;
       updateTerrainSettingsRef.current = () => undefined;
+      mapRef.current = null;
       if (settingsAnimationFrameId !== null) {
         window.cancelAnimationFrame(settingsAnimationFrameId);
       }
@@ -934,6 +999,7 @@ export function useEventTrackMap({
     startLabel,
     zoomInLabel,
     zoomOutLabel,
+    updateProfilePoint,
   ]);
 
   const resizeMap = useCallback(() => resizeMapRef.current(), []);

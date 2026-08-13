@@ -23,9 +23,13 @@ import {
 } from '@/hooks/use-event-track-map';
 import { useMapFullscreen } from '@/hooks/use-map-fullscreen';
 import { useTerrainSettingsDisclosure } from '@/hooks/use-terrain-settings-disclosure';
-import type { TrackRoute } from '@/types/race-track.types';
+import type {
+  ElevationProfileCursorPoint,
+  TrackRoute,
+} from '@/types/race-track.types';
 
 export interface EventTrackMapProps {
+  activePoint: ElevationProfileCursorPoint | null;
   eventId: string;
   eventSlug: string;
   routes: TrackRoute[];
@@ -404,6 +408,7 @@ function RotationHint({ desktopLabel, mobileLabel }: RotationHintProps) {
 }
 
 export function EventTrackMap({
+  activePoint,
   eventId,
   eventSlug,
   routes,
@@ -433,6 +438,7 @@ export function EventTrackMap({
     terrainStatus,
     terrainSupported,
   } = useEventTrackMap({
+    activePoint,
     eventId,
     eventSlug,
     finishLabel: tMap('routeFinish'),

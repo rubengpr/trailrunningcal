@@ -1,15 +1,32 @@
 'use client';
 
-import { useId, useState } from 'react';
-import type { ElevationProfile } from '@/types/race-track.types';
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type PointerEvent as ReactPointerEvent,
+} from 'react';
+import {
+  downsampleElevationPoints,
+  getElevationCursorPoint,
+} from '@/lib/race-tracks/elevation-profile';
+import type {
+  ElevationProfile,
+  ElevationProfileCursorPoint,
+} from '@/types/race-track.types';
 
 const CHART_WIDTH = 1_000;
 const CHART_HEIGHT = 220;
 const VERTICAL_INSET = 12;
 
 interface ElevationProfileChartProps {
+  activePoint: ElevationProfileCursorPoint | null;
   profiles: ElevationProfile[];
   chartDescription: string;
+  onActivePointChange: (point: ElevationProfileCursorPoint | null) => void;
+  onSelectedIdChange: (id: string) => void;
+  selectedId: string;
 }
 
 function formatDistance(value: number): string {
@@ -22,6 +39,21 @@ function formatElevation(value: number): string {
   return Math.round(value).toLocaleString('es-ES');
 }
 
+function formatCursorDistance(value: number): string {
+  return value.toLocaleString('es-ES', {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
+}
+
+function formatSlope(value: number): string {
+  return value.toLocaleString('es-ES', {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+    signDisplay: 'exceptZero',
+  });
+}
+
 function getProfilePaths(profile: ElevationProfile): {
   area: string;
   line: string;
@@ -29,7 +61,7 @@ function getProfilePaths(profile: ElevationProfile): {
   const elevationRange = profile.maximumElevationM - profile.minimumElevationM;
   const distanceRange = profile.distanceKm || 1;
   const drawableHeight = CHART_HEIGHT - VERTICAL_INSET * 2;
-  const coordinates = profile.points.map((point) => {
+  const coordinates = downsampleElevationPoints(profile.points).map((point) => {
     const x = (point.distanceKm / distanceRange) * CHART_WIDTH;
     const ratio = elevationRange === 0
       ? 0.5
@@ -50,16 +82,136 @@ function getProfilePaths(profile: ElevationProfile): {
 }
 
 export function ElevationProfileChart({
+  activePoint,
   profiles,
   chartDescription,
+  onActivePointChange,
+  onSelectedIdChange,
+  selectedId,
 }: ElevationProfileChartProps) {
-  const [selectedId, setSelectedId] = useState(profiles[0]?.id ?? '');
   const selected = profiles.find(({ id }) => id === selectedId) ?? profiles[0];
   const gradientId = `elevation-profile-${useId().replaceAll(':', '')}`;
+  const plotRef = useRef<HTMLDivElement>(null);
+  const pointerFrameRef = useRef<number | null>(null);
+  const pendingClientXRef = useRef<number | null>(null);
+  const touchPointerIdRef = useRef<number | null>(null);
+  const [hasPersistentTouchPoint, setHasPersistentTouchPoint] = useState(false);
+
+  useEffect(() => {
+    if (!hasPersistentTouchPoint) return;
+
+    const clearFromOutsideTouch = (event: PointerEvent) => {
+      if (
+        event.pointerType === 'touch' &&
+        !plotRef.current?.contains(event.target as Node)
+      ) {
+        setHasPersistentTouchPoint(false);
+        onActivePointChange(null);
+      }
+    };
+    document.addEventListener('pointerdown', clearFromOutsideTouch, true);
+    return () => {
+      document.removeEventListener('pointerdown', clearFromOutsideTouch, true);
+    };
+  }, [hasPersistentTouchPoint, onActivePointChange]);
+
+  useEffect(() => () => {
+    if (pointerFrameRef.current !== null) {
+      window.cancelAnimationFrame(pointerFrameRef.current);
+    }
+  }, []);
 
   if (!selected) return null;
 
   const paths = getProfilePaths(selected);
+  const activeForSelected = activePoint?.routeId === selected.id
+    ? activePoint
+    : null;
+  const activeXPercent = activeForSelected
+    ? (activeForSelected.distanceKm / (selected.distanceKm || 1)) * 100
+    : 0;
+  const elevationRange = selected.maximumElevationM - selected.minimumElevationM;
+  const activeYPercent = activeForSelected
+    ? elevationRange === 0
+      ? 50
+      : ((CHART_HEIGHT -
+          VERTICAL_INSET -
+          ((activeForSelected.elevationM - selected.minimumElevationM) /
+            elevationRange) *
+            (CHART_HEIGHT - VERTICAL_INSET * 2)) /
+          CHART_HEIGHT) *
+        100
+    : 0;
+  const tooltipAlignment = activeXPercent < 15
+    ? 'translate-x-0'
+    : activeXPercent > 85
+      ? '-translate-x-full'
+      : '-translate-x-1/2';
+
+  const updateFromClientX = (clientX: number) => {
+    const bounds = plotRef.current?.getBoundingClientRect();
+    if (!bounds || bounds.width === 0) return;
+    const ratio = Math.min(Math.max((clientX - bounds.left) / bounds.width, 0), 1);
+    onActivePointChange(
+      getElevationCursorPoint(selected, ratio * selected.distanceKm),
+    );
+  };
+
+  const scheduleUpdate = (clientX: number) => {
+    pendingClientXRef.current = clientX;
+    if (pointerFrameRef.current !== null) return;
+    pointerFrameRef.current = window.requestAnimationFrame(() => {
+      pointerFrameRef.current = null;
+      if (pendingClientXRef.current !== null) {
+        updateFromClientX(pendingClientXRef.current);
+      }
+    });
+  };
+
+  const cancelScheduledUpdate = () => {
+    pendingClientXRef.current = null;
+    if (pointerFrameRef.current !== null) {
+      window.cancelAnimationFrame(pointerFrameRef.current);
+      pointerFrameRef.current = null;
+    }
+  };
+
+  const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.pointerType !== 'touch') return;
+    touchPointerIdRef.current = event.pointerId;
+    setHasPersistentTouchPoint(false);
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+    updateFromClientX(event.clientX);
+  };
+
+  const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (
+      event.pointerType === 'touch' &&
+      touchPointerIdRef.current !== event.pointerId
+    ) {
+      return;
+    }
+    scheduleUpdate(event.clientX);
+  };
+
+  const handlePointerUp = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.pointerType !== 'touch') return;
+    cancelScheduledUpdate();
+    updateFromClientX(event.clientX);
+    touchPointerIdRef.current = null;
+    setHasPersistentTouchPoint(true);
+    if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  };
+
+  const handlePointerCancel = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.pointerType !== 'touch') return;
+    cancelScheduledUpdate();
+    touchPointerIdRef.current = null;
+    setHasPersistentTouchPoint(false);
+    onActivePointChange(null);
+  };
 
   return (
     <div
@@ -83,7 +235,11 @@ export function ElevationProfileChart({
                     : 'border-stone-200 bg-white text-stone-600 hover:border-stone-400 hover:text-stone-900'
                 }`}
                 aria-pressed={isSelected}
-                onClick={() => setSelectedId(profile.id)}
+                onClick={() => {
+                  setHasPersistentTouchPoint(false);
+                  onActivePointChange(null);
+                  onSelectedIdChange(profile.id);
+                }}
               >
                 {profile.raceNames.join(' · ')}
               </button>
@@ -93,8 +249,23 @@ export function ElevationProfileChart({
       ) : null}
 
       <div
+        ref={plotRef}
         className={`${profiles.length > 1 ? 'mt-4' : ''} relative h-32 w-full overflow-hidden sm:h-36`}
         data-testid="elevation-profile-plot"
+        style={{ touchAction: 'pan-y' }}
+        onPointerCancel={handlePointerCancel}
+        onPointerDown={handlePointerDown}
+        onPointerEnter={(event) => {
+          if (event.pointerType === 'mouse') updateFromClientX(event.clientX);
+        }}
+        onPointerLeave={(event) => {
+          if (event.pointerType === 'mouse') {
+            cancelScheduledUpdate();
+            onActivePointChange(null);
+          }
+        }}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
       >
         <svg
           className="h-full w-full"
@@ -134,6 +305,33 @@ export function ElevationProfileChart({
             {formatDistance(selected.distanceKm)} km
           </span>
         </div>
+        {activeForSelected ? (
+          <div className="pointer-events-none absolute inset-0 z-10">
+            <span
+              className="absolute inset-y-0 w-px bg-stone-800/35"
+              data-testid="elevation-profile-cursor"
+              style={{ left: `${activeXPercent}%` }}
+            />
+            <span
+              className="absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] border-white shadow-sm"
+              data-testid="elevation-profile-point"
+              style={{
+                backgroundColor: selected.color,
+                left: `${activeXPercent}%`,
+                top: `${activeYPercent}%`,
+              }}
+            />
+            <span
+              className={`absolute top-2 whitespace-nowrap rounded-full bg-stone-950/90 px-2.5 py-1 text-xs font-semibold tabular-nums text-white shadow-sm ${tooltipAlignment}`}
+              data-testid="elevation-profile-tooltip"
+              style={{ left: `${activeXPercent}%` }}
+            >
+              {formatCursorDistance(activeForSelected.distanceKm)} km ·{' '}
+              {formatElevation(activeForSelected.elevationM)} m ·{' '}
+              {formatSlope(activeForSelected.slopePercent)}%
+            </span>
+          </div>
+        ) : null}
       </div>
     </div>
   );

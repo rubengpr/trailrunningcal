@@ -3,6 +3,7 @@ import {
   buildElevationProfile,
   buildElevationProfiles,
   downsampleElevationPoints,
+  getElevationCursorPoint,
 } from '@/lib/race-tracks/elevation-profile';
 import type { TrackRoute } from '@/types/race-track.types';
 
@@ -38,6 +39,11 @@ describe('elevation profiles', () => {
     expect(profile?.distanceKm).toBeLessThan(1.7);
     expect(profile?.minimumElevationM).toBe(900);
     expect(profile?.maximumElevationM).toBe(1_050);
+    expect(profile?.points[1]).toMatchObject({
+      coordinate: [1.01, 42],
+      elevationM: 1_050,
+      segmentIndex: 0,
+    });
   });
 
   it('does not add distance across disconnected segments', () => {
@@ -70,8 +76,10 @@ describe('elevation profiles', () => {
 
   it('downsamples while retaining endpoints and elevation extremes', () => {
     const points = Array.from({ length: 1_000 }, (_, index) => ({
+      coordinate: [1 + index / 10_000, 42] as [number, number],
       distanceKm: index / 10,
       elevationM: index === 321 ? -500 : index === 678 ? 2_500 : 1_000,
+      segmentIndex: 0,
     }));
     const sampled = downsampleElevationPoints(points, 100);
 
@@ -80,5 +88,47 @@ describe('elevation profiles', () => {
     expect(sampled.at(-1)).toEqual(points.at(-1));
     expect(sampled).toContainEqual(points[321]);
     expect(sampled).toContainEqual(points[678]);
+  });
+
+  it('interpolates the cursor coordinate and elevation at a distance', () => {
+    const profile = buildElevationProfile(route([
+      [1, 42, 800],
+      [1.02, 42, 1_200],
+    ]))!;
+    const point = getElevationCursorPoint(profile, profile.distanceKm / 2);
+
+    expect(point.distanceKm).toBeCloseTo(profile.distanceKm / 2);
+    expect(point.elevationM).toBeCloseTo(1_000);
+    expect(point.coordinate[0]).toBeCloseTo(1.01);
+    expect(point.coordinate[1]).toBeCloseTo(42);
+    expect(point.slopePercent).toBeCloseTo(
+      400 / (profile.distanceKm * 10),
+    );
+  });
+
+  it('returns a negative slope while descending', () => {
+    const profile = buildElevationProfile(route([
+      [1, 42, 1_200],
+      [1.02, 42, 800],
+    ]))!;
+
+    const point = getElevationCursorPoint(profile, profile.distanceKm / 2);
+
+    expect(point.slopePercent).toBeCloseTo(
+      -400 / (profile.distanceKm * 10),
+    );
+  });
+
+  it('does not interpolate across disconnected segments', () => {
+    const profile = buildElevationProfile(route([
+      [[1, 42, 800], [1.01, 42, 850]],
+      [[2, 43, 900], [2.01, 43, 950]],
+    ], 'MultiLineString'))!;
+    const boundaryDistance = profile.points[1]!.distanceKm;
+    const point = getElevationCursorPoint(profile, boundaryDistance);
+
+    expect(point.coordinate).toEqual([1.01, 42]);
+    expect(point.elevationM).toBe(850);
+    expect(point.slopePercent).toBeGreaterThan(0);
   });
 });
