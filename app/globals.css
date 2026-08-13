@@ -479,8 +479,10 @@ input[type='number'] {
 
 [data-map-fullscreen='true'] .event-track-map-legend {
   bottom: max(0.75rem, env(safe-area-inset-bottom)) !important;
-  left: max(0.75rem, env(safe-area-inset-left)) !important;
-  right: max(0.75rem, env(safe-area-inset-right)) !important;
+  max-width: calc(
+    100% - max(0.75rem, env(safe-area-inset-left)) -
+      max(0.75rem, env(safe-area-inset-right))
+  ) !important;
 }
 
 @media (min-width: 640px) {

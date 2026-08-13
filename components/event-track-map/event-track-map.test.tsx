@@ -270,6 +270,11 @@ describe('EventTrackMap', () => {
     render(<EventTrackMap {...props} />);
 
     expect(screen.getByTestId('event-track-map-legend')).toBeDefined();
+    expect(screen.getByTestId('event-track-map-legend').className).toContain('left-1/2');
+    expect(screen.getByTestId('event-track-map-legend').className).toContain('w-max');
+    expect(screen.getByTestId('event-track-map-legend').className).toContain(
+      'justify-center',
+    );
     expect(screen.getByText('Marató')).toBeDefined();
     expect(
       screen.getByTestId('event-track-map-legend-dot-route-1').style.backgroundColor,
