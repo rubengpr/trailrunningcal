@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
+import { gzipSync } from 'node:zlib';
 import { ValidationError } from '@/lib/errors';
 import {
   MAX_TRACK_FILE_SIZE_BYTES,
-  MAX_TRACK_POINTS,
+  MAX_TRACK_SOURCE_POINTS,
   parseTrackFile,
 } from '@/lib/race-tracks/parse';
 
@@ -30,7 +31,7 @@ describe('parseTrackFile', () => {
       ),
     );
 
-    expect(result).toEqual({
+    expect(result).toMatchObject({
       geometry: {
         type: 'LineString',
         coordinates: [
@@ -40,9 +41,49 @@ describe('parseTrackFile', () => {
       },
       geometryType: 'LineString',
       pointCount: 2,
+      sourcePointCount: 3,
+      removedPointCount: 1,
       segmentCount: 1,
+      simplified: false,
+      toleranceMeters: null,
+      targetMet: true,
       normalizedSizeBytes: expect.any(Number),
     });
+  });
+
+  it('discards telemetry without changing a small route', () => {
+    const input = bytes(
+      `<gpx><trk><trkseg>${point(1, 42, 900).replace(
+        '</trkpt>',
+        '<time>2026-01-01T00:00:00Z</time><extensions><power>200</power></extensions></trkpt>',
+      )}${point(2, 43, 950)}</trkseg></trk></gpx>`,
+    );
+
+    const result = parseTrackFile(input);
+
+    expect(result.geometry).toEqual({
+      type: 'LineString',
+      coordinates: [[1, 42, 900], [2, 43, 950]],
+    });
+    expect(result.preSimplificationSizeBytes).toBe(result.normalizedSizeBytes);
+    expect(result.sourceSizeBytes).toBe(input.byteLength);
+  });
+
+  it('parses gzip transport and reports the decompressed source size', () => {
+    const input = route(point(1, 42, 900) + point(2, 43, 950));
+    const compressed = gzipSync(input);
+
+    const result = parseTrackFile(compressed);
+
+    expect(result.sourceSizeBytes).toBe(input.byteLength);
+    expect(result.sourcePointCount).toBe(2);
+    expect(result.geometry).toMatchObject({ type: 'LineString' });
+  });
+
+  it('rejects invalid gzip transport', () => {
+    expect(() =>
+      parseTrackFile(new Uint8Array([0x1f, 0x8b, 0x00, 0x01])),
+    ).toThrow(ValidationError);
   });
 
   it('preserves multiple segments as separately rendered stages', () => {
@@ -104,10 +145,23 @@ describe('parseTrackFile', () => {
     ).toThrow(ValidationError);
 
     const points = Array.from(
-      { length: MAX_TRACK_POINTS + 1 },
+      { length: MAX_TRACK_SOURCE_POINTS + 1 },
       (_, index) => point(1 + index / 1_000_000, 42),
     ).join('');
     expect(() => parseTrackFile(route(points))).toThrow(ValidationError);
+  });
+
+  it('rejects geometry that remains above hard limits at 3 metres', () => {
+    const segments = Array.from(
+      { length: 25_001 },
+      (_, index) =>
+        `<trkseg>${point(1 + index / 100_000, 42)}` +
+        `${point(1 + index / 100_000, 42.00001)}</trkseg>`,
+    ).join('');
+
+    expect(() =>
+      parseTrackFile(bytes(`<gpx><trk>${segments}</trk></gpx>`)),
+    ).toThrow(expect.objectContaining({ status: 413 }));
   });
 
   it('rejects an invalid source point instead of silently dropping it', () => {

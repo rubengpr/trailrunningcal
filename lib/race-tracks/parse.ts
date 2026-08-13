@@ -1,13 +1,23 @@
 import { gpx } from '@tmcw/togeojson';
 import { DOMParser } from '@xmldom/xmldom';
+import { gunzipSync } from 'node:zlib';
 import type { LineString, MultiLineString, Position } from 'geojson';
 import { ValidationError } from '@/lib/errors';
-import { MAX_TRACK_FILE_SIZE_BYTES } from '@/lib/race-tracks/limits';
+import {
+  MAX_TRACK_FILE_SIZE_BYTES,
+  MAX_TRACK_GEOMETRY_SIZE_BYTES,
+  MAX_TRACK_POINTS,
+  MAX_TRACK_SOURCE_POINTS,
+} from '@/lib/race-tracks/limits';
+import { optimizeTrackGeometry } from '@/lib/race-tracks/simplify';
 import type { TrackGeometry, TrackStage } from '@/types/race-track.types';
 
-export { MAX_TRACK_FILE_SIZE_BYTES } from '@/lib/race-tracks/limits';
-export const MAX_TRACK_GEOMETRY_SIZE_BYTES = 2 * 1024 * 1024;
-export const MAX_TRACK_POINTS = 50_000;
+export {
+  MAX_TRACK_FILE_SIZE_BYTES,
+  MAX_TRACK_GEOMETRY_SIZE_BYTES,
+  MAX_TRACK_POINTS,
+  MAX_TRACK_SOURCE_POINTS,
+} from '@/lib/race-tracks/limits';
 
 const UNSAFE_XML_PATTERN = /<!\s*(?:DOCTYPE|ENTITY)\b/i;
 
@@ -15,12 +25,40 @@ export interface ParsedTrack {
   geometry: TrackGeometry;
   geometryType: TrackGeometry['type'];
   pointCount: number;
+  preSimplificationSizeBytes: number;
+  removedPointCount: number;
   segmentCount: number;
+  simplified: boolean;
+  sourcePointCount: number;
+  sourceSizeBytes: number;
   normalizedSizeBytes: number;
+  targetMet: boolean;
+  toleranceMeters: number | null;
 }
 
 function invalidTrack(status = 422): ValidationError {
   return new ValidationError('Invalid track file', status);
+}
+
+function decompressTrackFile(bytes: Uint8Array): Uint8Array {
+  const isGzip = bytes[0] === 0x1f && bytes[1] === 0x8b;
+  if (!isGzip) return bytes;
+
+  try {
+    return gunzipSync(bytes, {
+      maxOutputLength: MAX_TRACK_FILE_SIZE_BYTES + 1,
+    });
+  } catch (error) {
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      error.code === 'ERR_BUFFER_TOO_LARGE'
+    ) {
+      throw invalidTrack(413);
+    }
+    throw invalidTrack();
+  }
 }
 
 function round(value: number, decimals: number): number {
@@ -97,11 +135,15 @@ function getTrackName(track: Element): string | null {
   return name ? name.slice(0, 200) : null;
 }
 
-function validateSourcePoints(document: Document): void {
+function validateSourcePoints(document: Document): number {
   const points = [
     ...Array.from(document.getElementsByTagName('trkpt')),
     ...Array.from(document.getElementsByTagName('rtept')),
   ];
+
+  if (points.length > MAX_TRACK_SOURCE_POINTS) {
+    throw invalidTrack(413);
+  }
 
   for (const point of points) {
     const longitudeValue = point.getAttribute('lon')?.trim();
@@ -129,6 +171,8 @@ function validateSourcePoints(document: Document): void {
       throw invalidTrack();
     }
   }
+
+  return points.length;
 }
 
 export function parseTrackFile(bytes: Uint8Array): ParsedTrack {
@@ -140,9 +184,14 @@ export function parseTrackFile(bytes: Uint8Array): ParsedTrack {
     throw invalidTrack(413);
   }
 
+  const sourceBytes = decompressTrackFile(bytes);
+  if (sourceBytes.byteLength > MAX_TRACK_FILE_SIZE_BYTES) {
+    throw invalidTrack(413);
+  }
+
   let xml: string;
   try {
-    xml = new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+    xml = new TextDecoder('utf-8', { fatal: true }).decode(sourceBytes);
   } catch {
     throw invalidTrack();
   }
@@ -166,7 +215,7 @@ export function parseTrackFile(bytes: Uint8Array): ParsedTrack {
     throw invalidTrack();
   }
 
-  validateSourcePoints(document);
+  const sourcePointCount = validateSourcePoints(document);
 
   let collection;
   try {
@@ -207,20 +256,16 @@ export function parseTrackFile(bytes: Uint8Array): ParsedTrack {
     }));
   }
 
-  const pointCount = segments.reduce(
+  const preSimplificationPointCount = segments.reduce(
     (total, coordinates) => total + coordinates.length,
     0,
   );
 
-  if (segments.length === 0 || pointCount === 0) {
+  if (segments.length === 0 || preSimplificationPointCount === 0) {
     throw invalidTrack();
   }
 
-  if (pointCount > MAX_TRACK_POINTS) {
-    throw invalidTrack();
-  }
-
-  const geometry: TrackGeometry =
+  const normalizedGeometry: TrackGeometry =
     segments.length === 1
       ? { type: 'LineString', coordinates: segments[0]! }
       : {
@@ -228,19 +273,30 @@ export function parseTrackFile(bytes: Uint8Array): ParsedTrack {
           coordinates: segments,
           ...(stages && stages.length > 1 ? { stages } : {}),
         };
-  const normalizedSizeBytes = new TextEncoder().encode(
-    JSON.stringify(geometry),
+  const preSimplificationSizeBytes = new TextEncoder().encode(
+    JSON.stringify(normalizedGeometry),
   ).byteLength;
+  const optimized = optimizeTrackGeometry(normalizedGeometry);
 
-  if (normalizedSizeBytes > MAX_TRACK_GEOMETRY_SIZE_BYTES) {
-    throw invalidTrack();
+  if (
+    optimized.pointCount > MAX_TRACK_POINTS ||
+    optimized.normalizedSizeBytes > MAX_TRACK_GEOMETRY_SIZE_BYTES
+  ) {
+    throw invalidTrack(413);
   }
 
   return {
-    geometry,
-    geometryType: geometry.type,
-    pointCount,
+    geometry: optimized.geometry,
+    geometryType: optimized.geometry.type,
+    pointCount: optimized.pointCount,
+    preSimplificationSizeBytes,
+    removedPointCount: sourcePointCount - optimized.pointCount,
     segmentCount: segments.length,
-    normalizedSizeBytes,
+    simplified: optimized.simplified,
+    sourcePointCount,
+    sourceSizeBytes: sourceBytes.byteLength,
+    normalizedSizeBytes: optimized.normalizedSizeBytes,
+    targetMet: optimized.targetMet,
+    toleranceMeters: optimized.toleranceMeters,
   };
 }

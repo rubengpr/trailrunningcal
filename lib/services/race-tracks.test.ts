@@ -148,4 +148,27 @@ describe('importRaceTrack', () => {
       expect.objectContaining({ type: 'LineString' }),
     );
   });
+
+  it('returns identical processing diagnostics in dry-run and apply modes', async () => {
+    const dryRun = await importRaceTrack({
+      eventSlug: 'pedraforca-xtrail',
+      raceName: 'Short',
+      bytes: validTrack,
+      mode: 'dry-run',
+    });
+    const applied = await importRaceTrack({
+      eventSlug: 'pedraforca-xtrail',
+      raceName: 'Short',
+      bytes: validTrack,
+      mode: 'apply',
+    });
+    expect(applied).toEqual({ ...dryRun, mode: 'apply' });
+    expect(dryRun).toMatchObject({
+      simplified: false,
+      sourcePointCount: 2,
+      removedPointCount: 0,
+      toleranceMeters: null,
+      targetMet: true,
+    });
+  });
 });

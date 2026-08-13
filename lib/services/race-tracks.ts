@@ -4,14 +4,31 @@ import {
   updateRaceTrackGeometry,
 } from '@/lib/db/race-tracks';
 import { ValidationError } from '@/lib/errors';
-import { parseTrackFile } from '@/lib/race-tracks/parse';
+import { parseTrackFile, type ParsedTrack } from '@/lib/race-tracks/parse';
 import { requireLocalTrackImportProject } from '@/lib/race-tracks/project';
 import type {
   RaceTrackImportInput,
   RaceTrackImportResult,
   RaceTrackSaveInput,
   RaceTrackSaveResult,
+  TrackProcessingSummary,
 } from '@/types/race-track.types';
+
+function getProcessingSummary(parsed: ParsedTrack): TrackProcessingSummary {
+  return {
+    geometryType: parsed.geometryType,
+    pointCount: parsed.pointCount,
+    preSimplificationSizeBytes: parsed.preSimplificationSizeBytes,
+    removedPointCount: parsed.removedPointCount,
+    segmentCount: parsed.segmentCount,
+    simplified: parsed.simplified,
+    sourcePointCount: parsed.sourcePointCount,
+    sourceSizeBytes: parsed.sourceSizeBytes,
+    normalizedSizeBytes: parsed.normalizedSizeBytes,
+    targetMet: parsed.targetMet,
+    toleranceMeters: parsed.toleranceMeters,
+  };
+}
 
 export async function importRaceTrack(
   input: RaceTrackImportInput,
@@ -40,10 +57,7 @@ export async function importRaceTrack(
     mode: input.mode,
     raceId: race.id,
     eventSlug: input.eventSlug,
-    geometryType: parsed.geometryType,
-    segmentCount: parsed.segmentCount,
-    pointCount: parsed.pointCount,
-    normalizedSizeBytes: parsed.normalizedSizeBytes,
+    ...getProcessingSummary(parsed),
   };
 }
 
@@ -62,9 +76,6 @@ export async function saveRaceTrack(
   return {
     raceId: race.id,
     eventSlug: race.eventSlug,
-    geometryType: parsed.geometryType,
-    segmentCount: parsed.segmentCount,
-    pointCount: parsed.pointCount,
-    normalizedSizeBytes: parsed.normalizedSizeBytes,
+    ...getProcessingSummary(parsed),
   };
 }

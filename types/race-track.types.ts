@@ -50,14 +50,24 @@ export interface RaceTrackImportInput {
   mode: TrackImportMode;
 }
 
-export interface RaceTrackImportResult {
+export interface TrackProcessingSummary {
+  geometryType: TrackGeometry['type'];
+  pointCount: number;
+  preSimplificationSizeBytes: number;
+  removedPointCount: number;
+  segmentCount: number;
+  simplified: boolean;
+  sourcePointCount: number;
+  sourceSizeBytes: number;
+  normalizedSizeBytes: number;
+  targetMet: boolean;
+  toleranceMeters: number | null;
+}
+
+export interface RaceTrackImportResult extends TrackProcessingSummary {
   mode: TrackImportMode;
   raceId: string;
   eventSlug: string;
-  geometryType: TrackGeometry['type'];
-  segmentCount: number;
-  pointCount: number;
-  normalizedSizeBytes: number;
 }
 
 export interface RaceTrackSaveInput {
@@ -65,11 +75,7 @@ export interface RaceTrackSaveInput {
   bytes: Uint8Array;
 }
 
-export interface RaceTrackSaveResult {
+export interface RaceTrackSaveResult extends TrackProcessingSummary {
   raceId: string;
   eventSlug: string;
-  geometryType: TrackGeometry['type'];
-  segmentCount: number;
-  pointCount: number;
-  normalizedSizeBytes: number;
 }
