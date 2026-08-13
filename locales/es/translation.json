@@ -200,7 +200,10 @@
       "title": "Recorridos",
       "errorTitle": "No se ha podido cargar el mapa",
       "errorMessage": "Puedes consultar los mapas individuales de cada distancia.",
-      "unnamedRoute": "{eventName} - {distance} km"
+      "unnamedRoute": "{eventName} - {distance} km",
+      "elevationProfile": {
+        "chartDescription": "Gráfico del perfil de elevación"
+      }
     },
     "share": {
       "label": "Compartir",

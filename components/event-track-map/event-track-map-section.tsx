@@ -1,6 +1,8 @@
 import { Map } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { DeferredEventTrackMap } from '@/components/event-track-map/deferred-event-track-map';
+import { ElevationProfileChart } from '@/components/event-track-map/elevation-profile';
+import { buildElevationProfiles } from '@/lib/race-tracks/elevation-profile';
 import { buildTrackRoutes } from '@/lib/race-tracks/routes';
 import type { TrailEventRaceWithTrack } from '@/types/event.types';
 
@@ -39,6 +41,7 @@ export async function EventTrackMapSection({
   );
 
   if (routes.length === 0) return null;
+  const elevationProfiles = buildElevationProfiles(routes);
 
   return (
     <section className="mt-10 sm:mt-12">
@@ -56,6 +59,10 @@ export async function EventTrackMapSection({
           routes={routes}
           errorTitle={t('errorTitle')}
           errorMessage={t('errorMessage')}
+        />
+        <ElevationProfileChart
+          profiles={elevationProfiles}
+          chartDescription={t('elevationProfile.chartDescription')}
         />
       </div>
     </section>

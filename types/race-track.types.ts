@@ -31,6 +31,21 @@ export interface TrackRoute {
   geometry: TrackGeometry;
 }
 
+export interface ElevationProfilePoint {
+  distanceKm: number;
+  elevationM: number;
+}
+
+export interface ElevationProfile {
+  id: string;
+  raceNames: string[];
+  color: string;
+  distanceKm: number;
+  minimumElevationM: number;
+  maximumElevationM: number;
+  points: ElevationProfilePoint[];
+}
+
 export interface TrackEndpointGroup {
   id: string;
   coordinate: [number, number];

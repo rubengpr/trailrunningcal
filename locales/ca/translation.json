@@ -200,7 +200,10 @@
       "title": "Recorreguts",
       "errorTitle": "No s'ha pogut carregar el mapa",
       "errorMessage": "Pots consultar els mapes individuals de cada distància.",
-      "unnamedRoute": "{eventName} - {distance} km"
+      "unnamedRoute": "{eventName} - {distance} km",
+      "elevationProfile": {
+        "chartDescription": "Gràfic del perfil d'elevació"
+      }
     },
     "share": {
       "label": "Compartir",
