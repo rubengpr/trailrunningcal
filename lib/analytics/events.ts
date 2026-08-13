@@ -13,6 +13,8 @@ export const ANALYTICS_EVENTS = {
   EVENT_RACE_MAP_OPENED: 'event_race_map_opened',
   EVENT_SHARE_CLICKED: 'event_share_clicked',
   EVENT_TRACK_MAP_INTERACTED: 'event_track_map_interacted',
+  EVENT_TRACK_MAP_TERRAIN_LOAD_FINISHED:
+    'event_track_map_terrain_load_finished',
   EVENT_TRACK_MAP_TERRAIN_TOGGLED: 'event_track_map_terrain_toggled',
   EVENT_TRACK_MAP_VIEWED: 'event_track_map_viewed',
   FILTERS_APPLIED: 'filters_applied',
@@ -103,6 +105,12 @@ export interface AnalyticsEventProperties {
     interaction: 'pan' | 'rotate' | 'zoom';
     route_count: number;
     race_count: number;
+  };
+  [ANALYTICS_EVENTS.EVENT_TRACK_MAP_TERRAIN_LOAD_FINISHED]: {
+    event_id: string;
+    event_slug: string;
+    outcome: 'ready' | 'cancelled' | 'timeout' | 'error';
+    duration_ms: number;
   };
   [ANALYTICS_EVENTS.EVENT_TRACK_MAP_TERRAIN_TOGGLED]: {
     event_id: string;

@@ -28,6 +28,8 @@ const mocks = vi.hoisted(() => ({
   fitBounds: vi.fn(),
   setLayoutProperty: vi.fn(),
   setPaintProperty: vi.fn(),
+  setSourceTiles: vi.fn(),
+  setSourceUrl: vi.fn(),
   setTerrain: vi.fn(),
   remove: vi.fn(),
   resize: vi.fn(),
@@ -63,8 +65,15 @@ vi.mock('maplibre-gl', () => {
   class MapMock {
     private container: HTMLElement;
     private bearing = 0;
+    private listeners = new Map<
+      string,
+      Set<(event?: MapMockEvent) => void>
+    >();
     private layers = new Set<string>(['osm']);
-    private sources = new Set<string>();
+    private sources = new Map<
+      string,
+      { setTiles: typeof mocks.setSourceTiles; setUrl: typeof mocks.setSourceUrl }
+    >();
     private terrain: unknown = null;
 
     constructor(options: { container: HTMLElement }) {
@@ -89,7 +98,10 @@ vi.mock('maplibre-gl', () => {
 
     addSource(id: string, source: unknown) {
       mocks.addSource(id, source);
-      this.sources.add(id);
+      this.sources.set(id, {
+        setTiles: mocks.setSourceTiles,
+        setUrl: mocks.setSourceUrl,
+      });
       return this;
     }
 
@@ -99,7 +111,7 @@ vi.mock('maplibre-gl', () => {
     }
 
     getSource(id: string) {
-      return this.sources.has(id) ? {} : undefined;
+      return this.sources.get(id);
     }
 
     addLayer(layer: { id: string }, beforeId?: string) {
@@ -148,7 +160,28 @@ vi.mock('maplibre-gl', () => {
     resize = mocks.resize;
 
     on(event: string, handler: (event?: MapMockEvent) => void) {
-      mocks.handlers.set(event, handler);
+      const listeners = this.listeners.get(event) ?? new Set();
+      listeners.add(handler);
+      this.listeners.set(event, listeners);
+      mocks.handlers.set(event, (payload) => {
+        for (const listener of [...(this.listeners.get(event) ?? [])]) {
+          listener(payload);
+        }
+      });
+      return this;
+    }
+
+    off(event: string, handler: (event?: MapMockEvent) => void) {
+      this.listeners.get(event)?.delete(handler);
+      return this;
+    }
+
+    once(event: string, handler: (event?: MapMockEvent) => void) {
+      const onceHandler = (payload?: MapMockEvent) => {
+        this.off(event, onceHandler);
+        handler(payload);
+      };
+      this.on(event, onceHandler);
       return this;
     }
   }
@@ -248,6 +281,22 @@ const props = {
     },
   ],
 };
+
+function finishTerrainLoading(): void {
+  act(() => {
+    for (const sourceId of [
+      'event-terrain',
+      'event-terrain-hillshade',
+      'event-orthophoto',
+    ]) {
+      mocks.handlers.get('sourcedata')?.({
+        sourceId,
+        isSourceLoaded: true,
+      });
+    }
+    mocks.handlers.get('idle')?.();
+  });
+}
 
 beforeEach(() => {
   mocks.handlers.clear();
@@ -426,6 +475,7 @@ describe('EventTrackMap', () => {
     act(() => mocks.handlers.get('load')?.());
     const terrainButton = screen.getByTestId('event-track-map-terrain-toggle');
     fireEvent.click(terrainButton);
+    finishTerrainLoading();
     fireEvent.click(terrainButton);
     fireEvent.change(screen.getByTestId('event-track-map-pitch'), {
       target: { value: '70' },
@@ -516,19 +566,70 @@ describe('EventTrackMap', () => {
         source: 'event-orthophoto',
         type: 'raster',
       }),
-      'event-track-casing-0',
+      'osm',
     );
     expect(mocks.addLayer).toHaveBeenLastCalledWith(
       expect.objectContaining({
         id: 'event-terrain-hillshade',
         type: 'hillshade',
       }),
-      'event-track-casing-0',
+      'osm',
     );
     expect(mocks.setTerrain).toHaveBeenLastCalledWith({
       source: 'event-terrain',
       exaggeration: 1,
     });
+    expect(mocks.setLayoutProperty).not.toHaveBeenCalledWith(
+      'osm',
+      'visibility',
+      'none',
+    );
+    expect(mocks.fitBounds).not.toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ bearing: -20, duration: 700, pitch: 60 }),
+    );
+    expect(button.disabled).toBe(true);
+    expect(screen.getByTestId('event-track-map-terrain-status').textContent).toContain(
+      'terrainLoading',
+    );
+    expect(mocks.track).not.toHaveBeenCalledWith(
+      'event_track_map_terrain_toggled',
+      expect.objectContaining({ mode: '3d' }),
+    );
+
+    act(() => {
+      mocks.handlers.get('sourcedata')?.({
+        sourceId: 'event-terrain',
+        isSourceLoaded: true,
+      });
+      mocks.handlers.get('sourcedata')?.({
+        sourceId: 'event-terrain-hillshade',
+        isSourceLoaded: true,
+      });
+      mocks.handlers.get('idle')?.();
+    });
+    expect(button.disabled).toBe(true);
+    expect(mocks.setLayoutProperty).not.toHaveBeenCalledWith(
+      'osm',
+      'visibility',
+      'none',
+    );
+
+    act(() =>
+      mocks.handlers.get('sourcedata')?.({
+        sourceId: 'event-orthophoto',
+        isSourceLoaded: true,
+      }),
+    );
+    expect(button.disabled).toBe(true);
+    expect(mocks.setLayoutProperty).not.toHaveBeenCalledWith(
+      'osm',
+      'visibility',
+      'none',
+    );
+
+    act(() => mocks.handlers.get('idle')?.());
+
     expect(mocks.setLayoutProperty).toHaveBeenCalledWith(
       'osm',
       'visibility',
@@ -577,6 +678,105 @@ describe('EventTrackMap', () => {
     );
   });
 
+  it('warns about a slow load, cancels cleanly, and ignores stale readiness', () => {
+    vi.useFakeTimers();
+    try {
+      render(<EventTrackMap {...props} />);
+      act(() => mocks.handlers.get('load')?.());
+      fireEvent.click(screen.getByTestId('event-track-map-terrain-toggle'));
+
+      act(() => {
+        for (const sourceId of [
+          'event-terrain',
+          'event-terrain-hillshade',
+          'event-orthophoto',
+        ]) {
+          mocks.handlers.get('sourcedata')?.({
+            sourceId,
+            isSourceLoaded: true,
+          });
+        }
+        vi.advanceTimersByTime(8_000);
+      });
+
+      const status = screen.getByTestId('event-track-map-terrain-status');
+      expect(status.textContent).toContain('terrainLoadingSlow');
+      expect(
+        (screen.getByTestId('event-track-map-rotation-button') as HTMLButtonElement)
+          .disabled,
+      ).toBe(true);
+      fireEvent.click(screen.getByRole('button', { name: 'terrainCancel' }));
+
+      expect(screen.queryByTestId('event-track-map-terrain-status')).toBeNull();
+      expect(
+        screen
+          .getByTestId('event-track-map')
+          .parentElement?.getAttribute('data-terrain-status'),
+      ).toBe('2d');
+      expect(mocks.track).toHaveBeenCalledWith(
+        'event_track_map_terrain_load_finished',
+        expect.objectContaining({ outcome: 'cancelled' }),
+      );
+
+      act(() => mocks.handlers.get('idle')?.());
+      expect(mocks.track).not.toHaveBeenCalledWith(
+        'event_track_map_terrain_toggled',
+        expect.objectContaining({ mode: '3d' }),
+      );
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('times out after 20 seconds and retries without recreating sources', () => {
+    vi.useFakeTimers();
+    try {
+      render(<EventTrackMap {...props} />);
+      act(() => mocks.handlers.get('load')?.());
+      fireEvent.click(screen.getByTestId('event-track-map-terrain-toggle'));
+
+      act(() => vi.advanceTimersByTime(20_000));
+
+      expect(
+        screen.getByTestId('event-track-map-terrain-status').textContent,
+      ).toContain('terrainLoadFailed');
+      expect(mocks.track).toHaveBeenCalledWith(
+        'event_track_map_terrain_load_finished',
+        expect.objectContaining({ outcome: 'timeout' }),
+      );
+      expect(mocks.addSource).toHaveBeenCalledTimes(4);
+
+      fireEvent.click(
+        screen
+          .getByTestId('event-track-map-terrain-status')
+          .querySelector('button')!,
+      );
+      expect(mocks.addSource).toHaveBeenCalledTimes(4);
+      expect(mocks.setSourceUrl).toHaveBeenCalledTimes(2);
+      expect(mocks.setSourceUrl).toHaveBeenCalledWith(
+        'https://tiles.mapterhorn.com/tilejson.json',
+      );
+      expect(mocks.setSourceTiles).toHaveBeenCalledOnce();
+      expect(
+        screen.getByTestId('event-track-map-terrain-status').textContent,
+      ).toContain('terrainLoading');
+
+      finishTerrainLoading();
+
+      expect(screen.queryByTestId('event-track-map-terrain-status')).toBeNull();
+      expect(mocks.track).toHaveBeenCalledWith(
+        'event_track_map_terrain_load_finished',
+        expect.objectContaining({ outcome: 'ready' }),
+      );
+      expect(mocks.track).toHaveBeenCalledWith(
+        'event_track_map_terrain_toggled',
+        expect.objectContaining({ mode: '3d' }),
+      );
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('hides terrain settings in production and toggles directly back to 2D', () => {
     vi.stubEnv('NODE_ENV', 'production');
     render(<EventTrackMap {...props} />);
@@ -584,6 +784,7 @@ describe('EventTrackMap', () => {
     const button = screen.getByTestId('event-track-map-terrain-toggle');
 
     fireEvent.click(button);
+    finishTerrainLoading();
 
     expect(button.title).toBe('view2D');
     expect(screen.queryByTestId('event-track-map-terrain-settings')).toBeNull();
@@ -602,6 +803,7 @@ describe('EventTrackMap', () => {
       act(() => mocks.handlers.get('load')?.());
       const terrainButton = screen.getByTestId('event-track-map-terrain-toggle');
       fireEvent.click(terrainButton);
+      finishTerrainLoading();
       fireEvent.click(terrainButton);
 
       const pitch = screen.getByTestId(
@@ -669,10 +871,55 @@ describe('EventTrackMap', () => {
     );
 
     await waitFor(() => expect(button.disabled).toBe(true));
-    expect(button.title).toBe('terrainUnavailable');
+    expect(button.title).toBe('terrainLoadFailed');
+    expect(screen.getByTestId('event-track-map-terrain-status').textContent).toContain(
+      'terrainLoadFailed',
+    );
     expect(mocks.setTerrain).toHaveBeenLastCalledWith(null);
     expect(mocks.remove).not.toHaveBeenCalled();
     expect(screen.getByTestId('event-track-map')).toBeDefined();
+    expect(mocks.track).toHaveBeenCalledWith(
+      'event_track_map_terrain_load_finished',
+      expect.objectContaining({ outcome: 'error' }),
+    );
+
+    fireEvent.click(
+      screen
+        .getByTestId('event-track-map-terrain-status')
+        .querySelector('button')!,
+    );
+    expect(mocks.addSource).toHaveBeenCalledTimes(4);
+    expect(mocks.setSourceUrl).toHaveBeenCalledTimes(2);
+    expect(mocks.setSourceTiles).toHaveBeenCalledOnce();
+    finishTerrainLoading();
+    expect(button.getAttribute('aria-pressed')).toBe('true');
+  });
+
+  it('does not activate terrain from a pending idle event after unmount', () => {
+    const view = render(<EventTrackMap {...props} />);
+    act(() => mocks.handlers.get('load')?.());
+    fireEvent.click(screen.getByTestId('event-track-map-terrain-toggle'));
+    act(() => {
+      for (const sourceId of [
+        'event-terrain',
+        'event-terrain-hillshade',
+        'event-orthophoto',
+      ]) {
+        mocks.handlers.get('sourcedata')?.({
+          sourceId,
+          isSourceLoaded: true,
+        });
+      }
+    });
+    mocks.track.mockClear();
+
+    view.unmount();
+    act(() => mocks.handlers.get('idle')?.());
+
+    expect(mocks.track).not.toHaveBeenCalledWith(
+      'event_track_map_terrain_toggled',
+      expect.objectContaining({ mode: '3d' }),
+    );
   });
 
   it('keeps terrain active when a tile fails after DEM data has loaded', () => {
@@ -682,13 +929,7 @@ describe('EventTrackMap', () => {
       'event-track-map-terrain-toggle',
     ) as HTMLButtonElement;
     fireEvent.click(button);
-
-    act(() =>
-      mocks.handlers.get('sourcedata')?.({
-        sourceId: 'event-terrain',
-        isSourceLoaded: true,
-      }),
-    );
+    finishTerrainLoading();
     mocks.setTerrain.mockClear();
     act(() =>
       mocks.handlers.get('error')?.({
@@ -706,6 +947,7 @@ describe('EventTrackMap', () => {
     render(<EventTrackMap {...props} />);
     act(() => mocks.handlers.get('load')?.());
     fireEvent.click(screen.getByTestId('event-track-map-terrain-toggle'));
+    finishTerrainLoading();
     expect(screen.getByTestId('event-track-map-rotation-hint')).toBeDefined();
     expect(screen.getByTestId('event-track-map-gesture-icon')).toBeDefined();
     mocks.track.mockClear();
@@ -744,12 +986,14 @@ describe('EventTrackMap', () => {
       const button = screen.getByTestId('event-track-map-terrain-toggle');
 
       fireEvent.click(button);
+      finishTerrainLoading();
       expect(screen.getByTestId('event-track-map-rotation-hint')).toBeDefined();
 
       act(() => vi.advanceTimersByTime(6000));
       expect(screen.queryByTestId('event-track-map-rotation-hint')).toBeNull();
 
       fireEvent.click(button);
+      finishTerrainLoading();
       fireEvent.click(button);
       expect(screen.queryByTestId('event-track-map-rotation-hint')).toBeNull();
     } finally {

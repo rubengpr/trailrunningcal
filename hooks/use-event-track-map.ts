@@ -33,6 +33,12 @@ const MIN_TERRAIN_EXAGGERATION = 0.5;
 const MIN_TERRAIN_PITCH = 30;
 const MAX_HILLSHADE_INTENSITY = 1;
 const MIN_HILLSHADE_INTENSITY = 0;
+const TERRAIN_SLOW_LOADING_DELAY_MS = 8_000;
+const TERRAIN_LOADING_TIMEOUT_MS = 20_000;
+
+export type TerrainStatus = '2d' | 'loading' | 'slow' | '3d' | 'failed';
+
+type TerrainLoadOutcome = 'ready' | 'cancelled' | 'timeout' | 'error';
 
 interface TerrainSettings {
   exaggeration: number;
@@ -55,6 +61,12 @@ type TerrainSourceDataEvent = maplibregl.MapSourceDataEvent & {
   isSourceLoaded?: boolean;
   sourceId?: string;
 };
+
+const TERRAIN_LOADING_SOURCE_IDS = new Set([
+  TERRAIN_SOURCE_ID,
+  HILLSHADE_SOURCE_ID,
+  ORTHOPHOTO_SOURCE_ID,
+]);
 
 interface EndpointLabels {
   finish: string;
@@ -264,11 +276,12 @@ export function useEventTrackMap({
   const updateTerrainSettingsRef = useRef<
     (settings: Partial<TerrainSettings>) => void
   >(() => undefined);
-  const toggleTerrainRef = useRef<() => void>(() => undefined);
+  const cancelTerrainRef = useRef<() => void>(() => undefined);
+  const disableTerrainRef = useRef<() => void>(() => undefined);
+  const requestTerrainRef = useRef<() => void>(() => undefined);
   const [hasError, setHasError] = useState(false);
   const [isMapReady, setIsMapReady] = useState(false);
-  const [is3D, setIs3D] = useState(false);
-  const [isTerrainAvailable, setIsTerrainAvailable] = useState(true);
+  const [terrainStatus, setTerrainStatus] = useState<TerrainStatus>('2d');
   const [hillshadeIntensity, setHillshadeIntensityState] = useState(
     DEFAULT_HILLSHADE_INTENSITY,
   );
@@ -285,14 +298,19 @@ export function useEventTrackMap({
     let map: maplibregl.Map | null = null;
     let errorTimeoutId: number | null = null;
     let rotationHintTimeoutId: number | null = null;
+    let terrainSlowTimeoutId: number | null = null;
+    let terrainLoadingTimeoutId: number | null = null;
     const endpointMarkers: EndpointMarkerEntry[] = [];
+    const loadedTerrainSources = new Set<string>();
     let disposed = false;
+    let activeTerrainAttemptId = 0;
     let interactionTracked = false;
+    let pendingTerrainIdleHandler: (() => void) | null = null;
     let rotationTargetBearing: number | null = null;
     let routeBounds: maplibregl.LngLatBounds | null = null;
     let terrainInitialized = false;
-    let terrainHasLoadedData = false;
-    let terrainFailed = false;
+    let currentTerrainStatus: TerrainStatus = '2d';
+    let terrainLoadStartedAt: number | null = null;
     let rotationHintShown = false;
     let settingsAnimationFrameId: number | null = null;
     let currentHillshadeIntensity = DEFAULT_HILLSHADE_INTENSITY;
@@ -323,7 +341,43 @@ export function useEventTrackMap({
       setShowRotationHint(false);
     };
 
-    const restore2D = () => {
+    const updateTerrainStatus = (status: TerrainStatus) => {
+      currentTerrainStatus = status;
+      setTerrainStatus(status);
+    };
+
+    const clearTerrainLoadTimers = () => {
+      if (terrainSlowTimeoutId !== null) {
+        window.clearTimeout(terrainSlowTimeoutId);
+        terrainSlowTimeoutId = null;
+      }
+      if (terrainLoadingTimeoutId !== null) {
+        window.clearTimeout(terrainLoadingTimeoutId);
+        terrainLoadingTimeoutId = null;
+      }
+    };
+
+    const clearPendingTerrainIdle = () => {
+      if (!map || !pendingTerrainIdleHandler) return;
+      map.off('idle', pendingTerrainIdleHandler);
+      pendingTerrainIdleHandler = null;
+    };
+
+    const trackTerrainLoadFinished = (outcome: TerrainLoadOutcome) => {
+      if (terrainLoadStartedAt === null) return;
+      track(ANALYTICS_EVENTS.EVENT_TRACK_MAP_TERRAIN_LOAD_FINISHED, {
+        event_id: eventId,
+        event_slug: eventSlug,
+        outcome,
+        duration_ms: Math.max(
+          0,
+          Math.round(performance.now() - terrainLoadStartedAt),
+        ),
+      });
+      terrainLoadStartedAt = null;
+    };
+
+    const restore2D = (duration = 700) => {
       if (!map) return;
 
       try {
@@ -337,19 +391,31 @@ export function useEventTrackMap({
         if (map.getLayer('osm')) {
           map.setLayoutProperty('osm', 'visibility', 'visible');
         }
-        if (routeBounds) fitRouteBounds(map, routeBounds, '2d', 700);
+        if (routeBounds) fitRouteBounds(map, routeBounds, '2d', duration);
       } catch {
         // The original 2D map remains usable even if terrain cleanup is partial.
       }
       dismissRotationHint();
-      setIs3D(false);
     };
 
-    const handleTerrainError = () => {
-      if (disposed || terrainFailed) return;
-      terrainFailed = true;
-      restore2D();
-      setIsTerrainAvailable(false);
+    const stopTerrainAttempt = (
+      outcome: Exclude<TerrainLoadOutcome, 'ready'>,
+      nextStatus: '2d' | 'failed',
+    ) => {
+      if (
+        disposed ||
+        (currentTerrainStatus !== 'loading' &&
+          currentTerrainStatus !== 'slow')
+      ) {
+        return;
+      }
+      activeTerrainAttemptId += 1;
+      clearTerrainLoadTimers();
+      clearPendingTerrainIdle();
+      loadedTerrainSources.clear();
+      restore2D(0);
+      trackTerrainLoadFinished(outcome);
+      updateTerrainStatus(nextStatus);
     };
 
     try {
@@ -459,20 +525,20 @@ export function useEventTrackMap({
       map.on('error', (event: TerrainMapError) => {
         if (
           terrainInitialized &&
-          !terrainHasLoadedData &&
+          (currentTerrainStatus === 'loading' ||
+            currentTerrainStatus === 'slow') &&
           isTerrainError(event)
         ) {
-          handleTerrainError();
+          if (event.sourceId) loadedTerrainSources.delete(event.sourceId);
+          stopTerrainAttempt('error', 'failed');
         }
       });
       map.on('sourcedata', (event: TerrainSourceDataEvent) => {
-        if (
-          event.isSourceLoaded &&
-          (event.sourceId === TERRAIN_SOURCE_ID ||
-            event.sourceId === HILLSHADE_SOURCE_ID)
-        ) {
-          terrainHasLoadedData = true;
+        if (!event.sourceId || !TERRAIN_LOADING_SOURCE_IDS.has(event.sourceId)) {
+          return;
         }
+        if (event.isSourceLoaded) loadedTerrainSources.add(event.sourceId);
+        else loadedTerrainSources.delete(event.sourceId);
       });
 
       map.on('load', () => {
@@ -612,22 +678,15 @@ export function useEventTrackMap({
           for (const route of routes) extendBounds(routeBounds, route.geometry);
           fitRouteBounds(map, routeBounds, '2d', 0);
 
-          toggleTerrainRef.current = () => {
-            if (!map || !routeBounds || terrainFailed) return;
-
-            if (map.getTerrain()) {
-              restore2D();
-              track(ANALYTICS_EVENTS.EVENT_TRACK_MAP_TERRAIN_TOGGLED, {
-                event_id: eventId,
-                event_slug: eventSlug,
-                mode: '2d',
-              });
-              return;
-            }
-
+          const initializeTerrain = (): boolean => {
+            if (!map) return false;
             try {
-              if (!terrainInitialized) {
-                terrainInitialized = true;
+              const terrainSource = map.getSource(TERRAIN_SOURCE_ID);
+              if (terrainSource) {
+                (terrainSource as maplibregl.RasterDEMTileSource).setUrl(
+                  TERRAIN_TILEJSON_URL,
+                );
+              } else {
                 map.addSource(TERRAIN_SOURCE_ID, {
                   type: 'raster-dem',
                   url: TERRAIN_TILEJSON_URL,
@@ -635,6 +694,13 @@ export function useEventTrackMap({
                   encoding: 'terrarium',
                   maxzoom: 17,
                 });
+              }
+              const hillshadeSource = map.getSource(HILLSHADE_SOURCE_ID);
+              if (hillshadeSource) {
+                (hillshadeSource as maplibregl.RasterDEMTileSource).setUrl(
+                  TERRAIN_TILEJSON_URL,
+                );
+              } else {
                 map.addSource(HILLSHADE_SOURCE_ID, {
                   type: 'raster-dem',
                   url: TERRAIN_TILEJSON_URL,
@@ -642,6 +708,13 @@ export function useEventTrackMap({
                   encoding: 'terrarium',
                   maxzoom: 17,
                 });
+              }
+              const orthophotoSource = map.getSource(ORTHOPHOTO_SOURCE_ID);
+              if (orthophotoSource) {
+                (orthophotoSource as maplibregl.RasterTileSource).setTiles([
+                  ORTHOPHOTO_TILE_URL,
+                ]);
+              } else {
                 map.addSource(ORTHOPHOTO_SOURCE_ID, {
                   type: 'raster',
                   tiles: [ORTHOPHOTO_TILE_URL],
@@ -649,6 +722,8 @@ export function useEventTrackMap({
                   attribution: '© ICGC',
                   maxzoom: 20,
                 });
+              }
+              if (!map.getLayer(ORTHOPHOTO_LAYER_ID)) {
                 map.addLayer(
                   {
                     id: ORTHOPHOTO_LAYER_ID,
@@ -656,8 +731,16 @@ export function useEventTrackMap({
                     source: ORTHOPHOTO_SOURCE_ID,
                     paint: { 'raster-opacity': 1 },
                   },
-                  'event-track-casing-0',
+                  'osm',
                 );
+              } else {
+                map.setLayoutProperty(
+                  ORTHOPHOTO_LAYER_ID,
+                  'visibility',
+                  'visible',
+                );
+              }
+              if (!map.getLayer(HILLSHADE_LAYER_ID)) {
                 map.addLayer(
                   {
                     id: HILLSHADE_LAYER_ID,
@@ -670,24 +753,45 @@ export function useEventTrackMap({
                       'hillshade-accent-color': 'rgba(91, 77, 52, 0.15)',
                     },
                   },
-                  'event-track-casing-0',
+                  'osm',
                 );
               } else {
                 map.setLayoutProperty(
-                  ORTHOPHOTO_LAYER_ID,
+                  HILLSHADE_LAYER_ID,
                   'visibility',
                   'visible',
                 );
-                map.setLayoutProperty(HILLSHADE_LAYER_ID, 'visibility', 'visible');
               }
 
-              map.setLayoutProperty('osm', 'visibility', 'none');
+              terrainInitialized = true;
               map.setTerrain({
                 source: TERRAIN_SOURCE_ID,
                 exaggeration: currentTerrainExaggeration,
               });
+              return true;
+            } catch {
+              stopTerrainAttempt('error', 'failed');
+              return false;
+            }
+          };
+
+          const commitTerrain = (attemptId: number) => {
+            pendingTerrainIdleHandler = null;
+            if (
+              !map ||
+              !routeBounds ||
+              attemptId !== activeTerrainAttemptId ||
+              (currentTerrainStatus !== 'loading' &&
+                currentTerrainStatus !== 'slow')
+            ) {
+              return;
+            }
+
+            try {
+              clearTerrainLoadTimers();
+              map.setLayoutProperty('osm', 'visibility', 'none');
               fitRouteBounds(map, routeBounds, '3d', 700, currentTerrainPitch);
-              setIs3D(true);
+              updateTerrainStatus('3d');
               if (!rotationHintShown) {
                 rotationHintShown = true;
                 setShowRotationHint(true);
@@ -695,14 +799,85 @@ export function useEventTrackMap({
                   if (!disposed) dismissRotationHint();
                 }, 6000);
               }
+              trackTerrainLoadFinished('ready');
               track(ANALYTICS_EVENTS.EVENT_TRACK_MAP_TERRAIN_TOGGLED, {
                 event_id: eventId,
                 event_slug: eventSlug,
                 mode: '3d',
               });
             } catch {
-              handleTerrainError();
+              stopTerrainAttempt('error', 'failed');
             }
+          };
+
+          const scheduleTerrainCommitIfReady = () => {
+            if (
+              !map ||
+              pendingTerrainIdleHandler ||
+              (currentTerrainStatus !== 'loading' &&
+                currentTerrainStatus !== 'slow') ||
+              ![...TERRAIN_LOADING_SOURCE_IDS].every((sourceId) =>
+                loadedTerrainSources.has(sourceId),
+              )
+            ) {
+              return;
+            }
+            const attemptId = activeTerrainAttemptId;
+            pendingTerrainIdleHandler = () => commitTerrain(attemptId);
+            map.once('idle', pendingTerrainIdleHandler);
+          };
+
+          map.on('sourcedata', scheduleTerrainCommitIfReady);
+
+          requestTerrainRef.current = () => {
+            if (
+              !map ||
+              !routeBounds ||
+              currentTerrainStatus === 'loading' ||
+              currentTerrainStatus === 'slow' ||
+              currentTerrainStatus === '3d'
+            ) {
+              return;
+            }
+
+            const attemptId = ++activeTerrainAttemptId;
+            clearPendingTerrainIdle();
+            clearTerrainLoadTimers();
+            loadedTerrainSources.clear();
+            terrainLoadStartedAt = performance.now();
+            updateTerrainStatus('loading');
+            if (!initializeTerrain()) return;
+            scheduleTerrainCommitIfReady();
+
+            terrainSlowTimeoutId = window.setTimeout(() => {
+              if (
+                !disposed &&
+                attemptId === activeTerrainAttemptId &&
+                currentTerrainStatus === 'loading'
+              ) {
+                updateTerrainStatus('slow');
+              }
+            }, TERRAIN_SLOW_LOADING_DELAY_MS);
+            terrainLoadingTimeoutId = window.setTimeout(() => {
+              if (attemptId === activeTerrainAttemptId) {
+                stopTerrainAttempt('timeout', 'failed');
+              }
+            }, TERRAIN_LOADING_TIMEOUT_MS);
+          };
+
+          cancelTerrainRef.current = () => {
+            stopTerrainAttempt('cancelled', '2d');
+          };
+
+          disableTerrainRef.current = () => {
+            if (currentTerrainStatus !== '3d') return;
+            restore2D();
+            updateTerrainStatus('2d');
+            track(ANALYTICS_EVENTS.EVENT_TRACK_MAP_TERRAIN_TOGGLED, {
+              event_id: eventId,
+              event_slug: eventSlug,
+              mode: '2d',
+            });
           };
           setIsMapReady(true);
 
@@ -722,10 +897,15 @@ export function useEventTrackMap({
 
     return () => {
       disposed = true;
+      activeTerrainAttemptId += 1;
+      clearTerrainLoadTimers();
+      clearPendingTerrainIdle();
+      cancelTerrainRef.current = () => undefined;
+      disableTerrainRef.current = () => undefined;
+      requestTerrainRef.current = () => undefined;
       rotateMapRef.current = () => undefined;
       resizeMapRef.current = () => undefined;
       updateTerrainSettingsRef.current = () => undefined;
-      toggleTerrainRef.current = () => undefined;
       if (settingsAnimationFrameId !== null) {
         window.cancelAnimationFrame(settingsAnimationFrameId);
       }
@@ -759,12 +939,12 @@ export function useEventTrackMap({
   const resizeMap = useCallback(() => resizeMapRef.current(), []);
 
   return {
+    cancelTerrain: () => cancelTerrainRef.current(),
     containerRef,
+    disableTerrain: () => disableTerrainRef.current(),
     hasError,
     hillshadeIntensity,
-    is3D,
     isMapReady,
-    isTerrainAvailable,
     resetTerrainSettings: () => {
       setHillshadeIntensityState(DEFAULT_HILLSHADE_INTENSITY);
       setTerrainExaggerationState(DEFAULT_TERRAIN_EXAGGERATION);
@@ -776,6 +956,8 @@ export function useEventTrackMap({
       });
     },
     resizeMap,
+    requestTerrain: () => requestTerrainRef.current(),
+    retryTerrain: () => requestTerrainRef.current(),
     rotateMap: (direction: -1 | 1) => rotateMapRef.current(direction),
     setHillshadeIntensity: (value: number) => {
       const nextValue = clamp(
@@ -803,7 +985,7 @@ export function useEventTrackMap({
     showRotationHint,
     terrainExaggeration,
     terrainPitch,
+    terrainStatus,
     terrainSupported: true,
-    toggleTerrain: () => toggleTerrainRef.current(),
   };
 }

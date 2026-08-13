@@ -29,7 +29,12 @@
     "terrainReset": "Restablecer",
     "view3D": "Ver en 3D",
     "view2D": "Volver a 2D",
-    "terrainUnavailable": "Vista 3D no disponible"
+    "terrainUnavailable": "Vista 3D no disponible",
+    "terrainLoading": "Cargando relieve 3D...",
+    "terrainLoadingSlow": "La vista 3D está tardando más de lo habitual",
+    "terrainCancel": "Cancelar",
+    "terrainLoadFailed": "No se ha podido cargar la vista 3D",
+    "terrainRetry": "Reintentar"
   },
   "filters": {
     "clearFilters": "Limpiar filtros",

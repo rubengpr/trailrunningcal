@@ -1,12 +1,26 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Compass, Maximize2, Minimize2, Pointer, Redo, Undo } from 'lucide-react';
+import {
+  Compass,
+  LoaderCircle,
+  Maximize2,
+  Minimize2,
+  Pointer,
+  Redo,
+  Undo,
+} from 'lucide-react';
 import type { RefObject } from 'react';
 import { createPortal } from 'react-dom';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { ErrorMessage } from '@/components/ui/error-message';
-import { useEventTrackMap } from '@/hooks/use-event-track-map';
+import {
+  ErrorMessage,
+  TerrainLoadError,
+} from '@/components/ui/error-message';
+import {
+  useEventTrackMap,
+  type TerrainStatus,
+} from '@/hooks/use-event-track-map';
 import { useMapFullscreen } from '@/hooks/use-map-fullscreen';
 import { useTerrainSettingsDisclosure } from '@/hooks/use-terrain-settings-disclosure';
 import type { TrackRoute } from '@/types/race-track.types';
@@ -43,7 +57,7 @@ function TrackLegend({ routes }: Pick<EventTrackMapProps, 'routes'>) {
 
 interface TerrainToggleProps {
   active: boolean;
-  available: boolean;
+  disabled: boolean;
   expanded: boolean;
   mapReady: boolean;
   label: string;
@@ -54,7 +68,7 @@ interface TerrainToggleProps {
 
 function TerrainToggle({
   active,
-  available,
+  disabled,
   expanded,
   mapReady,
   label,
@@ -77,11 +91,64 @@ function TerrainToggle({
       aria-controls={active ? 'event-track-map-terrain-settings' : undefined}
       aria-pressed={active}
       title={label}
-      disabled={!mapReady || !available}
+      disabled={!mapReady || disabled}
       onClick={active ? onOpenSettings : onToggle}
     >
       3D
     </button>
+  );
+}
+
+interface TerrainStatusNoticeProps {
+  cancelLabel: string;
+  failedLabel: string;
+  loadingLabel: string;
+  onCancel: () => void;
+  onRetry: () => void;
+  retryLabel: string;
+  slowLabel: string;
+  status: Extract<TerrainStatus, 'loading' | 'slow' | 'failed'>;
+}
+
+function TerrainStatusNotice({
+  cancelLabel,
+  failedLabel,
+  loadingLabel,
+  onCancel,
+  onRetry,
+  retryLabel,
+  slowLabel,
+  status,
+}: TerrainStatusNoticeProps) {
+  if (status === 'failed') {
+    return (
+      <TerrainLoadError
+        message={failedLabel}
+        onRetry={onRetry}
+        retryLabel={retryLabel}
+      />
+    );
+  }
+
+  const isSlow = status === 'slow';
+
+  return (
+    <div
+      className="absolute left-1/2 top-3 z-20 flex max-w-[calc(100%-6rem)] -translate-x-1/2 items-center gap-2 rounded-full border border-white/70 bg-white/90 px-3 py-2 text-xs font-medium text-stone-800 shadow-sm"
+      data-testid="event-track-map-terrain-status"
+    >
+      <LoaderCircle className="h-4 w-4 shrink-0 animate-spin" />
+      <span>{isSlow ? slowLabel : loadingLabel}</span>
+      {isSlow ? (
+        <button
+          type="button"
+          className="shrink-0 rounded-full bg-stone-900 px-2.5 py-1 text-white transition-colors hover:bg-stone-700"
+          onClick={onCancel}
+        >
+          {cancelLabel}
+        </button>
+      ) : null}
+    </div>
   );
 }
 
@@ -340,14 +407,16 @@ export function EventTrackMap({
   const tMap = useTranslations('map');
   const terrainSettingsEnabled = process.env.NODE_ENV !== 'production';
   const {
+    cancelTerrain,
     containerRef,
+    disableTerrain,
     hasError,
     hillshadeIntensity,
-    is3D,
     isMapReady,
-    isTerrainAvailable,
+    requestTerrain,
     resetTerrainSettings,
     resizeMap,
+    retryTerrain,
     rotateMap,
     setHillshadeIntensity,
     setTerrainExaggeration,
@@ -355,8 +424,8 @@ export function EventTrackMap({
     showRotationHint,
     terrainExaggeration,
     terrainPitch,
+    terrainStatus,
     terrainSupported,
-    toggleTerrain,
   } = useEventTrackMap({
     eventId,
     eventSlug,
@@ -366,6 +435,19 @@ export function EventTrackMap({
     zoomInLabel: tMap('zoomIn'),
     zoomOutLabel: tMap('zoomOut'),
   });
+  const is3D = terrainStatus === '3d';
+  const isTerrainLoading =
+    terrainStatus === 'loading' || terrainStatus === 'slow';
+  const showTerrainStatus = isTerrainLoading || terrainStatus === 'failed';
+  const terrainToggleLabel = isTerrainLoading
+    ? tMap('terrainLoading')
+    : terrainStatus === 'failed'
+      ? tMap('terrainLoadFailed')
+      : is3D
+        ? terrainSettingsEnabled
+          ? tMap('terrainSettings')
+          : tMap('view2D')
+        : tMap('view3D');
   const {
     anchorRef: fullscreenAnchorRef,
     isFullscreen,
@@ -408,6 +490,7 @@ export function EventTrackMap({
       }`}
       data-map-fullscreen={isFullscreen ? 'true' : undefined}
       data-rotation-hint-visible={showRotationHint ? 'true' : undefined}
+      data-terrain-status={terrainStatus}
       data-terrain-controls={terrainSupported ? 'true' : 'false'}
       data-event-track-map-root
     >
@@ -420,31 +503,23 @@ export function EventTrackMap({
         <>
           <RotationControls
             compassLabel={tMap('chooseRotationDirection')}
-            disabled={!isMapReady}
+            disabled={!isMapReady || isTerrainLoading}
             leftLabel={tMap('rotateLeft')}
             onRotate={rotateMap}
             rightLabel={tMap('rotateRight')}
           />
           <TerrainToggle
             active={is3D}
-            available={isTerrainAvailable}
+            disabled={isTerrainLoading || terrainStatus === 'failed'}
             expanded={terrainSettings.isOpen}
             mapReady={isMapReady}
-            label={
-              !isTerrainAvailable
-                ? tMap('terrainUnavailable')
-                : is3D
-                  ? terrainSettingsEnabled
-                    ? tMap('terrainSettings')
-                    : tMap('view2D')
-                  : tMap('view3D')
-            }
+            label={terrainToggleLabel}
             onOpenSettings={
               terrainSettingsEnabled
                 ? () => terrainSettings.setIsOpen((isOpen) => !isOpen)
-                : toggleTerrain
+                : disableTerrain
             }
-            onToggle={toggleTerrain}
+            onToggle={requestTerrain}
             triggerRef={terrainSettings.triggerRef}
           />
           {terrainSettingsEnabled ? (
@@ -460,7 +535,7 @@ export function EventTrackMap({
               onReset={resetTerrainSettings}
               onReturnTo2D={() => {
                 terrainSettings.setIsOpen(false);
-                toggleTerrain();
+                disableTerrain();
               }}
               panelRef={terrainSettings.panelRef}
               pitch={terrainPitch}
@@ -468,6 +543,18 @@ export function EventTrackMap({
               resetLabel={tMap('terrainReset')}
               returnTo2DLabel={tMap('view2D')}
               title={tMap('terrainSettings')}
+            />
+          ) : null}
+          {showTerrainStatus ? (
+            <TerrainStatusNotice
+              cancelLabel={tMap('terrainCancel')}
+              failedLabel={tMap('terrainLoadFailed')}
+              loadingLabel={tMap('terrainLoading')}
+              onCancel={cancelTerrain}
+              onRetry={retryTerrain}
+              retryLabel={tMap('terrainRetry')}
+              slowLabel={tMap('terrainLoadingSlow')}
+              status={terrainStatus}
             />
           ) : null}
         </>

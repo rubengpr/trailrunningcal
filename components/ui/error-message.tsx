@@ -75,6 +75,35 @@ export function ErrorMessage({
   );
 }
 
+interface TerrainLoadErrorProps {
+  message: string;
+  onRetry: () => void;
+  retryLabel: string;
+}
+
+export function TerrainLoadError({
+  message,
+  onRetry,
+  retryLabel,
+}: TerrainLoadErrorProps) {
+  return (
+    <div
+      className="absolute left-1/2 top-3 z-20 flex max-w-[calc(100%-6rem)] -translate-x-1/2 items-center gap-2 rounded-full border border-white/70 bg-white/90 px-3 py-2 text-xs font-medium text-stone-800 shadow-sm"
+      data-testid="event-track-map-terrain-status"
+    >
+      <TriangleAlert className="h-4 w-4 shrink-0 text-red-500" />
+      <span>{message}</span>
+      <button
+        type="button"
+        className="shrink-0 rounded-full bg-stone-900 px-2.5 py-1 text-white transition-colors hover:bg-stone-700"
+        onClick={onRetry}
+      >
+        {retryLabel}
+      </button>
+    </div>
+  );
+}
+
 interface SearchErrorProps {
   onRetry?: () => void;
 }
