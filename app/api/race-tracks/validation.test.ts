@@ -4,7 +4,7 @@ import {
   validateAdminRaceTrackRequest,
   validateRaceTrackRequestSize,
 } from '@/app/api/race-tracks/validation';
-import { MAX_TRACK_FILE_SIZE_BYTES } from '@/lib/race-tracks/limits';
+import { MAX_TRACK_UPLOAD_SIZE_BYTES } from '@/lib/race-tracks/limits';
 import { ValidationError } from '@/lib/errors';
 
 describe('validateRaceTrackRequestSize', () => {
@@ -39,6 +39,14 @@ describe('validateAdminRaceTrackRequest', () => {
   it('accepts one non-empty GPX file', () => {
     const formData = new FormData();
     const file = new File(['track'], 'route.GPX');
+    formData.set('file', file);
+
+    expect(validateAdminRaceTrackRequest(formData)).toEqual({ file });
+  });
+
+  it('accepts gzip-compressed GPX transport', () => {
+    const formData = new FormData();
+    const file = new File(['compressed'], 'route.gpx.gz');
     formData.set('file', file);
 
     expect(validateAdminRaceTrackRequest(formData)).toEqual({ file });
@@ -79,7 +87,7 @@ describe('validateAdminRaceTrackRequest', () => {
     const formData = new FormData();
     formData.set(
       'file',
-      new File([new Uint8Array(MAX_TRACK_FILE_SIZE_BYTES + 1)], 'route.gpx'),
+      new File([new Uint8Array(MAX_TRACK_UPLOAD_SIZE_BYTES + 1)], 'route.gpx'),
     );
 
     expect(() => validateAdminRaceTrackRequest(formData)).toThrow(

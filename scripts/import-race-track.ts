@@ -1,12 +1,14 @@
 import { readFile, stat } from 'node:fs/promises';
 import { createInterface } from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
+import { gzipSync } from 'node:zlib';
 import {
   LOCAL_TRACK_IMPORT_PROJECT,
   isLocalTrackImportProject,
   normalizeTrackImportBaseUrl,
 } from '@/lib/race-tracks/project';
 import { MAX_TRACK_FILE_SIZE_BYTES } from '@/lib/race-tracks/parse';
+import { MAX_TRACK_UPLOAD_SIZE_BYTES } from '@/lib/race-tracks/limits';
 
 interface Arguments {
   eventSlug: string;
@@ -99,14 +101,20 @@ async function main(): Promise<void> {
     );
   }
   const fileBytes = await readFile(args.filePath);
+  const compressedBytes = gzipSync(fileBytes);
+  if (compressedBytes.byteLength > MAX_TRACK_UPLOAD_SIZE_BYTES) {
+    throw new Error(
+      `Compressed track file cannot exceed ${MAX_TRACK_UPLOAD_SIZE_BYTES} bytes`,
+    );
+  }
   const formData = new FormData();
   formData.set('eventSlug', args.eventSlug);
   formData.set('raceName', args.raceName);
   formData.set('mode', args.apply ? 'apply' : 'dry-run');
   formData.set(
     'file',
-    new Blob([new Uint8Array(fileBytes)], { type: 'application/gpx+xml' }),
-    args.filePath.split('/').at(-1) ?? 'track.gpx',
+    new Blob([new Uint8Array(compressedBytes)], { type: 'application/gzip' }),
+    `${args.filePath.split('/').at(-1) ?? 'track.gpx'}.gz`,
   );
 
   console.log(

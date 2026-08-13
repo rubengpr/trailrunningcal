@@ -1,12 +1,12 @@
 import { ValidationError } from '@/lib/errors';
-import { MAX_TRACK_FILE_SIZE_BYTES } from '@/lib/race-tracks/limits';
+import { MAX_TRACK_UPLOAD_SIZE_BYTES } from '@/lib/race-tracks/limits';
 import type { TrackImportMode } from '@/types/race-track.types';
 
 const MAX_EVENT_SLUG_LENGTH = 200;
 const MAX_RACE_NAME_LENGTH = 300;
 const MAX_MULTIPART_OVERHEAD_BYTES = 64 * 1024;
 export const MAX_TRACK_REQUEST_SIZE_BYTES =
-  MAX_TRACK_FILE_SIZE_BYTES + MAX_MULTIPART_OVERHEAD_BYTES;
+  MAX_TRACK_UPLOAD_SIZE_BYTES + MAX_MULTIPART_OVERHEAD_BYTES;
 
 export interface RaceTrackRequestInput {
   eventSlug: string;
@@ -71,7 +71,11 @@ export function validateRaceTrackRequest(
 }
 
 function validateTrackFile(value: FormDataEntryValue | null): File {
-  if (!(value instanceof File) || !value.name.toLowerCase().endsWith('.gpx')) {
+  const name = value instanceof File ? value.name.toLowerCase() : '';
+  if (
+    !(value instanceof File) ||
+    (!name.endsWith('.gpx') && !name.endsWith('.gpx.gz'))
+  ) {
     throw new ValidationError('Invalid input', 400);
   }
 
@@ -79,7 +83,7 @@ function validateTrackFile(value: FormDataEntryValue | null): File {
     throw new ValidationError('Invalid input', 400);
   }
 
-  if (value.size > MAX_TRACK_FILE_SIZE_BYTES) {
+  if (value.size > MAX_TRACK_UPLOAD_SIZE_BYTES) {
     throw new ValidationError('Invalid track file', 413);
   }
 
