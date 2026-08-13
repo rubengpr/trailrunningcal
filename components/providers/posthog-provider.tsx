@@ -15,6 +15,13 @@ export function PostHogProvider() {
         ui_host: 'https://eu.posthog.com',
         defaults: '2025-05-24',
         capture_exceptions: true,
+        session_recording: {
+          captureCanvas: {
+            recordCanvas: true,
+            canvasFps: 2,
+            canvasQuality: '0.4',
+          },
+        },
         debug: process.env.NODE_ENV === 'development',
       });
     };
