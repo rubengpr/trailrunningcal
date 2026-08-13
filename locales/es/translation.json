@@ -1114,7 +1114,11 @@
         "stored": "Hay un recorrido guardado",
         "saveFirst": "Guarda el evento antes de añadir un recorrido a esta carrera.",
         "success": "Recorrido GPX guardado correctamente",
-        "summary": "{geometryType} · {pointCount} puntos · {segmentCount, plural, one {1 segmento} other {# segmentos}}",
+        "summary": {
+          "normalized": "{geometryType} · {pointCount} puntos · {segmentCount, plural, one {1 segmento} other {# segmentos}} · normalizado sin simplificación",
+          "simplified": "{geometryType} · reducido de {sourcePointCount} a {pointCount} puntos con una tolerancia de {toleranceMeters} m · {segmentCount, plural, one {1 segmento} other {# segmentos}}",
+          "bestEffort": "{geometryType} · reducido de {sourcePointCount} a {pointCount} puntos con el límite seguro de {toleranceMeters} m · no se alcanzó el objetivo de optimización"
+        },
         "errorTitle": "No se ha podido guardar el recorrido",
         "unnamed": "esta carrera",
         "geometry": {
@@ -1130,7 +1134,8 @@
         "errors": {
           "type": "Selecciona un archivo con extensión .gpx",
           "empty": "El archivo GPX está vacío",
-          "size": "El archivo GPX no puede superar los 4 MiB",
+          "size": "El archivo GPX no puede superar los 16 MiB",
+          "transportSize": "El recorrido sigue siendo demasiado grande después de normalizarlo",
           "upload": "No se ha podido subir el archivo GPX"
         }
       },

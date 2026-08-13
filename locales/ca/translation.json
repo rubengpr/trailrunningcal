@@ -1082,7 +1082,11 @@
         "stored": "Hi ha un recorregut desat",
         "saveFirst": "Desa l’esdeveniment abans d’afegir un recorregut a aquesta cursa.",
         "success": "Recorregut GPX desat correctament",
-        "summary": "{geometryType} · {pointCount} punts · {segmentCount, plural, one {1 segment} other {# segments}}",
+        "summary": {
+          "normalized": "{geometryType} · {pointCount} punts · {segmentCount, plural, one {1 segment} other {# segments}} · normalitzat sense simplificació",
+          "simplified": "{geometryType} · reduït de {sourcePointCount} a {pointCount} punts amb una tolerància de {toleranceMeters} m · {segmentCount, plural, one {1 segment} other {# segments}}",
+          "bestEffort": "{geometryType} · reduït de {sourcePointCount} a {pointCount} punts amb el límit segur de {toleranceMeters} m · no s’ha assolit l’objectiu d’optimització"
+        },
         "errorTitle": "No s’ha pogut desar el recorregut",
         "unnamed": "aquesta cursa",
         "geometry": {
@@ -1098,7 +1102,8 @@
         "errors": {
           "type": "Selecciona un fitxer amb extensió .gpx",
           "empty": "El fitxer GPX està buit",
-          "size": "El fitxer GPX no pot superar els 4 MiB",
+          "size": "El fitxer GPX no pot superar els 16 MiB",
+          "transportSize": "El recorregut continua sent massa gran després de normalitzar-lo",
           "upload": "No s’ha pogut pujar el fitxer GPX"
         }
       },

@@ -7,7 +7,10 @@ import toast from 'react-hot-toast';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { ErrorMessage } from '@/components/ui/error-message';
 import { useModal } from '@/hooks/use-modal';
-import { uploadRaceTrack } from '@/lib/api/race-tracks';
+import {
+  TrackTransportSizeError,
+  uploadRaceTrack,
+} from '@/lib/api/race-tracks';
 import { MAX_TRACK_FILE_SIZE_BYTES } from '@/lib/race-tracks/limits';
 import type { RaceTrackSaveResult } from '@/types/race-track.types';
 
@@ -54,8 +57,12 @@ export function RaceTrackUpload({
       setHasTrack(true);
       onUploaded?.(uploadResult);
       toast.success(t('success'));
-    } catch {
-      const message = t('errors.upload');
+    } catch (uploadError) {
+      const message = t(
+        uploadError instanceof TrackTransportSizeError
+          ? 'errors.transportSize'
+          : 'errors.upload',
+      );
       setError(message);
       toast.error(message);
     } finally {
@@ -125,20 +132,31 @@ export function RaceTrackUpload({
   const geometryLabel = result
     ? t(`geometry.${result.geometryType}`)
     : null;
+  const summary = result && geometryLabel
+    ? result.simplified && result.toleranceMeters !== null
+      ? t(result.targetMet ? 'summary.simplified' : 'summary.bestEffort', {
+          geometryType: geometryLabel,
+          pointCount: result.pointCount,
+          segmentCount: result.segmentCount,
+          sourcePointCount: result.sourcePointCount,
+          toleranceMeters: result.toleranceMeters,
+        })
+      : t('summary.normalized', {
+          geometryType: geometryLabel,
+          pointCount: result.pointCount,
+          segmentCount: result.segmentCount,
+        })
+    : null;
 
   return (
     <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-sm font-medium text-gray-900">{t('title')}</p>
-          {result && geometryLabel ? (
+          {result && summary ? (
             <p className="mt-1 flex items-center gap-1.5 text-sm text-emerald-700">
               <CheckCircle2 className="size-4" strokeWidth={2} />
-              {t('summary', {
-                geometryType: geometryLabel,
-                pointCount: result.pointCount,
-                segmentCount: result.segmentCount,
-              })}
+              {summary}
             </p>
           ) : hasTrack ? (
             <p className="mt-1 text-sm text-gray-500">{t('stored')}</p>
