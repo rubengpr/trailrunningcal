@@ -140,6 +140,13 @@ describe('ElevationProfileChart', () => {
     expect(screen.getByLabelText(labels.chartDescription).className).toContain(
       'snap-mandatory',
     );
+    expect(
+      screen
+        .getByTestId('elevation-profile-plot')
+        .nextElementSibling?.contains(
+          screen.getByLabelText(labels.chartDescription),
+        ),
+    ).toBe(true);
     expect(screen.getByRole('button', { name: 'Marató' }).className).toContain(
       'snap-start',
     );
