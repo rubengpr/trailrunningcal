@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import type { AnchorHTMLAttributes, ReactNode } from 'react';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { PublicEventDetail } from '@/types/event.types';
 
@@ -10,19 +10,30 @@ vi.mock('next/link', () => ({
     href,
     prefetch,
     children,
+    onClick,
     ...props
   }: AnchorHTMLAttributes<HTMLAnchorElement> & {
     href: string;
     prefetch?: boolean;
     children: ReactNode;
   }) => (
-    <a href={href} data-prefetch={String(prefetch)} {...props}>
+    <a
+      href={href}
+      data-prefetch={String(prefetch)}
+      onClick={(event) => {
+        onClick?.(event);
+        event.preventDefault();
+      }}
+      {...props}
+    >
       {children}
     </a>
   ),
 }));
+vi.mock('@/lib/analytics/track', () => ({ track: vi.fn() }));
 
 import { EventCard } from './event-card';
+import { track } from '@/lib/analytics/track';
 
 const eventDetail: PublicEventDetail = {
   event: {
@@ -62,5 +73,27 @@ describe('EventCard', () => {
     const link = screen.getByRole('link', { name: /Trail de prova/ });
     expect(link.getAttribute('href')).toBe('/es/e/trail-de-prova');
     expect(link.getAttribute('data-prefetch')).toBe('false');
+  });
+
+  it('tracks explorer card clicks with the layout-toggle variant', () => {
+    render(
+      <EventCard
+        eventDetail={eventDetail}
+        locale="es"
+        analyticsContext={{
+          source: 'calendar_explorer',
+          layoutToggleVariant: 'icon_text',
+        }}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('link', { name: /Trail de prova/ }));
+
+    expect(track).toHaveBeenCalledWith('race_card_clicked', {
+      event_id: 'event-1',
+      event_slug: 'trail-de-prova',
+      source: 'calendar_explorer',
+      layout_toggle_variant: 'icon_text',
+    });
   });
 });
