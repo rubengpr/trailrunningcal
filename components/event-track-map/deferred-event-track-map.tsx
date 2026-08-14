@@ -7,7 +7,7 @@ import type { EventTrackMapProps } from '@/components/event-track-map/event-trac
 import { useDeferredVisibility } from '@/hooks/use-deferred-visibility';
 
 const MAP_VISIBILITY_THRESHOLD = 0.25;
-const MAP_CLASS_NAME = 'h-[420px] w-full bg-stone-100 sm:h-[480px]';
+const MAP_CLASS_NAME = 'h-[336px] w-full bg-stone-100 sm:h-[480px]';
 
 let modulePromise: Promise<{
   default: typeof import('@/components/event-track-map/event-track-map').EventTrackMap;

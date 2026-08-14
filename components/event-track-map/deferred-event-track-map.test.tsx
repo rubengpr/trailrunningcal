@@ -67,7 +67,12 @@ describe('DeferredEventTrackMap', () => {
       />,
     );
 
-    expect(container.querySelector('[data-event-track-map-placeholder]')).not.toBeNull();
+    const placeholder = container.querySelector(
+      '[data-event-track-map-placeholder]',
+    );
+    expect(placeholder).not.toBeNull();
+    expect(placeholder?.className).toContain('h-[336px]');
+    expect(placeholder?.className).toContain('sm:h-[480px]');
     expect(screen.queryByTestId('loaded-track-map')).toBeNull();
 
     act(() => {
