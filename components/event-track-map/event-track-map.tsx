@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Compass,
   LoaderCircle,
@@ -25,8 +25,17 @@ import {
 import { useMapFullscreen } from '@/hooks/use-map-fullscreen';
 import { useTerrainSettingsDisclosure } from '@/hooks/use-terrain-settings-disclosure';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
+import {
+  getMapDeviceFormFactor,
+  getMapPreviewVariant,
+  getRequestedPreviewMode,
+  MAP_PREVIEW_FEATURE_FLAG_KEY,
+  type MapExperimentContext,
+} from '@/lib/maps/experiment';
 import { track } from '@/lib/analytics/track';
 import { getBrowserTerrainAutoLoadDecision } from '@/lib/maps/terrain-loading';
+import { useFeatureFlagVariant } from '@/hooks/use-feature-flag-variant';
+import { useMapDeepEngagement, type MapAction } from '@/hooks/use-map-deep-engagement';
 import type {
   ElevationProfileCursorPoint,
   TrackRoute,
@@ -41,6 +50,19 @@ export interface EventTrackMapProps {
   errorMessage: string;
   fullscreenProfile?: ReactNode;
   onFullscreenChange?: (fullscreen: boolean) => void;
+}
+
+const FEATURE_FLAG_TIMEOUT_MS = 3_000;
+const PREVIEW_EXPOSURE_DELAY_MS = 2_000;
+
+function MapPlaceholder() {
+  return (
+    <div
+      className="h-[336px] w-full bg-stone-100 sm:h-[480px]"
+      data-event-track-map-placeholder
+      data-testid="event-track-map-placeholder"
+    />
+  );
 }
 
 interface TrackLegendProps extends Pick<EventTrackMapProps, 'routes'> {
@@ -462,7 +484,37 @@ function RotationHint({ desktopLabel, mobileLabel }: RotationHintProps) {
   );
 }
 
-export function EventTrackMap({
+export function EventTrackMap(props: EventTrackMapProps) {
+  const flagValue = useFeatureFlagVariant(MAP_PREVIEW_FEATURE_FLAG_KEY);
+  const [useFallback, setUseFallback] = useState(false);
+  const variant = useFallback ? undefined : getMapPreviewVariant(flagValue);
+  const experiment = useMemo(
+    () => variant
+      ? {
+          device_form_factor: getMapDeviceFormFactor(),
+          feature_flag_variant: variant,
+          requested_preview_mode: getRequestedPreviewMode(variant),
+        }
+      : undefined,
+    [variant],
+  );
+
+  useEffect(() => {
+    if (variant) return;
+    const timeoutId = window.setTimeout(() => setUseFallback(true), FEATURE_FLAG_TIMEOUT_MS);
+    return () => window.clearTimeout(timeoutId);
+  }, [variant]);
+
+  if (!variant && !useFallback) return <MapPlaceholder />;
+
+  return <ResolvedEventTrackMap {...props} experiment={experiment} />;
+}
+
+interface ResolvedEventTrackMapProps extends EventTrackMapProps {
+  experiment: MapExperimentContext | undefined;
+}
+
+function ResolvedEventTrackMap({
   activePoint,
   eventId,
   eventSlug,
@@ -471,10 +523,39 @@ export function EventTrackMap({
   errorMessage,
   fullscreenProfile,
   onFullscreenChange,
-}: EventTrackMapProps) {
+  experiment,
+}: ResolvedEventTrackMapProps) {
   const tMap = useTranslations('map');
   const autoTerrainAttemptedRef = useRef(false);
+  const previewEngagedRef = useRef(false);
+  const recordMapActionRef = useRef<(action: MapAction) => void>(() => undefined);
   const terrainSettingsEnabled = process.env.NODE_ENV !== 'production';
+  const raceCount = useMemo(
+    () => new Set(routes.flatMap((route) => route.raceIds)).size,
+    [routes],
+  );
+  const trackPreviewEngagement = useCallback(
+    (engagementType: 'open_map' | MapAction) => {
+      if (!experiment || previewEngagedRef.current) return;
+      previewEngagedRef.current = true;
+      track(ANALYTICS_EVENTS.EVENT_TRACK_MAP_PREVIEW_ENGAGED, {
+        event_id: eventId,
+        event_slug: eventSlug,
+        ...experiment,
+        engagement_type: engagementType,
+        route_count: routes.length,
+        race_count: raceCount,
+      });
+    },
+    [eventId, eventSlug, experiment, raceCount, routes.length],
+  );
+  const handleMapAction = useCallback(
+    (action: MapAction) => {
+      trackPreviewEngagement(action);
+      recordMapActionRef.current(action);
+    },
+    [trackPreviewEngagement],
+  );
   const {
     cancelTerrain,
     containerRef,
@@ -498,14 +579,31 @@ export function EventTrackMap({
     terrainSupported,
   } = useEventTrackMap({
     activePoint,
+    analyticsContext: experiment,
     eventId,
     eventSlug,
     finishLabel: tMap('routeFinish'),
+    initialPreviewMode: experiment?.requested_preview_mode ?? '2d',
+    onMapAction: handleMapAction,
     routes,
     startLabel: tMap('routeStart'),
     zoomInLabel: tMap('zoomIn'),
     zoomOutLabel: tMap('zoomOut'),
   });
+  const { recordAction, setFullscreen, start } = useMapDeepEngagement({
+    containerRef,
+    eventId,
+    eventSlug,
+    experiment,
+    raceCount,
+    routeCount: routes.length,
+  });
+  useEffect(() => {
+    recordMapActionRef.current = recordAction;
+    return () => {
+      recordMapActionRef.current = () => undefined;
+    };
+  }, [recordAction]);
   const is3D = terrainStatus === '3d';
   const isTerrainLoading =
     terrainStatus === 'loading' || terrainStatus === 'slow';
@@ -528,8 +626,9 @@ export function EventTrackMap({
   const terrainSettings = useTerrainSettingsDisclosure(is3D);
 
   useEffect(() => {
+    setFullscreen(isFullscreen);
     onFullscreenChange?.(isFullscreen);
-  }, [isFullscreen, onFullscreenChange]);
+  }, [isFullscreen, onFullscreenChange, setFullscreen]);
 
   useEffect(() => {
     setAttributionVisible(
@@ -556,13 +655,70 @@ export function EventTrackMap({
     return () => window.clearTimeout(timeoutId);
   }, [isFullscreen, isMapReady, requestTerrain]);
 
+  const terrainStatusRef = useRef(terrainStatus);
+  useEffect(() => {
+    terrainStatusRef.current = terrainStatus;
+  }, [terrainStatus]);
+
+  useEffect(() => {
+    if (!experiment || !isMapReady) return;
+    const mapElement = containerRef.current;
+    if (!mapElement) return;
+
+    let exposureTimeoutId: number | null = null;
+    let exposed = false;
+    const expose = () => {
+      if (exposed) return;
+      exposed = true;
+      track(ANALYTICS_EVENTS.EVENT_TRACK_MAP_PREVIEW_EXPOSED, {
+        event_id: eventId,
+        event_slug: eventSlug,
+        ...experiment,
+        route_count: routes.length,
+        race_count: raceCount,
+        terrain_status: terrainStatusRef.current,
+      });
+    };
+    const clearExposureTimer = () => {
+      if (exposureTimeoutId === null) return;
+      window.clearTimeout(exposureTimeoutId);
+      exposureTimeoutId = null;
+    };
+    const scheduleExposure = () => {
+      if (exposed || exposureTimeoutId !== null) return;
+      exposureTimeoutId = window.setTimeout(expose, PREVIEW_EXPOSURE_DELAY_MS);
+    };
+
+    if (typeof IntersectionObserver === 'undefined') {
+      scheduleExposure();
+      return clearExposureTimer;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting && entry.intersectionRatio >= 0.5) {
+          scheduleExposure();
+        } else {
+          clearExposureTimer();
+        }
+      },
+      { threshold: 0.5 },
+    );
+    observer.observe(mapElement);
+    return () => {
+      clearExposureTimer();
+      observer.disconnect();
+    };
+  }, [containerRef, eventId, eventSlug, experiment, isMapReady, raceCount, routes.length]);
+
   const handleFullscreenToggle = () => {
     if (!isFullscreen) {
       track(ANALYTICS_EVENTS.EVENT_TRACK_MAP_FULLSCREEN_OPENED, {
         event_id: eventId,
         event_slug: eventSlug,
+        ...experiment,
         route_count: routes.length,
-        race_count: new Set(routes.flatMap((route) => route.raceIds)).size,
+        race_count: raceCount,
       });
     }
     toggleFullscreen();
@@ -691,7 +847,11 @@ export function EventTrackMap({
       {!isFullscreen ? (
         <MobilePreviewToggle
           label={tMap('openRouteFullscreen')}
-          onToggle={handleFullscreenToggle}
+          onToggle={() => {
+            trackPreviewEngagement('open_map');
+            start();
+            handleFullscreenToggle();
+          }}
         />
       ) : null}
       {is3D && showRotationHint ? (

@@ -43,6 +43,7 @@ const mocks = vi.hoisted(() => ({
   popupRemove: vi.fn(),
   popupSetDOMContent: vi.fn(),
   track: vi.fn(),
+  featureFlagVariant: 'control' as 'control' | '3d_preview' | undefined,
 }));
 
 vi.mock('next-intl', () => ({
@@ -54,6 +55,10 @@ vi.mock('next-intl', () => ({
 }));
 
 vi.mock('@/lib/analytics/track', () => ({ track: mocks.track }));
+
+vi.mock('@/hooks/use-feature-flag-variant', () => ({
+  useFeatureFlagVariant: () => mocks.featureFlagVariant,
+}));
 
 vi.mock('maplibre-gl', () => {
   class AttributionControlMock {}
@@ -308,6 +313,7 @@ function finishTerrainLoading(): void {
 beforeEach(() => {
   mocks.handlers.clear();
   vi.resetAllMocks();
+  mocks.featureFlagVariant = 'control';
   window.history.replaceState({}, '', '/');
   window.matchMedia = vi.fn().mockReturnValue({ matches: false });
   window.scrollTo = vi.fn();
@@ -323,6 +329,48 @@ afterEach(() => {
 });
 
 describe('EventTrackMap', () => {
+  it('waits for the experiment assignment, then falls back to an untracked 2D map', () => {
+    vi.useFakeTimers();
+    try {
+      mocks.featureFlagVariant = undefined;
+      render(<EventTrackMap {...props} />);
+
+      expect(screen.getByTestId('event-track-map-placeholder')).toBeDefined();
+      expect(mocks.mapConstructor).not.toHaveBeenCalled();
+
+      act(() => vi.advanceTimersByTime(3_000));
+      expect(mocks.mapConstructor).toHaveBeenCalledTimes(1);
+
+      act(() => mocks.handlers.get('load')?.());
+      expect(mocks.track).toHaveBeenCalledWith(
+        'event_track_map_viewed',
+        expect.not.objectContaining({ feature_flag_variant: expect.anything() }),
+      );
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('requests 3D terrain immediately for the 3D preview variant', () => {
+    mocks.featureFlagVariant = '3d_preview';
+
+    render(<EventTrackMap {...props} />);
+    act(() => mocks.handlers.get('load')?.());
+
+    expect(
+      screen
+        .getByTestId('event-track-map')
+        .parentElement?.getAttribute('data-terrain-status'),
+    ).toBe('loading');
+    expect(mocks.track).toHaveBeenCalledWith(
+      'event_track_map_viewed',
+      expect.objectContaining({
+        feature_flag_variant: '3d_preview',
+        requested_preview_mode: '3d',
+      }),
+    );
+  });
+
   it('automatically requests lightweight 3D after showing the 2D fallback', () => {
     vi.useFakeTimers();
     try {
@@ -820,12 +868,17 @@ describe('EventTrackMap', () => {
     expect(mocks.mapConstructor).toHaveBeenCalledTimes(1);
     expect(mocks.track).toHaveBeenCalledWith(
       'event_track_map_fullscreen_opened',
-      {
+      expect.objectContaining({
         event_id: 'event-1',
         event_slug: 'pedraforca-xtrail',
         route_count: 1,
         race_count: 1,
-      },
+        feature_flag_variant: 'control',
+      }),
+    );
+    expect(mocks.track).toHaveBeenCalledWith(
+      'event_track_map_preview_engaged',
+      expect.objectContaining({ engagement_type: 'open_map' }),
     );
   });
 
@@ -1369,7 +1422,11 @@ describe('EventTrackMap', () => {
     act(() =>
       mocks.handlers.get('dragstart')?.({ originalEvent: new MouseEvent('mousedown') }),
     );
-    expect(mocks.track).toHaveBeenCalledTimes(1);
+    expect(mocks.track).toHaveBeenCalledTimes(2);
+    expect(mocks.track).toHaveBeenCalledWith(
+      'event_track_map_preview_engaged',
+      expect.objectContaining({ engagement_type: 'rotate' }),
+    );
   });
 
   it('automatically dismisses the rotation hint and shows it only once', () => {

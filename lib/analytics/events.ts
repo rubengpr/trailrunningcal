@@ -14,9 +14,12 @@ export const ANALYTICS_EVENTS = {
   EVENT_SHARE_CLICKED: 'event_share_clicked',
   EVENT_TRACK_MAP_FULLSCREEN_OPENED: 'event_track_map_fullscreen_opened',
   EVENT_TRACK_MAP_INTERACTED: 'event_track_map_interacted',
+  EVENT_TRACK_MAP_DEEPLY_ENGAGED: 'event_track_map_deeply_engaged',
   EVENT_TRACK_MAP_TERRAIN_LOAD_FINISHED:
     'event_track_map_terrain_load_finished',
   EVENT_TRACK_MAP_TERRAIN_TOGGLED: 'event_track_map_terrain_toggled',
+  EVENT_TRACK_MAP_PREVIEW_ENGAGED: 'event_track_map_preview_engaged',
+  EVENT_TRACK_MAP_PREVIEW_EXPOSED: 'event_track_map_preview_exposed',
   EVENT_TRACK_MAP_VIEWED: 'event_track_map_viewed',
   FILTERS_APPLIED: 'filters_applied',
   MAP_VIEW_LIST_CLICKED: 'map_view_list_clicked',
@@ -39,6 +42,12 @@ export const ANALYTICS_EVENTS = {
 
 export type AnalyticsEventName =
   (typeof ANALYTICS_EVENTS)[keyof typeof ANALYTICS_EVENTS];
+
+type MapExperimentProperties = {
+  device_form_factor?: 'mobile' | 'desktop';
+  feature_flag_variant?: 'control' | '3d_preview';
+  requested_preview_mode?: '2d' | '3d';
+};
 
 export interface AnalyticsEventProperties {
   [ANALYTICS_EVENTS.BREADCRUMB_LINK_CLICKED]: {
@@ -107,11 +116,24 @@ export interface AnalyticsEventProperties {
     event_slug: string;
     route_count: number;
     race_count: number;
-  };
+  } & MapExperimentProperties;
   [ANALYTICS_EVENTS.EVENT_TRACK_MAP_INTERACTED]: {
     event_id: string;
     event_slug: string;
     interaction: 'pan' | 'rotate' | 'zoom';
+    route_count: number;
+    race_count: number;
+  } & MapExperimentProperties;
+  [ANALYTICS_EVENTS.EVENT_TRACK_MAP_DEEPLY_ENGAGED]: {
+    event_id: string;
+    event_slug: string;
+    device_form_factor: 'mobile' | 'desktop';
+    feature_flag_variant: 'control' | '3d_preview';
+    requested_preview_mode: '2d' | '3d';
+    action_count: number;
+    action_types: Array<'pan' | 'rotate' | 'zoom'>;
+    active_map_time_ms: number;
+    is_fullscreen: boolean;
     route_count: number;
     race_count: number;
   };
@@ -120,18 +142,38 @@ export interface AnalyticsEventProperties {
     event_slug: string;
     outcome: 'ready' | 'cancelled' | 'timeout' | 'error';
     duration_ms: number;
-  };
+  } & MapExperimentProperties;
   [ANALYTICS_EVENTS.EVENT_TRACK_MAP_TERRAIN_TOGGLED]: {
     event_id: string;
     event_slug: string;
     mode: '2d' | '3d';
+  } & MapExperimentProperties;
+  [ANALYTICS_EVENTS.EVENT_TRACK_MAP_PREVIEW_ENGAGED]: {
+    event_id: string;
+    event_slug: string;
+    device_form_factor: 'mobile' | 'desktop';
+    feature_flag_variant: 'control' | '3d_preview';
+    requested_preview_mode: '2d' | '3d';
+    engagement_type: 'open_map' | 'pan' | 'rotate' | 'zoom';
+    route_count: number;
+    race_count: number;
+  };
+  [ANALYTICS_EVENTS.EVENT_TRACK_MAP_PREVIEW_EXPOSED]: {
+    event_id: string;
+    event_slug: string;
+    device_form_factor: 'mobile' | 'desktop';
+    feature_flag_variant: 'control' | '3d_preview';
+    requested_preview_mode: '2d' | '3d';
+    route_count: number;
+    race_count: number;
+    terrain_status: '2d' | 'loading' | 'slow' | '3d' | 'failed';
   };
   [ANALYTICS_EVENTS.EVENT_TRACK_MAP_VIEWED]: {
     event_id: string;
     event_slug: string;
     route_count: number;
     race_count: number;
-  };
+  } & MapExperimentProperties;
   [ANALYTICS_EVENTS.FILTERS_APPLIED]: {
     variant:
       | 'control'

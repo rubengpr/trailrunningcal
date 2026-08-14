@@ -11,6 +11,7 @@ import type {
 } from 'geojson';
 import { Flag, Play } from 'lucide-react';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
+import type { MapExperimentContext, MapPreviewMode } from '@/lib/maps/experiment';
 import { track } from '@/lib/analytics/track';
 import { OSM_STANDARD_STYLE } from '@/lib/maps/style';
 import { buildTrackEndpointGroups } from '@/lib/race-tracks/routes';
@@ -60,9 +61,12 @@ export interface TerrainRequestOptions {
 
 interface EventTrackMapOptions {
   activePoint: ElevationProfileCursorPoint | null;
+  analyticsContext?: MapExperimentContext;
   eventId: string;
   eventSlug: string;
   finishLabel: string;
+  initialPreviewMode: MapPreviewMode;
+  onMapAction?: (action: 'pan' | 'rotate' | 'zoom') => void;
   routes: TrackRoute[];
   startLabel: string;
   zoomInLabel: string;
@@ -286,9 +290,12 @@ function isTerrainError(event: TerrainMapError): boolean {
 
 export function useEventTrackMap({
   activePoint,
+  analyticsContext,
   eventId,
   eventSlug,
   finishLabel,
+  initialPreviewMode,
+  onMapAction,
   routes,
   startLabel,
   zoomInLabel,
@@ -439,6 +446,7 @@ export function useEventTrackMap({
       track(ANALYTICS_EVENTS.EVENT_TRACK_MAP_TERRAIN_LOAD_FINISHED, {
         event_id: eventId,
         event_slug: eventSlug,
+        ...analyticsContext,
         outcome,
         duration_ms: Math.max(
           0,
@@ -536,11 +544,13 @@ export function useEventTrackMap({
         setAttributionVisibility(container, visible);
 
       const trackInteraction = (interaction: 'pan' | 'rotate' | 'zoom') => {
+        onMapAction?.(interaction);
         if (interactionTracked) return;
         interactionTracked = true;
         track(ANALYTICS_EVENTS.EVENT_TRACK_MAP_INTERACTED, {
           event_id: eventId,
           event_slug: eventSlug,
+          ...analyticsContext,
           interaction,
           route_count: routes.length,
           race_count: raceCount,
@@ -914,6 +924,7 @@ export function useEventTrackMap({
               track(ANALYTICS_EVENTS.EVENT_TRACK_MAP_TERRAIN_TOGGLED, {
                 event_id: eventId,
                 event_slug: eventSlug,
+                ...analyticsContext,
                 mode: '3d',
               });
             } catch {
@@ -1001,14 +1012,18 @@ export function useEventTrackMap({
             track(ANALYTICS_EVENTS.EVENT_TRACK_MAP_TERRAIN_TOGGLED, {
               event_id: eventId,
               event_slug: eventSlug,
+              ...analyticsContext,
               mode: '2d',
             });
           };
           setIsMapReady(true);
 
+          if (initialPreviewMode === '3d') requestTerrainRef.current();
+
           track(ANALYTICS_EVENTS.EVENT_TRACK_MAP_VIEWED, {
             event_id: eventId,
             event_slug: eventSlug,
+            ...analyticsContext,
             route_count: routes.length,
             race_count: raceCount,
           });
@@ -1055,9 +1070,12 @@ export function useEventTrackMap({
       map?.remove();
     };
   }, [
+    analyticsContext,
     eventId,
     eventSlug,
     finishLabel,
+    initialPreviewMode,
+    onMapAction,
     routes,
     startLabel,
     zoomInLabel,
