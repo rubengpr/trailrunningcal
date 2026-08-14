@@ -230,60 +230,9 @@ export function ElevationProfileChart({
       }`}
       data-testid="elevation-profile"
     >
-      {profiles.length > 1 ? (
-        <div className="relative max-w-full overflow-hidden">
-          {canScrollLeft ? (
-            <span
-              className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-linear-to-r from-white via-white/80 to-transparent"
-              data-testid="elevation-profile-picker-left-fade"
-            />
-          ) : null}
-          {canScrollRight ? (
-            <span
-              className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-linear-to-l from-white via-white/80 to-transparent"
-              data-testid="elevation-profile-picker-right-fade"
-            />
-          ) : null}
-          <div
-            ref={pickerRef}
-            className="event-track-profile-picker flex max-w-full snap-x snap-mandatory gap-1.5 overflow-x-auto overscroll-x-contain scroll-px-4 px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:scroll-px-6 sm:px-6"
-            aria-label={chartDescription}
-          >
-            {profiles.map((profile) => {
-              const isSelected = profile.id === selected.id;
-              return (
-                <button
-                  key={profile.id}
-                  type="button"
-                  className={`shrink-0 snap-start snap-always rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
-                    isSelected
-                      ? 'border-stone-900 bg-stone-900 text-white'
-                      : 'border-stone-200 bg-white text-stone-600 hover:border-stone-400 hover:text-stone-900'
-                  }`}
-                  aria-pressed={isSelected}
-                  onClick={() => {
-                    setHasPersistentTouchPoint(false);
-                    onActivePointChange(null);
-                    onSelectedIdChange(profile.id);
-                  }}
-                >
-                  {profile.raceNames.join(' · ')}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      ) : null}
-
       <div
         ref={plotRef}
-        className={`${
-          profiles.length > 1
-            ? isFullscreen
-              ? 'mt-2 sm:mt-4'
-              : 'mt-4'
-            : ''
-        } relative w-full overflow-hidden ${
+        className={`relative w-full overflow-hidden ${
           isFullscreen ? 'h-[86px] sm:h-[130px]' : 'h-32 sm:h-36'
         }`}
         data-testid="elevation-profile-plot"
@@ -368,6 +317,55 @@ export function ElevationProfileChart({
           </div>
         ) : null}
       </div>
+
+      {profiles.length > 1 ? (
+        <div
+          className={`relative max-w-full overflow-hidden ${
+            isFullscreen ? 'mt-2 sm:mt-4' : 'mt-4'
+          }`}
+        >
+          {canScrollLeft ? (
+            <span
+              className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-linear-to-r from-white via-white/80 to-transparent"
+              data-testid="elevation-profile-picker-left-fade"
+            />
+          ) : null}
+          {canScrollRight ? (
+            <span
+              className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-linear-to-l from-white via-white/80 to-transparent"
+              data-testid="elevation-profile-picker-right-fade"
+            />
+          ) : null}
+          <div
+            ref={pickerRef}
+            className="event-track-profile-picker flex max-w-full snap-x snap-mandatory gap-1.5 overflow-x-auto overscroll-x-contain scroll-px-4 px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:scroll-px-6 sm:px-6"
+            aria-label={chartDescription}
+          >
+            {profiles.map((profile) => {
+              const isSelected = profile.id === selected.id;
+              return (
+                <button
+                  key={profile.id}
+                  type="button"
+                  className={`shrink-0 snap-start snap-always rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
+                    isSelected
+                      ? 'border-stone-900 bg-stone-900 text-white'
+                      : 'border-stone-200 bg-white text-stone-600 hover:border-stone-400 hover:text-stone-900'
+                  }`}
+                  aria-pressed={isSelected}
+                  onClick={() => {
+                    setHasPersistentTouchPoint(false);
+                    onActivePointChange(null);
+                    onSelectedIdChange(profile.id);
+                  }}
+                >
+                  {profile.raceNames.join(' · ')}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
