@@ -68,6 +68,34 @@ const eventDetail: PublicEventDetail = {
 afterEach(cleanup);
 
 describe('EventCard', () => {
+  it('renders each race distance as an independently colored badge', () => {
+    const eventWithMultipleDistances: PublicEventDetail = {
+      ...eventDetail,
+      races: [
+        eventDetail.races[0]!,
+        {
+          ...eventDetail.races[0]!,
+          id: 'race-2',
+          distanceKm: 42,
+        },
+        {
+          ...eventDetail.races[0]!,
+          id: 'race-3',
+          distanceKm: 50,
+        },
+      ],
+    };
+
+    const { container } = render(
+      <EventCard eventDetail={eventWithMultipleDistances} locale="es" />,
+    );
+
+    const badges = container.querySelectorAll('[data-distance-group]');
+    expect(Array.from(badges, (badge) => badge.getAttribute('data-distance-group')))
+      .toEqual(['20-30', '40-50', '50+']);
+    expect(screen.getAllByText('km')).toHaveLength(3);
+  });
+
   it('keeps prefetch disabled and links to the localized event page', () => {
     render(<EventCard eventDetail={eventDetail} locale="es" />);
 

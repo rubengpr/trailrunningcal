@@ -4,6 +4,7 @@ import type { PublicEventDetail } from '@/types/event.types';
 import { formatEventLocationLabel } from '@/lib/events/utils';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { track } from '@/lib/analytics/track';
+import { DistanceBadge } from '@/components/race/distance-badge';
 
 interface EventCardProps {
   eventDetail: PublicEventDetail;
@@ -12,12 +13,6 @@ interface EventCardProps {
     source: 'calendar_explorer';
     layoutToggleVariant: 'control' | 'icon_text';
   };
-}
-
-function formatDistance(distanceKm: number, locale: Locale): string {
-  return new Intl.NumberFormat(locale === 'ca' ? 'ca-ES' : 'es-ES', {
-    maximumFractionDigits: 1,
-  }).format(distanceKm);
 }
 
 function formatDateBlock(dateString: string | null, locale: Locale) {
@@ -47,10 +42,6 @@ function formatDateBlock(dateString: string | null, locale: Locale) {
 export function EventCard({ eventDetail, locale, analyticsContext }: EventCardProps) {
   const { day, month, weekday } = formatDateBlock(eventDetail.dateRange.startDate, locale);
   const location = formatEventLocationLabel(eventDetail.location, locale);
-  const distances = eventDetail.races.map((race) => ({
-    id: race.id,
-    label: formatDistance(race.distanceKm, locale),
-  }));
   const handleClick = analyticsContext
     ? () => {
         track(ANALYTICS_EVENTS.RACE_CARD_CLICKED, {
@@ -89,21 +80,16 @@ export function EventCard({ eventDetail, locale, analyticsContext }: EventCardPr
                 </span>
               )}
             </div>
-            {distances.length > 0 && (
-              <div className="mt-1.5 min-w-0">
-                <span className="inline-block min-w-0 max-w-full truncate rounded-sm bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-600 sm:text-xs">
-                  {distances.map((distance, index) => (
-                    <span key={distance.id} className="inline-flex items-baseline gap-0.5">
-                      {index > 0 && (
-                        <span className="mr-1 text-gray-400">·</span>
-                      )}
-                      <span>{distance.label}</span>
-                      <span className="text-[8px] font-medium uppercase text-gray-600">
-                        km
-                      </span>
-                    </span>
-                  ))}
-                </span>
+            {eventDetail.races.length > 0 && (
+              <div className="mt-1.5 flex min-w-0 flex-nowrap gap-1.5 overflow-hidden">
+                {eventDetail.races.map((race) => (
+                  <DistanceBadge
+                    key={race.id}
+                    distanceKm={race.distanceKm}
+                    locale={locale}
+                    size="sm"
+                  />
+                ))}
               </div>
             )}
           </div>

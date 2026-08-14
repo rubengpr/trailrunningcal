@@ -15,6 +15,7 @@ import {
 import type { EventMapMarker, MapPageLabels } from '@/types/map.types';
 import { ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react';
 import { OSM_STANDARD_STYLE } from '@/lib/maps/style';
+import { DistanceBadge } from '@/components/race/distance-badge';
 const DEFAULT_CENTER: [number, number] = [2.1734, 41.3851];
 const DEFAULT_ZOOM = 7;
 
@@ -97,12 +98,6 @@ interface MarkerPopupBodyProps {
   initialEventIndex?: number;
 }
 
-function formatDistance(distanceKm: number, locale: Locale): string {
-  return new Intl.NumberFormat(locale === 'ca' ? 'ca-ES' : 'es-ES', {
-    maximumFractionDigits: 1,
-  }).format(distanceKm);
-}
-
 function MarkerPopupBody({
   marker,
   locale,
@@ -182,14 +177,13 @@ function MarkerPopupBody({
         ) : null}
       </div>
       {event.distances.length > 0 ? (
-        <div className="flex w-full min-w-0 flex-wrap gap-1.5">
+        <div className="flex w-full min-w-0 flex-nowrap gap-1.5 overflow-hidden">
           {event.distances.map((distance) => (
-            <span
+            <DistanceBadge
               key={distance.id}
-              className="inline-flex items-baseline justify-center rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-900 tabular-nums"
-            >
-              {formatDistance(distance.distanceKm, locale)} km
-            </span>
+              distanceKm={distance.distanceKm}
+              locale={locale}
+            />
           ))}
         </div>
       ) : null}
