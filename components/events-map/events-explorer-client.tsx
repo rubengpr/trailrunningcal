@@ -19,7 +19,11 @@ import { ErrorBoundary } from '@/components/ui/error-boundary';
 import { SearchError } from '@/components/ui/error-message';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Button } from '@/components/ui/button';
-import type { DesktopLayout, LayoutToggleButton } from '@/components/ui/layout-toggle';
+import type {
+  DesktopLayout,
+  LayoutToggleButton,
+  LayoutToggleVariant,
+} from '@/components/ui/layout-toggle';
 import { DeferredEventsMap } from '@/components/events-map/deferred-events-map';
 import { MapToggleFab } from '@/components/events-map/map-toggle-fab';
 import { Search, RefreshCw, TriangleAlert } from 'lucide-react';
@@ -72,6 +76,7 @@ export function EventsExplorerClient({
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [requestError, setRequestError] = useState<'refresh' | 'load-more' | null>(null);
+  const [layoutToggleVariant, setLayoutToggleVariant] = useState<LayoutToggleVariant | null>(null);
   const [filtersHydrated, setFiltersHydrated] = useState(false);
   const [retryToken, setRetryToken] = useState(0);
   const pillsScrollRef = useRef<HTMLDivElement>(null);
@@ -332,9 +337,17 @@ export function EventsExplorerClient({
     closeFiltersModal();
   };
 
-  const handleDesktopLayoutChange = (layout: DesktopLayout, button: LayoutToggleButton): void => {
+  const handleDesktopLayoutChange = (
+    layout: DesktopLayout,
+    button: LayoutToggleButton,
+    layoutToggleVariant: LayoutToggleVariant,
+  ): void => {
     setDesktopLayout(layout);
-    setTimeout(() => track(ANALYTICS_EVENTS.DESKTOP_LAYOUT_CHANGED, { layout, button }), 0);
+    setTimeout(() => track(ANALYTICS_EVENTS.DESKTOP_LAYOUT_CHANGED, {
+      layout,
+      button,
+      layout_toggle_variant: layoutToggleVariant,
+    }), 0);
   };
 
   const handleViewMapClick = (): void => {
@@ -385,8 +398,10 @@ export function EventsExplorerClient({
         showProvinceFilter={showProvinceFilter}
         showDistanceFilter={showDistanceFilter}
         filterColor={filterColor}
+        isDesktop={isDesktopMap}
         desktopLayout={desktopLayout}
         onDesktopLayoutChange={handleDesktopLayoutChange}
+        onLayoutToggleVariantResolved={setLayoutToggleVariant}
         pillsScrollRef={pillsScrollRef}
       />
 
@@ -459,7 +474,14 @@ export function EventsExplorerClient({
                                   </div>
                                 }
                               >
-                                <EventCard eventDetail={eventDetail} locale={locale} />
+                                <EventCard
+                                  eventDetail={eventDetail}
+                                  locale={locale}
+                                  analyticsContext={isDesktopMap && layoutToggleVariant ? {
+                                    source: 'calendar_explorer',
+                                    layoutToggleVariant,
+                                  } : undefined}
+                                />
                               </ErrorBoundary>
                             </div>
                           );

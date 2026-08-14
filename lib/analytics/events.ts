@@ -22,6 +22,7 @@ export const ANALYTICS_EVENTS = {
   NAVBAR_FILTER_ICON_CLICKED: 'navbar_filter_icon_clicked',
   NAVBAR_LINK_CLICKED: 'navbar_link_clicked',
   RACE_FAVORITE_CLICKED: 'race_favorite_clicked',
+  RACE_CARD_CLICKED: 'race_card_clicked',
   RACE_FILTERS_CLEARED: 'race_filters_cleared',
   RACE_ORGANIZER_CLAIM_CLICKED: 'race_organizer_claim_clicked',
   RACE_ORGANIZER_SOCIAL_CLICKED: 'race_organizer_social_clicked',
@@ -49,6 +50,7 @@ export interface AnalyticsEventProperties {
   [ANALYTICS_EVENTS.DESKTOP_LAYOUT_CHANGED]: {
     layout: 'list' | 'both' | 'map';
     button: 'list' | 'map';
+    layout_toggle_variant: 'control' | 'icon_text';
   };
   [ANALYTICS_EVENTS.ERROR_BOUNDARY_CAUGHT_ERROR]: {
     error_message: string;
@@ -148,6 +150,12 @@ export interface AnalyticsEventProperties {
   [ANALYTICS_EVENTS.RACE_FAVORITE_CLICKED]: {
     race_id: string;
     action: 'save' | 'remove';
+  };
+  [ANALYTICS_EVENTS.RACE_CARD_CLICKED]: {
+    event_id: string;
+    event_slug: string;
+    source: 'calendar_explorer';
+    layout_toggle_variant: 'control' | 'icon_text';
   };
   [ANALYTICS_EVENTS.RACE_FILTERS_CLEARED]: undefined;
   [ANALYTICS_EVENTS.RACE_ORGANIZER_CLAIM_CLICKED]: {

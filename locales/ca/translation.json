@@ -48,7 +48,9 @@
   },
   "layoutToggle": {
     "list": "Només llista",
-    "map": "Només mapa"
+    "map": "Només mapa",
+    "shortList": "Llista",
+    "shortMap": "Mapa"
   },
   "months": {
     "0": "Gen",

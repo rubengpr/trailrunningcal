@@ -2,10 +2,16 @@ import Link from 'next/link';
 import type { Locale } from '@/i18n';
 import type { PublicEventDetail } from '@/types/event.types';
 import { formatEventLocationLabel } from '@/lib/events/utils';
+import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
+import { track } from '@/lib/analytics/track';
 
 interface EventCardProps {
   eventDetail: PublicEventDetail;
   locale: Locale;
+  analyticsContext?: {
+    source: 'calendar_explorer';
+    layoutToggleVariant: 'control' | 'icon_text';
+  };
 }
 
 function formatDistance(distanceKm: number, locale: Locale): string {
@@ -38,7 +44,7 @@ function formatDateBlock(dateString: string | null, locale: Locale) {
   };
 }
 
-export function EventCard({ eventDetail, locale }: EventCardProps) {
+export function EventCard({ eventDetail, locale, analyticsContext }: EventCardProps) {
   const { day, month, weekday } = formatDateBlock(eventDetail.dateRange.startDate, locale);
   const location = formatEventLocationLabel(eventDetail.location, locale);
   const distances = eventDetail.races.map((race) => ({
@@ -51,6 +57,15 @@ export function EventCard({ eventDetail, locale }: EventCardProps) {
       <Link
         href={`/${locale}/e/${eventDetail.event.slug}`}
         prefetch={false}
+        onClick={() => {
+          if (!analyticsContext) return;
+          track(ANALYTICS_EVENTS.RACE_CARD_CLICKED, {
+            event_id: eventDetail.event.id,
+            event_slug: eventDetail.event.slug,
+            source: analyticsContext.source,
+            layout_toggle_variant: analyticsContext.layoutToggleVariant,
+          });
+        }}
         className="block px-2 py-2.5 sm:px-4 sm:py-4"
       >
         <div className="flex min-w-0 items-start gap-4">

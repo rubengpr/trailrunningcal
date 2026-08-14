@@ -2,8 +2,12 @@
 
 import type { RefObject } from 'react';
 import { FilterBar } from '@/components/filters/filter-bar';
-import { LayoutToggle } from '@/components/ui/layout-toggle';
-import type { DesktopLayout, LayoutToggleButton } from '@/components/ui/layout-toggle';
+import { DesktopLayoutToggle } from '@/components/events-map/desktop-layout-toggle';
+import type {
+  DesktopLayout,
+  LayoutToggleButton,
+  LayoutToggleVariant,
+} from '@/components/ui/layout-toggle';
 
 interface EventsExplorerFiltersSectionProps {
   filterLayout: string;
@@ -21,8 +25,14 @@ interface EventsExplorerFiltersSectionProps {
   showProvinceFilter: boolean;
   showDistanceFilter: boolean;
   filterColor: 'white' | 'black';
+  isDesktop: boolean;
   desktopLayout: DesktopLayout;
-  onDesktopLayoutChange: (layout: DesktopLayout, button: LayoutToggleButton) => void;
+  onDesktopLayoutChange: (
+    layout: DesktopLayout,
+    button: LayoutToggleButton,
+    variant: LayoutToggleVariant,
+  ) => void;
+  onLayoutToggleVariantResolved: (variant: LayoutToggleVariant) => void;
   pillsScrollRef: RefObject<HTMLDivElement | null>;
 }
 
@@ -42,8 +52,10 @@ export function EventsExplorerFiltersSection({
   showProvinceFilter,
   showDistanceFilter,
   filterColor,
+  isDesktop,
   desktopLayout,
   onDesktopLayoutChange,
+  onLayoutToggleVariantResolved,
   pillsScrollRef,
 }: EventsExplorerFiltersSectionProps) {
   const isPillVariant = filterLayout === 'pill';
@@ -78,7 +90,13 @@ export function EventsExplorerFiltersSection({
             />
           </div>
           <div className="ml-auto hidden lg:block">
-            <LayoutToggle value={desktopLayout} onChange={onDesktopLayoutChange} />
+            {isDesktop && (
+              <DesktopLayoutToggle
+                value={desktopLayout}
+                onChange={onDesktopLayoutChange}
+                onVariantResolved={onLayoutToggleVariantResolved}
+              />
+            )}
           </div>
         </div>
       </div>

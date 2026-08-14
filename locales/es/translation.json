@@ -48,7 +48,9 @@
   },
   "layoutToggle": {
     "list": "Solo lista",
-    "map": "Solo mapa"
+    "map": "Solo mapa",
+    "shortList": "Lista",
+    "shortMap": "Mapa"
   },
   "months": {
     "0": "Ene",
