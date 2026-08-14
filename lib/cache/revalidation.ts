@@ -1,15 +1,8 @@
 import { revalidatePath } from 'next/cache';
 import { locales } from '@/i18n';
-import { getRaceCategorySlugsForRace } from '@/lib/races/race-types';
-import { getTypePath } from '@/lib/races/race-types';
+import { getTypePath, RACE_CATEGORY_SLUGS } from '@/lib/races/race-types';
 import { getDestinationPath, getProvinceByDbName } from '@/lib/geography/destinations';
 import type { TrailEventDetail } from '@/types/event.types';
-
-type RaceForRevalidation = {
-  name: string | null;
-  distanceKm: number;
-  elevationGainM: number | null;
-};
 
 export function revalidateHomepages() {
   for (const locale of locales) {
@@ -31,10 +24,9 @@ export function revalidateProvincePage(province: string) {
   }
 }
 
-export function revalidateCategoryPages(race: RaceForRevalidation) {
-  const slugs = getRaceCategorySlugsForRace(race);
+export function revalidateCategoryPages() {
   for (const locale of locales) {
-    for (const slug of slugs) {
+    for (const slug of RACE_CATEGORY_SLUGS) {
       revalidatePath(getTypePath(locale, slug));
     }
   }
@@ -48,9 +40,9 @@ export function revalidateEventPages(eventSlug: string) {
 
 export function revalidateEventRelatedPages(detail: TrailEventDetail): void {
   revalidateEventPages(detail.event.slug);
+  revalidateCategoryPages();
 
   for (const race of detail.races) {
-    revalidateCategoryPages(race);
     if (race.province) revalidateProvincePage(race.province);
   }
 }

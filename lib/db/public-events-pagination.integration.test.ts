@@ -141,6 +141,76 @@ integrationDescribe('get_public_events_page integration', () => {
     expect(emptyPage.hasMore).toBe(false);
   });
 
+  it('classifies vertical kilometers from event names, race names, or profile', async () => {
+    const runId = randomUUID();
+    const { data: events, error: eventError } = await admin
+      .from('events')
+      .insert([
+        { name: `VertiKalm ${runId}`, slug: `vertikalm-${runId}` },
+        { name: `Race ${runId}`, slug: `race-${runId}` },
+        { name: `Profile ${runId}`, slug: `profile-${runId}` },
+        { name: `Trail ${runId}`, slug: `trail-${runId}` },
+      ])
+      .select('id, name');
+    if (eventError || !events) {
+      throw eventError ?? new Error('Failed to insert vertical kilometer fixtures');
+    }
+    eventIds.push(...events.map((event) => event.id as string));
+
+    const eventByName = new Map(events.map((event) => [event.name, event.id]));
+    const { error: raceError } = await admin.from('races').insert([
+      {
+        event_id: eventByName.get(`VertiKalm ${runId}`),
+        name: 'Race fixture',
+        date: '2031-10-01',
+        distance_km: 5,
+        elevation_gain_m: 200,
+        city: 'Test City',
+        province: 'Codex Automated Pagination',
+      },
+      {
+        event_id: eventByName.get(`Race ${runId}`),
+        name: 'KMV fixture',
+        date: '2031-10-01',
+        distance_km: 7.8,
+        elevation_gain_m: 200,
+        city: 'Test City',
+        province: 'Codex Automated Pagination',
+      },
+      {
+        event_id: eventByName.get(`Profile ${runId}`),
+        name: 'Race fixture',
+        date: '2031-10-01',
+        distance_km: 8,
+        elevation_gain_m: 800,
+        city: 'Test City',
+        province: 'Codex Automated Pagination',
+      },
+      {
+        event_id: eventByName.get(`Trail ${runId}`),
+        name: 'Race fixture',
+        date: '2031-10-01',
+        distance_km: 8,
+        elevation_gain_m: 600,
+        city: 'Test City',
+        province: 'Codex Automated Pagination',
+      },
+    ]);
+    if (raceError) throw raceError;
+
+    const { data, error } = await anonymous.rpc('get_public_events_page', {
+      ...rpcParameters(0),
+      p_scope_race_type: 'km-vertical',
+    });
+    if (error) throw error;
+
+    expect(data?.map((event: { name: string }) => event.name)).toEqual([
+      `Profile ${runId}`,
+      `Race ${runId}`,
+      `VertiKalm ${runId}`,
+    ]);
+  });
+
   it('returns only requested public event locations to anonymous users', async () => {
     const { data: knownLocation, error: locationError } = await admin
       .from('city_locations')
