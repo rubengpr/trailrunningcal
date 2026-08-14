@@ -44,13 +44,13 @@ export function EventCard({ eventDetail, locale, analyticsContext }: EventCardPr
   const location = formatEventLocationLabel(eventDetail.location, locale);
   const handleClick = analyticsContext
     ? () => {
-        track(ANALYTICS_EVENTS.RACE_CARD_CLICKED, {
-          event_id: eventDetail.event.id,
-          event_slug: eventDetail.event.slug,
-          source: analyticsContext.source,
-          layout_toggle_variant: analyticsContext.layoutToggleVariant,
-        });
-      }
+      track(ANALYTICS_EVENTS.RACE_CARD_CLICKED, {
+        event_id: eventDetail.event.id,
+        event_slug: eventDetail.event.slug,
+        source: analyticsContext.source,
+        layout_toggle_variant: analyticsContext.layoutToggleVariant,
+      });
+    }
     : undefined;
 
   return (
@@ -62,7 +62,7 @@ export function EventCard({ eventDetail, locale, analyticsContext }: EventCardPr
         className="block px-2 py-2.5 sm:px-4 sm:py-4"
       >
         <div className="flex min-w-0 items-start gap-4">
-          <div className="flex min-w-[50px] flex-col items-center justify-center rounded-sm bg-amber-50 px-3 py-2 text-gray-800">
+          <div className="flex min-w-12.5 flex-col items-center justify-center rounded-sm bg-amber-50 px-3 py-2 text-gray-800">
             <span className="text-[9px] font-medium uppercase tracking-wide sm:text-[10px]">
               {weekday}
             </span>
