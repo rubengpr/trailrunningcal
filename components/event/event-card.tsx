@@ -51,21 +51,23 @@ export function EventCard({ eventDetail, locale, analyticsContext }: EventCardPr
     id: race.id,
     label: formatDistance(race.distanceKm, locale),
   }));
+  const handleClick = analyticsContext
+    ? () => {
+        track(ANALYTICS_EVENTS.RACE_CARD_CLICKED, {
+          event_id: eventDetail.event.id,
+          event_slug: eventDetail.event.slug,
+          source: analyticsContext.source,
+          layout_toggle_variant: analyticsContext.layoutToggleVariant,
+        });
+      }
+    : undefined;
 
   return (
     <article className="relative w-full min-w-0 max-w-full rounded-lg bg-white shadow transition-shadow sm:hover:shadow-md">
       <Link
         href={`/${locale}/e/${eventDetail.event.slug}`}
         prefetch={false}
-        onClick={() => {
-          if (!analyticsContext) return;
-          track(ANALYTICS_EVENTS.RACE_CARD_CLICKED, {
-            event_id: eventDetail.event.id,
-            event_slug: eventDetail.event.slug,
-            source: analyticsContext.source,
-            layout_toggle_variant: analyticsContext.layoutToggleVariant,
-          });
-        }}
+        onClick={handleClick}
         className="block px-2 py-2.5 sm:px-4 sm:py-4"
       >
         <div className="flex min-w-0 items-start gap-4">

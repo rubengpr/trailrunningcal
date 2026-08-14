@@ -20,6 +20,7 @@ vi.mock('next/link', () => ({
     <a
       href={href}
       data-prefetch={String(prefetch)}
+      data-has-on-click={String(Boolean(onClick))}
       onClick={(event) => {
         onClick?.(event);
         event.preventDefault();
@@ -73,6 +74,7 @@ describe('EventCard', () => {
     const link = screen.getByRole('link', { name: /Trail de prova/ });
     expect(link.getAttribute('href')).toBe('/es/e/trail-de-prova');
     expect(link.getAttribute('data-prefetch')).toBe('false');
+    expect(link.getAttribute('data-has-on-click')).toBe('false');
   });
 
   it('tracks explorer card clicks with the layout-toggle variant', () => {
@@ -87,8 +89,10 @@ describe('EventCard', () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole('link', { name: /Trail de prova/ }));
+    const link = screen.getByRole('link', { name: /Trail de prova/ });
+    fireEvent.click(link);
 
+    expect(link.getAttribute('data-has-on-click')).toBe('true');
     expect(track).toHaveBeenCalledWith('race_card_clicked', {
       event_id: 'event-1',
       event_slug: 'trail-de-prova',

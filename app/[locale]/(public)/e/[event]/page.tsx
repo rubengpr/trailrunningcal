@@ -174,7 +174,7 @@ export default async function EventPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       <div className="min-h-screen w-full text-gray-900 flex flex-col bg-white">
-        <div className="flex flex-col max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="mx-auto flex w-full min-w-0 max-w-5xl flex-col px-4 py-6 sm:px-6 lg:px-8">
           <Breadcrumb
             items={[
               { name: tNav('calendar'), href: `/${locale}` },
