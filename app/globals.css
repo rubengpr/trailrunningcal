@@ -522,3 +522,18 @@ input[type='number'] {
   .maplibregl-ctrl-attrib-button:hover {
   background-color: rgb(255 255 255 / 0.85);
 }
+
+@media (max-width: 639px) {
+  [data-map-preview='true'] .event-track-map {
+    pointer-events: none;
+  }
+
+  [data-map-preview='true']
+    .event-track-map
+    .maplibregl-ctrl-group,
+  [data-map-preview='true'] .event-track-map-rotation-controls,
+  [data-map-preview='true'] .event-track-map-terrain-toggle,
+  [data-map-preview='true'] .event-track-map-terrain-settings {
+    display: none !important;
+  }
+}

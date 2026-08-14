@@ -24,6 +24,8 @@ import {
 } from '@/hooks/use-event-track-map';
 import { useMapFullscreen } from '@/hooks/use-map-fullscreen';
 import { useTerrainSettingsDisclosure } from '@/hooks/use-terrain-settings-disclosure';
+import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
+import { track } from '@/lib/analytics/track';
 import { getBrowserTerrainAutoLoadDecision } from '@/lib/maps/terrain-loading';
 import type {
   ElevationProfileCursorPoint,
@@ -53,12 +55,12 @@ function TrackLegend({
 }: TrackLegendProps) {
   return (
     <ul
-      className={`${fullscreen ? 'event-track-map-fullscreen-legend' : 'event-track-map-legend'} absolute z-10 flex w-max rounded-2xl border border-white/60 bg-white/75 px-3 py-2.5 text-xs leading-4 text-stone-900 shadow-sm backdrop-blur-sm sm:px-4 sm:text-sm ${
+      className={`${fullscreen ? 'event-track-map-fullscreen-legend' : 'event-track-map-legend'} absolute z-10 w-max rounded-2xl border border-white/60 bg-white/75 px-3 py-2.5 text-xs leading-4 text-stone-900 shadow-sm backdrop-blur-sm sm:px-4 sm:text-sm ${
         fullscreen
-          ? `left-3 max-w-[calc(100%-5.5rem)] flex-col items-start justify-start gap-2 text-left sm:max-w-sm ${
+          ? `left-3 flex max-w-[calc(100%-5.5rem)] flex-col items-start justify-start gap-2 text-left sm:max-w-sm ${
               offsetForHint ? 'top-16' : 'top-3'
             }`
-          : 'bottom-3 left-1/2 max-w-[calc(100%-1.5rem)] -translate-x-1/2 flex-wrap items-center justify-center gap-x-4 gap-y-2 text-center'
+          : 'bottom-3 left-1/2 hidden max-w-[calc(100%-1.5rem)] -translate-x-1/2 flex-wrap items-center justify-center gap-x-4 gap-y-2 text-center sm:flex'
       }`}
       data-testid="event-track-map-legend"
       data-fullscreen={fullscreen ? 'true' : undefined}
@@ -392,7 +394,9 @@ function FullscreenToggle({
   return (
     <button
       type="button"
-      className={`event-track-map-fullscreen-toggle absolute right-3 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-white/60 bg-white/70 text-stone-800 transition-colors hover:bg-white/85 ${
+      className={`event-track-map-fullscreen-toggle absolute right-3 z-10 h-9 w-9 items-center justify-center rounded-full border border-white/60 bg-white/70 text-stone-800 transition-colors hover:bg-white/85 ${
+        active ? 'flex' : 'hidden sm:flex'
+      } ${
         terrainSupported ? 'top-[11.75rem]' : 'top-[6.25rem]'
       }`}
       data-testid="event-track-map-fullscreen-toggle"
@@ -402,6 +406,25 @@ function FullscreenToggle({
       onClick={onToggle}
     >
       <Icon className="h-4 w-4" strokeWidth={2} />
+    </button>
+  );
+}
+
+interface MobilePreviewToggleProps {
+  label: string;
+  onToggle: () => void;
+}
+
+function MobilePreviewToggle({ label, onToggle }: MobilePreviewToggleProps) {
+  return (
+    <button
+      type="button"
+      className="event-track-map-preview-toggle absolute left-1/2 top-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 whitespace-nowrap rounded-full border border-white/30 bg-stone-950/90 px-4 py-2.5 text-sm font-semibold text-white shadow-lg backdrop-blur-sm transition-colors hover:bg-stone-800 sm:hidden"
+      data-testid="event-track-map-preview-toggle"
+      onClick={onToggle}
+    >
+      <Maximize2 className="h-4 w-4" strokeWidth={2} />
+      <span>{label}</span>
     </button>
   );
 }
@@ -464,6 +487,7 @@ export function EventTrackMap({
     resizeMap,
     retryTerrain,
     rotateMap,
+    setAttributionVisible,
     setHillshadeIntensity,
     setTerrainExaggeration,
     setTerrainPitch,
@@ -508,7 +532,19 @@ export function EventTrackMap({
   }, [isFullscreen, onFullscreenChange]);
 
   useEffect(() => {
-    if (!isMapReady || autoTerrainAttemptedRef.current) return;
+    setAttributionVisible(
+      isFullscreen || window.matchMedia('(min-width: 640px)').matches,
+    );
+  }, [isFullscreen, setAttributionVisible]);
+
+  useEffect(() => {
+    if (
+      !isMapReady ||
+      autoTerrainAttemptedRef.current ||
+      (!isFullscreen && !window.matchMedia('(min-width: 640px)').matches)
+    ) {
+      return;
+    }
     autoTerrainAttemptedRef.current = true;
     const timeoutId = window.setTimeout(() => {
       const decision = getBrowserTerrainAutoLoadDecision();
@@ -518,7 +554,19 @@ export function EventTrackMap({
       if (decision.enabled) requestTerrain({ includeHillshade: false });
     }, 500);
     return () => window.clearTimeout(timeoutId);
-  }, [isMapReady, requestTerrain]);
+  }, [isFullscreen, isMapReady, requestTerrain]);
+
+  const handleFullscreenToggle = () => {
+    if (!isFullscreen) {
+      track(ANALYTICS_EVENTS.EVENT_TRACK_MAP_FULLSCREEN_OPENED, {
+        event_id: eventId,
+        event_slug: eventSlug,
+        route_count: routes.length,
+        race_count: new Set(routes.flatMap((route) => route.raceIds)).size,
+      });
+    }
+    toggleFullscreen();
+  };
 
   const mapContent = hasError ? (
     <div
@@ -528,6 +576,7 @@ export function EventTrackMap({
           : ''
       }`}
       data-map-fullscreen={isFullscreen ? 'true' : undefined}
+      data-map-preview={!isFullscreen ? 'true' : undefined}
       data-event-track-map-root
     >
       <ErrorMessage
@@ -541,7 +590,7 @@ export function EventTrackMap({
           <FullscreenToggle
             active
             label={tMap('exitFullscreen')}
-            onToggle={toggleFullscreen}
+            onToggle={handleFullscreenToggle}
             terrainSupported={false}
           />
           {fullscreenProfile ? (
@@ -558,6 +607,7 @@ export function EventTrackMap({
           : ''
       }`}
       data-map-fullscreen={isFullscreen ? 'true' : undefined}
+      data-map-preview={!isFullscreen ? 'true' : undefined}
       data-rotation-hint-visible={showRotationHint ? 'true' : undefined}
       data-terrain-status={terrainStatus}
       data-terrain-controls={terrainSupported ? 'true' : 'false'}
@@ -635,9 +685,15 @@ export function EventTrackMap({
             ? tMap('exitFullscreen')
             : tMap('enterFullscreen')
         }
-        onToggle={toggleFullscreen}
+        onToggle={handleFullscreenToggle}
         terrainSupported={terrainSupported}
       />
+      {!isFullscreen ? (
+        <MobilePreviewToggle
+          label={tMap('openRouteFullscreen')}
+          onToggle={handleFullscreenToggle}
+        />
+      ) : null}
       {is3D && showRotationHint ? (
         <RotationHint
           desktopLabel={tMap('rotateHintDesktop')}
@@ -659,7 +715,7 @@ export function EventTrackMap({
     <>
       <div
         ref={fullscreenAnchorRef}
-        className="h-[420px] w-full bg-stone-100 sm:h-[480px]"
+        className="h-[336px] w-full bg-stone-100 sm:h-[480px]"
         data-testid="event-track-map-anchor"
       />
       {portalHost ? createPortal(mapContent, portalHost) : null}

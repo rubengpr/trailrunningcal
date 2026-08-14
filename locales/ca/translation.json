@@ -12,6 +12,7 @@
     "viewMap": "Mapa",
     "viewList": "Llista",
     "enterFullscreen": "Veure el mapa a pantalla completa",
+    "openRouteFullscreen": "Obrir el mapa del recorregut",
     "exitFullscreen": "Sortir de pantalla completa",
     "chooseRotationDirection": "Triar el sentit de gir",
     "rotateLeft": "Girar a l'esquerra",

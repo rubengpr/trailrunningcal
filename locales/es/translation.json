@@ -12,6 +12,7 @@
     "viewMap": "Mapa",
     "viewList": "Lista",
     "enterFullscreen": "Ver mapa a pantalla completa",
+    "openRouteFullscreen": "Abrir mapa del recorrido",
     "exitFullscreen": "Salir de pantalla completa",
     "chooseRotationDirection": "Elegir sentido de giro",
     "rotateLeft": "Girar a la izquierda",

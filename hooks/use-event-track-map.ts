@@ -222,6 +222,16 @@ function collapseAttribution(container: HTMLElement): void {
     ?.classList.remove('maplibregl-compact-show');
 }
 
+function setAttributionVisibility(
+  container: HTMLElement,
+  visible: boolean,
+): void {
+  const attribution = container.querySelector<HTMLElement>(
+    '.maplibregl-ctrl-attrib',
+  );
+  if (attribution) attribution.hidden = !visible;
+}
+
 function extendBounds(
   bounds: maplibregl.LngLatBounds,
   geometry: LineString | MultiLineString,
@@ -246,7 +256,7 @@ function fitRouteBounds(
   terrainPitch = DEFAULT_TERRAIN_PITCH,
 ): void {
   map.fitBounds(bounds, {
-    padding: window.matchMedia('(min-width: 640px)').matches ? 48 : 24,
+    padding: 48,
     maxZoom: 15,
     duration,
     linear: true,
@@ -288,6 +298,9 @@ export function useEventTrackMap({
   const mapRef = useRef<maplibregl.Map | null>(null);
   const activePointRef = useRef(activePoint);
   const resizeMapRef = useRef<() => void>(() => undefined);
+  const setAttributionVisibleRef = useRef<(visible: boolean) => void>(
+    () => undefined,
+  );
   const rotateMapRef = useRef<(direction: -1 | 1) => void>(() => undefined);
   const updateTerrainSettingsRef = useRef<
     (settings: Partial<TerrainSettings>) => void
@@ -489,7 +502,19 @@ export function useEventTrackMap({
         attributionControl: false,
       });
       mapRef.current = map;
-      resizeMapRef.current = () => map?.resize();
+      resizeMapRef.current = () => {
+        if (!map) return;
+        map.resize();
+        if (routeBounds) {
+          fitRouteBounds(
+            map,
+            routeBounds,
+            currentTerrainStatus === '3d' ? '3d' : '2d',
+            0,
+            currentTerrainPitch,
+          );
+        }
+      };
       map.addControl(
         new maplibregl.NavigationControl({
           showCompass: false,
@@ -503,6 +528,12 @@ export function useEventTrackMap({
         'top-right',
       );
       collapseAttribution(container);
+      setAttributionVisibility(
+        container,
+        window.matchMedia('(min-width: 640px)').matches,
+      );
+      setAttributionVisibleRef.current = (visible) =>
+        setAttributionVisibility(container, visible);
 
       const trackInteraction = (interaction: 'pan' | 'rotate' | 'zoom') => {
         if (interactionTracked) return;
@@ -1000,6 +1031,7 @@ export function useEventTrackMap({
       retryTerrainRef.current = () => undefined;
       rotateMapRef.current = () => undefined;
       resizeMapRef.current = () => undefined;
+      setAttributionVisibleRef.current = () => undefined;
       updateTerrainSettingsRef.current = () => undefined;
       mapRef.current = null;
       if (settingsAnimationFrameId !== null) {
@@ -1034,6 +1066,10 @@ export function useEventTrackMap({
   ]);
 
   const resizeMap = useCallback(() => resizeMapRef.current(), []);
+  const setAttributionVisible = useCallback(
+    (visible: boolean) => setAttributionVisibleRef.current(visible),
+    [],
+  );
   const requestTerrain = useCallback(
     (options?: TerrainRequestOptions) => requestTerrainRef.current(options),
     [],
@@ -1061,6 +1097,7 @@ export function useEventTrackMap({
     requestTerrain,
     retryTerrain,
     rotateMap: (direction: -1 | 1) => rotateMapRef.current(direction),
+    setAttributionVisible,
     setHillshadeIntensity: (value: number) => {
       const nextValue = clamp(
         value,

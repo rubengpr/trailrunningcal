@@ -326,6 +326,7 @@ describe('EventTrackMap', () => {
   it('automatically requests lightweight 3D after showing the 2D fallback', () => {
     vi.useFakeTimers();
     try {
+      window.matchMedia = vi.fn().mockReturnValue({ matches: true });
       window.history.replaceState({}, '', '/?event-map-3d=auto');
       Object.defineProperty(navigator, 'connection', {
         configurable: true,
@@ -394,9 +395,43 @@ describe('EventTrackMap', () => {
     }
   });
 
+  it('keeps the mobile preview in 2D until it opens fullscreen', () => {
+    vi.useFakeTimers();
+    try {
+      window.history.replaceState({}, '', '/?event-map-3d=auto');
+      Object.defineProperty(navigator, 'connection', {
+        configurable: true,
+        value: { effectiveType: '4g', saveData: false },
+      });
+
+      render(<EventTrackMap {...props} />);
+      act(() => mocks.handlers.get('load')?.());
+      act(() => vi.advanceTimersByTime(500));
+
+      expect(
+        screen
+          .getByTestId('event-track-map')
+          .parentElement?.getAttribute('data-terrain-status'),
+      ).toBe('2d');
+
+      fireEvent.click(screen.getByTestId('event-track-map-preview-toggle'));
+      act(() => vi.advanceTimersByTime(500));
+
+      expect(
+        screen
+          .getByTestId('event-track-map')
+          .parentElement?.getAttribute('data-terrain-status'),
+      ).toBe('loading');
+      expect(mocks.mapConstructor).toHaveBeenCalledTimes(1);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('keeps automatic 3D off on 3G but honors an explicit request', () => {
     vi.useFakeTimers();
     try {
+      window.matchMedia = vi.fn().mockReturnValue({ matches: true });
       window.history.replaceState({}, '', '/?event-map-3d=auto');
       Object.defineProperty(navigator, 'connection', {
         configurable: true,
@@ -432,6 +467,7 @@ describe('EventTrackMap', () => {
     vi.useFakeTimers();
     vi.stubEnv('NODE_ENV', 'production');
     try {
+      window.matchMedia = vi.fn().mockReturnValue({ matches: true });
       window.history.replaceState({}, '', '/?event-map-3d=auto');
       Object.defineProperty(navigator, 'connection', {
         configurable: true,
@@ -459,6 +495,7 @@ describe('EventTrackMap', () => {
   it('keeps timeout and retry recovery for lightweight automatic 3D', () => {
     vi.useFakeTimers();
     try {
+      window.matchMedia = vi.fn().mockReturnValue({ matches: true });
       window.history.replaceState({}, '', '/?event-map-3d=auto');
       Object.defineProperty(navigator, 'connection', {
         configurable: true,
@@ -744,6 +781,52 @@ describe('EventTrackMap', () => {
     expect(button.title).toBe('enterFullscreen');
     expect(document.activeElement).toBe(button);
     expect(mocks.mapConstructor).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows a non-interactive mobile preview CTA and reuses the map fullscreen', () => {
+    render(<EventTrackMap {...props} />);
+    act(() => mocks.handlers.get('load')?.());
+
+    const anchor = screen.getByTestId('event-track-map-anchor');
+    const attribution = screen
+      .getByTestId('event-track-map')
+      .querySelector<HTMLElement>('.maplibregl-ctrl-attrib');
+    const mapRoot = screen.getByTestId('event-track-map').parentElement;
+    const previewButton = screen.getByTestId('event-track-map-preview-toggle');
+
+    expect(anchor.className).toContain('h-[336px]');
+    expect(anchor.className).toContain('sm:h-[480px]');
+    expect(attribution?.hidden).toBe(true);
+    expect(mapRoot?.getAttribute('data-map-preview')).toBe('true');
+    expect(previewButton.textContent).toContain('openRouteFullscreen');
+    expect(screen.getByTestId('event-track-map-legend').className).toContain(
+      'hidden',
+    );
+    expect(screen.getByTestId('event-track-map-legend').className).toContain(
+      'sm:flex',
+    );
+    expect(mocks.mapConstructor).toHaveBeenCalledTimes(1);
+    expect(mocks.fitBounds).toHaveBeenLastCalledWith(
+      expect.anything(),
+      expect.objectContaining({ padding: 48 }),
+    );
+
+    fireEvent.click(previewButton);
+
+    expect(mapRoot?.getAttribute('data-map-preview')).toBeNull();
+    expect(mapRoot?.getAttribute('data-map-fullscreen')).toBe('true');
+    expect(attribution?.hidden).toBe(false);
+    expect(screen.queryByTestId('event-track-map-preview-toggle')).toBeNull();
+    expect(mocks.mapConstructor).toHaveBeenCalledTimes(1);
+    expect(mocks.track).toHaveBeenCalledWith(
+      'event_track_map_fullscreen_opened',
+      {
+        event_id: 'event-1',
+        event_slug: 'pedraforca-xtrail',
+        route_count: 1,
+        race_count: 1,
+      },
+    );
   });
 
   it('shows the elevation profile at the bottom and moves the legend in fullscreen', () => {

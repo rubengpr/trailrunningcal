@@ -12,6 +12,7 @@ export const ANALYTICS_EVENTS = {
   EVENT_PROVINCE_LINK_CLICKED: 'event_province_link_clicked',
   EVENT_RACE_MAP_OPENED: 'event_race_map_opened',
   EVENT_SHARE_CLICKED: 'event_share_clicked',
+  EVENT_TRACK_MAP_FULLSCREEN_OPENED: 'event_track_map_fullscreen_opened',
   EVENT_TRACK_MAP_INTERACTED: 'event_track_map_interacted',
   EVENT_TRACK_MAP_TERRAIN_LOAD_FINISHED:
     'event_track_map_terrain_load_finished',
@@ -100,6 +101,12 @@ export interface AnalyticsEventProperties {
   [ANALYTICS_EVENTS.EVENT_SHARE_CLICKED]: {
     event_id: string;
     event_slug: string;
+  };
+  [ANALYTICS_EVENTS.EVENT_TRACK_MAP_FULLSCREEN_OPENED]: {
+    event_id: string;
+    event_slug: string;
+    route_count: number;
+    race_count: number;
   };
   [ANALYTICS_EVENTS.EVENT_TRACK_MAP_INTERACTED]: {
     event_id: string;
