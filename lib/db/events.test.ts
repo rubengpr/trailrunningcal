@@ -172,7 +172,6 @@ describe('selectRelevantEventRaces', () => {
 });
 
 describe('shouldShowEventResults', () => {
-  const referenceDate = '2026-08-17';
   const resultRace = race({
     id: 'result-race',
     date: '2026-08-15',
@@ -180,33 +179,25 @@ describe('shouldShowEventResults', () => {
     resultsUrl: 'https://results.example.com/36k',
   });
 
-  it('shows partial results after the event has finished', () => {
+  it('shows partial results when a modality has a URL', () => {
     expect(shouldShowEventResults(
-      { startDate: '2026-08-15', endDate: '2026-08-15' },
       [resultRace, race({ id: 'hidden', date: '2026-08-15', distanceKm: 4 })],
-      referenceDate,
     )).toBe(true);
   });
 
-  it('hides results for current or future events', () => {
-    expect(shouldShowEventResults(
-      { startDate: '2026-08-17', endDate: '2026-08-17' },
-      [resultRace],
-      referenceDate,
-    )).toBe(false);
-    expect(shouldShowEventResults(
-      { startDate: '2026-08-18', endDate: '2026-08-18' },
-      [resultRace],
-      referenceDate,
-    )).toBe(false);
+  it('shows results regardless of the event date', () => {
+    expect(shouldShowEventResults([
+      { ...resultRace, date: '2026-08-17' },
+    ])).toBe(true);
+    expect(shouldShowEventResults([
+      { ...resultRace, date: '2026-08-18' },
+    ])).toBe(true);
   });
 
-  it('hides a past event without result URLs', () => {
-    expect(shouldShowEventResults(
-      { startDate: '2026-08-15', endDate: '2026-08-15' },
-      [race({ id: 'no-results', date: '2026-08-15', distanceKm: 12 })],
-      referenceDate,
-    )).toBe(false);
+  it('hides an event without result URLs', () => {
+    expect(shouldShowEventResults([
+      race({ id: 'no-results', date: '2026-08-15', distanceKm: 12 }),
+    ])).toBe(false);
   });
 });
 

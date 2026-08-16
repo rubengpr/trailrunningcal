@@ -129,10 +129,7 @@ export default async function EventPage({
     tEvent('dateTbd'),
   );
   const locationLabel = formatEventLocationLabel(eventData.location, locale as Locale);
-  const showResults = shouldShowEventResults(
-    eventData.dateRange,
-    eventData.races,
-  );
+  const showResults = shouldShowEventResults(eventData.races);
   const resultsYear = eventData.dateRange.startDate?.slice(0, 4)
     ?? new Date().getFullYear().toString();
 

@@ -73,13 +73,9 @@ export function buildEventDateRange(
 }
 
 export function shouldShowEventResults(
-  dateRange: TrailEventDateRange,
   races: TrailEventRace[],
-  referenceDate: string = new Date().toISOString().slice(0, 10),
 ): boolean {
-  return dateRange.endDate !== null
-    && dateRange.endDate < referenceDate
-    && races.some((race) => race.resultsUrl !== null);
+  return races.some((race) => race.resultsUrl !== null);
 }
 
 export function buildEventLocation(
