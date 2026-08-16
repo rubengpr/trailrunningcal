@@ -14,6 +14,7 @@ import { isValidProvince } from '@/lib/geography/provinces';
 export type EventRaceWriteInput = Omit<TrailEventAgentRace, 'name'> & {
   name: string | null;
   id?: string;
+  resultsUrl?: string | null;
   tiers: EventRaceTierWriteInput[];
 };
 
@@ -30,6 +31,9 @@ function toRacePayload(race: EventRaceWriteInput): Record<string, unknown> {
     province: race.province,
     distance_km: race.distanceKm,
     elevation_gain_m: race.elevationGainM,
+    ...(race.resultsUrl !== undefined
+      ? { results_url: race.resultsUrl }
+      : {}),
     tiers: race.tiers.map((tier) => ({
       price_eur: tier.priceEur,
       ends_at: tier.endsAt,
@@ -52,7 +56,7 @@ export async function createEventWithRaces(
 ): Promise<{ id: string }> {
   const supabase = createAdminClient();
 
-  const { data, error } = await supabase.rpc('create_event_with_races', {
+  const { data, error } = await supabase.rpc('create_event_with_results', {
     p_event: {
       name: input.event.name,
       description: input.event.description,
@@ -75,7 +79,7 @@ export async function updateEventWithRaces(
 ): Promise<TrailEventDetail> {
   const supabase = createAdminClient();
 
-  const { data, error } = await supabase.rpc('update_event_with_races', {
+  const { data, error } = await supabase.rpc('update_event_with_results', {
     p_event_id: eventId,
     p_event: {
       name: input.event.name,
@@ -114,7 +118,7 @@ export async function updateOrganizerEventWithRaces(
 ): Promise<TrailEventDetail> {
   const supabase = await createClient();
 
-  const { data, error } = await supabase.rpc('update_organizer_event_with_races', {
+  const { data, error } = await supabase.rpc('update_organizer_event_with_results', {
     p_event_id: eventId,
     p_organizer_id: organizerId,
     p_event: {
@@ -157,7 +161,7 @@ export async function createEventEdition(
 ): Promise<TrailEventDetail> {
   const supabase = createAdminClient();
 
-  const { data, error } = await supabase.rpc('create_event_edition', {
+  const { data, error } = await supabase.rpc('create_event_edition_with_results', {
     p_event_id: eventId,
     p_event: {
       name: input.event.name,

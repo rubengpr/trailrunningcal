@@ -13,11 +13,16 @@ import { EventFavoriteButton } from '@/components/event/event-favorite-button';
 import { EventDistanceList } from '@/components/event/event-distance-list';
 import { EventShareWhatsappButton } from '@/components/event/event-share-whatsapp-button';
 import { EventFeatureFeedback } from '@/components/event/event-feature-feedback';
+import { EventResultsAccordion } from '@/components/event/event-results-accordion';
 import { EventTrackMapSection } from '@/components/event-track-map/event-track-map-section';
 import { ConfirmedDateBadge } from '@/components/race/confirmed-date-badge';
 import { RaceOrganizerClaimCard } from '@/components/race/race-organizer-claim-card';
 import { TrackedLink } from '@/components/ui/tracked-link';
-import { formatEventDateRange, formatEventLocationLabel } from '@/lib/events/utils';
+import {
+  formatEventDateRange,
+  formatEventLocationLabel,
+  shouldShowEventResults,
+} from '@/lib/events/utils';
 import { buildBreadcrumbJsonLd, buildEventJsonLd } from '@/lib/seo/json-ld';
 import { LOCALE_BY_LANGUAGE, SITE_NAME } from '@/lib/seo/meta-config';
 import { getDestinationPath, getProvinceByDbName } from '@/lib/geography/destinations';
@@ -124,6 +129,12 @@ export default async function EventPage({
     tEvent('dateTbd'),
   );
   const locationLabel = formatEventLocationLabel(eventData.location, locale as Locale);
+  const showResults = shouldShowEventResults(
+    eventData.dateRange,
+    eventData.races,
+  );
+  const resultsYear = eventData.dateRange.startDate?.slice(0, 4)
+    ?? new Date().getFullYear().toString();
 
   const destinationProvince =
     !eventData.location.isMultipleLocations && eventData.location.province
@@ -252,6 +263,20 @@ export default async function EventPage({
               </div>
             </div>
           </header>
+
+          {showResults ? (
+            <EventResultsAccordion
+              eventId={eventData.event.id}
+              eventSlug={event}
+              locale={localeTyped}
+              races={eventData.races}
+              title={tEvent('resultsAccordion.title', {
+                eventName: eventData.event.name,
+                year: resultsYear,
+              })}
+              viewLabel={tEvent('resultsAccordion.view')}
+            />
+          ) : null}
 
           {eventData.event.description && (
             <div className="w-full my-6 sm:my-8">

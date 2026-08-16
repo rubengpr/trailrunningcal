@@ -18,7 +18,9 @@ vi.mock('@/lib/db/events', () => ({
 }));
 
 import {
+  createEventEdition,
   createEventWithRaces,
+  updateEventWithRaces,
   updateOrganizerEventWithRaces,
 } from './events';
 
@@ -75,7 +77,7 @@ describe('event services race tiers', () => {
   it('includes tiers when creating an event with races', async () => {
     await expect(createEventWithRaces(input)).resolves.toEqual({ id: EVENT_ID });
 
-    expect(mocks.rpc).toHaveBeenCalledWith('create_event_with_races', {
+    expect(mocks.rpc).toHaveBeenCalledWith('create_event_with_results', {
       p_event: {
         name: 'Trail Event',
         description: null,
@@ -85,16 +87,91 @@ describe('event services race tiers', () => {
     });
   });
 
-  it('includes tiers when an organizer updates an owned event', async () => {
+  it('persists results when creating an event or a new edition', async () => {
+    const inputWithResults = {
+      ...input,
+      races: [{
+        ...input.races[0],
+        resultsUrl: 'https://results.example.com/21k',
+      }],
+    };
+    const detail = { event: { id: EVENT_ID }, races: [] };
+    mocks.getEventByIdForAdmin.mockResolvedValue(detail);
+
+    await createEventWithRaces(inputWithResults);
+    await expect(createEventEdition(EVENT_ID, inputWithResults)).resolves.toBe(detail);
+
+    expect(mocks.rpc).toHaveBeenNthCalledWith(1, 'create_event_with_results', {
+      p_event: {
+        name: 'Trail Event',
+        description: null,
+        website_url: 'https://example.com',
+      },
+      p_races: [{
+        ...expectedRacePayload,
+        results_url: 'https://results.example.com/21k',
+      }],
+    });
+    expect(mocks.rpc).toHaveBeenNthCalledWith(
+      2,
+      'create_event_edition_with_results',
+      expect.objectContaining({
+        p_event_id: EVENT_ID,
+        p_races: [{
+          ...expectedRacePayload,
+          results_url: 'https://results.example.com/21k',
+        }],
+      }),
+    );
+  });
+
+  it('includes tiers and results when an admin updates an event', async () => {
+    const detail = { event: { id: EVENT_ID }, races: [] };
+    mocks.getEventByIdForAdmin.mockResolvedValue(detail);
+
+    await expect(
+      updateEventWithRaces(EVENT_ID, {
+        ...input,
+        races: [{
+          ...input.races[0],
+          id: 'race-1',
+          resultsUrl: 'https://results.example.com/21k',
+        }],
+      }),
+    ).resolves.toBe(detail);
+
+    expect(mocks.rpc).toHaveBeenCalledWith('update_event_with_results', {
+      p_event_id: EVENT_ID,
+      p_event: {
+        name: 'Trail Event',
+        description: null,
+        website_url: 'https://example.com',
+      },
+      p_races: [{
+        ...expectedRacePayload,
+        id: 'race-1',
+        results_url: 'https://results.example.com/21k',
+      }],
+    });
+  });
+
+  it('includes results when an organizer updates an owned event', async () => {
     const detail = { event: { id: EVENT_ID }, races: [] };
     mocks.getEventByIdForOrganizer.mockResolvedValue(detail);
 
     await expect(
-      updateOrganizerEventWithRaces(EVENT_ID, ORGANIZER_ID, input),
+      updateOrganizerEventWithRaces(EVENT_ID, ORGANIZER_ID, {
+        ...input,
+        races: [{
+          ...input.races[0],
+          id: 'race-1',
+          resultsUrl: 'https://results.example.com/21k',
+        }],
+      }),
     ).resolves.toBe(detail);
 
     expect(mocks.rpc).toHaveBeenCalledWith(
-      'update_organizer_event_with_races',
+      'update_organizer_event_with_results',
       {
         p_event_id: EVENT_ID,
         p_organizer_id: ORGANIZER_ID,
@@ -103,9 +180,27 @@ describe('event services race tiers', () => {
           description: null,
           website_url: 'https://example.com',
         },
-        p_races: [expectedRacePayload],
+        p_races: [{
+          ...expectedRacePayload,
+          id: 'race-1',
+          results_url: 'https://results.example.com/21k',
+        }],
       },
     );
+  });
+
+  it('omits results so older clients preserve the stored value', async () => {
+    const detail = { event: { id: EVENT_ID }, races: [] };
+    mocks.getEventByIdForAdmin.mockResolvedValue(detail);
+
+    await updateEventWithRaces(EVENT_ID, input);
+
+    expect(mocks.rpc).toHaveBeenCalledWith('update_event_with_results',
+      expect.objectContaining({
+        p_races: [expectedRacePayload],
+      }),
+    );
+    expect(expectedRacePayload).not.toHaveProperty('results_url');
   });
 
   it('rejects a non-canonical province before any database write', async () => {

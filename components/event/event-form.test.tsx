@@ -47,6 +47,7 @@ const initialData: TrailEventDetail = {
     province: 'Girona',
     distanceKm: 21,
     elevationGainM: 900,
+    resultsUrl: null,
     tiers: [],
   }],
   allRaceCount: 1,
@@ -83,6 +84,26 @@ describe('EventForm province selection', () => {
     fireEvent.click(screen.getByRole('button', { name: 'save' }));
 
     expect(screen.getByText('errors.province')).toBeTruthy();
+    expect(mocks.updateEvent).not.toHaveBeenCalled();
+  });
+});
+
+describe('EventForm results URLs', () => {
+  it('shows the field to organizers editing a saved race and uses custom validation', () => {
+    render(
+      <EventForm
+        eventId="event-1"
+        initialData={initialData}
+        isEditMode
+        apiMode="organizer"
+      />,
+    );
+
+    const input = screen.getByPlaceholderText('resultsUrlPlaceholder');
+    fireEvent.change(input, { target: { value: 'ftp://example.com/results' } });
+    fireEvent.click(screen.getByRole('button', { name: 'save' }));
+
+    expect(screen.getByText('errors.resultsUrl')).toBeTruthy();
     expect(mocks.updateEvent).not.toHaveBeenCalled();
   });
 });

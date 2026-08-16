@@ -6,6 +6,7 @@ import {
   formatEventLocationLabel,
   selectRecommendedEvents,
   selectRelevantEventRaces,
+  shouldShowEventResults,
 } from '@/lib/events/utils';
 import type { TrailEventDetail, TrailEventRace } from '@/types/event.types';
 
@@ -18,6 +19,7 @@ function race(
     city: 'Bagà',
     province: 'Barcelona',
     mapUrl: null,
+    resultsUrl: null,
     tiers: [],
     ...overrides,
   };
@@ -166,6 +168,45 @@ describe('selectRelevantEventRaces', () => {
       'long-walk',
       'short-walk',
     ]);
+  });
+});
+
+describe('shouldShowEventResults', () => {
+  const referenceDate = '2026-08-17';
+  const resultRace = race({
+    id: 'result-race',
+    date: '2026-08-15',
+    distanceKm: 36,
+    resultsUrl: 'https://results.example.com/36k',
+  });
+
+  it('shows partial results after the event has finished', () => {
+    expect(shouldShowEventResults(
+      { startDate: '2026-08-15', endDate: '2026-08-15' },
+      [resultRace, race({ id: 'hidden', date: '2026-08-15', distanceKm: 4 })],
+      referenceDate,
+    )).toBe(true);
+  });
+
+  it('hides results for current or future events', () => {
+    expect(shouldShowEventResults(
+      { startDate: '2026-08-17', endDate: '2026-08-17' },
+      [resultRace],
+      referenceDate,
+    )).toBe(false);
+    expect(shouldShowEventResults(
+      { startDate: '2026-08-18', endDate: '2026-08-18' },
+      [resultRace],
+      referenceDate,
+    )).toBe(false);
+  });
+
+  it('hides a past event without result URLs', () => {
+    expect(shouldShowEventResults(
+      { startDate: '2026-08-15', endDate: '2026-08-15' },
+      [race({ id: 'no-results', date: '2026-08-15', distanceKm: 12 })],
+      referenceDate,
+    )).toBe(false);
   });
 });
 

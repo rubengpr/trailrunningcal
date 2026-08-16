@@ -198,6 +198,10 @@
       "until": "fins al {date}"
     },
     "racesTitle": "Distàncies",
+    "resultsAccordion": {
+      "title": "Classificacions de {eventName} {year}",
+      "view": "Veure resultats"
+    },
     "elevationRatioTooltip": "Mitjana de desnivell acumulat per quilòmetre",
     "trackMap": {
       "title": "Recorreguts",
@@ -1075,6 +1079,8 @@
       "provincePlaceholder": "Selecciona una província",
       "distanceKm": "Distància (km)",
       "elevationGainM": "Desnivell (m)",
+      "resultsUrl": "URL de resultats",
+      "resultsUrlPlaceholder": "https://exemple.com/resultats",
       "tiers": {
         "title": "Preus d’inscripció",
         "description": "Afegeix un preu únic o diversos preus amb dates límit inclusives i ordenades. Màxim {count} preus per cursa.",
@@ -1130,6 +1136,7 @@
         "province": "Selecciona una província vàlida",
         "distance": "La distància ha de ser un número vàlid",
         "elevation": "El desnivell ha de ser un número enter vàlid",
+        "resultsUrl": "L’URL de resultats ha de començar per http:// o https://",
         "tierLimit": "Cada cursa pot tenir un màxim de 5 preus",
         "tierPrice": "El preu ha de ser un número enter entre 0 i 9999 €",
         "tierDeadlineRequired": "Indica una data límit per a cada preu quan n’hi hagi més d’un",

@@ -38,6 +38,14 @@ function bodyWithProvince(province: unknown): Record<string, unknown> {
   return input;
 }
 
+function bodyWithResultsUrl(resultsUrl: unknown): Record<string, unknown> {
+  const input = body([]);
+  const races = input.races as Array<Record<string, unknown>>;
+  races[0].id = '9b6330da-471c-46d4-99ed-51b56970e1af';
+  races[0].resultsUrl = resultsUrl;
+  return input;
+}
+
 function expectValidationError(
   callback: () => unknown,
   message: string,
@@ -168,4 +176,44 @@ describe('event race province validation', () => {
       );
     },
   );
+});
+
+describe('event race results URL validation', () => {
+  it('accepts and trims http and https URLs', () => {
+    const https = parseEventInput(
+      bodyWithResultsUrl(' https://results.example.com/race '),
+    );
+    const http = parseEventInput(
+      bodyWithResultsUrl('http://results.example.com/race'),
+    );
+
+    expect(https.races[0].resultsUrl).toBe(
+      'https://results.example.com/race',
+    );
+    expect(http.races[0].resultsUrl).toBe(
+      'http://results.example.com/race',
+    );
+  });
+
+  it.each(['', '   ', null])('normalizes an empty value %j to null', (value) => {
+    expect(parseEventInput(bodyWithResultsUrl(value)).races[0].resultsUrl)
+      .toBeNull();
+  });
+
+  it.each([
+    'javascript:alert(1)',
+    'ftp://results.example.com/race',
+    'results.example.com/race',
+  ])('rejects the unsafe or malformed URL %j', (value) => {
+    expectValidationError(
+      () => parseEventInput(bodyWithResultsUrl(value)),
+      'Invalid results URL',
+    );
+  });
+
+  it('preserves omission for backwards-compatible clients', () => {
+    const parsed = parseEventInput(body([]));
+
+    expect(parsed.races[0]).not.toHaveProperty('resultsUrl');
+  });
 });

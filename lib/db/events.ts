@@ -64,7 +64,10 @@ function isEventRaceRow(value: unknown): value is EventRaceRow {
     typeof value.province === 'string' &&
     (typeof value.map_url === 'string' ||
       value.map_url === null ||
-      value.map_url === undefined)
+      value.map_url === undefined) &&
+    (typeof value.results_url === 'string' ||
+      value.results_url === null ||
+      value.results_url === undefined)
   );
 }
 
@@ -121,6 +124,7 @@ export function toTrailEventRace(row: EventRaceRow): TrailEventRace {
     city: row.city,
     province: row.province,
     mapUrl: row.map_url ?? null,
+    resultsUrl: row.results_url ?? null,
     tiers,
   };
 }
@@ -279,6 +283,7 @@ export async function getAdminEventsPage({
           city,
           province,
           map_url,
+          results_url,
           race_tiers ( id, ends_at, price_eur )
         )
       `,
@@ -347,6 +352,7 @@ export async function getEventsForOrganizer(
         city,
         province,
         map_url,
+        results_url,
         race_tiers ( id, ends_at, price_eur )
       )
     `,
@@ -420,6 +426,7 @@ export async function getEventByIdForOrganizer(
       city,
       province,
       map_url,
+      results_url,
       race_tiers ( price_eur )
     `,
     )
@@ -582,6 +589,7 @@ export const getEventBySlug = cache(async function getEventBySlug(
       city,
       province,
       map_url,
+      results_url,
       track_geometry,
       race_tiers ( ends_at, price_eur )
     `,
@@ -654,6 +662,7 @@ export async function getEventByIdForAdmin(
       city,
       province,
       map_url,
+      results_url,
       race_tiers ( id, ends_at, price_eur )
     `,
     )

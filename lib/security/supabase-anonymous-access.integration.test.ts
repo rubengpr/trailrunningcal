@@ -30,7 +30,7 @@ integrationDescribe('anonymous Supabase access', () => {
         .limit(1),
       supabase
         .from('races')
-        .select('id, name, date, distance_km, elevation_gain_m, city, province, map_url, event_id, race_tiers ( ends_at, price_eur )')
+        .select('id, name, date, distance_km, elevation_gain_m, city, province, map_url, results_url, event_id, race_tiers ( ends_at, price_eur )')
         .limit(1),
       supabase
         .from('city_locations')
@@ -100,12 +100,29 @@ integrationDescribe('anonymous Supabase access', () => {
         p_event: null,
         p_races: null,
       }),
+      supabase.rpc('create_event_edition_with_results', {
+        p_event_id: ZERO_UUID,
+        p_event: null,
+        p_races: null,
+      }),
       supabase.rpc('create_event_import_batch', { p_urls: null, p_model: null }),
       supabase.rpc('create_event_update_batch', { p_reference_date: '2099-01-01' }),
       supabase.rpc('create_event_with_races', { p_event: null, p_races: null }),
+      supabase.rpc('create_event_with_results', { p_event: null, p_races: null }),
       supabase.rpc('create_race_import_batch', { p_urls: null, p_model: null }),
       supabase.rpc('update_event_with_races', {
         p_event_id: ZERO_UUID,
+        p_event: null,
+        p_races: null,
+      }),
+      supabase.rpc('update_event_with_results', {
+        p_event_id: ZERO_UUID,
+        p_event: null,
+        p_races: null,
+      }),
+      supabase.rpc('update_organizer_event_with_results', {
+        p_event_id: ZERO_UUID,
+        p_organizer_id: ZERO_UUID,
         p_event: null,
         p_races: null,
       }),

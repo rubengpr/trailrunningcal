@@ -24,6 +24,7 @@ describe('toPublicEventDetail', () => {
         city: 'Barcelona',
         province: 'Barcelona',
         mapUrl: 'https://example.com/private-map',
+        resultsUrl: 'https://example.com/private-results',
         tiers: [{
           id: 'tier-id',
           priceEur: 30,

@@ -27,6 +27,7 @@ import {
 import type { EventRaceWriteInput } from '@/lib/api/events';
 import type { TrailEventDetail } from '@/types/event.types';
 import { PROVINCES, isValidProvince } from '@/lib/geography/provinces';
+import { isValidResultsUrl } from '@/lib/races/utils';
 
 interface RaceDraft {
   id?: string;
@@ -36,6 +37,7 @@ interface RaceDraft {
   province: string;
   distanceKm: string;
   elevationGainM: string;
+  resultsUrl: string;
   tiers: RaceTierDraft[];
 }
 
@@ -53,6 +55,7 @@ const emptyRace = (): RaceDraft => ({
   province: '',
   distanceKm: '',
   elevationGainM: '',
+  resultsUrl: '',
   tiers: [],
 });
 
@@ -69,6 +72,7 @@ function toRaceDrafts(initialData: TrailEventDetail | null): RaceDraft[] {
     province: race.province,
     distanceKm: String(race.distanceKm),
     elevationGainM: race.elevationGainM != null ? String(race.elevationGainM) : '',
+    resultsUrl: race.resultsUrl ?? '',
     tiers: toRaceTierDrafts(race.tiers),
   }));
 }
@@ -163,6 +167,9 @@ export function EventForm({
       }
       const tierError = validateRaceTierDrafts(race.tiers);
       if (tierError) return t(`errors.${tierError}`);
+      if (race.resultsUrl.trim() && !isValidResultsUrl(race.resultsUrl)) {
+        return t('errors.resultsUrl');
+      }
     }
 
     return null;
@@ -187,6 +194,7 @@ export function EventForm({
         province: race.province,
         distanceKm: Number(race.distanceKm),
         elevationGainM: parseOptionalInteger(race.elevationGainM),
+        ...(race.id ? { resultsUrl: race.resultsUrl.trim() || null } : {}),
         tiers: toRaceTierWriteInputs(race.tiers),
       }));
 
@@ -346,6 +354,18 @@ export function EventForm({
                 value={race.elevationGainM}
                 onChange={(e) => updateRace(index, 'elevationGainM', e.target.value)}
               />
+              {isEditMode && race.id ? (
+                <div className="md:col-span-2">
+                  <FormInput
+                    id={`race-results-url-${index}`}
+                    label={t('resultsUrl')}
+                    type="url"
+                    value={race.resultsUrl}
+                    placeholder={t('resultsUrlPlaceholder')}
+                    onChange={(e) => updateRace(index, 'resultsUrl', e.target.value)}
+                  />
+                </div>
+              ) : null}
             </div>
             <RaceTierFields
               idPrefix={`race-${index}`}

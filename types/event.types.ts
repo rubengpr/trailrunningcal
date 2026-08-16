@@ -21,6 +21,7 @@ export type EventRaceRow = {
   city: string;
   province: string;
   map_url?: string | null;
+  results_url?: string | null;
   race_tiers?: EventRaceTierRow[] | null;
 };
 
@@ -63,6 +64,7 @@ export interface TrailEventRace {
   city: string;
   province: string;
   mapUrl?: string | null;
+  resultsUrl: string | null;
   tiers: EventRaceTier[];
 }
 

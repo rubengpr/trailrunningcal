@@ -171,6 +171,7 @@ export function AdminEventsContent({ page, query }: AdminEventsContentProps) {
       province: race.province,
       distanceKm: race.distanceKm,
       elevationGainM: race.elevationGainM,
+      resultsUrl: race.resultsUrl,
       tiers: race.tiers.map(({ priceEur, endsAt }) => ({
         priceEur,
         endsAt,
@@ -626,6 +627,7 @@ export function AdminEventsContent({ page, query }: AdminEventsContentProps) {
         onSave={handleSaveEdit}
         showTiers
         showTrackUploads
+        showResultsUrls
         trackedRaceIds={eventToEdit?.trackedRaceIds ?? []}
         onTrackUploaded={handleTrackUploaded}
       />

@@ -33,6 +33,7 @@ function race(overrides: Partial<TrailEventRace> = {}): TrailEventRace {
     city: 'Vall de Boí',
     province: 'Lleida',
     mapUrl: null,
+    resultsUrl: null,
     tiers: [],
     ...overrides,
   };

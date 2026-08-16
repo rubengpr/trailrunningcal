@@ -4,7 +4,7 @@ import {
   validateRaceTierSchedule,
   type RaceTierScheduleValidationError,
 } from '@/lib/events/tier-validation';
-import { normalizeRaceName } from '@/lib/races/utils';
+import { isValidResultsUrl, normalizeRaceName } from '@/lib/races/utils';
 import { isValidProvince } from '@/lib/geography/provinces';
 import type { EventRaceTierWriteInput } from '@/types/event.types';
 import type {
@@ -21,6 +21,7 @@ export interface ParsedEventInput {
 export type ParsedEventRaceInput = Omit<TrailEventAgentRace, 'name'> & {
   name: string | null;
   id?: string;
+  resultsUrl?: string | null;
   tiers: EventRaceTierWriteInput[];
 };
 
@@ -104,6 +105,17 @@ function parseRaceName(value: unknown): string | null {
   return normalizeRaceName(value);
 }
 
+function parseResultsUrl(value: unknown): string | null {
+  const parsed = parseNullableString(value);
+  if (parsed === null) return null;
+
+  if (!isValidResultsUrl(parsed)) {
+    throw new ValidationError('Invalid results URL', 400);
+  }
+
+  return parsed;
+}
+
 function parseTierDate(value: unknown): string | null {
   const parsed = parseNullableString(value);
   if (parsed === null) return null;
@@ -172,6 +184,7 @@ function parseRace(value: unknown, allowId = false): ParsedEventRaceInput {
     province,
     distanceKm,
     elevationGainM,
+    resultsUrl,
     tiers,
   } = value as Record<string, unknown>;
 
@@ -220,6 +233,10 @@ function parseRace(value: unknown, allowId = false): ParsedEventRaceInput {
   if (allowId) {
     const parsedId = parseOptionalRaceId(id);
     if (parsedId !== undefined) parsedRace.id = parsedId;
+  }
+
+  if (Object.prototype.hasOwnProperty.call(value, 'resultsUrl')) {
+    parsedRace.resultsUrl = parseResultsUrl(resultsUrl);
   }
 
   return parsedRace;

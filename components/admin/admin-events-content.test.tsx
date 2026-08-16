@@ -70,6 +70,7 @@ vi.mock('@/components/admin/event-races-edit-modal', () => ({
   EventRacesEditModal: (props: {
     isOpen: boolean;
     showTrackUploads?: boolean;
+    showResultsUrls?: boolean;
     trackedRaceIds?: string[];
   }) => {
     mocks.eventRacesEditModalProps(props);
@@ -334,6 +335,7 @@ describe('AdminEventsContent editing', () => {
       expect.objectContaining({
         isOpen: true,
         showTrackUploads: true,
+        showResultsUrls: true,
         trackedRaceIds: ['race-1'],
       }),
     );

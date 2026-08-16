@@ -17,6 +17,7 @@ import type { RaceTierDraft } from '@/components/event/race-tier-fields';
 import type { EventRaceWriteInput } from '@/lib/api/events';
 import type { TrailEventAgentEvent } from '@/types/trail-event-agent.types';
 import { PROVINCES, isValidProvince } from '@/lib/geography/provinces';
+import { isValidResultsUrl } from '@/lib/races/utils';
 
 interface EventRacesEditModalProps {
   isOpen: boolean;
@@ -28,6 +29,7 @@ interface EventRacesEditModalProps {
   savingLabel?: string;
   showTiers?: boolean;
   showTrackUploads?: boolean;
+  showResultsUrls?: boolean;
   trackedRaceIds?: string[];
   onTrackUploaded?: (raceId: string) => void;
   onClose: () => void;
@@ -65,6 +67,7 @@ function emptyRaceDraft(): ModalRaceDraft {
     province: '',
     distanceKm: '',
     elevationGainM: null,
+    resultsUrl: undefined,
     tierDrafts: [],
   };
 }
@@ -113,6 +116,7 @@ export function EventRacesEditModal({
   savingLabel,
   showTiers = false,
   showTrackUploads = false,
+  showResultsUrls = false,
   trackedRaceIds = [],
   onTrackUploaded,
   onClose,
@@ -132,6 +136,7 @@ export function EventRacesEditModal({
       savingLabel={savingLabel}
       showTiers={showTiers}
       showTrackUploads={showTrackUploads}
+      showResultsUrls={showResultsUrls}
       trackedRaceIds={trackedRaceIds}
       onTrackUploaded={onTrackUploaded}
       onClose={onClose}
@@ -149,6 +154,7 @@ function EventRacesEditModalContent({
   savingLabel,
   showTiers = false,
   showTrackUploads = false,
+  showResultsUrls = false,
   trackedRaceIds = [],
   onTrackUploaded,
   onClose,
@@ -213,6 +219,11 @@ function EventRacesEditModalContent({
         distanceKm >= 1000
       ) {
         setError(formT('errors.distance'));
+        return;
+      }
+
+      if (race.resultsUrl && !isValidResultsUrl(race.resultsUrl)) {
+        setError(formT('errors.resultsUrl'));
         return;
       }
     }
@@ -440,6 +451,24 @@ function EventRacesEditModalContent({
                     />
                   </div>
                 </div>
+                {showResultsUrls && race.id ? (
+                  <div className="mt-3 flex flex-col gap-1">
+                    <label className={labelClass}>{formT('resultsUrl')}</label>
+                    <input
+                      type="url"
+                      className={inputClass}
+                      value={race.resultsUrl ?? ''}
+                      placeholder={formT('resultsUrlPlaceholder')}
+                      disabled={isSaving}
+                      onChange={(e) =>
+                        updateRaceDraft(index, {
+                          ...race,
+                          resultsUrl: e.target.value.trim() || null,
+                        })
+                      }
+                    />
+                  </div>
+                ) : null}
                 {showTrackUploads ? (
                   <div className="mt-4">
                     <RaceTrackUpload

@@ -107,3 +107,34 @@ describe('EventRacesEditModal track uploads', () => {
     expect(screen.queryByLabelText('inputLabel')).toBeNull();
   });
 });
+
+describe('EventRacesEditModal results URLs', () => {
+  it('shows saved results and validates the protocol before saving', () => {
+    const onSave = vi.fn();
+    render(
+      <EventRacesEditModal
+        isOpen
+        event={event}
+        races={[{
+          ...races[0],
+          resultsUrl: 'https://results.example.com/21k',
+        }]}
+        title="Edit"
+        showResultsUrls
+        onClose={vi.fn()}
+        onSave={onSave}
+      />,
+    );
+
+    const input = screen.getByPlaceholderText('resultsUrlPlaceholder');
+    expect((input as HTMLInputElement).value).toBe(
+      'https://results.example.com/21k',
+    );
+
+    fireEvent.change(input, { target: { value: 'javascript:alert(1)' } });
+    fireEvent.click(screen.getByRole('button', { name: 'saveReview' }));
+
+    expect(screen.getByText('errors.resultsUrl')).toBeTruthy();
+    expect(onSave).not.toHaveBeenCalled();
+  });
+});

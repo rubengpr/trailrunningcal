@@ -21,3 +21,15 @@ export function normalizeRaceName(name: unknown): string | null {
 
   return /[\p{L}\p{N}]/u.test(trimmed) ? trimmed : null;
 }
+
+export function isValidResultsUrl(value: string): boolean {
+  const trimmed = value.trim();
+  if (trimmed.length === 0 || trimmed.length > 500) return false;
+
+  try {
+    const url = new URL(trimmed);
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}

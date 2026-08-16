@@ -198,6 +198,10 @@
       "until": "hasta {date}"
     },
     "racesTitle": "Distancias",
+    "resultsAccordion": {
+      "title": "Clasificaciones de {eventName} {year}",
+      "view": "Ver resultados"
+    },
     "elevationRatioTooltip": "Media de desnivel acumulado por kilómetro",
     "trackMap": {
       "title": "Recorridos",
@@ -1107,6 +1111,8 @@
       "provincePlaceholder": "Selecciona una provincia",
       "distanceKm": "Distancia (km)",
       "elevationGainM": "Desnivel (m)",
+      "resultsUrl": "URL de resultados",
+      "resultsUrlPlaceholder": "https://ejemplo.com/resultados",
       "tiers": {
         "title": "Precios de inscripción",
         "description": "Añade un precio único o varios precios con fechas límite inclusivas y en orden. Máximo {count} precios por carrera.",
@@ -1162,6 +1168,7 @@
         "province": "Selecciona una provincia válida",
         "distance": "La distancia debe ser un número válido",
         "elevation": "El desnivel debe ser un número entero válido",
+        "resultsUrl": "La URL de resultados debe comenzar por http:// o https://",
         "tierLimit": "Cada carrera puede tener un máximo de 5 precios",
         "tierPrice": "El precio debe ser un número entero entre 0 y 9999 €",
         "tierDeadlineRequired": "Indica una fecha límite para cada precio cuando haya más de uno",
