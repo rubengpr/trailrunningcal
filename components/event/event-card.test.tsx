@@ -112,6 +112,7 @@ describe('EventCard', () => {
         locale="es"
         analyticsContext={{
           source: 'calendar_explorer',
+          pageType: 'homepage',
           listPosition: 10,
           layoutToggleVariant: 'icon_text',
         }}
@@ -138,6 +139,7 @@ describe('EventCard', () => {
         locale="es"
         analyticsContext={{
           source: 'calendar_explorer',
+          pageType: 'homepage',
           listPosition: 3,
         }}
       />,

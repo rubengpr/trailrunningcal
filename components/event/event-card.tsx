@@ -1,9 +1,12 @@
+'use client';
+
 import Link from 'next/link';
 import type { Locale } from '@/i18n';
 import type { PublicEventDetail } from '@/types/event.types';
 import { formatEventLocationLabel } from '@/lib/events/utils';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { track } from '@/lib/analytics/track';
+import { useCardImpression } from '@/hooks/use-card-impression';
 import { DistanceBadge } from '@/components/race/distance-badge';
 
 interface EventCardProps {
@@ -11,6 +14,7 @@ interface EventCardProps {
   locale: Locale;
   analyticsContext?: {
     source: 'calendar_explorer';
+    pageType: 'homepage' | 'finder_type' | 'finder_province_distance';
     listPosition: number;
     layoutToggleVariant?: 'control' | 'icon_text';
   };
@@ -43,6 +47,12 @@ function formatDateBlock(dateString: string | null, locale: Locale) {
 export function EventCard({ eventDetail, locale, analyticsContext }: EventCardProps) {
   const { day, month, weekday } = formatDateBlock(eventDetail.dateRange.startDate, locale);
   const location = formatEventLocationLabel(eventDetail.location, locale);
+  const impressionRef = useCardImpression<HTMLElement>({
+    pageType: analyticsContext?.pageType,
+    eventId: eventDetail.event.id,
+    eventSlug: eventDetail.event.slug,
+    listPosition: analyticsContext?.listPosition,
+  });
   const handleClick = analyticsContext
     ? () => {
       track(ANALYTICS_EVENTS.RACE_CARD_CLICKED, {
@@ -58,7 +68,10 @@ export function EventCard({ eventDetail, locale, analyticsContext }: EventCardPr
     : undefined;
 
   return (
-    <article className="relative w-full min-w-0 max-w-full rounded-lg bg-white shadow transition-shadow sm:hover:shadow-md">
+    <article
+      ref={impressionRef}
+      className="relative w-full min-w-0 max-w-full rounded-lg bg-white shadow transition-shadow sm:hover:shadow-md"
+    >
       <Link
         href={`/${locale}/e/${eventDetail.event.slug}`}
         prefetch={false}

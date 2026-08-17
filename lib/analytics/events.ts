@@ -28,6 +28,7 @@ export const ANALYTICS_EVENTS = {
   NAVBAR_LINK_CLICKED: 'navbar_link_clicked',
   RACE_FAVORITE_CLICKED: 'race_favorite_clicked',
   RACE_CARD_CLICKED: 'race_card_clicked',
+  RACE_CARD_IMPRESSIONS_BATCH: 'race_card_impressions_batch',
   RACE_FILTERS_CLEARED: 'race_filters_cleared',
   RACE_ORGANIZER_CLAIM_CLICKED: 'race_organizer_claim_clicked',
   RACE_ORGANIZER_SOCIAL_CLICKED: 'race_organizer_social_clicked',
@@ -215,6 +216,14 @@ export interface AnalyticsEventProperties {
     list_position: number;
     /** Only resolved on the desktop explorer, where the layout toggle renders. */
     layout_toggle_variant?: 'control' | 'icon_text';
+  };
+  [ANALYTICS_EVENTS.RACE_CARD_IMPRESSIONS_BATCH]: {
+    page_type: 'homepage' | 'finder_type' | 'finder_province_distance';
+    impressions: Array<{
+      event_id: string;
+      event_slug: string;
+      list_position: number;
+    }>;
   };
   [ANALYTICS_EVENTS.RACE_FILTERS_CLEARED]: undefined;
   [ANALYTICS_EVENTS.RACE_ORGANIZER_CLAIM_CLICKED]: {

@@ -89,6 +89,12 @@ export function EventsExplorerClient({
     status: mapStatus,
   } = useEventMapLocations(events);
 
+  const pageType: 'homepage' | 'finder_type' | 'finder_province_distance' = scope?.raceType
+    ? 'finder_type'
+    : scope?.province
+      ? 'finder_province_distance'
+      : 'homepage';
+
   const isDesktopMap = useMinWidthLg();
   const v2Variant = useFeatureFlagVariant('filter-flag-v2');
   const v2VariantStr = typeof v2Variant === 'string' ? v2Variant : null;
@@ -479,6 +485,7 @@ export function EventsExplorerClient({
                                   locale={locale}
                                   analyticsContext={{
                                     source: 'calendar_explorer',
+                                    pageType,
                                     listPosition: index + 1,
                                     ...(isDesktopMap && layoutToggleVariant
                                       ? { layoutToggleVariant }
