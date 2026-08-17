@@ -1,10 +1,10 @@
 'use client';
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { TriangleAlert, RefreshCw } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { track } from '@/lib/analytics/track';
+import { ErrorMessage } from '@/components/ui/error-message';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -59,39 +59,26 @@ function DefaultErrorFallback({ error }: DefaultErrorFallbackProps) {
   const t = useTranslations('errors');
 
   return (
-    <div className="min-h-[200px] flex items-center justify-center p-6">
-      <div className="text-center max-w-md mx-auto">
-        <div className="mb-4">
-          <TriangleAlert className="mx-auto h-12 w-12 text-red-500" />
-        </div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          {t('general')}
-        </h3>
-        <p className="text-gray-600 mb-4">{t('generalMessage')}</p>
-        <button
-          onClick={() => {
-            track(ANALYTICS_EVENTS.ERROR_FALLBACK_RETRY_CLICKED, {
-              error_message: error?.message,
-            });
-            window.location.reload();
-          }}
-          className="inline-flex items-center px-4 py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
-        >
-          <RefreshCw className="w-4 h-4 mr-2" />
-          {t('retry')}
-        </button>
-        {process.env.NODE_ENV === 'development' && error && (
-          <details className="mt-4 text-left">
-            <summary className="cursor-pointer text-sm text-gray-500 hover:text-gray-700">
-              {t('errorDetails')}
-            </summary>
-            <pre className="mt-2 text-xs text-red-600 bg-red-50 p-2 rounded overflow-auto">
-              {error.message}
-              {error.stack && `\n\n${error.stack}`}
-            </pre>
-          </details>
-        )}
-      </div>
+    <div>
+      <ErrorMessage
+        onRetry={() => {
+          track(ANALYTICS_EVENTS.ERROR_FALLBACK_RETRY_CLICKED, {
+            error_message: error?.message,
+          });
+          window.location.reload();
+        }}
+      />
+      {process.env.NODE_ENV === 'development' && error && (
+        <details className="mx-auto max-w-md px-6 pb-6 text-left">
+          <summary className="cursor-pointer text-sm text-gray-500 hover:text-gray-700">
+            {t('errorDetails')}
+          </summary>
+          <pre className="mt-2 text-xs text-red-600 bg-red-50 p-2 rounded overflow-auto">
+            {error.message}
+            {error.stack && `\n\n${error.stack}`}
+          </pre>
+        </details>
+      )}
     </div>
   );
 }
