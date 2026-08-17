@@ -454,7 +454,7 @@ export function EventsExplorerClient({
                           }
                         />
                       ) : (
-                        events.map((eventDetail) => {
+                        events.map((eventDetail, index) => {
                           return (
                             <div key={eventDetail.event.id} className="min-w-0">
                               <ErrorBoundary
@@ -477,10 +477,13 @@ export function EventsExplorerClient({
                                 <EventCard
                                   eventDetail={eventDetail}
                                   locale={locale}
-                                  analyticsContext={isDesktopMap && layoutToggleVariant ? {
+                                  analyticsContext={{
                                     source: 'calendar_explorer',
-                                    layoutToggleVariant,
-                                  } : undefined}
+                                    listPosition: index + 1,
+                                    ...(isDesktopMap && layoutToggleVariant
+                                      ? { layoutToggleVariant }
+                                      : {}),
+                                  }}
                                 />
                               </ErrorBoundary>
                             </div>

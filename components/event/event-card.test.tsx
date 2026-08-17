@@ -112,6 +112,7 @@ describe('EventCard', () => {
         locale="es"
         analyticsContext={{
           source: 'calendar_explorer',
+          listPosition: 10,
           layoutToggleVariant: 'icon_text',
         }}
       />,
@@ -125,7 +126,30 @@ describe('EventCard', () => {
       event_id: 'event-1',
       event_slug: 'trail-de-prova',
       source: 'calendar_explorer',
+      list_position: 10,
       layout_toggle_variant: 'icon_text',
+    });
+  });
+
+  it('tracks explorer card clicks without a layout-toggle variant', () => {
+    render(
+      <EventCard
+        eventDetail={eventDetail}
+        locale="es"
+        analyticsContext={{
+          source: 'calendar_explorer',
+          listPosition: 3,
+        }}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('link', { name: /Trail de prova/ }));
+
+    expect(track).toHaveBeenCalledWith('race_card_clicked', {
+      event_id: 'event-1',
+      event_slug: 'trail-de-prova',
+      source: 'calendar_explorer',
+      list_position: 3,
     });
   });
 });

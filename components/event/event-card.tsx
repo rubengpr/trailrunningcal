@@ -11,7 +11,8 @@ interface EventCardProps {
   locale: Locale;
   analyticsContext?: {
     source: 'calendar_explorer';
-    layoutToggleVariant: 'control' | 'icon_text';
+    listPosition: number;
+    layoutToggleVariant?: 'control' | 'icon_text';
   };
 }
 
@@ -48,7 +49,10 @@ export function EventCard({ eventDetail, locale, analyticsContext }: EventCardPr
         event_id: eventDetail.event.id,
         event_slug: eventDetail.event.slug,
         source: analyticsContext.source,
-        layout_toggle_variant: analyticsContext.layoutToggleVariant,
+        list_position: analyticsContext.listPosition,
+        ...(analyticsContext.layoutToggleVariant
+          ? { layout_toggle_variant: analyticsContext.layoutToggleVariant }
+          : {}),
       });
     }
     : undefined;

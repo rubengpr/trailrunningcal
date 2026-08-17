@@ -211,7 +211,10 @@ export interface AnalyticsEventProperties {
     event_id: string;
     event_slug: string;
     source: 'calendar_explorer';
-    layout_toggle_variant: 'control' | 'icon_text';
+    /** 1-based rank of the card within its list. */
+    list_position: number;
+    /** Only resolved on the desktop explorer, where the layout toggle renders. */
+    layout_toggle_variant?: 'control' | 'icon_text';
   };
   [ANALYTICS_EVENTS.RACE_FILTERS_CLEARED]: undefined;
   [ANALYTICS_EVENTS.RACE_ORGANIZER_CLAIM_CLICKED]: {
