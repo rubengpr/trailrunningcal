@@ -31,6 +31,9 @@ vi.mock('next/link', () => ({
     </a>
   ),
 }));
+vi.mock('next-intl', () => ({
+  useTranslations: (namespace: string) => (key: string) => `${namespace}.${key}`,
+}));
 vi.mock('@/lib/analytics/track', () => ({ track: vi.fn() }));
 
 import { EventCard } from './event-card';
@@ -130,6 +133,26 @@ describe('EventCard', () => {
       list_position: 10,
       layout_toggle_variant: 'icon_text',
     });
+  });
+
+  it('renders the featured badge and description only when featured', () => {
+    const { container: plain } = render(<EventCard eventDetail={eventDetail} locale="es" />);
+    expect(plain.textContent).not.toContain('event.featured.badge');
+    expect(plain.textContent).not.toContain('featuredEvents.trail-de-prova');
+    expect(
+      (plain.querySelector('article') as HTMLElement | null)?.style.background,
+    ).toBeFalsy();
+
+    cleanup();
+
+    const { container: featured } = render(
+      <EventCard eventDetail={eventDetail} locale="es" isFeatured />,
+    );
+    expect(featured.textContent).toContain('event.featured.badge');
+    expect(featured.textContent).toContain('featuredEvents.trail-de-prova');
+    expect(
+      (featured.querySelector('article') as HTMLElement | null)?.style.background,
+    ).toContain('linear-gradient');
   });
 
   it('tracks explorer card clicks without a layout-toggle variant', () => {

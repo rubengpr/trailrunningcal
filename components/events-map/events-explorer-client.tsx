@@ -33,6 +33,7 @@ import { useScrollEdges } from '@/hooks/use-scroll-edges';
 import { useMobileFilters } from '@/components/providers/mobile-filters-provider';
 import { getPublicEventPage } from '@/lib/api/events';
 import { isRaceCategorySlug } from '@/lib/races/race-types';
+import { isFeaturedEvent } from '@/lib/featured-events/config';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { track } from '@/lib/analytics/track';
 
@@ -429,7 +430,7 @@ export function EventsExplorerClient({
               <div className="flex min-w-0 flex-col gap-6 lg:flex-row lg:items-start lg:gap-8">
                 {showListPanel && (
                   <div
-                    className={`min-w-0 w-full min-h-0 ${desktopLayout === 'both' ? 'lg:w-1/2 lg:max-h-[calc(100vh-12rem)] lg:overflow-y-auto lg:pr-1' : 'lg:w-full'} ${showMobileMapFab && mobileView === 'list' ? 'pb-20' : ''}`}
+                    className={`min-w-0 w-full min-h-0 ${desktopLayout === 'both' ? 'lg:-mx-3 lg:w-[calc(50%+1.5rem)] lg:max-h-[calc(100vh-12rem)] lg:overflow-y-auto lg:px-3' : 'lg:w-full'} ${showMobileMapFab && mobileView === 'list' ? 'pb-20' : ''}`}
                   >
                     <SponsorBannerSlot
                       page="homepage"
@@ -483,6 +484,7 @@ export function EventsExplorerClient({
                                 <EventCard
                                   eventDetail={eventDetail}
                                   locale={locale}
+                                  isFeatured={isFeaturedEvent(eventDetail.event.slug)}
                                   analyticsContext={{
                                     source: 'calendar_explorer',
                                     pageType,

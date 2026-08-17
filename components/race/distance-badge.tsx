@@ -6,6 +6,7 @@ interface DistanceBadgeProps {
   distanceKm: number;
   locale: Locale;
   size?: 'sm' | 'md';
+  variant?: 'default' | 'metallic';
 }
 
 const COLOR_CLASSES: Record<DistanceGroup, string> = {
@@ -16,6 +17,8 @@ const COLOR_CLASSES: Record<DistanceGroup, string> = {
   '40-50': 'bg-rose-100 text-rose-800',
   '50+': 'bg-neutral-700 text-white',
 };
+
+const METALLIC_CLASSES = 'bg-[#fefdfb] text-slate-800';
 
 const SIZE_CLASSES = {
   sm: 'rounded-sm px-2 py-0.5 text-[10px]',
@@ -32,13 +35,16 @@ export function DistanceBadge({
   distanceKm,
   locale,
   size = 'md',
+  variant = 'default',
 }: DistanceBadgeProps) {
   const group = getDistanceGroup(distanceKm);
 
   return (
     <span
       data-distance-group={group}
-      className={`inline-flex shrink-0 items-baseline justify-center gap-0.5 font-medium tabular-nums ${COLOR_CLASSES[group]} ${SIZE_CLASSES[size]}`}
+      className={`inline-flex shrink-0 items-baseline justify-center gap-0.5 font-medium tabular-nums ${
+        variant === 'metallic' ? METALLIC_CLASSES : COLOR_CLASSES[group]
+      } ${SIZE_CLASSES[size]}`}
     >
       <span>{formatDistance(distanceKm, locale)}</span>
       <span className="text-[8px] uppercase opacity-75">km</span>

@@ -215,6 +215,9 @@
     "share": {
       "label": "Compartir",
       "message": "Mira este evento de trail: {eventName} {url}"
+    },
+    "featured": {
+      "badge": "Destacado"
     }
   },
   "difficulty": {
@@ -1267,5 +1270,11 @@
     "title": "Evento duplicado",
     "description": "Existen carreras ya listadas con la misma url:",
     "close": "Cerrar"
+  },
+  "featuredEvents": {
+    "burriac-atac": "Un clásico de la Serralada Litoral: sube al mítico Castell de Burriac entre pinares, con el mar de fondo en cada cresta, cerca de Vilassar de Mar.",
+    "salomon-ultra-pirineu": "La gran cita del ultra trail en el Pirineu Català, con perfiles exigentes y un ambiente de carrera de referencia estatal.",
+    "trail-l-albiol": "Trail entre bosques y masías de l'Albiol, con vistas a la Serra de Prades y un recorrido técnico muy disfrutable.",
+    "olla-de-nuria": "Una subida mítica al Santuari de Núria rodeada de alta montaña pirenaica, con el cremallera como testigo del recorrido."
   }
 }
