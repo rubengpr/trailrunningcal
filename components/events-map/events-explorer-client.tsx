@@ -97,6 +97,8 @@ export function EventsExplorerClient({
       : 'homepage';
 
   const isDesktopMap = useMinWidthLg();
+  const featuredCardVariant = useFeatureFlagVariant('featured-event-card');
+  const showsFeaturedCards = featuredCardVariant === 'featured';
   const v2Variant = useFeatureFlagVariant('filter-flag-v2');
   const v2VariantStr = typeof v2Variant === 'string' ? v2Variant : null;
   const filterLayout = v2VariantStr?.includes('-') ? v2VariantStr.slice(0, v2VariantStr.lastIndexOf('-')) : (v2VariantStr ?? 'control');
@@ -484,7 +486,10 @@ export function EventsExplorerClient({
                                 <EventCard
                                   eventDetail={eventDetail}
                                   locale={locale}
-                                  isFeatured={isFeaturedEvent(eventDetail.event.slug)}
+                                  isFeatured={
+                                    showsFeaturedCards &&
+                                    isFeaturedEvent(eventDetail.event.slug)
+                                  }
                                   analyticsContext={{
                                     source: 'calendar_explorer',
                                     pageType,

@@ -14,6 +14,7 @@ import type { PublicEventPage } from '@/types/public-events.types';
 
 const mocks = vi.hoisted(() => ({
   getPublicEventPage: vi.fn(),
+  featureFlagVariant: vi.fn((_key: string): string => 'control'),
 }));
 
 vi.mock('next-intl', () => ({
@@ -23,7 +24,7 @@ vi.mock('next-intl', () => ({
   ) => values ? `${key}:${values.count}/${values.total}` : key,
 }));
 vi.mock('posthog-js/react', () => ({
-  useFeatureFlagVariantKey: () => 'control',
+  useFeatureFlagVariantKey: (key: string) => mocks.featureFlagVariant(key),
 }));
 vi.mock('@/lib/api/events', () => ({
   getPublicEventPage: mocks.getPublicEventPage,
@@ -41,8 +42,16 @@ vi.mock('@/components/sponsors/sponsor-banner-slot', () => ({
   SponsorBannerSlot: () => null,
 }));
 vi.mock('@/components/event/event-card', () => ({
-  EventCard: ({ eventDetail }: { eventDetail: PublicEventDetail }) => (
-    <div data-testid="event-card">{eventDetail.event.id}</div>
+  EventCard: ({
+    eventDetail,
+    isFeatured,
+  }: {
+    eventDetail: PublicEventDetail;
+    isFeatured: boolean;
+  }) => (
+    <div data-testid="event-card" data-featured={String(isFeatured)}>
+      {eventDetail.event.id}
+    </div>
   ),
 }));
 vi.mock('@/components/ui/error-boundary', () => ({
@@ -71,9 +80,9 @@ vi.mock('@/lib/analytics/track', () => ({ track: vi.fn() }));
 
 import { EventsExplorerClient } from './events-explorer-client';
 
-function event(id: string): PublicEventDetail {
+function event(id: string, slug = `event-${id}`): PublicEventDetail {
   return {
-    event: { id, name: `Event ${id}`, slug: `event-${id}` },
+    event: { id, name: `Event ${id}`, slug },
     races: [{
       id: `race-${id}`,
       name: null,
@@ -113,10 +122,69 @@ const labels = {
 
 beforeEach(() => {
   vi.resetAllMocks();
+  mocks.featureFlagVariant.mockReturnValue('control');
   sessionStorage.clear();
 });
 
 afterEach(cleanup);
+
+describe('EventsExplorerClient featured card experiment', () => {
+  function enrollInFeaturedArm() {
+    mocks.featureFlagVariant.mockImplementation((key) =>
+      key === 'featured-event-card' ? 'featured' : 'control',
+    );
+  }
+
+  function renderWithFeaturedEvent() {
+    render(
+      <EventsExplorerClient
+        initialPage={page({
+          events: [event('one', 'burriac-atac')],
+          total: 1,
+          hasMore: false,
+        })}
+        locale="es"
+        labels={labels}
+      />,
+    );
+    return screen.getByTestId('event-card');
+  }
+
+  it('reads the flag so every visitor is exposed, not just those who see a featured card', () => {
+    render(
+      <EventsExplorerClient
+        initialPage={page({ total: 1, hasMore: false })}
+        locale="es"
+        labels={labels}
+      />,
+    );
+
+    expect(mocks.featureFlagVariant).toHaveBeenCalledWith('featured-event-card');
+  });
+
+  it('keeps a featured slug on the normal treatment for the control arm', () => {
+    expect(renderWithFeaturedEvent().dataset.featured).toBe('false');
+  });
+
+  it('applies the featured treatment to a featured slug for the featured arm', () => {
+    enrollInFeaturedArm();
+
+    expect(renderWithFeaturedEvent().dataset.featured).toBe('true');
+  });
+
+  it('leaves non-featured slugs alone in the featured arm', () => {
+    enrollInFeaturedArm();
+    render(
+      <EventsExplorerClient
+        initialPage={page({ total: 1, hasMore: false })}
+        locale="es"
+        labels={labels}
+      />,
+    );
+
+    expect(screen.getByTestId('event-card').dataset.featured).toBe('false');
+  });
+});
 
 describe('EventsExplorerClient pagination', () => {
   it('requests and appends the next page after Load more succeeds', async () => {
