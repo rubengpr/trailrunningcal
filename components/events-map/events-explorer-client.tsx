@@ -16,7 +16,7 @@ import { MobileFiltersModal } from '@/components/filters/mobile-filters-modal';
 import { SponsorBannerSlot } from '@/components/sponsors/sponsor-banner-slot';
 import { EventCard } from '@/components/event/event-card';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
-import { SearchError } from '@/components/ui/error-message';
+import { SearchError, RaceCardError } from '@/components/ui/error-message';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Button } from '@/components/ui/button';
 import type {
@@ -26,7 +26,7 @@ import type {
 } from '@/components/ui/layout-toggle';
 import { DeferredEventsMap } from '@/components/events-map/deferred-events-map';
 import { MapToggleFab } from '@/components/events-map/map-toggle-fab';
-import { Search, RefreshCw, TriangleAlert } from 'lucide-react';
+import { Search, RefreshCw } from 'lucide-react';
 import { useMinWidthLg } from '@/hooks/use-min-width-lg';
 import { useEventMapLocations } from '@/hooks/use-event-map-locations';
 import { useScrollEdges } from '@/hooks/use-scroll-edges';
@@ -66,7 +66,6 @@ export function EventsExplorerClient({
 }: EventsExplorerClientProps) {
   const tResults = useTranslations('results');
   const tFilters = useTranslations('filters');
-  const tErrors = useTranslations('errors');
   const tMap = useTranslations('map');
   const [mobileView, setMobileView] = useState<MobileView>('list');
   const [desktopLayout, setDesktopLayout] = useState<DesktopLayout>('both');
@@ -466,23 +465,7 @@ export function EventsExplorerClient({
                         events.map((eventDetail, index) => {
                           return (
                             <div key={eventDetail.event.id} className="min-w-0">
-                              <ErrorBoundary
-                                fallback={
-                                  <div className="bg-white rounded-lg shadow-sm border border-red-200 p-6">
-                                    <div className="text-center">
-                                      <div className="mb-2">
-                                        <TriangleAlert className="mx-auto size-8 text-red-500" strokeWidth={2} />
-                                      </div>
-                                      <h4 className="text-sm font-semibold text-gray-900 mb-1">
-                                        {tErrors('raceLoadError')}
-                                      </h4>
-                                      <p className="text-xs text-gray-600">
-                                        {tErrors('raceLoadErrorMessage')}
-                                      </p>
-                                    </div>
-                                  </div>
-                                }
-                              >
+                              <ErrorBoundary fallback={<RaceCardError />}>
                                 <EventCard
                                   eventDetail={eventDetail}
                                   locale={locale}

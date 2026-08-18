@@ -18,7 +18,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { BaseModal } from '@/components/ui/base-modal';
+import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { SectionHeader } from '@/components/ui/section-header';
 import {
   Table,
@@ -655,46 +655,27 @@ export function AdminEventsContent({ page, query }: AdminEventsContentProps) {
         </EventImportPreviewModal>
       )}
 
-      <BaseModal
+      <ConfirmationModal
         isOpen={eventToDelete !== null}
         onClose={() => setEventToDelete(null)}
+        onConfirm={handleDeleteConfirm}
         title={t('delete.confirmTitle')}
+        message={
+          eventToDelete
+            ? t('delete.confirmDescription', {
+              name: eventToDelete.event.name,
+              count: eventToDelete.allRaceCount,
+            })
+            : ''
+        }
+        highlight={eventToDelete?.event.name}
+        confirmButtonText={t('delete.confirmButton')}
+        cancelButtonText={t('delete.cancelButton')}
+        isSubmitting={isDeleting}
+        loadingText={t('delete.deleting')}
+        variant="destructive"
         maxWidth="md"
-      >
-        <div className="flex flex-col gap-4">
-          <p className="text-sm text-gray-600">
-            {eventToDelete
-              ? t('delete.confirmDescription', {
-                name: eventToDelete.event.name,
-                count: eventToDelete.allRaceCount,
-              })
-              : null}
-          </p>
-          {eventToDelete && (
-            <p className="rounded-lg bg-gray-50 px-3 py-2 text-sm font-medium text-gray-800">
-              {eventToDelete.event.name}
-            </p>
-          )}
-          <div className="flex justify-end gap-3">
-            <Button
-              variant="secondary"
-              onClick={() => setEventToDelete(null)}
-              disabled={isDeleting}
-            >
-              {t('delete.cancelButton')}
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={handleDeleteConfirm}
-              isLoading={isDeleting}
-              loadingText={t('delete.deleting')}
-              className="border-red-300 text-red-600 hover:bg-red-50"
-            >
-              {t('delete.confirmButton')}
-            </Button>
-          </div>
-        </div>
-      </BaseModal>
+      />
     </div>
   );
 }

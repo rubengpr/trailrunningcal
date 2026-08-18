@@ -3,9 +3,8 @@
 import { useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import toast from 'react-hot-toast';
-import { Button } from '@/components/ui/button';
 import { SectionHeader } from '@/components/ui/section-header';
-import { BaseModal } from '@/components/ui/base-modal';
+import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { AlertBanner } from '@/components/ui/alert-banner';
 import {
   Table,
@@ -218,41 +217,21 @@ export function AdminPendingQueueContent({
         </Table>
       )}
 
-      <BaseModal
+      <ConfirmationModal
         isOpen={entryToDelete !== null}
         onClose={() => setEntryToDelete(null)}
+        onConfirm={handleDeleteConfirm}
         title={t('delete.confirmTitle')}
+        message={t('delete.confirmDescription')}
+        highlight={entryToDelete?.url}
+        highlightVariant="code"
+        confirmButtonText={t('delete.confirmButton')}
+        cancelButtonText={t('delete.cancelButton')}
+        isSubmitting={isDeleting}
+        loadingText={t('delete.deleting')}
+        variant="destructive"
         maxWidth="md"
-      >
-        <div className="flex flex-col gap-4">
-          <p className="text-sm text-gray-600">
-            {t('delete.confirmDescription')}
-          </p>
-          {entryToDelete && (
-            <p className="rounded-lg bg-gray-50 px-3 py-2 text-xs text-gray-700 break-all font-mono">
-              {entryToDelete.url}
-            </p>
-          )}
-          <div className="flex justify-end gap-3">
-            <Button
-              variant="secondary"
-              onClick={() => setEntryToDelete(null)}
-              disabled={isDeleting}
-            >
-              {t('delete.cancelButton')}
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={handleDeleteConfirm}
-              isLoading={isDeleting}
-              loadingText={t('delete.deleting')}
-              className="border-red-300 text-red-600 hover:bg-red-50"
-            >
-              {t('delete.confirmButton')}
-            </Button>
-          </div>
-        </div>
-      </BaseModal>
+      />
     </div>
   );
 }

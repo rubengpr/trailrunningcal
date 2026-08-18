@@ -124,3 +124,19 @@ export function SearchError({ onRetry }: SearchErrorProps) {
     </div>
   );
 }
+
+/** Fallback for a single event card that failed to render, sized to sit in the card's slot. */
+export function RaceCardError() {
+  const t = useTranslations('errors');
+
+  return (
+    <div className="bg-white rounded-lg shadow-sm border border-red-200 p-6">
+      <ErrorMessage
+        title={t('raceLoadError')}
+        message={t('raceLoadErrorMessage')}
+        variant="inline"
+        showRetry={false}
+      />
+    </div>
+  );
+}
