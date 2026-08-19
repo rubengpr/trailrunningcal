@@ -5,7 +5,8 @@ import { useTranslations } from 'next-intl';
 import { Plus, Trash2 } from 'lucide-react';
 import { RaceTrackUpload } from '@/components/admin/race-track-upload';
 import { BaseModal } from '@/components/ui/base-modal';
-import { NumberInput } from '@/components/ui/number-input';
+import { FormInput } from '@/components/ui/form-input';
+import { FormTextarea } from '@/components/ui/form-textarea';
 import { SelectMenu } from '@/components/ui/select-menu';
 import {
   RaceTierFields,
@@ -17,6 +18,7 @@ import type { RaceTierDraft } from '@/components/event/race-tier-fields';
 import type { EventRaceWriteInput } from '@/lib/api/events';
 import type { TrailEventAgentEvent } from '@/types/trail-event-agent.types';
 import { PROVINCES, isValidProvince } from '@/lib/geography/provinces';
+import { parseOptionalInteger } from '@/lib/events/utils';
 import { isValidResultsUrl } from '@/lib/races/utils';
 
 interface EventRacesEditModalProps {
@@ -46,14 +48,15 @@ type EventRacesEditModalContentProps = Omit<
   event: TrailEventAgentEvent;
 };
 
-type ModalRaceDraft = Omit<EventRaceWriteInput, 'distanceKm' | 'tiers'> & {
+type ModalRaceDraft = Omit<
+  EventRaceWriteInput,
+  'distanceKm' | 'elevationGainM' | 'tiers'
+> & {
   distanceKm: string;
+  elevationGainM: string;
   tierDrafts: RaceTierDraft[];
 };
 
-const inputClass =
-  'w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-400';
-const labelClass = 'text-xs font-medium text-gray-600';
 const provinceOptions = PROVINCES.map((province) => ({
   value: province,
   label: province,
@@ -66,7 +69,7 @@ function emptyRaceDraft(): ModalRaceDraft {
     city: '',
     province: '',
     distanceKm: '',
-    elevationGainM: null,
+    elevationGainM: '',
     resultsUrl: undefined,
     tierDrafts: [],
   };
@@ -169,6 +172,9 @@ function EventRacesEditModalContent({
     () => races.map((race) => ({
       ...race,
       distanceKm: String(race.distanceKm),
+      elevationGainM: race.elevationGainM != null
+        ? String(race.elevationGainM)
+        : '',
       tierDrafts: toRaceTierDrafts(
         race.tiers?.map((tier, index) => ({
           id: `tier-${index}`,
@@ -222,6 +228,17 @@ function EventRacesEditModalContent({
         return;
       }
 
+      const elevationGainM = parseOptionalInteger(race.elevationGainM);
+      if (
+        elevationGainM !== null &&
+        (!Number.isInteger(elevationGainM) ||
+          elevationGainM <= 0 ||
+          elevationGainM >= 100000)
+      ) {
+        setError(formT('errors.elevation'));
+        return;
+      }
+
       if (race.resultsUrl && !isValidResultsUrl(race.resultsUrl)) {
         setError(formT('errors.resultsUrl'));
         return;
@@ -243,6 +260,7 @@ function EventRacesEditModalContent({
       ({ tierDrafts, ...race }) => ({
         ...race,
         distanceKm: Number(race.distanceKm),
+        elevationGainM: parseOptionalInteger(race.elevationGainM),
         tiers: toRaceTierWriteInputs(tierDrafts),
       }),
     );
@@ -259,52 +277,42 @@ function EventRacesEditModalContent({
     >
       <div className="flex max-h-[70vh] flex-col gap-6 overflow-y-auto px-1 pb-1">
         <section className="flex flex-col gap-3">
-          <div className="flex flex-col gap-1">
-            <label className={labelClass}>{t('editFieldName')}</label>
-            <input
-              type="text"
-              className={inputClass}
-              value={eventDraft.name}
-              disabled={isSaving}
-              onChange={(e) =>
-                setEventDraft({ ...eventDraft, name: e.target.value })
-              }
-            />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label className={labelClass}>
-              {t('editFieldWebsiteUrl')}
-            </label>
-            <input
-              type="url"
-              className={inputClass}
-              value={eventDraft.websiteUrl ?? ''}
-              disabled={isSaving}
-              onChange={(e) =>
-                setEventDraft({
-                  ...eventDraft,
-                  websiteUrl: e.target.value.trim() || null,
-                })
-              }
-            />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label className={labelClass}>
-              {t('editFieldDescription')}
-            </label>
-            <textarea
-              rows={12}
-              className={`${inputClass} min-h-64 resize-y`}
-              value={eventDraft.description ?? ''}
-              disabled={isSaving}
-              onChange={(e) =>
-                setEventDraft({
-                  ...eventDraft,
-                  description: e.target.value || null,
-                })
-              }
-            />
-          </div>
+          <FormInput
+            id="modal-event-name"
+            label={t('editFieldName')}
+            value={eventDraft.name}
+            disabled={isSaving}
+            onChange={(e) =>
+              setEventDraft({ ...eventDraft, name: e.target.value })
+            }
+          />
+          <FormInput
+            id="modal-event-website-url"
+            label={t('editFieldWebsiteUrl')}
+            type="url"
+            value={eventDraft.websiteUrl ?? ''}
+            disabled={isSaving}
+            onChange={(e) =>
+              setEventDraft({
+                ...eventDraft,
+                websiteUrl: e.target.value.trim() || null,
+              })
+            }
+          />
+          <FormTextarea
+            id="modal-event-description"
+            label={t('editFieldDescription')}
+            rows={12}
+            className="min-h-64 resize-y"
+            value={eventDraft.description ?? ''}
+            disabled={isSaving}
+            onChange={(e) =>
+              setEventDraft({
+                ...eventDraft,
+                description: e.target.value || null,
+              })
+            }
+          />
         </section>
 
         <section className="flex flex-col gap-3 pt-4">
@@ -324,9 +332,9 @@ function EventRacesEditModalContent({
             {raceDrafts.map((race, index) => (
               <div
                 key={race.id ?? `race-draft-${index}`}
-                className="py-8 first:pt-0 last:pb-0"
+                className="flex flex-col gap-3 py-8 first:pt-0 last:pb-0"
               >
-                <div className="mb-3 flex items-center justify-between gap-3">
+                <div className="flex items-center justify-between gap-3">
                   <div className="flex min-w-0 items-center gap-2">
                     <RacePositionBadge number={index + 1} />
                     <p className="min-w-0 truncate text-sm font-semibold text-gray-900">
@@ -341,158 +349,124 @@ function EventRacesEditModalContent({
                     <Trash2 className="h-4 w-4" aria-hidden="true" />
                   </ReviewActionButton>
                 </div>
-                <div className="flex flex-col gap-1">
-                  <label className={labelClass}>
-                    {t('editFieldName')}
-                  </label>
-                  <input
-                    type="text"
-                    className={inputClass}
-                    value={race.name ?? ''}
+                <FormInput
+                  id={`modal-race-name-${index}`}
+                  label={t('editFieldName')}
+                  value={race.name ?? ''}
+                  disabled={isSaving}
+                  onChange={(e) =>
+                    updateRaceDraft(index, {
+                      ...race,
+                      name: e.target.value,
+                    })
+                  }
+                />
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <FormInput
+                    id={`modal-race-date-${index}`}
+                    label={t('editFieldDate')}
+                    type="date"
+                    value={race.date ?? ''}
                     disabled={isSaving}
                     onChange={(e) =>
                       updateRaceDraft(index, {
                         ...race,
-                        name: e.target.value,
+                        date: e.target.value || null,
+                      })
+                    }
+                  />
+                  <FormInput
+                    id={`modal-race-distance-${index}`}
+                    label={t('editFieldDistance')}
+                    inputMode="decimal"
+                    value={race.distanceKm}
+                    disabled={isSaving}
+                    onChange={(e) =>
+                      updateRaceDraft(index, {
+                        ...race,
+                        distanceKm: e.target.value,
+                      })
+                    }
+                  />
+                  <FormInput
+                    id={`modal-race-elevation-${index}`}
+                    label={t('editFieldElevation')}
+                    inputMode="numeric"
+                    value={race.elevationGainM}
+                    disabled={isSaving}
+                    onChange={(e) =>
+                      updateRaceDraft(index, {
+                        ...race,
+                        elevationGainM: e.target.value,
                       })
                     }
                   />
                 </div>
-                <div className="mt-3 grid gap-3 sm:grid-cols-3">
-                  <div className="flex flex-col gap-1">
-                    <label className={labelClass}>
-                      {t('editFieldDate')}
-                    </label>
-                    <input
-                      type="date"
-                      className={inputClass}
-                      value={race.date ?? ''}
-                      disabled={isSaving}
-                      onChange={(e) =>
-                        updateRaceDraft(index, {
-                          ...race,
-                          date: e.target.value || null,
-                        })
-                      }
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <label className={labelClass}>
-                      {t('editFieldDistance')}
-                    </label>
-                    <NumberInput
-                      min="0"
-                      step="0.1"
-                      className={inputClass}
-                      value={race.distanceKm}
-                      disabled={isSaving}
-                      onChange={(e) =>
-                        updateRaceDraft(index, {
-                          ...race,
-                          distanceKm: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <label className={labelClass}>
-                      {t('editFieldElevation')}
-                    </label>
-                    <NumberInput
-                      min="0"
-                      className={inputClass}
-                      value={race.elevationGainM ?? ''}
-                      disabled={isSaving}
-                      onChange={(e) =>
-                        updateRaceDraft(index, {
-                          ...race,
-                          elevationGainM: e.target.value === ''
-                            ? null
-                            : Number.parseInt(e.target.value, 10) || 0,
-                        })
-                      }
-                    />
-                  </div>
-                </div>
-                <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                  <div className="flex flex-col gap-1">
-                    <label className={labelClass}>
-                      {t('editFieldCity')}
-                    </label>
-                    <input
-                      type="text"
-                      className={inputClass}
-                      value={race.city}
-                      disabled={isSaving}
-                      onChange={(e) =>
-                        updateRaceDraft(index, {
-                          ...race,
-                          city: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <label className={labelClass}>
-                      {t('editFieldProvince')}
-                    </label>
-                    <SelectMenu
-                      value={race.province}
-                      options={provinceOptions}
-                      disabled={isSaving}
-                      placeholder={formT('provincePlaceholder')}
-                      variant="modal"
-                      onValueChange={(value) =>
-                        updateRaceDraft(index, {
-                          ...race,
-                          province: value,
-                        })
-                      }
-                    />
-                  </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <FormInput
+                    id={`modal-race-city-${index}`}
+                    label={t('editFieldCity')}
+                    value={race.city}
+                    disabled={isSaving}
+                    onChange={(e) =>
+                      updateRaceDraft(index, {
+                        ...race,
+                        city: e.target.value,
+                      })
+                    }
+                  />
+                  <SelectMenu
+                    id={`modal-race-province-${index}`}
+                    label={t('editFieldProvince')}
+                    value={race.province}
+                    options={provinceOptions}
+                    disabled={isSaving}
+                    placeholder={formT('provincePlaceholder')}
+                    variant="modal"
+                    onValueChange={(value) =>
+                      updateRaceDraft(index, {
+                        ...race,
+                        province: value,
+                      })
+                    }
+                  />
                 </div>
                 {showResultsUrls && race.id ? (
-                  <div className="mt-3 flex flex-col gap-1">
-                    <label className={labelClass}>{formT('resultsUrl')}</label>
-                    <input
-                      type="url"
-                      className={inputClass}
-                      value={race.resultsUrl ?? ''}
-                      placeholder={formT('resultsUrlPlaceholder')}
-                      disabled={isSaving}
-                      onChange={(e) =>
-                        updateRaceDraft(index, {
-                          ...race,
-                          resultsUrl: e.target.value.trim() || null,
-                        })
-                      }
-                    />
-                  </div>
+                  <FormInput
+                    id={`modal-race-results-url-${index}`}
+                    label={formT('resultsUrl')}
+                    type="url"
+                    value={race.resultsUrl ?? ''}
+                    placeholder={formT('resultsUrlPlaceholder')}
+                    disabled={isSaving}
+                    onChange={(e) =>
+                      updateRaceDraft(index, {
+                        ...race,
+                        resultsUrl: e.target.value.trim() || null,
+                      })
+                    }
+                  />
                 ) : null}
                 {showTrackUploads ? (
-                  <div className="mt-4">
-                    <RaceTrackUpload
-                      raceId={race.id}
-                      raceName={race.name ?? ''}
-                      initialHasTrack={
-                        race.id ? trackedRaceIds.includes(race.id) : false
-                      }
-                      disabled={isSaving}
-                      onUploaded={(result) => onTrackUploaded?.(result.raceId)}
-                    />
-                  </div>
+                  <RaceTrackUpload
+                    raceId={race.id}
+                    raceName={race.name ?? ''}
+                    initialHasTrack={
+                      race.id ? trackedRaceIds.includes(race.id) : false
+                    }
+                    disabled={isSaving}
+                    onUploaded={(result) => onTrackUploaded?.(result.raceId)}
+                  />
                 ) : null}
                 {showTiers ? (
-                  <div className="mt-4">
-                    <RaceTierFields
-                      idPrefix={`modal-race-${index}`}
-                      tiers={race.tierDrafts}
-                      disabled={isSaving}
-                      onChange={(tierDrafts) =>
-                        updateRaceDraft(index, { ...race, tierDrafts })
-                      }
-                    />
-                  </div>
+                  <RaceTierFields
+                    idPrefix={`modal-race-${index}`}
+                    tiers={race.tierDrafts}
+                    disabled={isSaving}
+                    onChange={(tierDrafts) =>
+                      updateRaceDraft(index, { ...race, tierDrafts })
+                    }
+                  />
                 ) : null}
               </div>
             ))}

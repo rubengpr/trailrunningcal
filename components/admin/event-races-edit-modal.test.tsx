@@ -138,3 +138,105 @@ describe('EventRacesEditModal results URLs', () => {
     expect(onSave).not.toHaveBeenCalled();
   });
 });
+
+describe('EventRacesEditModal elevation', () => {
+  it('rejects a non-numeric elevation instead of silently saving zero', () => {
+    const onSave = vi.fn();
+    render(
+      <EventRacesEditModal
+        isOpen
+        event={event}
+        races={races}
+        title="Edit"
+        onClose={vi.fn()}
+        onSave={onSave}
+      />,
+    );
+
+    const elevation = screen.getByLabelText('editFieldElevation');
+    fireEvent.change(elevation, { target: { value: 'abc' } });
+    fireEvent.click(screen.getByRole('button', { name: 'saveReview' }));
+
+    expect(screen.getByText('errors.elevation')).toBeTruthy();
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
+  it('saves a cleared elevation as null', () => {
+    const onSave = vi.fn();
+    render(
+      <EventRacesEditModal
+        isOpen
+        event={event}
+        races={races}
+        title="Edit"
+        onClose={vi.fn()}
+        onSave={onSave}
+      />,
+    );
+
+    fireEvent.change(screen.getByLabelText('editFieldElevation'), {
+      target: { value: '' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'saveReview' }));
+
+    expect(onSave).toHaveBeenCalledTimes(1);
+    expect(onSave.mock.calls[0][1][0].elevationGainM).toBeNull();
+  });
+
+  it('round-trips an existing elevation unchanged', () => {
+    const onSave = vi.fn();
+    render(
+      <EventRacesEditModal
+        isOpen
+        event={event}
+        races={races}
+        title="Edit"
+        onClose={vi.fn()}
+        onSave={onSave}
+      />,
+    );
+
+    expect((screen.getByLabelText('editFieldElevation') as HTMLInputElement).value)
+      .toBe('900');
+
+    fireEvent.click(screen.getByRole('button', { name: 'saveReview' }));
+
+    expect(onSave.mock.calls[0][1][0].elevationGainM).toBe(900);
+  });
+});
+
+describe('EventRacesEditModal field wiring', () => {
+  it('gives each race its own labelled controls', () => {
+    const secondRace: EventRaceWriteInput = {
+      ...races[0],
+      id: 'race-2',
+      name: '42K',
+      distanceKm: 42,
+    };
+    const { container } = render(
+      <EventRacesEditModal
+        isOpen
+        event={event}
+        races={[races[0], secondRace]}
+        title="Edit"
+        showResultsUrls
+        onClose={vi.fn()}
+        onSave={vi.fn()}
+      />,
+    );
+
+    const ids = [...container.querySelectorAll('input, textarea')]
+      .map((element) => element.id)
+      .filter(Boolean);
+    expect(new Set(ids).size).toBe(ids.length);
+
+    const unresolvedLabels = [...container.querySelectorAll('label[for]')]
+      .map((label) => label.getAttribute('for'))
+      .filter((target) => target && !document.getElementById(target));
+    expect(unresolvedLabels).toEqual([]);
+
+    const distances = screen.getAllByLabelText('editFieldDistance');
+    expect(distances.map((input) => (input as HTMLInputElement).value))
+      .toEqual(['21', '42']);
+  });
+});

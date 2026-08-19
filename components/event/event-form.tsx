@@ -27,6 +27,7 @@ import {
 import type { EventRaceWriteInput } from '@/lib/api/events';
 import type { TrailEventDetail } from '@/types/event.types';
 import { PROVINCES, isValidProvince } from '@/lib/geography/provinces';
+import { parseOptionalInteger } from '@/lib/events/utils';
 import { isValidResultsUrl } from '@/lib/races/utils';
 
 interface RaceDraft {
@@ -75,14 +76,6 @@ function toRaceDrafts(initialData: TrailEventDetail | null): RaceDraft[] {
     resultsUrl: race.resultsUrl ?? '',
     tiers: toRaceTierDrafts(race.tiers),
   }));
-}
-
-function parseOptionalInteger(value: string): number | null {
-  const trimmed = value.trim();
-  if (trimmed.length === 0) {
-    return null;
-  }
-  return /^\d+$/.test(trimmed) ? Number(trimmed) : Number.NaN;
 }
 
 interface EventFormProps {

@@ -2,7 +2,7 @@
 
 import { Plus, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { NumberInput } from '@/components/ui/number-input';
+import { FormInput } from '@/components/ui/form-input';
 import { MAX_RACE_TIERS } from '@/lib/events/constants';
 import {
   validateRaceTierSchedule,
@@ -28,8 +28,6 @@ interface RaceTierFieldsProps {
   onChange: (tiers: RaceTierDraft[]) => void;
 }
 
-const inputClass =
-  'h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-400 disabled:cursor-not-allowed disabled:opacity-50';
 export function emptyRaceTierDraft(): RaceTierDraft {
   return {
     priceEur: '',
@@ -126,35 +124,26 @@ export function RaceTierFields({
               key={tier.id ?? `new-tier-${index}`}
               className="grid gap-3 rounded-md border border-gray-200 bg-white p-3 sm:grid-cols-[minmax(7rem,0.75fr)_minmax(9rem,1fr)_2.5rem] sm:items-end"
             >
-              <label className="flex flex-col gap-1 text-xs font-medium text-gray-600">
-                {t('price')}
-                <NumberInput
-                  id={`${idPrefix}-tier-price-${index}`}
-                  min="0"
-                  max="9999"
-                  step="1"
-                  inputMode="numeric"
-                  className={inputClass}
-                  value={tier.priceEur}
-                  disabled={disabled}
-                  onChange={(event) =>
-                    updateTier(index, 'priceEur', event.target.value)
-                  }
-                />
-              </label>
-              <label className="flex flex-col gap-1 text-xs font-medium text-gray-600">
-                {t('endsAt')}
-                <input
-                  id={`${idPrefix}-tier-end-${index}`}
-                  type="date"
-                  className={inputClass}
-                  value={tier.endsAt}
-                  disabled={disabled}
-                  onChange={(event) =>
-                    updateTier(index, 'endsAt', event.target.value)
-                  }
-                />
-              </label>
+              <FormInput
+                id={`${idPrefix}-tier-price-${index}`}
+                label={t('price')}
+                inputMode="numeric"
+                value={tier.priceEur}
+                disabled={disabled}
+                onChange={(event) =>
+                  updateTier(index, 'priceEur', event.target.value)
+                }
+              />
+              <FormInput
+                id={`${idPrefix}-tier-end-${index}`}
+                label={t('endsAt')}
+                type="date"
+                value={tier.endsAt}
+                disabled={disabled}
+                onChange={(event) =>
+                  updateTier(index, 'endsAt', event.target.value)
+                }
+              />
               <button
                 type="button"
                 title={t('remove')}
@@ -162,7 +151,7 @@ export function RaceTierFields({
                 onClick={() =>
                   onChange(tiers.filter((_, tierIndex) => tierIndex !== index))
                 }
-                className="inline-flex size-10 cursor-pointer items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 disabled:pointer-events-none disabled:opacity-50"
+                className="inline-flex size-10 cursor-pointer items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 disabled:pointer-events-none disabled:opacity-50 sm:mb-5"
               >
                 <Trash2 className="size-4" strokeWidth={1.5} />
               </button>

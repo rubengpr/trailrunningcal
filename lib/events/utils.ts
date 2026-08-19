@@ -328,3 +328,16 @@ export function selectRecommendedEvents(
     })
     .slice(0, limit);
 }
+
+/**
+ * Parses an optional integer field held as form state. Returns `null` for an
+ * empty value and `NaN` for anything non-numeric, so callers can tell "not
+ * provided" apart from "provided but invalid".
+ */
+export function parseOptionalInteger(value: string): number | null {
+  const trimmed = value.trim();
+  if (trimmed.length === 0) {
+    return null;
+  }
+  return /^\d+$/.test(trimmed) ? Number(trimmed) : Number.NaN;
+}
