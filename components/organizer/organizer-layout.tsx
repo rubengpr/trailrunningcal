@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Calendar, CircleUser, Sparkles, Trophy } from 'lucide-react';
-import { Sidebar } from '@/components/ui/sidebar';
+import { DashboardLayout } from '@/components/ui/dashboard-layout';
 import type { NavItem } from '@/components/ui/sidebar';
 
 interface OrganizerLayoutProps {
@@ -41,12 +41,5 @@ export function OrganizerLayout({ children }: OrganizerLayoutProps) {
     },
   ];
 
-  return (
-    <div className="flex flex-col md:flex-row">
-      <Sidebar navItems={navItems} />
-      <div className="flex flex-col w-full p-6">
-        {children}
-      </div>
-    </div>
-  );
+  return <DashboardLayout navItems={navItems}>{children}</DashboardLayout>;
 }
