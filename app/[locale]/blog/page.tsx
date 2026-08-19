@@ -9,6 +9,7 @@ import {
 } from '@/lib/seo/meta-config';
 import { buildBlogListingAlternateLinks } from '@/lib/content/alternate-links';
 import { buildBreadcrumbJsonLd } from '@/lib/seo/json-ld';
+import { JsonLd } from '@/components/seo/json-ld';
 import { BASE_URL } from '@/lib/config';
 
 export async function generateMetadata({
@@ -51,10 +52,7 @@ export default async function BlogPage({
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
-      />
+      <JsonLd data={breadcrumbJsonLd} />
       {/* Header Section */}
       <div className="py-16 sm:py-24 text-center px-4">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 tracking-tight">

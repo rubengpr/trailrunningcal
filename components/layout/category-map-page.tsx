@@ -6,6 +6,7 @@ import type {
   PublicEventScope,
 } from '@/types/public-events.types';
 import { buildFaqJsonLd, type FaqItem } from '@/lib/seo/json-ld';
+import { JsonLd } from '@/components/seo/json-ld';
 import { HeroSection } from '@/components/layout/hero-section';
 import { FaqSection } from '@/components/layout/faq-section';
 import { EventsExplorerClient } from '@/components/events-map/events-explorer-client';
@@ -19,7 +20,7 @@ interface CategoryMapPageProps {
   locale: Locale;
   initialPage: PublicEventPage;
   scope: PublicEventScope;
-  breadcrumbJsonLd: object;
+  breadcrumbJsonLd: Record<string, unknown>;
   heroBody: string;
   heroTitleStart: string;
   heroTitlePlace: string;
@@ -52,10 +53,7 @@ export async function CategoryMapPage({
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
-      />
+      <JsonLd data={breadcrumbJsonLd} />
       <HeroSection
         titleStart={heroTitleStart}
         titlePlace={heroTitlePlace}
@@ -75,10 +73,7 @@ export async function CategoryMapPage({
       </div>
       {contentSections && contentSections.length > 0 && contentSectionsHeading && (
         <>
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(buildFaqJsonLd(contentSections)) }}
-          />
+          <JsonLd data={buildFaqJsonLd(contentSections)} />
           <FaqSection sections={contentSections} heading={contentSectionsHeading} />
         </>
       )}

@@ -24,6 +24,7 @@ import {
   shouldShowEventResults,
 } from '@/lib/events/utils';
 import { buildBreadcrumbJsonLd, buildEventJsonLd } from '@/lib/seo/json-ld';
+import { JsonLd } from '@/components/seo/json-ld';
 import { LOCALE_BY_LANGUAGE, SITE_NAME } from '@/lib/seo/meta-config';
 import { getDestinationPath, getProvinceByDbName } from '@/lib/geography/destinations';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
@@ -173,14 +174,8 @@ export default async function EventPage({
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
-      />
+      <JsonLd data={jsonLd} />
+      <JsonLd data={breadcrumbJsonLd} />
       <div className="min-h-screen w-full text-gray-900 flex flex-col bg-white">
         <div className="mx-auto flex w-full min-w-0 max-w-5xl flex-col px-4 py-6 sm:px-6 lg:px-8">
           <Breadcrumb

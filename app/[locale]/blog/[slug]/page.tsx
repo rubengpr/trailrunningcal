@@ -10,8 +10,8 @@ import { renderMDXFile } from '@/lib/content/mdx-renderer';
 import { BASE_URL } from '@/lib/config';
 import { generateMetadataFromOptions } from '@/lib/seo/meta-config';
 import { buildBlogPostAlternateLinks } from '@/lib/content/alternate-links';
-import { buildBlogJsonLd } from '@/lib/seo/json-ld';
-import { buildBreadcrumbJsonLd } from '@/lib/seo/json-ld';
+import { buildBlogJsonLd, buildBreadcrumbJsonLd } from '@/lib/seo/json-ld';
+import { JsonLd } from '@/components/seo/json-ld';
 import { getTranslations } from 'next-intl/server';
 import { BlogPostCard } from '@/components/blog/blog-post-card';
 
@@ -84,14 +84,8 @@ export default async function BlogPostPage({ params }: PageProps) {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
-      />
+      <JsonLd data={jsonLd} />
+      <JsonLd data={breadcrumbJsonLd} />
       <div className="w-full px-6 sm:px-10 lg:px-16 sm:py-8 lg:py-12">
         <MDXContent />
       </div>

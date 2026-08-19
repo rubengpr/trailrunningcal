@@ -9,8 +9,12 @@ import {
 import type { Locale } from '@/i18n';
 import { buildHomeAlternateLinks } from '@/lib/content/alternate-links';
 import { getUpcomingEventsPage } from '@/lib/db/events';
-import { buildWebsiteJsonLd, buildOrganizationJsonLd } from '@/lib/seo/json-ld';
-import { buildFaqJsonLd } from '@/lib/seo/json-ld';
+import {
+  buildWebsiteJsonLd,
+  buildOrganizationJsonLd,
+  buildFaqJsonLd,
+} from '@/lib/seo/json-ld';
+import { JsonLd } from '@/components/seo/json-ld';
 import type { MapPageLabels } from '@/types/map.types';
 
 export const revalidate = 86400;
@@ -81,15 +85,9 @@ export default async function HomePage({
 
   return (
     <>
-      <script type="application/ld+json">
-        {JSON.stringify(websiteJsonLd)}
-      </script>
-      <script type="application/ld+json">
-        {JSON.stringify(organizationJsonLd)}
-      </script>
-      <script type="application/ld+json">
-        {JSON.stringify(faqJsonLd)}
-      </script>
+      <JsonLd data={websiteJsonLd} />
+      <JsonLd data={organizationJsonLd} />
+      <JsonLd data={faqJsonLd} />
       <HeroSection
         titleStart={t('landing.titleStart')}
         titlePlace={t('landing.titlePlace')}
