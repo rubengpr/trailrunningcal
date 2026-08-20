@@ -32,6 +32,7 @@ function toItem(
     status: row.status,
     reviewStatus: row.review_status,
     acceptedEventId: row.accepted_event_id,
+    savedDraftId: row.saved_draft_id,
     acceptedEventSlug,
     reviewedAt: row.reviewed_at,
     raceCount: row.race_count,
@@ -109,7 +110,7 @@ export async function getPendingBatchItems(
   const { data, error } = await supabase
     .from('event_import_batch_items')
     .select(
-      'id, batch_id, url, status, review_status, accepted_event_id, reviewed_at, result, race_count, error, created_at, updated_at',
+      'id, batch_id, url, status, review_status, accepted_event_id, saved_draft_id, reviewed_at, result, race_count, error, created_at, updated_at',
     )
     .eq('batch_id', batchId)
     .eq('status', 'pending')
@@ -152,7 +153,7 @@ export async function getBatchItems(
   const { data, error } = await supabase
     .from('event_import_batch_items')
     .select(
-      'id, batch_id, url, status, review_status, accepted_event_id, reviewed_at, result, race_count, error, created_at, updated_at',
+      'id, batch_id, url, status, review_status, accepted_event_id, saved_draft_id, reviewed_at, result, race_count, error, created_at, updated_at',
     )
     .eq('batch_id', batchId)
     .order('created_at', { ascending: true });
@@ -305,12 +306,13 @@ export async function getItemResult(
 export async function getItemResultState(itemId: string): Promise<{
   result: EventImportResult;
   reviewStatus: EventImportItemRow['review_status'];
+  savedDraftId: string | null;
 } | null> {
   const supabase = createAdminClient();
 
   const { data, error } = await supabase
     .from('event_import_batch_items')
-    .select('result, review_status')
+    .select('result, review_status, saved_draft_id')
     .eq('id', itemId)
     .eq('status', 'completed')
     .maybeSingle();
@@ -327,6 +329,7 @@ export async function getItemResultState(itemId: string): Promise<{
   return {
     result: data.result as EventImportResult,
     reviewStatus: data.review_status as EventImportItemRow['review_status'],
+    savedDraftId: data.saved_draft_id as string | null,
   };
 }
 
@@ -346,6 +349,7 @@ export async function saveItemResult(
     .eq('id', itemId)
     .eq('status', 'completed')
     .eq('review_status', 'pending')
+    .is('saved_draft_id', null)
     .not('result', 'is', null)
     .select('result')
     .maybeSingle();

@@ -42,6 +42,12 @@ interface EventImportPreviewProps {
     event: TrailEventAgentEvent,
     races: TrailEventAgentRace[],
   ) => Promise<void> | void;
+  onSaveDraft?: (
+    event: TrailEventAgentEvent,
+    races: TrailEventAgentRace[],
+  ) => Promise<void>;
+  isSavingDraft?: boolean;
+  isDraftSaved?: boolean;
 }
 
 function toPreviewRace(
@@ -180,6 +186,9 @@ export function EventImportPreview({
   isRejected,
   showReject = true,
   onSaveReview,
+  onSaveDraft,
+  isSavingDraft = false,
+  isDraftSaved = false,
 }: EventImportPreviewProps): React.ReactElement {
   const t = useTranslations('admin.events.import.results');
   const pricingT = useTranslations('event.pricing');
@@ -231,7 +240,7 @@ export function EventImportPreview({
   const showRaceLocations = buildEventLocation(previewRaces).isMultipleLocations;
   const description = event.description?.trim();
   const websiteUrl = event.websiteUrl?.trim();
-  const isActionDisabled = isAccepting || isAccepted || isRejected;
+  const isActionDisabled = isAccepting || isAccepted || isRejected || isDraftSaved;
 
   const handleStartEdit = (): void => {
     setIsEditing(true);
@@ -283,7 +292,17 @@ export function EventImportPreview({
                   </a>
                 )}
               </div>
-              <div className="pointer-events-none flex shrink-0 items-center gap-1 opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
+              <div className={`${onSaveDraft ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100'} flex shrink-0 items-center gap-1 transition-opacity`}>
+                {onSaveDraft && (
+                  <button
+                    type="button"
+                    disabled={isActionDisabled || isSavingDraft || isDraftSaved}
+                    onClick={() => void onSaveDraft(event, races)}
+                    className="inline-flex h-8 items-center rounded-md px-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-100 disabled:pointer-events-none disabled:opacity-35"
+                  >
+                    {isDraftSaved ? t('draftSaved') : isSavingDraft ? t('savingDraft') : t('saveDraft')}
+                  </button>
+                )}
                 <ReviewActionButton
                   title={isAccepted ? t('reviewAccepted') : t('acceptEvent')}
                   disabled={isActionDisabled}

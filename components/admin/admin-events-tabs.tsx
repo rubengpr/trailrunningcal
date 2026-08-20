@@ -12,6 +12,7 @@ export function AdminEventsTabs() {
   const tabs = [
     { label: t('activos'), slug: 'activos', href: `/${locale}/admin/eventos/activos` },
     { label: t('pendientes'), slug: 'pendientes', href: `/${locale}/admin/eventos/pendientes` },
+    { label: t('borradores'), slug: 'borradores', href: `/${locale}/admin/eventos/borradores` },
   ];
 
   return (

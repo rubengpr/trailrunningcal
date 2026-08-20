@@ -34,6 +34,7 @@ import {
     runEventImport,
     acceptScrapedEvent,
     acceptEventImportItem,
+    saveEventImportDraft,
     startEventImportBatch,
     getEventImportBatchStatus,
     getEventImportItemResult,
@@ -496,6 +497,9 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
     const [reviewingBatchItemId, setReviewingBatchItemId] = useState<string | null>(null);
     const [reviewingBatchResult, setReviewingBatchResult] = useState<EventImportResult | null>(null);
     const [isAcceptingBatchItem, setIsAcceptingBatchItem] = useState(false);
+    const [savedDraftId, setSavedDraftId] = useState<string | null>(null);
+    const [savedBatchDraftId, setSavedBatchDraftId] = useState<string | null>(null);
+    const [isSavingDraft, setIsSavingDraft] = useState(false);
     const [isAddingToPending, setIsAddingToPending] = useState(false);
     const fetchedBatchItemIds = useRef<Set<string>>(new Set());
     const [importConflicts, setImportConflicts] = useState<ConflictingRace[]>([]);
@@ -529,6 +533,7 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
     const { elapsedMs: liveElapsedMs, startedAtRef: runStartedAtRef } = useLiveTimer(isScraping);
 
     const resetScrapeResults = (): void => {
+        setSavedDraftId(null);
         dispatch({ type: 'RESULTS_CLEARED' });
     };
 
@@ -813,6 +818,7 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
     }, [batchSnapshot, isBatchRunning]);
 
     const handleViewBatchResult = async (itemId: string): Promise<void> => {
+        setSavedBatchDraftId(null);
         setViewingBatchItemId(itemId);
 
         try {
@@ -850,6 +856,26 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
             toast.error(errorMessage);
         } finally {
             dispatch({ type: 'ACCEPTING_INDEX', index: null });
+        }
+    };
+
+    const handleSaveDraft = async (
+        event: TrailEventAgentEvent,
+        races: TrailEventAgentRace[],
+    ): Promise<void> => {
+        if (isSavingDraft || savedDraftId) return;
+        setIsSavingDraft(true);
+        try {
+            const sourceUrl = websiteUrl.trim()
+                ? normalizeUrl(websiteUrl.trim())
+                : event.websiteUrl;
+            const draft = await saveEventImportDraft({ event, races, sourceUrl });
+            setSavedDraftId(draft.id);
+            toast.success(t('results.draftSaved'));
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : t('results.draftSaveError'));
+        } finally {
+            setIsSavingDraft(false);
         }
     };
 
@@ -942,6 +968,34 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
         }
     };
 
+    const handleSaveBatchDraft = async (
+        event: TrailEventAgentEvent,
+        races: TrailEventAgentRace[],
+    ): Promise<void> => {
+        if (!reviewingBatchItem || isSavingDraft || savedBatchDraftId) return;
+        setIsSavingDraft(true);
+        try {
+            const draft = await saveEventImportDraft({
+                event,
+                races,
+                sourceUrl: reviewingBatchItem.url,
+                batchItemId: reviewingBatchItem.id,
+            });
+            setSavedBatchDraftId(draft.id);
+            setBatchSnapshot((current) => current ? {
+                ...current,
+                items: current.items.map((item) => item.id === reviewingBatchItem.id
+                    ? { ...item, savedDraftId: draft.id }
+                    : item),
+            } : current);
+            toast.success(t('results.draftSaved'));
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : t('results.draftSaveError'));
+        } finally {
+            setIsSavingDraft(false);
+        }
+    };
+
     const handleSwitchToJsonView = (): void => {
         dispatch({
             type: 'JSON_TAB_OPENED',
@@ -1007,6 +1061,8 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
         setActiveBatchId(null);
         setBatchSnapshot(null);
         setViewingBatchItemId(null);
+        setSavedDraftId(null);
+        setSavedBatchDraftId(null);
         closeBatchReview();
         fetchedBatchItemIds.current.clear();
         fileUpload.clearUpload();
@@ -1582,6 +1638,9 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                     onReject={handleReject}
                     isRejected={rejectedIndexes.has(0)}
                     onSaveReview={handleSaveReview}
+                    onSaveDraft={handleSaveDraft}
+                    isSavingDraft={isSavingDraft}
+                    isDraftSaved={savedDraftId !== null}
                 />
             )}
             {batchRows.length > 0 && (
@@ -1622,6 +1681,9 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                         isRejected={false}
                         showReject={false}
                         onSaveReview={handleSaveBatchReview}
+                        onSaveDraft={handleSaveBatchDraft}
+                        isSavingDraft={isSavingDraft}
+                        isDraftSaved={savedBatchDraftId !== null || reviewingBatchItem.savedDraftId !== null}
                     />
                 ) : null}
             </EventImportPreviewModal>

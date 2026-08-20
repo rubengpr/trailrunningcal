@@ -771,7 +771,21 @@
       },
       "tabs": {
         "activos": "Actius",
-        "pendientes": "Pendents"
+        "pendientes": "Pendents",
+        "borradores": "Esborranys"
+      },
+      "drafts": {
+        "title": "Esborranys importats",
+        "subtitle": "Revisa els esdeveniments desats abans d'acceptar-los.",
+        "empty": "No hi ha esborranys importats.",
+        "raceCount": "{count} curses",
+        "open": "Obrir",
+        "close": "Tancar",
+        "saveSuccess": "Canvis desats",
+        "acceptSuccess": "Esdeveniment acceptat correctament",
+        "acceptError": "Error en acceptar l'esborrany",
+        "rejectSuccess": "Esborrany rebutjat",
+        "rejectError": "Error en rebutjar l'esborrany"
       },
       "queue": {
         "title": "Cua d'URLs",
@@ -981,6 +995,10 @@
           "reviewRejected": "Esdeveniment rebutjat",
           "saveReview": "Desar",
           "savingReview": "Desant...",
+          "saveDraft": "Desar com a esborrany",
+          "savingDraft": "Desant esborrany...",
+          "draftSaved": "Desat com a esborrany",
+          "draftSaveError": "Error en desar l'esborrany",
           "cancelEdit": "Cancel·lar",
           "editEventInfo": "Esdeveniment",
           "editRaceInfo": "Curses",

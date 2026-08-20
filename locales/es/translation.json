@@ -803,7 +803,21 @@
       },
       "tabs": {
         "activos": "Activos",
-        "pendientes": "Pendientes"
+        "pendientes": "Pendientes",
+        "borradores": "Borradores"
+      },
+      "drafts": {
+        "title": "Borradores importados",
+        "subtitle": "Revisa los eventos guardados antes de aceptarlos.",
+        "empty": "No hay borradores importados.",
+        "raceCount": "{count} carreras",
+        "open": "Abrir",
+        "close": "Cerrar",
+        "saveSuccess": "Cambios guardados",
+        "acceptSuccess": "Evento aceptado correctamente",
+        "acceptError": "Error al aceptar el borrador",
+        "rejectSuccess": "Borrador rechazado",
+        "rejectError": "Error al rechazar el borrador"
       },
       "queue": {
         "title": "Cola de URLs",
@@ -1013,6 +1027,10 @@
           "reviewRejected": "Evento rechazado",
           "saveReview": "Guardar",
           "savingReview": "Guardando...",
+          "saveDraft": "Guardar como borrador",
+          "savingDraft": "Guardando borrador...",
+          "draftSaved": "Guardado como borrador",
+          "draftSaveError": "Error al guardar el borrador",
           "cancelEdit": "Cancelar",
           "editEventInfo": "Evento",
           "editRaceInfo": "Carreras",

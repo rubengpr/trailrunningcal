@@ -82,6 +82,7 @@ export interface EventImportBatchItem {
   reviewStatus: EventImportItemReviewStatus;
   acceptedEventId: string | null;
   acceptedEventSlug: string | null;
+  savedDraftId: string | null;
   reviewedAt: string | null;
   raceCount: number | null;
   error: string | null;
@@ -121,6 +122,7 @@ export interface EventImportItemRow {
   status: EventImportItemStatus;
   review_status: EventImportItemReviewStatus;
   accepted_event_id: string | null;
+  saved_draft_id: string | null;
   reviewed_at: string | null;
   result: EventImportResult | null;
   race_count: number | null;

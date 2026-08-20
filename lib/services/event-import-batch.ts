@@ -84,6 +84,9 @@ export async function updateItemResult(
   if (current.reviewStatus === 'accepted') {
     throw new ValidationError('Accepted items cannot be edited', 409);
   }
+  if (current.savedDraftId) {
+    throw new ValidationError('Saved drafts must be edited from the drafts queue', 409);
+  }
 
   const updated = await saveItemResult(itemId, {
     ...current.result,
@@ -115,6 +118,9 @@ export async function acceptItem(
 
   if (current.result.races.some((race) => !isValidProvince(race.province))) {
     throw new ValidationError('Invalid province', 400);
+  }
+  if (current.savedDraftId) {
+    throw new ValidationError('Saved drafts must be accepted from the drafts queue', 409);
   }
 
   return acceptItemInDatabase(itemId);

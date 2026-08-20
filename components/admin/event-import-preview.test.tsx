@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import es from '@/locales/es/translation.json';
@@ -103,5 +103,28 @@ describe('EventImportPreview race tiers', () => {
     expect(screen.queryByTitle('Rechazar evento')).toBeNull();
     expect(screen.getByTitle('Editar')).toHaveProperty('disabled', true);
     expect(screen.getByTitle('Evento aceptado')).toHaveProperty('disabled', true);
+  });
+
+  it('shows a visible save-draft action and prevents another save after success', async () => {
+    const onSaveDraft = vi.fn().mockResolvedValue(undefined);
+    render(
+      <NextIntlClientProvider locale="es" messages={es}>
+        <EventImportPreview
+          event={{ name: 'Draft Event', description: null, websiteUrl: null }}
+          races={[{ name: '10K', date: '2027-05-01', city: 'Girona', province: 'Girona', distanceKm: 10, elevationGainM: 300, tiers: [] }]}
+          isLoading={false}
+          error={null}
+          onAccept={vi.fn()}
+          isAccepted={false}
+          isAccepting={false}
+          onReject={vi.fn()}
+          isRejected={false}
+          onSaveReview={vi.fn()}
+          onSaveDraft={onSaveDraft}
+        />
+      </NextIntlClientProvider>,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar como borrador' }));
+    await waitFor(() => expect(onSaveDraft).toHaveBeenCalledTimes(1));
   });
 });

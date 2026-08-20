@@ -13,9 +13,10 @@ import type {
 } from '@/types/event-description.types';
 import type {
   EventImportBatchSnapshot,
-  EventImportRequest,
   EventImportResult,
+  EventImportRequest,
 } from '@/types/events-import-api.types';
+import type { EventImportDraft } from '@/types/event-import-draft.types';
 import type {
   EventRaceTierWriteInput,
   PublicEventDetail,
@@ -337,6 +338,47 @@ export async function acceptEventImportItem(
   }
 
   return responseData.data;
+}
+
+export async function saveEventImportDraft(input: {
+  event: TrailEventAgentEvent;
+  races: TrailEventAgentRace[];
+  sourceUrl?: string | null;
+  batchItemId?: string | null;
+}): Promise<EventImportDraft> {
+  const response = await fetch('/api/events/import/drafts', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  });
+  const responseData = await response.json();
+  if (!response.ok) throw new Error(responseData.error || 'Failed to save event import draft');
+  return responseData.data;
+}
+
+export async function updateEventImportDraft(
+  draftId: string,
+  input: { event: TrailEventAgentEvent; races: TrailEventAgentRace[] },
+): Promise<EventImportDraft> {
+  const response = await fetch(`/api/events/import/drafts/${draftId}`, {
+    method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(input),
+  });
+  const responseData = await response.json();
+  if (!response.ok) throw new Error(responseData.error || 'Failed to update event import draft');
+  return responseData.data;
+}
+
+export async function acceptEventImportDraft(draftId: string): Promise<{ eventId: string; eventSlug: string }> {
+  const response = await fetch(`/api/events/import/drafts/${draftId}/accept`, { method: 'POST' });
+  const responseData = await response.json();
+  if (!response.ok) throw new Error(responseData.error || 'Failed to accept event import draft');
+  return responseData.data;
+}
+
+export async function rejectEventImportDraft(draftId: string): Promise<void> {
+  const response = await fetch(`/api/events/import/drafts/${draftId}`, { method: 'DELETE' });
+  const responseData = await response.json();
+  if (!response.ok) throw new Error(responseData.error || 'Failed to reject event import draft');
 }
 
 export async function generateEventDescriptionDraft(
