@@ -7,11 +7,11 @@ description: Business, product, and market context for Trail Running Cal. Load w
 
 ## What it is
 
-Trail Running Cal (**Trail Running Calendar** in SEO/schema) is a bilingual (Spanish + Catalan) web product at [trailrunningcal.com](https://www.trailrunningcal.com) that helps people discover and plan trail and mountain races in Catalonia, Spain. It is maintained by one single product engineer with limited resources.
+Trail Running Cal (**Trail Running Calendar** in SEO/schema) is a bilingual (Spanish + Catalan) web product at [trailrunningcal.com](https://www.trailrunningcal.com) that helps people discover and plan trail and mountain races in Catalonia, Spain, and is actively expanding to Valencia. It is maintained by one single product engineer with limited resources.
 
 ## Core user promise
 
-A single, maintained calendar of races across all Catalan provinces (Barcelona, Girona, Lleida, Tarragona), from popular races to ultras, with search and filters (month, province, distance, race type, difficulty) and a map + list experience so runners can find their next event.
+A single, maintained calendar of races across all Catalan provinces (Barcelona, Girona, Lleida, Tarragona) and growing Valencia coverage, from popular races to ultras, with search and filters (month, province, distance, race type, difficulty) and a map + list experience so runners can find their next event.
 
 ## Audience
 
@@ -23,7 +23,7 @@ Public calendar and race detail pages, category/programmatic-style exploration (
 
 ## Positioning
 
-Regional authority: "reference platform" / "most complete calendar" for trail running in Catalonia — not a generic global race DB.
+Regional authority: "reference platform" / "most complete calendar" for trail running in Catalonia, with Valencia as the active expansion market — not a generic global race DB.
 
 ## Vision
 
@@ -35,7 +35,7 @@ Main goal for 2026 is to scale from Catalonia to trail and mountain racing acros
 
 ## Scope / non-goals
 
-Today the product and listings center on Catalonia; 2026 work targets Spain-wide trail/mountain coverage (see 2026 focus). Still out of scope: road running and worldwide coverage.
+Today the product and listings center on Catalonia, with Valencia as the active expansion market; 2026 work targets Spain-wide trail/mountain coverage (see 2026 focus). Still out of scope: road running and worldwide coverage.
 
 ## Core tech stack
 

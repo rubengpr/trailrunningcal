@@ -1,6 +1,6 @@
 ## Product
 
-Trail Running Cal (**Trail Running Calendar** in SEO/schema) is a bilingual (es + ca) race calendar at [trailrunningcal.com](https://www.trailrunningcal.com), covering trail/mountain events in Catalonia (Barcelona, Girona, Lleida, Tarragona) — not road running, not worldwide.
+Trail Running Cal (**Trail Running Calendar** in SEO/schema) is a bilingual (es + ca) race calendar at [trailrunningcal.com](https://www.trailrunningcal.com), covering trail/mountain events in Catalonia (Barcelona, Girona, Lleida, Tarragona) and actively expanding to Valencia — not road running or worldwide.
 For business context, metrics, positioning, and audience — invoke the `/product-context` skill.
 
 ## Code style
