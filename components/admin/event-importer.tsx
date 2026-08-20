@@ -687,6 +687,7 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
             return;
         }
 
+        setSavedDraftId(null);
         runStartedAtRef.current = performance.now();
 
         try {
