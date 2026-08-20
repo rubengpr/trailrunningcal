@@ -807,17 +807,31 @@
         "borradores": "Borradores"
       },
       "drafts": {
-        "title": "Borradores importados",
-        "subtitle": "Revisa los eventos guardados antes de aceptarlos.",
+        "title": "Eventos en borrador",
         "empty": "No hay borradores importados.",
+        "draftCount": "{count} borradores",
+        "draftCountOne": "1 borrador",
+        "search": {
+          "placeholder": "Nombre o URL del evento",
+          "empty": "No hay borradores que coincidan con la búsqueda."
+        },
         "raceCount": "{count} carreras",
-        "open": "Abrir",
-        "close": "Cerrar",
+        "accept": "Aceptar",
+        "edit": "Editar",
         "saveSuccess": "Cambios guardados",
+        "saveError": "Error al guardar los cambios",
         "acceptSuccess": "Evento aceptado correctamente",
         "acceptError": "Error al aceptar el borrador",
         "rejectSuccess": "Borrador rechazado",
-        "rejectError": "Error al rechazar el borrador"
+        "rejectError": "Error al rechazar el borrador",
+        "delete": {
+          "button": "Eliminar",
+          "confirmTitle": "Eliminar borrador",
+          "confirmDescription": "¿Quieres eliminar el borrador de {name}?",
+          "confirmButton": "Eliminar",
+          "cancelButton": "Cancelar",
+          "deleting": "Eliminando..."
+        }
       },
       "queue": {
         "title": "Cola de URLs",
