@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { Footer } from '@/components/layout/footer';
+import { ContactInfoCard } from '@/components/contact/contact-info-card';
 import {
   getSeoMetaConfig,
   generateMetadataFromOptions,
@@ -56,42 +57,28 @@ export default async function ContactPage({
 
         <div className="grid md:grid-cols-2 gap-12">
           <div className="space-y-8">
-            <div className="bg-white rounded-lg p-6 shadow-sm">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-gray-100 rounded-lg">
-                  <Mail className="h-6 w-6 text-gray-600" strokeWidth={2} />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900">
-                  {t('contact.email')}
-                </h3>
-              </div>
-              <p className="text-gray-600 mb-2">
-                {t('contact.emailDescription')}
-              </p>
+            <ContactInfoCard
+              icon={<Mail className="h-6 w-6 text-gray-600" strokeWidth={2} />}
+              title={t('contact.email')}
+              description={t('contact.emailDescription')}
+            >
               <a
                 href={`mailto:${CONTACT_EMAIL}`}
                 className="text-gray-700 hover:text-gray-900 font-medium rounded-md px-1"
               >
                 {CONTACT_EMAIL}
               </a>
-            </div>
+            </ContactInfoCard>
 
-            <div className="bg-white rounded-lg p-6 shadow-sm">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-gray-100 rounded-lg">
-                  <MapPin className="h-6 w-6 text-gray-600" strokeWidth={2} />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900">
-                  {t('contact.location')}
-                </h3>
-              </div>
-              <p className="text-gray-600 mb-2">
-                {t('contact.locationDescription')}
-              </p>
+            <ContactInfoCard
+              icon={<MapPin className="h-6 w-6 text-gray-600" strokeWidth={2} />}
+              title={t('contact.location')}
+              description={t('contact.locationDescription')}
+            >
               <p className="text-gray-900 font-medium">
                 {t('contact.locationValue')}
               </p>
-            </div>
+            </ContactInfoCard>
           </div>
 
           <div className="bg-white rounded-lg p-6 shadow-sm">
