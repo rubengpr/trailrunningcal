@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
-import { Check, Search, TextCursor, Trash2 } from 'lucide-react';
+import { Check, TextCursor, Trash2 } from 'lucide-react';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { SectionHeader } from '@/components/ui/section-header';
 import {
@@ -14,6 +14,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { EventRacesEditModal } from '@/components/admin/event-races-edit-modal';
+import { AdminListEmptyState } from '@/components/admin/admin-list-empty-state';
+import { AdminListSearch } from '@/components/admin/admin-list-search';
 import {
   acceptEventImportDraft,
   rejectEventImportDraft,
@@ -116,32 +118,14 @@ export function AdminEventImportDraftsContent({
   return (
     <div className="flex flex-col gap-8">
       <SectionHeader title={t('title')} subtitle={draftCount} />
-      <form
+      <AdminListSearch
         action={`/${locale}/admin/eventos/borradores`}
-        method="get"
-        className="relative ml-auto flex w-full max-w-64"
-      >
-        <label htmlFor="admin-event-draft-search" className="sr-only">
-          {t('search.placeholder')}
-        </label>
-        <Search
-          className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-gray-400"
-          strokeWidth={1.5}
-        />
-        <input
-          id="admin-event-draft-search"
-          key={search}
-          type="search"
-          name="q"
-          defaultValue={search}
-          maxLength={200}
-          className="h-10 min-w-0 flex-1 rounded-xl border border-gray-300 bg-white py-2 pl-3 pr-9 text-sm font-normal text-gray-900 outline-none transition-colors focus:border-gray-500 [&::-webkit-search-cancel-button]:appearance-none"
-        />
-      </form>
+        inputId="admin-event-draft-search"
+        initialQuery={search}
+        label={t('search.placeholder')}
+      />
       {drafts.length === 0 ? (
-        <p className="rounded-lg border border-gray-200 bg-white p-6 text-sm text-gray-600">
-          {search ? t('search.empty') : t('empty')}
-        </p>
+        <AdminListEmptyState message={search ? t('search.empty') : t('empty')} />
       ) : (
         <Table>
             <TableHeader>
