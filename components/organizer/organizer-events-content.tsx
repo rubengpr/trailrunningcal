@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import { Pencil } from 'lucide-react';
 import { SectionHeader } from '@/components/ui/section-header';
+import { EventWebsiteTableCell } from '@/components/event/event-website-table-cell';
 import {
   Table,
   TableBody,
@@ -15,7 +16,6 @@ import {
   formatEventDateRangeNumeric,
   formatEventLocationLabel,
 } from '@/lib/events/utils';
-import { cleanUrl } from '@/lib/utils/url';
 import type { Locale } from '@/i18n';
 import type { TrailEventDetail } from '@/types/event.types';
 
@@ -68,20 +68,11 @@ export function OrganizerEventsContent({
                       {eventDetail.event.name}
                     </Link>
                   </TableCell>
-                  <TableCell className="max-w-[180px]">
-                    {eventDetail.event.websiteUrl ? (
-                      <a
-                        href={eventDetail.event.websiteUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block truncate text-sm text-gray-500 hover:text-gray-800 hover:underline"
-                      >
-                        {cleanUrl(eventDetail.event.websiteUrl)}
-                      </a>
-                    ) : (
-                      <span className="text-sm text-gray-400">{t('missingWebsite')}</span>
-                    )}
-                  </TableCell>
+                  <EventWebsiteTableCell
+                    url={eventDetail.event.websiteUrl}
+                    missingLabel={t('missingWebsite')}
+                    missingClassName="text-sm text-gray-400"
+                  />
                   <TableCell className="max-w-[220px]">
                     <span className="block truncate text-sm text-gray-700">
                       {locationLabel || t('missingLocation')}

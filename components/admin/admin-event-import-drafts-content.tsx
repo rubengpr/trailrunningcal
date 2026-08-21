@@ -16,6 +16,7 @@ import {
 import { EventRacesEditModal } from '@/components/admin/event-races-edit-modal';
 import { AdminListEmptyState } from '@/components/admin/admin-list-empty-state';
 import { AdminListSearch } from '@/components/admin/admin-list-search';
+import { EventWebsiteTableCell } from '@/components/event/event-website-table-cell';
 import {
   acceptEventImportDraft,
   rejectEventImportDraft,
@@ -25,7 +26,6 @@ import type { EventRaceWriteInput } from '@/lib/api/events';
 import type { EventImportDraft } from '@/types/event-import-draft.types';
 import type { TrailEventAgentEvent } from '@/types/trail-event-agent.types';
 import { formatEventDateRangeNumeric } from '@/lib/events/utils';
-import { cleanUrl } from '@/lib/utils/url';
 
 interface AdminEventImportDraftsContentProps {
   initialDrafts: EventImportDraft[];
@@ -143,20 +143,11 @@ export function AdminEventImportDraftsContent({
                       {draft.data.event.name}
                     </span>
                   </TableCell>
-                  <TableCell className="max-w-[180px]">
-                    {draft.sourceUrl ? (
-                      <a
-                        href={draft.sourceUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block truncate text-sm text-gray-500 hover:text-gray-800 hover:underline"
-                      >
-                        {cleanUrl(draft.sourceUrl)}
-                      </a>
-                    ) : (
-                      <span className="text-sm text-red-600">{eventsT('missingUrl')}</span>
-                    )}
-                  </TableCell>
+                  <EventWebsiteTableCell
+                    url={draft.sourceUrl}
+                    missingLabel={eventsT('missingUrl')}
+                    missingClassName="text-sm text-red-600"
+                  />
                   <TableCell align="right" className="text-sm tabular-nums text-gray-700">
                     {draft.data.races.length}
                   </TableCell>

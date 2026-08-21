@@ -31,6 +31,7 @@ import { EventImportPreviewModal } from '@/components/admin/event-import-preview
 import { EventRacesEditModal } from '@/components/admin/event-races-edit-modal';
 import { AdminListEmptyState } from '@/components/admin/admin-list-empty-state';
 import { AdminListSearch } from '@/components/admin/admin-list-search';
+import { EventWebsiteTableCell } from '@/components/event/event-website-table-cell';
 import {
   deleteEvent,
   updateEvent,
@@ -43,7 +44,6 @@ import {
   updateEventDraft,
 } from '@/lib/api/event-drafts';
 import { formatEventDateRangeNumeric } from '@/lib/events/utils';
-import { cleanUrl } from '@/lib/utils/url';
 import { buildAdminEventsHref } from '@/lib/events/admin-pagination';
 import type { AdminTrailEventDetail, TrailEventDetail } from '@/types/event.types';
 import type { EventDraft } from '@/types/event-draft.types';
@@ -452,20 +452,11 @@ export function AdminEventsContent({ page, query }: AdminEventsContentProps) {
                       </Link>
                     </div>
                   </TableCell>
-                  <TableCell className="max-w-[180px]">
-                    {event.websiteUrl ? (
-                      <a
-                        href={event.websiteUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block truncate text-sm text-gray-500 hover:text-gray-800 hover:underline"
-                      >
-                        {cleanUrl(event.websiteUrl)}
-                      </a>
-                    ) : (
-                      <span className="text-sm text-red-600">{t('missingUrl')}</span>
-                    )}
-                  </TableCell>
+                  <EventWebsiteTableCell
+                    url={event.websiteUrl}
+                    missingLabel={t('missingUrl')}
+                    missingClassName="text-sm text-red-600"
+                  />
                   <TableCell align="right" className="text-sm tabular-nums text-gray-700">
                     {eventDetail.allRaceCount}
                   </TableCell>
