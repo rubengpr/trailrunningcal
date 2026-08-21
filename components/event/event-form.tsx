@@ -10,6 +10,7 @@ import { FormInput } from '@/components/ui/form-input';
 import { FormTextarea } from '@/components/ui/form-textarea';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { SelectMenu } from '@/components/ui/select-menu';
+import { RaceDraftFields } from '@/components/event/race-draft-fields';
 import {
   RaceTierFields,
   toRaceTierDrafts,
@@ -26,7 +27,7 @@ import {
 } from '@/lib/api/events';
 import type { EventRaceWriteInput } from '@/lib/api/events';
 import type { TrailEventDetail } from '@/types/event.types';
-import { PROVINCES, isValidProvince } from '@/lib/geography/provinces';
+import { isValidProvince } from '@/lib/geography/provinces';
 import { parseOptionalInteger } from '@/lib/events/utils';
 import { isValidResultsUrl } from '@/lib/races/utils';
 
@@ -41,11 +42,6 @@ interface RaceDraft {
   resultsUrl: string;
   tiers: RaceTierDraft[];
 }
-
-const provinceOptions = PROVINCES.map((province) => ({
-  value: province,
-  label: province,
-}));
 
 type RaceTextField = Exclude<keyof RaceDraft, 'tiers'>;
 
@@ -305,61 +301,19 @@ export function EventForm({
                 </button>
               )}
             </div>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-8">
-              <FormInput
-                id={`race-name-${index}`}
-                label={t('raceName')}
-                value={race.name}
-                onChange={(e) => updateRace(index, 'name', e.target.value)}
-              />
-              <FormInput
-                id={`race-date-${index}`}
-                label={t('date')}
-                type="date"
-                value={race.date}
-                onChange={(e) => updateRace(index, 'date', e.target.value)}
-              />
-              <FormInput
-                id={`race-city-${index}`}
-                label={t('city')}
-                value={race.city}
-                onChange={(e) => updateRace(index, 'city', e.target.value)}
-              />
-              <SelectMenu
-                id={`race-province-${index}`}
-                label={t('province')}
-                value={race.province}
-                options={provinceOptions}
-                placeholder={t('provincePlaceholder')}
-                onValueChange={(value) => updateRace(index, 'province', value)}
-              />
-              <FormInput
-                id={`race-distance-${index}`}
-                label={t('distanceKm')}
-                inputMode="decimal"
-                value={race.distanceKm}
-                onChange={(e) => updateRace(index, 'distanceKm', e.target.value)}
-              />
-              <FormInput
-                id={`race-elevation-${index}`}
-                label={t('elevationGainM')}
-                inputMode="numeric"
-                value={race.elevationGainM}
-                onChange={(e) => updateRace(index, 'elevationGainM', e.target.value)}
-              />
-              {isEditMode && race.id ? (
-                <div className="md:col-span-2">
-                  <FormInput
-                    id={`race-results-url-${index}`}
-                    label={t('resultsUrl')}
-                    type="url"
-                    value={race.resultsUrl}
-                    placeholder={t('resultsUrlPlaceholder')}
-                    onChange={(e) => updateRace(index, 'resultsUrl', e.target.value)}
-                  />
-                </div>
-              ) : null}
-            </div>
+            <RaceDraftFields
+              idPrefix={`race-${index}`}
+              name={race.name}
+              date={race.date}
+              city={race.city}
+              province={race.province}
+              distanceKm={race.distanceKm}
+              elevationGainM={race.elevationGainM}
+              resultsUrl={race.resultsUrl}
+              showResultsUrl={isEditMode && Boolean(race.id)}
+              labels={{ name: t('raceName'), date: t('date'), city: t('city'), province: t('province'), provincePlaceholder: t('provincePlaceholder'), distance: t('distanceKm'), elevation: t('elevationGainM'), resultsUrl: t('resultsUrl'), resultsUrlPlaceholder: t('resultsUrlPlaceholder') }}
+              onFieldChange={(field, value) => updateRace(index, field, value)}
+            />
             <RaceTierFields
               idPrefix={`race-${index}`}
               tiers={race.tiers}

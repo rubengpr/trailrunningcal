@@ -7,7 +7,7 @@ import { RaceTrackUpload } from '@/components/admin/race-track-upload';
 import { BaseModal } from '@/components/ui/base-modal';
 import { FormInput } from '@/components/ui/form-input';
 import { FormTextarea } from '@/components/ui/form-textarea';
-import { SelectMenu } from '@/components/ui/select-menu';
+import { RaceDraftFields } from '@/components/event/race-draft-fields';
 import {
   RaceTierFields,
   toRaceTierDrafts,
@@ -17,7 +17,7 @@ import {
 import type { RaceTierDraft } from '@/components/event/race-tier-fields';
 import type { EventRaceWriteInput } from '@/lib/api/events';
 import type { TrailEventAgentEvent } from '@/types/trail-event-agent.types';
-import { PROVINCES, isValidProvince } from '@/lib/geography/provinces';
+import { isValidProvince } from '@/lib/geography/provinces';
 import { parseOptionalInteger } from '@/lib/events/utils';
 import { isValidResultsUrl } from '@/lib/races/utils';
 
@@ -56,11 +56,6 @@ type ModalRaceDraft = Omit<
   elevationGainM: string;
   tierDrafts: RaceTierDraft[];
 };
-
-const provinceOptions = PROVINCES.map((province) => ({
-  value: province,
-  label: province,
-}));
 
 function emptyRaceDraft(): ModalRaceDraft {
   return {
@@ -349,104 +344,24 @@ function EventRacesEditModalContent({
                     <Trash2 className="h-4 w-4" aria-hidden="true" />
                   </ReviewActionButton>
                 </div>
-                <FormInput
-                  id={`modal-race-name-${index}`}
-                  label={t('editFieldName')}
-                  value={race.name ?? ''}
+                <RaceDraftFields
+                  idPrefix={`modal-race-${index}`}
+                  name={race.name ?? ''}
+                  date={race.date ?? ''}
+                  city={race.city}
+                  province={race.province}
+                  distanceKm={race.distanceKm}
+                  elevationGainM={race.elevationGainM}
+                  resultsUrl={race.resultsUrl ?? ''}
+                  showResultsUrl={showResultsUrls && Boolean(race.id)}
                   disabled={isSaving}
-                  onChange={(e) =>
-                    updateRaceDraft(index, {
-                      ...race,
-                      name: e.target.value,
-                    })
-                  }
+                  layout="modal"
+                  labels={{ name: t('editFieldName'), date: t('editFieldDate'), city: t('editFieldCity'), province: t('editFieldProvince'), provincePlaceholder: formT('provincePlaceholder'), distance: t('editFieldDistance'), elevation: t('editFieldElevation'), resultsUrl: formT('resultsUrl'), resultsUrlPlaceholder: formT('resultsUrlPlaceholder') }}
+                  onFieldChange={(field, value) => updateRaceDraft(index, {
+                    ...race,
+                    [field]: field === 'date' ? value || null : value,
+                  })}
                 />
-                <div className="grid gap-3 sm:grid-cols-3">
-                  <FormInput
-                    id={`modal-race-date-${index}`}
-                    label={t('editFieldDate')}
-                    type="date"
-                    value={race.date ?? ''}
-                    disabled={isSaving}
-                    onChange={(e) =>
-                      updateRaceDraft(index, {
-                        ...race,
-                        date: e.target.value || null,
-                      })
-                    }
-                  />
-                  <FormInput
-                    id={`modal-race-distance-${index}`}
-                    label={t('editFieldDistance')}
-                    inputMode="decimal"
-                    value={race.distanceKm}
-                    disabled={isSaving}
-                    onChange={(e) =>
-                      updateRaceDraft(index, {
-                        ...race,
-                        distanceKm: e.target.value,
-                      })
-                    }
-                  />
-                  <FormInput
-                    id={`modal-race-elevation-${index}`}
-                    label={t('editFieldElevation')}
-                    inputMode="numeric"
-                    value={race.elevationGainM}
-                    disabled={isSaving}
-                    onChange={(e) =>
-                      updateRaceDraft(index, {
-                        ...race,
-                        elevationGainM: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <FormInput
-                    id={`modal-race-city-${index}`}
-                    label={t('editFieldCity')}
-                    value={race.city}
-                    disabled={isSaving}
-                    onChange={(e) =>
-                      updateRaceDraft(index, {
-                        ...race,
-                        city: e.target.value,
-                      })
-                    }
-                  />
-                  <SelectMenu
-                    id={`modal-race-province-${index}`}
-                    label={t('editFieldProvince')}
-                    value={race.province}
-                    options={provinceOptions}
-                    disabled={isSaving}
-                    placeholder={formT('provincePlaceholder')}
-                    variant="modal"
-                    onValueChange={(value) =>
-                      updateRaceDraft(index, {
-                        ...race,
-                        province: value,
-                      })
-                    }
-                  />
-                </div>
-                {showResultsUrls && race.id ? (
-                  <FormInput
-                    id={`modal-race-results-url-${index}`}
-                    label={formT('resultsUrl')}
-                    type="url"
-                    value={race.resultsUrl ?? ''}
-                    placeholder={formT('resultsUrlPlaceholder')}
-                    disabled={isSaving}
-                    onChange={(e) =>
-                      updateRaceDraft(index, {
-                        ...race,
-                        resultsUrl: e.target.value.trim() || null,
-                      })
-                    }
-                  />
-                ) : null}
                 {showTrackUploads ? (
                   <RaceTrackUpload
                     raceId={race.id}
