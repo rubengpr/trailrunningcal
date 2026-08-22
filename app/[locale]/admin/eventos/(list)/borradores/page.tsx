@@ -14,17 +14,21 @@ export default async function AdminEventosBorradoresPage({
 }) {
   const [{ locale }, rawSearchParams] = await Promise.all([params, searchParams]);
   const { search } = parseAdminEventPageRequest(rawSearchParams);
+  const rawDraftId = rawSearchParams.draftId;
+  const draftId = typeof rawDraftId === 'string' ? rawDraftId : null;
   const supabase = await createClient();
   const { data: { user }, error } = await supabase.auth.getUser();
   if (error || !user || !isAdminEmail(user.email)) redirect(`/${locale}/admin/login`);
   const drafts = await getEventImportDrafts();
   const normalizedSearch = search.toLocaleLowerCase();
-  const filteredDrafts = normalizedSearch
-    ? drafts.filter((draft) => (
-      draft.data.event.name.toLocaleLowerCase().includes(normalizedSearch) ||
-      draft.sourceUrl?.toLocaleLowerCase().includes(normalizedSearch)
-    ))
-    : drafts;
+  const filteredDrafts = draftId
+    ? drafts.filter((draft) => draft.id === draftId)
+    : normalizedSearch
+      ? drafts.filter((draft) => (
+        draft.data.event.name.toLocaleLowerCase().includes(normalizedSearch) ||
+        draft.sourceUrl?.toLocaleLowerCase().includes(normalizedSearch)
+      ))
+      : drafts;
 
   return <AdminEventImportDraftsContent initialDrafts={filteredDrafts} search={search} />;
 }

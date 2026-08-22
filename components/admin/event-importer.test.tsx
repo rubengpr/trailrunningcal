@@ -37,6 +37,10 @@ const mocks = vi.hoisted(() => ({
   updateEventImportItemResult: vi.fn(),
   acceptEventImportItem: vi.fn(),
   acceptScrapedEvent: vi.fn(),
+  startEventResearchBatch: vi.fn(),
+  getEventResearchBatchHistory: vi.fn(),
+  getEventResearchBatchStatus: vi.fn(),
+  retryEventResearchItem: vi.fn(),
   toastSuccess: vi.fn(),
   toastError: vi.fn(),
 }));
@@ -59,6 +63,10 @@ vi.mock('@/lib/api/events', () => ({
   getEventImportItemResult: mocks.getEventImportItemResult,
   updateEventImportItemResult: mocks.updateEventImportItemResult,
   acceptEventImportItem: mocks.acceptEventImportItem,
+  startEventResearchBatch: mocks.startEventResearchBatch,
+  getEventResearchBatchHistory: mocks.getEventResearchBatchHistory,
+  getEventResearchBatchStatus: mocks.getEventResearchBatchStatus,
+  retryEventResearchItem: mocks.retryEventResearchItem,
 }));
 vi.mock('@/lib/api/pending-events', () => ({ addPendingEvents: vi.fn() }));
 vi.mock('@/components/admin/import-cost-summary', () => ({
@@ -199,6 +207,61 @@ beforeEach(() => {
     eventSlug: 'accepted-event',
   });
   mocks.acceptScrapedEvent.mockResolvedValue({ id: 'single-event-1' });
+  mocks.startEventResearchBatch.mockResolvedValue({
+    batchId: 'research-batch-1',
+    workflowRunId: 'research-run-1',
+  });
+  mocks.getEventResearchBatchHistory.mockResolvedValue([
+    {
+      batch: {
+        id: 'research-batch-1',
+        status: 'completed',
+        model: 'gpt-5.6-terra',
+        promptSlug: 'event-research-v0',
+        promptVersion: 'version-1',
+        searchContextSize: 'high',
+        concurrency: 4,
+        workflowRunId: 'research-run-1',
+        createdAt: '2026-08-22T00:00:00.000Z',
+        updatedAt: '2026-08-22T00:01:00.000Z',
+      },
+      summary: { total: 2, pending: 0, running: 0, completed: 2, failed: 0 },
+    },
+  ]);
+  mocks.getEventResearchBatchStatus.mockResolvedValue({
+    batch: {
+      id: 'research-batch-1',
+      status: 'completed',
+      model: 'gpt-5.6-terra',
+      promptSlug: 'event-research-v0',
+      promptVersion: 'version-1',
+      searchContextSize: 'high',
+      concurrency: 4,
+      workflowRunId: 'research-run-1',
+      createdAt: '2026-08-22T00:00:00.000Z',
+      updatedAt: '2026-08-22T00:01:00.000Z',
+    },
+    summary: { total: 2, pending: 0, running: 0, completed: 2, failed: 0 },
+    items: [
+      {
+        id: 'research-item-1',
+        batchId: 'research-batch-1',
+        eventName: 'XIV Solana Trail',
+        status: 'completed',
+        result: { event: originalResult.event, races: originalResult.races, errorMessage: null },
+        sources: [],
+        usage: null,
+        openAIResponseId: 'response-1',
+        braintrustRootSpanId: 'span-1',
+        raceCount: 1,
+        attemptCount: 1,
+        error: null,
+        draftId: 'draft-1',
+        createdAt: '2026-08-22T00:00:00.000Z',
+        updatedAt: '2026-08-22T00:01:00.000Z',
+      },
+    ],
+  });
 });
 
 afterEach(cleanup);
@@ -312,6 +375,46 @@ describe('EventImporter batch review', () => {
     await waitFor(() => {
       expect(mocks.acceptScrapedEvent).toHaveBeenCalledOnce();
       expect(mocks.acceptEventImportItem).not.toHaveBeenCalled();
+    });
+  });
+
+  it('starts a research batch from unique multiline event names', async () => {
+    render(<EventImporter pendingEntries={[]} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'workflowResearch' }));
+    fireEvent.change(screen.getByLabelText('research.namesLabel'), {
+      target: {
+        value: ' XIV Solana Trail\nxiv solana trail\nTrail Navajas',
+      },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'runWorkflowButton' }));
+
+    await waitFor(() => {
+      expect(mocks.startEventResearchBatch).toHaveBeenCalledWith([
+        'XIV Solana Trail',
+        'Trail Navajas',
+      ]);
+      expect(mocks.getEventResearchBatchStatus).toHaveBeenCalledWith(
+        'research-batch-1',
+      );
+    });
+  });
+
+  it('loads recent research batches and opens the selected batch inline', async () => {
+    render(<EventImporter pendingEntries={[]} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'workflowResearch' }));
+
+    await waitFor(() => {
+      expect(mocks.getEventResearchBatchHistory).toHaveBeenCalledOnce();
+      expect(screen.getByText('gpt-5.6-terra')).toBeTruthy();
+    });
+
+    fireEvent.click(screen.getByText('gpt-5.6-terra'));
+
+    await waitFor(() => {
+      expect(mocks.getEventResearchBatchStatus).toHaveBeenCalledWith('research-batch-1');
+      expect(screen.getByText('pending')).toBeTruthy();
     });
   });
 });

@@ -48,6 +48,7 @@ interface EventImportPreviewProps {
   ) => Promise<void>;
   isSavingDraft?: boolean;
   isDraftSaved?: boolean;
+  readOnly?: boolean;
 }
 
 function toPreviewRace(
@@ -189,6 +190,7 @@ export function EventImportPreview({
   onSaveDraft,
   isSavingDraft = false,
   isDraftSaved = false,
+  readOnly = false,
 }: EventImportPreviewProps): React.ReactElement {
   const t = useTranslations('admin.events.import.results');
   const pricingT = useTranslations('event.pricing');
@@ -292,46 +294,48 @@ export function EventImportPreview({
                   </a>
                 )}
               </div>
-              <div className={`${onSaveDraft ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100'} flex shrink-0 items-center gap-1 transition-opacity`}>
-                {onSaveDraft && (
-                  <button
-                    type="button"
-                    disabled={isActionDisabled || isSavingDraft || isDraftSaved}
-                    onClick={() => void onSaveDraft(event, races)}
-                    className="inline-flex h-8 items-center rounded-md px-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-100 disabled:pointer-events-none disabled:opacity-35"
-                  >
-                    {isDraftSaved ? t('draftSaved') : isSavingDraft ? t('savingDraft') : t('saveDraft')}
-                  </button>
-                )}
-                <ReviewActionButton
-                  title={isAccepted ? t('reviewAccepted') : t('acceptEvent')}
-                  disabled={isActionDisabled}
-                  onClick={() => void onAccept()}
-                  variant="primary"
-                >
-                  {isAccepting ? (
-                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                  ) : (
-                    <Check className="h-4 w-4" aria-hidden="true" />
+              {!readOnly && (
+                <div className={`${onSaveDraft ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100'} flex shrink-0 items-center gap-1 transition-opacity`}>
+                  {onSaveDraft && (
+                    <button
+                      type="button"
+                      disabled={isActionDisabled || isSavingDraft || isDraftSaved}
+                      onClick={() => void onSaveDraft(event, races)}
+                      className="inline-flex h-8 items-center rounded-md px-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-100 disabled:pointer-events-none disabled:opacity-35"
+                    >
+                      {isDraftSaved ? t('draftSaved') : isSavingDraft ? t('savingDraft') : t('saveDraft')}
+                    </button>
                   )}
-                </ReviewActionButton>
-                <ReviewActionButton
-                  title={t('editReview')}
-                  disabled={isActionDisabled}
-                  onClick={handleStartEdit}
-                >
-                  <TextCursor className="h-3.5 w-3.5" aria-hidden="true" />
-                </ReviewActionButton>
-                {showReject && (
                   <ReviewActionButton
-                    title={isRejected ? t('reviewRejected') : t('rejectEvent')}
+                    title={isAccepted ? t('reviewAccepted') : t('acceptEvent')}
                     disabled={isActionDisabled}
-                    onClick={onReject}
+                    onClick={() => void onAccept()}
+                    variant="primary"
                   >
-                    <X className="h-4 w-4" aria-hidden="true" />
+                    {isAccepting ? (
+                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                    ) : (
+                      <Check className="h-4 w-4" aria-hidden="true" />
+                    )}
                   </ReviewActionButton>
-                )}
-              </div>
+                  <ReviewActionButton
+                    title={t('editReview')}
+                    disabled={isActionDisabled}
+                    onClick={handleStartEdit}
+                  >
+                    <TextCursor className="h-3.5 w-3.5" aria-hidden="true" />
+                  </ReviewActionButton>
+                  {showReject && (
+                    <ReviewActionButton
+                      title={isRejected ? t('reviewRejected') : t('rejectEvent')}
+                      disabled={isActionDisabled}
+                      onClick={onReject}
+                    >
+                      <X className="h-4 w-4" aria-hidden="true" />
+                    </ReviewActionButton>
+                  )}
+                </div>
+              )}
             </div>
             <dl className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
               <div>
@@ -455,17 +459,19 @@ export function EventImportPreview({
           </div>
         </section>
       </div>
-      <EventRacesEditModal
-        isOpen={isEditing}
-        event={event}
-        races={races}
-        title={t('editReview')}
-        isSaving={isSavingReview}
-        savingLabel={t('savingReview')}
-        showTiers
-        onClose={handleCancelEdit}
-        onSave={handleSaveReview}
-      />
+      {!readOnly && (
+        <EventRacesEditModal
+          isOpen={isEditing}
+          event={event}
+          races={races}
+          title={t('editReview')}
+          isSaving={isSavingReview}
+          savingLabel={t('savingReview')}
+          showTiers
+          onClose={handleCancelEdit}
+          onSave={handleSaveReview}
+        />
+      )}
     </div>
   );
 }

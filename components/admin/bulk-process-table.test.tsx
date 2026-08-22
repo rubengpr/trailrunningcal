@@ -132,4 +132,36 @@ describe('BulkProcessTable', () => {
     expect((screen.getByText('Markdown') as HTMLButtonElement).disabled).toBe(false);
     expect((screen.getByText('JSON') as HTMLButtonElement).disabled).toBe(true);
   });
+
+  it('links research results to the exact draft id', () => {
+    const researchRow: BulkProcessTableRow = {
+      id: 'research-item',
+      label: 'XIV Solana Trail',
+      url: null,
+      status: 'completed',
+      reviewStatus: 'pending',
+      acceptedEventId: null,
+      acceptedEventSlug: null,
+      raceCount: 1,
+      error: null,
+      updatedAt: '2026-08-22T10:00:00.000Z',
+      markdown: null,
+      rawModelOutput: null,
+      draftId: '2fdb5c9f-1df4-482e-a218-d230f003a184',
+    };
+
+    render(
+      <NextIntlClientProvider locale="es" messages={es}>
+        <BulkProcessTable
+          rows={[researchRow]}
+          translationsNamespace="admin.events.import.research"
+          primaryColumnKey="eventName"
+        />
+      </NextIntlClientProvider>,
+    );
+
+    expect(screen.getByRole('link', { name: 'Abrir borrador' }).getAttribute('href')).toBe(
+      '/es/admin/eventos/borradores?draftId=2fdb5c9f-1df4-482e-a218-d230f003a184',
+    );
+  });
 });

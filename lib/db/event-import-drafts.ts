@@ -7,6 +7,7 @@ function toDraft(row: EventImportDraftRow): EventImportDraft {
     id: row.id,
     sourceUrl: row.source_url,
     batchItemId: row.batch_item_id,
+    researchBatchItemId: row.research_batch_item_id,
     status: row.status,
     acceptedEventId: row.accepted_event_id,
     data: row.data,

@@ -816,6 +816,8 @@
           "empty": "No hay borradores que coincidan con la búsqueda."
         },
         "raceCount": "{count} carreras",
+        "view": "Ver borrador",
+        "closePreview": "Cerrar vista previa",
         "accept": "Aceptar",
         "edit": "Editar",
         "saveSuccess": "Cambios guardados",
@@ -893,6 +895,7 @@
         "workflowLlmFromFile": "Parse",
         "workflowCrawlAndLlm": "Full",
         "workflowBulk": "Bulk",
+        "workflowResearch": "Research",
         "importSourceModeLabel": "modo",
         "sourceScrapePage": "Scrape",
         "sourceCrawlSite": "Crawl",
@@ -982,6 +985,7 @@
           "statusSummary": "{completed} completadas · {failed} fallidas",
           "columns": {
             "url": "URL",
+            "eventName": "Evento",
             "status": "Estado",
             "error": "Error",
             "suggestedRaces": "Carreras",
@@ -999,7 +1003,66 @@
             "openEvent": "Ver evento",
             "loading": "Cargando...",
             "downloadMarkdown": "Markdown",
-            "downloadJson": "JSON"
+            "downloadJson": "JSON",
+            "retry": "Reintentar",
+            "openDraft": "Abrir borrador"
+          }
+        },
+        "research": {
+          "namesLabel": "Nombres de eventos",
+          "namesPlaceholder": "XIV Solana Trail\nTrail Navajas\n3 Cims",
+          "namesHint": "{count} eventos listos para investigar",
+          "namesHintOne": "1 evento listo para investigar",
+          "configuration": "Configuración fija",
+          "nativeSearch": "búsqueda web nativa",
+          "concurrency": "4 en paralelo",
+          "running": "Investigando...",
+          "startSuccess": "Investigación iniciada para {count} eventos",
+          "startSuccessOne": "Investigación iniciada para 1 evento",
+          "runError": "Error al iniciar la investigación",
+          "pollError": "Error al actualizar el estado de la investigación",
+          "retrySuccess": "Reintento iniciado",
+          "retryError": "Error al reintentar la investigación",
+          "statusSummary": "{completed} de {total} completados · {failed} fallidos",
+          "historyTitle": "Investigaciones recientes",
+          "historyHint": "Selecciona una investigación para ver sus eventos.",
+          "historyLoading": "Cargando historial...",
+          "historyEmpty": "Aún no hay investigaciones guardadas.",
+          "historyError": "No se ha podido cargar el historial de investigaciones.",
+          "historySummary": "{completed}/{total} completados · {failed} fallidos",
+          "errors": {
+            "apiError": "La solicitud de investigación ha fallado",
+            "incompleteResponse": "La respuesta de investigación está incompleta",
+            "parseError": "La respuesta de investigación no es válida",
+            "processingError": "No se ha podido procesar la respuesta de investigación",
+            "refusal": "La solicitud de investigación ha sido rechazada",
+            "schedulingError": "No se ha podido programar el reintento",
+            "timeout": "La solicitud de investigación ha agotado el tiempo de espera",
+            "unknown": "La investigación ha fallado"
+          },
+          "columns": {
+            "url": "URL",
+            "eventName": "Evento",
+            "status": "Estado",
+            "error": "Resultado",
+            "suggestedRaces": "Carreras",
+            "updatedAt": "Actualizada",
+            "actions": "Acciones"
+          },
+          "state": {
+            "completed": "Completada",
+            "running": "En proceso",
+            "pending": "Pendiente",
+            "failed": "Fallida"
+          },
+          "actions": {
+            "viewResult": "Ver resultado",
+            "openEvent": "Ver evento",
+            "loading": "Cargando...",
+            "downloadMarkdown": "Markdown",
+            "downloadJson": "JSON",
+            "retry": "Reintentar",
+            "openDraft": "Abrir borrador"
           }
         },
         "results": {

@@ -105,6 +105,39 @@ describe('EventImportPreview race tiers', () => {
     expect(screen.getByTitle('Evento aceptado')).toHaveProperty('disabled', true);
   });
 
+  it('can render a draft in read-only mode', () => {
+    render(
+      <NextIntlClientProvider locale="es" messages={es}>
+        <EventImportPreview
+          event={{ name: 'Draft Event', description: null, websiteUrl: null }}
+          races={[{
+            name: '10K',
+            date: '2027-05-01',
+            city: 'Girona',
+            province: 'Girona',
+            distanceKm: 10,
+            elevationGainM: 300,
+            tiers: [],
+          }]}
+          isLoading={false}
+          error={null}
+          onAccept={vi.fn()}
+          isAccepted={false}
+          isAccepting={false}
+          onReject={vi.fn()}
+          isRejected={false}
+          onSaveReview={vi.fn()}
+          readOnly
+        />
+      </NextIntlClientProvider>,
+    );
+
+    expect(screen.getByText('Draft Event')).toBeTruthy();
+    expect(screen.queryByTitle('Aceptar evento')).toBeNull();
+    expect(screen.queryByTitle('Editar')).toBeNull();
+    expect(screen.queryByTitle('Rechazar evento')).toBeNull();
+  });
+
   it('shows a visible save-draft action and prevents another save after success', async () => {
     const onSaveDraft = vi.fn().mockResolvedValue(undefined);
     render(

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
-import { ArrowUpRight, Eye, LoaderCircle } from 'lucide-react';
+import { ArrowUpRight, Eye, FilePenLine, LoaderCircle, RotateCcw } from 'lucide-react';
 import { IconActionMenu } from '@/components/ui/icon-action-menu';
 import {
   Table,
@@ -22,7 +22,8 @@ export type BulkProcessState = EventImportItemStatus;
 
 export interface BulkProcessTableRow {
   id: string;
-  url: string;
+  label?: string;
+  url: string | null;
   status: BulkProcessState;
   reviewStatus: EventImportItemReviewStatus;
   acceptedEventId: string | null;
@@ -32,6 +33,8 @@ export interface BulkProcessTableRow {
   updatedAt: string;
   markdown: string | null;
   rawModelOutput: string | null;
+  draftId?: string | null;
+  negativeMessage?: string | null;
 }
 
 const STATE_DOT_COLOR: Record<BulkProcessState, string> = {
@@ -50,9 +53,14 @@ const UPDATED_AT_FORMATTER = new Intl.DateTimeFormat(undefined, {
 
 interface BulkProcessTableProps {
   rows: BulkProcessTableRow[];
-  translationsNamespace?: 'admin.events.import.bulk';
+  translationsNamespace?:
+    | 'admin.events.import.bulk'
+    | 'admin.events.import.research';
+  primaryColumnKey?: 'url' | 'eventName';
   viewingRowId?: string | null;
+  retryingRowId?: string | null;
   onViewResult?: (rowId: string) => void;
+  onRetry?: (rowId: string) => void;
 }
 
 function StateBadge({
@@ -60,7 +68,9 @@ function StateBadge({
   translationsNamespace,
 }: {
   state: BulkProcessState;
-  translationsNamespace: 'admin.events.import.bulk';
+  translationsNamespace:
+    | 'admin.events.import.bulk'
+    | 'admin.events.import.research';
 }) {
   const t = useTranslations(translationsNamespace);
   return (
@@ -83,8 +93,11 @@ function formatUpdatedAt(value: string): string {
 export function BulkProcessTable({
   rows,
   translationsNamespace = 'admin.events.import.bulk',
+  primaryColumnKey = 'url',
   viewingRowId = null,
+  retryingRowId = null,
   onViewResult,
+  onRetry,
 }: BulkProcessTableProps) {
   const t = useTranslations(translationsNamespace);
   const locale = useLocale();
@@ -96,7 +109,7 @@ export function BulkProcessTable({
   return (
     <Table className="text-sm">
       <TableHeader>
-        <TableCell header className="w-[45%]">{t('columns.url')}</TableCell>
+        <TableCell header className="w-[45%]">{t(`columns.${primaryColumnKey}`)}</TableCell>
         <TableCell header>{t('columns.status')}</TableCell>
         <TableCell header muted>
           <span className="sr-only">{t('columns.error')}</span>
@@ -111,7 +124,9 @@ export function BulkProcessTable({
         {rows.map((row) => {
           const hostname = (() => {
             try {
-              return new URL(row.url).hostname.replace(/^www\./, '');
+              return row.url
+                ? new URL(row.url).hostname.replace(/^www\./, '')
+                : 'research';
             } catch {
               return 'file';
             }
@@ -128,14 +143,18 @@ export function BulkProcessTable({
             >
               <TableCell className="max-w-[260px]">
                 <div className="flex min-w-0 items-center gap-2">
-                  <a
-                    href={row.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="min-w-0 truncate text-gray-700 hover:underline"
-                  >
-                    {cleanUrl(row.url)}
-                  </a>
+                  {row.url ? (
+                    <a
+                      href={row.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="min-w-0 truncate text-gray-700 hover:underline"
+                    >
+                      {row.label ?? cleanUrl(row.url)}
+                    </a>
+                  ) : (
+                    <span className="min-w-0 truncate text-gray-700">{row.label}</span>
+                  )}
                   {row.acceptedEventSlug ? (
                     <Link
                       href={`/${locale}/e/${row.acceptedEventSlug}`}
@@ -152,9 +171,11 @@ export function BulkProcessTable({
                 <StateBadge state={row.status} translationsNamespace={translationsNamespace} />
               </TableCell>
               <TableCell>
-                {row.status === 'failed' && row.error && (
+                {row.status === 'failed' && row.error ? (
                   <span className="text-xs text-red-600">{row.error}</span>
-                )}
+                ) : row.negativeMessage ? (
+                  <span className="text-xs text-gray-500">{row.negativeMessage}</span>
+                ) : null}
               </TableCell>
               <TableCell align="right">
                 <RaceCountCell raceCount={row.raceCount} />
@@ -165,31 +186,53 @@ export function BulkProcessTable({
               </TableCell>
               <TableCell align="right">
                 <div className="inline-flex items-center justify-end gap-1">
-                  <button
-                    type="button"
-                    onClick={() => onViewResult?.(row.id)}
-                    disabled={
-                      row.status !== 'completed' ||
-                      viewingRowId !== null ||
-                      !onViewResult
-                    }
-                    title={
-                      viewingRowId === row.id
-                        ? t('actions.loading')
-                        : t('actions.viewResult')
-                    }
-                    className="inline-flex size-8 cursor-pointer items-center justify-center rounded text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-800 disabled:pointer-events-none disabled:opacity-40"
-                  >
-                    {viewingRowId === row.id ? (
-                      <LoaderCircle className="size-4 animate-spin" strokeWidth={1.5} />
-                    ) : (
-                      <Eye className="size-4" strokeWidth={1.5} />
-                    )}
-                  </button>
-                  <IconActionMenu
-                    triggerAriaLabel={t('columns.actions')}
-                    size="sm"
-                    items={[
+                  {onViewResult ? (
+                    <button
+                      type="button"
+                      onClick={() => onViewResult(row.id)}
+                      disabled={row.status !== 'completed' || viewingRowId !== null}
+                      title={
+                        viewingRowId === row.id
+                          ? t('actions.loading')
+                          : t('actions.viewResult')
+                      }
+                      className="inline-flex size-8 cursor-pointer items-center justify-center rounded text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-800 disabled:pointer-events-none disabled:opacity-40"
+                    >
+                      {viewingRowId === row.id ? (
+                        <LoaderCircle className="size-4 animate-spin" strokeWidth={1.5} />
+                      ) : (
+                        <Eye className="size-4" strokeWidth={1.5} />
+                      )}
+                    </button>
+                  ) : null}
+                  {row.status === 'failed' && onRetry ? (
+                    <button
+                      type="button"
+                      onClick={() => onRetry(row.id)}
+                      disabled={retryingRowId !== null}
+                      title={t('actions.retry')}
+                      className="inline-flex size-8 cursor-pointer items-center justify-center rounded text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-800 disabled:pointer-events-none disabled:opacity-40"
+                    >
+                      <RotateCcw
+                        className={`size-4 ${retryingRowId === row.id ? 'animate-spin' : ''}`}
+                        strokeWidth={1.5}
+                      />
+                    </button>
+                  ) : null}
+                  {row.draftId ? (
+                    <Link
+                      href={`/${locale}/admin/eventos/borradores?draftId=${encodeURIComponent(row.draftId)}`}
+                      title={t('actions.openDraft')}
+                      className="inline-flex size-8 items-center justify-center rounded text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-800"
+                    >
+                      <FilePenLine className="size-4" strokeWidth={1.5} />
+                    </Link>
+                  ) : null}
+                  {row.draftId === undefined || row.markdown || row.rawModelOutput ? (
+                    <IconActionMenu
+                      triggerAriaLabel={t('columns.actions')}
+                      size="sm"
+                      items={[
                       {
                         id: 'downloadMarkdown',
                         label: t('actions.downloadMarkdown'),
@@ -214,8 +257,9 @@ export function BulkProcessTable({
                           }
                         },
                       },
-                    ]}
-                  />
+                      ]}
+                    />
+                  ) : null}
                 </div>
               </TableCell>
             </TableRow>

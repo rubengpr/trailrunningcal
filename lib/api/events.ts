@@ -18,6 +18,11 @@ import type {
 } from '@/types/events-import-api.types';
 import type { EventImportDraft } from '@/types/event-import-draft.types';
 import type {
+  EventResearchBatchItem,
+  EventResearchBatchHistoryEntry,
+  EventResearchBatchSnapshot,
+} from '@/types/event-research.types';
+import type {
   EventRaceTierWriteInput,
   PublicEventDetail,
   TrailEvent,
@@ -299,6 +304,68 @@ export async function getEventImportItemResult(
     );
   }
 
+  return responseData.data;
+}
+
+export async function startEventResearchBatch(
+  eventNames: string[],
+): Promise<{ batchId: string; workflowRunId: string }> {
+  const response = await fetch('/api/events/research/batches', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ eventNames }),
+  });
+  const responseData = await response.json();
+  if (!response.ok) {
+    throw new Error(responseData.error || 'Failed to start event research batch');
+  }
+  return responseData.data;
+}
+
+export async function getEventResearchBatchStatus(
+  batchId: string,
+): Promise<EventResearchBatchSnapshot> {
+  const response = await fetch(`/api/events/research/batches/${batchId}`);
+  const responseData = await response.json();
+  if (!response.ok) {
+    throw new Error(responseData.error || 'Failed to fetch event research batch');
+  }
+  return responseData.data;
+}
+
+export async function getEventResearchBatchHistory(): Promise<
+  EventResearchBatchHistoryEntry[]
+> {
+  const response = await fetch('/api/events/research/batches');
+  const responseData = await response.json();
+  if (!response.ok) {
+    throw new Error(responseData.error || 'Failed to fetch event research batches');
+  }
+  return responseData.data;
+}
+
+export async function getEventResearchItem(
+  itemId: string,
+): Promise<EventResearchBatchItem> {
+  const response = await fetch(`/api/events/research/batch-items/${itemId}`);
+  const responseData = await response.json();
+  if (!response.ok) {
+    throw new Error(responseData.error || 'Failed to fetch event research item');
+  }
+  return responseData.data;
+}
+
+export async function retryEventResearchItem(
+  itemId: string,
+): Promise<{ batchId: string; itemId: string; workflowRunId: string }> {
+  const response = await fetch(
+    `/api/events/research/batch-items/${itemId}/retry`,
+    { method: 'POST' },
+  );
+  const responseData = await response.json();
+  if (!response.ok) {
+    throw new Error(responseData.error || 'Failed to retry event research item');
+  }
   return responseData.data;
 }
 

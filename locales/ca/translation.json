@@ -784,6 +784,8 @@
           "empty": "No hi ha esborranys que coincideixin amb la cerca."
         },
         "raceCount": "{count} curses",
+        "view": "Veure esborrany",
+        "closePreview": "Tancar la vista prèvia",
         "accept": "Acceptar",
         "edit": "Editar",
         "saveSuccess": "Canvis desats",
@@ -861,6 +863,7 @@
         "workflowLlmFromFile": "Parse",
         "workflowCrawlAndLlm": "Full",
         "workflowBulk": "Bulk",
+        "workflowResearch": "Research",
         "importSourceModeLabel": "mode",
         "sourceScrapePage": "Scrape",
         "sourceCrawlSite": "Crawl",
@@ -950,6 +953,7 @@
           "statusSummary": "{completed} completades · {failed} fallides",
           "columns": {
             "url": "URL",
+            "eventName": "Esdeveniment",
             "status": "Estat",
             "error": "Error",
             "suggestedRaces": "Curses",
@@ -967,7 +971,66 @@
             "openEvent": "Veure esdeveniment",
             "loading": "Carregant...",
             "downloadMarkdown": "Markdown",
-            "downloadJson": "JSON"
+            "downloadJson": "JSON",
+            "retry": "Tornar-ho a intentar",
+            "openDraft": "Obrir esborrany"
+          }
+        },
+        "research": {
+          "namesLabel": "Noms d'esdeveniments",
+          "namesPlaceholder": "XIV Solana Trail\nTrail Navajas\n3 Cims",
+          "namesHint": "{count} esdeveniments preparats per investigar",
+          "namesHintOne": "1 esdeveniment preparat per investigar",
+          "configuration": "Configuració fixa",
+          "nativeSearch": "cerca web nativa",
+          "concurrency": "4 en paral·lel",
+          "running": "Investigant...",
+          "startSuccess": "Investigació iniciada per a {count} esdeveniments",
+          "startSuccessOne": "Investigació iniciada per a 1 esdeveniment",
+          "runError": "Error en iniciar la investigació",
+          "pollError": "Error en actualitzar l'estat de la investigació",
+          "retrySuccess": "Reintent iniciat",
+          "retryError": "Error en tornar a intentar la investigació",
+          "statusSummary": "{completed} de {total} completats · {failed} fallits",
+          "historyTitle": "Investigacions recents",
+          "historyHint": "Selecciona una investigació per veure els seus esdeveniments.",
+          "historyLoading": "Carregant l'historial...",
+          "historyEmpty": "Encara no hi ha investigacions desades.",
+          "historyError": "No s'ha pogut carregar l'historial d'investigacions.",
+          "historySummary": "{completed}/{total} completats · {failed} fallits",
+          "errors": {
+            "apiError": "La sol·licitud d'investigació ha fallat",
+            "incompleteResponse": "La resposta d'investigació està incompleta",
+            "parseError": "La resposta d'investigació no és vàlida",
+            "processingError": "No s'ha pogut processar la resposta d'investigació",
+            "refusal": "La sol·licitud d'investigació ha estat rebutjada",
+            "schedulingError": "No s'ha pogut programar el reintent",
+            "timeout": "La sol·licitud d'investigació ha superat el temps d'espera",
+            "unknown": "La investigació ha fallat"
+          },
+          "columns": {
+            "url": "URL",
+            "eventName": "Esdeveniment",
+            "status": "Estat",
+            "error": "Resultat",
+            "suggestedRaces": "Curses",
+            "updatedAt": "Actualitzada",
+            "actions": "Accions"
+          },
+          "state": {
+            "completed": "Completada",
+            "running": "En procés",
+            "pending": "Pendent",
+            "failed": "Fallida"
+          },
+          "actions": {
+            "viewResult": "Veure resultat",
+            "openEvent": "Veure esdeveniment",
+            "loading": "Carregant...",
+            "downloadMarkdown": "Markdown",
+            "downloadJson": "JSON",
+            "retry": "Tornar-ho a intentar",
+            "openDraft": "Obrir esborrany"
           }
         },
         "results": {

@@ -16,6 +16,7 @@ import { SectionHeader } from '@/components/ui/section-header';
 import { EventImportPreview } from '@/components/admin/event-import-preview';
 import { EventImportPreviewModal } from '@/components/admin/event-import-preview-modal';
 import { ImportCostSummary } from '@/components/admin/import-cost-summary';
+import { ErrorMessage } from '@/components/ui/error-message';
 import { cleanUrl } from '@/lib/utils/url';
 import {
     DUMMY_CRAWL_PAGE_STATS,
@@ -39,6 +40,10 @@ import {
     getEventImportBatchStatus,
     getEventImportItemResult,
     updateEventImportItemResult,
+    startEventResearchBatch,
+    getEventResearchBatchHistory,
+    getEventResearchBatchStatus,
+    retryEventResearchItem,
 } from '@/lib/api/events';
 import { OPENROUTER_SCRAPE_MODEL_IDS, OPENROUTER_VISION_MODEL_IDS } from '@/lib/integrations/openrouter/scrape-models';
 import type { OpenRouterScrapeModelId, OpenRouterVisionModelId } from '@/lib/integrations/openrouter/scrape-models';
@@ -51,6 +56,10 @@ import { normalizeUrl } from '@/lib/validation';
 import type { PageStats, ScrapeUsage } from '@/types/races-scrape-api.types';
 import type { EventImportBatchSnapshot, EventImportResult, EventImportStep, EventImportWorkflow } from '@/types/events-import-api.types';
 import type {
+    EventResearchBatchHistoryEntry,
+    EventResearchBatchSnapshot,
+} from '@/types/event-research.types';
+import type {
     TrailEventAgentEvent,
     TrailEventAgentRace,
 } from '@/types/trail-event-agent.types';
@@ -62,10 +71,20 @@ import { useModal } from '@/hooks/use-modal';
 import type { ConflictingRace } from '@/types/race.types';
 import { XCircle, RotateCcw, Sparkles, FileText, ImageIcon, X, Play } from 'lucide-react';
 
-type ScrapeWorkflow = 'bulk' | 'full' | 'ingest' | 'llmFromFile';
+type ScrapeWorkflow = 'bulk' | 'full' | 'ingest' | 'llmFromFile' | 'research';
 type ScrapeSourceMode = 'scrapePage' | 'crawlSite';
 
 type ScrapePhase = 'idle' | 'crawling' | 'llm';
+
+const RESEARCH_ERROR_TRANSLATION_KEYS: Record<string, string> = {
+    api_error: 'research.errors.apiError',
+    incomplete_response: 'research.errors.incompleteResponse',
+    parse_error: 'research.errors.parseError',
+    processing_error: 'research.errors.processingError',
+    refusal: 'research.errors.refusal',
+    scheduling_error: 'research.errors.schedulingError',
+    timeout: 'research.errors.timeout',
+};
 
 type FullPipelineRowKind = 'loading' | 'success' | 'error' | 'pending';
 
@@ -502,6 +521,14 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
     const [isSavingDraft, setIsSavingDraft] = useState(false);
     const [isAddingToPending, setIsAddingToPending] = useState(false);
     const fetchedBatchItemIds = useRef<Set<string>>(new Set());
+    const [researchNamesInput, setResearchNamesInput] = useState('');
+    const [researchHistory, setResearchHistory] = useState<EventResearchBatchHistoryEntry[]>([]);
+    const [isLoadingResearchHistory, setIsLoadingResearchHistory] = useState(false);
+    const [researchHistoryError, setResearchHistoryError] = useState(false);
+    const [activeResearchBatchId, setActiveResearchBatchId] = useState<string | null>(null);
+    const [researchSnapshot, setResearchSnapshot] = useState<EventResearchBatchSnapshot | null>(null);
+    const [isStartingResearch, setIsStartingResearch] = useState(false);
+    const [retryingResearchItemId, setRetryingResearchItemId] = useState<string | null>(null);
     const [importConflicts, setImportConflicts] = useState<ConflictingRace[]>([]);
     const { isOpen: isConflictModalOpen, open: openConflictModal, close: closeConflictModal } = useModal();
 
@@ -585,6 +612,28 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
     const isBatchRunning =
         batchSnapshot?.batch.status === 'pending' || batchSnapshot?.batch.status === 'running';
 
+    const parsedResearchNames = useMemo((): string[] => {
+        const unique = new Map<string, string>();
+        for (const rawName of researchNamesInput.split(/\r?\n/)) {
+            const name = rawName.trim();
+            if (!name) continue;
+            const key = name.normalize('NFKC').toLocaleLowerCase('es');
+            if (!unique.has(key)) unique.set(key, name);
+        }
+        return [...unique.values()];
+    }, [researchNamesInput]);
+
+    const isResearchRunning =
+        researchSnapshot?.batch.status === 'pending' ||
+        researchSnapshot?.batch.status === 'running';
+
+    const canRunResearch =
+        parsedResearchNames.length > 0 &&
+        parsedResearchNames.length <= 50 &&
+        parsedResearchNames.every((name) => name.length >= 2 && name.length <= 200) &&
+        !isStartingResearch &&
+        !isResearchRunning;
+
     const canRunBatch =
         parsedBatchUrls.length > 0 &&
         parsedBatchUrls.every(isValidUrl) &&
@@ -595,6 +644,8 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
         !isScraping &&
         (workflow === 'bulk'
             ? canRunBatch
+            : workflow === 'research'
+                ? canRunResearch
             : workflow === 'full' || workflow === 'ingest'
                 ? isValidUrl(websiteUrl)
                 : uploadKind === 'images'
@@ -681,9 +732,76 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
         }
     };
 
+    const fetchResearchStatus = useCallback(async (batchId: string): Promise<EventResearchBatchSnapshot> => {
+        const data = await getEventResearchBatchStatus(batchId);
+        setResearchSnapshot(data);
+        return data;
+    }, []);
+
+    const fetchResearchHistory = useCallback(async (): Promise<void> => {
+        setIsLoadingResearchHistory(true);
+        setResearchHistoryError(false);
+        try {
+            setResearchHistory(await getEventResearchBatchHistory());
+        } catch {
+            setResearchHistoryError(true);
+        } finally {
+            setIsLoadingResearchHistory(false);
+        }
+    }, []);
+
+    const handleSelectResearchBatch = async (batchId: string): Promise<void> => {
+        setActiveResearchBatchId(batchId);
+        setResearchSnapshot(null);
+        try {
+            await fetchResearchStatus(batchId);
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : t('research.pollError'));
+        }
+    };
+
+    const handleStartResearch = async (): Promise<void> => {
+        setIsStartingResearch(true);
+        setResearchSnapshot(null);
+        setActiveResearchBatchId(null);
+        try {
+            const data = await startEventResearchBatch(parsedResearchNames);
+            setActiveResearchBatchId(data.batchId);
+            await fetchResearchStatus(data.batchId);
+            await fetchResearchHistory();
+            toast.success(parsedResearchNames.length === 1
+                ? t('research.startSuccessOne')
+                : t('research.startSuccess', { count: parsedResearchNames.length }));
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : t('research.runError'));
+        } finally {
+            setIsStartingResearch(false);
+        }
+    };
+
+    const handleRetryResearchItem = async (itemId: string): Promise<void> => {
+        if (retryingResearchItemId) return;
+        setRetryingResearchItemId(itemId);
+        try {
+            const data = await retryEventResearchItem(itemId);
+            setActiveResearchBatchId(data.batchId);
+            await fetchResearchStatus(data.batchId);
+            await fetchResearchHistory();
+            toast.success(t('research.retrySuccess'));
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : t('research.retryError'));
+        } finally {
+            setRetryingResearchItemId(null);
+        }
+    };
+
     const handleRunWorkflow = async () => {
         if (workflow === 'bulk') {
             await handleStartBatchImport();
+            return;
+        }
+        if (workflow === 'research') {
+            await handleStartResearch();
             return;
         }
 
@@ -805,6 +923,23 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
 
         return () => window.clearInterval(intervalId);
     }, [activeBatchId, batchSnapshot, fetchBatchStatus, t]);
+
+    useEffect(() => {
+        if (!activeResearchBatchId || !isResearchRunning) return;
+        const intervalId = window.setInterval(() => {
+            void fetchResearchStatus(activeResearchBatchId).catch((error) => {
+                console.error('Event research batch polling error:', error);
+                toast.error(t('research.pollError'));
+                setActiveResearchBatchId(null);
+            });
+        }, 3000);
+        return () => window.clearInterval(intervalId);
+    }, [activeResearchBatchId, fetchResearchStatus, isResearchRunning, t]);
+
+    useEffect(() => {
+        if (workflow !== 'research') return;
+        void fetchResearchHistory();
+    }, [fetchResearchHistory, workflow]);
 
     useEffect(() => {
         if (!batchSnapshot || isBatchRunning) return;
@@ -1056,11 +1191,14 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
     };
 
     const handleRestart = (): void => {
-        if (isScraping || isStartingBatch) return;
+        if (isScraping || isStartingBatch || isStartingResearch) return;
         setWebsiteUrl('');
         setBatchUrlsInput('');
         setActiveBatchId(null);
         setBatchSnapshot(null);
+        setResearchNamesInput('');
+        setActiveResearchBatchId(null);
+        setResearchSnapshot(null);
         setViewingBatchItemId(null);
         setSavedDraftId(null);
         setSavedBatchDraftId(null);
@@ -1090,7 +1228,7 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
     };
 
     const showImportPreview =
-        workflow === 'bulk'
+        workflow === 'bulk' || workflow === 'research'
             ? false
             : workflow !== 'ingest'
             ? isScraping || hasScraped
@@ -1101,11 +1239,13 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
             ? t('crawlingMarkdown')
             : workflow === 'bulk'
                 ? t('bulk.running')
+                : workflow === 'research'
+                    ? t('research.running')
                 : workflow === 'full' && scrapePhase === 'crawling'
                     ? t('crawlingMarkdown')
                     : t('scraping');
 
-    const showLlmMetricsUi = workflow !== 'ingest' && workflow !== 'bulk';
+    const showLlmMetricsUi = workflow !== 'ingest' && workflow !== 'bulk' && workflow !== 'research';
 
     const fullPipelineSteps = useMemo((): {
         row1: FullPipelineRowConfig;
@@ -1216,6 +1356,30 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
         })) ?? [];
     }, [batchSnapshot]);
 
+    const researchRows = useMemo((): BulkProcessTableRow[] => {
+        return researchSnapshot?.items.map((item) => ({
+            id: item.id,
+            label: item.eventName,
+            url: null,
+            status: item.status,
+            reviewStatus: 'pending',
+            acceptedEventId: null,
+            acceptedEventSlug: null,
+            raceCount: item.raceCount,
+            error: item.error
+                ? t(RESEARCH_ERROR_TRANSLATION_KEYS[item.error] ?? 'research.errors.unknown')
+                : null,
+            negativeMessage:
+                item.status === 'completed' && item.draftId === null
+                    ? item.result?.errorMessage ?? null
+                    : null,
+            updatedAt: item.updatedAt,
+            markdown: null,
+            rawModelOutput: null,
+            draftId: item.draftId,
+        })) ?? [];
+    }, [researchSnapshot, t]);
+
     const reviewingBatchItem = reviewingBatchItemId
         ? batchSnapshot?.items.find((item) => item.id === reviewingBatchItemId) ?? null
         : null;
@@ -1240,12 +1404,13 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                                 ),
                             },
                             { id: 'bulk', label: t('workflowBulk') },
+                            { id: 'research', label: t('workflowResearch') },
                             { id: 'ingest', label: t('workflowIngest') },
                             { id: 'llmFromFile', label: t('workflowLlmFromFile') },
                         ]}
                         activeId={workflow}
                         onChange={(id) => handleWorkflowChange(id as ScrapeWorkflow)}
-                        disabled={isScraping || isStartingBatch}
+                        disabled={isScraping || isStartingBatch || isStartingResearch}
                     />
 
                     {(workflow === 'full' || workflow === 'ingest') && (
@@ -1280,6 +1445,94 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                                     {parsedBatchUrls.length === 1 ? t('bulk.urlsHintOne') : t('bulk.urlsHint', { count: parsedBatchUrls.length })}
                                 </p>
                             )}
+                        </div>
+                    )}
+
+                    {workflow === 'research' && (
+                        <div className="grid w-full gap-5">
+                            <div className="grid gap-2">
+                                <label htmlFor="researchEventNames" className="text-sm font-medium leading-none text-gray-900">
+                                    {t('research.namesLabel')}
+                                </label>
+                                <textarea
+                                    id="researchEventNames"
+                                    value={researchNamesInput}
+                                    onChange={(event) => setResearchNamesInput(event.target.value)}
+                                    placeholder={t('research.namesPlaceholder')}
+                                    disabled={isStartingResearch || isResearchRunning}
+                                    className="min-h-32 w-full resize-y rounded-xl border border-gray-200 bg-white p-3 text-sm text-gray-800 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-200/80 disabled:cursor-not-allowed disabled:opacity-60"
+                                />
+                                {parsedResearchNames.length > 0 ? (
+                                    <p className="text-xs text-gray-500">
+                                        {parsedResearchNames.length === 1
+                                            ? t('research.namesHintOne')
+                                            : t('research.namesHint', { count: parsedResearchNames.length })}
+                                    </p>
+                                ) : null}
+                            </div>
+                            <div className="rounded-xl border border-gray-200 bg-gray-50 p-3 text-xs text-gray-600">
+                                <span className="font-medium text-gray-900">{t('research.configuration')}</span>
+                                {' · '}gpt-5.6-terra{' · '}{t('research.nativeSearch')}{' · '}{t('research.concurrency')}
+                            </div>
+                            <div className="max-w-3xl border-t border-gray-100 pt-5">
+                                <div className="mb-3 flex items-baseline justify-between gap-3">
+                                    <div>
+                                        <h2 className="text-sm font-semibold text-gray-900">{t('research.historyTitle')}</h2>
+                                        <p className="mt-0.5 text-xs text-gray-500">{t('research.historyHint')}</p>
+                                    </div>
+                                    {isLoadingResearchHistory ? (
+                                        <span className="text-xs text-gray-500">{t('research.historyLoading')}</span>
+                                    ) : null}
+                                </div>
+                                {researchHistoryError ? (
+                                    <ErrorMessage
+                                        variant="inline"
+                                        title={t('research.historyError')}
+                                        message={t('research.historyError')}
+                                        onRetry={() => void fetchResearchHistory()}
+                                    />
+                                ) : researchHistory.length === 0 && !isLoadingResearchHistory ? (
+                                    <p className="rounded-lg border border-dashed border-gray-200 px-3 py-4 text-sm text-gray-500">
+                                        {t('research.historyEmpty')}
+                                    </p>
+                                ) : (
+                                    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+                                        {researchHistory.map(({ batch, summary }) => {
+                                            const isSelected = batch.id === activeResearchBatchId;
+                                            return (
+                                                <button
+                                                    key={batch.id}
+                                                    type="button"
+                                                    onClick={() => void handleSelectResearchBatch(batch.id)}
+                                                    aria-pressed={isSelected}
+                                                    className={`grid w-full grid-cols-[minmax(0,1fr)_auto] gap-x-4 border-b border-gray-100 px-4 py-3 text-left last:border-b-0 transition-colors ${isSelected ? 'bg-gray-900 text-white' : 'hover:bg-gray-50'}`}
+                                                >
+                                                    <span className="min-w-0">
+                                                        <span className={`block truncate text-sm font-medium ${isSelected ? 'text-white' : 'text-gray-900'}`}>
+                                                            {batch.model}
+                                                        </span>
+                                                        <span className={`mt-0.5 block text-xs tabular-nums ${isSelected ? 'text-gray-300' : 'text-gray-500'}`}>
+                                                            {new Intl.DateTimeFormat(undefined, {
+                                                                day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit',
+                                                            }).format(new Date(batch.createdAt))}
+                                                        </span>
+                                                    </span>
+                                                    <span className={`self-center text-right text-xs tabular-nums ${isSelected ? 'text-gray-200' : 'text-gray-600'}`}>
+                                                        <span className="block font-medium">{t(`research.state.${batch.status}`)}</span>
+                                                        <span className="mt-0.5 block">
+                                                            {t('research.historySummary', {
+                                                                completed: summary.completed,
+                                                                failed: summary.failed,
+                                                                total: summary.total,
+                                                            })}
+                                                        </span>
+                                                    </span>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     )}
 
@@ -1482,7 +1735,7 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                             type="button"
                             onClick={handleRunWorkflow}
                             disabled={!canRunWorkflow}
-                            isLoading={isScraping || isStartingBatch}
+                            isLoading={isScraping || isStartingBatch || isStartingResearch}
                             loadingText={primaryLoadingLabel}
                         >
                             <span className="inline-flex items-center gap-2">
@@ -1490,7 +1743,7 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                                 {t('runWorkflowButton')}
                             </span>
                         </Button>
-                        {workflow !== 'bulk' &&
+                        {workflow !== 'bulk' && workflow !== 'research' &&
                             (scrapeMarkdown || (rawModelOutput !== null && rawModelOutput !== '')) && (
                             <IconActionMenu
                                 triggerAriaLabel={t('downloadMenuTriggerLabel')}
@@ -1515,13 +1768,13 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                             type="button"
                             variant="secondary"
                             onClick={handleLoadDummyPreview}
-                            disabled={isScraping || isStartingBatch}
+                            disabled={isScraping || isStartingBatch || isStartingResearch || workflow === 'research'}
                         >
                             {t('loadDummyPreview')}
                         </Button>
                         <IconButton
                             onClick={handleRestart}
-                            disabled={isScraping || isStartingBatch}
+                            disabled={isScraping || isStartingBatch || isStartingResearch}
                             title={t('restart')}
                         >
                             <RotateCcw className="h-4 w-4" strokeWidth={2} />
@@ -1644,7 +1897,7 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                     isDraftSaved={savedDraftId !== null}
                 />
             )}
-            {batchRows.length > 0 && (
+            {workflow === 'bulk' && batchRows.length > 0 && (
                 <div>
                     {batchSnapshot && (
                         <p className="mb-2 text-xs text-gray-500">
@@ -1660,6 +1913,28 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                         viewingRowId={viewingBatchItemId}
                         onViewResult={(itemId) => {
                             void handleViewBatchResult(itemId);
+                        }}
+                    />
+                </div>
+            )}
+            {workflow === 'research' && researchRows.length > 0 && (
+                <div>
+                    {researchSnapshot ? (
+                        <p className="mb-2 text-xs text-gray-500">
+                            {t('research.statusSummary', {
+                                completed: researchSnapshot.summary.completed,
+                                failed: researchSnapshot.summary.failed,
+                                total: researchSnapshot.summary.total,
+                            })}
+                        </p>
+                    ) : null}
+                    <BulkProcessTable
+                        rows={researchRows}
+                        translationsNamespace="admin.events.import.research"
+                        primaryColumnKey="eventName"
+                        retryingRowId={retryingResearchItemId}
+                        onRetry={(itemId) => {
+                            void handleRetryResearchItem(itemId);
                         }}
                     />
                 </div>
@@ -1688,7 +1963,7 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                     />
                 ) : null}
             </EventImportPreviewModal>
-            {workflow !== 'bulk' && jsonView && hasScraped && !isScraping && scrapeError === null && (
+            {workflow !== 'bulk' && workflow !== 'research' && jsonView && hasScraped && !isScraping && scrapeError === null && (
                 <div className="max-w-3xl flex flex-col gap-3">
                     <textarea
                         value={jsonEditorValue}

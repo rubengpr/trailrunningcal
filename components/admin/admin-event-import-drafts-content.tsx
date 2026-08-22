@@ -3,9 +3,11 @@
 import { useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
-import { Check, TextCursor, Trash2 } from 'lucide-react';
+import { Check, Eye, TextCursor, Trash2 } from 'lucide-react';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { SectionHeader } from '@/components/ui/section-header';
+import { EventImportPreview } from '@/components/admin/event-import-preview';
+import { EventImportPreviewModal } from '@/components/admin/event-import-preview-modal';
 import {
   Table,
   TableBody,
@@ -54,6 +56,7 @@ export function AdminEventImportDraftsContent({
   const eventsT = useTranslations('adminEvents');
   const locale = useLocale();
   const [drafts, setDrafts] = useState(initialDrafts);
+  const [draftToPreview, setDraftToPreview] = useState<EventImportDraft | null>(null);
   const [draftToEdit, setDraftToEdit] = useState<EventImportDraft | null>(null);
   const [draftToDelete, setDraftToDelete] = useState<EventImportDraft | null>(null);
   const [acceptingDraftId, setAcceptingDraftId] = useState<string | null>(null);
@@ -65,6 +68,7 @@ export function AdminEventImportDraftsContent({
 
   const removeDraft = (draftId: string): void => {
     setDrafts((current) => current.filter((draft) => draft.id !== draftId));
+    setDraftToPreview((current) => current?.id === draftId ? null : current);
     setDraftToEdit((current) => current?.id === draftId ? null : current);
     setDraftToDelete((current) => current?.id === draftId ? null : current);
   };
@@ -158,6 +162,14 @@ export function AdminEventImportDraftsContent({
                     <div className="flex justify-end gap-1">
                       <button
                         type="button"
+                        onClick={() => setDraftToPreview(draft)}
+                        title={t('view')}
+                        className="inline-flex size-8 cursor-pointer items-center justify-center rounded text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-800"
+                      >
+                        <Eye className="size-4" strokeWidth={1.5} />
+                      </button>
+                      <button
+                        type="button"
                         onClick={() => void handleAccept(draft)}
                         disabled={acceptingDraftId !== null}
                         title={t('accept')}
@@ -188,6 +200,25 @@ export function AdminEventImportDraftsContent({
             </TableBody>
         </Table>
       )}
+      <EventImportPreviewModal
+        isOpen={draftToPreview !== null}
+        closeLabel={t('closePreview')}
+        onClose={() => setDraftToPreview(null)}
+      >
+        <EventImportPreview
+          event={draftToPreview?.data.event ?? null}
+          races={draftToPreview?.data.races ?? []}
+          isLoading={false}
+          error={null}
+          onAccept={async () => undefined}
+          isAccepted={false}
+          isAccepting={false}
+          onReject={() => undefined}
+          isRejected={false}
+          onSaveReview={async () => undefined}
+          readOnly
+        />
+      </EventImportPreviewModal>
       <EventRacesEditModal
         isOpen={draftToEdit !== null}
         event={draftToEdit?.data.event ?? null}

@@ -11,6 +11,7 @@ export interface EventImportDraft {
   id: string;
   sourceUrl: string | null;
   batchItemId: string | null;
+  researchBatchItemId: string | null;
   status: EventImportDraftStatus;
   acceptedEventId: string | null;
   data: EventImportDraftData;
@@ -22,6 +23,7 @@ export interface EventImportDraftRow {
   id: string;
   source_url: string | null;
   batch_item_id: string | null;
+  research_batch_item_id: string | null;
   status: EventImportDraftStatus;
   accepted_event_id: string | null;
   data: EventImportDraftData;
