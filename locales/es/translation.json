@@ -1151,10 +1151,12 @@
     "missingUrl": "Sin URL",
     "noDescription": "Sin descripción",
     "noDates": "Sin fecha",
+    "noProvince": "Sin provincia",
     "columns": {
       "name": "Evento",
       "website": "Web",
       "races": "Carreras",
+      "province": "Provincia",
       "dates": "Fechas",
       "description": "Descripción",
       "actions": "Acciones"

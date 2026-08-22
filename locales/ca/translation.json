@@ -1119,10 +1119,12 @@
     "missingUrl": "Sense URL",
     "noDescription": "Sense descripció",
     "noDates": "Sense data",
+    "noProvince": "Sense província",
     "columns": {
       "name": "Esdeveniment",
       "website": "Web",
       "races": "Curses",
+      "province": "Província",
       "dates": "Dates",
       "description": "Descripció",
       "actions": "Accions"

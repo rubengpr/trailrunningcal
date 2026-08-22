@@ -410,6 +410,7 @@ export function AdminEventsContent({ page, query }: AdminEventsContentProps) {
             </TableCell>
             <TableCell header>{t('columns.website')}</TableCell>
             <TableCell header align="right">{t('columns.races')}</TableCell>
+            <TableCell header>{t('columns.province')}</TableCell>
             <TableCell header>
               <Link
                 href={getSortHref('dates')}
@@ -459,6 +460,11 @@ export function AdminEventsContent({ page, query }: AdminEventsContentProps) {
                   />
                   <TableCell align="right" className="text-sm tabular-nums text-gray-700">
                     {eventDetail.allRaceCount}
+                  </TableCell>
+                  <TableCell className="text-sm text-gray-700">
+                    {eventDetail.location.groups
+                      .map(({ province }) => province)
+                      .join(', ') || t('noProvince')}
                   </TableCell>
                   <TableCell className="text-sm text-gray-700">
                     {formatEventDateRangeNumeric(eventDetail.dateRange, t('noDates'))}

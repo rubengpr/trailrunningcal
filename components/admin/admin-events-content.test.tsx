@@ -322,6 +322,23 @@ describe('AdminEventsContent pagination', () => {
   });
 });
 
+describe('AdminEventsContent provinces', () => {
+  it('renders the event province between races and dates', () => {
+    const detail = eventDetail(null);
+    detail.location = {
+      city: 'Barcelona',
+      province: 'Barcelona',
+      groups: [{ province: 'Barcelona', cities: ['Barcelona'] }],
+      isMultipleLocations: false,
+    };
+
+    renderContent([detail]);
+
+    expect(screen.getByText('columns.province')).toBeTruthy();
+    expect(screen.getByText('Barcelona')).toBeTruthy();
+  });
+});
+
 describe('AdminEventsContent editing', () => {
   it('enables track uploads and passes stored track status to the edit modal', () => {
     const detail = eventDetail(null);
