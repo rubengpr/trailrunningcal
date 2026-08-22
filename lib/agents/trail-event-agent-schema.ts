@@ -45,6 +45,9 @@ export const TRAIL_EVENT_AGENT_JSON_SCHEMA = {
           elevationGainM: {
             anyOf: [{ type: 'integer' }, { type: 'null' }],
           },
+          gpxDownloadUrl: {
+            anyOf: [{ type: 'string', pattern: '^https?://' }, { type: 'null' }],
+          },
           tiers: {
             type: 'array',
             maxItems: 5,
@@ -78,6 +81,7 @@ export const TRAIL_EVENT_AGENT_JSON_SCHEMA = {
           'province',
           'distanceKm',
           'elevationGainM',
+          'gpxDownloadUrl',
           'tiers',
         ],
       },

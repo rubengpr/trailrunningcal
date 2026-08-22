@@ -16,6 +16,9 @@ export interface TrailEventAgentRace {
   province: string;
   distanceKm: number;
   elevationGainM: number | null;
+  // Optional for compatibility with legacy endpoint outputs. The current
+  // structured-output schema always asks the research agent to include it.
+  gpxDownloadUrl?: string | null;
   tiers: TrailEventAgentRaceTier[];
 }
 

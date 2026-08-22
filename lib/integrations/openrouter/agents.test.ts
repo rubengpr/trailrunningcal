@@ -25,6 +25,7 @@ function agentOutput(tiers?: unknown, province = 'Barcelona'): string {
         province,
         distanceKm: 21,
         elevationGainM: 900,
+        gpxDownloadUrl: null,
         ...(tiers === undefined ? {} : { tiers }),
       },
     ],
@@ -87,6 +88,15 @@ describe('TRAIL_EVENT_AGENT_JSON_SCHEMA', () => {
     expect(tiers.maxItems).toBe(5);
     expect(tiers.items.required).toEqual(['priceEur', 'endsAt']);
     expect(tiers.items.properties.priceEur.type).toBe('number');
+  });
+
+  it('requires a nullable HTTP(S) GPX download page URL for each race', () => {
+    const races = TRAIL_EVENT_AGENT_JSON_SCHEMA.properties.races;
+
+    expect(races.items.required).toContain('gpxDownloadUrl');
+    expect(races.items.properties.gpxDownloadUrl).toEqual({
+      anyOf: [{ type: 'string', pattern: '^https?://' }, { type: 'null' }],
+    });
   });
 
   it('uses the complete canonical province catalogue as its enum', () => {
