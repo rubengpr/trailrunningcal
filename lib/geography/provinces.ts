@@ -67,4 +67,7 @@ export const PUBLIC_PROVINCES = [
   'Girona',
   'Lleida',
   'Tarragona',
+  'Alicante',
+  'Castellón',
+  'Valencia',
 ] as const satisfies readonly Province[];

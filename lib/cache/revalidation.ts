@@ -1,7 +1,12 @@
 import { revalidatePath } from 'next/cache';
 import { locales } from '@/i18n';
 import { getTypePath, RACE_CATEGORY_SLUGS } from '@/lib/races/race-types';
-import { getDestinationPath, getProvinceByDbName } from '@/lib/geography/destinations';
+import {
+  DESTINATION_PROVINCE_IDS,
+  GEOGRAPHY,
+  getDestinationPath,
+  getProvinceByDbName,
+} from '@/lib/geography/destinations';
 import type { TrailEventDetail } from '@/types/event.types';
 
 export function revalidateHomepages() {
@@ -30,6 +35,24 @@ export function revalidateCategoryPages() {
       revalidatePath(getTypePath(locale, slug));
     }
   }
+}
+
+export function revalidateDestinationPages() {
+  for (const provinceId of DESTINATION_PROVINCE_IDS) {
+    const province = GEOGRAPHY.provinces[provinceId];
+
+    for (const locale of locales) {
+      revalidatePath(
+        getDestinationPath(locale, province.regionId, provinceId),
+      );
+    }
+  }
+}
+
+export function revalidatePublicListingPages() {
+  revalidateHomepages();
+  revalidateCategoryPages();
+  revalidateDestinationPages();
 }
 
 export function revalidateEventPages(eventSlug: string) {

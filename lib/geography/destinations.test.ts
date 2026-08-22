@@ -15,6 +15,9 @@ describe('getDestinationPath', () => {
     expect(getDestinationPath('ca', 'catalonia', 'barcelona')).toBe(
       '/ca/d/cataluna/barcelona',
     );
+    expect(getDestinationPath('es', 'valencianCommunity', 'castellon')).toBe(
+      '/es/d/comunidad-valenciana/castellon',
+    );
   });
 });
 
@@ -39,6 +42,14 @@ describe('getDestinationBySlugs', () => {
     });
   });
 
+  it('resolves a Valencian destination', () => {
+    expect(getDestinationBySlugs('comunidad-valenciana', 'valencia')).toMatchObject({
+      regionId: 'valencianCommunity',
+      provinceId: 'valencia',
+      province: { dbName: 'Valencia' },
+    });
+  });
+
   it('returns null for invalid region or province slugs', () => {
     expect(getDestinationBySlugs('madrid', 'barcelona')).toBeNull();
     expect(getDestinationBySlugs('cataluna', 'not-a-province')).toBeNull();
@@ -52,6 +63,10 @@ describe('getProvinceByDbName', () => {
       province: {
         slug: 'girona',
       },
+    });
+    expect(getProvinceByDbName('Alicante')).toMatchObject({
+      id: 'alicante',
+      province: { slug: 'alicante' },
     });
   });
 });

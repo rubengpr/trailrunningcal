@@ -39,6 +39,9 @@ describe('sitemap destination URLs', () => {
 
     expect(sitemapUrls).toContain(`${BASE_URL}/es/d/cataluna/barcelona`);
     expect(sitemapUrls).toContain(`${BASE_URL}/ca/d/cataluna/barcelona`);
+    expect(sitemapUrls).toContain(`${BASE_URL}/es/d/comunidad-valenciana/alicante`);
+    expect(sitemapUrls).toContain(`${BASE_URL}/ca/d/comunidad-valenciana/castellon`);
+    expect(sitemapUrls).toContain(`${BASE_URL}/es/d/comunidad-valenciana/valencia`);
   });
 
   it('does not include legacy /provincia URLs', async () => {

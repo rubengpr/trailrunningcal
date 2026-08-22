@@ -7,6 +7,10 @@ export const GEOGRAPHY = {
       slug: 'cataluna',
       name: 'Cataluña',
     },
+    valencianCommunity: {
+      slug: 'comunidad-valenciana',
+      name: 'Comunidad Valenciana',
+    },
   },
   provinces: {
     barcelona: {
@@ -32,6 +36,24 @@ export const GEOGRAPHY = {
       name: 'Tarragona',
       regionId: 'catalonia',
       dbName: 'Tarragona',
+    },
+    alicante: {
+      slug: 'alicante',
+      name: 'Alicante',
+      regionId: 'valencianCommunity',
+      dbName: 'Alicante',
+    },
+    castellon: {
+      slug: 'castellon',
+      name: 'Castellón',
+      regionId: 'valencianCommunity',
+      dbName: 'Castellón',
+    },
+    valencia: {
+      slug: 'valencia',
+      name: 'Valencia',
+      regionId: 'valencianCommunity',
+      dbName: 'Valencia',
     },
   },
 } as const;

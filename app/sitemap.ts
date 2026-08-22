@@ -3,7 +3,10 @@ import { BASE_URL } from '@/lib/config';
 import { locales, type Locale } from '@/i18n';
 import { getAllBlogPosts } from '@/lib/content/blog-utils';
 import { RACE_CATEGORY_SLUGS } from '@/lib/races/race-types';
-import { DESTINATION_PROVINCE_IDS } from '@/lib/geography/destinations';
+import {
+  DESTINATION_PROVINCE_IDS,
+  GEOGRAPHY,
+} from '@/lib/geography/destinations';
 import { getSitemapEvents } from '@/lib/db/sitemap-events';
 import {
   buildHomeAlternateLinks,
@@ -92,14 +95,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   for (const provinceId of DESTINATION_PROVINCE_IDS) {
+    const province = GEOGRAPHY.provinces[provinceId];
+
     for (const locale of locales) {
       urls.push({
-        url: `${BASE_URL}${getDestinationPath(locale, 'catalonia', provinceId)}`,
+        url: `${BASE_URL}${getDestinationPath(locale, province.regionId, provinceId)}`,
         lastModified: currentDate,
         changeFrequency: 'weekly',
         priority: 0.9,
         alternates: {
-          languages: buildDestinationAlternateLinks('catalonia', provinceId),
+          languages: buildDestinationAlternateLinks(province.regionId, provinceId),
         },
       });
     }

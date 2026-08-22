@@ -21,12 +21,15 @@ describe('province catalogue', () => {
     ]));
   });
 
-  it('keeps public filtering limited to the four Catalan provinces', () => {
+  it('includes the supported Catalan and Valencian provinces in public filtering', () => {
     expect(PUBLIC_PROVINCES).toEqual([
       'Barcelona',
       'Girona',
       'Lleida',
       'Tarragona',
+      'Alicante',
+      'Castellón',
+      'Valencia',
     ]);
   });
 });

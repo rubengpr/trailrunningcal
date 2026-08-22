@@ -260,7 +260,10 @@
     "barcelona": "Barcelona",
     "girona": "Girona",
     "lleida": "Lleida",
-    "tarragona": "Tarragona"
+    "tarragona": "Tarragona",
+    "alicante": "Alacant",
+    "castellon": "Castelló",
+    "valencia": "València"
   },
   "sidebar": {
     "calendar": "Calendari",
@@ -468,7 +471,10 @@
       "barcelona": "Curses de trail running a Barcelona: Montseny, Montserrat, Garraf i Sant Llorenç. Dates, distàncies i desnivells per al {year}.",
       "girona": "Curses de trail running a Girona: Pirineus, Garrotxa i Serra de l'Albera. Dates, distàncies i desnivells per al {year}.",
       "lleida": "Curses de trail running a Lleida: Pirineus del Pallars, Montsec i Alta Ribagorça. Dates, distàncies i desnivells per al {year}.",
-      "tarragona": "Curses de trail running a Tarragona: Serra de Prades, Ports de Beseit i Serra de Llaberia. Dates, distàncies i desnivells per al {year}."
+      "tarragona": "Curses de trail running a Tarragona: Serra de Prades, Ports de Beseit i Serra de Llaberia. Dates, distàncies i desnivells per al {year}.",
+      "alicante": "Curses de trail running a Alacant: Aitana, Mariola i el Maigmó. Dates, distàncies i desnivells per al {year}.",
+      "castellon": "Curses de trail running a Castelló: Penyagolosa, la Serra d'Espadà i l'Alt Palància. Dates, distàncies i desnivells per al {year}.",
+      "valencia": "Curses de trail running a València: la Calderona, la Serrania i les serres de l'interior. Dates, distàncies i desnivells per al {year}."
     },
     "pageBody": "Descobreix totes les curses de trail running a la província de {province}: senders, muntanyes i rutes de tota mena de distància i dificultat. El trail running a {province} combina paisatges únics amb una creixent comunitat de corredors de muntanya activa durant tot l'any.",
     "heroTitleStart": "Explora curses de trail running a",
@@ -476,14 +482,20 @@
       "barcelona": "Explora les curses de muntanya pel Montseny, Montserrat i el Garraf. Dates, distàncies i informació completa per a la teva propera aventura.",
       "girona": "Explora les curses de muntanya pels Pirineus, la Garrotxa i la Serra de l'Albera. Dates, distàncies i informació completa per a la teva propera aventura.",
       "lleida": "Explora les curses de muntanya pels Pirineus del Pallars, el Montsec i l'Alta Ribagorça. Dates, distàncies i informació per a la teva propera aventura.",
-      "tarragona": "Descobreix les curses de muntanya per la Serra de Prades, els Ports de Beseit i la Serra de Llaberia. Dates, distàncies i informació per a la teva propera aventura."
+      "tarragona": "Descobreix les curses de muntanya per la Serra de Prades, els Ports de Beseit i la Serra de Llaberia. Dates, distàncies i informació per a la teva propera aventura.",
+      "alicante": "Explora les curses de muntanya per Aitana, Mariola i el Maigmó. Dates, distàncies i informació completa per a la teva propera aventura.",
+      "castellon": "Descobreix les curses de muntanya per Penyagolosa, la Serra d'Espadà i l'Alt Palància. Dates, distàncies i informació per a la teva propera aventura.",
+      "valencia": "Explora les curses de muntanya per la Calderona, la Serrania i les serres de l'interior valencià. Dates, distàncies i informació per a la teva propera aventura."
     },
     "breadcrumb": "Trail Running · Catalunya",
     "names": {
       "barcelona": "Barcelona",
       "girona": "Girona",
       "lleida": "Lleida",
-      "tarragona": "Tarragona"
+      "tarragona": "Tarragona",
+      "alicante": "Alacant",
+      "castellon": "Castelló",
+      "valencia": "València"
     }
   },
   "notFound": {
