@@ -410,7 +410,15 @@ export function AdminEventsContent({ page, query }: AdminEventsContentProps) {
             </TableCell>
             <TableCell header>{t('columns.website')}</TableCell>
             <TableCell header align="right">{t('columns.races')}</TableCell>
-            <TableCell header>{t('columns.province')}</TableCell>
+            <TableCell header>
+              <Link
+                href={getSortHref('province')}
+                className="inline-flex items-center gap-1 transition-colors hover:text-gray-800"
+              >
+                {t('columns.province')}
+                {renderSortIcon('province')}
+              </Link>
+            </TableCell>
             <TableCell header>
               <Link
                 href={getSortHref('dates')}
@@ -463,6 +471,7 @@ export function AdminEventsContent({ page, query }: AdminEventsContentProps) {
                   </TableCell>
                   <TableCell className="text-sm text-gray-700">
                     {eventDetail.location.groups
+                      .toSorted((a, b) => a.province.localeCompare(b.province))
                       .map(({ province }) => province)
                       .join(', ') || t('noProvince')}
                   </TableCell>

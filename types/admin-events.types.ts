@@ -1,6 +1,6 @@
 import type { AdminTrailEventDetail } from '@/types/event.types';
 
-export type AdminEventSortColumn = 'dates' | 'name';
+export type AdminEventSortColumn = 'dates' | 'name' | 'province';
 export type AdminEventSortDirection = 'asc' | 'desc';
 
 export interface AdminEventPageRequest {

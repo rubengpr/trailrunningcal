@@ -334,7 +334,10 @@ describe('AdminEventsContent provinces', () => {
 
     renderContent([detail]);
 
-    expect(screen.getByText('columns.province')).toBeTruthy();
+    expect(
+      (screen.getByText('columns.province').closest('a') as HTMLAnchorElement)
+        .getAttribute('href'),
+    ).toBe('/es/admin/eventos/activos?sort=province');
     expect(screen.getByText('Barcelona')).toBeTruthy();
   });
 });

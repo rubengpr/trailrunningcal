@@ -21,7 +21,7 @@ function parsePage(value: string | undefined): number {
 }
 
 function parseSortColumn(value: string | undefined): AdminEventSortColumn {
-  return value === 'name' ? 'name' : 'dates';
+  return value === 'name' || value === 'province' ? value : 'dates';
 }
 
 function parseSortDirection(

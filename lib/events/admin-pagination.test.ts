@@ -24,7 +24,7 @@ describe('admin event pagination URL state', () => {
     const result = parseAdminEventPageRequest({
       page: '-2',
       q: 'x'.repeat(ADMIN_EVENTS_SEARCH_MAX_LENGTH + 10),
-      sort: 'province',
+      sort: 'unknown',
       direction: 'sideways',
     });
 
@@ -33,6 +33,16 @@ describe('admin event pagination URL state', () => {
       search: 'x'.repeat(ADMIN_EVENTS_SEARCH_MAX_LENGTH),
       sortColumn: 'dates',
       sortDirection: 'asc',
+    });
+  });
+
+  it('parses province sorting', () => {
+    expect(parseAdminEventPageRequest({
+      sort: 'province',
+      direction: 'desc',
+    })).toMatchObject({
+      sortColumn: 'province',
+      sortDirection: 'desc',
     });
   });
 
@@ -52,5 +62,12 @@ describe('admin event pagination URL state', () => {
       sortColumn: 'dates',
       sortDirection: 'asc',
     })).toBe('/ca/admin/eventos/activos');
+
+    expect(buildAdminEventsHref('es', {
+      page: 1,
+      search: '',
+      sortColumn: 'province',
+      sortDirection: 'asc',
+    })).toBe('/es/admin/eventos/activos?sort=province');
   });
 });
