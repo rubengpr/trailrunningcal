@@ -366,6 +366,24 @@ export function EventsMap({
       pinClickListeners.push({ el: markerEl, fn: handlePinClick });
     }
 
+    if (markers.length === 1) {
+      const marker = markers[0]!;
+      map.jumpTo({
+        center: [marker.longitude, marker.latitude],
+        zoom: 9,
+      });
+    } else if (markers.length > 1) {
+      const bounds = new maplibregl.LngLatBounds();
+      for (const marker of markers) {
+        bounds.extend([marker.longitude, marker.latitude]);
+      }
+      map.fitBounds(bounds, {
+        padding: 48,
+        maxZoom: 9,
+        duration: 0,
+      });
+    }
+
     return () => {
       for (const { el, fn } of pinClickListeners) {
         el.removeEventListener('click', fn);
