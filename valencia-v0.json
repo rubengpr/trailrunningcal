@@ -1,0 +1,910 @@
+[
+  {
+    "input": {
+      "eventName": "Trail Solidari Ciutat d'Alcoi"
+    },
+    "expected": {
+      "event": {
+        "name": "Trail Solidari Ciutat d'Alcoi",
+        "description": "El Trail Solidari Ciutat d'Alcoi es una cita deportiva y solidaria que se celebra en Alcoi, en la provincia de Alicante, y que combina la carrera por montaña con la recaudación de fondos para la investigación contra el cáncer. La prueba discurre por el entorno natural del municipio, cerca de los parajes de la Serra de Mariola y la Font Roja, y la organización trabaja cada edición para reducir los tramos de asfalto y priorizar los caminos naturales.\n\nLa edición de 2026 se disputa el 3 de octubre con salida a las 08:00 y ofrece tres modalidades: el Trail de 45,5 kilómetros, el Mig Trail de 28 kilómetros y la Marcha Solidaria de 19 kilómetros, esta última de carácter no competitivo. La participación se organiza por equipos de cuatro personas y una parte destacada de las inscripciones se destina a una beca para jóvenes investigadores a través de ASEICA. Este año no se celebra el Jove Trail.",
+        "websiteUrl": "https://www.trailsolidarialcoi.org"
+      },
+      "races": [
+        {
+          "name": "Trail",
+          "date": "2026-10-03",
+          "city": "Alcoi",
+          "province": "Alicante",
+          "distanceKm": 45,
+          "elevationGainM": 2100,
+          "tiers": [
+            {
+              "priceEur": 55,
+              "endsAt": "2026-09-26"
+            }
+          ]
+        },
+        {
+          "name": "Mig Trail",
+          "date": "2026-10-03",
+          "city": "Alcoi",
+          "province": "Alicante",
+          "distanceKm": 28,
+          "elevationGainM": 1432,
+          "tiers": [
+            {
+              "priceEur": 40,
+              "endsAt": "2026-09-26"
+            }
+          ]
+        },
+        {
+          "name": "Marcha",
+          "date": "2026-10-03",
+          "city": "Alcoi",
+          "province": "Alicante",
+          "distanceKm": 19,
+          "elevationGainM": 821,
+          "tiers": [
+            {
+              "priceEur": 37,
+              "endsAt": "2026-09-26"
+            }
+          ]
+        }
+      ],
+      "errorMessage": null
+    },
+    "metadata": {
+      "datasetVersion": "valencia-v0",
+      "inputMode": "name-only",
+      "verifiedAt": "2026-08-20",
+      "caseType": "valid-event"
+    },
+    "tags": [
+      "valencia-v0",
+      "valid-event"
+    ]
+  },
+  {
+    "input": {
+      "eventName": "Sprint Trail Senyera"
+    },
+    "expected": {
+      "event": {
+        "name": "Sprint Trail Senyera",
+        "description": "El Sprint Trail Senyera es una prueba de carrera por montaña organizada por el club Senderuts i Senderudes junto con el Ayuntamiento de Senyera, en la comarca de la Ribera Alta, dentro de la provincia de Valencia. El recorrido parte del casco urbano y transcurre por los parajes naturales del término municipal, con un trazado técnico pero accesible pensado tanto para corredores habituales como para quienes se inician en el trail.\n\nLa edición de 2026 se celebra el domingo 4 de octubre con salida a las 08:30 e incluye dos modalidades abiertas al público general: el Sprint Trail de 13 kilómetros y 500 metros de desnivel positivo, de carácter competitivo, y el Sender, una marcha senderista no competitiva de 8 kilómetros y 250 metros de desnivel. El programa se completa con una modalidad de canicross para quienes desean participar acompañados de su perro. Las inscripciones se gestionan a través de la plataforma Mychip.",
+        "websiteUrl": "https://sprinttrailsenyera.wixsite.com/sprinttrailsenyera"
+      },
+      "races": [
+        {
+          "name": "Sprint Trail",
+          "date": "2026-10-04",
+          "city": "Senyera",
+          "province": "Valencia",
+          "distanceKm": 13,
+          "elevationGainM": 500,
+          "tiers": [
+            {
+              "priceEur": 14,
+              "endsAt": "2026-09-30"
+            }
+          ]
+        },
+        {
+          "name": "Marcha",
+          "date": "2026-10-04",
+          "city": "Senyera",
+          "province": "Valencia",
+          "distanceKm": 8,
+          "elevationGainM": 250,
+          "tiers": [
+            {
+              "priceEur": 14,
+              "endsAt": "2026-09-30"
+            }
+          ]
+        }
+      ],
+      "errorMessage": null
+    },
+    "metadata": {
+      "datasetVersion": "valencia-v0",
+      "inputMode": "name-only",
+      "verifiedAt": "2026-08-20",
+      "caseType": "valid-event"
+    },
+    "tags": [
+      "valencia-v0",
+      "valid-event"
+    ]
+  },
+  {
+    "input": {
+      "eventName": "Solana Trail"
+    },
+    "expected": {
+      "event": {
+        "name": "Solana Trail",
+        "description": "El Solana Trail es una carrera por montaña organizada por el Grup de Muntanya de Beneixama que se celebra en la localidad de Beneixama, en el interior de la provincia de Alicante. La salida y la meta se sitúan en la plaza del Ayuntamiento y el recorrido recorre los parajes de montaña del término municipal, con opciones adaptadas tanto a corredores experimentados como a quienes se inician en el trail o prefieren caminar.\n\nLa edición de 2026 se disputa el domingo 4 de octubre con salida a las 08:30 y ofrece dos distancias competitivas para adultos, el K-22 de 22 kilómetros y el K-13 de 13 kilómetros, además de una modalidad de caminantes no competitiva sobre el mismo trazado de 13 kilómetros. El programa se completa con el K-9, reservado a participantes de 12 a 15 años. Las inscripciones se gestionan a través de Sportmaniacs y se cierran el 21 de septiembre, con recogida de dorsales la tarde anterior a la prueba.",
+        "websiteUrl": "https://www.instagram.com/solanatrail"
+      },
+      "races": [
+        {
+          "name": null,
+          "date": "2026-10-04",
+          "city": "Beneixama",
+          "province": "Alicante",
+          "distanceKm": 22,
+          "elevationGainM": 761,
+          "tiers": [
+            {
+              "priceEur": 23,
+              "endsAt": "2026-07-04"
+            },
+            {
+              "priceEur": 25,
+              "endsAt": "2026-09-14"
+            },
+            {
+              "priceEur": 27,
+              "endsAt": "2026-09-21"
+            }
+          ]
+        },
+        {
+          "name": null,
+          "date": "2026-10-04",
+          "city": "Beneixama",
+          "province": "Alicante",
+          "distanceKm": 13,
+          "elevationGainM": 423,
+          "tiers": [
+            {
+              "priceEur": 23,
+              "endsAt": "2026-07-04"
+            },
+            {
+              "priceEur": 25,
+              "endsAt": "2026-09-14"
+            },
+            {
+              "priceEur": 27,
+              "endsAt": "2026-09-21"
+            }
+          ]
+        },
+        {
+          "name": "Marcha",
+          "date": "2026-10-04",
+          "city": "Beneixama",
+          "province": "Alicante",
+          "distanceKm": 13,
+          "elevationGainM": 423,
+          "tiers": [
+            {
+              "priceEur": 23,
+              "endsAt": "2026-07-04"
+            },
+            {
+              "priceEur": 25,
+              "endsAt": "2026-09-14"
+            },
+            {
+              "priceEur": 27,
+              "endsAt": "2026-09-21"
+            }
+          ]
+        }
+      ],
+      "errorMessage": null
+    },
+    "metadata": {
+      "datasetVersion": "valencia-v0",
+      "inputMode": "name-only",
+      "verifiedAt": "2026-08-20",
+      "caseType": "valid-event"
+    },
+    "tags": [
+      "valencia-v0",
+      "valid-event"
+    ]
+  },
+  {
+    "input": {
+      "eventName": "Badall Trail"
+    },
+    "expected": {
+      "event": {
+        "name": "Badall Trail",
+        "description": "El Badall Trail es una carrera por montaña que se celebra en Benigembla, en la comarca de la Marina Alta, dentro de la provincia de Alicante. Organizada por el club Dénia Corre con la colaboración del Ayuntamiento de Benigembla, la prueba forma parte del Circuit Trail Marina y recorre parajes emblemáticos del término municipal como las fuentes de Dalt i Baix, la Coveta de les Cabres, la Cova de Dalt y la cima del Cocoll.\n\nSu tramo más característico es el Pas del Badall, un paso estrecho que los participantes deben superar reptando con la ayuda de argollas y cadenas fijadas a la roca, detalle que da nombre a la prueba. La edición de 2026 se disputa el domingo 4 de octubre con salida desde la avenida Bon Aire y ofrece dos recorridos: el Badall Trail de 21 kilómetros y 1.100 metros de desnivel positivo y el Penya Blanca Sprint de 15 kilómetros y 700 metros de desnivel.",
+        "websiteUrl": "https://www.instagram.com/badall_trail_benigembla"
+      },
+      "races": [
+        {
+          "name": "Badall Trail",
+          "date": "2026-10-04",
+          "city": "Benigembla",
+          "province": "Alicante",
+          "distanceKm": 21,
+          "elevationGainM": 1100,
+          "tiers": [
+            {
+              "priceEur": 25,
+              "endsAt": "2026-09-30"
+            }
+          ]
+        },
+        {
+          "name": "Penya Blanca Sprint",
+          "date": "2026-10-04",
+          "city": "Benigembla",
+          "province": "Alicante",
+          "distanceKm": 15,
+          "elevationGainM": 700,
+          "tiers": [
+            {
+              "priceEur": 20,
+              "endsAt": "2026-09-30"
+            }
+          ]
+        }
+      ],
+      "errorMessage": null
+    },
+    "metadata": {
+      "datasetVersion": "valencia-v0",
+      "inputMode": "name-only",
+      "verifiedAt": "2026-08-20",
+      "caseType": "valid-event"
+    },
+    "tags": [
+      "valencia-v0",
+      "valid-event"
+    ]
+  },
+  {
+    "input": {
+      "eventName": "3 Cims"
+    },
+    "expected": {
+      "event": {
+        "name": "3 Cims",
+        "description": "El 3 Cims es una prueba de carrera por montaña organizada por el Club de Muntanya Vilafamés que se celebra en Vilafamés, en el interior de la provincia de Castellón. La salida y la meta se sitúan en la Plaza de la Fuente y el recorrido asciende las tres cimas que dan nombre al evento, concentradas en la primera parte del trazado, para dar paso después a senderos y descensos más cómodos. La prueba forma parte de la Lliga de Curses per Muntanya Castelló Nord.\n\nLa edición de 2026 se disputa el domingo 4 de octubre y consta de dos recorridos: el Trail de 30 kilómetros y 1.600 metros de desnivel positivo, con salida a las 08:00 y un tiempo máximo de seis horas, y la Marcha de 14 kilómetros y 590 metros de desnivel, con salida a las 08:30 y cuatro horas de tiempo límite. La organización limita la participación conjunta a 700 personas y gestiona las inscripciones a través de Runática.",
+        "websiteUrl": "https://www.cmvilafames.es/3cims"
+      },
+      "races": [
+        {
+          "name": "Trail",
+          "date": "2026-10-04",
+          "city": "Vilafamés",
+          "province": "Castellón",
+          "distanceKm": 30,
+          "elevationGainM": 1600,
+          "tiers": [
+            {
+              "priceEur": 25,
+              "endsAt": "2026-09-13"
+            },
+            {
+              "priceEur": 30,
+              "endsAt": "2026-09-27"
+            }
+          ]
+        },
+        {
+          "name": "Marcha",
+          "date": "2026-10-04",
+          "city": "Vilafamés",
+          "province": "Castellón",
+          "distanceKm": 14,
+          "elevationGainM": 590,
+          "tiers": [
+            {
+              "priceEur": 25,
+              "endsAt": "2026-09-27"
+            }
+          ]
+        }
+      ],
+      "errorMessage": null
+    },
+    "metadata": {
+      "datasetVersion": "valencia-v0",
+      "inputMode": "name-only",
+      "verifiedAt": "2026-08-20",
+      "caseType": "valid-event"
+    },
+    "tags": [
+      "valencia-v0",
+      "valid-event"
+    ]
+  },
+  {
+    "input": {
+      "eventName": "Carrera y Marcha de Rabosa"
+    },
+    "expected": {
+      "event": {
+        "name": "Carrera y Marcha de Rabosa",
+        "description": "La Carrera y Marcha de Rabosa es una prueba de montaña organizada por el Centro Excursionista Eldense que en 2026 celebra su decimoquinto aniversario y regresa a Elda, en la provincia de Alicante, tras varias ediciones disputadas en la vecina Petrer. La edición conmemorativa se presenta bajo el lema 'Vuelta a los orígenes' y recupera los parajes naturales que dieron nombre a la prueba en sus primeros años.\n\nEl programa del 4 de octubre de 2026 se articula en tres recorridos de dificultad progresiva por los parajes de Bolón, Pocico Alonso y Camara. El de Camara, de 21 kilómetros y 875 metros de desnivel positivo, es la opción más exigente y abre la jornada a las 08:00; el de Pocico Alonso, de 15 kilómetros y 500 metros de desnivel, se dirige a un nivel intermedio; y el de Bolón, de 8 kilómetros y 200 metros de desnivel, está pensado para quienes se inician. Los dos últimos pueden completarse en modalidad de carrera o de marcha.",
+        "websiteUrl": "https://www.runatica.com/event/xv-carrera-marcha-rabosa-elda-2026"
+      },
+      "races": [
+        {
+          "name": "Trail Camara",
+          "date": "2026-10-04",
+          "city": "Elda",
+          "province": "Alicante",
+          "distanceKm": 21,
+          "elevationGainM": 875,
+          "tiers": [
+            {
+              "priceEur": 22,
+              "endsAt": "2026-09-28"
+            }
+          ]
+        },
+        {
+          "name": "Trail Pocico",
+          "date": "2026-10-04",
+          "city": "Elda",
+          "province": "Alicante",
+          "distanceKm": 15,
+          "elevationGainM": 500,
+          "tiers": [
+            {
+              "priceEur": 17,
+              "endsAt": "2026-09-28"
+            }
+          ]
+        },
+        {
+          "name": "Trail Bolón",
+          "date": "2026-10-04",
+          "city": "Elda",
+          "province": "Alicante",
+          "distanceKm": 8,
+          "elevationGainM": 200,
+          "tiers": [
+            {
+              "priceEur": 12,
+              "endsAt": "2026-09-28"
+            }
+          ]
+        },
+        {
+          "name": "Marcha",
+          "date": "2026-10-04",
+          "city": "Elda",
+          "province": "Alicante",
+          "distanceKm": 15,
+          "elevationGainM": 500,
+          "tiers": [
+            {
+              "priceEur": 17,
+              "endsAt": "2026-09-28"
+            }
+          ]
+        },
+        {
+          "name": "Marcha",
+          "date": "2026-10-04",
+          "city": "Elda",
+          "province": "Alicante",
+          "distanceKm": 8,
+          "elevationGainM": 200,
+          "tiers": [
+            {
+              "priceEur": 12,
+              "endsAt": "2026-09-28"
+            }
+          ]
+        }
+      ],
+      "errorMessage": null
+    },
+    "metadata": {
+      "datasetVersion": "valencia-v0",
+      "inputMode": "name-only",
+      "verifiedAt": "2026-08-20",
+      "caseType": "valid-event"
+    },
+    "tags": [
+      "valencia-v0",
+      "valid-event"
+    ]
+  },
+  {
+    "input": {
+      "eventName": "Estret Trail Bellús"
+    },
+    "expected": {
+      "event": {
+        "name": "Estret Trail Bellús",
+        "description": "El Estret Trail Bellús es una carrera de montaña que se celebra en la localidad de Bellús, en la comarca de la Vall d'Albaida, dentro de la provincia de Valencia. La prueba toma su nombre del Estret de les Aigües, el paraje que da carácter al recorrido, y forma parte del circuito de curses populars de la comarca, con una organización a cargo de las entidades locales y el cronometraje de Multiesport.\n\nLa edición de 2026, décima de la prueba, se disputa el domingo 4 de octubre sobre un único recorrido de 12,3 kilómetros con salida a las 09:30. La jornada se completa por la tarde con las carreras infantiles, previstas a partir de las 12:00 en las categorías benjamín, alevín e infantil. Las inscripciones se gestionan de forma telemática y el plazo se cierra el 1 de octubre, con una participación que en ediciones recientes ha superado los 700 corredores.",
+        "websiteUrl": "https://multiesport.es/event/2026-x-estret-trail-bellus"
+      },
+      "races": [
+        {
+          "name": null,
+          "date": "2026-10-04",
+          "city": "Bellús",
+          "province": "Valencia",
+          "distanceKm": 12,
+          "elevationGainM": 225,
+          "tiers": [
+            {
+              "priceEur": 8,
+              "endsAt": "2026-10-01"
+            }
+          ]
+        }
+      ],
+      "errorMessage": null
+    },
+    "metadata": {
+      "datasetVersion": "valencia-v0",
+      "inputMode": "name-only",
+      "verifiedAt": "2026-08-20",
+      "caseType": "valid-event"
+    },
+    "tags": [
+      "valencia-v0",
+      "valid-event"
+    ]
+  },
+  {
+    "input": {
+      "eventName": "Trail Navajas"
+    },
+    "expected": {
+      "event": {
+        "name": "Trail Navajas",
+        "description": "El Trail Navajas es una carrera por montaña organizada por Atlos Eventos que se celebra en la localidad de Navajas, en la comarca del Alto Palancia, dentro de la provincia de Castellón. La prueba pertenece al circuito El Desafío Alto Palancia y aprovecha el entorno de montaña que rodea el municipio, con salida y meta en el casco urbano y recorridos que combinan senderos técnicos con pistas más rodadoras.\n\nLa edición de 2026, sexta de la prueba, se disputa el domingo 4 de octubre y mantiene las dos modalidades habituales: el Trail Navajas de 22 kilómetros y 789 metros de desnivel positivo, la opción más exigente, y el SprinTrail Navajas de 15 kilómetros y 550 metros de desnivel, pensado para quienes buscan una distancia más asequible. Las inscripciones permanecen abiertas desde el 6 de agosto hasta el 30 de septiembre, e incluyen material de merchandising para quienes se apunten antes del 20 de septiembre.",
+        "websiteUrl": "https://atloseventos.com/trail-de-navajas-2026"
+      },
+      "races": [
+        {
+          "name": "Trail Navajas",
+          "date": "2026-10-04",
+          "city": "Navajas",
+          "province": "Castellón",
+          "distanceKm": 22,
+          "elevationGainM": 789,
+          "tiers": [
+            {
+              "priceEur": 25,
+              "endsAt": "2026-09-20"
+            },
+            {
+              "priceEur": 22,
+              "endsAt": "2026-09-30"
+            }
+          ]
+        },
+        {
+          "name": "SprinTrail Navajas",
+          "date": "2026-10-04",
+          "city": "Navajas",
+          "province": "Castellón",
+          "distanceKm": 15,
+          "elevationGainM": 550,
+          "tiers": [
+            {
+              "priceEur": 20,
+              "endsAt": "2026-09-20"
+            },
+            {
+              "priceEur": 17,
+              "endsAt": "2026-09-30"
+            }
+          ]
+        }
+      ],
+      "errorMessage": null
+    },
+    "metadata": {
+      "datasetVersion": "valencia-v0",
+      "inputMode": "name-only",
+      "verifiedAt": "2026-08-20",
+      "caseType": "valid-event"
+    },
+    "tags": [
+      "valencia-v0",
+      "valid-event"
+    ]
+  },
+  {
+    "input": {
+      "eventName": "Trail Cortes de Pallás"
+    },
+    "expected": {
+      "event": {
+        "name": "Trail Cortes de Pallás",
+        "description": "El Trail Cortes de Pallás es una carrera por montaña organizada por Amida Sports que se celebra en Cortes de Pallás, en la comarca del Valle de Ayora-Cofrentes, dentro de la provincia de Valencia. La prueba forma parte del circuito Sendas de Gigantes y discurre por el entorno del cañón del Júcar, con senderos técnicos, fuertes desniveles y panorámicas sobre los embalses y las paredes rocosas que caracterizan la zona.\n\nLa edición de 2026 se disputa el domingo 4 de octubre con salida a las 09:00 y ofrece tres opciones para distintos niveles: el Trail de 21,1 kilómetros y 909 metros de desnivel positivo, que se mueve entre los 418 y los 823 metros de altitud, el Sprint Trail de 9 kilómetros y una caminata no competitiva de la misma distancia. La organización incluye servicio médico, avituallamientos, cronometraje, bolsa del corredor, duchas y sorteos entre los participantes, y gestiona las inscripciones desde su propia web.",
+        "websiteUrl": "https://amidasports.com/trail-cortes-de-pallas-2026"
+      },
+      "races": [
+        {
+          "name": "Trail",
+          "date": "2026-10-04",
+          "city": "Cortes de Pallás",
+          "province": "Valencia",
+          "distanceKm": 21,
+          "elevationGainM": 909,
+          "tiers": [
+            {
+              "priceEur": 24,
+              "endsAt": null
+            }
+          ]
+        },
+        {
+          "name": "Sprint Trail",
+          "date": "2026-10-04",
+          "city": "Cortes de Pallás",
+          "province": "Valencia",
+          "distanceKm": 9,
+          "elevationGainM": 494,
+          "tiers": [
+            {
+              "priceEur": 18,
+              "endsAt": null
+            }
+          ]
+        },
+        {
+          "name": "Marcha",
+          "date": "2026-10-04",
+          "city": "Cortes de Pallás",
+          "province": "Valencia",
+          "distanceKm": 9,
+          "elevationGainM": null,
+          "tiers": [
+            {
+              "priceEur": 10,
+              "endsAt": null
+            }
+          ]
+        }
+      ],
+      "errorMessage": null
+    },
+    "metadata": {
+      "datasetVersion": "valencia-v0",
+      "inputMode": "name-only",
+      "verifiedAt": "2026-08-20",
+      "caseType": "valid-event"
+    },
+    "tags": [
+      "valencia-v0",
+      "valid-event"
+    ]
+  },
+  {
+    "input": {
+      "eventName": "Volta al Terme de Gilet"
+    },
+    "expected": {
+      "event": {
+        "name": "Volta al Terme de Gilet",
+        "description": "La Volta al Terme de Gilet es una carrera por montaña que recorre el término municipal de Gilet, en la comarca del Camp de Morvedre, dentro de la provincia de Valencia. El trazado discurre por parajes de gran valor ecológico enmarcados en el Parque Natural de la Sierra Calderona, con senderos técnicos y desniveles exigentes que han convertido la prueba en una cita consolidada del calendario valenciano de montaña.\n\nLa decimoquinta edición se celebra el 9 de octubre de 2026 y mantiene las dos modalidades habituales: el Trail 21K, de 21 kilómetros y 1.360 metros de desnivel positivo, con salida a las 08:30 y un tiempo máximo de cuatro horas y media, y el Trail 11K, de 11,1 kilómetros y 525 metros de desnivel, que arranca a las 09:00 con un límite de dos horas y media. La inscripción incluye bolsa del corredor con camiseta conmemorativa, avituallamientos, duchas y seguro de accidentes.",
+        "websiteUrl": "https://sportmaniacs.com/es/services/inscription/xv-volta-al-terme-de-gilet-2026"
+      },
+      "races": [
+        {
+          "name": "Trail 21K",
+          "date": "2026-10-09",
+          "city": "Gilet",
+          "province": "Valencia",
+          "distanceKm": 21,
+          "elevationGainM": 1360,
+          "tiers": [
+            {
+              "priceEur": 24,
+              "endsAt": "2026-10-07"
+            }
+          ]
+        },
+        {
+          "name": "Trail 11K",
+          "date": "2026-10-09",
+          "city": "Gilet",
+          "province": "Valencia",
+          "distanceKm": 11,
+          "elevationGainM": 525,
+          "tiers": [
+            {
+              "priceEur": 17,
+              "endsAt": "2026-10-07"
+            }
+          ]
+        }
+      ],
+      "errorMessage": null
+    },
+    "metadata": {
+      "datasetVersion": "valencia-v0",
+      "inputMode": "name-only",
+      "verifiedAt": "2026-08-20",
+      "caseType": "valid-event"
+    },
+    "tags": [
+      "valencia-v0",
+      "valid-event"
+    ]
+  },
+  {
+    "input": {
+      "eventName": "III Trail Nocturno Cabeço d'Or"
+    },
+    "expected": {
+      "event": {
+        "name": "Trail Nocturno Cabeço d'Or",
+        "description": "El Trail Nocturno Cabeço d'Or es una carrera por montaña organizada por el Club de Muntanya Cabeço d'Or que se disputa de noche en Busot, en la provincia de Alicante. El recorrido es circular, parte del casco urbano y rodea el macizo del Cabeçó d'Or pasando por el Collado de Terol, el Collado del Polset y las Cuevas del Canelobre, con senderos técnicos y crestas expuestas que se afrontan con frontal como única iluminación.\n\nLa tercera edición se celebra el sábado 17 de octubre de 2026, con salida a las 17:00 desde Busot. La prueba ofrece dos modalidades sobre el mismo trazado de 17,5 kilómetros: el Trail, de carácter competitivo, y el Sender, una marcha pensada para quienes prefieren completar el recorrido caminando y disfrutar del entorno nocturno sin cronómetro. Las inscripciones se gestionan a través de la plataforma Mychip y permanecen abiertas hasta el 14 de octubre.",
+        "websiteUrl": "https://inscripciones.mychip.es/es/evento/iii-trail-nocturno-cabeco-dor-busot"
+      },
+      "races": [
+        {
+          "name": "Trail",
+          "date": "2026-10-17",
+          "city": "Busot",
+          "province": "Alicante",
+          "distanceKm": 17,
+          "elevationGainM": 850,
+          "tiers": [
+            {
+              "priceEur": 24,
+              "endsAt": "2026-10-14"
+            }
+          ]
+        },
+        {
+          "name": "Marcha",
+          "date": "2026-10-17",
+          "city": "Busot",
+          "province": "Alicante",
+          "distanceKm": 17,
+          "elevationGainM": 850,
+          "tiers": [
+            {
+              "priceEur": 24,
+              "endsAt": "2026-10-14"
+            }
+          ]
+        }
+      ],
+      "errorMessage": null
+    },
+    "metadata": {
+      "datasetVersion": "valencia-v0",
+      "inputMode": "name-only",
+      "verifiedAt": "2026-08-20",
+      "caseType": "valid-event"
+    },
+    "tags": [
+      "valencia-v0",
+      "valid-event"
+    ]
+  },
+  {
+    "input": {
+      "eventName": "Trail Santa Bárbara"
+    },
+    "expected": {
+      "event": {
+        "name": "Trail Santa Bárbara",
+        "description": "El Trail Santa Bárbara es una carrera de montaña circular organizada por el Ayuntamiento de Pina de Montalgrao junto con la Asociación Cultural Pinajoven, en el interior de la provincia de Castellón. El recorrido enlaza los términos de Pina de Montalgrao y Villanueva de Viver y atraviesa algunas de las zonas de recolección de setas más emblemáticas de la comarca, de donde toman nombre sus dos modalidades.\n\nLa sexta edición se celebra el domingo 18 de octubre de 2026 con salida y meta en la Plaza Mayor de Pina de Montalgrao. La Carrera del Rebollón, de 14 kilómetros, sale a las 09:00 y describe un circular con paso intermedio por Villanueva de Viver y por el alto de Santa Bárbara, a 1.405 metros de altitud, donde se sitúa uno de los avituallamientos. La Carrera de la Hongueta, de 5,5 kilómetros, parte a las 09:30 y ofrece una opción más accesible. El tiempo máximo es de tres horas y media y la prueba está controlada por chip.",
+        "websiteUrl": "https://www.cronorunner.com/evento.php?ref=540-2205"
+      },
+      "races": [
+        {
+          "name": "Carrera del Rebollón",
+          "date": "2026-10-18",
+          "city": "Pina de Montalgrao",
+          "province": "Castellón",
+          "distanceKm": 14,
+          "elevationGainM": 697,
+          "tiers": [
+            {
+              "priceEur": 13,
+              "endsAt": "2026-09-17"
+            },
+            {
+              "priceEur": 18,
+              "endsAt": "2026-10-09"
+            },
+            {
+              "priceEur": 13,
+              "endsAt": "2026-10-18"
+            }
+          ]
+        },
+        {
+          "name": "Carrera de la Hongueta",
+          "date": "2026-10-18",
+          "city": "Pina de Montalgrao",
+          "province": "Castellón",
+          "distanceKm": 5,
+          "elevationGainM": 65,
+          "tiers": [
+            {
+              "priceEur": 9,
+              "endsAt": "2026-09-17"
+            },
+            {
+              "priceEur": 14,
+              "endsAt": "2026-10-09"
+            },
+            {
+              "priceEur": 9,
+              "endsAt": "2026-10-18"
+            }
+          ]
+        }
+      ],
+      "errorMessage": null
+    },
+    "metadata": {
+      "datasetVersion": "valencia-v0",
+      "inputMode": "name-only",
+      "verifiedAt": "2026-08-20",
+      "caseType": "valid-event"
+    },
+    "tags": [
+      "valencia-v0",
+      "valid-event"
+    ]
+  },
+  {
+    "input": {
+      "eventName": "Volta a peu pel Benicadell"
+    },
+    "expected": {
+      "event": {
+        "name": "Volta a peu pel Benicadell",
+        "description": "La Volta a peu pel Benicadell es una carrera por montaña que se celebra en Salem, en la comarca de la Vall d'Albaida, dentro de la provincia de Valencia. La prueba forma parte del Circuit de Curses Populars de la Vall d'Albaida y toma su nombre de la sierra del Benicadell, cuya cima alcanza los 1.105 metros y marca la frontera natural entre las provincias de Valencia y Alicante.\n\nLa vigésima edición se disputa el domingo 18 de octubre de 2026 con salida a las 09:30 desde Salem sobre un único recorrido de 15,3 kilómetros y unos 650 metros de desnivel positivo. El trazado se caracteriza por una subida larga y sostenida hacia el Benicadell y un descenso rodador hasta la línea de meta. Las inscripciones se gestionan de forma telemática a través de TimingRace y el plazo se cierra el 15 de octubre, con el cronometraje a cargo de Multiesport.",
+        "websiteUrl": "https://www.visitasalem.es/volta-benicadell"
+      },
+      "races": [
+        {
+          "name": null,
+          "date": "2026-10-18",
+          "city": "Salem",
+          "province": "Valencia",
+          "distanceKm": 15,
+          "elevationGainM": 650,
+          "tiers": [
+            {
+              "priceEur": 8,
+              "endsAt": "2026-10-15"
+            }
+          ]
+        }
+      ],
+      "errorMessage": null
+    },
+    "metadata": {
+      "datasetVersion": "valencia-v0",
+      "inputMode": "name-only",
+      "verifiedAt": "2026-08-20",
+      "caseType": "valid-event"
+    },
+    "tags": [
+      "valencia-v0",
+      "valid-event"
+    ]
+  },
+  {
+    "input": {
+      "eventName": "Trail Millares"
+    },
+    "expected": {
+      "event": {
+        "name": "Trail Millares",
+        "description": "El Trail Millares es una carrera por montaña que se celebra en Millares, en la comarca del Canal de Navarrés, provincia de Valencia. Forma parte del circuito Sendas de Gigantes y del Desafío Tierras del Júcar, con recorridos circulares por pistas y senderos del término municipal, tramos técnicos en el trail largo y altitudes que oscilan entre los 159 y los 614 metros.\n\nLa edición de 2026 se disputa el domingo 18 de octubre con salida a las 09:00 y tres modalidades: Caminante de 9 kilómetros, Sprint Trail de 14 y Trail de 24. La recogida de dorsales se realiza el sábado 17 por la tarde y el mismo domingo de 7:00 a 8:30 horas. La organización, a cargo de Amida Sports, habilita oficina permanente en la zona de salida y meta, vestuarios con duchas y aparcamiento para coches y autocaravanas.",
+        "websiteUrl": "https://amidasports.com/trail-millares-2026"
+      },
+      "races": [
+        {
+          "name": "Trail",
+          "date": "2026-10-18",
+          "city": "Millares",
+          "province": "Valencia",
+          "distanceKm": 24,
+          "elevationGainM": 1100,
+          "tiers": [
+            {
+              "priceEur": 24,
+              "endsAt": null
+            }
+          ]
+        },
+        {
+          "name": "Sprint Trail",
+          "date": "2026-10-18",
+          "city": "Millares",
+          "province": "Valencia",
+          "distanceKm": 14,
+          "elevationGainM": 600,
+          "tiers": [
+            {
+              "priceEur": 19,
+              "endsAt": null
+            }
+          ]
+        },
+        {
+          "name": "Marcha",
+          "date": "2026-10-18",
+          "city": "Millares",
+          "province": "Valencia",
+          "distanceKm": 9,
+          "elevationGainM": null,
+          "tiers": [
+            {
+              "priceEur": 10,
+              "endsAt": null
+            }
+          ]
+        }
+      ],
+      "errorMessage": null
+    },
+    "metadata": {
+      "datasetVersion": "valencia-v0",
+      "inputMode": "name-only",
+      "verifiedAt": "2026-08-20",
+      "caseType": "valid-event"
+    },
+    "tags": [
+      "valencia-v0",
+      "valid-event"
+    ]
+  },
+  {
+    "input": {
+      "eventName": "Trail Las Aguilillas"
+    },
+    "expected": {
+      "event": {
+        "name": "Trail Parque de las Aguilillas",
+        "description": "El Trail Parque de las Aguilillas es una carrera por montaña que se disputa en Jerez de la Frontera, en la provincia de Cádiz. La prueba se desarrolla íntegramente en el parque periurbano de Las Aguilillas, una zona forestal de titularidad municipal situada en el entorno de la ciudad y habilitada para el senderismo y la carrera por sendas.\n\nLa primera edición se celebró el domingo 9 de noviembre de 2025 con salida a las 10:00 horas y un recorrido de 10 kilómetros por los caminos del parque. La organización planteó la prueba como una carrera de iniciación al trail, con una distancia asequible y un trazado que permite completar entre 5 y 10 kilómetros según la modalidad elegida por cada participante.",
+        "websiteUrl": null
+      },
+      "races": [],
+      "errorMessage": "La prueba se celebra en Jerez de la Frontera, provincia de Cádiz, fuera del ámbito geográfico cubierto por el calendario."
+    },
+    "metadata": {
+      "datasetVersion": "valencia-v0",
+      "inputMode": "name-only",
+      "verifiedAt": "2026-08-20",
+      "caseType": "out-of-scope"
+    },
+    "tags": [
+      "valencia-v0",
+      "out-of-scope"
+    ]
+  },
+  {
+    "input": {
+      "eventName": "Trail de la Roda"
+    },
+    "expected": {
+      "event": null,
+      "races": [],
+      "errorMessage": "No se ha identificado ninguna carrera por montaña con ese nombre; la prueba más parecida es el Trail Roda de Berà, en Tarragona, que no corresponde al evento indicado."
+    },
+    "metadata": {
+      "datasetVersion": "valencia-v0",
+      "inputMode": "name-only",
+      "verifiedAt": "2026-08-20",
+      "caseType": "not-found"
+    },
+    "tags": [
+      "valencia-v0",
+      "not-found"
+    ]
+  }
+]

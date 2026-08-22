@@ -1,0 +1,22 @@
+export const PROJECT_NAME = 'My Project';
+export const DATASET_NAME = 'Valencia V0';
+export const DATASET_LABEL = 'valencia-v0';
+export const DATASET_VERSION = '1000197728446724647';
+export const PROMPT_SLUG = 'event-research-v0';
+export const PROMPT_VERSION = '1000197728666180083';
+export const MODEL = 'gpt-5.4-mini-2026-03-17';
+export const TERRA_MODEL = 'gpt-5.6-terra';
+export const OPENROUTER_MODEL = 'google/gemini-3.6-flash';
+export const GROK_MODEL = 'x-ai/grok-4.20';
+export const MISTRAL_MODEL = 'mistral-small-2603';
+export const MISTRAL_BASE_URL = 'https://api.mistral.ai/v1';
+export const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1';
+export const OPENROUTER_SEARCH_ENGINE = 'native';
+export const REASONING_EFFORT = 'medium';
+export const SEARCH_CONTEXT_SIZE = 'high';
+export const MAX_CONCURRENCY = 4;
+// Mistral Small 4 is limited to 1.67 requests/second for this workspace.
+export const MISTRAL_MAX_CONCURRENCY = 2;
+export const MISTRAL_REQUEST_INTERVAL_MS = 700;
+export const REQUEST_TIMEOUT_MS = 120_000;
+export const MAX_RETRIES = 2;

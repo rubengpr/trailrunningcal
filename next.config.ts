@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 import createMDX from '@next/mdx';
+import { wrapNextjsConfigWithBraintrust } from 'braintrust/next';
 import { withWorkflow } from 'workflow/next';
 
 const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
@@ -156,4 +157,4 @@ const withMDX = createMDX({
 });
 
 // Apply MDX, next-intl, and Workflow plugins to Next.js config
-export default withWorkflow(withNextIntl(withMDX(nextConfig)));
+export default wrapNextjsConfigWithBraintrust(withWorkflow(withNextIntl(withMDX(nextConfig))));
