@@ -33,6 +33,16 @@ describe('event description translations', () => {
     ).toContain('4, 2026, 12,3, 500');
   });
 
+  it('adds a correction instruction when one is provided', () => {
+    expect(
+      buildEventDescriptionTranslationPrompt({
+        description: source,
+        locale: 'en',
+        additionalInstructions: ['Use "elevation gain" and never "positive elevation gain".'],
+      }),
+    ).toContain('Use "elevation gain" and never "positive elevation gain".');
+  });
+
   it('accepts a valid two-paragraph English translation with matching numbers', () => {
     const translation =
       'The event takes place on 4 October 2026, with a 12.3-kilometre course and 500 metres of elevation gain. Trail del Montseny offers two options for runners of different abilities.\n\nThe organisers provide refreshment stations and a runner’s bag. Entries close on 1 October, and the event attracts more than 700 participants.';

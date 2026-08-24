@@ -3,6 +3,10 @@ import {
   hasEventTranslation,
   saveEventTranslation,
 } from '@/lib/db/event-translations';
+import {
+  getGoldenTranslationCases,
+  validateGoldenEventTranslation,
+} from '@/lib/services/event-translation-golden';
 import { translateEventDescription } from '@/lib/services/event-translations';
 import {
   EVENT_TRANSLATION_LOCALES,
@@ -15,11 +19,12 @@ type Options = {
   apply: boolean;
   force: boolean;
   all: boolean;
+  golden: boolean;
 };
 
 function usage(): never {
   throw new Error(
-    'Usage: --locales=ca,en,fr (--limit=20 | --all) [--dry-run | --apply] [--force]',
+    'Usage: --locales=ca,en,fr (--limit=20 | --all) [--dry-run | --apply] [--force]\n       --golden --locales=ca,en,fr --dry-run',
   );
 }
 
@@ -44,6 +49,21 @@ function parseOptions(args: string[]): Options {
   const all = args.includes('--all');
   const apply = args.includes('--apply');
   const dryRun = args.includes('--dry-run');
+  const golden = args.includes('--golden');
+
+  const locales = parseLocales(localesArg?.slice('--locales='.length));
+  if (golden) {
+    if (
+      !dryRun ||
+      apply ||
+      all ||
+      limitArg ||
+      locales.length !== EVENT_TRANSLATION_LOCALES.length
+    ) {
+      usage();
+    }
+    return { locales, limit: 0, apply: false, force: false, all: false, golden: true };
+  }
 
   if (apply === dryRun || (all && limitArg) || (!all && !limitArg)) usage();
 
@@ -53,12 +73,56 @@ function parseOptions(args: string[]): Options {
   if (!Number.isInteger(limit) || limit < 1 || limit > 10_000) usage();
 
   return {
-    locales: parseLocales(localesArg?.slice('--locales='.length)),
+    locales,
     limit,
     apply,
     force: args.includes('--force'),
     all,
+    golden: false,
   };
+}
+
+async function runGolden(): Promise<void> {
+  const cases = getGoldenTranslationCases();
+  let passed = 0;
+  let failed = 0;
+
+  for (const testCase of cases) {
+    try {
+      let translation = await translateEventDescription({
+        source: testCase.source,
+        locale: testCase.locale,
+      });
+      let validation = validateGoldenEventTranslation({
+        ...testCase,
+        translation,
+      });
+      if (!validation.value) {
+        translation = await translateEventDescription({
+          source: testCase.source,
+          locale: testCase.locale,
+          additionalInstructions: [
+            `This is a quality correction. Your previous translation failed this required check: ${validation.error}. Correct it while preserving every other fact.`,
+          ],
+        });
+        validation = validateGoldenEventTranslation({
+          ...testCase,
+          translation,
+        });
+      }
+      if (!validation.value) throw new Error(validation.error ?? 'Golden validation failed');
+
+      passed += 1;
+      console.log(`Passed ${testCase.slug} (${testCase.locale})`);
+    } catch (error) {
+      failed += 1;
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      console.error(`Failed ${testCase.slug} (${testCase.locale}): ${message}`);
+    }
+  }
+
+  console.log(`Completed golden dataset: ${passed} passed, ${failed} failed.`);
+  if (failed > 0) process.exitCode = 1;
 }
 
 async function revalidate(slugs: string[]): Promise<void> {
@@ -87,6 +151,10 @@ async function revalidate(slugs: string[]): Promise<void> {
 
 async function main(): Promise<void> {
   const options = parseOptions(process.argv.slice(2));
+  if (options.golden) {
+    await runGolden();
+    return;
+  }
   const events = await getEventTranslationCandidates(options.limit);
   const savedSlugs = new Set<string>();
   let generated = 0;

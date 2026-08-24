@@ -69,16 +69,19 @@ export function validateEventTranslation(input: {
 export async function translateEventDescription(input: {
   source: string;
   locale: EventTranslationLocale;
+  additionalInstructions?: string[];
 }): Promise<string> {
   const client = createOpenAIClient();
   const prompts = [
     buildEventDescriptionTranslationPrompt({
       description: input.source,
       locale: input.locale,
+      additionalInstructions: input.additionalInstructions,
     }),
     buildEventDescriptionTranslationRetryPrompt({
       description: input.source,
       locale: input.locale,
+      additionalInstructions: input.additionalInstructions,
     }),
   ];
   let lastError = 'Invalid event translation';

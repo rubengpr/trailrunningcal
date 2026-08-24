@@ -12,18 +12,19 @@ const LOCALE_STYLE_RULES: Record<EventTranslationLocale, string[]> = {
     'Use "desnivell positiu" for elevation gain and natural Catalan event terminology.',
   ],
   en: [
-    'Use idiomatic British English trail-running terminology: "elevation gain", "aid stations" or "refreshment stations", and "walk" for a non-competitive hiking event where appropriate.',
-    'Translate generic Spanish or Catalan administrative and geographic nouns (for example, "Ayuntamiento" → "Town Council" and "Parque Natural" → "Natural Park").',
+    'Use idiomatic British English trail-running terminology: "elevation gain" (never "positive elevation gain"), "aid stations" or "refreshment stations", "vertical race" for a vertical format, and "walk" for a non-competitive hiking event where appropriate.',
+    'Translate generic Spanish or Catalan administrative and geographic nouns, including when they begin an official name (for example, "Ayuntamiento" → "Town Council", "Parque Natural" or "Parc Natural" → "Natural Park"). Preserve the distinctive name that follows.',
   ],
   fr: [
-    'Use idiomatic French trail-running terminology: "dénivelé positif", "ravitaillements", and "marche" for a non-competitive hiking event where appropriate.',
-    'Use French ordinal notation (for example, "11e", never "11.ª") and translate generic Spanish or Catalan administrative and geographic nouns (for example, "Ayuntamiento" → "mairie" and "Parque Natural" → "parc naturel").',
+    'Use idiomatic French trail-running terminology: "dénivelé positif", "ravitaillements", "course verticale" for a vertical format, and "marche" for a non-competitive hiking event where appropriate.',
+    'Use French ordinal notation (for example, "11e", never "11.ª") and translate generic Spanish or Catalan administrative and geographic nouns, including when they begin an official name (for example, "Ayuntamiento" → "mairie" and "Parque Natural" or "Parc Natural" → "parc naturel"). Preserve the distinctive name that follows.',
   ],
 };
 
 export function buildEventDescriptionTranslationPrompt(input: {
   description: string;
   locale: EventTranslationLocale;
+  additionalInstructions?: string[];
 }): string {
   return `Translate this Spanish trail running event description into ${TARGET_LANGUAGES[input.locale]}.
 
@@ -35,6 +36,7 @@ Rules:
 - Keep exactly the same two-paragraph structure.
 - Use natural editorial language for a trail running calendar, without marketing claims or calls to action.
 - ${LOCALE_STYLE_RULES[input.locale].join('\n- ')}
+- ${input.additionalInstructions?.join('\n- ') ?? 'Follow all terminology rules exactly.'}
 - Return only the translated description, with no title, notes, or Markdown.
 
 Spanish description:
@@ -44,6 +46,7 @@ ${input.description}`;
 export function buildEventDescriptionTranslationRetryPrompt(input: {
   description: string;
   locale: EventTranslationLocale;
+  additionalInstructions?: string[];
 }): string {
   const numericValues = input.description.match(/\d+(?:[.,]\d+)?/g) ?? [];
 
