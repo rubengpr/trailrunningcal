@@ -130,6 +130,19 @@ describe('event description translations', () => {
     );
   });
 
+  it('rejects translations that reorder preserved numeric values', () => {
+    const orderedSource =
+      'La prueba se celebra en 2026 en su 62.ª edición con salida a las 9:00 h. Mantiene un recorrido de montaña.\n\nEl recorrido tiene 9,1 km y 485 metros de desnivel para los participantes.';
+    const reorderedTranslation =
+      'The event celebrates its 62nd edition in 2026 with a 9:00 start. It keeps a mountain route.\n\nThe route has 9.1 km and 485 metres of elevation gain for participants.';
+
+    expect(validateEventTranslation({
+      source: orderedSource,
+      translation: reorderedTranslation,
+      locale: 'en',
+    }).error).toBe('Translation does not preserve numeric values');
+  });
+
   it('accepts French thousands separators', () => {
     const translation =
       'L’événement a lieu le 4 octobre 2026, avec un parcours de 12,3 kilomètres et 500 mètres de dénivelé positif. Trail del Montseny propose deux options pour des coureurs de différents niveaux.\n\nLes organisateurs prévoient des ravitaillements et un sac coureur. Les inscriptions se terminent le 1er octobre et l’événement réunit plus de 700 participants.';

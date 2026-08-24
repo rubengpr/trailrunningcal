@@ -32,7 +32,7 @@ export function buildEventDescriptionTranslationPrompt(input: {
 
 Rules:
 - Preserve every fact. Do not add, omit, infer, or rewrite information.
-- Preserve all numbers, dates, distances, elevation figures, prices, event names, route names, organizer names, place names, brands, URLs, and quoted phrases.
+- Preserve all numbers, dates, distances, elevation figures, prices, event names, route names, organizer names, place names, brands, URLs, and quoted phrases. Keep numeric values in the same order as the Spanish source; do not move an edition number before or after its date.
 - Preserve the proper-name portion of names, but translate generic descriptive words around it when that makes the target language natural. For example, keep a named route or event title intact, but translate words such as town council, natural park, street, walk, course, and municipality when they are not part of the proper name.
 - Keep every numeric value written with digits; do not spell numbers out as words.
 - Keep exactly the same two-paragraph structure.
