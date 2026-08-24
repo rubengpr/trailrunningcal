@@ -40,4 +40,30 @@ describe('selectUntranslatedEventCandidates', () => {
       limit: 20,
     })).toHaveLength(1);
   });
+
+  it('skips completed events even when the translation catalogue exceeds one thousand rows', () => {
+    const translations = Array.from({ length: 334 }, (_, index) => [
+      { event_id: `event-${index}`, locale: 'ca' as const },
+      { event_id: `event-${index}`, locale: 'en' as const },
+      { event_id: `event-${index}`, locale: 'fr' as const },
+    ]).flat();
+    translations.push(
+      { event_id: 'completed-after-page-boundary', locale: 'ca' },
+      { event_id: 'completed-after-page-boundary', locale: 'en' },
+      { event_id: 'completed-after-page-boundary', locale: 'fr' },
+    );
+
+    expect(translations).toHaveLength(1_005);
+    expect(selectUntranslatedEventCandidates({
+      events: [{
+        id: 'completed-after-page-boundary',
+        slug: 'completed-after-page-boundary',
+        name: 'Completed',
+        description,
+      }],
+      translations,
+      locales: ['ca', 'en', 'fr'],
+      limit: 20,
+    })).toEqual([]);
+  });
 });

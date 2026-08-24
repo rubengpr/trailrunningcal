@@ -15,6 +15,32 @@ type EventTranslationRow = {
   updated_at: string;
 };
 
+const TRANSLATION_SELECTION_PAGE_SIZE = 1_000;
+
+async function getTranslationLocaleRows(
+  locales: EventTranslationLocale[],
+): Promise<Array<{ event_id: string; locale: EventTranslationLocale }>> {
+  const supabase = createAdminClient();
+  const rows: Array<{ event_id: string; locale: EventTranslationLocale }> = [];
+
+  for (let from = 0; ; from += TRANSLATION_SELECTION_PAGE_SIZE) {
+    const { data, error } = await supabase
+      .from('event_translations')
+      .select('event_id, locale')
+      .in('locale', locales)
+      .range(from, from + TRANSLATION_SELECTION_PAGE_SIZE - 1);
+
+    if (error) {
+      console.error('Failed to fetch event translation locales:', error);
+      throw new Error('Failed to fetch event translation candidates');
+    }
+
+    const page = (data ?? []) as Array<{ event_id: string; locale: EventTranslationLocale }>;
+    rows.push(...page);
+    if (page.length < TRANSLATION_SELECTION_PAGE_SIZE) return rows;
+  }
+}
+
 function toEventTranslation(row: EventTranslationRow): EventTranslation {
   return {
     eventId: row.event_id,
@@ -50,26 +76,23 @@ export async function getEventTranslationCandidates(
   locales: EventTranslationLocale[] = [...EVENT_TRANSLATION_LOCALES],
 ): Promise<EventTranslationCandidate[]> {
   const supabase = createAdminClient();
-  const [{ data, error }, { data: translations, error: translationsError }] = await Promise.all([
+  const [{ data, error }, translations] = await Promise.all([
     supabase
       .from('events')
       .select('id, slug, name, description')
       .not('description', 'is', null)
       .order('updated_at', { ascending: false }),
-    supabase
-      .from('event_translations')
-      .select('event_id, locale')
-      .in('locale', locales),
+    getTranslationLocaleRows(locales),
   ]);
 
-  if (error || translationsError) {
+  if (error) {
     console.error('Failed to fetch event translation candidates:', error);
     throw new Error('Failed to fetch event translation candidates');
   }
 
   return selectUntranslatedEventCandidates({
     events: data ?? [],
-    translations: (translations ?? []) as Array<{ event_id: string; locale: EventTranslationLocale }>,
+    translations,
     locales,
     limit,
   });
