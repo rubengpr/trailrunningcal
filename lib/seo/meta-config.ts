@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import type { Locale } from '@/i18n';
+import { openGraphLocales, type Locale } from '@/i18n';
 import { BASE_URL } from '@/lib/config';
 
 export type SeoPageId = 'home' | 'contact' | 'blog';
@@ -31,6 +31,7 @@ const SEO_ROUTES: Record<SeoPageId, SeoRouteConfig> = {
     pathByLanguage: {
       es: '/es',
       ca: '/ca',
+      en: '/en',
     },
     titleKey: 'title',
     descriptionKey: 'subtitle',
@@ -40,6 +41,7 @@ const SEO_ROUTES: Record<SeoPageId, SeoRouteConfig> = {
     pathByLanguage: {
       es: '/es/contacto',
       ca: '/ca/contacte',
+      en: '/en/contact',
     },
     titleKey: 'contact.title',
     descriptionKey: 'contact.description',
@@ -49,6 +51,7 @@ const SEO_ROUTES: Record<SeoPageId, SeoRouteConfig> = {
     pathByLanguage: {
       es: '/es/blog',
       ca: '/ca/blog',
+      en: '/en/blog',
     },
     titleKey: 'blog.title',
     descriptionKey: 'blog.description',
@@ -56,10 +59,7 @@ const SEO_ROUTES: Record<SeoPageId, SeoRouteConfig> = {
   },
 };
 
-export const LOCALE_BY_LANGUAGE: Record<Locale, string> = {
-  es: 'es_ES',
-  ca: 'ca_ES',
-};
+export const LOCALE_BY_LANGUAGE = openGraphLocales;
 
 export const SITE_NAME = 'Trail Running Calendar';
 
@@ -80,6 +80,9 @@ function buildAlternateLinks(
       hrefLang: 'ca',
       href: buildCanonical(pathByLanguage.ca),
     },
+    ...(pageId === 'blog'
+      ? []
+      : [{ hrefLang: 'en', href: buildCanonical(pathByLanguage.en) }]),
     {
       hrefLang: 'x-default',
       href: buildCanonical(pathByLanguage.es),

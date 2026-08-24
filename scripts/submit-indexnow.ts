@@ -1,5 +1,4 @@
 import { createClient } from '@supabase/supabase-js';
-import { generateRaceSlug } from '../lib/race-utils';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -11,38 +10,37 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
 
 const BASE_URL = 'https://www.trailrunningcal.com';
 const INDEXNOW_KEY = 'a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4';
-const LOCALES = ['es', 'ca'] as const;
+const LOCALES = ['es', 'ca', 'en'] as const;
 
 async function main(): Promise<void> {
   const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
 
   const today = new Date().toISOString().split('T')[0];
 
-  const { data: races, error } = await supabase
-    .from('races')
-    .select('name, date')
-    .or(`date.gte.${today},date.is.null`);
+  const { data: events, error } = await supabase
+    .from('events')
+    .select('slug, races!inner(date)')
+    .or(`date.gte.${today},date.is.null`, { referencedTable: 'races' });
 
   if (error) {
     console.error('Failed to fetch races:', error.message);
     process.exit(1);
   }
 
-  if (!races || races.length === 0) {
-    console.log('No upcoming races found.');
+  if (!events || events.length === 0) {
+    console.log('No upcoming events found.');
     return;
   }
 
   const urls: string[] = [];
 
-  for (const race of races) {
-    const slug = generateRaceSlug(race.name);
+  for (const event of events) {
     for (const locale of LOCALES) {
-      urls.push(`${BASE_URL}/${locale}/carrera/${slug}`);
+      urls.push(`${BASE_URL}/${locale}/e/${event.slug}`);
     }
   }
 
-  console.log(`Submitting ${urls.length} URLs to IndexNow (${races.length} races × ${LOCALES.length} locales)...`);
+  console.log(`Submitting ${urls.length} URLs to IndexNow (${events.length} events × ${LOCALES.length} locales)...`);
 
   const response = await fetch('https://api.indexnow.org/indexnow', {
     method: 'POST',

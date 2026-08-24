@@ -26,6 +26,7 @@ describe('buildDestinationAlternateLinks', () => {
     expect(buildDestinationAlternateLinks('catalonia', 'barcelona')).toEqual({
       es: `${BASE_URL}/es/d/cataluna/barcelona`,
       ca: `${BASE_URL}/ca/d/cataluna/barcelona`,
+      en: `${BASE_URL}/en/d/cataluna/barcelona`,
       'x-default': `${BASE_URL}/es/d/cataluna/barcelona`,
     });
   });

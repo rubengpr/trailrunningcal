@@ -130,8 +130,13 @@
       "title": "Reclamar carrera",
       "message": "Estás a punto de reclamar la propiedad de la carrera. Se enviará un email a info@trailrunningcal.com para revisar la propiedad. Una vez confirmado, podrás editar los datos y contenido de la carrera.",
       "confirmButton": "Confirmar",
+      "confirming": "Enviando...",
       "cancelButton": "Cancelar",
-      "successMessage": "Carrera reclamada correctamente"
+      "successMessage": "Carrera reclamada correctamente",
+      "errors": {
+        "raceNameRequired": "El nombre de la carrera es obligatorio",
+        "requestFailed": "No se ha podido enviar la solicitud. Inténtalo de nuevo más tarde."
+      }
     },
     "verifiedOrganizer": "Organizador verificado"
   },
@@ -187,8 +192,13 @@
       "title": "Reclamar evento",
       "message": "Estás a punto de reclamar la propiedad del evento. Se enviará un email a info@trailrunningcal.com para revisar la propiedad. Una vez confirmado, podrás editar los datos y contenido del evento.",
       "confirmButton": "Confirmar",
+      "confirming": "Enviando...",
       "cancelButton": "Cancelar",
-      "successMessage": "Evento reclamado correctamente"
+      "successMessage": "Evento reclamado correctamente",
+      "errors": {
+        "raceNameRequired": "El nombre del evento es obligatorio",
+        "requestFailed": "No se ha podido enviar la solicitud. Inténtalo de nuevo más tarde."
+      }
     },
     "provincePageLinkText": "Ver todos los eventos en {province}",
     "pricing": {

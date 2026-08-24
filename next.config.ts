@@ -114,7 +114,13 @@ const nextConfig: NextConfig = {
       },
     ]);
 
-    return [...raceTypeRedirects, ...destinationRedirects];
+    return [
+      ...raceTypeRedirects,
+      ...destinationRedirects,
+      { source: '/en/contacto', destination: '/en/contact', permanent: true },
+      { source: '/en/contacte', destination: '/en/contact', permanent: true },
+      { source: '/en/mis-eventos', destination: '/en/my-events', permanent: true },
+    ];
   },
 
   // PostHog rewrites (EU region) — static assets first, then catch-all
@@ -134,15 +140,15 @@ const nextConfig: NextConfig = {
       },
       // Locale-prefixed paths (next-intl with localePrefix: 'always')
       {
-        source: '/:locale(es|ca)/ingest/static/:path*',
+        source: '/:locale(es|ca|en)/ingest/static/:path*',
         destination: 'https://eu-assets.i.posthog.com/static/:path*',
       },
       {
-        source: '/:locale(es|ca)/ingest/array/:path*',
+        source: '/:locale(es|ca|en)/ingest/array/:path*',
         destination: 'https://eu-assets.i.posthog.com/array/:path*',
       },
       {
-        source: '/:locale(es|ca)/ingest/:path*',
+        source: '/:locale(es|ca|en)/ingest/:path*',
         destination: 'https://eu.i.posthog.com/:path*',
       },
     ];

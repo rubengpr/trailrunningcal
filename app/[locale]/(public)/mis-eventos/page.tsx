@@ -4,6 +4,7 @@ import type { Locale } from '@/i18n';
 import { BASE_URL } from '@/lib/config';
 import { generateMetadataFromOptions } from '@/lib/seo/meta-config';
 import { EventFavoritesClient } from '@/components/home/event-favorites-client';
+import { getFavoritesPath } from '@/lib/i18n/paths';
 
 export const revalidate = 86400;
 
@@ -19,7 +20,7 @@ export async function generateMetadata({
   return generateMetadataFromOptions({
     title: t('pageTitle'),
     description: t('pageTitle'),
-    canonicalUrl: `${BASE_URL}/${locale}/mis-eventos`,
+    canonicalUrl: `${BASE_URL}${getFavoritesPath(locale)}`,
     locale,
     ogImageUrl: `${BASE_URL}/og-image.png`,
   });

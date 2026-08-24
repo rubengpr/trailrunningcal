@@ -130,8 +130,13 @@
       "title": "Reclamar cursa",
       "message": "Estàs a punt de reclamar la propietat de la cursa. S'enviarà un correu a info@trailrunningcal.com per revisar la propietat. Un cop confirmat, podràs editar les dades i contingut de la cursa.",
       "confirmButton": "Confirmar",
+      "confirming": "Enviant...",
       "cancelButton": "Cancel·lar",
-      "successMessage": "Cursa reclamada correctament"
+      "successMessage": "Cursa reclamada correctament",
+      "errors": {
+        "raceNameRequired": "El nom de la cursa és obligatori",
+        "requestFailed": "No s'ha pogut enviar la sol·licitud. Torna-ho a provar més tard."
+      }
     },
     "verifiedOrganizer": "Organitzador verificat"
   },
@@ -187,8 +192,13 @@
       "title": "Reclamar esdeveniment",
       "message": "Estàs a punt de reclamar la propietat de l'esdeveniment. S'enviarà un correu a info@trailrunningcal.com per revisar la propietat. Un cop confirmat, podràs editar les dades i contingut de l'esdeveniment.",
       "confirmButton": "Confirmar",
+      "confirming": "Enviant...",
       "cancelButton": "Cancel·lar",
-      "successMessage": "Esdeveniment reclamat correctament"
+      "successMessage": "Esdeveniment reclamat correctament",
+      "errors": {
+        "raceNameRequired": "El nom de l'esdeveniment és obligatori",
+        "requestFailed": "No s'ha pogut enviar la sol·licitud. Torna-ho a provar més tard."
+      }
     },
     "provincePageLinkText": "Veure tots els esdeveniments a {province}",
     "pricing": {

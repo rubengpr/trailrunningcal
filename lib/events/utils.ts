@@ -6,8 +6,8 @@ import type {
   TrailEventRace,
   PublicEventDetail,
 } from '@/types/event.types';
-import type { Locale } from '@/i18n';
-import { formatDateToCatalan, formatDateToSpanish, formatIsoDateNumeric } from '@/lib/utils/date';
+import { localeTags, type Locale } from '@/i18n';
+import { formatDateByLocale, formatDateToCatalan, formatDateToSpanish, formatIsoDateNumeric } from '@/lib/utils/date';
 import {
   isNonCompetitiveRace,
 } from '@/lib/races/race-types';
@@ -192,13 +192,13 @@ function formatDay(date: Date): string {
 }
 
 function formatMonth(date: Date, locale: Locale): string {
-  return new Intl.DateTimeFormat(locale === 'ca' ? 'ca-ES' : 'es-ES', {
+  return new Intl.DateTimeFormat(localeTags[locale], {
     month: 'long',
   }).format(date);
 }
 
 function formatMonthYear(date: Date, locale: Locale): string {
-  return new Intl.DateTimeFormat(locale === 'ca' ? 'ca-ES' : 'es-ES', {
+  return new Intl.DateTimeFormat(localeTags[locale], {
     month: 'long',
     year: 'numeric',
   }).format(date);
@@ -224,6 +224,10 @@ export function formatEventDateRange(
   }
 
   if (!endDate || startDate === endDate) {
+    if (locale === 'en') {
+      return formatDateByLocale(startDate, locale);
+    }
+
     return locale === 'ca'
       ? formatDateToCatalan(startDate)
       : formatDateToSpanish(startDate);
@@ -238,6 +242,18 @@ export function formatEventDateRange(
 
   const sameYear = start.getFullYear() === end.getFullYear();
   const sameMonth = sameYear && start.getMonth() === end.getMonth();
+
+  if (locale === 'en') {
+    if (sameMonth) {
+      return `${formatDay(start)}–${formatDay(end)} ${formatMonthYear(end, locale)}`;
+    }
+
+    if (sameYear) {
+      return `${formatDay(start)} ${formatMonth(start, locale)} – ${formatDay(end)} ${formatMonthYear(end, locale)}`;
+    }
+
+    return `${formatDateByLocale(startDate, locale)} – ${formatDateByLocale(endDate, locale)}`;
+  }
 
   if (sameMonth) {
     return `${formatDay(start)}-${formatDay(end)}${dayMonthConnector(locale)}${formatMonthYear(end, locale)}`;

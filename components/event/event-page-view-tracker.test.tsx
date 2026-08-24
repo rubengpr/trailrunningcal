@@ -35,6 +35,7 @@ describe('EventPageViewTracker', () => {
     expect(track).toHaveBeenCalledWith(ANALYTICS_EVENTS.EVENT_PAGE_VIEWED, {
       event_id: 'event-1',
       event_slug: 'marato-valencia',
+      locale: 'es',
       province: 'Valencia',
       region: 'valencianCommunity',
     });
@@ -90,6 +91,7 @@ describe('EventPageViewTracker', () => {
     expect(track).toHaveBeenCalledWith(ANALYTICS_EVENTS.EVENT_PAGE_VIEWED, {
       event_id: 'event-2',
       event_slug: 'cami-de-cavalls',
+      locale: 'es',
       province: null,
       region: null,
     });

@@ -59,9 +59,9 @@ export default async function TypePage({
   );
   const t = await getTranslations({ locale, namespace: config.namespace });
 
-  const contentSections = Object.values(
-    t.raw('contentSections') as Record<string, FaqItem>,
-  );
+  const contentSections = locale === 'en'
+    ? []
+    : Object.values(t.raw('contentSections') as Record<string, FaqItem>);
 
   return (
     <CategoryMapPage
@@ -82,7 +82,7 @@ export default async function TypePage({
       ]}
       labels={labels}
       contentSections={contentSections}
-      contentSectionsHeading={t('contentSectionsTitle')}
+      contentSectionsHeading={locale === 'en' ? undefined : t('contentSectionsTitle')}
     />
   );
 }

@@ -66,7 +66,7 @@ export function RaceOrganizerClaimCard({
 
     const handleConfirm = async () => {
         if (!raceName) {
-            toast.error('Race name is required');
+            toast.error(t('errors.raceNameRequired'));
             return;
         }
 
@@ -75,12 +75,8 @@ export function RaceOrganizerClaimCard({
             await claimOrganizer(raceName, resourceType);
             toast.success(t('successMessage'));
             setIsConfirmationModalOpen(false);
-        } catch (error) {
-            toast.error(
-                error instanceof Error
-                    ? error.message
-                    : 'Failed to send claim request. Please try again later.'
-            );
+        } catch {
+            toast.error(t('errors.requestFailed'));
         } finally {
             setIsSubmitting(false);
         }
@@ -108,7 +104,7 @@ export function RaceOrganizerClaimCard({
                 onConfirm={handleConfirm}
                 title={t('title')}
                 message={t('message')}
-                confirmButtonText={isSubmitting ? 'Enviando...' : t('confirmButton')}
+                confirmButtonText={isSubmitting ? t('confirming') : t('confirmButton')}
                 cancelButtonText={t('cancelButton')}
                 isSubmitting={isSubmitting}
             />

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { ChevronDown, Coins, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import type { Locale } from '@/i18n';
+import { localeTags, type Locale } from '@/i18n';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { track } from '@/lib/analytics/track';
 import { getMadridCalendarDate, getVisibleRaceTiers } from '@/lib/events/tier-pricing';
@@ -41,7 +41,7 @@ function useHasHydrated(): boolean {
 }
 
 function formatPrice(priceEur: number, locale: Locale): string {
-  return new Intl.NumberFormat(locale === 'ca' ? 'ca-ES' : 'es-ES', {
+  return new Intl.NumberFormat(localeTags[locale], {
     currency: 'EUR',
     maximumFractionDigits: 0,
     minimumFractionDigits: 0,

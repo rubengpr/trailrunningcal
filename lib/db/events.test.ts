@@ -377,6 +377,16 @@ describe('formatEventDateRange', () => {
     ).toBe('29-31 de maig del 2026');
   });
 
+  it('formats an English range in the same month and year', () => {
+    expect(
+      formatEventDateRange(
+        { startDate: '2026-05-29', endDate: '2026-05-31' },
+        'en',
+        'Date to be confirmed',
+      ),
+    ).toBe('29–31 May 2026');
+  });
+
   it('formats a range across months in the same year', () => {
     expect(
       formatEventDateRange(
@@ -395,6 +405,16 @@ describe('formatEventDateRange', () => {
         'Data per confirmar',
       ),
     ).toBe('31 de maig - 2 de juny del 2026');
+  });
+
+  it('formats an English range across months in the same year', () => {
+    expect(
+      formatEventDateRange(
+        { startDate: '2026-05-31', endDate: '2026-06-02' },
+        'en',
+        'Date to be confirmed',
+      ),
+    ).toBe('31 May – 2 June 2026');
   });
 
   it('uses fallback when no date exists', () => {

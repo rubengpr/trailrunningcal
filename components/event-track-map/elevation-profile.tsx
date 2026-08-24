@@ -6,6 +6,7 @@ import {
   useState,
   type PointerEvent as ReactPointerEvent,
 } from 'react';
+import { localeTags, type Locale } from '@/i18n';
 import {
   downsampleElevationPoints,
   getElevationCursorPoint,
@@ -27,28 +28,29 @@ interface ElevationProfileChartProps {
   onActivePointChange: (point: ElevationProfileCursorPoint | null) => void;
   onSelectedIdChange: (id: string) => void;
   selectedId: string;
+  locale?: Locale;
   variant?: 'embedded' | 'fullscreen';
 }
 
-function formatDistance(value: number): string {
-  return value.toLocaleString('es-ES', {
+function formatDistance(value: number, locale: string): string {
+  return value.toLocaleString(locale, {
     maximumFractionDigits: value < 10 ? 1 : 0,
   });
 }
 
-function formatElevation(value: number): string {
-  return Math.round(value).toLocaleString('es-ES');
+function formatElevation(value: number, locale: string): string {
+  return Math.round(value).toLocaleString(locale);
 }
 
-function formatCursorDistance(value: number): string {
-  return value.toLocaleString('es-ES', {
+function formatCursorDistance(value: number, locale: string): string {
+  return value.toLocaleString(locale, {
     minimumFractionDigits: 1,
     maximumFractionDigits: 1,
   });
 }
 
-function formatSlope(value: number): string {
-  return value.toLocaleString('es-ES', {
+function formatSlope(value: number, locale: string): string {
+  return value.toLocaleString(locale, {
     minimumFractionDigits: 1,
     maximumFractionDigits: 1,
     signDisplay: 'exceptZero',
@@ -89,8 +91,10 @@ export function ElevationProfileChart({
   onActivePointChange,
   onSelectedIdChange,
   selectedId,
+  locale: localeCode = 'es',
   variant = 'embedded',
 }: ElevationProfileChartProps) {
+  const locale = localeTags[localeCode];
   const selected = profiles.find(({ id }) => id === selectedId) ?? profiles[0];
   const plotRef = useRef<HTMLDivElement>(null);
   const pickerRef = useRef<HTMLDivElement>(null);
@@ -256,7 +260,7 @@ export function ElevationProfileChart({
           viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`}
           preserveAspectRatio="none"
           role="img"
-          aria-label={`${chartDescription}: ${selected.raceNames.join(' · ')}, ${formatDistance(selected.distanceKm)} km`}
+          aria-label={`${chartDescription}: ${selected.raceNames.join(' · ')}, ${formatDistance(selected.distanceKm, locale)} km`}
         >
           <defs>
             <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
@@ -280,13 +284,13 @@ export function ElevationProfileChart({
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-[linear-gradient(0deg,rgba(255,255,255,0.86)_0%,rgba(255,255,255,0)_100%)]" />
         <div className="pointer-events-none absolute inset-0 text-[11px] tabular-nums text-stone-500">
           <span className="absolute left-3 top-1.5 sm:left-4">
-            {formatElevation(selected.maximumElevationM)}
+            {formatElevation(selected.maximumElevationM, locale)}
           </span>
           <span className="absolute bottom-1.5 left-3 sm:left-4">
-            {formatElevation(selected.minimumElevationM)}
+            {formatElevation(selected.minimumElevationM, locale)}
           </span>
           <span className="absolute bottom-1.5 right-3 sm:right-4">
-            {formatDistance(selected.distanceKm)} km
+            {formatDistance(selected.distanceKm, locale)} km
           </span>
         </div>
         {activeForSelected ? (
@@ -310,9 +314,9 @@ export function ElevationProfileChart({
               data-testid="elevation-profile-tooltip"
               style={{ left: `${activeXPercent}%` }}
             >
-              {formatCursorDistance(activeForSelected.distanceKm)} km ·{' '}
-              {formatElevation(activeForSelected.elevationM)} m ·{' '}
-              {formatSlope(activeForSelected.slopePercent)}%
+              {formatCursorDistance(activeForSelected.distanceKm, locale)} km ·{' '}
+              {formatElevation(activeForSelected.elevationM, locale)} m ·{' '}
+              {formatSlope(activeForSelected.slopePercent, locale)}%
             </span>
           </div>
         ) : null}

@@ -27,6 +27,7 @@ describe('buildHomeAlternateLinks', () => {
     expect(result).toEqual({
       es: `${BASE_URL}/es`,
       ca: `${BASE_URL}/ca`,
+      en: `${BASE_URL}/en`,
       'x-default': `${BASE_URL}/es`,
     });
   });
@@ -273,6 +274,7 @@ describe('buildContactAlternateLinks', () => {
     expect(result).toEqual({
       es: `${BASE_URL}/es/contacto`,
       ca: `${BASE_URL}/ca/contacte`,
+      en: `${BASE_URL}/en/contact`,
       'x-default': `${BASE_URL}/es/contacto`,
     });
   });
@@ -315,6 +317,7 @@ describe('buildEventAlternateLinks', () => {
     expect(result).toEqual({
       es: `${BASE_URL}/es/e/${eventSlug}`,
       ca: `${BASE_URL}/ca/e/${eventSlug}`,
+      en: `${BASE_URL}/en/e/${eventSlug}`,
       'x-default': `${BASE_URL}/es/e/${eventSlug}`,
     });
   });
@@ -352,6 +355,7 @@ describe('buildTypeAlternateLinks', () => {
     expect(result).toEqual({
       es: `${BASE_URL}/es/t/ultra-trail`,
       ca: `${BASE_URL}/ca/t/ultra-trail`,
+      en: `${BASE_URL}/en/t/ultra-trail`,
       'x-default': `${BASE_URL}/es/t/ultra-trail`,
     });
   });
@@ -381,6 +385,7 @@ describe('buildDestinationAlternateLinks', () => {
     expect(result).toEqual({
       es: `${BASE_URL}/es/d/cataluna/barcelona`,
       ca: `${BASE_URL}/ca/d/cataluna/barcelona`,
+      en: `${BASE_URL}/en/d/cataluna/barcelona`,
       'x-default': `${BASE_URL}/es/d/cataluna/barcelona`,
     });
   });

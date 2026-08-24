@@ -2,7 +2,7 @@ import { TrendingUp } from 'lucide-react';
 import { RaceMapButton } from '@/components/event/race-map-button';
 import { RacePriceBadge } from '@/components/event/race-price-badge';
 import { ElevationIntensity } from '@/components/race/elevation-intensity';
-import type { Locale } from '@/i18n';
+import { localeTags, type Locale } from '@/i18n';
 import { getRaceMapEmbed } from '@/lib/races/map-url';
 import type { TrailEventRace } from '@/types/event.types';
 
@@ -16,7 +16,7 @@ interface EventDistanceListProps {
 }
 
 function formatDistance(distanceKm: number, locale: Locale): string {
-  const formatter = new Intl.NumberFormat(locale === 'ca' ? 'ca-ES' : 'es-ES', {
+  const formatter = new Intl.NumberFormat(localeTags[locale], {
     maximumFractionDigits: 1,
   });
 
@@ -26,7 +26,7 @@ function formatDistance(distanceKm: number, locale: Locale): string {
 function formatElevation(elevationGainM: number | null, locale: Locale): string {
   if (elevationGainM === null) return '—';
 
-  return new Intl.NumberFormat(locale === 'ca' ? 'ca-ES' : 'es-ES').format(
+  return new Intl.NumberFormat(localeTags[locale]).format(
     elevationGainM,
   );
 }

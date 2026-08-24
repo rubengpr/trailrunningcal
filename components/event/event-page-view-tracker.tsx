@@ -5,10 +5,12 @@ import posthog from 'posthog-js';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { track } from '@/lib/analytics/track';
 import type { RegionId } from '@/lib/geography/destinations';
+import type { Locale } from '@/i18n';
 
 interface EventPageViewTrackerProps {
   eventId: string;
   eventSlug: string;
+  locale?: Locale;
   province: string | null;
   region: RegionId | null;
 }
@@ -19,6 +21,7 @@ const READY_POLL_MAX_ATTEMPTS = 25;
 export function EventPageViewTracker({
   eventId,
   eventSlug,
+  locale = 'es',
   province,
   region,
 }: EventPageViewTrackerProps) {
@@ -44,6 +47,7 @@ export function EventPageViewTracker({
       track(ANALYTICS_EVENTS.EVENT_PAGE_VIEWED, {
         event_id: eventId,
         event_slug: eventSlug,
+        locale,
         province,
         region,
       });
@@ -54,7 +58,7 @@ export function EventPageViewTracker({
     return () => {
       if (timeoutId !== undefined) window.clearTimeout(timeoutId);
     };
-  }, [eventId, eventSlug, province, region]);
+  }, [eventId, eventSlug, locale, province, region]);
 
   return null;
 }

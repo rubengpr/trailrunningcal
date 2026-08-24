@@ -1,8 +1,9 @@
 import { Map } from 'lucide-react';
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 import { EventTrackMapExperience } from '@/components/event-track-map/event-track-map-experience';
 import { buildTrackRoutes } from '@/lib/race-tracks/routes';
 import type { TrailEventRaceWithTrack } from '@/types/event.types';
+import type { Locale } from '@/i18n';
 
 interface EventTrackMapSectionProps {
   eventId: string;
@@ -18,6 +19,7 @@ export async function EventTrackMapSection({
   races,
 }: EventTrackMapSectionProps) {
   const t = await getTranslations('event.trackMap');
+  const locale = (await getLocale()) as Locale;
   const routes = buildTrackRoutes(
     races.flatMap((race) =>
       race.trackGeometry
@@ -54,6 +56,7 @@ export async function EventTrackMapSection({
           eventId={eventId}
           eventSlug={eventSlug}
           routes={routes}
+          locale={locale}
           errorTitle={t('errorTitle')}
           errorMessage={t('errorMessage')}
         />

@@ -8,6 +8,7 @@ import type {
   ElevationProfileCursorPoint,
   TrackRoute,
 } from '@/types/race-track.types';
+import type { Locale } from '@/i18n';
 
 interface EventTrackMapExperienceProps {
   chartDescription: string;
@@ -16,6 +17,7 @@ interface EventTrackMapExperienceProps {
   eventId: string;
   eventSlug: string;
   routes: TrackRoute[];
+  locale: Locale;
 }
 
 export function EventTrackMapExperience({
@@ -25,6 +27,7 @@ export function EventTrackMapExperience({
   eventId,
   eventSlug,
   routes,
+  locale,
 }: EventTrackMapExperienceProps) {
   const profiles = useMemo(() => buildElevationProfiles(routes), [routes]);
   const [selectedId, setSelectedId] = useState(profiles[0]?.id ?? '');
@@ -38,6 +41,7 @@ export function EventTrackMapExperience({
     onSelectedIdChange: setSelectedId,
     profiles,
     selectedId,
+    locale,
   };
 
   return (

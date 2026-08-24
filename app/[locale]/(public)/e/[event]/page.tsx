@@ -181,6 +181,7 @@ export default async function EventPage({
         <EventPageViewTracker
           eventId={eventData.event.id}
           eventSlug={event}
+          locale={localeTyped}
           province={eventData.location.province}
           region={provinceDestination?.regionId ?? null}
         />

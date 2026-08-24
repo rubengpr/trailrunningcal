@@ -1,3 +1,5 @@
+import { localeTags, type Locale } from '@/i18n';
+
 export const formatDate = (dateString: string | null) => {
   if (!dateString) {
     return { day: '-', month: '-', dayOfWeek: '-' };
@@ -39,15 +41,23 @@ export const formatDateToCatalan = (date: Date | string): string => {
 
 export const formatDateByLocale = (
   date: Date | string | null,
-  locale: string,
+  locale: Locale,
 ): string => {
   if (!date) {
     return 'N/D';
   }
 
-  return locale === 'ca'
-    ? formatDateToCatalan(date)
-    : formatDateToSpanish(date);
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
+
+  if (Number.isNaN(dateObj.getTime())) {
+    return '';
+  }
+
+  return new Intl.DateTimeFormat(localeTags[locale], {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(dateObj);
 };
 
 export const formatIsoDateNumeric = (isoDate: string | null): string | null => {

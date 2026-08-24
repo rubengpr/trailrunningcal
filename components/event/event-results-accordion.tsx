@@ -1,7 +1,7 @@
 import { ArrowUpRight, Trophy } from 'lucide-react';
 import { TrackedLink } from '@/components/ui/tracked-link';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
-import type { Locale } from '@/i18n';
+import { localeTags, type Locale } from '@/i18n';
 import type { TrailEventRace } from '@/types/event.types';
 
 interface EventResultsAccordionProps {
@@ -14,7 +14,7 @@ interface EventResultsAccordionProps {
 }
 
 function formatDistance(distanceKm: number, locale: Locale): string {
-  const formatter = new Intl.NumberFormat(locale === 'ca' ? 'ca-ES' : 'es-ES', {
+  const formatter = new Intl.NumberFormat(localeTags[locale], {
     maximumFractionDigits: 1,
   });
 

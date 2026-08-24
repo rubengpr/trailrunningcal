@@ -1,4 +1,4 @@
-import type { Locale } from '@/i18n';
+import { localeTags, type Locale } from '@/i18n';
 import type { DistanceGroup } from '@/lib/constants';
 import { getDistanceGroup } from '@/lib/races/utils';
 
@@ -26,7 +26,7 @@ const SIZE_CLASSES = {
 } as const;
 
 function formatDistance(distanceKm: number, locale: Locale): string {
-  return new Intl.NumberFormat(locale === 'ca' ? 'ca-ES' : 'es-ES', {
+  return new Intl.NumberFormat(localeTags[locale], {
     maximumFractionDigits: 1,
   }).format(distanceKm);
 }

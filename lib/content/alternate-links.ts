@@ -13,6 +13,7 @@ export function buildHomeAlternateLinks(): Record<string, string> {
   return {
     es: `${BASE_URL}/es`,
     ca: `${BASE_URL}/ca`,
+    en: `${BASE_URL}/en`,
     'x-default': `${BASE_URL}/es`,
   };
 }
@@ -53,6 +54,7 @@ export function buildContactAlternateLinks(): Record<string, string> {
   return {
     es: `${BASE_URL}/es/contacto`,
     ca: `${BASE_URL}/ca/contacte`,
+    en: `${BASE_URL}/en/contact`,
     'x-default': `${BASE_URL}/es/contacto`,
   };
 }

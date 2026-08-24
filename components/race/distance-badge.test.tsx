@@ -37,6 +37,12 @@ describe('DistanceBadge', () => {
     },
   );
 
+  it('uses a decimal point for British English', () => {
+    render(<DistanceBadge distanceKm={21.5} locale="en" />);
+
+    expect(screen.getByText('21.5')).toBeDefined();
+  });
+
   it('supports small and medium sizes', () => {
     const { rerender } = render(
       <DistanceBadge distanceKm={21} locale="es" size="sm" />,

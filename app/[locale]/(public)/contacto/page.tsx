@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { Footer } from '@/components/layout/footer';
 import { ContactInfoCard } from '@/components/contact/contact-info-card';
 import {
   getSeoMetaConfig,
@@ -94,7 +93,6 @@ export default async function ContactPage({
         </div>
       </main>
 
-      <Footer />
     </div>
   );
 }

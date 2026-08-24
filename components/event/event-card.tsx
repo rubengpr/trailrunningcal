@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Award } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import type { Locale } from '@/i18n';
+import { localeTags, type Locale } from '@/i18n';
 import type { PublicEventDetail } from '@/types/event.types';
 import { formatEventLocationLabel } from '@/lib/events/utils';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
@@ -35,7 +35,7 @@ function formatDateBlock(dateString: string | null, locale: Locale) {
 
   const [year, month, day] = dateString.split('-').map(Number);
   const date = new Date(year, month - 1, day);
-  const dateLocale = locale === 'ca' ? 'ca-ES' : 'es-ES';
+  const dateLocale = localeTags[locale];
 
   return {
     day: new Intl.DateTimeFormat(dateLocale, { day: 'numeric' }).format(date),

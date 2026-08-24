@@ -1,4 +1,5 @@
 import type { RegionId } from '@/lib/geography/destinations';
+import type { Locale } from '@/i18n';
 
 export const ANALYTICS_EVENTS = {
   BREADCRUMB_LINK_CLICKED: 'breadcrumb_link_clicked',
@@ -104,6 +105,7 @@ export interface AnalyticsEventProperties {
   [ANALYTICS_EVENTS.EVENT_PAGE_VIEWED]: {
     event_id: string;
     event_slug: string;
+    locale: Locale;
     /** null en eventos multi-localización o provincias fuera de las soportadas */
     province: string | null;
     region: RegionId | null;

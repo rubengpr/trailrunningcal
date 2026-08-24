@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next';
 import { BASE_URL } from '@/lib/config';
-import { locales, type Locale } from '@/i18n';
+import { blogLocales, locales } from '@/i18n';
 import { getAllBlogPosts } from '@/lib/content/blog-utils';
 import { RACE_CATEGORY_SLUGS } from '@/lib/races/race-types';
 import {
@@ -19,11 +19,7 @@ import {
   getDestinationPath,
   getTypePath,
 } from '@/lib/content/alternate-links';
-
-const CONTACT_PATHS: Record<Locale, string> = {
-  es: 'contacto',
-  ca: 'contacte',
-};
+import { getContactPath } from '@/lib/i18n/paths';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const currentDate = new Date();
@@ -48,7 +44,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Add contact pages
   for (const locale of locales) {
     urls.push({
-      url: `${BASE_URL}/${locale}/${CONTACT_PATHS[locale]}`,
+      url: `${BASE_URL}${getContactPath(locale)}`,
       lastModified: currentDate,
       changeFrequency: 'monthly',
       priority: 0.8,
@@ -59,7 +55,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   // Add blog listing pages
-  for (const locale of locales) {
+  for (const locale of blogLocales) {
     urls.push({
       url: `${BASE_URL}/${locale}/blog`,
       lastModified: currentDate,

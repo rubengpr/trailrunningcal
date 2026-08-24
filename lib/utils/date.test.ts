@@ -103,6 +103,12 @@ describe('formatDateByLocale', () => {
       expect(result).toContain('junio');
     });
   });
+
+  describe('en locale', () => {
+    it('should return a British English formatted date', () => {
+      expect(formatDateByLocale('2025-06-15', 'en')).toBe('15 June 2025');
+    });
+  });
 });
 
 describe('formatDateShort', () => {

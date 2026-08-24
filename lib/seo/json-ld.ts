@@ -1,16 +1,11 @@
 import type { BlogPost } from '@/lib/content/blog-utils';
 import type { TrailEventDetail } from '@/types/event.types';
-import type { Locale } from '@/i18n';
+import { localeTags, locales, type Locale } from '@/i18n';
 import { BASE_URL, CONTACT_EMAIL } from '@/lib/config';
 import { SITE_NAME } from '@/lib/seo/meta-config';
 
 const LOGO_URL =
   'https://ppmdbmyxgtqvmvtbptmg.supabase.co/storage/v1/object/public/brand/logos/trc-logo.svg';
-
-const LOCALE_LANGUAGE: Record<Locale, string> = {
-  es: 'es-ES',
-  ca: 'ca-ES',
-};
 
 export interface BreadcrumbItem {
   name: string;
@@ -58,7 +53,7 @@ export function buildWebsiteJsonLd(): Record<string, unknown> {
     '@type': 'WebSite',
     name: SITE_NAME,
     url: BASE_URL,
-    inLanguage: ['es-ES', 'ca-ES'],
+    inLanguage: locales.map((locale) => localeTags[locale]),
     publisher: {
       '@type': 'Organization',
       name: SITE_NAME,
@@ -81,7 +76,7 @@ export function buildOrganizationJsonLd(): Record<string, unknown> {
       '@type': 'ContactPoint',
       email: CONTACT_EMAIL,
       contactType: 'customer service',
-      availableLanguage: ['Spanish', 'Catalan'],
+      availableLanguage: ['Spanish', 'Catalan', 'English'],
     },
     areaServed: {
       '@type': 'AdministrativeArea',
@@ -108,7 +103,7 @@ export function buildBlogJsonLd(post: BlogPost): Record<string, unknown> {
     datePublished: post.date,
     dateModified: post.dateModified ?? post.date,
     url: postUrl,
-    inLanguage: LOCALE_LANGUAGE[post.locale],
+    inLanguage: localeTags[post.locale],
     image: {
       '@type': 'ImageObject',
       url: imageUrl,
@@ -141,6 +136,7 @@ export function buildEventJsonLd(
     name: event.name,
     sport: 'Trail Running',
     url: eventUrl,
+    inLanguage: localeTags[locale],
   };
 
   if (dateRange.startDate) {
