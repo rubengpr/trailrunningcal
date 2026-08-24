@@ -2,6 +2,7 @@ export type ApiAuthorization =
   | 'public'
   | 'cron'
   | 'import-track'
+  | 'revalidation'
   | 'authenticated'
   | 'admin'
   | 'owner'
@@ -10,6 +11,7 @@ export type ApiAuthorization =
 export const API_AUTHORIZATION_POLICY = {
   'GET /api/cron/event-updates': 'cron',
   'POST /api/event-locations': 'public',
+  'POST /api/internal/revalidate-events': 'revalidation',
   'POST /api/events/[eventId]/description-draft': 'admin',
   'PATCH /api/events/[eventId]/description': 'admin',
   'POST /api/events/[eventId]/drafts': 'admin',

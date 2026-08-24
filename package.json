@@ -30,7 +30,8 @@
     "migrate:price-eur": "tsx scripts/migrate-price-eur.ts",
     "migrate:price-eur:dry": "tsx scripts/migrate-price-eur.ts --dry-run",
     "geocode:city-locations": "tsx scripts/geocode-city-locations.ts",
-    "track:import": "node --env-file=.env.local --import tsx scripts/import-race-track.ts"
+    "track:import": "node --env-file=.env.local --import tsx scripts/import-race-track.ts",
+    "translate:event-descriptions": "node --env-file=.env.local --import tsx scripts/translate-event-descriptions.ts"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.1",

@@ -29,6 +29,7 @@ import { JsonLd } from '@/components/seo/json-ld';
 import { LOCALE_BY_LANGUAGE, SITE_NAME } from '@/lib/seo/meta-config';
 import { getDestinationPath, getProvinceByDbName } from '@/lib/geography/destinations';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
+import type { EventTranslationLocale } from '@/types/event-translation.types';
 
 export const revalidate = false;
 
@@ -48,7 +49,10 @@ export async function generateMetadata({
   }
 
   const localeTyped = locale as Locale;
-  const eventData = await getEventBySlug(event);
+  const eventData = await getEventBySlug(
+    event,
+    localeTyped === 'es' ? undefined : localeTyped,
+  );
 
   if (!eventData) {
     return {
@@ -112,7 +116,10 @@ export default async function EventPage({
 
   setRequestLocale(locale);
 
-  const eventData = await getEventBySlug(event);
+  const eventData = await getEventBySlug(
+    event,
+    locale === 'es' ? undefined : locale as EventTranslationLocale,
+  );
 
   if (!eventData) {
     notFound();

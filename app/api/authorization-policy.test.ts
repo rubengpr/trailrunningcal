@@ -326,6 +326,12 @@ describe('API authorization policy', () => {
           : [`${handler.key} must call requireImportTrackSecret`];
       }
 
+      if (handler.access === 'revalidation') {
+        return calls.includes('requireRevalidationSecret')
+          ? []
+          : [`${handler.key} must call requireRevalidationSecret`];
+      }
+
       const expectedGuard =
         handler.access === 'admin' ? 'requireAdmin' : 'requireAuth';
       return calls.includes(expectedGuard)
@@ -358,6 +364,16 @@ describe('API authorization policy', () => {
           ? []
           : [
               `${handler.key} must call requireImportTrackSecret before other functions`,
+            ];
+      }
+
+      if (handler.access === 'revalidation') {
+        const firstFunction = calledFunctions(handler)[0];
+
+        return firstFunction === 'requireRevalidationSecret'
+          ? []
+          : [
+              `${handler.key} must call requireRevalidationSecret before other functions`,
             ];
       }
 

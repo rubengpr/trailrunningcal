@@ -26,12 +26,14 @@ import type {
   AdminEventPage,
   AdminEventPageRequest,
 } from '@/types/admin-events.types';
+import type { EventTranslationLocale } from '@/types/event-translation.types';
 import { buildEventDetail, toPublicEventDetail } from '@/lib/events/utils';
 import { getPendingDraftsByEventIds } from '@/lib/db/event-drafts';
 import { getTrackedRaceIdsByEventIds } from '@/lib/db/race-tracks';
 import { PUBLIC_EVENTS_PAGE_SIZE } from '@/lib/db/public-events-pagination';
 import { ADMIN_EVENTS_PAGE_SIZE } from '@/lib/events/admin-pagination';
 import { toTrackGeometry } from '@/lib/race-tracks/routes';
+import { getEventTranslation } from '@/lib/db/event-translations';
 
 type EventRaceTrackRow = EventRaceRow & { track_geometry: unknown };
 
@@ -550,6 +552,7 @@ export async function getEventsByUrl(
 
 export const getEventBySlug = cache(async function getEventBySlug(
   slug: string,
+  locale?: EventTranslationLocale,
 ): Promise<TrailEventDetailWithTracks | null> {
   const supabase = createStaticClient();
 
@@ -575,7 +578,14 @@ export const getEventBySlug = cache(async function getEventBySlug(
     return null;
   }
 
-  const event = toTrailEvent(eventData as EventRow);
+  const baseEvent = toTrailEvent(eventData as EventRow);
+  const translatedDescription = locale
+    ? await getEventTranslation(baseEvent.id, locale)
+    : null;
+  const event = {
+    ...baseEvent,
+    description: translatedDescription ?? baseEvent.description,
+  };
 
   const { data: raceData, error: raceError } = await supabase
     .from('races')
