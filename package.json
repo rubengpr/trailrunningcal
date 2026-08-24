@@ -32,6 +32,7 @@
     "geocode:city-locations": "tsx scripts/geocode-city-locations.ts",
     "track:import": "node --env-file=.env.local --import tsx scripts/import-race-track.ts",
     "translate:event-descriptions": "node --env-file=.env.local --import tsx scripts/translate-event-descriptions.ts",
+    "translate:event-descriptions:production": "node --env-file=.env.production.local --import tsx scripts/translate-event-descriptions.ts",
     "eval:event-translations:golden": "node --env-file=.env.local --import tsx scripts/translate-event-descriptions.ts --golden --locales=ca,en,fr --dry-run"
   },
   "dependencies": {
