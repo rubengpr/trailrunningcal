@@ -13,6 +13,15 @@ const LANGUAGE_CODES: Record<EventTranslationLocale, string> = {
   fr: 'fra',
 };
 
+export class EventTranslationValidationError extends Error {
+  constructor(
+    message: string,
+    readonly translation: string,
+  ) {
+    super(message);
+  }
+}
+
 function normalizeDescription(value: string): string {
   return value
     .replace(/\r\n/g, '\n')
@@ -22,8 +31,35 @@ function normalizeDescription(value: string): string {
     .join('\n\n');
 }
 
+function normalizeLocaleTerminology(
+  value: string,
+  locale: EventTranslationLocale,
+): string {
+  if (locale === 'ca') {
+    return value
+      .replace(/(\d+)\.ª/gu, '$1a')
+      .replace(/\bde l[’'](\d{1,2}) de\b/gu, 'del $1 de');
+  }
+
+  if (locale === 'fr') {
+    return value
+      .replace(/(\d+)\.ª/gu, '$1e')
+      .replace(/\bMarcha\b/gu, 'marche');
+  }
+
+  if (locale !== 'en') return value;
+
+  return value
+    .replace(/\b(?:Parc|Parque) Natural del\b/gu, 'Natural Park of')
+    .replace(/\b(?:Parc|Parque) Natural de la\b/gu, 'Natural Park of the')
+    .replace(/\b(?:Parc|Parque) Natural\b/gu, 'Natural Park')
+    .replace(/\bpositive elevation gain\b/giu, 'elevation gain')
+    .replace(/(\d[\d.,\s]*m) positive\b/giu, '$1 of elevation gain')
+    .replace(/\bMarcha\b/gu, 'Walk');
+}
+
 function getNumbers(value: string): string[] {
-  return value.match(/\d{1,3}(?:[.,\s\u202f]\d{3})+|\d+(?:[.,]\d+)?/g)?.map((number) =>
+  return value.match(/(?<![-\d])\d{1,3}(?:[., \u202f]\d{3})+|\d+(?:[.,]\d+)?/g)?.map((number) =>
     number.replace(/[.,\s\u202f]/g, ''),
   ) ?? [];
 }
@@ -46,7 +82,10 @@ export function validateEventTranslation(input: {
   translation: string;
   locale: EventTranslationLocale;
 }): { value: string | null; error: string | null } {
-  const value = normalizeDescription(input.translation);
+  const value = normalizeLocaleTerminology(
+    normalizeDescription(input.translation),
+    input.locale,
+  );
   const paragraphs = value.split('\n\n').filter(Boolean);
 
   if (!value) return { value: null, error: 'Translation is empty' };
@@ -83,8 +122,16 @@ export async function translateEventDescription(input: {
       locale: input.locale,
       additionalInstructions: input.additionalInstructions,
     }),
+    `${buildEventDescriptionTranslationRetryPrompt({
+      description: input.source,
+      locale: input.locale,
+      additionalInstructions: input.additionalInstructions,
+    })}
+
+Critical numeric correction: copy every numeric value from the Spanish description as digits. Do not spell any numeric value as words, do not round it, and do not omit dates, prices, route labels, durations, distances, or elevation figures.`,
   ];
   let lastError = 'Invalid event translation';
+  let lastTranslation = '';
 
   for (const prompt of prompts) {
     const completion = await client.chat.completions.create({
@@ -93,6 +140,7 @@ export async function translateEventDescription(input: {
       messages: [{ role: 'user', content: prompt }],
     });
     const translation = completion.choices[0]?.message?.content ?? '';
+    lastTranslation = translation;
     const validation = validateEventTranslation({
       source: input.source,
       translation,
@@ -103,5 +151,5 @@ export async function translateEventDescription(input: {
     lastError = validation.error ?? lastError;
   }
 
-  throw new Error(lastError);
+  throw new EventTranslationValidationError(lastError, lastTranslation);
 }

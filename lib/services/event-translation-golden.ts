@@ -18,18 +18,18 @@ export function validateGoldenEventTranslation(input: {
   if (!rules) return validation;
 
   const lowerCaseTranslation = validation.value.toLocaleLowerCase(input.locale);
-  const missingTerm = rules.required.find(
-    (term) => !lowerCaseTranslation.includes(term.toLocaleLowerCase(input.locale)),
-  );
-  if (missingTerm) {
-    return { value: null, error: `Translation is missing required term: ${missingTerm}` };
-  }
-
   const forbiddenTerm = rules.forbidden.find((term) =>
     lowerCaseTranslation.includes(term.toLocaleLowerCase(input.locale)),
   );
   if (forbiddenTerm) {
     return { value: null, error: `Translation contains forbidden term: ${forbiddenTerm}` };
+  }
+
+  const missingTerm = rules.required.find(
+    (term) => !lowerCaseTranslation.includes(term.toLocaleLowerCase(input.locale)),
+  );
+  if (missingTerm) {
+    return { value: null, error: `Translation is missing required term: ${missingTerm}` };
   }
 
   return validation;
