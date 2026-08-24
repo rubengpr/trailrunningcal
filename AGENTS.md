@@ -1,6 +1,6 @@
 ## Product
 
-Trail Running Cal (**Trail Running Calendar** in SEO/schema) is a public trilingual (es + ca + en) race calendar at [trailrunningcal.com](https://www.trailrunningcal.com), covering trail/mountain events in Catalonia (Barcelona, Girona, Lleida, Tarragona) and actively expanding to Valencia — not road running or worldwide. Blog content remains es + ca only.
+Trail Running Cal (**Trail Running Calendar** in SEO/schema) is a public quadrilingual (es + ca + en + fr) race calendar at [trailrunningcal.com](https://www.trailrunningcal.com), covering trail/mountain events in Catalonia (Barcelona, Girona, Lleida, Tarragona) and actively expanding to Valencia — not road running or worldwide. Blog content remains es + ca only.
 For business context, metrics, positioning, and audience — invoke the `/product-context` skill.
 
 ## Code style
@@ -12,7 +12,7 @@ For business context, metrics, positioning, and audience — invoke the `/produc
 - **URLs:** no trailing slashes on internal URLs, paths, or links
 - **Forms:** never use native browser error messages for inputs — use custom validation messages via translation files
 - **Accessibility:** ARIA attributes are not required
-- **i18n:** public locales are `es`, `ca`, and `en`; blog content remains `es` and `ca` only. No hardcoded user-facing strings; define them in locale translation files.
+- **i18n:** public locales are `es`, `ca`, `en`, and `fr`; blog content remains `es` and `ca` only. No hardcoded user-facing strings; define them in locale translation files.
 
 ## Architecture
 

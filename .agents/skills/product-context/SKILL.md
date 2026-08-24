@@ -7,7 +7,7 @@ description: Business, product, and market context for Trail Running Cal. Load w
 
 ## What it is
 
-Trail Running Cal (**Trail Running Calendar** in SEO/schema) is a public trilingual (Spanish, Catalan, and English) web product at [trailrunningcal.com](https://www.trailrunningcal.com) that helps people discover and plan trail and mountain races in Catalonia, Spain, and is actively expanding to Valencia. Blog content remains Spanish and Catalan only. It is maintained by one single product engineer with limited resources.
+Trail Running Cal (**Trail Running Calendar** in SEO/schema) is a public quadrilingual (Spanish, Catalan, English, and French) web product at [trailrunningcal.com](https://www.trailrunningcal.com) that helps people discover and plan trail and mountain races in Catalonia, Spain, and is actively expanding to Valencia. Blog content remains Spanish and Catalan only. It is maintained by one single product engineer with limited resources.
 
 ## Core user promise
 
@@ -39,7 +39,7 @@ Today the product and listings center on Catalonia, with Valencia as the active 
 
 ## Core tech stack
 
-Next.js (App Router), React, and TypeScript, deployed on Vercel. Supabase (Postgres + Auth) is the backend. Architecture is React Server Components plus Route Handler APIs, with server-side services over the database and client-side fetches to those APIs. next-intl for public UI in Spanish, Catalan, and English (`es`, `ca`, `en`), while the blog remains `es` and `ca` only; MapLibre GL for the race map; PostHog, Vercel Analytics, and Cloudflare Web Analytics for observability.
+Next.js (App Router), React, and TypeScript, deployed on Vercel. Supabase (Postgres + Auth) is the backend. Architecture is React Server Components plus Route Handler APIs, with server-side services over the database and client-side fetches to those APIs. next-intl for public UI in Spanish, Catalan, English, and French (`es`, `ca`, `en`, `fr`), while the blog remains `es` and `ca` only; MapLibre GL for the race map; PostHog, Vercel Analytics, and Cloudflare Web Analytics for observability.
 
 ## Main metrics (April 2026)
 
