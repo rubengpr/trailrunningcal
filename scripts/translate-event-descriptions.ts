@@ -303,7 +303,9 @@ async function promoteArtifact(artifactFile: string): Promise<void> {
 }
 
 async function main(): Promise<void> {
-  const options = parseOptions(process.argv.slice(2));
+  // pnpm forwards a literal `--` before user arguments. It is a package-manager
+  // separator, not a script argument, and must not invalidate strict promotion mode.
+  const options = parseOptions(process.argv.slice(2).filter((argument) => argument !== '--'));
   if (options.mode === 'golden') return runGolden();
   if (options.mode === 'promote') return promoteArtifact(options.artifactFile);
   return generateBatch(options);
