@@ -1,9 +1,11 @@
 import { createAdminClient, createStaticClient } from '@/lib/supabase/server';
+import { selectUntranslatedEventCandidates } from '@/lib/event-translations/utils';
 import type {
   EventTranslation,
   EventTranslationCandidate,
   EventTranslationLocale,
 } from '@/types/event-translation.types';
+import { EVENT_TRANSLATION_LOCALES } from '@/types/event-translation.types';
 
 type EventTranslationRow = {
   event_id: string;
@@ -21,12 +23,6 @@ function toEventTranslation(row: EventTranslationRow): EventTranslation {
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
-}
-
-function hasExactlyTwoParagraphs(description: string): boolean {
-  return description
-    .split(/\n\s*\n/)
-    .filter((paragraph) => paragraph.trim().length > 0).length === 2;
 }
 
 export async function getEventTranslation(
@@ -51,25 +47,56 @@ export async function getEventTranslation(
 
 export async function getEventTranslationCandidates(
   limit: number,
+  locales: EventTranslationLocale[] = [...EVENT_TRANSLATION_LOCALES],
 ): Promise<EventTranslationCandidate[]> {
+  const supabase = createAdminClient();
+  const [{ data, error }, { data: translations, error: translationsError }] = await Promise.all([
+    supabase
+      .from('events')
+      .select('id, slug, name, description')
+      .not('description', 'is', null)
+      .order('updated_at', { ascending: false }),
+    supabase
+      .from('event_translations')
+      .select('event_id, locale')
+      .in('locale', locales),
+  ]);
+
+  if (error || translationsError) {
+    console.error('Failed to fetch event translation candidates:', error);
+    throw new Error('Failed to fetch event translation candidates');
+  }
+
+  return selectUntranslatedEventCandidates({
+    events: data ?? [],
+    translations: (translations ?? []) as Array<{ event_id: string; locale: EventTranslationLocale }>,
+    locales,
+    limit,
+  });
+}
+
+export async function getEventTranslationCandidatesByIds(
+  eventIds: string[],
+): Promise<EventTranslationCandidate[]> {
+  if (eventIds.length === 0) return [];
+
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from('events')
     .select('id, slug, name, description')
-    .not('description', 'is', null)
-    .order('updated_at', { ascending: false });
+    .in('id', eventIds);
 
   if (error) {
-    console.error('Failed to fetch event translation candidates:', error);
+    console.error('Failed to fetch event translation candidates by ID:', error);
     throw new Error('Failed to fetch event translation candidates');
   }
 
   return (data ?? []).flatMap((row) => {
     const description = row.description?.trim();
-    return description && hasExactlyTwoParagraphs(description)
+    return description && description.split(/\n\s*\n/).filter((paragraph: string) => paragraph.trim().length > 0).length === 2
       ? [{ id: row.id, slug: row.slug, name: row.name, description }]
       : [];
-  }).slice(0, limit);
+  });
 }
 
 export async function saveEventTranslation(input: {
@@ -150,4 +177,25 @@ export async function hasEventTranslation(input: {
   }
 
   return data !== null;
+}
+
+export async function getPersistedEventTranslations(input: {
+  eventIds: string[];
+  locales: EventTranslationLocale[];
+}): Promise<EventTranslation[]> {
+  if (input.eventIds.length === 0) return [];
+
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from('event_translations')
+    .select('event_id, locale, description, created_at, updated_at')
+    .in('event_id', input.eventIds)
+    .in('locale', input.locales);
+
+  if (error) {
+    console.error('Failed to fetch persisted event translations:', error);
+    throw new Error('Failed to fetch persisted event translations');
+  }
+
+  return ((data ?? []) as EventTranslationRow[]).map(toEventTranslation);
 }
