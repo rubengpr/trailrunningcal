@@ -1,3 +1,5 @@
+import type { RegionId } from '@/lib/geography/destinations';
+
 export const ANALYTICS_EVENTS = {
   BREADCRUMB_LINK_CLICKED: 'breadcrumb_link_clicked',
   CALENDAR_VIEW_MAP_CLICKED: 'calendar_view_map_clicked',
@@ -9,6 +11,7 @@ export const ANALYTICS_EVENTS = {
   EVENT_FEATURE_FEEDBACK_SUBMITTED: 'event_feature_feedback_submitted',
   EVENT_OFFICIAL_WEBSITE_CLICKED: 'event_official_website_clicked',
   EVENT_ORGANIZER_CLAIM_CLICKED: 'event_organizer_claim_clicked',
+  EVENT_PAGE_VIEWED: 'event_page_viewed',
   EVENT_PROVINCE_LINK_CLICKED: 'event_province_link_clicked',
   EVENT_RACE_RESULTS_CLICKED: 'event_race_results_clicked',
   EVENT_RACE_MAP_OPENED: 'event_race_map_opened',
@@ -97,6 +100,13 @@ export interface AnalyticsEventProperties {
   };
   [ANALYTICS_EVENTS.EVENT_ORGANIZER_CLAIM_CLICKED]: {
     event_name: string;
+  };
+  [ANALYTICS_EVENTS.EVENT_PAGE_VIEWED]: {
+    event_id: string;
+    event_slug: string;
+    /** null en eventos multi-localización o provincias fuera de las soportadas */
+    province: string | null;
+    region: RegionId | null;
   };
   [ANALYTICS_EVENTS.EVENT_PROVINCE_LINK_CLICKED]: {
     event_id: string;
