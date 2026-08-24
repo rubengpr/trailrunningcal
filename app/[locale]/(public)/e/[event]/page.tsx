@@ -13,6 +13,7 @@ import { EventFavoriteButton } from '@/components/event/event-favorite-button';
 import { EventDistanceList } from '@/components/event/event-distance-list';
 import { EventShareWhatsappButton } from '@/components/event/event-share-whatsapp-button';
 import { EventFeatureFeedback } from '@/components/event/event-feature-feedback';
+import { EventPageViewTracker } from '@/components/event/event-page-view-tracker';
 import { EventResultsAccordion } from '@/components/event/event-results-accordion';
 import { EventTrackMapSection } from '@/components/event-track-map/event-track-map-section';
 import { ConfirmedDateBadge } from '@/components/race/confirmed-date-badge';
@@ -177,6 +178,12 @@ export default async function EventPage({
       <JsonLd data={jsonLd} />
       <JsonLd data={breadcrumbJsonLd} />
       <div className="min-h-screen w-full text-gray-900 flex flex-col bg-white">
+        <EventPageViewTracker
+          eventId={eventData.event.id}
+          eventSlug={event}
+          province={eventData.location.province}
+          region={provinceDestination?.regionId ?? null}
+        />
         <div className="mx-auto flex w-full min-w-0 max-w-5xl flex-col px-4 py-6 sm:px-6 lg:px-8">
           <Breadcrumb
             items={[
