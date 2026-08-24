@@ -8,6 +8,7 @@ import type { Locale } from '@/i18n';
 import ca from '@/locales/ca/translation.json';
 import es from '@/locales/es/translation.json';
 import en from '@/locales/en/translation.json';
+import fr from '@/locales/fr/translation.json';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { track } from '@/lib/analytics/track';
 import type { EventRaceTier } from '@/types/event.types';
@@ -15,7 +16,7 @@ import { RacePriceBadge } from './race-price-badge';
 
 vi.mock('@/lib/analytics/track', () => ({ track: vi.fn() }));
 
-const messages = { ca, en, es };
+const messages = { ca, en, es, fr };
 
 afterEach(() => {
   cleanup();

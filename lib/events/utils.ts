@@ -224,7 +224,7 @@ export function formatEventDateRange(
   }
 
   if (!endDate || startDate === endDate) {
-    if (locale === 'en') {
+    if (locale === 'en' || locale === 'fr') {
       return formatDateByLocale(startDate, locale);
     }
 
@@ -244,6 +244,18 @@ export function formatEventDateRange(
   const sameMonth = sameYear && start.getMonth() === end.getMonth();
 
   if (locale === 'en') {
+    if (sameMonth) {
+      return `${formatDay(start)}–${formatDay(end)} ${formatMonthYear(end, locale)}`;
+    }
+
+    if (sameYear) {
+      return `${formatDay(start)} ${formatMonth(start, locale)} – ${formatDay(end)} ${formatMonthYear(end, locale)}`;
+    }
+
+    return `${formatDateByLocale(startDate, locale)} – ${formatDateByLocale(endDate, locale)}`;
+  }
+
+  if (locale === 'fr') {
     if (sameMonth) {
       return `${formatDay(start)}–${formatDay(end)} ${formatMonthYear(end, locale)}`;
     }

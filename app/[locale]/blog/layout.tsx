@@ -2,6 +2,7 @@ import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { MobileFiltersProvider } from '@/components/providers/mobile-filters-provider';
 import { notFound } from 'next/navigation';
+import { isBlogLocale, type Locale } from '@/i18n';
 
 export default async function BlogLayout({
   children,
@@ -10,9 +11,10 @@ export default async function BlogLayout({
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
+  const { locale: rawLocale } = await params;
+  const locale = rawLocale as Locale;
 
-  if (locale === 'en') {
+  if (!isBlogLocale(locale)) {
     notFound();
   }
 

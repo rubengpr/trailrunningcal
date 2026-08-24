@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import type { Locale } from '@/i18n';
+import { isPublicOnlyLocale, type Locale } from '@/i18n';
 import { BASE_URL } from '@/lib/config';
 import { buildTypeAlternateLinks, getTypePath } from '@/lib/content/alternate-links';
 import { getCategoryPageData } from '@/lib/content/category-page';
@@ -59,7 +59,7 @@ export default async function TypePage({
   );
   const t = await getTranslations({ locale, namespace: config.namespace });
 
-  const contentSections = locale === 'en'
+  const contentSections = isPublicOnlyLocale(locale)
     ? []
     : Object.values(t.raw('contentSections') as Record<string, FaqItem>);
 
@@ -82,7 +82,7 @@ export default async function TypePage({
       ]}
       labels={labels}
       contentSections={contentSections}
-      contentSectionsHeading={locale === 'en' ? undefined : t('contentSectionsTitle')}
+      contentSectionsHeading={isPublicOnlyLocale(locale) ? undefined : t('contentSectionsTitle')}
     />
   );
 }

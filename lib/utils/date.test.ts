@@ -105,9 +105,13 @@ describe('formatDateByLocale', () => {
   });
 
   describe('en locale', () => {
-    it('should return a British English formatted date', () => {
-      expect(formatDateByLocale('2025-06-15', 'en')).toBe('15 June 2025');
-    });
+  it('should return a British English formatted date', () => {
+    expect(formatDateByLocale('2025-06-15', 'en')).toBe('15 June 2025');
+  });
+
+  it('should return a French formatted date', () => {
+    expect(formatDateByLocale('2025-06-15', 'fr')).toBe('15 juin 2025');
+  });
   });
 });
 

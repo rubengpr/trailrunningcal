@@ -76,7 +76,7 @@ export function buildOrganizationJsonLd(): Record<string, unknown> {
       '@type': 'ContactPoint',
       email: CONTACT_EMAIL,
       contactType: 'customer service',
-      availableLanguage: ['Spanish', 'Catalan', 'English'],
+      availableLanguage: ['Spanish', 'Catalan', 'English', 'French'],
     },
     areaServed: {
       '@type': 'AdministrativeArea',

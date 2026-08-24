@@ -28,6 +28,7 @@ describe('buildHomeAlternateLinks', () => {
       es: `${BASE_URL}/es`,
       ca: `${BASE_URL}/ca`,
       en: `${BASE_URL}/en`,
+      fr: `${BASE_URL}/fr`,
       'x-default': `${BASE_URL}/es`,
     });
   });
@@ -275,6 +276,7 @@ describe('buildContactAlternateLinks', () => {
       es: `${BASE_URL}/es/contacto`,
       ca: `${BASE_URL}/ca/contacte`,
       en: `${BASE_URL}/en/contact`,
+      fr: `${BASE_URL}/fr/contact`,
       'x-default': `${BASE_URL}/es/contacto`,
     });
   });
@@ -318,6 +320,7 @@ describe('buildEventAlternateLinks', () => {
       es: `${BASE_URL}/es/e/${eventSlug}`,
       ca: `${BASE_URL}/ca/e/${eventSlug}`,
       en: `${BASE_URL}/en/e/${eventSlug}`,
+      fr: `${BASE_URL}/fr/e/${eventSlug}`,
       'x-default': `${BASE_URL}/es/e/${eventSlug}`,
     });
   });
@@ -356,6 +359,7 @@ describe('buildTypeAlternateLinks', () => {
       es: `${BASE_URL}/es/t/ultra-trail`,
       ca: `${BASE_URL}/ca/t/ultra-trail`,
       en: `${BASE_URL}/en/t/ultra-trail`,
+      fr: `${BASE_URL}/fr/t/ultra-trail`,
       'x-default': `${BASE_URL}/es/t/ultra-trail`,
     });
   });
@@ -386,6 +390,7 @@ describe('buildDestinationAlternateLinks', () => {
       es: `${BASE_URL}/es/d/cataluna/barcelona`,
       ca: `${BASE_URL}/ca/d/cataluna/barcelona`,
       en: `${BASE_URL}/en/d/cataluna/barcelona`,
+      fr: `${BASE_URL}/fr/d/cataluna/barcelona`,
       'x-default': `${BASE_URL}/es/d/cataluna/barcelona`,
     });
   });

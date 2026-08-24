@@ -12,7 +12,7 @@ import { useMobileFilters } from '@/components/providers/mobile-filters-provider
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { track } from '@/lib/analytics/track';
 import { getTypePath } from '@/lib/races/race-types';
-import type { Locale } from '@/i18n';
+import { isBlogLocale, isPublicOnlyLocale, type Locale } from '@/i18n';
 import { getContactPath, getFavoritesPath } from '@/lib/i18n/paths';
 import {
   DESTINATION_PROVINCE_IDS,
@@ -30,7 +30,7 @@ export function Navbar({ sticky = true }: NavbarProps) {
   const locale = useLocale() as Locale;
   const favoritesPath = getFavoritesPath(locale);
   const contactPath = getContactPath(locale);
-  const profilePath = locale === 'en' ? '/es/org/perfil' : `/${locale}/org/perfil`;
+  const profilePath = isPublicOnlyLocale(locale) ? '/es/org/perfil' : `/${locale}/org/perfil`;
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -240,7 +240,7 @@ export function Navbar({ sticky = true }: NavbarProps) {
                 </div>
               )}
             </div>
-            {locale !== 'en' && (
+            {isBlogLocale(locale) && (
               <Link href={`/${locale}/blog`} prefetch={false} className="hover:text-gray-900 transition-colors" onClick={() => setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'blog', link_href: `/${locale}/blog`, locale }), 0)}>{t('blog')}</Link>
             )}
             <Link href={contactPath} prefetch={false} className="hover:text-gray-900 transition-colors" onClick={() => setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'contact', link_href: contactPath, locale }), 0)}>{t('contact')}</Link>
@@ -294,7 +294,7 @@ export function Navbar({ sticky = true }: NavbarProps) {
               <Link href={`/${locale}`} prefetch={false} onClick={() => { setIsMenuOpen(false); setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'home', link_href: `/${locale}`, locale }), 0); }}>{t('calendar')}</Link>
               <Link href={favoritesPath} prefetch={false} onClick={() => { setIsMenuOpen(false); setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'my_events', link_href: favoritesPath, locale }), 0); }}>{t('myEvents')}</Link>
               <Link href={contactPath} prefetch={false} onClick={() => { setIsMenuOpen(false); setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'contact', link_href: contactPath, locale }), 0); }}>{t('contact')}</Link>
-              {locale !== 'en' && (
+              {isBlogLocale(locale) && (
                 <Link href={`/${locale}/blog`} prefetch={false} onClick={() => { setIsMenuOpen(false); setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'blog', link_href: `/${locale}/blog`, locale }), 0); }}>{t('blog')}</Link>
               )}
               {isAuthenticated && (

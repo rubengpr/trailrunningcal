@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { getPostsForLocale } from '@/lib/content/blog-utils';
-import type { Locale } from '@/i18n';
+import { isBlogLocale, type Locale } from '@/i18n';
 import { getContactPath } from '@/lib/i18n/paths';
 import { getTypePath } from '@/lib/races/race-types';
 import {
@@ -26,7 +26,9 @@ export async function Footer() {
   const locale = (await getLocale()) as Locale;
   const t = await getTranslations('footer');
   const tNav = await getTranslations('navigation');
-  const blogPosts = locale === 'en' ? [] : getPostsForLocale(locale).slice(0, MAX_FOOTER_POSTS);
+  const blogPosts = isBlogLocale(locale)
+    ? getPostsForLocale(locale).slice(0, MAX_FOOTER_POSTS)
+    : [];
 
   return (
     <footer className="border-t border-gray-200 bg-gray-50">
@@ -89,7 +91,7 @@ export async function Footer() {
                 })}
               </div>
             </div>
-            {locale !== 'en' && <div className="col-span-2 sm:col-span-1 flex flex-col gap-2">
+            {isBlogLocale(locale) && <div className="col-span-2 sm:col-span-1 flex flex-col gap-2">
               <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 {t('blog')}
               </p>

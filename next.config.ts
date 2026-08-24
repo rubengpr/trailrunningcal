@@ -120,6 +120,9 @@ const nextConfig: NextConfig = {
       { source: '/en/contacto', destination: '/en/contact', permanent: true },
       { source: '/en/contacte', destination: '/en/contact', permanent: true },
       { source: '/en/mis-eventos', destination: '/en/my-events', permanent: true },
+      { source: '/fr/contacto', destination: '/fr/contact', permanent: true },
+      { source: '/fr/contacte', destination: '/fr/contact', permanent: true },
+      { source: '/fr/mis-eventos', destination: '/fr/mes-evenements', permanent: true },
     ];
   },
 
@@ -140,15 +143,15 @@ const nextConfig: NextConfig = {
       },
       // Locale-prefixed paths (next-intl with localePrefix: 'always')
       {
-        source: '/:locale(es|ca|en)/ingest/static/:path*',
+        source: '/:locale(es|ca|en|fr)/ingest/static/:path*',
         destination: 'https://eu-assets.i.posthog.com/static/:path*',
       },
       {
-        source: '/:locale(es|ca|en)/ingest/array/:path*',
+        source: '/:locale(es|ca|en|fr)/ingest/array/:path*',
         destination: 'https://eu-assets.i.posthog.com/array/:path*',
       },
       {
-        source: '/:locale(es|ca|en)/ingest/:path*',
+        source: '/:locale(es|ca|en|fr)/ingest/:path*',
         destination: 'https://eu.i.posthog.com/:path*',
       },
     ];

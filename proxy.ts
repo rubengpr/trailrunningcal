@@ -1,6 +1,6 @@
 import createMiddleware from 'next-intl/middleware';
 import { locales, defaultLocale } from './i18n';
-import { getEnglishBackofficeRedirectPath } from './lib/i18n/paths';
+import { getPublicBackofficeRedirectPath } from './lib/i18n/paths';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
@@ -11,7 +11,7 @@ const intlMiddleware = createMiddleware({
 });
 
 export default async function proxy(request: NextRequest) {
-  const redirectPath = getEnglishBackofficeRedirectPath(request.nextUrl.pathname);
+  const redirectPath = getPublicBackofficeRedirectPath(request.nextUrl.pathname);
 
   if (redirectPath) {
     const url = request.nextUrl.clone();

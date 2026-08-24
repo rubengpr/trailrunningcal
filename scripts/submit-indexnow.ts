@@ -10,7 +10,7 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
 
 const BASE_URL = 'https://www.trailrunningcal.com';
 const INDEXNOW_KEY = 'a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4';
-const LOCALES = ['es', 'ca', 'en'] as const;
+const LOCALES = ['es', 'ca', 'en', 'fr'] as const;
 
 async function main(): Promise<void> {
   const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);

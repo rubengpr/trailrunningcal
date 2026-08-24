@@ -32,6 +32,7 @@ const SEO_ROUTES: Record<SeoPageId, SeoRouteConfig> = {
       es: '/es',
       ca: '/ca',
       en: '/en',
+      fr: '/fr',
     },
     titleKey: 'title',
     descriptionKey: 'subtitle',
@@ -42,6 +43,7 @@ const SEO_ROUTES: Record<SeoPageId, SeoRouteConfig> = {
       es: '/es/contacto',
       ca: '/ca/contacte',
       en: '/en/contact',
+      fr: '/fr/contact',
     },
     titleKey: 'contact.title',
     descriptionKey: 'contact.description',
@@ -52,6 +54,7 @@ const SEO_ROUTES: Record<SeoPageId, SeoRouteConfig> = {
       es: '/es/blog',
       ca: '/ca/blog',
       en: '/en/blog',
+      fr: '/fr/blog',
     },
     titleKey: 'blog.title',
     descriptionKey: 'blog.description',
@@ -82,7 +85,10 @@ function buildAlternateLinks(
     },
     ...(pageId === 'blog'
       ? []
-      : [{ hrefLang: 'en', href: buildCanonical(pathByLanguage.en) }]),
+      : [
+          { hrefLang: 'en', href: buildCanonical(pathByLanguage.en) },
+          { hrefLang: 'fr', href: buildCanonical(pathByLanguage.fr) },
+        ]),
     {
       hrefLang: 'x-default',
       href: buildCanonical(pathByLanguage.es),

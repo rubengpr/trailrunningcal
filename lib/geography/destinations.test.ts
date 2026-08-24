@@ -27,6 +27,7 @@ describe('buildDestinationAlternateLinks', () => {
       es: `${BASE_URL}/es/d/cataluna/barcelona`,
       ca: `${BASE_URL}/ca/d/cataluna/barcelona`,
       en: `${BASE_URL}/en/d/cataluna/barcelona`,
+      fr: `${BASE_URL}/fr/d/cataluna/barcelona`,
       'x-default': `${BASE_URL}/es/d/cataluna/barcelona`,
     });
   });

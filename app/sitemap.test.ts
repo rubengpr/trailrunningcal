@@ -22,6 +22,7 @@ describe('sitemap race type URLs', () => {
     expect(sitemapUrls).toContain(`${BASE_URL}/es/t/ultra-trail`);
     expect(sitemapUrls).toContain(`${BASE_URL}/ca/t/ultra-trail`);
     expect(sitemapUrls).toContain(`${BASE_URL}/en/t/ultra-trail`);
+    expect(sitemapUrls).toContain(`${BASE_URL}/fr/t/ultra-trail`);
   });
 
   it('does not include legacy root race type URLs', async () => {
@@ -44,6 +45,7 @@ describe('sitemap destination URLs', () => {
     expect(sitemapUrls).toContain(`${BASE_URL}/ca/d/comunidad-valenciana/castellon`);
     expect(sitemapUrls).toContain(`${BASE_URL}/es/d/comunidad-valenciana/valencia`);
     expect(sitemapUrls).toContain(`${BASE_URL}/en/d/comunidad-valenciana/valencia`);
+    expect(sitemapUrls).toContain(`${BASE_URL}/fr/d/comunidad-valenciana/valencia`);
   });
 
   it('does not include legacy /provincia URLs', async () => {
@@ -71,6 +73,7 @@ describe('sitemap event URLs', () => {
     expect(sitemapUrls).toContain(`${BASE_URL}/es/e/cursa-cassoles-de-tros`);
     expect(sitemapUrls).toContain(`${BASE_URL}/ca/e/cursa-cassoles-de-tros`);
     expect(sitemapUrls).toContain(`${BASE_URL}/en/e/cursa-cassoles-de-tros`);
+    expect(sitemapUrls).toContain(`${BASE_URL}/fr/e/cursa-cassoles-de-tros`);
     expect(urls.find(
       (entry) => entry.url === `${BASE_URL}/es/e/cursa-cassoles-de-tros`,
     )?.lastModified).toBe('2026-08-08T10:00:00.000Z');
@@ -93,13 +96,16 @@ describe('sitemap event URLs', () => {
   });
 });
 
-describe('sitemap English scope', () => {
-  it('indexes English public pages without exposing the English blog', async () => {
+describe('sitemap public locale scope', () => {
+  it('indexes English and French public pages without exposing either blog', async () => {
     const urls = await sitemap();
     const sitemapUrls = urls.map((entry) => entry.url);
 
     expect(sitemapUrls).toContain(`${BASE_URL}/en`);
     expect(sitemapUrls).toContain(`${BASE_URL}/en/contact`);
     expect(sitemapUrls).not.toContain(`${BASE_URL}/en/blog`);
+    expect(sitemapUrls).toContain(`${BASE_URL}/fr`);
+    expect(sitemapUrls).toContain(`${BASE_URL}/fr/contact`);
+    expect(sitemapUrls).not.toContain(`${BASE_URL}/fr/blog`);
   });
 });

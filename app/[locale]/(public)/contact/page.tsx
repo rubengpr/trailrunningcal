@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import type { Locale } from '@/i18n';
+import { isPublicOnlyLocale, type Locale } from '@/i18n';
 import ContactPage, {
   generateMetadata as generateContactMetadata,
 } from '@/app/[locale]/(public)/contacto/page';
@@ -12,10 +12,10 @@ export async function generateMetadata(props: PageProps) {
   return generateContactMetadata(props);
 }
 
-export default async function EnglishContactPage(props: PageProps) {
+export default async function PublicContactPage(props: PageProps) {
   const { locale } = await props.params;
 
-  if (locale !== 'en') {
+  if (!isPublicOnlyLocale(locale)) {
     notFound();
   }
 

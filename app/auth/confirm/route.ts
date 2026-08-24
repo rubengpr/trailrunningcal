@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
   let redirectUrl: URL | null = null;
   if (next) {
     redirectUrl = new URL(next, request.url);
-    const localeMatch = redirectUrl.pathname.match(/^\/(es|ca|en)(?:\/|$)/);
+    const localeMatch = redirectUrl.pathname.match(/^\/(es|ca|en|fr)(?:\/|$)/);
     if (localeMatch) {
       locale = localeMatch[1];
     }

@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import ca from '@/locales/ca/translation.json';
 import en from '@/locales/en/translation.json';
+import fr from '@/locales/fr/translation.json';
 import es from '@/locales/es/translation.json';
 import { blogLocales, localeTags, locales } from '@/i18n';
 import {
   getContactPath,
-  getEnglishBackofficeRedirectPath,
+  getPublicBackofficeRedirectPath,
   getFavoritesPath,
 } from '@/lib/i18n/paths';
 
@@ -64,31 +65,45 @@ function placeholders(message: string): string[] {
   )].sort();
 }
 
-describe('English locale contract', () => {
-  it('registers English for public pages but not for the blog', () => {
-    expect(locales).toEqual(['es', 'ca', 'en']);
+describe('public locale contract', () => {
+  it('registers English and French for public pages but not for the blog', () => {
+    expect(locales).toEqual(['es', 'ca', 'en', 'fr']);
     expect(blogLocales).toEqual(['es', 'ca']);
     expect(localeTags.en).toBe('en-GB');
+    expect(localeTags.fr).toBe('fr-FR');
   });
 
-  it('uses canonical English paths for contact and favourites', () => {
+  it('uses canonical public paths for contact and favourites', () => {
     expect(getContactPath('en')).toBe('/en/contact');
     expect(getFavoritesPath('en')).toBe('/en/my-events');
+    expect(getContactPath('fr')).toBe('/fr/contact');
+    expect(getFavoritesPath('fr')).toBe('/fr/mes-evenements');
   });
 
-  it('keeps English limited to public routes', () => {
-    expect(getEnglishBackofficeRedirectPath('/en/admin/eventos')).toBe(
+  it('keeps public-only locales limited to public routes', () => {
+    expect(getPublicBackofficeRedirectPath('/en/admin/eventos')).toBe(
       '/es/admin/eventos',
     );
-    expect(getEnglishBackofficeRedirectPath('/en/org/perfil')).toBe(
+    expect(getPublicBackofficeRedirectPath('/fr/org/perfil')).toBe(
       '/es/org/perfil',
     );
-    expect(getEnglishBackofficeRedirectPath('/en/e/pedraforca-xtrail')).toBeNull();
+    expect(getPublicBackofficeRedirectPath('/fr/e/pedraforca-xtrail')).toBeNull();
   });
 
   it.each(PUBLIC_NAMESPACES)('fully translates the public %s namespace', (namespace) => {
     const source = flatten((es as Messages)[namespace]);
     const translation = flatten((en as Messages)[namespace]);
+
+    expect(Object.keys(translation).sort()).toEqual(Object.keys(source).sort());
+
+    for (const key of Object.keys(source)) {
+      expect(placeholders(translation[key])).toEqual(placeholders(source[key]));
+    }
+  });
+
+  it.each(PUBLIC_NAMESPACES)('fully translates the French public %s namespace', (namespace) => {
+    const source = flatten((es as Messages)[namespace]);
+    const translation = flatten((fr as Messages)[namespace]);
 
     expect(Object.keys(translation).sort()).toEqual(Object.keys(source).sort());
 

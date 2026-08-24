@@ -2,6 +2,7 @@ import { BASE_URL } from '@/lib/config';
 import { locales, type Locale } from '@/i18n';
 import { getTypePath, type RaceCategorySlug } from '@/lib/races/race-types';
 import { getPostBySlug, getPostTranslations } from '@/lib/content/blog-utils';
+import { getContactPath } from '@/lib/i18n/paths';
 
 export { getTypePath } from '@/lib/races/race-types';
 export {
@@ -10,12 +11,11 @@ export {
 } from '@/lib/geography/destinations';
 
 export function buildHomeAlternateLinks(): Record<string, string> {
-  return {
-    es: `${BASE_URL}/es`,
-    ca: `${BASE_URL}/ca`,
-    en: `${BASE_URL}/en`,
-    'x-default': `${BASE_URL}/es`,
-  };
+  const alternates = Object.fromEntries(
+    locales.map((locale) => [locale, `${BASE_URL}/${locale}`]),
+  );
+  alternates['x-default'] = `${BASE_URL}/es`;
+  return alternates;
 }
 
 export function buildBlogListingAlternateLinks(): Record<string, string> {
@@ -51,12 +51,11 @@ export function buildBlogPostAlternateLinks(
 }
 
 export function buildContactAlternateLinks(): Record<string, string> {
-  return {
-    es: `${BASE_URL}/es/contacto`,
-    ca: `${BASE_URL}/ca/contacte`,
-    en: `${BASE_URL}/en/contact`,
-    'x-default': `${BASE_URL}/es/contacto`,
-  };
+  const alternates = Object.fromEntries(
+    locales.map((locale) => [locale, `${BASE_URL}${getContactPath(locale)}`]),
+  );
+  alternates['x-default'] = `${BASE_URL}/es/contacto`;
+  return alternates;
 }
 
 export function buildTypeAlternateLinks(
