@@ -13,6 +13,16 @@ const LANGUAGE_CODES: Record<EventTranslationLocale, string> = {
   fr: 'fra',
 };
 
+function getEnglishOrdinal(value: string): string {
+  const number = Number(value);
+  const remainder = number % 100;
+  if (remainder >= 11 && remainder <= 13) return `${value}th`;
+  if (number % 10 === 1) return `${value}st`;
+  if (number % 10 === 2) return `${value}nd`;
+  if (number % 10 === 3) return `${value}rd`;
+  return `${value}th`;
+}
+
 export class EventTranslationValidationError extends Error {
   constructor(
     message: string,
@@ -38,23 +48,30 @@ function normalizeLocaleTerminology(
   if (locale === 'ca') {
     return value
       .replace(/(\d+)\.ª/gu, '$1a')
-      .replace(/\bde l[’'](\d{1,2}) de\b/gu, 'del $1 de');
+      .replace(/(\d+)[º°é](?=\s|$)/gu, '$1è')
+      .replace(/\bde l[’'](\d{1,2}) de\b/gu, 'del $1 de')
+      .replace(/\bde l[’'](1\d|2\d|3[01])(?=\s+(?:al|a|i|,|\.|$))/gu, 'del $1');
   }
 
   if (locale === 'fr') {
     return value
       .replace(/(\d+)\.ª/gu, '$1e')
-      .replace(/\bMarcha\b/gu, 'marche');
+      .replace(/\bMarcha\b/gu, 'marche')
+      .replace(/\b1 (janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)\b/giu, '1er $1')
+      .replace(/\bSa édition\b/gu, 'Son édition')
+      .replace(/\bun sac coureur\b/giu, 'un sac de coureur');
   }
 
   if (locale !== 'en') return value;
 
   return value
+    .replace(/(\d+)[º°é](?=\s)/gu, (_, number: string) => getEnglishOrdinal(number))
     .replace(/\b(?:Parc|Parque) Natural del\b/gu, 'Natural Park of')
     .replace(/\b(?:Parc|Parque) Natural de la\b/gu, 'Natural Park of the')
     .replace(/\b(?:Parc|Parque) Natural\b/gu, 'Natural Park')
     .replace(/\bpositive elevation gain\b/giu, 'elevation gain')
-    .replace(/(\d[\d.,\s]*m) positive\b/giu, '$1 of elevation gain')
+    .replace(/(\d[\d.,\s]*m) positives?\b/giu, '$1 of elevation gain')
+    .replace(/\bcounty atmosphere\b/giu, 'local atmosphere')
     .replace(/\bMarcha\b/gu, 'Walk');
 }
 

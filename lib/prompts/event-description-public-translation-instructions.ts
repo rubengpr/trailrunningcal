@@ -9,15 +9,17 @@ const TARGET_LANGUAGES: Record<EventTranslationLocale, string> = {
 const LOCALE_STYLE_RULES: Record<EventTranslationLocale, string[]> = {
   ca: [
     'Use standard central Catalan date grammar (for example, "del 5 de juliol", never "de l’5 de juliol").',
+    'Use Catalan ordinal notation (for example, "9è", never "9é" or "9º").',
     'Use "desnivell positiu" for elevation gain and natural Catalan event terminology.',
   ],
   en: [
-    'Use idiomatic British English trail-running terminology: "elevation gain" (never "positive elevation gain"), "aid stations" or "refreshment stations", "vertical race" for a vertical format, and "walk" for a non-competitive hiking event where appropriate.',
+    'Use idiomatic British English trail-running terminology: "elevation gain" (never "positive elevation gain" or "metres positive"), "aid stations" or "refreshment stations", "vertical race" for a vertical format, and "walk" for a non-competitive hiking event where appropriate.',
+    'Use "local atmosphere", never the literal phrase "county atmosphere".',
     'Translate generic Spanish or Catalan administrative and geographic nouns, including when they begin an official name (for example, "Ayuntamiento" → "Town Council", "Parque Natural" or "Parc Natural" → "Natural Park"). Preserve the distinctive name that follows.',
   ],
   fr: [
     'Use idiomatic French trail-running terminology: "dénivelé positif", "ravitaillements", "course verticale" for a vertical format, and "marche" for a non-competitive hiking event where appropriate.',
-    'Use French ordinal notation (for example, "11e", never "11.ª") and translate generic Spanish or Catalan administrative and geographic nouns, including when they begin an official name (for example, "Ayuntamiento" → "mairie" and "Parque Natural" or "Parc Natural" → "parc naturel"). Preserve the distinctive name that follows.',
+    'Use French ordinal notation (for example, "11e", never "11.ª"), write the first day of each month as "1er", and say "un sac de coureur". Translate generic Spanish or Catalan administrative and geographic nouns, including when they begin an official name (for example, "Ayuntamiento" → "mairie" and "Parque Natural" or "Parc Natural" → "parc naturel"). Preserve the distinctive name that follows.',
   ],
 };
 
@@ -34,6 +36,7 @@ Rules:
 - Preserve the proper-name portion of names, but translate generic descriptive words around it when that makes the target language natural. For example, keep a named route or event title intact, but translate words such as town council, natural park, street, walk, course, and municipality when they are not part of the proper name.
 - Keep every numeric value written with digits; do not spell numbers out as words.
 - Keep exactly the same two-paragraph structure.
+- Write every complete sentence in the target language. Proper names may remain unchanged, but never return Spanish sentences or Spanish explanatory text.
 - Use natural editorial language for a trail running calendar, without marketing claims or calls to action.
 - ${LOCALE_STYLE_RULES[input.locale].join('\n- ')}
 - ${input.additionalInstructions?.join('\n- ') ?? 'Follow all terminology rules exactly.'}

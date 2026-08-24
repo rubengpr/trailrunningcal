@@ -20,6 +20,9 @@ describe('event description translations', () => {
       buildEventDescriptionTranslationPrompt({ description: source, locale: 'fr' }),
     ).toContain('French ordinal notation');
     expect(
+      buildEventDescriptionTranslationPrompt({ description: source, locale: 'fr' }),
+    ).toContain('never return Spanish sentences');
+    expect(
       buildEventDescriptionTranslationPrompt({ description: source, locale: 'en' }),
     ).toContain('"elevation gain"');
     expect(
@@ -93,6 +96,31 @@ describe('event description translations', () => {
     );
   });
 
+  it('normalizes locale defects found during the production pilot', () => {
+    const catalanSource =
+      'La prueba se celebrará del 13 al 15 de noviembre de 2026, dentro del 9 Circuit Trail Marina. Mantiene 2 recorridos de montaña para adultos.\n\nLa organización ofrece avituallamientos y fija una inscripción para cada modalidad.';
+    const englishSource =
+      'La prueba tiene un ambiente comarcal y un recorrido de 15 km con 650 m positivos. Ofrece 2 recorridos de montaña para adultos en el 9 Circuit.\n\nLa organización ofrece avituallamientos y fija una inscripción para cada modalidad.';
+    const frenchSource =
+      'La prueba se celebra el 1 de septiembre de 2026 con una bolsa del corredor para los participantes. Propone 2 recorridos de montaña para adultos.\n\nLa organización prevé avituallamientos y fija una tarifa para cada modalidad.';
+    const catalan =
+      'La prova se celebrarà de l’13 al 15 de novembre de 2026, dins del 9é Circuit Trail Marina. Manté 2 recorreguts de muntanya per a adults.\n\nL’organització ofereix avituallaments i fixa una inscripció per a cada modalitat.';
+    const english =
+      'The event has a county atmosphere and a 15 km route with 650 m positives. It offers 2 mountain routes for adults in the 9é Circuit.\n\nThe organisers provide refreshment stations and set an entry fee for each format.';
+    const french =
+      'Sa édition se déroule le 1 septembre 2026 avec un sac coureur pour les participants. Elle propose 2 parcours de montagne pour adultes.\n\nL’organisation prévoit des ravitaillements et fixe un tarif pour chaque formule.';
+
+    expect(validateEventTranslation({ source: catalanSource, translation: catalan, locale: 'ca' }).value).toContain(
+      'del 13 al 15 de novembre de 2026, dins del 9è Circuit Trail Marina',
+    );
+    expect(validateEventTranslation({ source: englishSource, translation: english, locale: 'en' }).value).toContain(
+      'local atmosphere and a 15 km route with 650 m of elevation gain. It offers 2 mountain routes for adults in the 9th Circuit',
+    );
+    expect(validateEventTranslation({ source: frenchSource, translation: french, locale: 'fr' }).value).toContain(
+      'Son édition se déroule le 1er septembre 2026 avec un sac de coureur',
+    );
+  });
+
   it('rejects translations with a changed numeric value', () => {
     const translation =
       'The event takes place on 4 October 2026, with a 12.3-kilometre course and 600 metres of elevation gain. Trail del Montseny offers two options for runners of different abilities.\n\nThe organisers provide refreshment stations and a runner’s bag. Entries close on 1 October, and the event attracts more than 700 participants.';
@@ -107,7 +135,7 @@ describe('event description translations', () => {
       'L’événement a lieu le 4 octobre 2026, avec un parcours de 12,3 kilomètres et 500 mètres de dénivelé positif. Trail del Montseny propose deux options pour des coureurs de différents niveaux.\n\nLes organisateurs prévoient des ravitaillements et un sac coureur. Les inscriptions se terminent le 1er octobre et l’événement réunit plus de 700 participants.';
 
     expect(validateEventTranslation({ source, translation, locale: 'fr' })).toEqual({
-      value: translation,
+      value: translation.replace('un sac coureur', 'un sac de coureur'),
       error: null,
     });
   });

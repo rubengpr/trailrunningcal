@@ -100,6 +100,38 @@ export async function saveEventTranslation(input: {
   return toEventTranslation(data as EventTranslationRow);
 }
 
+export async function saveEventTranslations(
+  inputs: Array<{
+    eventId: string;
+    locale: EventTranslationLocale;
+    description: string;
+  }>,
+): Promise<EventTranslation[]> {
+  if (inputs.length === 0) return [];
+
+  const supabase = createAdminClient();
+  const updatedAt = new Date().toISOString();
+  const { data, error } = await supabase
+    .from('event_translations')
+    .upsert(
+      inputs.map((input) => ({
+        event_id: input.eventId,
+        locale: input.locale,
+        description: input.description,
+        updated_at: updatedAt,
+      })),
+      { onConflict: 'event_id,locale' },
+    )
+    .select('event_id, locale, description, created_at, updated_at');
+
+  if (error || !data || data.length !== inputs.length) {
+    console.error('Failed to save event translations:', error);
+    throw new Error('Failed to save event translations');
+  }
+
+  return (data as EventTranslationRow[]).map(toEventTranslation);
+}
+
 export async function hasEventTranslation(input: {
   eventId: string;
   locale: EventTranslationLocale;
