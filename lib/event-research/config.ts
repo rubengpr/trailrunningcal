@@ -1,6 +1,6 @@
 export const EVENT_RESEARCH_PROJECT = 'My Project';
 export const EVENT_RESEARCH_PROMPT_SLUG = 'event-research-v0';
-export const EVENT_RESEARCH_PROMPT_VERSION = '1000197728666180083';
+export const EVENT_RESEARCH_PROMPT_VERSION = '1000197748685628163';
 export const EVENT_RESEARCH_MODEL = 'gpt-5.6-terra';
 export const EVENT_RESEARCH_REASONING_EFFORT = 'medium';
 export const EVENT_RESEARCH_SEARCH_CONTEXT_SIZE = 'high';
