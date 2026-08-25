@@ -1,3 +1,4 @@
+import type { EventImportDraftTranslationJobStatus } from '@/types/event-import-draft-translation.types';
 import type { TrailEventAgentEvent, TrailEventAgentRace } from '@/types/trail-event-agent.types';
 
 export type EventImportDraftStatus = 'draft' | 'accepted' | 'rejected';
@@ -14,6 +15,11 @@ export interface EventImportDraft {
   researchBatchItemId: string | null;
   status: EventImportDraftStatus;
   acceptedEventId: string | null;
+  publication: {
+    jobId: string;
+    status: EventImportDraftTranslationJobStatus;
+    error: string | null;
+  } | null;
   data: EventImportDraftData;
   createdAt: string;
   updatedAt: string;

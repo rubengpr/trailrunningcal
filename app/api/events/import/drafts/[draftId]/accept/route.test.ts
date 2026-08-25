@@ -4,17 +4,11 @@ import { AuthError, ValidationError } from '@/lib/errors';
 const mocks = vi.hoisted(() => ({
   requireAdmin: vi.fn(),
   acceptDraft: vi.fn(),
-  revalidatePublicListingPages: vi.fn(),
-  revalidateEventPages: vi.fn(),
 }));
 
 vi.mock('@/lib/auth', () => ({ requireAdmin: mocks.requireAdmin }));
 vi.mock('@/lib/services/event-import-drafts', () => ({
   acceptDraft: mocks.acceptDraft,
-}));
-vi.mock('@/lib/cache/revalidation', () => ({
-  revalidatePublicListingPages: mocks.revalidatePublicListingPages,
-  revalidateEventPages: mocks.revalidateEventPages,
 }));
 
 import { POST } from './route';
@@ -40,24 +34,31 @@ describe('POST /api/events/import/drafts/[draftId]/accept', () => {
     expect(mocks.acceptDraft).not.toHaveBeenCalled();
   });
 
-  it('accepts a draft and invalidates public listings and its event page', async () => {
-    const data = { eventId: 'event-id', eventSlug: 'trail-montan' };
+  it('starts asynchronous publication for a draft', async () => {
+    const data = { status: 'pending', jobId: 'job-id' };
+    mocks.acceptDraft.mockResolvedValue(data);
+
+    const response = await POST(new Request('http://localhost'), context());
+
+    expect(response.status).toBe(202);
+    await expect(response.json()).resolves.toEqual({ success: true, data });
+  });
+
+  it('keeps the accepted response idempotent', async () => {
+    const data = { status: 'accepted', eventId: 'event-id', eventSlug: 'trail-montan' };
     mocks.acceptDraft.mockResolvedValue(data);
 
     const response = await POST(new Request('http://localhost'), context());
 
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({ success: true, data });
-    expect(mocks.revalidatePublicListingPages).toHaveBeenCalledOnce();
-    expect(mocks.revalidateEventPages).toHaveBeenCalledWith('trail-montan');
   });
 
-  it('returns the service error without invalidating pages', async () => {
+  it('returns the service error', async () => {
     mocks.acceptDraft.mockRejectedValue(new ValidationError('Draft not found', 404));
 
     const response = await POST(new Request('http://localhost'), context());
 
     expect(response.status).toBe(404);
-    expect(mocks.revalidatePublicListingPages).not.toHaveBeenCalled();
   });
 });

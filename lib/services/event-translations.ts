@@ -2,7 +2,6 @@ import { franc } from 'franc';
 import { createOpenAIClient } from '@/lib/integrations/openai/client';
 import {
   buildEventDescriptionTranslationPrompt,
-  buildEventDescriptionTranslationRetryPrompt,
 } from '@/lib/prompts/event-description-public-translation-instructions';
 import type { EventTranslationLocale } from '@/types/event-translation.types';
 
@@ -128,45 +127,28 @@ export async function translateEventDescription(input: {
   additionalInstructions?: string[];
 }): Promise<string> {
   const client = createOpenAIClient();
-  const prompts = [
-    buildEventDescriptionTranslationPrompt({
-      description: input.source,
-      locale: input.locale,
-      additionalInstructions: input.additionalInstructions,
-    }),
-    buildEventDescriptionTranslationRetryPrompt({
-      description: input.source,
-      locale: input.locale,
-      additionalInstructions: input.additionalInstructions,
-    }),
-    `${buildEventDescriptionTranslationRetryPrompt({
-      description: input.source,
-      locale: input.locale,
-      additionalInstructions: input.additionalInstructions,
-    })}
+  const completion = await client.chat.completions.create({
+    model: MODEL,
+    temperature: 0,
+    messages: [{
+      role: 'user',
+      content: buildEventDescriptionTranslationPrompt({
+        description: input.source,
+        locale: input.locale,
+        additionalInstructions: input.additionalInstructions,
+      }),
+    }],
+  });
+  const translation = completion.choices[0]?.message?.content ?? '';
+  const validation = validateEventTranslation({
+    source: input.source,
+    translation,
+    locale: input.locale,
+  });
 
-Critical numeric correction: copy every numeric value from the Spanish description as digits. Do not spell any numeric value as words, do not round it, and do not omit dates, prices, route labels, durations, distances, or elevation figures.`,
-  ];
-  let lastError = 'Invalid event translation';
-  let lastTranslation = '';
-
-  for (const prompt of prompts) {
-    const completion = await client.chat.completions.create({
-      model: MODEL,
-      temperature: 0,
-      messages: [{ role: 'user', content: prompt }],
-    });
-    const translation = completion.choices[0]?.message?.content ?? '';
-    lastTranslation = translation;
-    const validation = validateEventTranslation({
-      source: input.source,
-      translation,
-      locale: input.locale,
-    });
-
-    if (validation.value) return validation.value;
-    lastError = validation.error ?? lastError;
-  }
-
-  throw new EventTranslationValidationError(lastError, lastTranslation);
+  if (validation.value) return validation.value;
+  throw new EventTranslationValidationError(
+    validation.error ?? 'Invalid event translation',
+    translation,
+  );
 }

@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
-import { Check, Eye, TextCursor, Trash2 } from 'lucide-react';
+import { Check, CircleAlert, Eye, LoaderCircle, TextCursor, Trash2 } from 'lucide-react';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { SectionHeader } from '@/components/ui/section-header';
 import { EventImportPreview } from '@/components/admin/event-import-preview';
@@ -21,6 +21,7 @@ import { AdminListSearch } from '@/components/admin/admin-list-search';
 import { EventWebsiteTableCell } from '@/components/event/event-website-table-cell';
 import {
   acceptEventImportDraft,
+  getEventImportDraftPublicationStatus,
   rejectEventImportDraft,
   updateEventImportDraft,
 } from '@/lib/api/events';
@@ -60,26 +61,47 @@ export function AdminEventImportDraftsContent({
   const [draftToEdit, setDraftToEdit] = useState<EventImportDraft | null>(null);
   const [draftToDelete, setDraftToDelete] = useState<EventImportDraft | null>(null);
   const [acceptingDraftId, setAcceptingDraftId] = useState<string | null>(null);
+  const [publicationJobs, setPublicationJobs] = useState<Record<string, string>>(() =>
+    Object.fromEntries(initialDrafts.flatMap((draft) =>
+      draft.publication?.status === 'pending' || draft.publication?.status === 'running'
+        ? [[draft.id, draft.publication.jobId]]
+        : [],
+    )),
+  );
+  const [failedPublications, setFailedPublications] = useState<Record<string, true>>(() =>
+    Object.fromEntries(initialDrafts.flatMap((draft) =>
+      draft.publication?.status === 'failed' ? [[draft.id, true]] : [],
+    )),
+  );
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSavingEdit, setIsSavingEdit] = useState(false);
   const draftCount = drafts.length === 1
     ? t('draftCountOne')
     : t('draftCount', { count: drafts.length });
 
-  const removeDraft = (draftId: string): void => {
+  const removeDraft = useCallback((draftId: string): void => {
     setDrafts((current) => current.filter((draft) => draft.id !== draftId));
     setDraftToPreview((current) => current?.id === draftId ? null : current);
     setDraftToEdit((current) => current?.id === draftId ? null : current);
     setDraftToDelete((current) => current?.id === draftId ? null : current);
-  };
+  }, []);
 
   const handleAccept = async (draft: EventImportDraft): Promise<void> => {
     if (acceptingDraftId) return;
     setAcceptingDraftId(draft.id);
     try {
-      await acceptEventImportDraft(draft.id);
-      removeDraft(draft.id);
-      toast.success(t('acceptSuccess'));
+      const result = await acceptEventImportDraft(draft.id);
+      if (result.status === 'accepted') {
+        removeDraft(draft.id);
+        toast.success(t('acceptSuccess'));
+      } else {
+        setFailedPublications((current) => {
+          const next = { ...current };
+          delete next[draft.id];
+          return next;
+        });
+        setPublicationJobs((current) => ({ ...current, [draft.id]: result.jobId }));
+      }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t('acceptError'));
     } finally {
@@ -110,6 +132,16 @@ export function AdminEventImportDraftsContent({
     try {
       const updated = await updateEventImportDraft(draftToEdit.id, { event, races });
       setDrafts((current) => current.map((draft) => draft.id === updated.id ? updated : draft));
+      setPublicationJobs((current) => {
+        const next = { ...current };
+        delete next[updated.id];
+        return next;
+      });
+      setFailedPublications((current) => {
+        const next = { ...current };
+        delete next[updated.id];
+        return next;
+      });
       setDraftToEdit(null);
       toast.success(t('saveSuccess'));
     } catch (error) {
@@ -118,6 +150,61 @@ export function AdminEventImportDraftsContent({
       setIsSavingEdit(false);
     }
   };
+
+  useEffect(() => {
+    const entries = Object.entries(publicationJobs);
+    if (entries.length === 0) return;
+
+    let cancelled = false;
+    const poll = async (): Promise<void> => {
+      const results = await Promise.all(entries.map(async ([draftId, jobId]) => ({
+        draftId,
+        snapshot: await getEventImportDraftPublicationStatus({ draftId, jobId }),
+      })));
+
+      if (cancelled) return;
+
+      for (const { draftId, snapshot } of results) {
+        if (snapshot.job.status === 'completed') {
+          removeDraft(draftId);
+          setPublicationJobs((current) => {
+            const next = { ...current };
+            delete next[draftId];
+            return next;
+          });
+          setFailedPublications((current) => {
+            const next = { ...current };
+            delete next[draftId];
+            return next;
+          });
+          toast.success(t('acceptSuccess'));
+        }
+        if (snapshot.job.status === 'failed') {
+          setPublicationJobs((current) => {
+            const next = { ...current };
+            delete next[draftId];
+            return next;
+          });
+          setFailedPublications((current) => ({ ...current, [draftId]: true }));
+          toast.error(t('acceptError'));
+        }
+      }
+    };
+
+    void poll().catch(() => {
+      if (!cancelled) toast.error(t('acceptError'));
+    });
+    const intervalId = window.setInterval(() => {
+      void poll().catch(() => {
+        if (!cancelled) toast.error(t('acceptError'));
+      });
+    }, 3000);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(intervalId);
+    };
+  }, [publicationJobs, removeDraft, t]);
 
   return (
     <div className="flex flex-col gap-8">
@@ -140,8 +227,11 @@ export function AdminEventImportDraftsContent({
               <TableCell header align="right">{eventsT('columns.actions')}</TableCell>
             </TableHeader>
             <TableBody>
-              {drafts.map((draft) => (
-                <TableRow key={draft.id} className="align-middle transition-colors duration-150 hover:bg-gray-100">
+              {drafts.map((draft) => {
+                const isPublishing = publicationJobs[draft.id] !== undefined;
+                const hasFailedPublication = failedPublications[draft.id] === true;
+                return (
+                  <TableRow key={draft.id} className="align-middle transition-colors duration-150 hover:bg-gray-100">
                   <TableCell className="max-w-[200px]">
                     <span className="block truncate text-sm font-medium text-gray-900">
                       {draft.data.event.name}
@@ -160,6 +250,11 @@ export function AdminEventImportDraftsContent({
                   </TableCell>
                   <TableCell align="right">
                     <div className="flex justify-end gap-1">
+                      {hasFailedPublication ? (
+                        <span className="mt-2" title={t('acceptError')}>
+                          <CircleAlert className="size-4 text-red-600" strokeWidth={1.5} />
+                        </span>
+                      ) : null}
                       <button
                         type="button"
                         onClick={() => setDraftToPreview(draft)}
@@ -171,11 +266,13 @@ export function AdminEventImportDraftsContent({
                       <button
                         type="button"
                         onClick={() => void handleAccept(draft)}
-                        disabled={acceptingDraftId !== null}
+                        disabled={acceptingDraftId !== null || isPublishing}
                         title={t('accept')}
                         className="inline-flex size-8 cursor-pointer items-center justify-center rounded text-gray-400 transition-colors hover:bg-gray-100 hover:text-green-700 disabled:pointer-events-none disabled:opacity-35"
                       >
-                        <Check className="size-4" strokeWidth={1.5} />
+                        {isPublishing
+                          ? <LoaderCircle className="size-4 animate-spin" strokeWidth={1.5} />
+                          : <Check className="size-4" strokeWidth={1.5} />}
                       </button>
                       <button
                         type="button"
@@ -195,8 +292,9 @@ export function AdminEventImportDraftsContent({
                       </button>
                     </div>
                   </TableCell>
-                </TableRow>
-              ))}
+                  </TableRow>
+                );
+              })}
             </TableBody>
         </Table>
       )}

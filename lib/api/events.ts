@@ -18,6 +18,10 @@ import type {
 } from '@/types/events-import-api.types';
 import type { EventImportDraft } from '@/types/event-import-draft.types';
 import type {
+  EventImportDraftPublication,
+  EventImportDraftTranslationJobSnapshot,
+} from '@/types/event-import-draft-translation.types';
+import type {
   EventResearchBatchItem,
   EventResearchBatchHistoryEntry,
   EventResearchBatchSnapshot,
@@ -435,10 +439,21 @@ export async function updateEventImportDraft(
   return responseData.data;
 }
 
-export async function acceptEventImportDraft(draftId: string): Promise<{ eventId: string; eventSlug: string }> {
+export async function acceptEventImportDraft(draftId: string): Promise<EventImportDraftPublication> {
   const response = await fetch(`/api/events/import/drafts/${draftId}/accept`, { method: 'POST' });
   const responseData = await response.json();
   if (!response.ok) throw new Error(responseData.error || 'Failed to accept event import draft');
+  return responseData.data;
+}
+
+export async function getEventImportDraftPublicationStatus(input: {
+  draftId: string;
+  jobId: string;
+}): Promise<EventImportDraftTranslationJobSnapshot> {
+  const searchParams = new URLSearchParams({ jobId: input.jobId });
+  const response = await fetch(`/api/events/import/drafts/${input.draftId}/publication?${searchParams}`);
+  const responseData = await response.json();
+  if (!response.ok) throw new Error(responseData.error || 'Failed to fetch draft publication');
   return responseData.data;
 }
 

@@ -1,12 +1,15 @@
 import { ValidationError } from '@/lib/errors';
 import {
-  acceptEventImportDraft as acceptInDatabase,
   createEventImportDraft as createInDatabase,
   getEventImportDraft,
   getEventImportDrafts,
   rejectEventImportDraft as rejectInDatabase,
   updateEventImportDraft as updateInDatabase,
 } from '@/lib/db/event-import-drafts';
+import {
+  getEventImportDraftPublicationStatus,
+  startEventImportDraftPublication,
+} from '@/lib/services/event-import-draft-publication';
 import type { EventImportDraftData } from '@/types/event-import-draft.types';
 
 export async function createDraft(input: {
@@ -36,5 +39,9 @@ export async function rejectDraft(id: string) {
 }
 
 export async function acceptDraft(id: string) {
-  return acceptInDatabase(id);
+  return startEventImportDraftPublication(id);
+}
+
+export async function getDraftPublicationStatus(jobId: string) {
+  return getEventImportDraftPublicationStatus(jobId);
 }

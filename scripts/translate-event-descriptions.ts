@@ -16,10 +16,11 @@ import {
 } from '@/lib/services/event-translation-golden';
 import { promoteEventTranslationArtifact } from '@/lib/services/event-translation-promotion';
 import {
-  EventTranslationValidationError,
-  translateEventDescription,
-  validateEventTranslation,
-} from '@/lib/services/event-translations';
+  EventTranslationQualityError,
+  generateValidatedEventTranslation,
+  MAX_EVENT_TRANSLATION_ATTEMPTS,
+} from '@/lib/services/event-translation-generation';
+import { validateEventTranslation } from '@/lib/services/event-translations';
 import {
   EVENT_TRANSLATION_LOCALES,
   type EventTranslationLocale,
@@ -55,17 +56,7 @@ type TranslationResult = {
   lastTranslation: string | null;
 };
 
-const MAX_QUALITY_ATTEMPTS = 3;
 const CONCURRENCY = 6;
-
-class TranslationQualityError extends Error {
-  constructor(
-    message: string,
-    readonly lastTranslation: string | null,
-  ) {
-    super(message);
-  }
-}
 
 function usage(): never {
   throw new Error(
@@ -136,28 +127,6 @@ function formatReview(artifact: EventTranslationArtifact): string {
       .join('\n\n')}` : ''}\n`;
 }
 
-function getRepairInstructions(input: {
-  attempt: number;
-  error: string;
-  locale: EventTranslationLocale;
-  lastTranslation: string | null;
-}): string[] {
-  const instructions = [
-    `This is quality repair attempt ${input.attempt}. The previous output failed this check: ${input.error}. Correct that issue while preserving every other fact and the exact two-paragraph structure.`,
-  ];
-  const missingTerm = input.error.match(/^Translation is missing required term: (.+)$/u)?.[1];
-  if (missingTerm) {
-    instructions.push(`The final description must include this exact target-language phrase: "${missingTerm}".`);
-  }
-  if (input.error === 'Translation has an invalid language') {
-    instructions.push(`Return every complete sentence in ${input.locale}; do not return Spanish sentences. Keep only proper names unchanged.`);
-  }
-  if (input.lastTranslation) {
-    instructions.push(`Do not repeat this invalid previous output:\n${input.lastTranslation}`);
-  }
-  return instructions;
-}
-
 async function translateWithQuality(input: {
   slug: string;
   source: string;
@@ -171,29 +140,11 @@ async function translateWithQuality(input: {
   description: string;
   attempts: number;
 }> {
-  let error = 'Translation did not pass the quality gate';
-  let lastTranslation: string | null = null;
-
-  for (let attempt = 1; attempt <= MAX_QUALITY_ATTEMPTS; attempt += 1) {
-    try {
-      const translation = await translateEventDescription({
-        source: input.source,
-        locale: input.locale,
-        additionalInstructions: attempt === 1
-          ? undefined
-          : getRepairInstructions({ attempt, error, locale: input.locale, lastTranslation }),
-      });
-      lastTranslation = translation;
-      const validation = validate({ ...input, translation });
-      if (validation.value) return { description: validation.value, attempts: attempt };
-      error = validation.error ?? error;
-    } catch (caught) {
-      error = caught instanceof Error ? caught.message : 'Unknown translation error';
-      if (caught instanceof EventTranslationValidationError) lastTranslation = caught.translation;
-    }
-  }
-
-  throw new TranslationQualityError(error, lastTranslation);
+  return generateValidatedEventTranslation({
+    source: input.source,
+    locale: input.locale,
+    validate: ({ source, translation, locale }) => validate({ ...input, source, translation, locale }),
+  });
 }
 
 async function runGolden(): Promise<void> {
@@ -230,7 +181,7 @@ async function generateBatch(options: GenerateOptions): Promise<void> {
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Unknown error';
         console.error(`Failed ${event.slug} (${locale}): ${message}`);
-        return { eventId: event.id, slug: event.slug, source: event.description, locale, description: null, attempts: MAX_QUALITY_ATTEMPTS, error: message, lastTranslation: error instanceof TranslationQualityError ? error.lastTranslation : null };
+        return { eventId: event.id, slug: event.slug, source: event.description, locale, description: null, attempts: MAX_EVENT_TRANSLATION_ATTEMPTS, error: message, lastTranslation: error instanceof EventTranslationQualityError ? error.lastTranslation : null };
       }
     }),
   );
