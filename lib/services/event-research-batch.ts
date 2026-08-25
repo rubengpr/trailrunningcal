@@ -15,6 +15,7 @@ import {
   updateEventResearchBatchStatus,
 } from '@/lib/db/event-research-batches';
 import { ValidationError } from '@/lib/errors';
+import { normalizeRaceTiers } from '@/lib/events/tier-normalization';
 import { researchEvent } from '@/lib/integrations/openai/event-research';
 import type {
   EventResearchBatchItem,
@@ -62,6 +63,20 @@ function validateNegativeResult(result: TrailEventAgentParsed): void {
       throw new Error('Invalid negative research response');
     }
   }
+}
+
+function normalizeResearchResult(
+  result: TrailEventAgentParsed,
+): TrailEventAgentParsed {
+  return {
+    ...result,
+    races: result.races.map((race) => ({
+      ...race,
+      // Prices are optional research enrichment. An invalid schedule must not
+      // prevent the otherwise validated event and race data from becoming a draft.
+      tiers: normalizeRaceTiers(race.tiers),
+    })),
+  };
 }
 
 export async function getEventResearchBatchStatus(
@@ -207,29 +222,30 @@ async function processItemStep(input: {
       throw new Error('Invalid research response');
     }
 
+    const result = normalizeResearchResult(run.result);
     const isDraft =
-      run.result.event !== null &&
-      run.result.races.length > 0 &&
-      run.result.errorMessage === null;
+      result.event !== null &&
+      result.races.length > 0 &&
+      result.errorMessage === null;
     let draftData;
     let sourceUrl: string | null = null;
 
     if (isDraft) {
-      const parsed = parseEventInput(run.result);
+      const parsed = parseEventInput(result);
       draftData = { event: parsed.event, races: parsed.races };
       sourceUrl = parsed.event.websiteUrl;
     } else {
-      validateNegativeResult(run.result);
+      validateNegativeResult(result);
     }
 
     await completeEventResearchItem({
       itemId: input.itemId,
-      result: run.result,
+      result,
       sources: run.response.sources,
       usage: run.response.usage,
       openAIResponseId: run.response.id,
       braintrustRootSpanId: rootSpanId,
-      raceCount: run.result.races.length,
+      raceCount: result.races.length,
       draftData,
       sourceUrl,
     });

@@ -197,6 +197,38 @@ describe('eventResearchBatchWorkflow', () => {
     );
   });
 
+  it('keeps researched races when optional price tiers have an invalid schedule', async () => {
+    mocks.getItems.mockResolvedValue([item(1)]);
+    mocks.researchEvent.mockResolvedValue(
+      successfulRun({
+        ...validResult,
+        races: [
+          {
+            ...validResult.races[0],
+            tiers: [
+              { priceEur: 18, endsAt: '2026-09-04' },
+              { priceEur: 23, endsAt: '2026-09-04' },
+            ],
+          },
+        ],
+      }),
+    );
+
+    await eventResearchBatchWorkflow({ batchId: batch.id });
+
+    expect(mocks.failItem).not.toHaveBeenCalled();
+    expect(mocks.completeItem).toHaveBeenCalledWith(
+      expect.objectContaining({
+        draftData: expect.objectContaining({
+          races: [expect.objectContaining({ tiers: [] })],
+        }),
+        result: expect.objectContaining({
+          races: [expect.objectContaining({ tiers: [] })],
+        }),
+      }),
+    );
+  });
+
   it('persists the workflow run id when retrying a failed item', async () => {
     mocks.getItem.mockResolvedValue({
       ...item(1),
