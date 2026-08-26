@@ -573,6 +573,22 @@
       "zaragoza": "Zaragoza"
     }
   },
+  "comunidad": {
+    "pageTitle": "Trail running in {region} - Mountain races {year}",
+    "pageDescription": "Find trail running races in {region}: ultras, mountain marathons, short trails and events for every level. Updated for {year}.",
+    "pageDescriptions": {
+      "catalonia": "Trail running races in Catalonia: the Pyrenees, Montseny, Montserrat and the Prades and Ports ranges. Dates, distances and elevation gain for {year}.",
+      "valencianCommunity": "Trail running races in the Valencian Community: Penyagolosa, Aitana, La Calderona and the Espadán range. Dates, distances and elevation gain for {year}."
+    },
+    "pageBody": "Discover trail running races across {region}, from mountain paths to technical tracks for every distance and level.",
+    "heroTitleStart": "Explore trail running races in",
+    "heroSubtitle": "Find dates, distances, elevation gain and everything you need for your next mountain race in {region}.",
+    "heroSubtitles": {
+      "catalonia": "Explore mountain races across the Pyrenees, Montseny and Montserrat. Dates, distances and everything you need for your next adventure.",
+      "valencianCommunity": "Explore mountain races across Penyagolosa, Aitana and La Calderona. Dates, distances and everything you need for your next adventure."
+    },
+    "provincesHeading": "Races by province in {region}"
+  },
   "geography": {
     "regions": {
       "andalusia": "Andalusia",

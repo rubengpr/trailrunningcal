@@ -573,6 +573,22 @@
       "zaragoza": "Saragosse"
     }
   },
+  "comunidad": {
+    "pageTitle": "Trail running en {region} - Courses de montagne {year}",
+    "pageDescription": "Trouve des courses de trail en {region} : ultras, marathons de montagne, trails courts et événements pour tous les niveaux. Mis à jour pour {year}.",
+    "pageDescriptions": {
+      "catalonia": "Courses de trail en Catalogne : Pyrénées, Montseny, Montserrat et les massifs de Prades et des Ports. Dates, distances et dénivelés pour {year}.",
+      "valencianCommunity": "Courses de trail dans la Communauté valencienne : Penyagolosa, Aitana, la Calderona et la sierra d'Espadán. Dates, distances et dénivelés pour {year}."
+    },
+    "pageBody": "Découvre les courses de trail en {region}, des sentiers de montagne aux parcours techniques, pour toutes les distances et tous les niveaux.",
+    "heroTitleStart": "Explore les courses de trail en",
+    "heroSubtitle": "Trouve les dates, distances, dénivelés et informations pour ta prochaine course de montagne en {region}.",
+    "heroSubtitles": {
+      "catalonia": "Explore les courses de montagne dans les Pyrénées, le Montseny et Montserrat. Dates, distances et informations complètes pour ta prochaine aventure.",
+      "valencianCommunity": "Explore les courses de montagne au Penyagolosa, à Aitana et à la Calderona. Dates, distances et informations complètes pour ta prochaine aventure."
+    },
+    "provincesHeading": "Courses par province en {region}"
+  },
   "geography": {
     "regions": {
       "andalusia": "Andalousie",

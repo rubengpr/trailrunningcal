@@ -592,6 +592,22 @@
       "zaragoza": "Zaragoza"
     }
   },
+  "comunidad": {
+    "pageTitle": "Trail running en {region} - Carreras de montaña {year}",
+    "pageDescription": "Encuentra todas las carreras de trail running en {region}: ultras, maratones de montaña, trails cortos y pruebas para todos los niveles. Actualizado para {year}.",
+    "pageDescriptions": {
+      "catalonia": "Carreras de trail running en Cataluña: Pirineos, Montseny, Montserrat y las sierras de Prades y els Ports. Fechas, distancias y desniveles para {year}.",
+      "valencianCommunity": "Carreras de trail running en la Comunidad Valenciana: Penyagolosa, Aitana, la Calderona y la Sierra de Espadán. Fechas, distancias y desniveles para {year}."
+    },
+    "pageBody": "Descubre todas las carreras de trail running en {region}: senderos, montañas y rutas de todo tipo de distancia y dificultad. El trail running en {region} combina paisajes únicos con una comunidad de corredores de montaña activa durante todo el año.",
+    "heroTitleStart": "Explora carreras de trail running en",
+    "heroSubtitle": "Encuentra fechas, distancias, desniveles e información para tu próxima carrera de montaña en {region}.",
+    "heroSubtitles": {
+      "catalonia": "Explora las carreras de montaña por los Pirineos, el Montseny y Montserrat. Fechas, distancias e información completa para tu próxima aventura.",
+      "valencianCommunity": "Explora las carreras de montaña por el Penyagolosa, Aitana y la Calderona. Fechas, distancias e información completa para tu próxima aventura."
+    },
+    "provincesHeading": "Carreras por provincia en {region}"
+  },
   "geography": {
     "regions": {
       "andalusia": "Andalucía",
