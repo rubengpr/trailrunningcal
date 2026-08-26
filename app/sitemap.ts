@@ -7,7 +7,7 @@ import {
   DESTINATION_PROVINCE_IDS,
   GEOGRAPHY,
 } from '@/lib/geography/destinations';
-import { getSitemapEvents } from '@/lib/db/sitemap-events';
+import { getSitemapEvents, getSitemapProvinces } from '@/lib/db/sitemap-events';
 import {
   buildHomeAlternateLinks,
   buildBlogListingAlternateLinks,
@@ -24,7 +24,11 @@ import { getContactPath } from '@/lib/i18n/paths';
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const currentDate = new Date();
 
-  const events = await getSitemapEvents();
+  const [events, provincesWithEvents] = await Promise.all([
+    getSitemapEvents(),
+    getSitemapProvinces(),
+  ]);
+  const coveredProvinces = new Set(provincesWithEvents);
 
   const urls: MetadataRoute.Sitemap = [];
 
@@ -92,6 +96,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   for (const provinceId of DESTINATION_PROVINCE_IDS) {
     const province = GEOGRAPHY.provinces[provinceId];
+
+    if (!coveredProvinces.has(province.dbName)) {
+      continue;
+    }
 
     for (const locale of locales) {
       urls.push({

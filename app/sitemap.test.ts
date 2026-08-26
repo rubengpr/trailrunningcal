@@ -1,13 +1,23 @@
 import { describe, expect, it, vi } from 'vitest';
 import { BASE_URL } from '@/lib/config';
 import sitemap from './sitemap';
+import { GEOGRAPHY } from '@/lib/geography/destinations';
+import { locales } from '@/i18n';
 
 vi.mock('@/lib/db/races', () => ({
   getRaces: vi.fn().mockResolvedValue([]),
 }));
 
+const COVERED_PROVINCES = [
+  'Barcelona',
+  'Alicante',
+  'Castellón',
+  'Valencia',
+];
+
 vi.mock('@/lib/db/sitemap-events', () => ({
   getSitemapEvents: vi.fn().mockResolvedValue([]),
+  getSitemapProvinces: vi.fn(() => Promise.resolve(COVERED_PROVINCES)),
 }));
 
 vi.mock('@/lib/content/blog-utils', () => ({
@@ -46,6 +56,18 @@ describe('sitemap destination URLs', () => {
     expect(sitemapUrls).toContain(`${BASE_URL}/es/d/comunidad-valenciana/valencia`);
     expect(sitemapUrls).toContain(`${BASE_URL}/en/d/comunidad-valenciana/valencia`);
     expect(sitemapUrls).toContain(`${BASE_URL}/fr/d/comunidad-valenciana/valencia`);
+  });
+
+  it('only lists destinations that have upcoming races', async () => {
+    const urls = await sitemap();
+    const destinationUrls = urls.filter((entry) => entry.url.includes('/d/'));
+
+    expect(destinationUrls).toHaveLength(
+      COVERED_PROVINCES.length * locales.length,
+    );
+    expect(destinationUrls.map((entry) => entry.url)).not.toContain(
+      `${BASE_URL}/es/d/${GEOGRAPHY.regions.andalusia.slug}/${GEOGRAPHY.provinces.granada.slug}`,
+    );
   });
 
   it('does not include legacy /provincia URLs', async () => {
