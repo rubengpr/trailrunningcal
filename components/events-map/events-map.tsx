@@ -16,8 +16,11 @@ import type { EventMapMarker, MapPageLabels } from '@/types/map.types';
 import { ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react';
 import { OSM_STANDARD_STYLE } from '@/lib/maps/style';
 import { DistanceBadge } from '@/components/race/distance-badge';
-const SPAIN_CENTER: [number, number] = [-3.7, 40.2];
-const SPAIN_ZOOM = 5.4;
+/** Spain's westernmost island (El Hierro) through its easternmost (Menorca). */
+const SPAIN_BOUNDS: [[number, number], [number, number]] = [
+  [-18.5, 27.4],
+  [4.7, 44.1],
+];
 
 /** GeoJSON from codeforgermany/click_that_hood (OpenStreetMap-derived boundaries). */
 const SPAIN_BOUNDARIES_GEOJSON_URL = '/geo/spain-boundaries.geojson';
@@ -284,8 +287,8 @@ export function EventsMap({
     const map = new maplibregl.Map({
       container: el,
       style: OSM_STANDARD_STYLE,
-      center: SPAIN_CENTER,
-      zoom: SPAIN_ZOOM,
+      bounds: SPAIN_BOUNDS,
+      fitBoundsOptions: { padding: 24 },
       locale: {
         'NavigationControl.ZoomIn': tMap('zoomIn'),
         'NavigationControl.ZoomOut': tMap('zoomOut'),

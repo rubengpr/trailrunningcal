@@ -178,9 +178,10 @@ describe('EventsMap country framing', () => {
       marker('Almería', 36.84, -2.46),
     ]);
 
-    expect(mocks.mapConstructor).toHaveBeenCalledWith(
-      expect.objectContaining({ center: [-3.7, 40.2], zoom: 5.4 }),
-    );
+    expect(mocks.mapConstructor).toHaveBeenCalledWith(expect.objectContaining({
+      bounds: [[-18.5, 27.4], [4.7, 44.1]],
+      fitBoundsOptions: { padding: 24 },
+    }));
     expect(mocks.fitBounds).not.toHaveBeenCalled();
     expect(mocks.jumpTo).not.toHaveBeenCalled();
   });
