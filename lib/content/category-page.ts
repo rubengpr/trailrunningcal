@@ -7,6 +7,21 @@ import type {
   PublicEventScope,
 } from '@/types/public-events.types';
 
+type Translator = Awaited<ReturnType<typeof getTranslations>>;
+
+/**
+ * Returns the copy written for a specific destination when it exists, and the
+ * generic interpolated copy otherwise.
+ */
+export function translateWithOverride(
+  t: Translator,
+  overrideKey: string,
+  fallbackKey: string,
+  values: Record<string, string | number>,
+): string {
+  return t.has(overrideKey) ? t(overrideKey, values) : t(fallbackKey, values);
+}
+
 export interface CategoryPageData {
   eventsPage: PublicEventPage;
   labels: MapPageLabels;
