@@ -16,8 +16,8 @@ import type { EventMapMarker, MapPageLabels } from '@/types/map.types';
 import { ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react';
 import { OSM_STANDARD_STYLE } from '@/lib/maps/style';
 import { DistanceBadge } from '@/components/race/distance-badge';
-const DEFAULT_CENTER: [number, number] = [2.1734, 41.3851];
-const DEFAULT_ZOOM = 7;
+const SPAIN_CENTER: [number, number] = [-3.7, 40.2];
+const SPAIN_ZOOM = 5.4;
 
 /** GeoJSON from codeforgermany/click_that_hood (OpenStreetMap-derived boundaries). */
 const SPAIN_BOUNDARIES_GEOJSON_URL = '/geo/spain-boundaries.geojson';
@@ -284,8 +284,8 @@ export function EventsMap({
     const map = new maplibregl.Map({
       container: el,
       style: OSM_STANDARD_STYLE,
-      center: DEFAULT_CENTER,
-      zoom: DEFAULT_ZOOM,
+      center: SPAIN_CENTER,
+      zoom: SPAIN_ZOOM,
       locale: {
         'NavigationControl.ZoomIn': tMap('zoomIn'),
         'NavigationControl.ZoomOut': tMap('zoomOut'),
@@ -364,24 +364,6 @@ export function EventsMap({
       };
       markerEl.addEventListener('click', handlePinClick);
       pinClickListeners.push({ el: markerEl, fn: handlePinClick });
-    }
-
-    if (markers.length === 1) {
-      const marker = markers[0]!;
-      map.jumpTo({
-        center: [marker.longitude, marker.latitude],
-        zoom: 9,
-      });
-    } else if (markers.length > 1) {
-      const bounds = new maplibregl.LngLatBounds();
-      for (const marker of markers) {
-        bounds.extend([marker.longitude, marker.latitude]);
-      }
-      map.fitBounds(bounds, {
-        padding: 48,
-        maxZoom: 9,
-        duration: 0,
-      });
     }
 
     return () => {
