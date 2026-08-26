@@ -6,12 +6,21 @@ import {
   GEOGRAPHY,
   getDestinationPath,
   getProvinceByDbName,
+  getRegionPath,
+  REGION_IDS,
+  type RegionId,
 } from '@/lib/geography/destinations';
 import type { TrailEventDetail } from '@/types/event.types';
 
 export function revalidateHomepages() {
   for (const locale of locales) {
     revalidatePath(`/${locale}`);
+  }
+}
+
+export function revalidateRegionPage(regionId: RegionId) {
+  for (const locale of locales) {
+    revalidatePath(getRegionPath(locale, regionId));
   }
 }
 
@@ -27,6 +36,9 @@ export function revalidateProvincePage(province: string) {
       getDestinationPath(locale, destination.province.regionId, destination.id),
     );
   }
+
+  // The community page lists every race in its provinces.
+  revalidateRegionPage(destination.province.regionId);
 }
 
 export function revalidateCategoryPages() {
@@ -38,6 +50,10 @@ export function revalidateCategoryPages() {
 }
 
 export function revalidateDestinationPages() {
+  for (const regionId of REGION_IDS) {
+    revalidateRegionPage(regionId);
+  }
+
   for (const provinceId of DESTINATION_PROVINCE_IDS) {
     const province = GEOGRAPHY.provinces[provinceId];
 

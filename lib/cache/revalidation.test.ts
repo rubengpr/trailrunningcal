@@ -14,10 +14,13 @@ describe('revalidateProvincePage', () => {
   it('revalidates every localized destination page for a newly supported province', () => {
     revalidateProvincePage('Granada');
 
-    expect(revalidatePath).toHaveBeenCalledTimes(locales.length);
+    // Every locale of the province page, plus its community page.
+    expect(revalidatePath).toHaveBeenCalledTimes(locales.length * 2);
     expect(revalidatePath).toHaveBeenCalledWith('/es/d/andalucia/granada');
     expect(revalidatePath).toHaveBeenCalledWith('/ca/d/andalucia/granada');
     expect(revalidatePath).toHaveBeenCalledWith('/en/d/andalucia/granada');
     expect(revalidatePath).toHaveBeenCalledWith('/fr/d/andalucia/granada');
+    expect(revalidatePath).toHaveBeenCalledWith('/es/d/andalucia');
+    expect(revalidatePath).toHaveBeenCalledWith('/fr/d/andalucia');
   });
 });
