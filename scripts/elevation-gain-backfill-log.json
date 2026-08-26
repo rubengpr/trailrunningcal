@@ -1,0 +1,1048 @@
+[
+  {
+    "draftId": "468c92bf-d840-4d88-8238-522f95dafa93",
+    "eventName": "MoralTrail Race",
+    "outcome": "filled",
+    "races": [
+      {
+        "distanceKm": 9.5,
+        "elevationGainM": 560,
+        "sources": [
+          "https://moraltrailrunning.com/",
+          "https://es.wikiloc.com/rutas-carrera-por-montana/moralzarzal-moraltrail-race-9km-30821955"
+        ]
+      },
+      {
+        "distanceKm": 17,
+        "elevationGainM": 940,
+        "sources": [
+          "https://moraltrailrunning.com/",
+          "https://es.wikiloc.com/rutas-carrera-por-montana/moraltrail-race-2025-17k-240713313"
+        ]
+      }
+    ]
+  },
+  {
+    "draftId": "dd3f8c74-40a7-485d-b531-e6802c8b8469",
+    "eventName": "Carrera de Montaña Guía de Isora",
+    "outcome": "filled",
+    "races": [
+      {
+        "distanceKm": 10,
+        "name": "Individual",
+        "elevationGainM": 508,
+        "sources": [
+          "https://www.canaryrun.com/carrera/carrera-de-montana-guia-de-isora-2027/",
+          "https://macaronesiasport.com/noticias-destacada/carrera-de-montana-guia-de-isora-2025/"
+        ]
+      },
+      {
+        "distanceKm": 20,
+        "name": "Individual",
+        "elevationGainM": 1205,
+        "sources": [
+          "https://www.canaryrun.com/carrera/carrera-de-montana-guia-de-isora-2027/",
+          "https://macaronesiasport.com/noticias-destacada/carrera-de-montana-guia-de-isora-2025/"
+        ]
+      },
+      {
+        "distanceKm": 32,
+        "name": "Individual",
+        "elevationGainM": 2029,
+        "sources": [
+          "https://www.canaryrun.com/carrera/carrera-de-montana-guia-de-isora-2027/",
+          "https://macaronesiasport.com/noticias-destacada/carrera-de-montana-guia-de-isora-2025/"
+        ]
+      },
+      {
+        "distanceKm": 10,
+        "name": "Parejas",
+        "elevationGainM": 508,
+        "sources": [
+          "https://www.canaryrun.com/carrera/carrera-de-montana-guia-de-isora-2027/",
+          "https://macaronesiasport.com/noticias-destacada/carrera-de-montana-guia-de-isora-2025/"
+        ]
+      },
+      {
+        "distanceKm": 20,
+        "name": "Parejas",
+        "elevationGainM": 1205,
+        "sources": [
+          "https://www.canaryrun.com/carrera/carrera-de-montana-guia-de-isora-2027/",
+          "https://macaronesiasport.com/noticias-destacada/carrera-de-montana-guia-de-isora-2025/"
+        ]
+      },
+      {
+        "distanceKm": 32,
+        "name": "Parejas",
+        "elevationGainM": 2029,
+        "sources": [
+          "https://www.canaryrun.com/carrera/carrera-de-montana-guia-de-isora-2027/",
+          "https://macaronesiasport.com/noticias-destacada/carrera-de-montana-guia-de-isora-2025/"
+        ]
+      }
+    ]
+  },
+  {
+    "draftId": "22407653-8c01-49b6-8f5f-50628301c62c",
+    "eventName": "Alto Porma Trail",
+    "outcome": "partial",
+    "races": [
+      {
+        "distanceKm": 9,
+        "name": "Trail corto",
+        "elevationGainM": 350,
+        "sources": [
+          "https://www.diariodevalderrueda.es/texto-diario/mostrar/5411944/alto-porma-trail-2025-retara-corredores-puebla-lillo-imponente-susaron",
+          "https://puntuatutrail.com/carreras/alto-porma-trail"
+        ]
+      }
+    ]
+  },
+  {
+    "draftId": "ee177d66-5f91-439c-9ca1-e23c254533b9",
+    "eventName": "Trail Solidario AntimioCon la ELA",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "30eb956d-6a48-456b-8191-6224d1a533c4",
+    "eventName": "Bizkaia Kopa Trail (Arrieta)",
+    "outcome": "filled",
+    "races": [
+      {
+        "distanceKm": 10,
+        "name": "Trail",
+        "elevationGainM": 368,
+        "sources": [
+          "https://aupamikel.com/carreras/bizkaia-kopa-trail-arrieta-10k/",
+          "https://es.wikiloc.com/rutas-prueba-combinada/bkt-arrieta-10k-180095085"
+        ]
+      },
+      {
+        "distanceKm": 20,
+        "name": "Trail",
+        "elevationGainM": 685,
+        "sources": [
+          "https://aupamikel.com/carreras/bizkaia-kopa-trail-arrieta-20k/",
+          "https://es.wikiloc.com/rutas-prueba-combinada/bkt-arrieta-20k-180103737"
+        ]
+      },
+      {
+        "distanceKm": 10,
+        "name": "Marcha",
+        "elevationGainM": 368,
+        "sources": [
+          "https://aupamikel.com/carreras/bizkaia-kopa-trail-arrieta-10k/",
+          "https://es.wikiloc.com/rutas-prueba-combinada/bkt-arrieta-10k-180095085",
+          "https://aupamikel.com/carreras/bizkaia-kopa-trail-arrieta-marcha-10k/"
+        ]
+      },
+      {
+        "distanceKm": 20,
+        "name": "Marcha",
+        "elevationGainM": 685,
+        "sources": [
+          "https://aupamikel.com/carreras/bizkaia-kopa-trail-arrieta-20k/",
+          "https://es.wikiloc.com/rutas-prueba-combinada/bkt-arrieta-20k-180103737"
+        ]
+      }
+    ]
+  },
+  {
+    "draftId": "2c438f4d-b76c-4689-ae72-edef0ba2aee5",
+    "eventName": "Bizkaia Kopa Trail (Zamudio)",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "27a672b9-d65b-4661-80f5-5da0431fe6a6",
+    "eventName": "Marcha Rio Verde Trail",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "c90d6b7f-d4b1-4f7d-a1aa-2a86fded5f78",
+    "eventName": "Trail da Baña",
+    "outcome": "partial",
+    "races": [
+      {
+        "distanceKm": 28,
+        "name": "Trail largo",
+        "elevationGainM": 1000,
+        "sources": [
+          "https://www.elcorreogallego.es/deportes/2025/09/19/bana-prepara-celebrar-octava-edicion-121720674.html",
+          "https://www.carreirasgalegas.com (listing for Trail da Baña, surfaced via web search)"
+        ]
+      }
+    ]
+  },
+  {
+    "draftId": "ebc83ddd-316a-4be9-a934-3c174a0d4a3e",
+    "eventName": "FalcoTrail",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "5aeb69d3-ebd7-45c4-a391-020682b71853",
+    "eventName": "Backyard Ultra Almaraz",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "1a183aba-1c43-4cac-875a-6ae1be7c0213",
+    "eventName": "Trail das Bestas",
+    "outcome": "partial",
+    "races": [
+      {
+        "distanceKm": 43,
+        "name": "Maratón",
+        "elevationGainM": 2080,
+        "sources": [
+          "https://traildasbestas.com/ ('43 kms. desnivel: +2080 mts. -2080mts.')",
+          "https://utmb.world/es/utmb-index/races/33570.traildasbestastraildasbestas.2025 ('43 KM / 2080 M+')"
+        ]
+      }
+    ]
+  },
+  {
+    "draftId": "0ecbf8d1-72df-4d72-ab4f-a8e0fab7b150",
+    "eventName": "Carreña Trail",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "17b9f22d-fa4f-414a-a09d-d7c1d82f9fc0",
+    "eventName": "Trail La Vegueta",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "1b03ce82-ec6d-4dce-a5b1-69ed87504ee1",
+    "eventName": "Pilancones Tunte Trail",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "335dd2e6-f68b-41ec-84fe-8bce2da640a6",
+    "eventName": "Doñana Trail Marathon",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "3e9596f9-b11c-46ec-b853-63291d3b6b96",
+    "eventName": "WOP Challenge Bilbao-Bizkaia",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "4512f7a1-06b0-4293-af45-7ba65c85b8fa",
+    "eventName": "Trail de la Berrea Sierra de Andújar",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "54a4674f-37e9-4996-bf39-3ddad5fc1164",
+    "eventName": "Carrera Las Minas de Remolinos",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "4a57c00f-bf17-4808-bdff-67a4e0a3d5c3",
+    "eventName": "Carrera Los Alfares",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "5dfa2cb6-e50c-4b17-b838-4a21f25453e2",
+    "eventName": "Ecomaratón La Donaira",
+    "outcome": "partial",
+    "races": [
+      {
+        "distanceKm": 15,
+        "name": "Trail",
+        "elevationGainM": 800,
+        "sources": [
+          "https://cadiznoticias.es/la-vi-ecomaraton-la-donaira-unira-deporte-naturaleza-y-convivencia-entre-el-gastor-y-montecorto/ ('15 kilómetros y 800 metros de desnivel positivo')",
+          "https://www.teleprensa.com/articulo/cadiz/vi-ecomaraton-donaira-... ('otro trail de 15 km con 800 metros de desnivel positivo')"
+        ]
+      }
+    ]
+  },
+  {
+    "draftId": "56fb25a7-7221-48d7-b364-802807e9ff3b",
+    "eventName": "CxM Valle de los Guájares",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "6160144a-8726-46fc-aee9-6c006fc5ad74",
+    "eventName": "Tinajo YouTrail",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "71a13a53-03be-458c-9b5b-324f9c157f8d",
+    "eventName": "Deustuko Kilometro Bertikala",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "791f09a4-8d3a-426a-9536-3bcbebf5955d",
+    "eventName": "Trail do Acibal",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "9338127b-3122-49fa-b634-eff6ccdbf87c",
+    "eventName": "Ribera Run Experience",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "a3c36175-9b38-45e9-84c6-bac920a303fa",
+    "eventName": "Desafío Cimas de Blanca Trail",
+    "outcome": "partial",
+    "races": [
+      {
+        "distanceKm": 16,
+        "name": null,
+        "elevationGainM": 518,
+        "sources": [
+          "https://running.life/es/carrera/desafio-cimas-de-blanca-trail ('16 km: desnivel positivo 518 m')",
+          "https://www.wikiloc.com/trail-running-trails/circuito-desafio-cimas-de-blanca-trail-16k-blanca-242083523 (course confirmation: 16,06 km loop named for this exact race, recorded Nov 2025, GPS gain 396 m)"
+        ]
+      }
+    ]
+  },
+  {
+    "draftId": "9a7b5e63-358b-410f-9ba2-abd61c01d9c3",
+    "eventName": "Trail dels Fars",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "bc6f6b6b-01db-4cad-b2bc-3850ffab8d16",
+    "eventName": "Trail Castillo de Montearagón",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "bda959ca-478e-4bb1-87d1-bcd65860b3a0",
+    "eventName": "Trail Merindad Río Ubierna",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "c226d672-0ad2-47c2-98af-7c3433d65e30",
+    "eventName": "Full Moon Trail",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "e7065639-98b6-498c-9efd-1ae4b4e2fb72",
+    "eventName": "Dólar Trail",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "fc4bcddf-41a6-4f88-94f0-db9158506785",
+    "eventName": "Sky Gran Canaria",
+    "outcome": "partial",
+    "races": [
+      {
+        "distanceKm": 46,
+        "name": null,
+        "elevationGainM": 2660,
+        "sources": [
+          "https://carreraspopularesgrancanaria.es/calendario/sky-gran-canaria/",
+          "https://carrerasdemontana.com/2024/09/21/sky-gran-canaria-resultados-21k-mayayo/ (and the same site's 2024 race reports)"
+        ]
+      },
+      {
+        "distanceKm": 21,
+        "name": null,
+        "elevationGainM": 740,
+        "sources": [
+          "https://carreraspopularesgrancanaria.es/calendario/sky-gran-canaria/",
+          "https://carrerasdemontana.com/2024/09/21/sky-gran-canaria-resultados-21k-mayayo/ (and the same site's 2024 race reports)"
+        ]
+      }
+    ]
+  },
+  {
+    "draftId": "eb526e3a-8233-4950-a542-5c23d65ca4a2",
+    "eventName": "Ultra Maratón Costa de Almería",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "fbabfbd9-60df-458c-93b8-3f47e582a017",
+    "eventName": "Trail Sierra San Cristóbal",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "fcb05351-dff0-41cd-86ad-5c3e5146adfe",
+    "eventName": "Wine Run Rioja Alavesa",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "004102e3-5a6d-470b-be25-0e8504be87e2",
+    "eventName": "Trail Pino Santo",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "053f0a83-0326-4c72-8213-ab8bd358072f",
+    "eventName": "Trail Monte Canales",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "1b4ce622-5bf0-480e-8204-f815a5a6c01e",
+    "eventName": "Trail Valle del Guadiaro",
+    "outcome": "filled",
+    "races": [
+      {
+        "distanceKm": 13,
+        "name": "Trail Corto",
+        "elevationGainM": 280,
+        "sources": [
+          "https://www.sanroque.es/content/presentado-el-i-trail-valle-del-guadiaro ('desnivel positivo acumulado de 280 metros' / 'desnivel positivo acumulado es de 583 metros')",
+          "https://www.diarioarea.com/san-roque/i-trail-valle-del-guadiaro-se-agotan-las-300-plazas-dos-dias-antes-de-la-carrera/ (same 280 m and 583 m)"
+        ]
+      },
+      {
+        "distanceKm": 21,
+        "name": "Trail Largo",
+        "elevationGainM": 583,
+        "sources": [
+          "https://www.sanroque.es/content/presentado-el-i-trail-valle-del-guadiaro ('desnivel positivo acumulado de 280 metros' / 'desnivel positivo acumulado es de 583 metros')",
+          "https://www.diarioarea.com/san-roque/i-trail-valle-del-guadiaro-se-agotan-las-300-plazas-dos-dias-antes-de-la-carrera/ (same 280 m and 583 m)"
+        ]
+      }
+    ]
+  },
+  {
+    "draftId": "3033a08f-5ad2-42bb-b3b4-4777a3462956",
+    "eventName": "Desafío Sarrio",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "2f9af1ee-923e-454f-b98d-9961638534c0",
+    "eventName": "Desafio X-Men",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "4e8442d9-77c5-4678-b1e4-2ed856c639f6",
+    "eventName": "Paleotrail Loarre",
+    "outcome": "filled",
+    "races": [
+      {
+        "distanceKm": 13,
+        "name": "Trepadinos",
+        "elevationGainM": 586,
+        "sources": [
+          "https://huevosdeloarre.com/paleotrail/recorrido-trepadinos/ (organiser route page: '586 m+' of climbing concentrated in the first section to Santa Marina)",
+          "https://www.trailrun.es/carreras/paleotrail-loarre-correr-pistas-dinosaurios-en-prepirineo-aragones_316793_102.html ('586 m+')"
+        ]
+      },
+      {
+        "distanceKm": 21,
+        "name": "Quebrantahuevos",
+        "elevationGainM": 1000,
+        "sources": [
+          "http://monrasin.blogspot.com/2025/11/paleotrail-loarre.html ('21 kms', '1000 metros de desnivel positivo')",
+          "https://www.trailrun.es/carreras/paleotrail-loarre-... ('1.000 m+')"
+        ]
+      }
+    ]
+  },
+  {
+    "draftId": "4a1b676b-0191-4c0a-9cd1-b8230e7c93ee",
+    "eventName": "Charca Grande",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "4cd5718d-7304-4bf4-b6ad-eee71dc8193d",
+    "eventName": "Media Maratón Valdigüelo y Cross Valdigüelo",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "585195b6-7a5b-45a3-b81b-6b437dbd28af",
+    "eventName": "CXM Sierra Albarracín",
+    "outcome": "partial",
+    "races": [
+      {
+        "distanceKm": 24,
+        "name": null,
+        "elevationGainM": 1400,
+        "sources": [
+          "https://andaluciarunning.com/carreras/trail-sierra-albarracin-el-bosque/ ('24.000 metros de distancia y 1.400 metros de desnivel positivo')",
+          "https://refugiocasadelasbeatas.com/vii-cxm-sierra-de-albarracin/ ('más de 1.400 m de desnivel positivo')"
+        ]
+      }
+    ]
+  },
+  {
+    "draftId": "62562420-4539-4eb9-9781-357b5de9f5b3",
+    "eventName": "Media Maratón Villa de Montehermoso",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "62e54bab-509b-4655-8851-21f9901cf058",
+    "eventName": "Trail Nocturno Dehesa de Santa Fé",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "69e0a913-2bd7-4c9a-b227-e5c46a097560",
+    "eventName": "Oso Trail Proaza",
+    "outcome": "filled",
+    "races": [
+      {
+        "distanceKm": 14,
+        "name": "Trail",
+        "elevationGainM": 783,
+        "sources": [
+          "https://www.turismoasturias.es/agenda-de-asturias/deporte/-/calendarsuite/event/oso-trail-proaza/14539986/jr0cMeS144cd ('un recorrido de 14 kilómetros ... con un desnivel positivo aproximado de 783 metros')",
+          "https://www.wikiloc.com/trail-running-trails/oso-trail-proaza-221335863 (track named for the race, recorded May 2025: gain 797 m, loss 797 m, max 943 m, min 202 m - the max/min match the declared course exactly, confirming it)"
+        ]
+      },
+      {
+        "distanceKm": 14,
+        "name": "Marcha",
+        "elevationGainM": 783,
+        "sources": [
+          "https://www.turismoasturias.es/agenda-de-asturias/deporte/-/calendarsuite/event/oso-trail-proaza/14539986/jr0cMeS144cd ('un recorrido de 14 kilómetros ... con un desnivel positivo aproximado de 783 metros')",
+          "https://www.wikiloc.com/trail-running-trails/oso-trail-proaza-221335863 (track named for the race, recorded May 2025: gain 797 m, loss 797 m, max 943 m, min 202 m - the max/min match the declared course exactly, confirming it)",
+          "same 14 km course: the event description gives a single route, and both draft rows record distanceKm 14"
+        ]
+      }
+    ]
+  },
+  {
+    "draftId": "63f30c50-b499-4f33-a7aa-552f12162b05",
+    "eventName": "Isleta Extreme",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "6d71a635-37ba-4b96-8425-a9b22eee1909",
+    "eventName": "Carrera de Montaña Villa de Hermigua",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "72293e95-5c50-4fcc-8d9c-3802398f8fdb",
+    "eventName": "Siete Picos Integral",
+    "outcome": "partial",
+    "races": [
+      {
+        "distanceKm": 16,
+        "name": null,
+        "elevationGainM": 1000,
+        "sources": [
+          "https://www.fororunners.es/noticias/inscripciones-siete-picos-integral-cercedilla/ ('16,5 km', '1.000 m+')",
+          "https://carreraspormontana.com/carreras/siete-picos-integral-101-anos-despues-cercedilla-... ('aproximadamente 16,5 kilómetros con un desnivel positivo de 1.000 metros')"
+        ]
+      }
+    ]
+  },
+  {
+    "draftId": "8249243a-53e7-4102-a24f-c81c3acc0640",
+    "eventName": "Sant Carles Trail",
+    "outcome": "partial",
+    "races": [
+      {
+        "distanceKm": 12,
+        "name": "Trail",
+        "elevationGainM": 367,
+        "sources": [
+          "https://trainerday.com/events/es/xi-adobe-sant-carles-trail (12 km trail, 367 m positive elevation gain)",
+          "https://es.wikiloc.com/rutas-carrera-por-montana/sant-carles-trail-41606290 (track published by the organiser's own Wikiloc account 'ibiza blue challenge': 12,76 km one-way, elevation gain 367 m - matching the published figure exactly)"
+        ]
+      }
+    ]
+  },
+  {
+    "draftId": "9e0c0ecd-407d-4f21-9951-6517ca4972f8",
+    "eventName": "Trail Las Aguilillas",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "a8dc1802-af5c-4266-8290-3ccaf1a5be94",
+    "eventName": "Oboncross",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "a9531446-1f8f-4ee4-a47d-9b4b620a382b",
+    "eventName": "Ariño Trail de Vuelta a la Mina",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "aeccee08-f3b4-4bcc-86c7-3897555e551d",
+    "eventName": "Sabinita Trail Aromas de Mi Pueblo",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "b02de754-64b8-43e8-ad0c-6cb5ed4893ff",
+    "eventName": "Trail Minero Santa Bárbara",
+    "outcome": "partial",
+    "races": [
+      {
+        "distanceKm": 42,
+        "name": "Maratón TMSB",
+        "elevationGainM": 2450,
+        "sources": [
+          "https://carreraspormontana.com/noticias/trail-minero-santa-barbara-2025-dos-distancias-y-una-meta-inolvidable-en-el-pozo-soton/ ('2.450 m D+')",
+          "https://maratonradio.com/noticias/trail-minero-santa-barbara-asturias/ ('42 kilómetros y 2.450 metros de desnivel positivo')"
+        ]
+      }
+    ]
+  },
+  {
+    "draftId": "b6f8d7d6-1afa-4405-9173-71c6b3247f4e",
+    "eventName": "Marcha Cueva del Gato",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "b4a15964-71c6-46ed-9d9e-67296b375992",
+    "eventName": "Trail Sierra de Facinas",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "b94ddcbc-9f23-4003-9e6a-f7e5d981fab7",
+    "eventName": "Trail Monte Canales",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "bd85a7c2-0faf-4409-b659-8db1052e3494",
+    "eventName": "Trail Monte Castelo",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "c217d982-03f3-4eb1-a348-fb46a1d40348",
+    "eventName": "Adeyahamen Trail",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "c8c4bdff-678b-4e99-a2db-2946570c43b1",
+    "eventName": "Arrankudiaga-Zollo Trail Lasterketa",
+    "outcome": "filled",
+    "races": [
+      {
+        "distanceKm": 21,
+        "name": "Mendi Maratoi Erdia",
+        "elevationGainM": 970,
+        "sources": [
+          "https://sportmaniacs.com/es/services/inscription/arrankudiaga-zolloko-trail-lasterketa-2026 ('21,1 km', '970m-ko desnibel positiboa'; '7,9 km', '410m-ko desnibel positiboa')",
+          "https://sites.google.com/view/arrankudiaga-zollotraillasterk/ (organiser site, per-modality pages: same 21,1 km / 970 m and 7,9 km / 410 m, with checkpoint distances Madalena 5,1 km, Basakoetxe 11,3 km, Zollo 17 km)"
+        ]
+      },
+      {
+        "distanceKm": 8,
+        "name": "Trail Herrikoia",
+        "elevationGainM": 410,
+        "sources": [
+          "https://sportmaniacs.com/es/services/inscription/arrankudiaga-zolloko-trail-lasterketa-2026 ('21,1 km', '970m-ko desnibel positiboa'; '7,9 km', '410m-ko desnibel positiboa')",
+          "https://sites.google.com/view/arrankudiaga-zollotraillasterk/ (organiser site, per-modality pages: same 21,1 km / 970 m and 7,9 km / 410 m, with checkpoint distances Madalena 5,1 km, Basakoetxe 11,3 km, Zollo 17 km)"
+        ]
+      }
+    ]
+  },
+  {
+    "draftId": "c575a113-d74e-4e58-a1f9-e59655328491",
+    "eventName": "Trail Majal Blanco",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "c6148756-64eb-4590-b244-88b26b767de7",
+    "eventName": "Urban Trail Moral Extreme",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "d3d9e0b5-773a-4248-a90f-140f3df9b09d",
+    "eventName": "CxM Toleta",
+    "outcome": "partial",
+    "races": [
+      {
+        "distanceKm": 29,
+        "name": null,
+        "elevationGainM": 1650,
+        "sources": [
+          "https://inscripciones.tecnocrono.com/inscripcion/v-cxm-toleta/ficheros/?filetype=reglamento&lang=es (organiser reglamento: '29 km y un desnivel positivo de 1650 metros')",
+          "https://www.wikiloc.com/trail-running-trails/cxm-trail-toleta-2023-151527856 (course confirmation: 28,23 km loop, recorded gain 1.451 m)"
+        ]
+      }
+    ]
+  },
+  {
+    "draftId": "cb0237f2-4a4c-49a6-b64e-341fc5a5ed31",
+    "eventName": "Sport Night Camponaraya",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "d80943fb-c698-4d6d-92be-759435240ed7",
+    "eventName": "Carrera Mundo Cero",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "ddec2c06-f47f-4198-a200-6f983ec380a7",
+    "eventName": "Trail Alajeró",
+    "outcome": "partial",
+    "races": [
+      {
+        "distanceKm": 9,
+        "name": null,
+        "elevationGainM": 400,
+        "sources": [
+          "https://gomeraverde.es/art/100496/el-viii-trail-alajero-se-celebrara-los-dias-22-y-23-noviembre ('unos 9 kilómetros' con '+400 metros de desnivel')",
+          "https://ayuntamientoalajero.es/index.php/prensa/ultimas-noticias/1008-... (Alajeró town hall, same 9 km / +400 m)"
+        ]
+      }
+    ]
+  },
+  {
+    "draftId": "f15b118d-c8f2-4c41-ad66-c9f53ee706a8",
+    "eventName": "Acebuches Trail",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "dca3aa19-2981-441f-8fd8-a82e870bd4b5",
+    "eventName": "Cross COI Dehesa de Botoa",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "0c1da980-fbfa-483e-8742-80432cedd979",
+    "eventName": "Carrera Vertical El Risco",
+    "outcome": "filled",
+    "races": [
+      {
+        "distanceKm": 3,
+        "name": "Cronoescalada",
+        "elevationGainM": 700,
+        "sources": [
+          "https://macaronesiasport.com/trail-running/todo-listo-para-la-carrera-vertical-el-risco-2025/ ('una ascensión cronometrada de 3,7 kilómetros con un duro desnivel positivo de 700 metros')",
+          "https://todoenjoy.com/... ('V Carrera Vertical El Risco con más de 700 metros de desnivel en Teno Alto'); gotrail.run independently confirms the 3,7 km distance"
+        ],
+        "note": "The draft records distanceKm 3 while every source gives 3,7 km for this single-modality race. Distance left untouched as instructed; flagged for review."
+      }
+    ]
+  },
+  {
+    "draftId": "f455ba7a-135c-4bca-a1d5-bedfe9a09559",
+    "eventName": "Subida al Mingrano",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "0738978c-5e6a-4294-9d95-775f13fdd7c5",
+    "eventName": "CxM El Ronquillo",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "181ba8dc-62cf-499a-9fcf-d87b2585bcb5",
+    "eventName": "Anaga Trail Solidaria",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "1f82cc02-86a9-4182-9b56-785a8e526a3a",
+    "eventName": "Carrera de Montaña El Picón de Beamud",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "24393bbe-1788-45e5-a523-60ccdd4e0705",
+    "eventName": "Carrera Atlética de Montaña «Monte Naranco»",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "279b4a08-c261-4448-a286-5d9b56a5043a",
+    "eventName": "Trail Navideño Risco Blanco",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "2a6496b2-061b-4191-8988-2ba3eb00132a",
+    "eventName": "GARIN MENDI-LASTERKETA",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "30fcbbe6-8a22-45da-9c2f-b64ac495931d",
+    "eventName": "Cross Solidario Narval",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "3b920c2e-9311-4045-9c92-09ba47c3a6b1",
+    "eventName": "CxM Picu Turbina",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "364bf405-f7c3-4e47-acef-d9940f491fc2",
+    "eventName": "Trail CxM Marismas de Corrales",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "399939cb-5759-42c1-b132-1a2ae512419a",
+    "eventName": "Punta Lucero igoera",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "41eaf753-4743-4048-b9bd-1e07b2f338d8",
+    "eventName": "Subida a la Virgen del Espino",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "4c49c262-9c00-462f-b0bd-223222c2248c",
+    "eventName": "Trail Caldera de El Cuchillo",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "4f86368c-1e66-43b7-b0cf-b79f9795103a",
+    "eventName": "Trail Cabo Noval",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "620fcaae-8389-4722-b4f5-ba60789f49d6",
+    "eventName": "Carrera Subida al Cerro de la Degollá",
+    "outcome": "filled",
+    "races": [
+      {
+        "distanceKm": 14,
+        "name": null,
+        "elevationGainM": 1000,
+        "sources": [
+          "web search of the event listings (trainerday / carreraspopulares.com entries for Subida al Cerro de la Degollá): '14 km con 1.000 m de desnivel positivo'",
+          "https://www.wikiloc.com/trail-running-trails/carrera-subida-al-cerro-de-la-degolla-priego-5218734 (course confirmation: 13,90 km loop named for the race, 163 recordings, gain 866 m - 13% under the declared figure, the normal declared-vs-GPS drift)"
+        ]
+      }
+    ]
+  },
+  {
+    "draftId": "508a52ec-7c52-4103-892e-40db0993eccf",
+    "eventName": "IberiKa Trail CAM La Cabrera",
+    "outcome": "partial",
+    "races": [],
+    "note": "The draft's Corto (685 m) and Largo (1500 m) already carried values and were left untouched; the reglamento confirms them as '15,7 kms y 685 m de desnivel positivo' and '23,5 Kms. y 1500 m de desnivel positivo'. Only the 6 km marcha was missing and it could not be resolved."
+  },
+  {
+    "draftId": "6a345dd5-b71d-4be1-8554-f6dd75ceb20b",
+    "eventName": "Trail Castillo de Peñarroya",
+    "outcome": "partial",
+    "races": [],
+    "note": "The draft's Trail Largo (325 m) and Trail Corto (200 m) already carried values and were left untouched; the town hall announcement confirms them as '28 kilómetros, con 325 metros de desnivel positivo' and '16 kilómetros, con 200 metros de desnivel positivo'. Only the 10 km marcha was missing and it could not be resolved."
+  },
+  {
+    "draftId": "6b672020-7c7e-458d-a6ae-4137d6a963d8",
+    "eventName": "Redondela Backyard Ultra",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "70675649-5c1a-4649-abfe-b7c7a30d7b0f",
+    "eventName": "X Carrera Trail Paterna del Madera",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "726bb8b1-7035-433e-b95b-d167c986cc40",
+    "eventName": "Yuri Trail por las Sendas de Isabel",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "738b9a1f-57d3-4b9d-8a2c-15e705e7fa99",
+    "eventName": "Subida Pedestre al Santuario Virgen de la Sierra",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "7a525fc3-7c8a-453c-b005-ff49c7ae26c4",
+    "eventName": "MLK Trail & Tahermo",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "7b1c37c8-1143-4889-95cd-c8a39d7b5ee3",
+    "eventName": "Trail Hinojos, tu huella en Doñana",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "92a5233e-cae0-4e9d-9db8-ee6de2529899",
+    "eventName": "Peña Prieta SkyRace",
+    "outcome": "filled",
+    "races": [
+      {
+        "distanceKm": 36,
+        "name": "SkyRace",
+        "elevationGainM": 2600,
+        "sources": [
+          "https://es.wikiloc.com/rutas-carrera-por-montana/pena-prieta-sky-race-36km-2-600-m-225137436 (track titled 'Peña Prieta Sky Race 36km - 2.600 m+')",
+          "Grupo de Acción Local Liébana / uno.es listings: 'la sky race de 36km y 2600m', alongside a Peña Prieta Trail and Marcha of 8 km / 560 m"
+        ]
+      }
+    ]
+  },
+  {
+    "draftId": "80931650-75b6-411a-b6f3-40e0d52711e6",
+    "eventName": "IV Copa Trail Paterna del Madera",
+    "outcome": "filled",
+    "races": [
+      {
+        "distanceKm": 34,
+        "name": "Copa Trail",
+        "elevationGainM": 1626,
+        "sources": [
+          "Circuito Provincial de Trail / Diputación de Albacete coverage: a 34 km course with 1.626 m of elevation gain, start and finish at the Complejo Deportivo Adolfo Suárez, via Pajonar (7,0 km), Refugio Las Mesas (8,9), Cascada de los Endrinales (13,4), El Encebrico (19,9), Mirador de la Chaparra (25,2) and Fuente Lisa (29,8)",
+          "https://www.wikiloc.com/trail-running-trails/iii-copa-trail-paterna-del-madera-2024-circuito-trail-de-albacete-188180227 (track named for the race: 33,96 km loop, gain 1.645 m, loss 1.645 m)"
+        ],
+        "note": "The published 1.626 m was described as 'acumulado', which is ambiguous, but the name-matching track at the same distance records 1.645 m of gain - within 1% - confirming the figure is genuine D+ rather than an ascent-plus-descent total (which would have implied roughly 813 m)."
+      }
+    ]
+  },
+  {
+    "draftId": "93d330db-6955-4221-be5d-72c7c875f7cd",
+    "eventName": "Iberika Trail El Molar",
+    "outcome": "partial",
+    "races": [],
+    "note": "The draft's Corta (332 m) and Larga (748 m) already carried values and were left untouched; the organiser's recorrido page confirms them as 15 km/+332 m and 24 km/+748 m. Only the 9 km marcha was missing and could not be resolved."
+  },
+  {
+    "draftId": "96b277eb-47c2-43a7-a3ca-72906263e77f",
+    "eventName": "Cross Subida a la Fuente del Sapo",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "a4d782a9-832b-41a9-8b3e-f8a13304a805",
+    "eventName": "BERTXIN XTREM",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "ae7b8b84-7f1f-4156-b98b-8d13b146eef1",
+    "eventName": "Camino del Salvador",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "b0b8071e-e392-4ff0-9bef-3e6c8f00b745",
+    "eventName": "Kalamua Barinaga Jaitsiera",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "b2a7f1f7-3845-4fcb-9a0a-29382bd869f6",
+    "eventName": "Trail Somarroza Virgen de Valencia",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "ba94573a-01eb-4662-8c54-7ea3b2f5df8e",
+    "eventName": "Kaxtrail Mendi Lasterketa",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "be1b35de-b55e-443b-86c0-0f76e23e72a5",
+    "eventName": "Medio Kilómetro Vertical Garachico",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "c3f4b241-4e4c-4726-8212-a91bc3aa4e94",
+    "eventName": "San Silvestre Corraliega",
+    "outcome": "partial",
+    "races": [],
+    "note": "The draft's 5 km Trail already carried 691 m and was left untouched. Only the 15 km Marcha was missing and could not be resolved."
+  },
+  {
+    "draftId": "c94bb804-5ed8-443d-af63-4f51eb3cf135",
+    "eventName": "Roncesvalles-Zubiri",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "cc9c7df3-a2a2-43eb-9836-9aee8f3a362e",
+    "eventName": "Endino Trail",
+    "outcome": "partial",
+    "races": [],
+    "note": "The draft's 21 km Trail (1200 m) and 13 km Marcha (631 m) already carried values and were left untouched; monteregaliz corroborates them as 'Trail 22 km / +1.200m' and 'Andarines 13 km con +600m'. Only the 13 km Trail row was missing and could not be resolved."
+  },
+  {
+    "draftId": "d9b4107c-fa22-42fa-9346-59c386ddc75d",
+    "eventName": "Carrera Trail Ciudad de Chinchilla",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "ed012ba1-8b6f-4971-98bb-b3491cf73db2",
+    "eventName": "Trail Almodóvar del Pinar",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "ed456afb-c04c-4f9f-81a3-c1ebd262bad5",
+    "eventName": "Churrigueresca",
+    "outcome": "filled",
+    "races": [
+      {
+        "distanceKm": 10,
+        "name": "Trail",
+        "elevationGainM": 158,
+        "sources": [
+          "https://ayto-nuevobaztan.es/la-vii-churrigueresca-llega-a-nuevo-baztan-en-formato-nocturno/ (Nuevo Baztán town hall, the organiser, for the VII edition: 'Trail 10K' with '+158 metros')",
+          "https://es.wikiloc.com/rutas-carrera-por-montana/iii-carrera-churrigueresca-114062226 (track named for the race: gain 145 m, consistent in magnitude with the declared 158 m and in the normal declared-vs-GPS direction)"
+        ],
+        "note": "The corroborating track is the III edition at 8,90 km, 11% shorter than this draft's 10 km, so it supports the magnitude rather than matching the course exactly. The written value comes from the organiser's own current-edition page, which states the 10 km and the +158 m together."
+      }
+    ]
+  },
+  {
+    "draftId": "f85ed87c-3b26-45f0-a11a-e877f63880b1",
+    "eventName": "Usurbeko Igoera",
+    "outcome": "not_found",
+    "races": []
+  },
+  {
+    "draftId": "ff7f78ef-9ef4-420e-9969-ef9cad876bbb",
+    "eventName": "Trail Iniciación Paterna del Madera",
+    "outcome": "not_found",
+    "races": []
+  }
+]
