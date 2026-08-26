@@ -41,12 +41,14 @@ Today the product and listings center on Catalonia, with Valencia as the active 
 
 Next.js (App Router), React, and TypeScript, deployed on Vercel. Supabase (Postgres + Auth) is the backend. Architecture is React Server Components plus Route Handler APIs, with server-side services over the database and client-side fetches to those APIs. next-intl for public UI in Spanish, Catalan, English, and French (`es`, `ca`, `en`, `fr`), while the blog remains `es` and `ca` only; MapLibre GL for the race map; PostHog, Vercel Analytics, and Cloudflare Web Analytics for observability.
 
-## Main metrics (April 2026)
+## Main metrics (August 2026)
+
+Trailing-three-month figures are the ones used in commercial outreach.
 
 | Metric                          | Value   |
 | ------------------------------- | ------- |
-| Monthly visits                  | ~10,000 |
-| Listed events                   | ~300    |
-| Month-over-Month visits growth  | 100%    |
+| Unique users (last 3 months)    | ~17,000 |
+| Pageviews (last 3 months)       | ~37,000 |
+| Listed events                   | ~410    |
 | Mobile share                    | 67%     |
 | Organic traffic (Google Search) | 85%     |
