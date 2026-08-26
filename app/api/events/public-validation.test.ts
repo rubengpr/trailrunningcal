@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ValidationError } from '@/lib/errors';
+import { PROVINCES } from '@/lib/geography/provinces';
 import { parsePublicEventPageRequest } from './public-validation';
 
 function params(query = ''): URLSearchParams {
@@ -40,6 +41,15 @@ describe('parsePublicEventPageRequest', () => {
     });
     expect(result.scope).toBeUndefined();
     expect(result.referenceDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  });
+
+  it('accepts a province filter covering the whole catalogue', () => {
+    const query = PROVINCES
+      .map((province) => `province=${encodeURIComponent(province)}`)
+      .join('&');
+
+    expect(parsePublicEventPageRequest(params(query)).filters.provinces)
+      .toEqual([...PROVINCES]);
   });
 
   it.each([

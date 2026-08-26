@@ -1,5 +1,6 @@
 import { ValidationError } from '@/lib/errors';
 import { DISTANCE_GROUPS, MONTH_INDICES } from '@/lib/constants';
+import { PROVINCES } from '@/lib/geography/provinces';
 import {
   isRaceCategorySlug,
   type RaceCategorySlug,
@@ -14,6 +15,8 @@ import { MAX_PUBLIC_EVENTS_PAGE } from '@/lib/db/public-events-pagination';
 const DISTANCE_GROUP_SET = new Set<string>(DISTANCE_GROUPS);
 const MONTH_INDEX_SET = new Set<number>(MONTH_INDICES);
 const MAX_FILTER_VALUES = 20;
+// Every province in the catalogue is selectable in the public filter.
+const MAX_PROVINCE_FILTER_VALUES = PROVINCES.length;
 const MAX_PROVINCE_LENGTH = 100;
 
 function uniqueValues(values: string[]): string[] {
@@ -67,7 +70,7 @@ function parseMonths(values: string[]): number[] {
 function parseProvinces(values: string[]): string[] {
   const provinces = uniqueValues(values.map((value) => value.trim()));
   if (
-    provinces.length > MAX_FILTER_VALUES ||
+    provinces.length > MAX_PROVINCE_FILTER_VALUES ||
     provinces.some(
       (province) =>
         province.length === 0 || province.length > MAX_PROVINCE_LENGTH,
