@@ -6,7 +6,10 @@ import { Trash2 } from 'lucide-react';
 import { FilterSelect } from '@/components/filters/filter-select';
 import { FilterPill } from '@/components/filters/filter-pill';
 import { DISTANCE_GROUPS, MONTH_INDICES } from '@/lib/constants';
-import { PUBLIC_PROVINCES } from '@/lib/geography/provinces';
+import {
+  DESTINATION_PROVINCE_GROUPS,
+  GEOGRAPHY,
+} from '@/lib/geography/destinations';
 import { RACE_TYPES, RACE_TYPE_CATEGORY_KEYS } from '@/lib/races/home-filters';
 
 interface FilterBarProps {
@@ -48,16 +51,21 @@ export function FilterBar({
   const tMonthsFull = useTranslations('monthsFull');
   const tDistanceGroups = useTranslations('distanceGroups');
   const tCategory = useTranslations('category');
+  const tProvince = useTranslations('provincia.names');
+  const tGeography = useTranslations('geography.regions');
 
   const monthOptions = MONTH_INDICES.map((index) => ({
     value: index.toString(),
     label: tMonthsFull(index.toString()),
   }));
 
-  const provinceOptions = PUBLIC_PROVINCES.map((province) => ({
-    value: province,
-    label: province,
-  }));
+  const provinceOptions = DESTINATION_PROVINCE_GROUPS.flatMap(({ regionId, provinceIds }) =>
+    provinceIds.map((provinceId) => ({
+      value: GEOGRAPHY.provinces[provinceId].dbName,
+      label: tProvince(provinceId),
+      group: tGeography(regionId),
+    })),
+  );
 
   const distanceOptions = DISTANCE_GROUPS.map((group) => ({
     value: group,

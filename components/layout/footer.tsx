@@ -6,7 +6,7 @@ import { isBlogLocale, type Locale } from '@/i18n';
 import { getContactPath } from '@/lib/i18n/paths';
 import { getTypePath } from '@/lib/races/race-types';
 import {
-  DESTINATION_PROVINCE_IDS,
+  DESTINATION_PROVINCE_GROUPS,
   GEOGRAPHY,
   getDestinationPath,
 } from '@/lib/geography/destinations';
@@ -24,8 +24,12 @@ const MAX_FOOTER_POSTS = 5;
 
 export async function Footer() {
   const locale = (await getLocale()) as Locale;
-  const t = await getTranslations('footer');
-  const tNav = await getTranslations('navigation');
+  const [t, tNav, tProvince, tGeography] = await Promise.all([
+    getTranslations('footer'),
+    getTranslations('navigation'),
+    getTranslations('provincia.names'),
+    getTranslations('geography.regions'),
+  ]);
   const blogPosts = isBlogLocale(locale)
     ? getPostsForLocale(locale).slice(0, MAX_FOOTER_POSTS)
     : [];
@@ -74,21 +78,28 @@ export async function Footer() {
               <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 {t('byProvince')}
               </p>
-              <div className="flex flex-col gap-1">
-                {DESTINATION_PROVINCE_IDS.map((provinceId) => {
-                  const province = GEOGRAPHY.provinces[provinceId];
+              <div className="max-h-80 overflow-y-auto pr-2">
+                {DESTINATION_PROVINCE_GROUPS.map(({ regionId, provinceIds }) => (
+                  <section key={regionId} className="mb-3 last:mb-0">
+                    <p className="text-xs font-semibold text-gray-500">{tGeography(regionId)}</p>
+                    <div className="mt-1 flex flex-col gap-1">
+                      {provinceIds.map((provinceId) => {
+                        const province = GEOGRAPHY.provinces[provinceId];
 
-                  return (
-                    <Link
-                      key={provinceId}
-                      href={getDestinationPath(locale, province.regionId, provinceId)}
-                      prefetch={false}
-                      className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors py-1"
-                    >
-                      {tNav(province.slug)}
-                    </Link>
-                  );
-                })}
+                        return (
+                          <Link
+                            key={provinceId}
+                            href={getDestinationPath(locale, province.regionId, provinceId)}
+                            prefetch={false}
+                            className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors py-1"
+                          >
+                            {tProvince(provinceId)}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </section>
+                ))}
               </div>
             </div>
             {isBlogLocale(locale) && <div className="col-span-2 sm:col-span-1 flex flex-col gap-2">

@@ -1,11 +1,18 @@
 import { describe, expect, it } from 'vitest';
 import { BASE_URL } from '@/lib/config';
 import {
+  DESTINATION_PROVINCE_IDS,
+  GEOGRAPHY,
   buildDestinationAlternateLinks,
   getDestinationBySlugs,
   getDestinationPath,
   getProvinceByDbName,
 } from './destinations';
+import { PROVINCES } from './provinces';
+import ca from '@/locales/ca/translation.json';
+import en from '@/locales/en/translation.json';
+import es from '@/locales/es/translation.json';
+import fr from '@/locales/fr/translation.json';
 
 describe('getDestinationPath', () => {
   it('returns the destination path for a locale, region, and province', () => {
@@ -17,6 +24,12 @@ describe('getDestinationPath', () => {
     );
     expect(getDestinationPath('es', 'valencianCommunity', 'castellon')).toBe(
       '/es/d/comunidad-valenciana/castellon',
+    );
+    expect(getDestinationPath('es', 'andalusia', 'granada')).toBe(
+      '/es/d/andalucia/granada',
+    );
+    expect(getDestinationPath('es', 'andorra', 'andorra')).toBe(
+      '/es/d/andorra/andorra',
     );
   });
 });
@@ -52,9 +65,60 @@ describe('getDestinationBySlugs', () => {
     });
   });
 
+  it.each([
+    ['andalucia', 'granada'],
+    ['galicia', 'a-coruna'],
+    ['pais-vasco', 'araba'],
+    ['canarias', 'santa-cruz-de-tenerife'],
+    ['ceuta', 'ceuta'],
+    ['melilla', 'melilla'],
+    ['andorra', 'andorra'],
+  ])('resolves %s/%s', (regionSlug, provinceSlug) => {
+    const destination = getDestinationBySlugs(regionSlug, provinceSlug);
+
+    expect(destination).not.toBeNull();
+    expect(es.provincia.names[destination!.provinceId]).toBeTruthy();
+  });
+
   it('returns null for invalid region or province slugs', () => {
     expect(getDestinationBySlugs('madrid', 'barcelona')).toBeNull();
     expect(getDestinationBySlugs('cataluna', 'not-a-province')).toBeNull();
+  });
+});
+
+describe('destination catalogue', () => {
+  it('maps every accepted province to exactly one public destination', () => {
+    expect(DESTINATION_PROVINCE_IDS).toHaveLength(PROVINCES.length);
+    expect(DESTINATION_PROVINCE_IDS.map(
+      (provinceId) => GEOGRAPHY.provinces[provinceId].dbName,
+    ).sort()).toEqual([...PROVINCES].sort());
+  });
+
+  it('round-trips every destination through its canonical path segments', () => {
+    for (const provinceId of DESTINATION_PROVINCE_IDS) {
+      const province = GEOGRAPHY.provinces[provinceId];
+      const region = GEOGRAPHY.regions[province.regionId];
+
+      expect(getDestinationBySlugs(region.slug, province.slug)).toMatchObject({
+        provinceId,
+        regionId: province.regionId,
+      });
+    }
+  });
+
+  it('provides every destination and region label in every public locale', () => {
+    for (const translation of [es, ca, en, fr]) {
+      for (const provinceId of DESTINATION_PROVINCE_IDS) {
+        expect(translation.provincia.names[provinceId]).toBeTruthy();
+      }
+
+      for (const regionId of Object.keys(GEOGRAPHY.regions)) {
+        expect(translation.geography.regions[regionId as keyof typeof GEOGRAPHY.regions]).toBeTruthy();
+      }
+
+      expect(translation.provincia.pageDescription).toContain('{province}');
+      expect(translation.provincia.heroSubtitle).toContain('{province}');
+    }
   });
 });
 

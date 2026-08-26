@@ -15,7 +15,7 @@ import { getTypePath } from '@/lib/races/race-types';
 import { isBlogLocale, isPublicOnlyLocale, type Locale } from '@/i18n';
 import { getContactPath, getFavoritesPath } from '@/lib/i18n/paths';
 import {
-  DESTINATION_PROVINCE_IDS,
+  DESTINATION_PROVINCE_GROUPS,
   GEOGRAPHY,
   getDestinationPath,
 } from '@/lib/geography/destinations';
@@ -27,6 +27,8 @@ interface NavbarProps {
 
 export function Navbar({ sticky = true }: NavbarProps) {
   const t = useTranslations('navigation');
+  const tProvince = useTranslations('provincia.names');
+  const tGeography = useTranslations('geography.regions');
   const locale = useLocale() as Locale;
   const favoritesPath = getFavoritesPath(locale);
   const contactPath = getContactPath(locale);
@@ -218,24 +220,29 @@ export function Navbar({ sticky = true }: NavbarProps) {
                     })}
                   </div>
                   <div className="w-px bg-gray-100" />
-                  <div className="flex-1">
+                  <div className="flex-1 max-h-[min(28rem,calc(100vh-7rem))] overflow-y-auto">
                     <p className="px-2 pb-1 text-xs font-semibold text-gray-400 uppercase tracking-wide">{t('provincesHeading')}</p>
-                    {DESTINATION_PROVINCE_IDS.map((provinceId) => {
-                      const province = GEOGRAPHY.provinces[provinceId];
-                      const href = getDestinationPath(locale, province.regionId, provinceId);
+                    {DESTINATION_PROVINCE_GROUPS.map(({ regionId, provinceIds }) => (
+                      <section key={regionId} className="mb-2 last:mb-0">
+                        <p className="px-2 pt-2 pb-1 text-xs font-semibold text-gray-500">{tGeography(regionId)}</p>
+                        {provinceIds.map((provinceId) => {
+                          const province = GEOGRAPHY.provinces[provinceId];
+                          const href = getDestinationPath(locale, province.regionId, provinceId);
 
-                      return (
-                        <Link
-                          key={provinceId}
-                          href={href}
-                          prefetch={false}
-                          className="block px-2 py-1.5 text-sm rounded hover:bg-gray-50 transition-colors"
-                          onClick={() => { setIsCategoriesOpen(false); setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: provinceId, link_href: href, locale }), 0); }}
-                        >
-                          {t(province.slug)}
-                        </Link>
-                      );
-                    })}
+                          return (
+                            <Link
+                              key={provinceId}
+                              href={href}
+                              prefetch={false}
+                              className="block px-2 py-1.5 text-sm rounded hover:bg-gray-50 transition-colors"
+                              onClick={() => { setIsCategoriesOpen(false); setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: provinceId, link_href: href, locale }), 0); }}
+                            >
+                              {tProvince(provinceId)}
+                            </Link>
+                          );
+                        })}
+                      </section>
+                    ))}
                   </div>
                 </div>
               )}

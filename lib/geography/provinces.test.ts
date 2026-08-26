@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
   PROVINCES,
-  PUBLIC_PROVINCES,
   isValidProvince,
 } from './provinces';
 
@@ -20,25 +19,15 @@ describe('province catalogue', () => {
       'Tarragona',
     ]));
   });
-
-  it('includes the supported Catalan and Valencian provinces in public filtering', () => {
-    expect(PUBLIC_PROVINCES).toEqual([
-      'Barcelona',
-      'Girona',
-      'Lleida',
-      'Tarragona',
-      'Alicante',
-      'Castellón',
-      'Valencia',
-    ]);
-  });
 });
 
 describe('isValidProvince', () => {
   it('accepts exact canonical values', () => {
     expect(isValidProvince('Girona')).toBe(true);
     expect(isValidProvince('A Coruña')).toBe(true);
-    expect(isValidProvince('Araba/Álava')).toBe(true);
+    expect(isValidProvince('Araba')).toBe(true);
+    expect(isValidProvince('Bizkaia')).toBe(true);
+    expect(isValidProvince('Gipuzkoa')).toBe(true);
     expect(isValidProvince('Alicante')).toBe(true);
     expect(isValidProvince('Castellón')).toBe(true);
     expect(isValidProvince('Valencia')).toBe(true);
@@ -50,6 +39,7 @@ describe('isValidProvince', () => {
     ' Girona',
     'Barcleona',
     'Alacant/Alicante',
+    'Araba/Álava',
     'Castelló/Castellón',
     'València/Valencia',
     '',

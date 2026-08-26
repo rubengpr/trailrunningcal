@@ -4,7 +4,7 @@ export const PROVINCES = [
   'Alicante',
   'Almería',
   'Andorra',
-  'Araba/Álava',
+  'Araba',
   'Asturias',
   'Ávila',
   'Badajoz',
@@ -61,13 +61,3 @@ const provinceSet: ReadonlySet<string> = new Set(PROVINCES);
 export function isValidProvince(value: unknown): value is Province {
   return typeof value === 'string' && provinceSet.has(value);
 }
-
-export const PUBLIC_PROVINCES = [
-  'Barcelona',
-  'Girona',
-  'Lleida',
-  'Tarragona',
-  'Alicante',
-  'Castellón',
-  'Valencia',
-] as const satisfies readonly Province[];

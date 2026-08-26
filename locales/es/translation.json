@@ -1,6 +1,6 @@
 {
-  "title": "Calendario carreras trail running Cataluña",
-  "subtitle": "Descubre el calendario más completo de carreras de trail running en Cataluña. Encuentra tu próxima carrera de montaña con filtros por mes, provincia y dificultad.",
+  "title": "Calendario de carreras de trail running en España",
+  "subtitle": "Descubre carreras de trail y montaña en España. Encuentra tu próxima carrera por mes, provincia, distancia y tipo.",
   "map": {
     "title": "Mapa de eventos",
     "description": "Próximos eventos por ubicación. Haz clic en un punto para ver los detalles.",
@@ -294,8 +294,8 @@
   },
   "landing": {
     "titleStart": "Explora carreras de trail running en",
-    "titlePlace": "Cataluña y Valencia",
-    "subtitle": "Descubre carreras de montaña cerca de ti. Explora el calendario de carreras de trail running en Cataluña y Valencia y encuentra toda la información de carreras espectaculares en todo el territorio.",
+    "titlePlace": "España",
+    "subtitle": "Descubre carreras de montaña cerca de ti en un calendario cuidado con fechas, distancias, desnivel, precios y recorridos.",
     "cta": "Calendario"
   },
   "banner": {
@@ -339,14 +339,14 @@
   },
   "contact": {
     "title": "Contacta con Trail Running Calendar",
-    "description": "Contáctanos para consultas sobre carreras de trail running en Cataluña, añadir tu evento al calendario o colaboraciones.",
+    "description": "Contáctanos para consultas sobre carreras de trail running en España y Andorra, añadir tu evento al calendario o colaboraciones.",
     "email": "Email",
     "emailDescription": "Para consultas generales:",
     "location": "Ubicación",
     "locationDescription": "Basado en:",
-    "locationValue": "Cataluña, España",
+    "locationValue": "España y Andorra",
     "information": "Información",
-    "infoDescription1": "Trail Running Cal es tu plataforma de referencia para descubrir las mejores carreras de trail running en Cataluña.",
+    "infoDescription1": "Trail Running Cal ayuda a descubrir carreras de trail y montaña en España y Andorra.",
     "infoDescription2": "Mantenemos un calendario actualizado con carreras de todas las provincias catalanas, desde carreras populares hasta ultra trails.",
     "infoDescription3": "Si eres organizador de carreras y quieres que tu evento aparezca en nuestro calendario, contáctanos."
   },
@@ -390,7 +390,7 @@
   },
   "footer": {
     "copyright": "© {year} Trail Running Cal",
-    "description": "Tu calendario de carreras de trail running en Cataluña. Encuentra tu próxima carrera de montaña.",
+    "description": "Tu calendario de carreras de trail running en España. Encuentra tu próxima carrera de montaña.",
     "byDistance": "Distancia",
     "byProvince": "Provincia",
     "blog": "Blog",
@@ -485,6 +485,7 @@
     },
     "pageBody": "Descubre todas las carreras de trail running en la provincia de {province}: senderos, montañas y rutas de todo tipo de distancia y dificultad. El trail running en {province} combina paisajes únicos con una creciente comunidad de corredores de montaña activa durante todo el año.",
     "heroTitleStart": "Explora carreras de trail running en",
+    "heroSubtitle": "Encuentra fechas, distancias, desniveles e información para tu próxima carrera de montaña en {province}.",
     "heroSubtitles": {
       "barcelona": "Explora las carreras de montaña por el Montseny, Montserrat y el Garraf. Fechas, distancias e información completa para tu próxima aventura.",
       "girona": "Explora las carreras de montaña por los Pirineos, la Garrotxa y la Serra de l'Albera. Fechas, distancias e información completa para tu próxima aventura.",
@@ -496,13 +497,83 @@
     },
     "breadcrumb": "Trail Running · Cataluña",
     "names": {
-      "barcelona": "Barcelona",
-      "girona": "Girona",
-      "lleida": "Lleida",
-      "tarragona": "Tarragona",
+      "aCoruna": "A Coruña",
+      "albacete": "Albacete",
       "alicante": "Alicante",
+      "almeria": "Almería",
+      "andorra": "Andorra",
+      "araba": "Araba",
+      "asturias": "Asturias",
+      "avila": "Ávila",
+      "badajoz": "Badajoz",
+      "barcelona": "Barcelona",
+      "bizkaia": "Bizkaia",
+      "burgos": "Burgos",
+      "caceres": "Cáceres",
+      "cadiz": "Cádiz",
+      "cantabria": "Cantabria",
       "castellon": "Castellón",
-      "valencia": "Valencia"
+      "ceuta": "Ceuta",
+      "ciudadReal": "Ciudad Real",
+      "cordoba": "Córdoba",
+      "cuenca": "Cuenca",
+      "gipuzkoa": "Gipuzkoa",
+      "girona": "Girona",
+      "granada": "Granada",
+      "guadalajara": "Guadalajara",
+      "huelva": "Huelva",
+      "huesca": "Huesca",
+      "illesBalears": "Illes Balears",
+      "jaen": "Jaén",
+      "laRioja": "La Rioja",
+      "lasPalmas": "Las Palmas",
+      "leon": "León",
+      "lleida": "Lleida",
+      "lugo": "Lugo",
+      "madrid": "Madrid",
+      "malaga": "Málaga",
+      "melilla": "Melilla",
+      "murcia": "Murcia",
+      "navarra": "Navarra",
+      "ourense": "Ourense",
+      "palencia": "Palencia",
+      "pontevedra": "Pontevedra",
+      "salamanca": "Salamanca",
+      "santaCruzDeTenerife": "Santa Cruz de Tenerife",
+      "segovia": "Segovia",
+      "sevilla": "Sevilla",
+      "soria": "Soria",
+      "tarragona": "Tarragona",
+      "teruel": "Teruel",
+      "toledo": "Toledo",
+      "valencia": "Valencia",
+      "valladolid": "Valladolid",
+      "zamora": "Zamora",
+      "zaragoza": "Zaragoza"
+    }
+  },
+  "geography": {
+    "regions": {
+      "andalusia": "Andalucía",
+      "aragon": "Aragón",
+      "asturias": "Principado de Asturias",
+      "balearicIslands": "Illes Balears",
+      "canaryIslands": "Canarias",
+      "cantabria": "Cantabria",
+      "castileAndLeon": "Castilla y León",
+      "castileLaMancha": "Castilla-La Mancha",
+      "catalonia": "Cataluña",
+      "ceuta": "Ceuta",
+      "extremadura": "Extremadura",
+      "galicia": "Galicia",
+      "madrid": "Comunidad de Madrid",
+      "melilla": "Melilla",
+      "murcia": "Región de Murcia",
+      "navarre": "Navarra",
+      "basqueCountry": "País Vasco",
+      "laRioja": "La Rioja",
+      "valencianCommunity": "Comunidad Valenciana",
+      "andorra": "Andorra"
     }
   },
   "notFound": {
@@ -561,44 +632,44 @@
     }
   },
   "faq": {
-    "calendarQ": "¿Dónde puedo encontrar el calendario de carreras de trail running en Cataluña?",
-    "calendarA": "Trail Running Cal es el calendario más completo de carreras de trail running en Cataluña. Incluye carreras de las cuatro provincias —Barcelona, Girona, Lleida y Tarragona— con filtros por mes, distancia y dificultad, actualizado para 2026.",
-    "typesQ": "¿Qué tipos de carreras de trail running hay en Cataluña?",
-    "typesA": "En Cataluña encontrarás ultra trail (más de 50 km), maratón de trail (40-50 km), media maratón de trail (20-24 km) y trails cortos. Las pruebas recorren entornos como el Pirineo, el Montseny, la Costa Brava y el Garraf.",
-    "provincesQ": "¿En qué provincias de Cataluña hay carreras de trail running?",
-    "provincesA": "Hay carreras de trail running en las cuatro provincias catalanas: Barcelona, Girona, Lleida y Tarragona. Puedes filtrar por provincia en el calendario para ver todas las pruebas de cada región.",
+    "calendarQ": "¿Dónde puedo encontrar el calendario de carreras de trail running en España?",
+    "calendarA": "Trail Running Cal reúne carreras de trail y montaña en España, con filtros por mes, provincia, distancia y tipo de carrera.",
+    "typesQ": "¿Qué tipos de carreras de trail running puedo encontrar?",
+    "typesA": "El calendario incluye ultra trails, maratones, medias maratones, carreras cortas, kilómetros verticales, marchas de montaña y Backyard Ultras.",
+    "provincesQ": "¿Qué provincias están cubiertas?",
+    "provincesA": "El calendario cubre todas las provincias españolas, además de Ceuta y Melilla. Puedes filtrar por provincia para ver las pruebas disponibles en cada territorio.",
     "addRaceQ": "¿Cómo puedo añadir una carrera al calendario de Trail Running Cal?",
     "addRaceA": "Puedes proponer una carrera usando el formulario de la web o contactando en info@trailrunningcal.com. Si eres el organizador, puedes reclamar la propiedad del evento y añadir datos como fotos, mapa y precios."
   },
   "ultraTrail": {
-    "pageTitle": "Ultra Trail Running Cataluña {year} - Carreras de más de 50 km",
-    "pageDescription": "Encuentra todas las carreras de ultra trail running en Cataluña (más de 50 km). Fechas, desniveles y toda la información para {year}.",
-    "pageBody": "Las carreras de ultra trail (más de 50 km) representan el máximo desafío del running de montaña: distancias extremas, grandes desniveles y terrenos alpinos de alta montaña. En Cataluña, el ultra trail tiene su escenario en el Pirineo, el Prepirineo y espacios naturales protegidos, con pruebas que van desde los 50 hasta los más de 100 km.",
+    "pageTitle": "Ultra Trail Running España {year} - Carreras de más de 50 km",
+    "pageDescription": "Encuentra carreras de ultra trail running en España y Andorra (más de 50 km). Fechas, desniveles y toda la información para {year}.",
+    "pageBody": "Las carreras de ultra trail superan los 50 km y combinan grandes desniveles, terreno técnico y resistencia en montaña.",
     "titleStart": "Explora ultras de trail running en",
-    "titlePlace": "Cataluña",
-    "heroSubtitle": "Explora carreras de montaña de ultra trail por el Pirineo, el Prepirineo y los parques naturales. Distancias, desniveles y todo lo que necesitas para afrontar el máximo reto del trail running.",
+    "titlePlace": "España y Andorra",
+    "heroSubtitle": "Explora carreras de montaña de ultra trail en España y Andorra, con distancias, desniveles e información clave.",
     "breadcrumb": "Ultra Trail",
     "contentSectionsTitle": "Preguntas frecuentes",
     "contentSections": {
       "0": {
         "question": "¿Qué es una carrera de ultra trail?",
-        "answer": "El ultra trail es una modalidad de carrera de montaña de más de 50 km con grandes desniveles y terreno natural no asfaltado. Exige resistencia física y mental excepcionales, y se desarrolla en entornos de alta montaña. En Cataluña, las pruebas de ultra trail recorren el Pirineo, el Prepirineo y espacios naturales protegidos como el Parc Natural del Cadí-Moixeró o la Vall de Núria."
+        "answer": "El ultra trail es una modalidad de carrera de montaña de más de 50 km con grandes desniveles y terreno natural no asfaltado. Exige resistencia física y mental excepcionales, y se desarrolla en entornos de alta montaña. En España y Andorra, las pruebas de ultra trail recorren los Pirineos, Sierra Nevada, los Picos de Europa, el Sistema Central y numerosos espacios naturales protegidos."
       },
       "1": {
-        "question": "¿Cómo prepararse para un ultra trail en Cataluña?",
+        "question": "¿Cómo prepararse para un ultra trail?",
         "answer": "Prepararse para un ultra trail va mucho más allá de un plan de entrenamiento de unos meses. Requiere una base sólida como deportista, haber completado distancias menores de forma progresiva —trail corto, maratón de montaña— y acumular experiencia real en terreno técnico antes de abordar los 50 km o más. Llegar a un ultra sin ese historial previo aumenta significativamente el riesgo de lesión o abandono."
       },
       "2": {
-        "question": "¿Cuáles son las mejores zonas para el ultra trail en Cataluña?",
-        "answer": "El Pirineo catalán concentra la mayor parte de las pruebas de ultra trail, con escenarios como el Alt Urgell, el Pallars Sobirà y la Cerdanya. El Prepirineo ofrece opciones más accesibles desde Barcelona y Girona. Otras zonas destacadas son la Garrotxa, con su orografía volcánica, y el Montseny, que acoge pruebas de referencia en el calendario catalán."
+        "question": "¿Cuáles son las mejores zonas para el ultra trail en España y Andorra?",
+        "answer": "Los Pirineos —de Navarra y Huesca a Lleida, Girona y Andorra— concentran buena parte de las pruebas de ultra trail. En el sur, Sierra Nevada y las sierras de Granada, Almería y Málaga sostienen un calendario propio. Los Picos de Europa, el Sistema Central y las islas Canarias y Baleares completan una oferta repartida por todo el territorio a lo largo del año."
       },
       "3": {
         "question": "¿Qué material es necesario para correr un ultra trail?",
-        "answer": "La mayoría de pruebas de ultra trail en Cataluña exigen una lista de material obligatorio: frontal con pila de repuesto, manta de emergencia, silbato, impermeable, agua mínima y comida de reserva. Además, es recomendable llevar bastones, zapatillas de trail con suela agresiva y ropa de abrigo adaptada a la alta montaña. Cada carrera publica su listado oficial antes del evento."
+        "answer": "La mayoría de pruebas de ultra trail en España y Andorra exigen una lista de material obligatorio: frontal con pila de repuesto, manta de emergencia, silbato, impermeable, agua mínima y comida de reserva. Además, es recomendable llevar bastones, zapatillas de trail con suela agresiva y ropa de abrigo adaptada a la alta montaña. Cada carrera publica su listado oficial antes del evento."
       },
       "4": {
         "question": "¿Cuánto tiempo se tarda en acabar un ultra trail?",
-        "answer": "El tiempo de finalización de un ultra trail varía mucho según la distancia, el desnivel acumulado y el nivel del corredor. En Cataluña, las pruebas de 50-60 km suelen tener tiempos de corte de entre 14 y 18 horas. Los ultras de 80-100 km pueden extenderse hasta 24-30 horas. La mayoría de participantes no compiten por el tiempo, sino por completar el recorrido dentro del corte establecido."
+        "answer": "El tiempo de finalización de un ultra trail varía mucho según la distancia, el desnivel acumulado y el nivel del corredor. En España y Andorra, las pruebas de 50-60 km suelen tener tiempos de corte de entre 14 y 18 horas. Los ultras de 80-100 km pueden extenderse hasta 24-30 horas. La mayoría de participantes no compiten por el tiempo, sino por completar el recorrido dentro del corte establecido."
       }
     },
     "events": {
@@ -638,17 +709,17 @@
     }
   },
   "maraton": {
-    "pageTitle": "Maratón Trail Running Cataluña {year} - Carreras de 40 a 50 km",
-    "pageDescription": "Encuentra todas las carreras de trail running de maratón en Cataluña (40-50 km). Fechas, desniveles y toda la información para {year}.",
-    "pageBody": "La maratón de trail running (40–50 km) es la distancia de referencia para corredores de montaña con experiencia. Combina resistencia, técnica y conocimiento del terreno en recorridos por senderos, crestas y cimas. En Cataluña, las maratones de trail discurren por entornos únicos como el Pirineo, el Montseny y los Ports de Tortosa-Beseit.",
+    "pageTitle": "Maratón Trail Running España {year} - Carreras de 40 a 50 km",
+    "pageDescription": "Encuentra carreras de trail running de maratón en España y Andorra (40-50 km). Fechas, desniveles y toda la información para {year}.",
+    "pageBody": "La maratón de trail running combina resistencia, técnica y conocimiento del terreno en recorridos de 40 a 50 km por senderos, crestas y cimas.",
     "titleStart": "Explora maratones de trail running en",
-    "titlePlace": "Cataluña",
-    "heroSubtitle": "Explora carreras de montaña de maratón por el Pirineo, el Montseny y los Ports de Beseit. Encuentra tu próxima carrera de 40 a 50 km en Cataluña.",
+    "titlePlace": "España y Andorra",
+    "heroSubtitle": "Explora maratones de montaña en España y Andorra y encuentra tu próxima carrera de 40 a 50 km.",
     "contentSectionsTitle": "Preguntas frecuentes",
     "contentSections": {
       "0": {
         "question": "¿Qué es una maratón de trail running?",
-        "answer": "La maratón de trail running es una modalidad de carrera de montaña de entre 40 y 50 km, con terreno natural no asfaltado y desnivel acumulado variable. A diferencia de distancias cortas, requiere una gestión del esfuerzo más precisa y mayor autosuficiencia. En Cataluña encontrarás maratones de trail repartidas por todo el territorio, desde el Pirineo hasta la costa."
+        "answer": "La maratón de trail running es una modalidad de carrera de montaña de entre 40 y 50 km, con terreno natural no asfaltado y desnivel acumulado variable. A diferencia de distancias cortas, requiere una gestión del esfuerzo más precisa y mayor autosuficiencia. En España y Andorra encontrarás maratones de trail repartidas por todo el territorio, desde los Pirineos hasta Sierra Nevada, las islas y la costa."
       },
       "1": {
         "question": "¿En qué se diferencia de una maratón de asfalto?",
@@ -660,27 +731,27 @@
       },
       "3": {
         "question": "¿Qué material se necesita para una maratón de trail?",
-        "answer": "La mayoría de maratones de trail en Cataluña exigen material mínimo obligatorio: impermeable, manta de emergencia, agua mínima y comida de reserva. Es recomendable llevar zapatillas con suela de trail, mochila de hidratación y bastones plegables. Cada carrera publica su lista oficial antes del evento."
+        "answer": "La mayoría de maratones de trail en España y Andorra exigen material mínimo obligatorio: impermeable, manta de emergencia, agua mínima y comida de reserva. Es recomendable llevar zapatillas con suela de trail, mochila de hidratación y bastones plegables. Cada carrera publica su lista oficial antes del evento."
       },
       "4": {
         "question": "¿Cuánto tiempo se tarda en completar una maratón de trail?",
-        "answer": "Los tiempos varían según el desnivel acumulado y el nivel del corredor. En Cataluña, una maratón de trail de 40-50 km con 2.000-3.000 m de desnivel suele tener tiempos de corte de entre 8 y 12 horas. La mayoría de participantes no compite por el tiempo sino por completar el recorrido dentro del corte establecido."
+        "answer": "Los tiempos varían según el desnivel acumulado y el nivel del corredor. En España y Andorra, una maratón de trail de 40-50 km con 2.000-3.000 m de desnivel suele tener tiempos de corte de entre 8 y 12 horas. La mayoría de participantes no compite por el tiempo sino por completar el recorrido dentro del corte establecido."
       }
     },
     "breadcrumb": "Maratón Trail"
   },
   "mediaMaraton": {
-    "pageTitle": "Media Maratón Trail Running Cataluña {year} - Carreras de 20 a 24 km",
-    "pageDescription": "Encuentra todas las carreras de trail running de media maratón en Cataluña (20-24 km). Fechas, desniveles y toda la información para {year}.",
-    "pageBody": "La media maratón de trail running (20–24 km) es una de las distancias más populares entre corredores de montaña. Una distancia exigente que combina resistencia y técnica en terreno de montaña, y un paso habitual hacia maratones y ultras. En Cataluña encontrarás media maratones de trail por el Pirineo, el Montseny, la Costa Brava y el Garraf a lo largo de todo el año.",
+    "pageTitle": "Media Maratón Trail Running España {year} - Carreras de 20 a 24 km",
+    "pageDescription": "Encuentra carreras de trail running de media maratón en España y Andorra (20-24 km). Fechas, desniveles y toda la información para {year}.",
+    "pageBody": "La media maratón de trail running combina resistencia y técnica en montaña, y es un paso habitual hacia maratones y ultras.",
     "titleStart": "Explora medias maratones de trail running en",
-    "titlePlace": "Cataluña",
-    "heroSubtitle": "Explora carreras de montaña de media maratón por el Pirineo, el Montseny y la Costa Brava. El punto de partida ideal para dar el salto a distancias mayores.",
+    "titlePlace": "España y Andorra",
+    "heroSubtitle": "Explora medias maratones de trail en España y Andorra, un paso ideal hacia distancias más largas.",
     "contentSectionsTitle": "Preguntas frecuentes",
     "contentSections": {
       "0": {
         "question": "¿Qué es una media maratón de trail running?",
-        "answer": "La media maratón de trail running es una carrera de montaña de entre 20 y 24 km, con terreno natural no asfaltado y desnivel variable. Es una de las distancias más populares en Cataluña: exigente pero accesible, combina resistencia y técnica sin los requerimientos extremos de las distancias largas. Encontrarás pruebas repartidas por todo el territorio a lo largo de todo el año."
+        "answer": "La media maratón de trail running es una carrera de montaña de entre 20 y 24 km, con terreno natural no asfaltado y desnivel variable. Es una de las distancias más populares en España y Andorra: exigente pero accesible, combina resistencia y técnica sin los requerimientos extremos de las distancias largas. Encontrarás pruebas repartidas por todo el territorio a lo largo de todo el año."
       },
       "1": {
         "question": "¿Es la media maratón de trail apta para corredores principiantes?",
@@ -692,27 +763,27 @@
       },
       "3": {
         "question": "¿Qué material se necesita para una media maratón de trail?",
-        "answer": "Muchas medias maratones de trail en Cataluña exigen material mínimo obligatorio: impermeable, agua mínima y comida de emergencia. Es recomendable correr con zapatillas de trail, mochila o cinturón de hidratación y ropa técnica adaptada a la montaña. Cada carrera publica su lista oficial antes del evento."
+        "answer": "Muchas medias maratones de trail en España y Andorra exigen material mínimo obligatorio: impermeable, agua mínima y comida de emergencia. Es recomendable correr con zapatillas de trail, mochila o cinturón de hidratación y ropa técnica adaptada a la montaña. Cada carrera publica su lista oficial antes del evento."
       },
       "4": {
         "question": "¿Cuánto tiempo se tarda en completar una media maratón de trail?",
-        "answer": "Los tiempos varían según el desnivel y el nivel del corredor. En Cataluña, una media maratón de trail de 20-24 km con 1.000-1.500 m de desnivel suele completarse entre 2 y 4 horas. Los tiempos de corte más habituales están entre 4 y 6 horas."
+        "answer": "Los tiempos varían según el desnivel y el nivel del corredor. En España y Andorra, una media maratón de trail de 20-24 km con 1.000-1.500 m de desnivel suele completarse entre 2 y 4 horas. Los tiempos de corte más habituales están entre 4 y 6 horas."
       }
     },
     "breadcrumb": "Media Maratón Trail"
   },
   "marcha": {
-    "pageTitle": "Marchas y Caminadas Cataluña {year} - Rutas no competitivas",
-    "pageDescription": "Encuentra todas las marchas populares y caminadas en Cataluña. Rutas para todos los niveles, sin competición, en entornos naturales. Fechas e información para {year}.",
-    "pageBody": "Las marchas populares y caminadas son pruebas no competitivas pensadas para disfrutar del entorno natural a pie o corriendo sin cronómetro. En Cataluña encontrarás marchas por el Pirineo, el Montseny, la Costa Brava y el Garraf, con recorridos para todos los niveles y edades. Una opción ideal para iniciarse en el trail running o para participar en familia.",
+    "pageTitle": "Marchas y Caminadas España {year} - Rutas no competitivas",
+    "pageDescription": "Encuentra marchas populares y caminadas en España y Andorra. Rutas para todos los niveles, sin competición y con fechas para {year}.",
+    "pageBody": "Las marchas populares y caminadas son pruebas no competitivas para disfrutar de la montaña a pie o corriendo, sin cronómetro y para todos los niveles.",
     "titleStart": "Explora marchas populares de montaña en",
-    "titlePlace": "Cataluña",
-    "heroSubtitle": "Explora marchas populares de montaña por el Pirineo, el Montseny y el Garraf. Para quienes disfrutan la montaña sin cronómetro.",
+    "titlePlace": "España y Andorra",
+    "heroSubtitle": "Explora marchas populares de montaña en España y Andorra, para quienes disfrutan de la montaña sin cronómetro.",
     "contentSectionsTitle": "Preguntas frecuentes",
     "contentSections": {
       "0": {
         "question": "¿Qué es una marcha popular de montaña?",
-        "answer": "Las marchas populares de montaña son pruebas no competitivas en las que los participantes recorren un itinerario por terreno natural a pie o corriendo, sin cronómetro oficial ni clasificación. El objetivo es disfrutar del entorno, no competir. En Cataluña encontrarás marchas por el Pirineo, el Montseny, el Garraf y muchos otros espacios naturales a lo largo de todo el año."
+        "answer": "Las marchas populares de montaña son pruebas no competitivas en las que los participantes recorren un itinerario por terreno natural a pie o corriendo, sin cronómetro oficial ni clasificación. El objetivo es disfrutar del entorno, no competir. En España y Andorra encontrarás marchas por los Pirineos, la cornisa cantábrica, las sierras del sur, las islas y muchos otros espacios naturales a lo largo de todo el año."
       },
       "1": {
         "question": "¿En qué se diferencia de una carrera de trail?",
@@ -727,19 +798,19 @@
         "answer": "Al ser pruebas no competitivas, el material exigido suele ser mínimo o ninguno. Aun así, se recomienda llevar calzado de montaña o trail, ropa técnica adecuada a la climatología, agua suficiente y algo de comida. En marchas largas o de alta montaña, es aconsejable añadir impermeable y capas de abrigo."
       },
       "4": {
-        "question": "¿Cómo encontrar marchas populares en Cataluña?",
-        "answer": "El calendario de Trail Running Cal recoge las principales marchas populares de montaña en Cataluña con fechas, recorridos y toda la información necesaria. Es habitual que las inscripciones se abran con pocas semanas de antelación y que las plazas sean limitadas, especialmente en las marchas más conocidas."
+        "question": "¿Cómo encontrar marchas populares de montaña?",
+        "answer": "El calendario de Trail Running Cal recoge las principales marchas populares de montaña en España y Andorra con fechas, recorridos y toda la información necesaria. Es habitual que las inscripciones se abran con pocas semanas de antelación y que las plazas sean limitadas, especialmente en las marchas más conocidas."
       }
     },
     "breadcrumb": "Marcha Popular"
   },
   "kmVertical": {
-    "pageTitle": "Kilómetro Vertical Cataluña {year} - Carreras de alta montaña",
-    "pageDescription": "Encuentra todas las carreras de kilómetro vertical en Cataluña. Pruebas de corta distancia con desnivel extremo para {year}.",
-    "pageBody": "El kilómetro vertical (KV) es una modalidad de carrera de montaña caracterizada por una distancia corta —generalmente entre 3 y 5 km— con un desnivel positivo muy elevado en proporción. Requiere una potencia y resistencia muscular excepcionales. En Cataluña, los KV se celebran en los entornos más verticales del Pirineo y las cordilleras prelitorales, con pruebas que forman parte de circuitos nacionales e internacionales.",
+    "pageTitle": "Kilómetro Vertical España {year} - Carreras de alta montaña",
+    "pageDescription": "Encuentra carreras de kilómetro vertical en España y Andorra. Pruebas de corta distancia con desnivel extremo para {year}.",
+    "pageBody": "El kilómetro vertical concentra un desnivel positivo excepcional en recorridos de montaña cortos y muy empinados.",
     "titleStart": "Explora kilómetros verticales de trail running en",
-    "titlePlace": "Cataluña",
-    "heroSubtitle": "Explora carreras de montaña de kilómetro vertical en el Pirineo y el Prepirineo. Máximo desnivel, mínima distancia: el formato más vertical del trail running.",
+    "titlePlace": "España y Andorra",
+    "heroSubtitle": "Explora carreras de kilómetro vertical en España y Andorra: máximo desnivel y mínima distancia.",
     "contentSectionsTitle": "Preguntas frecuentes",
     "contentSections": {
       "0": {
@@ -759,19 +830,19 @@
         "answer": "El KV es una prueba minimalista en cuanto a material. En la mayoría de casos no se exige mochila ni avituallamiento propio, dado que la duración es corta. Las zapatillas de trail con suela agresiva y, en algunos terrenos, los bastones de carbono ligeros son los elementos más valorados por los competidores."
       },
       "4": {
-        "question": "¿Dónde se celebran los kilómetros verticales en Cataluña?",
-        "answer": "Los KV en Cataluña se concentran en los entornos más verticales del Pirineo y las cordilleras prelitorales. Collformic, Montserrat y diferentes cimas pirenaicas son escenarios habituales de estas pruebas, algunas de las cuales forman parte de circuitos nacionales e internacionales."
+        "question": "¿Dónde se celebran los kilómetros verticales?",
+        "answer": "Los KV se concentran en los entornos más verticales: los Pirineos de Huesca, Lleida, Girona y Andorra, Sierra Nevada, los Picos de Europa y las cordilleras prelitorales mediterráneas. Muchas de estas pruebas forman parte de circuitos nacionales e internacionales."
       }
     },
     "breadcrumb": "Kilómetro Vertical"
   },
   "backyard": {
-    "pageTitle": "Backyard Ultra {year} - Carreras Backyard en Cataluña",
-    "pageDescription": "Encuentra todas las carreras Backyard Ultra en Cataluña. El formato más extremo del running: corres hasta que solo queda uno. Fechas e información para {year}.",
-    "pageBody": "Las carreras Backyard Ultra son un formato en el que los participantes completan bucles de ~6,7 km (una hora) de forma continua hasta que solo queda un corredor en pie. Sin distancia fija ni tiempo límite, el Backyard es una prueba de resistencia mental y física llevada al extremo. En Cataluña, este formato está ganando popularidad como una de las experiencias más desafiantes del trail running.",
+    "pageTitle": "Backyard Ultra {year} - Carreras Backyard en España",
+    "pageDescription": "Encuentra carreras Backyard Ultra en España y Andorra. El formato más extremo del running, con fechas e información para {year}.",
+    "pageBody": "En una Backyard Ultra los participantes completan bucles de unos 6,7 km cada hora hasta que queda una sola persona en pie.",
     "titleStart": "Explora backyard ultras en",
-    "titlePlace": "Cataluña",
-    "heroSubtitle": "Descubre carreras de montaña Backyard Ultra en Cataluña. Bucles de 6,7 km que se repiten hasta que solo queda uno en pie.",
+    "titlePlace": "España y Andorra",
+    "heroSubtitle": "Descubre carreras de montaña Backyard Ultra en España y Andorra. Bucles de 6,7 km que se repiten hasta que solo queda uno en pie.",
     "contentSectionsTitle": "Preguntas frecuentes",
     "contentSections": {
       "0": {
@@ -791,8 +862,8 @@
         "answer": "No existe una preparación estándar, pero el volumen de entrenamiento continuado, la experiencia en ultras y la capacidad de correr con privación de sueño son claves. Muchos participantes incorporan sesiones nocturnas y entrenamientos en estado de fatiga acumulada para simular las condiciones reales de la carrera."
       },
       "4": {
-        "question": "¿Dónde se celebran Backyard Ultras en Cataluña?",
-        "answer": "El formato Backyard está ganando popularidad en Cataluña y cada año aparecen nuevas pruebas en el calendario. Trail Running Cal recoge todas las carreras Backyard Ultra en Cataluña con fechas, ubicación e información de inscripción."
+        "question": "¿Dónde se celebran Backyard Ultras?",
+        "answer": "El formato Backyard está ganando popularidad en España y Andorra, y cada año aparecen nuevas pruebas en el calendario. Trail Running Cal recoge todas las carreras Backyard Ultra con fechas, ubicación e información de inscripción."
       }
     },
     "breadcrumb": "Backyard Ultra"

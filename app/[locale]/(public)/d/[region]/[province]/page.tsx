@@ -30,12 +30,12 @@ export async function generateMetadata({
   }
 
   const t = await getTranslations({ locale, namespace: 'provincia' });
-  const provinceName = t(`names.${destination.province.slug}`);
+  const provinceName = t(`names.${destination.provinceId}`);
   const year = new Date().getFullYear();
 
   return generateMetadataFromOptions({
     title: t('pageTitle', { province: provinceName, year }),
-    description: t(`pageDescriptions.${destination.province.slug}`, { year }),
+    description: t('pageDescription', { province: provinceName, year }),
     canonicalUrl: `${BASE_URL}${getDestinationPath(
       locale,
       destination.regionId,
@@ -71,7 +71,7 @@ export default async function DestinationPage({
     scope,
   );
   const t = await getTranslations({ locale, namespace: 'provincia' });
-  const provinceName = t(`names.${destination.province.slug}`);
+  const provinceName = t(`names.${destination.provinceId}`);
   const destinationPath = getDestinationPath(
     locale,
     destination.regionId,
@@ -90,7 +90,7 @@ export default async function DestinationPage({
       heroBody={t('pageBody', { province: provinceName })}
       heroTitleStart={t('heroTitleStart')}
       heroTitlePlace={provinceName}
-      heroSubtitle={t(`heroSubtitles.${destination.province.slug}`)}
+      heroSubtitle={t('heroSubtitle', { province: provinceName })}
       breadcrumbItems={[
         { name: calendarLabel, href: `/${locale}` },
         { name: provinceName },

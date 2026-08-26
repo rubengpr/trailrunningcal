@@ -150,7 +150,6 @@ export default async function EventPage({
     ? {
       regionId: destinationProvince.province.regionId,
       provinceId: destinationProvince.id,
-      provinceSlug: destinationProvince.province.slug,
     }
     : null;
   const recommendedEvents = eventData.location.province
@@ -168,7 +167,7 @@ export default async function EventPage({
     ...(provinceDestination
       ? [
         {
-          name: tProvincia(`names.${provinceDestination.provinceSlug}`),
+          name: tProvincia(`names.${provinceDestination.provinceId}`),
           url: `${BASE_URL}${getDestinationPath(
             locale,
             provinceDestination.regionId,
@@ -199,7 +198,7 @@ export default async function EventPage({
               ...(provinceDestination
                 ? [
                   {
-                    name: tProvincia(`names.${provinceDestination.provinceSlug}`),
+                    name: tProvincia(`names.${provinceDestination.provinceId}`),
                     href: getDestinationPath(
                       locale,
                       provinceDestination.regionId,
@@ -349,7 +348,7 @@ export default async function EventPage({
               >
                 <span className="text-sm font-medium text-gray-900">
                   {tEvent('provincePageLinkText', {
-                    province: eventData.location.province ?? '',
+                    province: tProvincia(`names.${provinceDestination.provinceId}`),
                   })}
                 </span>
                 <span className="font-semibold text-gray-400">↗</span>
