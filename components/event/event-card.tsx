@@ -8,6 +8,7 @@ import { localeTags, type Locale } from '@/i18n';
 import type { PublicEventDetail } from '@/types/event.types';
 import { formatEventLocationLabel } from '@/lib/events/utils';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
+import type { PageType } from '@/lib/analytics/card-impression-batcher';
 import { track } from '@/lib/analytics/track';
 import { useCardImpression } from '@/hooks/use-card-impression';
 import { DistanceBadge } from '@/components/race/distance-badge';
@@ -18,7 +19,7 @@ interface EventCardProps {
   isFeatured?: boolean;
   analyticsContext?: {
     source: 'calendar_explorer';
-    pageType: 'homepage' | 'finder_type' | 'finder_province_distance';
+    pageType: PageType;
     listPosition: number;
     layoutToggleVariant?: 'control' | 'icon_text';
   };

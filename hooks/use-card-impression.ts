@@ -1,10 +1,13 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { queueCardImpression } from '@/lib/analytics/card-impression-batcher';
+import {
+  queueCardImpression,
+  type PageType,
+} from '@/lib/analytics/card-impression-batcher';
 
 interface UseCardImpressionParams {
-  pageType?: 'homepage' | 'finder_type' | 'finder_province_distance';
+  pageType?: PageType;
   eventId: string;
   eventSlug: string;
   listPosition?: number;

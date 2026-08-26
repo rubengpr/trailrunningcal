@@ -1,3 +1,4 @@
+import type { PageType } from '@/lib/analytics/card-impression-batcher';
 import type { RegionId } from '@/lib/geography/destinations';
 import type {
   SponsorBrand,
@@ -234,7 +235,7 @@ export interface AnalyticsEventProperties {
     layout_toggle_variant?: 'control' | 'icon_text';
   };
   [ANALYTICS_EVENTS.RACE_CARD_IMPRESSIONS_BATCH]: {
-    page_type: 'homepage' | 'finder_type' | 'finder_province_distance';
+    page_type: PageType;
     impressions: Array<{
       event_id: string;
       event_slug: string;

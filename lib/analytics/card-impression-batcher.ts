@@ -1,7 +1,11 @@
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { track } from '@/lib/analytics/track';
 
-type PageType = 'homepage' | 'finder_type' | 'finder_province_distance';
+export type PageType =
+  | 'homepage'
+  | 'finder_type'
+  | 'finder_region'
+  | 'finder_province_distance';
 
 interface QueuedImpression {
   event_id: string;
