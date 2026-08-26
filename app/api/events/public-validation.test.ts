@@ -43,6 +43,14 @@ describe('parsePublicEventPageRequest', () => {
     expect(result.referenceDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
   });
 
+  it('parses the province scope used by community pages', () => {
+    const result = parsePublicEventPageRequest(params(
+      'scopeProvinces=Barcelona&scopeProvinces=Girona&scopeProvinces=Barcelona',
+    ));
+
+    expect(result.scope).toEqual({ provinces: ['Barcelona', 'Girona'] });
+  });
+
   it('accepts a province filter covering the whole catalogue', () => {
     const query = PROVINCES
       .map((province) => `province=${encodeURIComponent(province)}`)
@@ -62,6 +70,8 @@ describe('parsePublicEventPageRequest', () => {
     ['type=road', 'Invalid race type filter'],
     ['scopeType=road', 'Invalid race type scope'],
     ['province=%20', 'Invalid province filter'],
+    ['scopeProvinces=Barna', 'Invalid province scope'],
+    ['scopeProvinces=Barcelona&scopeProvinces=Nowhere', 'Invalid province scope'],
   ])('rejects %s', (query, message) => {
     expect(() => parsePublicEventPageRequest(params(query))).toThrow(
       new ValidationError(message, 400),

@@ -152,6 +152,12 @@ export async function getUpcomingEventsPage({
   filters,
   scope,
 }: PublicEventPageRequest): Promise<PublicEventPage> {
+  // An empty province scope means "no province matches", never "no scope":
+  // dropping the argument would widen the query to the whole catalogue.
+  if (scope?.provinces?.length === 0) {
+    return { events: [], page, total: 0, hasMore: false, referenceDate };
+  }
+
   const supabase = createStaticClient();
 
   const offset = (page - 1) * PUBLIC_EVENTS_PAGE_SIZE;
@@ -162,6 +168,11 @@ export async function getUpcomingEventsPage({
     p_distance_ranges: filters.distanceRanges,
     p_race_types: filters.raceTypes,
     p_scope_province: scope?.province ?? null,
+    // Only community pages send this argument, so every other page keeps
+    // working against a database where the migration has not landed yet.
+    ...(scope?.provinces?.length
+      ? { p_scope_provinces: scope.provinces }
+      : {}),
     p_scope_race_type: scope?.raceType ?? null,
     p_include_locations: false,
   };

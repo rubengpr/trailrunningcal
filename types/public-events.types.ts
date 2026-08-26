@@ -10,6 +10,7 @@ export interface PublicEventFilters {
 
 export interface PublicEventScope {
   province?: string;
+  provinces?: string[];
   raceType?: RaceCategorySlug;
 }
 

@@ -108,6 +108,31 @@ describe('getUpcomingEventsPage', () => {
     });
   });
 
+  it('sends the province scope only when a community page asks for it', async () => {
+    mocks.rpc.mockResolvedValue({ data: [], error: null });
+
+    await getUpcomingEventsPage({
+      ...request,
+      scope: { provinces: ['Barcelona', 'Girona'] },
+    });
+
+    expect(mocks.rpc).toHaveBeenCalledWith(
+      'get_public_events_page',
+      expect.objectContaining({
+        p_scope_province: null,
+        p_scope_provinces: ['Barcelona', 'Girona'],
+      }),
+    );
+
+    mocks.rpc.mockClear();
+    await getUpcomingEventsPage({ ...request, scope: undefined });
+
+    expect(mocks.rpc).toHaveBeenCalledWith(
+      'get_public_events_page',
+      expect.not.objectContaining({ p_scope_provinces: expect.anything() }),
+    );
+  });
+
   it('throws when the RPC fails', async () => {
     mocks.rpc.mockResolvedValue({
       data: null,

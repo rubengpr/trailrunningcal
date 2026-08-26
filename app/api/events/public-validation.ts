@@ -1,6 +1,6 @@
 import { ValidationError } from '@/lib/errors';
 import { DISTANCE_GROUPS, MONTH_INDICES } from '@/lib/constants';
-import { PROVINCES } from '@/lib/geography/provinces';
+import { isValidProvince, PROVINCES } from '@/lib/geography/provinces';
 import {
   isRaceCategorySlug,
   type RaceCategorySlug,
@@ -103,6 +103,18 @@ function parseRaceTypes(values: string[]): RaceCategorySlug[] {
   return raceTypes as RaceCategorySlug[];
 }
 
+function parseScopeProvinces(values: string[]): string[] {
+  const provinces = uniqueValues(values.map((value) => value.trim()));
+  if (
+    provinces.length > MAX_PROVINCE_FILTER_VALUES ||
+    provinces.some((province) => !isValidProvince(province))
+  ) {
+    throw new ValidationError('Invalid province scope', 400);
+  }
+
+  return provinces;
+}
+
 function parseScope(searchParams: URLSearchParams): PublicEventScope | undefined {
   const province = searchParams.get('scopeProvince')?.trim();
   if (province !== undefined && (
@@ -111,17 +123,20 @@ function parseScope(searchParams: URLSearchParams): PublicEventScope | undefined
     throw new ValidationError('Invalid province scope', 400);
   }
 
+  const provinces = parseScopeProvinces(searchParams.getAll('scopeProvinces'));
+
   const raceType = searchParams.get('scopeType');
   if (raceType !== null && !isRaceCategorySlug(raceType)) {
     throw new ValidationError('Invalid race type scope', 400);
   }
 
-  if (province === undefined && raceType === null) {
+  if (province === undefined && provinces.length === 0 && raceType === null) {
     return undefined;
   }
 
   return {
     ...(province !== undefined ? { province } : {}),
+    ...(provinces.length > 0 ? { provinces } : {}),
     ...(raceType !== null ? { raceType } : {}),
   };
 }

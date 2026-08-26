@@ -84,6 +84,9 @@ export async function getPublicEventPage(
   if (input.scope?.province) {
     searchParams.set('scopeProvince', input.scope.province);
   }
+  for (const province of input.scope?.provinces ?? []) {
+    searchParams.append('scopeProvinces', province);
+  }
   if (input.scope?.raceType) {
     searchParams.set('scopeType', input.scope.raceType);
   }
