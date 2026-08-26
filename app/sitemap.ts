@@ -104,7 +104,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const locale of locales) {
       urls.push({
         url: `${BASE_URL}${getDestinationPath(locale, province.regionId, provinceId)}`,
-        lastModified: currentDate,
         changeFrequency: 'weekly',
         priority: 0.9,
         alternates: {

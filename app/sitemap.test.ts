@@ -70,6 +70,14 @@ describe('sitemap destination URLs', () => {
     );
   });
 
+  it('does not claim destination pages were recently modified without a source timestamp', async () => {
+    const urls = await sitemap();
+    const destinationUrls = urls.filter((entry) => entry.url.includes('/d/'));
+
+    expect(destinationUrls).not.toHaveLength(0);
+    expect(destinationUrls.every((entry) => entry.lastModified === undefined)).toBe(true);
+  });
+
   it('does not include legacy /provincia URLs', async () => {
     const urls = await sitemap();
     const sitemapUrls = urls.map((entry) => entry.url);
