@@ -6,7 +6,6 @@ describe('getSponsorPreviewConfig', () => {
     expect(
       getSponsorPreviewConfig({
         page: 'homepage',
-        bannerType: 'image_banner',
         brand: 'naak',
         isDevelopment: false,
       }),
@@ -16,9 +15,7 @@ describe('getSponsorPreviewConfig', () => {
   it('uses the brand key as the ignored local asset filename', () => {
     const config = getSponsorPreviewConfig({
       page: 'homepage',
-      bannerType: 'image_banner',
       brand: 'naak',
-      format: 'both',
       isDevelopment: true,
     });
 
@@ -28,23 +25,17 @@ describe('getSponsorPreviewConfig', () => {
     expect(config?.brand).toBe('Näak');
   });
 
-  it('can show image and sticky formats at the same time', () => {
-    const imageConfig = getSponsorPreviewConfig({
+  it('always tags preview destinations as image banners', () => {
+    const config = getSponsorPreviewConfig({
       page: 'event_page',
-      bannerType: 'image_banner',
       brand: 'naak',
-      format: 'both',
-      isDevelopment: true,
-    });
-    const stickyConfig = getSponsorPreviewConfig({
-      page: 'event_page',
-      bannerType: 'sticky_banner',
-      brand: 'naak',
-      format: 'both',
+      destinationUrl: 'https://naak.com',
       isDevelopment: true,
     });
 
-    expect(imageConfig?.bannerType).toBe('image_banner');
-    expect(stickyConfig?.bannerType).toBe('sticky_banner');
+    expect(config?.destinationUrl).toContain('utm_medium=banner_preview');
+    expect(config?.destinationUrl).toContain(
+      'utm_campaign=event_page_image_banner',
+    );
   });
 });

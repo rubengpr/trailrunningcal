@@ -1,7 +1,6 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
-import { SponsorStickyBannerSlot } from '@/components/sponsors/sponsor-banner-slot';
 import { MobileFiltersProvider } from '@/components/providers/mobile-filters-provider';
 import type { Locale } from '@/i18n';
 
@@ -28,7 +27,6 @@ export default async function PublicLayout({
         </a>
         <div className="sticky top-0 z-30 w-full">
           <Navbar sticky={false} />
-          <SponsorStickyBannerSlot locale={locale} />
         </div>
         <div id="main-content" className="min-w-0">
           {children}

@@ -1,9 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
-import { ExternalLink } from 'lucide-react';
-import type { Locale } from '@/i18n';
 
 interface PromoBannerProps {
   alt: string;
@@ -20,16 +17,6 @@ interface PromoBannerProps {
     width: number;
     height: number;
   };
-  onClick?: () => void;
-}
-
-interface PromoTextStripProps {
-  message: string;
-  backgroundColor?: string;
-  code?: string;
-  href?: string;
-  locale?: Locale;
-  isVisible?: boolean;
   onClick?: () => void;
 }
 
@@ -86,68 +73,6 @@ export function PromoBanner({
           {content}
         </a>
       ) : content}
-    </aside>
-  );
-}
-
-export function PromoTextStrip({
-  message,
-  backgroundColor = '#010101',
-  code,
-  href,
-  locale,
-  isVisible = false,
-  onClick,
-}: PromoTextStripProps) {
-  const pathname = usePathname();
-  const isSupportedPage = locale ? pathname === `/${locale}` : true;
-
-  if (!isVisible) return null;
-  if (!isSupportedPage) return null;
-
-  const content = (
-    <p className="text-center text-xs font-normal leading-4 text-[#ffffff]">
-      <span>{message}</span>
-      {code ? (
-        <>
-          {' '}
-          <span className="whitespace-nowrap">
-            <span className="font-semibold underline decoration-1 underline-offset-2">
-              {code}
-            </span>
-            <ExternalLink
-              className="ml-1 inline-block size-[0.9em] align-[-0.08em]"
-              strokeWidth={2}
-            />
-          </span>
-        </>
-      ) : (
-        <ExternalLink
-          className="ml-1 inline-block size-3 align-[-0.125em]"
-          strokeWidth={2}
-        />
-      )}
-    </p>
-  );
-
-  return (
-    <aside
-      className="w-full border-b border-black text-center"
-      style={{ backgroundColor }}
-    >
-      {href ? (
-        <a
-          href={href}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={onClick}
-          className="block w-full px-3 py-2"
-        >
-          {content}
-        </a>
-      ) : (
-        <div className="w-full px-3 py-2">{content}</div>
-      )}
     </aside>
   );
 }

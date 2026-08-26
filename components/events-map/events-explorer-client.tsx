@@ -436,8 +436,7 @@ export function EventsExplorerClient({
                     <SponsorBannerSlot
                       page="homepage"
                       locale={locale}
-                      bannerType="image_banner"
-                      className="sticky top-18 z-20 mb-4 bg-white py-2 sm:top-20 lg:top-0"
+                      className="mb-4 bg-white py-2"
                     />
                     <div className="grid min-h-[200px] min-w-0 grid-cols-1 gap-4">
                       {isRefreshing ? (

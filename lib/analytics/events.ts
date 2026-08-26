@@ -1,4 +1,8 @@
 import type { RegionId } from '@/lib/geography/destinations';
+import type {
+  SponsorBrand,
+  SponsorCreativeVariant,
+} from '@/lib/sponsors/banner-config';
 import type { Locale } from '@/i18n';
 
 export const ANALYTICS_EVENTS = {
@@ -275,16 +279,18 @@ export interface AnalyticsEventProperties {
     race_slug?: string;
   };
   [ANALYTICS_EVENTS.SPONSOR_BANNER_CLICKED]: {
-    brand: 'salssa' | 'otso' | 'asics';
+    brand: SponsorBrand;
+    creative_variant: SponsorCreativeVariant;
     page: 'homepage' | 'event_page';
-    banner_type: 'image_banner' | 'sticky_banner';
+    banner_type: 'image_banner';
     locale: string;
     destination_url: string;
   };
   [ANALYTICS_EVENTS.SPONSOR_BANNER_IMPRESSION]: {
-    brand: 'salssa' | 'otso' | 'asics';
+    brand: SponsorBrand;
+    creative_variant: SponsorCreativeVariant;
     page: 'homepage' | 'event_page';
-    banner_type: 'image_banner' | 'sticky_banner';
+    banner_type: 'image_banner';
     locale: string;
     destination_url: string;
   };

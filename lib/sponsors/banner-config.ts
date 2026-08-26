@@ -1,6 +1,13 @@
 export type SponsorPage = 'homepage' | 'event_page';
-export type SponsorBannerType = 'image_banner' | 'sticky_banner';
-export type SponsorBrand = 'salssa' | 'otso' | 'asics';
+export type SponsorBrand =
+  | 'asics'
+  | 'baouw'
+  | 'inverse'
+  | 'naak'
+  | 'nutribay'
+  | 'racepace';
+
+export type SponsorCreativeVariant = 'control' | Exclude<SponsorBrand, 'asics'>;
 
 export interface SponsorImage {
   src: string;
@@ -10,151 +17,87 @@ export interface SponsorImage {
 
 export interface SponsorBannerConfig {
   brand: SponsorBrand;
+  creativeVariant: SponsorCreativeVariant;
   page: SponsorPage;
-  bannerType: SponsorBannerType;
   destinationUrl: string;
   desktopImage: SponsorImage;
   mobileImage: SponsorImage;
   altKey: string;
-  stickyMessageKey: string;
-  stickyColor: string;
-  code?: string;
 }
 
-const FEATURE_FLAG_VARIANT_TO_BANNER_TYPE: Record<string, SponsorBannerType> = {
-  control: 'image_banner',
-  sticky_banner: 'sticky_banner',
-};
-
-// Manual rollout switch. Set a page to a sponsor brand and redeploy to activate it.
-const ACTIVE_SPONSOR_BY_PAGE: Record<SponsorPage, SponsorBrand | null> = {
-  homepage: null,
-  event_page: null,
+const FEATURE_FLAG_VARIANT_TO_BRAND: Record<
+  SponsorCreativeVariant,
+  SponsorBrand
+> = {
+  control: 'asics',
+  baouw: 'baouw',
+  inverse: 'inverse',
+  naak: 'naak',
+  nutribay: 'nutribay',
+  racepace: 'racepace',
 };
 
 const SPONSOR_DESTINATION_URLS: Record<SponsorBrand, string> = {
-  salssa: 'https://salssa.com/discount/TRC15?redirect=/ca/products/perform',
-  otso: 'https://otsosport.com/',
-  asics: 'https://www.asics.com/es/es-es/metafuji-campaign/',
+  asics: 'https://www.asics.com/es/es-es/trail-running-campaign/',
+  baouw:
+    'https://www.baouw-organic-nutrition.com/en_GB/shop/energy-purees-4/mix-30-energy-purees-bio-908',
+  inverse: 'https://www.inverseteams.com/en/custom/custom-trail-running-wear/',
+  naak: 'https://eu.naak.com/es-eu/products/boost-drink-mix-60-neutral-bag',
+  nutribay: 'https://es.nutri-bay.com/',
+  racepace: 'https://findracepace.com/',
 };
 
-const SPONSOR_CODES: Partial<Record<SponsorBrand, string>> = {
-  salssa: 'TRC15',
-  otso: 'TRC25',
-};
-
-const SPONSOR_STICKY_COLORS: Record<SponsorBrand, string> = {
-  salssa: '#812b33',
-  otso: '#FF4713',
-  asics: '#001e62',
-};
-
-const SPONSOR_IMAGES: Record<
-  SponsorBrand,
-  Record<
-    SponsorPage,
-    {
-      desktop: SponsorImage;
-      mobile: SponsorImage;
-    }
-  >
-> = {
-  salssa: {
-    homepage: {
-      desktop: {
-        src: '/assets/sponsors/salssa-homepage-desktop.webp',
-        width: 5625,
-        height: 938,
-      },
-      mobile: {
-        src: '/assets/sponsors/salssa-homepage-mobile.webp',
-        width: 2813,
-        height: 350,
-      },
-    },
-    event_page: {
-      desktop: {
-        src: '/assets/sponsors/salssa-event-desktop.webp',
-        width: 5625,
-        height: 703,
-      },
-      mobile: {
-        src: '/assets/sponsors/salssa-event-mobile.webp',
-        width: 2813,
-        height: 469,
-      },
-    },
-  },
-  otso: {
-    homepage: {
-      desktop: {
-        src: '/assets/sponsors/otso-homepage-desktop.jpg',
-        width: 1800,
-        height: 300,
-      },
-      mobile: {
-        src: '/assets/sponsors/otso-homepage-mobile.jpg',
-        width: 900,
-        height: 150,
-      },
-    },
-    event_page: {
-      desktop: {
-        src: '/assets/sponsors/otso-event-desktop.jpg',
-        width: 1800,
-        height: 225,
-      },
-      mobile: {
-        src: '/assets/sponsors/otso-event-mobile.jpg',
-        width: 900,
-        height: 112,
-      },
-    },
-  },
+const SPONSOR_IMAGES: Record<SponsorBrand, SponsorImage> = {
   asics: {
-    homepage: {
-      desktop: {
-        src: '/assets/sponsors/asics.png',
-        width: 1800,
-        height: 300,
-      },
-      mobile: {
-        src: '/assets/sponsors/asics.png',
-        width: 1800,
-        height: 300,
-      },
-    },
-    event_page: {
-      desktop: {
-        src: '/assets/sponsors/asics.png',
-        width: 1800,
-        height: 300,
-      },
-      mobile: {
-        src: '/assets/sponsors/asics.png',
-        width: 1800,
-        height: 300,
-      },
-    },
+    src: '/assets/sponsors/asics-banner.png',
+    width: 1800,
+    height: 300,
+  },
+  baouw: {
+    src: '/assets/sponsors/baouw-banner.png',
+    width: 1800,
+    height: 300,
+  },
+  inverse: {
+    src: '/assets/sponsors/inverse-banner.png',
+    width: 1800,
+    height: 314,
+  },
+  naak: {
+    src: '/assets/sponsors/naak-banner.png',
+    width: 1800,
+    height: 300,
+  },
+  nutribay: {
+    src: '/assets/sponsors/nutribay-banner.png',
+    width: 1800,
+    height: 300,
+  },
+  racepace: {
+    src: '/assets/sponsors/racepace-banner.png',
+    width: 1800,
+    height: 300,
   },
 };
 
-export function getSponsorBannerType(
+export function getSponsorBrand(
   posthogVariant: string | boolean | null | undefined,
-): SponsorBannerType | null {
+): SponsorBrand | null {
   if (typeof posthogVariant !== 'string') return null;
-  return FEATURE_FLAG_VARIANT_TO_BANNER_TYPE[posthogVariant] ?? null;
+
+  return FEATURE_FLAG_VARIANT_TO_BRAND[
+    posthogVariant as SponsorCreativeVariant
+  ] ?? null;
 }
 
 export function buildSponsorUrl(
   destinationUrl: string,
   page: SponsorPage,
-  bannerType: SponsorBannerType,
 ): string {
   const url = new URL(destinationUrl);
   url.searchParams.set('utm_source', 'trailrunningcal');
   url.searchParams.set('utm_medium', 'banner');
-  url.searchParams.set('utm_campaign', `${page}_${bannerType}`);
+  url.searchParams.set('utm_campaign', `${page}_image_banner`);
   return url.toString();
 }
 
@@ -165,27 +108,19 @@ export function getSponsorBannerConfig({
   page: SponsorPage;
   posthogVariant: string | boolean | null | undefined;
 }): SponsorBannerConfig | null {
-  const brand = ACTIVE_SPONSOR_BY_PAGE[page];
-  const bannerType = getSponsorBannerType(posthogVariant);
+  const brand = getSponsorBrand(posthogVariant);
+  if (!brand || typeof posthogVariant !== 'string') return null;
 
-  if (!brand || !bannerType) return null;
-
-  const images = SPONSOR_IMAGES[brand][page];
+  const creativeVariant = posthogVariant as SponsorCreativeVariant;
+  const image = SPONSOR_IMAGES[brand];
 
   return {
     brand,
+    creativeVariant,
     page,
-    bannerType,
-    destinationUrl: buildSponsorUrl(
-      SPONSOR_DESTINATION_URLS[brand],
-      page,
-      bannerType,
-    ),
-    desktopImage: images.desktop,
-    mobileImage: images.mobile,
+    destinationUrl: buildSponsorUrl(SPONSOR_DESTINATION_URLS[brand], page),
+    desktopImage: image,
+    mobileImage: image,
     altKey: `sponsors.${brand}.${page}.alt`,
-    stickyMessageKey: `sponsors.${brand}.stickyMessage`,
-    stickyColor: SPONSOR_STICKY_COLORS[brand],
-    code: SPONSOR_CODES[brand],
   };
 }

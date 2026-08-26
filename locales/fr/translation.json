@@ -328,6 +328,46 @@
           "alt": "Lancement de l’ASICS METAFUJI Trail 2"
         },
         "stickyMessage": "Découvre la nouvelle ASICS METAFUJI™ TRAIL 2"
+      },
+      "baouw": {
+        "homepage": {
+          "alt": "Promotion des purées énergétiques Baouw pour le trail"
+        },
+        "event_page": {
+          "alt": "Promotion des purées énergétiques Baouw pour les événements de trail"
+        }
+      },
+      "inverse": {
+        "homepage": {
+          "alt": "Tenues de trail running personnalisées par Inverse"
+        },
+        "event_page": {
+          "alt": "Tenues de trail running personnalisées par Inverse"
+        }
+      },
+      "naak": {
+        "homepage": {
+          "alt": "Promotion Näak Boost Energy pour le trail"
+        },
+        "event_page": {
+          "alt": "Promotion Näak Boost Energy pour les événements de trail"
+        }
+      },
+      "nutribay": {
+        "homepage": {
+          "alt": "Promotion Nutri-Bay pour les sports d'endurance"
+        },
+        "event_page": {
+          "alt": "Promotion Nutri-Bay pour les événements de trail"
+        }
+      },
+      "racepace": {
+        "homepage": {
+          "alt": "RacePace, votre copilote pour l'ultra-trail"
+        },
+        "event_page": {
+          "alt": "RacePace, votre copilote pour l'ultra-trail"
+        }
       }
     }
   },

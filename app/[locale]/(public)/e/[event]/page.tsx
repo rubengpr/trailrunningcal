@@ -295,7 +295,6 @@ export default async function EventPage({
           <SponsorBannerSlot
             page="event_page"
             locale={localeTyped}
-            bannerType="image_banner"
             className="my-6 sm:my-8"
           />
 
