@@ -3,12 +3,13 @@
 import { createPortal } from 'react-dom';
 import { ChevronDown } from 'lucide-react';
 import { useMultiSelectMenu } from '@/hooks/use-multi-select-menu';
-import { MultiSelectOptionsMenu } from '@/components/ui/multi-select-options-menu';
+import {
+  MULTI_SELECT_MENU_MAX_HEIGHT,
+  MultiSelectOptionsMenu,
+  type MultiSelectOptionItem,
+} from '@/components/ui/multi-select-options-menu';
 
-export interface FilterSelectOption {
-  value: string;
-  label: string;
-}
+export type FilterSelectOption = MultiSelectOptionItem;
 
 interface FilterSelectProps {
   value: string[];
@@ -23,6 +24,7 @@ export function FilterSelect({ value, onValueChange, placeholder, options, color
     usePortalPosition: true,
     minWidth: 160,
     offset: 4,
+    preferredMenuHeight: MULTI_SELECT_MENU_MAX_HEIGHT,
   });
 
   function handleToggle(optionValue: string) {
@@ -60,7 +62,7 @@ export function FilterSelect({ value, onValueChange, placeholder, options, color
       onToggleOption={handleToggle}
       onClear={handleClear}
       dropdownRef={dropdownRef}
-      style={{ position: 'absolute', top: dropdownStyle.top, left: dropdownStyle.left, minWidth: dropdownStyle.minWidth, zIndex: 9999 }}
+      style={{ position: 'absolute', top: dropdownStyle.top, left: dropdownStyle.left, minWidth: dropdownStyle.minWidth, maxHeight: dropdownStyle.maxHeight, zIndex: 9999 }}
     />
   );
 

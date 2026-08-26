@@ -1,7 +1,11 @@
 'use client';
 
 import { createPortal } from 'react-dom';
-import { MultiSelectOptionsMenu, type MultiSelectOptionItem } from '@/components/ui/multi-select-options-menu';
+import {
+  MULTI_SELECT_MENU_MAX_HEIGHT,
+  MultiSelectOptionsMenu,
+  type MultiSelectOptionItem,
+} from '@/components/ui/multi-select-options-menu';
 import { useMultiSelectMenu } from '@/hooks/use-multi-select-menu';
 
 interface FilterPillProps {
@@ -35,6 +39,7 @@ export function FilterPill({
     usePortalPosition: true,
     minWidth: 160,
     offset: 4,
+    preferredMenuHeight: MULTI_SELECT_MENU_MAX_HEIGHT,
   });
   const isSelected = selectedValues.length > 0;
 
@@ -66,6 +71,7 @@ export function FilterPill({
         top: dropdownStyle.top,
         left: dropdownStyle.left,
         minWidth: dropdownStyle.minWidth,
+        maxHeight: dropdownStyle.maxHeight,
         zIndex: 9999,
       }}
     />

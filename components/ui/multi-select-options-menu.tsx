@@ -4,9 +4,12 @@ import type { CSSProperties, RefObject } from 'react';
 import { Check } from 'lucide-react';
 import { MultiSelectOption } from '@/components/ui/multi-select-option';
 
+export const MULTI_SELECT_MENU_MAX_HEIGHT = 448;
+
 export interface MultiSelectOptionItem {
   value: string;
   label: string;
+  group?: string;
 }
 
 interface MultiSelectOptionsMenuProps {
@@ -32,7 +35,7 @@ export function MultiSelectOptionsMenu({
     <div
       ref={dropdownRef}
       style={style}
-      className="z-[9999] overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg animate-filter-select-in"
+      className="z-[9999] overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg animate-filter-select-in"
     >
       <div className="p-1">
         <button
@@ -50,15 +53,24 @@ export function MultiSelectOptionsMenu({
           {placeholder}
         </button>
 
-        {options.map((option) => {
+        {options.map((option, index) => {
           const selected = selectedValues.includes(option.value);
+          const previousGroup = index > 0 ? options[index - 1].group : undefined;
+          const showGroup = option.group && option.group !== previousGroup;
+
           return (
-            <MultiSelectOption
-              key={option.value}
-              label={option.label}
-              selected={selected}
-              onClick={() => onToggleOption(option.value)}
-            />
+            <div key={option.value}>
+              {showGroup ? (
+                <p className="px-3 pt-3 pb-1 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  {option.group}
+                </p>
+              ) : null}
+              <MultiSelectOption
+                label={option.label}
+                selected={selected}
+                onClick={() => onToggleOption(option.value)}
+              />
+            </div>
           );
         })}
       </div>
