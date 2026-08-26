@@ -7,10 +7,15 @@ import { buildDestinationAlternateLinks } from '@/lib/geography/destinations';
 import { BASE_URL } from '@/lib/config';
 import { buildBreadcrumbJsonLd } from '@/lib/seo/json-ld';
 import { CategoryMapPage } from '@/components/layout/category-map-page';
-import { getCategoryPageData } from '@/lib/content/category-page';
+import {
+  getCategoryPageData,
+  translateWithOverride,
+} from '@/lib/content/category-page';
 import {
   getDestinationBySlugs,
   getDestinationPath,
+  getRegionPath,
+  getSingleProvinceId,
 } from '@/lib/geography/destinations';
 
 export const revalidate = 86400;
@@ -35,7 +40,12 @@ export async function generateMetadata({
 
   return generateMetadataFromOptions({
     title: t('pageTitle', { province: provinceName, year }),
-    description: t('pageDescription', { province: provinceName, year }),
+    description: translateWithOverride(
+      t,
+      `pageDescriptions.${destination.provinceId}`,
+      'pageDescription',
+      { province: provinceName, year },
+    ),
     canonicalUrl: `${BASE_URL}${getDestinationPath(
       locale,
       destination.regionId,
@@ -70,13 +80,24 @@ export default async function DestinationPage({
     locale,
     scope,
   );
-  const t = await getTranslations({ locale, namespace: 'provincia' });
+  const [t, tGeography] = await Promise.all([
+    getTranslations({ locale, namespace: 'provincia' }),
+    getTranslations({ locale, namespace: 'geography.regions' }),
+  ]);
   const provinceName = t(`names.${destination.provinceId}`);
   const destinationPath = getDestinationPath(
     locale,
     destination.regionId,
     destination.provinceId,
   );
+  // Single-province communities canonicalise to this page, so linking up to
+  // them would point the breadcrumb at a URL that redirects the signal back.
+  const regionCrumb = getSingleProvinceId(destination.regionId)
+    ? null
+    : {
+        name: tGeography(destination.regionId),
+        path: getRegionPath(locale, destination.regionId),
+      };
 
   return (
     <CategoryMapPage
@@ -85,14 +106,25 @@ export default async function DestinationPage({
       scope={scope}
       breadcrumbJsonLd={buildBreadcrumbJsonLd([
         { name: calendarLabel, url: `${BASE_URL}/${locale}` },
+        ...(regionCrumb
+          ? [{ name: regionCrumb.name, url: `${BASE_URL}${regionCrumb.path}` }]
+          : []),
         { name: provinceName, url: `${BASE_URL}${destinationPath}` },
       ])}
       heroBody={t('pageBody', { province: provinceName })}
       heroTitleStart={t('heroTitleStart')}
       heroTitlePlace={provinceName}
-      heroSubtitle={t('heroSubtitle', { province: provinceName })}
+      heroSubtitle={translateWithOverride(
+        t,
+        `heroSubtitles.${destination.provinceId}`,
+        'heroSubtitle',
+        { province: provinceName },
+      )}
       breadcrumbItems={[
         { name: calendarLabel, href: `/${locale}` },
+        ...(regionCrumb
+          ? [{ name: regionCrumb.name, href: regionCrumb.path }]
+          : []),
         { name: provinceName },
       ]}
       labels={labels}
