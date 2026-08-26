@@ -9,6 +9,8 @@ import {
   DESTINATION_PROVINCE_GROUPS,
   GEOGRAPHY,
   getDestinationPath,
+  getRegionPath,
+  getSingleProvinceId,
 } from '@/lib/geography/destinations';
 
 const CATEGORY_SLUGS = [
@@ -81,7 +83,17 @@ export async function Footer() {
               <div className="max-h-80 overflow-y-auto pr-2">
                 {DESTINATION_PROVINCE_GROUPS.map(({ regionId, provinceIds }) => (
                   <section key={regionId} className="mb-3 last:mb-0">
-                    <p className="text-xs font-semibold text-gray-500">{tGeography(regionId)}</p>
+                    {getSingleProvinceId(regionId) ? (
+                      <p className="text-xs font-semibold text-gray-500">{tGeography(regionId)}</p>
+                    ) : (
+                      <Link
+                        href={getRegionPath(locale, regionId)}
+                        prefetch={false}
+                        className="text-xs font-semibold text-gray-500 hover:text-gray-900 hover:underline transition-colors"
+                      >
+                        {tGeography(regionId)}
+                      </Link>
+                    )}
                     <div className="mt-1 flex flex-col gap-1">
                       {provinceIds.map((provinceId) => {
                         const province = GEOGRAPHY.provinces[provinceId];
