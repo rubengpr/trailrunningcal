@@ -33,8 +33,14 @@ import { useScrollEdges } from '@/hooks/use-scroll-edges';
 import { useMobileFilters } from '@/components/providers/mobile-filters-provider';
 import { getPublicEventPage } from '@/lib/api/events';
 import { isRaceCategorySlug } from '@/lib/races/race-types';
+import {
+  GEOGRAPHY,
+  getRegionProvinceIds,
+  type RegionId,
+} from '@/lib/geography/destinations';
 import { isFeaturedEvent } from '@/lib/featured-events/config';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
+import type { PageType } from '@/lib/analytics/card-impression-batcher';
 import { track } from '@/lib/analytics/track';
 
 type MobileView = 'list' | 'map';
@@ -54,6 +60,7 @@ interface EventsExplorerClientProps {
   labels: MapPageLabels;
   showProvinceFilter?: boolean;
   showDistanceFilter?: boolean;
+  regionId?: RegionId;
 }
 
 export function EventsExplorerClient({
@@ -63,6 +70,7 @@ export function EventsExplorerClient({
   labels,
   showProvinceFilter = true,
   showDistanceFilter = true,
+  regionId,
 }: EventsExplorerClientProps) {
   const tResults = useTranslations('results');
   const tFilters = useTranslations('filters');
@@ -89,11 +97,13 @@ export function EventsExplorerClient({
     status: mapStatus,
   } = useEventMapLocations(events);
 
-  const pageType: 'homepage' | 'finder_type' | 'finder_province_distance' = scope?.raceType
+  const pageType: PageType = scope?.raceType
     ? 'finder_type'
-    : scope?.province
-      ? 'finder_province_distance'
-      : 'homepage';
+    : scope?.provinces
+      ? 'finder_region'
+      : scope?.province
+        ? 'finder_province_distance'
+        : 'homepage';
 
   const isDesktopMap = useMinWidthLg();
   const featuredCardVariant = useFeatureFlagVariant('featured-event-card');
@@ -114,6 +124,20 @@ export function EventsExplorerClient({
       filter_type: filterType,
     });
   }, [analyticsFilterVariant]);
+
+  // Community pages only offer their own provinces, so a province stored by
+  // another page would filter the list down with no chip to explain it.
+  const selectableProvinces = useMemo(
+    () =>
+      regionId
+        ? new Set<string>(
+            getRegionProvinceIds(regionId).map(
+              (provinceId) => GEOGRAPHY.provinces[provinceId].dbName,
+            ),
+          )
+        : null,
+    [regionId],
+  );
 
   const [selectedMonth, setSelectedMonth] = useState<string[]>([]);
   const [selectedProvince, setSelectedProvince] = useState<string[]>([]);
@@ -138,7 +162,11 @@ export function EventsExplorerClient({
 
       setSelectedMonth(readStoredFilter('filter_month'));
       setSelectedProvince(
-        showProvinceFilter ? readStoredFilter('filter_province') : [],
+        showProvinceFilter
+          ? readStoredFilter('filter_province').filter(
+              (province) => selectableProvinces?.has(province) ?? true,
+            )
+          : [],
       );
       setSelectedDistance(readStoredFilter('filter_distance'));
       setSelectedRaceType(readStoredFilter('filter_type'));
@@ -148,7 +176,7 @@ export function EventsExplorerClient({
     return () => {
       isActive = false;
     };
-  }, [showProvinceFilter]);
+  }, [showProvinceFilter, selectableProvinces]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -403,6 +431,7 @@ export function EventsExplorerClient({
         onDistanceSelect={handleDistanceSelect}
         onRaceTypeSelect={handleRaceTypeSelect}
         onClearFilters={handleClearFilters}
+        regionId={regionId}
         showProvinceFilter={showProvinceFilter}
         showDistanceFilter={showDistanceFilter}
         filterColor={filterColor}
@@ -569,6 +598,7 @@ export function EventsExplorerClient({
           initialRaceType={selectedRaceType}
           showProvinceFilter={showProvinceFilter}
           showDistanceFilter={showDistanceFilter}
+          regionId={regionId}
         />
       )}
 

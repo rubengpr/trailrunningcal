@@ -4,19 +4,25 @@ import { useTranslations } from 'next-intl';
 import {
   DESTINATION_PROVINCE_GROUPS,
   GEOGRAPHY,
+  type RegionId,
 } from '@/lib/geography/destinations';
 
 interface ProvinceFilterProps {
   selectedProvince: string[];
   onProvinceSelect: (provinces: string[]) => void;
+  regionId?: RegionId;
 }
 
 export function ProvinceFilter({
   selectedProvince,
   onProvinceSelect,
+  regionId,
 }: ProvinceFilterProps) {
   const tProvince = useTranslations('provincia.names');
   const tGeography = useTranslations('geography.regions');
+  const groups = regionId
+    ? DESTINATION_PROVINCE_GROUPS.filter((group) => group.regionId === regionId)
+    : DESTINATION_PROVINCE_GROUPS;
   const handleProvinceClick = (provinceName: string) => {
     const next = selectedProvince.includes(provinceName)
       ? selectedProvince.filter((p) => p !== provinceName)
@@ -26,11 +32,13 @@ export function ProvinceFilter({
 
   return (
     <div className="flex flex-col gap-4">
-      {DESTINATION_PROVINCE_GROUPS.map(({ regionId, provinceIds }) => (
-        <section key={regionId}>
-          <h3 className="mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-            {tGeography(regionId)}
-          </h3>
+      {groups.map(({ regionId: groupRegionId, provinceIds }) => (
+        <section key={groupRegionId}>
+          {!regionId && (
+            <h3 className="mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              {tGeography(groupRegionId)}
+            </h3>
+          )}
           <div className="flex flex-wrap gap-1.5 sm:gap-2">
             {provinceIds.map((provinceId) => {
               const province = GEOGRAPHY.provinces[provinceId].dbName;

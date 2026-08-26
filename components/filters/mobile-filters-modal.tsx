@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { MonthFilter } from '@/components/filters/month-filter';
 import { ProvinceFilter } from '@/components/filters/province-filter';
 import { DISTANCE_GROUPS } from '@/lib/constants';
+import type { RegionId } from '@/lib/geography/destinations';
 import { RACE_TYPES, RACE_TYPE_CATEGORY_KEYS } from '@/lib/races/home-filters';
 import { Button } from '@/components/ui/button';
 import { X, Trash2 } from 'lucide-react';
@@ -20,6 +21,7 @@ interface MobileFiltersModalProps {
   initialRaceType: string[];
   showProvinceFilter?: boolean;
   showDistanceFilter?: boolean;
+  regionId?: RegionId;
 }
 
 export function MobileFiltersModal({
@@ -33,6 +35,7 @@ export function MobileFiltersModal({
   initialRaceType,
   showProvinceFilter = true,
   showDistanceFilter = true,
+  regionId,
 }: MobileFiltersModalProps) {
   const tFilters = useTranslations('filters');
   const tDistanceGroups = useTranslations('distanceGroups');
@@ -130,6 +133,7 @@ export function MobileFiltersModal({
             <ProvinceFilter
               selectedProvince={draftProvince}
               onProvinceSelect={setDraftProvince}
+              regionId={regionId}
             />
           </div>
         ) : null}

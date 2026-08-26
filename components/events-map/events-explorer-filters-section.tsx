@@ -3,6 +3,7 @@
 import type { RefObject } from 'react';
 import { FilterBar } from '@/components/filters/filter-bar';
 import { DesktopLayoutToggle } from '@/components/events-map/desktop-layout-toggle';
+import type { RegionId } from '@/lib/geography/destinations';
 import type {
   DesktopLayout,
   LayoutToggleButton,
@@ -24,6 +25,7 @@ interface EventsExplorerFiltersSectionProps {
   onClearFilters: () => void;
   showProvinceFilter: boolean;
   showDistanceFilter: boolean;
+  regionId?: RegionId;
   filterColor: 'white' | 'black';
   isDesktop: boolean;
   desktopLayout: DesktopLayout;
@@ -51,6 +53,7 @@ export function EventsExplorerFiltersSection({
   onClearFilters,
   showProvinceFilter,
   showDistanceFilter,
+  regionId,
   filterColor,
   isDesktop,
   desktopLayout,
@@ -83,6 +86,7 @@ export function EventsExplorerFiltersSection({
               onClearFilters={onClearFilters}
               showProvinceFilter={showProvinceFilter}
               showDistanceFilter={showDistanceFilter}
+              regionId={regionId}
               variant={isPillVariant ? 'pill' : 'control'}
               color={filterColor}
               size={isPillVariant ? 'sm' : 'md'}

@@ -9,6 +9,7 @@ import { DISTANCE_GROUPS, MONTH_INDICES } from '@/lib/constants';
 import {
   DESTINATION_PROVINCE_GROUPS,
   GEOGRAPHY,
+  type RegionId,
 } from '@/lib/geography/destinations';
 import { RACE_TYPES, RACE_TYPE_CATEGORY_KEYS } from '@/lib/races/home-filters';
 
@@ -24,6 +25,7 @@ interface FilterBarProps {
   onClearFilters: () => void;
   showProvinceFilter?: boolean;
   showDistanceFilter?: boolean;
+  regionId?: RegionId;
   variant: 'control' | 'pill';
   color?: 'white' | 'black';
   size?: 'sm' | 'md';
@@ -42,6 +44,7 @@ export function FilterBar({
   onClearFilters,
   showProvinceFilter = true,
   showDistanceFilter = true,
+  regionId,
   variant,
   color = 'white',
   size = 'md',
@@ -59,11 +62,15 @@ export function FilterBar({
     label: tMonthsFull(index.toString()),
   }));
 
-  const provinceOptions = DESTINATION_PROVINCE_GROUPS.flatMap(({ regionId, provinceIds }) =>
-    provinceIds.map((provinceId) => ({
+  const provinceGroups = regionId
+    ? DESTINATION_PROVINCE_GROUPS.filter((group) => group.regionId === regionId)
+    : DESTINATION_PROVINCE_GROUPS;
+
+  const provinceOptions = provinceGroups.flatMap((group) =>
+    group.provinceIds.map((provinceId) => ({
       value: GEOGRAPHY.provinces[provinceId].dbName,
       label: tProvince(provinceId),
-      group: tGeography(regionId),
+      ...(regionId ? {} : { group: tGeography(group.regionId) }),
     })),
   );
 
