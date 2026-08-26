@@ -35,6 +35,28 @@ export function buildDestinationAlternateLinks(regionId: RegionId, provinceId: D
   return alternates;
 }
 
+export function getRegionPath(locale: string, regionId: RegionId): string {
+  return `/${locale}/d/${GEOGRAPHY.regions[regionId].slug}`;
+}
+
+export function buildRegionAlternateLinks(regionId: RegionId): Record<string, string> {
+  const alternates: Record<string, string> = {};
+  for (const locale of locales) alternates[locale] = `${BASE_URL}${getRegionPath(locale, regionId)}`;
+  alternates['x-default'] = `${BASE_URL}${getRegionPath('es', regionId)}`;
+  return alternates;
+}
+
+export function getRegionProvinceIds(regionId: RegionId): DestinationProvinceId[] {
+  return DESTINATION_PROVINCE_IDS.filter(
+    (provinceId) => GEOGRAPHY.provinces[provinceId].regionId === regionId,
+  );
+}
+
+export function getSingleProvinceId(regionId: RegionId): DestinationProvinceId | null {
+  const provinceIds = getRegionProvinceIds(regionId);
+  return provinceIds.length === 1 ? provinceIds[0] : null;
+}
+
 export function getRegionBySlug(slug: string): { id: RegionId; region: Region } | null {
   const id = REGION_IDS.find((regionId) => GEOGRAPHY.regions[regionId].slug === slug);
   return id ? { id, region: GEOGRAPHY.regions[id] } : null;

@@ -4,9 +4,13 @@ import {
   DESTINATION_PROVINCE_IDS,
   GEOGRAPHY,
   buildDestinationAlternateLinks,
+  buildRegionAlternateLinks,
   getDestinationBySlugs,
   getDestinationPath,
   getProvinceByDbName,
+  getRegionPath,
+  getRegionProvinceIds,
+  getSingleProvinceId,
 } from './destinations';
 import { PROVINCES } from './provinces';
 import ca from '@/locales/ca/translation.json';
@@ -118,6 +122,9 @@ describe('destination catalogue', () => {
 
       expect(translation.provincia.pageDescription).toContain('{province}');
       expect(translation.provincia.heroSubtitle).toContain('{province}');
+      expect(translation.comunidad.pageDescription).toContain('{region}');
+      expect(translation.comunidad.heroSubtitle).toContain('{region}');
+      expect(translation.comunidad.provincesHeading).toContain('{region}');
     }
   });
 });
@@ -134,5 +141,56 @@ describe('getProvinceByDbName', () => {
       id: 'alicante',
       province: { slug: 'alicante' },
     });
+  });
+});
+
+describe('getRegionPath', () => {
+  it('returns the community path for a locale', () => {
+    expect(getRegionPath('es', 'catalonia')).toBe('/es/d/cataluna');
+    expect(getRegionPath('fr', 'valencianCommunity')).toBe(
+      '/fr/d/comunidad-valenciana',
+    );
+    expect(getRegionPath('es', 'murcia')).toBe('/es/d/region-de-murcia');
+  });
+});
+
+describe('buildRegionAlternateLinks', () => {
+  it('links every locale and defaults to Spanish', () => {
+    const alternates = buildRegionAlternateLinks('aragon');
+
+    expect(alternates).toEqual({
+      es: `${BASE_URL}/es/d/aragon`,
+      ca: `${BASE_URL}/ca/d/aragon`,
+      en: `${BASE_URL}/en/d/aragon`,
+      fr: `${BASE_URL}/fr/d/aragon`,
+      'x-default': `${BASE_URL}/es/d/aragon`,
+    });
+  });
+});
+
+describe('getRegionProvinceIds', () => {
+  it('groups every province under its community', () => {
+    expect(getRegionProvinceIds('catalonia')).toEqual([
+      'barcelona',
+      'girona',
+      'lleida',
+      'tarragona',
+    ]);
+    expect(getRegionProvinceIds('murcia')).toEqual(['murcia']);
+
+    const grouped = Object.keys(GEOGRAPHY.regions).flatMap((regionId) =>
+      getRegionProvinceIds(regionId as keyof typeof GEOGRAPHY.regions),
+    );
+    expect(grouped.sort()).toEqual([...DESTINATION_PROVINCE_IDS].sort());
+  });
+});
+
+describe('getSingleProvinceId', () => {
+  it('identifies the communities that canonicalise to their province page', () => {
+    expect(getSingleProvinceId('murcia')).toBe('murcia');
+    expect(getSingleProvinceId('madrid')).toBe('madrid');
+    expect(getSingleProvinceId('asturias')).toBe('asturias');
+    expect(getSingleProvinceId('catalonia')).toBeNull();
+    expect(getSingleProvinceId('canaryIslands')).toBeNull();
   });
 });

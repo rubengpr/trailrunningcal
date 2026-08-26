@@ -7,7 +7,9 @@ import { getContactPath } from '@/lib/i18n/paths';
 export { getTypePath } from '@/lib/races/race-types';
 export {
   buildDestinationAlternateLinks,
+  buildRegionAlternateLinks,
   getDestinationPath,
+  getRegionPath,
 } from '@/lib/geography/destinations';
 
 export function buildHomeAlternateLinks(): Record<string, string> {
