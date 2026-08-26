@@ -6,6 +6,8 @@ import { RACE_CATEGORY_SLUGS } from '@/lib/races/race-types';
 import {
   DESTINATION_PROVINCE_IDS,
   GEOGRAPHY,
+  getRegionProvinceIds,
+  REGION_IDS,
 } from '@/lib/geography/destinations';
 import { getSitemapEvents, getSitemapProvinces } from '@/lib/db/sitemap-events';
 import {
@@ -16,7 +18,9 @@ import {
   buildTypeAlternateLinks,
   buildDestinationAlternateLinks,
   buildEventAlternateLinks,
+  buildRegionAlternateLinks,
   getDestinationPath,
+  getRegionPath,
   getTypePath,
 } from '@/lib/content/alternate-links';
 import { getContactPath } from '@/lib/i18n/paths';
@@ -108,6 +112,35 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.9,
         alternates: {
           languages: buildDestinationAlternateLinks(province.regionId, provinceId),
+        },
+      });
+    }
+  }
+
+  // Single-province communities canonicalise to their province page, so only
+  // the ones that actually aggregate several provinces are listed here.
+  for (const regionId of REGION_IDS) {
+    const provinceIds = getRegionProvinceIds(regionId);
+
+    if (provinceIds.length < 2) {
+      continue;
+    }
+
+    const hasUpcomingRaces = provinceIds.some((provinceId) =>
+      coveredProvinces.has(GEOGRAPHY.provinces[provinceId].dbName),
+    );
+
+    if (!hasUpcomingRaces) {
+      continue;
+    }
+
+    for (const locale of locales) {
+      urls.push({
+        url: `${BASE_URL}${getRegionPath(locale, regionId)}`,
+        changeFrequency: 'weekly',
+        priority: 0.9,
+        alternates: {
+          languages: buildRegionAlternateLinks(regionId),
         },
       });
     }

@@ -60,13 +60,48 @@ describe('sitemap destination URLs', () => {
 
   it('only lists destinations that have upcoming races', async () => {
     const urls = await sitemap();
-    const destinationUrls = urls.filter((entry) => entry.url.includes('/d/'));
+    const provinceUrls = urls.filter(
+      (entry) => entry.url.split('/d/')[1]?.includes('/'),
+    );
 
-    expect(destinationUrls).toHaveLength(
+    expect(provinceUrls).toHaveLength(
       COVERED_PROVINCES.length * locales.length,
     );
-    expect(destinationUrls.map((entry) => entry.url)).not.toContain(
+    expect(provinceUrls.map((entry) => entry.url)).not.toContain(
       `${BASE_URL}/es/d/${GEOGRAPHY.regions.andalusia.slug}/${GEOGRAPHY.provinces.granada.slug}`,
+    );
+  });
+
+  it('lists the communities that aggregate several covered provinces', async () => {
+    const urls = await sitemap();
+    const regionUrls = urls
+      .filter((entry) => entry.url.includes('/d/'))
+      .map((entry) => entry.url)
+      .filter((url) => !url.split('/d/')[1].includes('/'));
+
+    // Catalonia and the Valencian Community are the only ones with covered
+    // provinces, in every locale.
+    expect(regionUrls).toHaveLength(2 * locales.length);
+    expect(regionUrls).toContain(
+      `${BASE_URL}/es/d/${GEOGRAPHY.regions.catalonia.slug}`,
+    );
+    expect(regionUrls).toContain(
+      `${BASE_URL}/fr/d/${GEOGRAPHY.regions.valencianCommunity.slug}`,
+    );
+    expect(regionUrls).not.toContain(
+      `${BASE_URL}/es/d/${GEOGRAPHY.regions.andalusia.slug}`,
+    );
+  });
+
+  it('excludes single-province communities, which canonicalise to their province', async () => {
+    const urls = await sitemap();
+    const sitemapUrls = urls.map((entry) => entry.url);
+
+    expect(sitemapUrls).not.toContain(
+      `${BASE_URL}/es/d/${GEOGRAPHY.regions.murcia.slug}`,
+    );
+    expect(sitemapUrls).not.toContain(
+      `${BASE_URL}/es/d/${GEOGRAPHY.regions.madrid.slug}`,
     );
   });
 
