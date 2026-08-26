@@ -78,14 +78,10 @@ export function buildOrganizationJsonLd(): Record<string, unknown> {
       contactType: 'customer service',
       availableLanguage: ['Spanish', 'Catalan', 'English', 'French'],
     },
-    areaServed: {
-      '@type': 'AdministrativeArea',
-      name: 'Cataluña',
-      containedInPlace: {
-        '@type': 'Country',
-        name: 'España',
-      },
-    },
+    areaServed: [
+      { '@type': 'Country', name: 'España' },
+      { '@type': 'Country', name: 'Andorra' },
+    ],
   };
 }
 
@@ -164,7 +160,7 @@ export function buildEventJsonLd(
         '@type': 'PostalAddress',
         addressLocality: location.city,
         addressRegion: location.province,
-        addressCountry: 'ES',
+        addressCountry: location.province === 'Andorra' ? 'AD' : 'ES',
       },
     };
   }
