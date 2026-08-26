@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import type { Locale } from '@/i18n';
 import type { MapPageLabels } from '@/types/map.types';
@@ -10,10 +11,16 @@ import { JsonLd } from '@/components/seo/json-ld';
 import { HeroSection } from '@/components/layout/hero-section';
 import { FaqSection } from '@/components/layout/faq-section';
 import { EventsExplorerClient } from '@/components/events-map/events-explorer-client';
+import type { RegionId } from '@/lib/geography/destinations';
 
 interface BreadcrumbItem {
   name: string;
   href?: string;
+}
+
+interface ChildLink {
+  name: string;
+  href: string;
 }
 
 interface CategoryMapPageProps {
@@ -29,6 +36,9 @@ interface CategoryMapPageProps {
   labels: MapPageLabels;
   showProvinceFilter?: boolean;
   showDistanceFilter?: boolean;
+  regionId?: RegionId;
+  childLinks?: ChildLink[];
+  childLinksHeading?: string;
   contentSections?: FaqItem[];
   contentSectionsHeading?: string;
 }
@@ -46,6 +56,9 @@ export async function CategoryMapPage({
   labels,
   showProvinceFilter = true,
   showDistanceFilter = false,
+  regionId,
+  childLinks,
+  childLinksHeading,
   contentSections,
   contentSectionsHeading,
 }: CategoryMapPageProps) {
@@ -69,8 +82,27 @@ export async function CategoryMapPage({
           labels={labels}
           showProvinceFilter={showProvinceFilter}
           showDistanceFilter={showDistanceFilter}
+          regionId={regionId}
         />
       </div>
+      {childLinks && childLinks.length > 0 && childLinksHeading && (
+        <section className="mx-auto w-full max-w-4xl px-4 pb-16 sm:px-6 lg:max-w-7xl lg:px-8">
+          <h2 className="mb-4 text-lg font-semibold text-slate-800">
+            {childLinksHeading}
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            {childLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:border-gray-400 hover:bg-gray-100 hover:text-gray-900"
+              >
+                {link.name}
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
       {contentSections && contentSections.length > 0 && contentSectionsHeading && (
         <>
           <JsonLd data={buildFaqJsonLd(contentSections)} />
