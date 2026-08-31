@@ -24,6 +24,34 @@ export const DESTINATION_PROVINCE_GROUPS = REGION_IDS.map((regionId) => ({
   ),
 })).filter((group) => group.provinceIds.length > 0);
 
+export function getLocalizedProvinceGroups({
+  locale,
+  regionId,
+  getRegionLabel,
+  getProvinceLabel,
+}: {
+  locale: string;
+  regionId?: RegionId;
+  getRegionLabel: (regionId: RegionId) => string;
+  getProvinceLabel: (provinceId: DestinationProvinceId) => string;
+}) {
+  const collator = new Intl.Collator(locale, { sensitivity: 'base' });
+  const groups = regionId
+    ? DESTINATION_PROVINCE_GROUPS.filter((group) => group.regionId === regionId)
+    : DESTINATION_PROVINCE_GROUPS;
+
+  return groups
+    .map((group) => ({
+      ...group,
+      provinceIds: [...group.provinceIds].sort((left, right) =>
+        collator.compare(getProvinceLabel(left), getProvinceLabel(right)),
+      ),
+    }))
+    .sort((left, right) =>
+      collator.compare(getRegionLabel(left.regionId), getRegionLabel(right.regionId)),
+    );
+}
+
 export function getDestinationPath(locale: string, regionId: RegionId, provinceId: DestinationProvinceId): string {
   return `/${locale}/d/${GEOGRAPHY.regions[regionId].slug}/${GEOGRAPHY.provinces[provinceId].slug}`;
 }

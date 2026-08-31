@@ -7,6 +7,7 @@ import {
   buildRegionAlternateLinks,
   getDestinationBySlugs,
   getDestinationPath,
+  getLocalizedProvinceGroups,
   getProvinceByDbName,
   getRegionPath,
   getRegionProvinceIds,
@@ -182,6 +183,25 @@ describe('getRegionProvinceIds', () => {
       getRegionProvinceIds(regionId as keyof typeof GEOGRAPHY.regions),
     );
     expect(grouped.sort()).toEqual([...DESTINATION_PROVINCE_IDS].sort());
+  });
+});
+
+describe('getLocalizedProvinceGroups', () => {
+  it('sorts communities and provinces by their localized labels', () => {
+    const groups = getLocalizedProvinceGroups({
+      locale: 'es',
+      getRegionLabel: (regionId) => regionId === 'andalusia' ? 'Zulu' : regionId === 'andorra' ? 'Alpha' : regionId,
+      getProvinceLabel: (provinceId) => provinceId === 'almeria' ? 'Zulu' : provinceId === 'cadiz' ? 'Alpha' : provinceId,
+    });
+
+    expect(groups.findIndex((group) => group.regionId === 'andorra')).toBeLessThan(
+      groups.findIndex((group) => group.regionId === 'andalusia'),
+    );
+
+    const andalusia = groups.find((group) => group.regionId === 'andalusia');
+    expect(andalusia!.provinceIds.indexOf('cadiz')).toBeLessThan(
+      andalusia!.provinceIds.indexOf('almeria'),
+    );
   });
 });
 

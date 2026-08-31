@@ -1,14 +1,14 @@
 'use client';
 
 import type { RefObject } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Trash2 } from 'lucide-react';
 import { FilterSelect } from '@/components/filters/filter-select';
 import { FilterPill } from '@/components/filters/filter-pill';
 import { DISTANCE_GROUPS, MONTH_INDICES } from '@/lib/constants';
 import {
-  DESTINATION_PROVINCE_GROUPS,
   GEOGRAPHY,
+  getLocalizedProvinceGroups,
   type RegionId,
 } from '@/lib/geography/destinations';
 import { RACE_TYPES, RACE_TYPE_CATEGORY_KEYS } from '@/lib/races/home-filters';
@@ -56,15 +56,19 @@ export function FilterBar({
   const tCategory = useTranslations('category');
   const tProvince = useTranslations('provincia.names');
   const tGeography = useTranslations('geography.regions');
+  const locale = useLocale();
 
   const monthOptions = MONTH_INDICES.map((index) => ({
     value: index.toString(),
     label: tMonthsFull(index.toString()),
   }));
 
-  const provinceGroups = regionId
-    ? DESTINATION_PROVINCE_GROUPS.filter((group) => group.regionId === regionId)
-    : DESTINATION_PROVINCE_GROUPS;
+  const provinceGroups = getLocalizedProvinceGroups({
+    locale,
+    regionId,
+    getRegionLabel: tGeography,
+    getProvinceLabel: tProvince,
+  });
 
   const provinceOptions = provinceGroups.flatMap((group) =>
     group.provinceIds.map((provinceId) => ({

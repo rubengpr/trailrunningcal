@@ -1,9 +1,9 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import {
-  DESTINATION_PROVINCE_GROUPS,
   GEOGRAPHY,
+  getLocalizedProvinceGroups,
   type RegionId,
 } from '@/lib/geography/destinations';
 
@@ -20,9 +20,13 @@ export function ProvinceFilter({
 }: ProvinceFilterProps) {
   const tProvince = useTranslations('provincia.names');
   const tGeography = useTranslations('geography.regions');
-  const groups = regionId
-    ? DESTINATION_PROVINCE_GROUPS.filter((group) => group.regionId === regionId)
-    : DESTINATION_PROVINCE_GROUPS;
+  const locale = useLocale();
+  const groups = getLocalizedProvinceGroups({
+    locale,
+    regionId,
+    getRegionLabel: tGeography,
+    getProvinceLabel: tProvince,
+  });
   const handleProvinceClick = (provinceName: string) => {
     const next = selectedProvince.includes(provinceName)
       ? selectedProvince.filter((p) => p !== provinceName)
