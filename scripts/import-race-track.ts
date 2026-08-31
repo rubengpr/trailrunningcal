@@ -11,13 +11,17 @@ import { MAX_TRACK_FILE_SIZE_BYTES } from '@/lib/race-tracks/parse';
 import { MAX_TRACK_UPLOAD_SIZE_BYTES } from '@/lib/race-tracks/limits';
 
 interface Arguments {
-  eventSlug: string;
-  raceName: string;
+  eventSlug?: string;
+  raceName?: string;
+  raceId?: string;
   filePath: string;
   baseUrl: string;
   apply: boolean;
   yes: boolean;
 }
+
+const USAGE =
+  'Usage: pnpm track:import -- (--event <slug> --race <name> | --race-id <uuid>) --file <path> [--base-url <url>] [--apply] [--yes]';
 
 interface ImportResponse {
   success: true;
@@ -40,18 +44,25 @@ function readOption(args: string[], name: string): string | undefined {
 function parseArguments(args: string[]): Arguments {
   const eventSlug = readOption(args, '--event');
   const raceName = readOption(args, '--race');
+  const raceId = readOption(args, '--race-id');
   const filePath = readOption(args, '--file');
   const baseUrl = readOption(args, '--base-url') ?? 'http://localhost:3000';
 
-  if (!eventSlug || !raceName || !filePath) {
-    throw new Error(
-      'Usage: pnpm track:import -- --event <slug> --race <name> --file <path> [--base-url <url>] [--apply] [--yes]',
-    );
+  const hasNameMatch = eventSlug !== undefined || raceName !== undefined;
+  if (raceId !== undefined && hasNameMatch) {
+    throw new Error('Pass either --race-id, or --event and --race, not both');
+  }
+  if (raceId === undefined && (!eventSlug || !raceName)) {
+    throw new Error(USAGE);
+  }
+  if (!filePath) {
+    throw new Error(USAGE);
   }
 
   return {
     eventSlug,
     raceName,
+    raceId,
     filePath,
     baseUrl: normalizeTrackImportBaseUrl(baseUrl),
     apply: args.includes('--apply'),
@@ -108,8 +119,12 @@ async function main(): Promise<void> {
     );
   }
   const formData = new FormData();
-  formData.set('eventSlug', args.eventSlug);
-  formData.set('raceName', args.raceName);
+  if (args.raceId) {
+    formData.set('raceId', args.raceId);
+  } else {
+    formData.set('eventSlug', args.eventSlug!);
+    formData.set('raceName', args.raceName!);
+  }
   formData.set('mode', args.apply ? 'apply' : 'dry-run');
   formData.set(
     'file',
@@ -135,7 +150,7 @@ async function main(): Promise<void> {
   }
 
   const { data } = payload;
-  console.log(`Matched race: ${args.raceName} (${data.raceId})`);
+  console.log(`Matched race: ${args.raceName ?? data.raceId} (${data.raceId})`);
   console.log(
     `Geometry: ${data.geometryType}, ${data.segmentCount} segment(s), ${data.pointCount} points, ${data.normalizedSizeBytes} bytes`,
   );

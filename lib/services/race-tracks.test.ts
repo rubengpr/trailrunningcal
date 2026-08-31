@@ -149,6 +149,50 @@ describe('importRaceTrack', () => {
     );
   });
 
+  it('resolves via raceId when provided, ignoring name matching', async () => {
+    const result = await importRaceTrack({
+      raceId: 'race-1',
+      bytes: validTrack,
+      mode: 'apply',
+    });
+
+    expect(result).toMatchObject({
+      mode: 'apply',
+      raceId: 'race-1',
+      eventSlug: 'pedraforca-xtrail',
+    });
+    expect(mocks.findRaceTrackTargetById).toHaveBeenCalledWith('race-1');
+    expect(mocks.findRaceTrackTargets).not.toHaveBeenCalled();
+    expect(mocks.updateRaceTrackGeometry).toHaveBeenCalledWith(
+      'race-1',
+      expect.objectContaining({ type: 'LineString' }),
+    );
+  });
+
+  it('returns 404 without updating when raceId does not match a race', async () => {
+    mocks.findRaceTrackTargetById.mockResolvedValue(null);
+
+    await expect(
+      importRaceTrack({ raceId: 'missing', bytes: validTrack, mode: 'apply' }),
+    ).rejects.toEqual(
+      expect.objectContaining<Partial<ValidationError>>({ status: 404 }),
+    );
+    expect(mocks.updateRaceTrackGeometry).not.toHaveBeenCalled();
+  });
+
+  it('rejects an incomplete name match when raceId is absent', async () => {
+    await expect(
+      importRaceTrack({
+        eventSlug: 'pedraforca-xtrail',
+        bytes: validTrack,
+        mode: 'apply',
+      }),
+    ).rejects.toEqual(
+      expect.objectContaining<Partial<ValidationError>>({ status: 400 }),
+    );
+    expect(mocks.findRaceTrackTargets).not.toHaveBeenCalled();
+  });
+
   it('returns identical processing diagnostics in dry-run and apply modes', async () => {
     const dryRun = await importRaceTrack({
       eventSlug: 'pedraforca-xtrail',

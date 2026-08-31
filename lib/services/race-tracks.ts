@@ -38,7 +38,43 @@ export async function importRaceTrack(
   }
 
   const parsed = parseTrackFile(input.bytes);
-  const matches = await findRaceTrackTargets(input.eventSlug, input.raceName);
+  const { raceId, eventSlug } = input.raceId
+    ? await resolveRaceTrackTargetById(input.raceId)
+    : await resolveRaceTrackTargetByName(input.eventSlug, input.raceName);
+
+  if (input.mode === 'apply') {
+    await updateRaceTrackGeometry(raceId, parsed.geometry);
+  }
+
+  return {
+    mode: input.mode,
+    raceId,
+    eventSlug,
+    ...getProcessingSummary(parsed),
+  };
+}
+
+async function resolveRaceTrackTargetById(
+  raceId: string,
+): Promise<{ raceId: string; eventSlug: string }> {
+  const target = await findRaceTrackTargetById(raceId);
+
+  if (!target) {
+    throw new ValidationError('Race not found', 404);
+  }
+
+  return { raceId: target.id, eventSlug: target.eventSlug };
+}
+
+async function resolveRaceTrackTargetByName(
+  eventSlug: string | undefined,
+  raceName: string | undefined,
+): Promise<{ raceId: string; eventSlug: string }> {
+  if (!eventSlug || !raceName) {
+    throw new ValidationError('Invalid input', 400);
+  }
+
+  const matches = await findRaceTrackTargets(eventSlug, raceName);
 
   if (matches.length === 0) {
     throw new ValidationError('Race not found', 404);
@@ -48,17 +84,7 @@ export async function importRaceTrack(
     throw new ValidationError('Multiple races match', 409);
   }
 
-  const race = matches[0]!;
-  if (input.mode === 'apply') {
-    await updateRaceTrackGeometry(race.id, parsed.geometry);
-  }
-
-  return {
-    mode: input.mode,
-    raceId: race.id,
-    eventSlug: input.eventSlug,
-    ...getProcessingSummary(parsed),
-  };
+  return { raceId: matches[0]!.id, eventSlug };
 }
 
 export async function saveRaceTrack(
