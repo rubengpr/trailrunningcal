@@ -120,6 +120,27 @@ describe('POST /api/race-tracks', () => {
     );
   });
 
+  it('passes raceId through and revalidates using the resolved eventSlug', async () => {
+    mocks.validateRaceTrackRequest.mockReturnValue({
+      eventSlug: undefined,
+      raceName: undefined,
+      raceId: 'race-1',
+      mode: 'apply',
+      file,
+    });
+    mocks.importRaceTrack.mockResolvedValue({ ...result, mode: 'apply' });
+
+    const response = await POST(request());
+
+    expect(response.status).toBe(200);
+    expect(mocks.importRaceTrack).toHaveBeenCalledWith(
+      expect.objectContaining({ raceId: 'race-1' }),
+    );
+    expect(mocks.revalidateEventPages).toHaveBeenCalledWith(
+      'pedraforca-xtrail',
+    );
+  });
+
   it('does not revalidate when the import fails', async () => {
     mocks.importRaceTrack.mockRejectedValue(
       new ValidationError('Invalid track file', 422),

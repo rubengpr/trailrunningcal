@@ -2,10 +2,23 @@ import { describe, expect, it } from 'vitest';
 import {
   MAX_TRACK_REQUEST_SIZE_BYTES,
   validateAdminRaceTrackRequest,
+  validateRaceTrackRequest,
   validateRaceTrackRequestSize,
 } from '@/app/api/race-tracks/validation';
 import { MAX_TRACK_UPLOAD_SIZE_BYTES } from '@/lib/race-tracks/limits';
 import { ValidationError } from '@/lib/errors';
+
+const RACE_ID = '11111111-1111-4111-8111-111111111111';
+
+function trackFormData(fields: Record<string, string>): FormData {
+  const formData = new FormData();
+  for (const [key, value] of Object.entries(fields)) {
+    formData.set(key, value);
+  }
+  formData.set('mode', 'dry-run');
+  formData.set('file', new File(['track'], 'route.gpx'));
+  return formData;
+}
 
 describe('validateRaceTrackRequestSize', () => {
   it('allows absent and bounded content lengths', () => {
@@ -31,6 +44,65 @@ describe('validateRaceTrackRequestSize', () => {
       ),
     ).toThrow(
       expect.objectContaining<Partial<ValidationError>>({ status: 413 }),
+    );
+  });
+});
+
+describe('validateRaceTrackRequest', () => {
+  it('accepts a match by eventSlug and raceName', () => {
+    const input = validateRaceTrackRequest(
+      trackFormData({ eventSlug: 'pedraforca-xtrail', raceName: 'Short' }),
+    );
+
+    expect(input).toMatchObject({
+      eventSlug: 'pedraforca-xtrail',
+      raceName: 'Short',
+      raceId: undefined,
+      mode: 'dry-run',
+    });
+  });
+
+  it('accepts a match by raceId alone', () => {
+    const input = validateRaceTrackRequest(trackFormData({ raceId: RACE_ID }));
+
+    expect(input).toMatchObject({
+      eventSlug: undefined,
+      raceName: undefined,
+      raceId: RACE_ID,
+      mode: 'dry-run',
+    });
+  });
+
+  it('rejects raceId combined with eventSlug or raceName', () => {
+    expect(() =>
+      validateRaceTrackRequest(
+        trackFormData({ raceId: RACE_ID, eventSlug: 'pedraforca-xtrail' }),
+      ),
+    ).toThrow(
+      expect.objectContaining<Partial<ValidationError>>({ status: 400 }),
+    );
+    expect(() =>
+      validateRaceTrackRequest(
+        trackFormData({ raceId: RACE_ID, raceName: 'Short' }),
+      ),
+    ).toThrow(
+      expect.objectContaining<Partial<ValidationError>>({ status: 400 }),
+    );
+  });
+
+  it('rejects a malformed raceId', () => {
+    expect(() =>
+      validateRaceTrackRequest(trackFormData({ raceId: 'not-a-uuid' })),
+    ).toThrow(
+      expect.objectContaining<Partial<ValidationError>>({ status: 400 }),
+    );
+  });
+
+  it('rejects a missing raceName when raceId is absent', () => {
+    expect(() =>
+      validateRaceTrackRequest(trackFormData({ eventSlug: 'pedraforca-xtrail' })),
+    ).toThrow(
+      expect.objectContaining<Partial<ValidationError>>({ status: 400 }),
     );
   });
 });

@@ -634,8 +634,8 @@
     "pageDescription": "Trouve des courses d’ultra trail de plus de 50 km en Espagne et en Andorre. Dates, dénivelé et détails des événements pour {year}.",
     "pageBody": "Les courses d’ultra trail combinent longues distances, dénivelé important et terrain de montagne technique.",
     "titleStart": "Explore les courses d’ultra trail en",
-    "titlePlace": "Espagne et Andorre",
-    "heroSubtitle": "Explore les courses d’ultra trail en Espagne et en Andorre, avec distances, dénivelé et informations essentielles.",
+    "titlePlace": "Espagne",
+    "heroSubtitle": "Explore les courses d’ultra trail en Espagne, avec distances, dénivelé et informations essentielles.",
     "breadcrumb": "Ultra Trail",
     "contentSectionsTitle": "Questions fréquentes"
   },
@@ -644,7 +644,7 @@
     "pageDescription": "Trouve des marathons trail de 40 à 50 km en Espagne et en Andorre. Dates, dénivelé et détails des événements pour {year}.",
     "pageBody": "Les marathons trail combinent endurance et technicité sur des parcours de montagne de 40 à 50 km.",
     "titleStart": "Explore les marathons trail en",
-    "titlePlace": "Espagne et Andorre",
+    "titlePlace": "Espagne",
     "heroSubtitle": "Explore les marathons de montagne dans les Pyrénées, le Montseny et les Ports de Beseit. Trouve ta prochaine course de 40 à 50 km en Catalogne.",
     "breadcrumb": "Marathon Trail",
     "contentSectionsTitle": "Questions fréquentes"
@@ -654,7 +654,7 @@
     "pageDescription": "Trouve des semi-marathons trail de 20 à 24 km en Espagne et en Andorre. Dates, dénivelé et détails des événements pour {year}.",
     "pageBody": "Les semi-marathons trail offrent un mélange accessible mais exigeant d’endurance et de technicité en montagne.",
     "titleStart": "Explore les semi-marathons trail en",
-    "titlePlace": "Espagne et Andorre",
+    "titlePlace": "Espagne",
     "heroSubtitle": "Explore les semi-marathons trail dans les Pyrénées, le Montseny et la Costa Brava. Le point de départ idéal pour passer à des distances plus longues.",
     "breadcrumb": "Semi-marathon Trail",
     "contentSectionsTitle": "Questions fréquentes"
@@ -664,7 +664,7 @@
     "pageDescription": "Trouve des randonnées de montagne non compétitives en Espagne et en Andorre, pour tous les niveaux.",
     "pageBody": "Les randonnées de montagne sont des événements non compétitifs conçus pour profiter de la nature sans courir contre le chrono.",
     "titleStart": "Explore les randonnées de montagne en",
-    "titlePlace": "Espagne et Andorre",
+    "titlePlace": "Espagne",
     "heroSubtitle": "Explore les randonnées populaires dans les Pyrénées, le Montseny et le Garraf. Pour celles et ceux qui aiment la montagne sans courir contre le chrono.",
     "breadcrumb": "Randonnées de montagne",
     "contentSectionsTitle": "Questions fréquentes"
@@ -674,7 +674,7 @@
     "pageDescription": "Trouve des courses de kilomètre vertical en Espagne et en Andorre, avec de courtes distances et un dénivelé extrême.",
     "pageBody": "Les courses de kilomètre vertical concentrent un dénivelé exceptionnel sur des parcours de montagne courts et raides.",
     "titleStart": "Explore les courses de kilomètre vertical en",
-    "titlePlace": "Espagne et Andorre",
+    "titlePlace": "Espagne",
     "heroSubtitle": "Explore les courses de kilomètre vertical dans les Pyrénées et les Prépyrénées. Dénivelé maximal, distance minimale : le format le plus vertical du trail.",
     "breadcrumb": "Kilomètre vertical",
     "contentSectionsTitle": "Questions fréquentes"
@@ -684,7 +684,7 @@
     "pageDescription": "Trouve des courses Backyard Ultra en Espagne et en Andorre, avec dates et informations d’inscription.",
     "pageBody": "Les coureurs de Backyard Ultra réalisent une boucle de 6,7 km chaque heure jusqu’à ce qu’il n’en reste plus qu’un.",
     "titleStart": "Explore les Backyard Ultras en",
-    "titlePlace": "Espagne et Andorre",
+    "titlePlace": "Espagne",
     "heroSubtitle": "Découvre les courses de montagne Backyard Ultra en Catalogne. Répète des boucles de 6,7 km jusqu’à ce qu’il ne reste plus qu’un coureur debout.",
     "breadcrumb": "Backyard Ultra",
     "contentSectionsTitle": "Questions fréquentes"

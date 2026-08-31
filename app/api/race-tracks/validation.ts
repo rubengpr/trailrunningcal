@@ -1,3 +1,4 @@
+import { parseUuidParam } from '@/app/api/events/description-batches/validation';
 import { ValidationError } from '@/lib/errors';
 import { MAX_TRACK_UPLOAD_SIZE_BYTES } from '@/lib/race-tracks/limits';
 import type { TrackImportMode } from '@/types/race-track.types';
@@ -9,8 +10,9 @@ export const MAX_TRACK_REQUEST_SIZE_BYTES =
   MAX_TRACK_UPLOAD_SIZE_BYTES + MAX_MULTIPART_OVERHEAD_BYTES;
 
 export interface RaceTrackRequestInput {
-  eventSlug: string;
-  raceName: string;
+  eventSlug?: string;
+  raceName?: string;
+  raceId?: string;
   file: File;
   mode: TrackImportMode;
 }
@@ -49,17 +51,32 @@ function requiredString(
   return normalized;
 }
 
+function optionalRaceId(value: FormDataEntryValue | null): string | undefined {
+  if (value === null) return undefined;
+  if (typeof value !== 'string' || !value.trim()) {
+    throw new ValidationError('Invalid input', 400);
+  }
+
+  return parseUuidParam(value.trim(), 'race id');
+}
+
 export function validateRaceTrackRequest(
   formData: FormData,
 ): RaceTrackRequestInput {
-  const eventSlug = requiredString(
-    formData.get('eventSlug'),
-    MAX_EVENT_SLUG_LENGTH,
-  );
-  const raceName = requiredString(
-    formData.get('raceName'),
-    MAX_RACE_NAME_LENGTH,
-  );
+  const raceId = optionalRaceId(formData.get('raceId'));
+  const hasNameFields =
+    formData.get('eventSlug') !== null || formData.get('raceName') !== null;
+
+  if (raceId !== undefined && hasNameFields) {
+    throw new ValidationError('Invalid input', 400);
+  }
+
+  const eventSlug = raceId
+    ? undefined
+    : requiredString(formData.get('eventSlug'), MAX_EVENT_SLUG_LENGTH);
+  const raceName = raceId
+    ? undefined
+    : requiredString(formData.get('raceName'), MAX_RACE_NAME_LENGTH);
   const modeValue = formData.get('mode');
   const file = validateTrackFile(formData.get('file'));
 
@@ -67,7 +84,7 @@ export function validateRaceTrackRequest(
     throw new ValidationError('Invalid input', 400);
   }
 
-  return { eventSlug, raceName, mode: modeValue, file };
+  return { eventSlug, raceName, raceId, mode: modeValue, file };
 }
 
 function validateTrackFile(value: FormDataEntryValue | null): File {

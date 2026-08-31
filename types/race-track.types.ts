@@ -70,8 +70,9 @@ export interface TrackEndpointGroup {
 }
 
 export interface RaceTrackImportInput {
-  eventSlug: string;
-  raceName: string;
+  eventSlug?: string;
+  raceName?: string;
+  raceId?: string;
   bytes: Uint8Array;
   mode: TrackImportMode;
 }

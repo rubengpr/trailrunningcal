@@ -25,12 +25,13 @@ export async function POST(request: NextRequest) {
     const data = await importRaceTrack({
       eventSlug: input.eventSlug,
       raceName: input.raceName,
+      raceId: input.raceId,
       mode: input.mode,
       bytes: new Uint8Array(await input.file.arrayBuffer()),
     });
 
     if (input.mode === 'apply') {
-      revalidateEventPages(input.eventSlug);
+      revalidateEventPages(data.eventSlug);
     }
 
     return NextResponse.json({ success: true, data });
