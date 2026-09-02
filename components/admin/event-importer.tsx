@@ -15,13 +15,13 @@ import { EventImportPreview } from '@/components/admin/event-import-preview';
 import { EventImportPreviewModal } from '@/components/admin/event-import-preview-modal';
 import { ImportJsonEditor } from '@/components/admin/import-json-editor';
 import { ImportFileUploadPanel } from '@/components/admin/import-file-upload-panel';
+import { ResearchWorkflowPanel } from '@/components/admin/research-workflow-panel';
 import {
     ImportPipelineProgress,
     type ImportPipelineRowConfig,
     type PersistedImportPipelineRow,
 } from '@/components/admin/import-pipeline-progress';
 import { ImportCostSummary } from '@/components/admin/import-cost-summary';
-import { ErrorMessage } from '@/components/ui/error-message';
 import { cleanUrl } from '@/lib/utils/url';
 import {
     DUMMY_CRAWL_PAGE_STATS,
@@ -1349,91 +1349,19 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                     )}
 
                     {workflow === 'research' && (
-                        <div className="grid w-full gap-5">
-                            <div className="grid gap-2">
-                                <label htmlFor="researchEventNames" className="text-sm font-medium leading-none text-gray-900">
-                                    {t('research.namesLabel')}
-                                </label>
-                                <textarea
-                                    id="researchEventNames"
-                                    value={researchNamesInput}
-                                    onChange={(event) => setResearchNamesInput(event.target.value)}
-                                    placeholder={t('research.namesPlaceholder')}
-                                    disabled={isStartingResearch || isResearchRunning}
-                                    className="min-h-32 w-full resize-y rounded-xl border border-gray-200 bg-white p-3 text-sm text-gray-800 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-200/80 disabled:cursor-not-allowed disabled:opacity-60"
-                                />
-                                {parsedResearchNames.length > 0 ? (
-                                    <p className="text-xs text-gray-500">
-                                        {parsedResearchNames.length === 1
-                                            ? t('research.namesHintOne')
-                                            : t('research.namesHint', { count: parsedResearchNames.length })}
-                                    </p>
-                                ) : null}
-                            </div>
-                            <div className="rounded-xl border border-gray-200 bg-gray-50 p-3 text-xs text-gray-600">
-                                <span className="font-medium text-gray-900">{t('research.configuration')}</span>
-                                {' · '}gpt-5.6-terra{' · '}{t('research.nativeSearch')}{' · '}{t('research.concurrency')}
-                            </div>
-                            <div className="max-w-3xl border-t border-gray-100 pt-5">
-                                <div className="mb-3 flex items-baseline justify-between gap-3">
-                                    <div>
-                                        <h2 className="text-sm font-semibold text-gray-900">{t('research.historyTitle')}</h2>
-                                        <p className="mt-0.5 text-xs text-gray-500">{t('research.historyHint')}</p>
-                                    </div>
-                                    {isLoadingResearchHistory ? (
-                                        <span className="text-xs text-gray-500">{t('research.historyLoading')}</span>
-                                    ) : null}
-                                </div>
-                                {researchHistoryError ? (
-                                    <ErrorMessage
-                                        variant="inline"
-                                        title={t('research.historyError')}
-                                        message={t('research.historyError')}
-                                        onRetry={() => void fetchResearchHistory()}
-                                    />
-                                ) : researchHistory.length === 0 && !isLoadingResearchHistory ? (
-                                    <p className="rounded-lg border border-dashed border-gray-200 px-3 py-4 text-sm text-gray-500">
-                                        {t('research.historyEmpty')}
-                                    </p>
-                                ) : (
-                                    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-                                        {researchHistory.map(({ batch, summary }) => {
-                                            const isSelected = batch.id === activeResearchBatchId;
-                                            return (
-                                                <button
-                                                    key={batch.id}
-                                                    type="button"
-                                                    onClick={() => void handleSelectResearchBatch(batch.id)}
-                                                    aria-pressed={isSelected}
-                                                    className={`grid w-full grid-cols-[minmax(0,1fr)_auto] gap-x-4 border-b border-gray-100 px-4 py-3 text-left last:border-b-0 transition-colors ${isSelected ? 'bg-gray-900 text-white' : 'hover:bg-gray-50'}`}
-                                                >
-                                                    <span className="min-w-0">
-                                                        <span className={`block truncate text-sm font-medium ${isSelected ? 'text-white' : 'text-gray-900'}`}>
-                                                            {batch.model}
-                                                        </span>
-                                                        <span className={`mt-0.5 block text-xs tabular-nums ${isSelected ? 'text-gray-300' : 'text-gray-500'}`}>
-                                                            {new Intl.DateTimeFormat(undefined, {
-                                                                day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit',
-                                                            }).format(new Date(batch.createdAt))}
-                                                        </span>
-                                                    </span>
-                                                    <span className={`self-center text-right text-xs tabular-nums ${isSelected ? 'text-gray-200' : 'text-gray-600'}`}>
-                                                        <span className="block font-medium">{t(`research.state.${batch.status}`)}</span>
-                                                        <span className="mt-0.5 block">
-                                                            {t('research.historySummary', {
-                                                                completed: summary.completed,
-                                                                failed: summary.failed,
-                                                                total: summary.total,
-                                                            })}
-                                                        </span>
-                                                    </span>
-                                                </button>
-                                            );
-                                        })}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
+                        <ResearchWorkflowPanel
+                            namesInput={researchNamesInput}
+                            parsedNamesCount={parsedResearchNames.length}
+                            isStarting={isStartingResearch}
+                            isRunning={isResearchRunning}
+                            history={researchHistory}
+                            activeBatchId={activeResearchBatchId}
+                            isLoadingHistory={isLoadingResearchHistory}
+                            hasHistoryError={researchHistoryError}
+                            onNamesInputChange={setResearchNamesInput}
+                            onSelectBatch={(batchId) => void handleSelectResearchBatch(batchId)}
+                            onRetryHistory={() => void fetchResearchHistory()}
+                        />
                     )}
 
                     {workflow === 'full' && (
