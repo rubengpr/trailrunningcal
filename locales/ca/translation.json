@@ -923,6 +923,15 @@
         "pendientes": "Pendents",
         "borradores": "Esborranys"
       },
+      "updates": {
+        "title": "Actualitzacions d’esdeveniments",
+        "subtitle": "Seguiment de les actualitzacions programades d’esdeveniments.",
+        "empty": "Encara no hi ha actualitzacions programades.",
+        "status": { "pending": "Pendent", "running": "En curs", "completed": "Completat", "failed": "Fallat" },
+        "outcome": { "drafted": "Esborrany creat", "skipped": "Omesa", "unclassified": "Sense resultat registrat" },
+        "table": { "started": "Data", "duration": "Durada", "status": "Estat", "total": "Total", "drafted": "Esborranys", "skipped": "Omesos", "failed": "Fallats", "pending": "Pendents", "running": "En curs" },
+        "detail": { "title": "Detall de l’execució", "event": "Esdeveniment", "url": "URL", "status": "Estat", "outcome": "Resultat", "message": "Detall", "unknownEvent": "Esdeveniment no disponible" }
+      },
       "drafts": {
         "title": "Esdeveniments en esborrany",
         "empty": "No hi ha esborranys importats.",
@@ -1280,6 +1289,7 @@
     },
     "extractEvents": "Extreure esdeveniments",
     "newEvent": "Nou esdeveniment",
+    "automaticUpdates": "Actualitzacions automàtiques",
     "edit": {
       "button": "Editar esdeveniment"
     },

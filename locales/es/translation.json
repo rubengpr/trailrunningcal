@@ -955,6 +955,15 @@
         "pendientes": "Pendientes",
         "borradores": "Borradores"
       },
+      "updates": {
+        "title": "Actualizaciones de eventos",
+        "subtitle": "Seguimiento de las actualizaciones programadas de eventos.",
+        "empty": "Aún no hay actualizaciones programadas.",
+        "status": { "pending": "Pendiente", "running": "En curso", "completed": "Completado", "failed": "Fallido" },
+        "outcome": { "drafted": "Borrador creado", "skipped": "Omitido", "unclassified": "Sin resultado registrado" },
+        "table": { "started": "Fecha", "duration": "Duración", "status": "Estado", "total": "Total", "drafted": "Borradores", "skipped": "Omitidos", "failed": "Fallidos", "pending": "Pendientes", "running": "En curso" },
+        "detail": { "title": "Detalle de la ejecución", "event": "Evento", "url": "URL", "status": "Estado", "outcome": "Resultado", "message": "Detalle", "unknownEvent": "Evento no disponible" }
+      },
       "drafts": {
         "title": "Eventos en borrador",
         "empty": "No hay borradores importados.",
@@ -1312,6 +1321,7 @@
     },
     "extractEvents": "Extraer eventos",
     "newEvent": "Nuevo evento",
+    "automaticUpdates": "Actualizaciones automáticas",
     "edit": {
       "button": "Editar evento"
     },

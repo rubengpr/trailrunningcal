@@ -376,6 +376,9 @@ export function AdminEventsContent({ page, query }: AdminEventsContentProps) {
             >
               {t('newEvent')}
             </Button>
+            <Button variant="secondary" onClick={() => router.push(`/${locale}/admin/eventos/actualizaciones`)}>
+              {t('automaticUpdates')}
+            </Button>
             <Button onClick={() => router.push(`/${locale}/admin/eventos/descripciones`)}>
               {t('generateDescriptions')}
             </Button>

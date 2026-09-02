@@ -689,6 +689,19 @@
     "breadcrumb": "Backyard Ultra",
     "contentSectionsTitle": "Questions fréquentes"
   },
+  "admin": {
+    "events": {
+      "updates": {
+        "title": "Mises à jour des événements",
+        "subtitle": "Suivez les mises à jour programmées des événements.",
+        "empty": "Il n’y a pas encore de mise à jour programmée.",
+        "status": { "pending": "En attente", "running": "En cours", "completed": "Terminé", "failed": "Échoué" },
+        "outcome": { "drafted": "Brouillon créé", "skipped": "Ignoré", "unclassified": "Résultat non enregistré" },
+        "table": { "started": "Date", "duration": "Durée", "status": "État", "total": "Total", "drafted": "Brouillons", "skipped": "Ignorés", "failed": "Échoués", "pending": "En attente", "running": "En cours" },
+        "detail": { "title": "Détail de l’exécution", "event": "Événement", "url": "URL", "status": "État", "outcome": "Résultat", "message": "Détail", "unknownEvent": "Événement indisponible" }
+      }
+    }
+  },
   "monthsFull": {
     "0": "janvier",
     "1": "février",
