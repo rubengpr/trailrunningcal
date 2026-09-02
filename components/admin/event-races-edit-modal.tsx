@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Plus, Trash2 } from 'lucide-react';
 import { RaceTrackUpload } from '@/components/admin/race-track-upload';
+import { ReviewActionButton } from '@/components/admin/review-action-button';
 import { BaseModal } from '@/components/ui/base-modal';
 import { FormInput } from '@/components/ui/form-input';
 import { FormTextarea } from '@/components/ui/form-textarea';
@@ -75,32 +76,6 @@ function RacePositionBadge({ number }: { number: number }): React.ReactElement {
     <span className="inline-flex h-6 min-w-6 shrink-0 items-center justify-center rounded-full bg-gray-100 px-2 text-xs font-semibold tabular-nums text-gray-600">
       {number}
     </span>
-  );
-}
-
-interface ReviewActionButtonProps {
-  title: string;
-  onClick: () => void;
-  disabled: boolean;
-  children: React.ReactNode;
-}
-
-function ReviewActionButton({
-  title,
-  onClick,
-  disabled,
-  children,
-}: ReviewActionButtonProps): React.ReactElement {
-  return (
-    <button
-      type="button"
-      title={title}
-      disabled={disabled}
-      onClick={onClick}
-      className="inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-gray-700 transition-colors hover:bg-gray-100 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-35"
-    >
-      {children}
-    </button>
   );
 }
 
