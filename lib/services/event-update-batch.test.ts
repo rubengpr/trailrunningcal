@@ -16,6 +16,7 @@ const mocks = vi.hoisted(() => ({
   markEventUpdateItemFailed: vi.fn(),
   markEventUpdateItemRunning: vi.fn(),
   retryEventUpdateBatchItem: vi.fn(),
+  resumeEventUpdateBatch: vi.fn(),
   failPendingEventUpdateItemAttempt: vi.fn(),
   setEventUpdateItemAttemptWorkflowRunId: vi.fn(),
   setEventUpdateBatchWorkflowRunId: vi.fn(),
@@ -43,6 +44,7 @@ vi.mock('@/lib/db/event-update-batches', () => ({
   markEventUpdateItemFailed: mocks.markEventUpdateItemFailed,
   markEventUpdateItemRunning: mocks.markEventUpdateItemRunning,
   retryEventUpdateBatchItem: mocks.retryEventUpdateBatchItem,
+  resumeEventUpdateBatch: mocks.resumeEventUpdateBatch,
   failPendingEventUpdateItemAttempt: mocks.failPendingEventUpdateItemAttempt,
   setEventUpdateItemAttemptWorkflowRunId: mocks.setEventUpdateItemAttemptWorkflowRunId,
   setEventUpdateBatchWorkflowRunId: mocks.setEventUpdateBatchWorkflowRunId,
@@ -53,6 +55,7 @@ import {
   eventUpdateBatchWorkflow,
   eventUpdateItemRetryWorkflow,
   retryEventUpdateBatchItem,
+  resumeEventUpdateBatch,
   startEventUpdateBatch,
 } from './event-update-batch';
 import { ValidationError } from '@/lib/errors';
@@ -97,6 +100,7 @@ beforeEach(() => {
     sourceUrl: 'https://example.com/item-1',
     targetYear: 2027,
   });
+  mocks.resumeEventUpdateBatch.mockResolvedValue(14);
   mocks.crawlSite.mockResolvedValue({
     markdown: 'Nova edició 2027. Inscripcions 2027. Resultats 2026.',
     pageStats: { total: 1, successCount: 1, errorCount: 0 },
@@ -179,6 +183,37 @@ describe('startEventUpdateBatch', () => {
     expect(mocks.updateEventUpdateBatchStatus).toHaveBeenCalledWith(
       { batchId: batch.id, status: 'failed', failureReason: 'Unable to start workflow' },
     );
+  });
+});
+
+describe('resumeEventUpdateBatch', () => {
+  it('resumes unfinished items in a new workflow run', async () => {
+    const result = await resumeEventUpdateBatch(batch.id);
+
+    expect(mocks.resumeEventUpdateBatch).toHaveBeenCalledWith(batch.id);
+    expect(mocks.start).toHaveBeenCalledWith(eventUpdateBatchWorkflow, [{ batchId: batch.id }]);
+    expect(mocks.setEventUpdateBatchWorkflowRunId).toHaveBeenCalledWith({
+      batchId: batch.id,
+      workflowRunId: 'workflow-run-1',
+    });
+    expect(result).toEqual({
+      batchId: batch.id,
+      workflowRunId: 'workflow-run-1',
+      itemCount: 14,
+    });
+  });
+
+  it('marks the batch failed when scheduling the recovery fails', async () => {
+    const error = new Error('workflow start failed');
+    mocks.start.mockRejectedValue(error);
+
+    await expect(resumeEventUpdateBatch(batch.id)).rejects.toThrow(error);
+
+    expect(mocks.updateEventUpdateBatchStatus).toHaveBeenCalledWith({
+      batchId: batch.id,
+      status: 'failed',
+      failureReason: 'Unable to resume workflow',
+    });
   });
 });
 

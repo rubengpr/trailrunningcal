@@ -96,6 +96,7 @@ integrationDescribe('anonymous Supabase access', () => {
         p_batch_id: ZERO_UUID,
         p_item_id: ZERO_UUID,
       }),
+      supabase.rpc('resume_event_update_batch', { p_batch_id: ZERO_UUID }),
       supabase.rpc('start_event_update_item_attempt', { p_item_id: ZERO_UUID }),
       supabase.rpc('is_app_admin'),
       supabase.rpc('accept_event_draft', { p_draft_id: ZERO_UUID }),

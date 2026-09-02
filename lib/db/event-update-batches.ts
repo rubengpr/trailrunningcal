@@ -161,6 +161,22 @@ export async function updateEventUpdateBatchStatus(input: {
   }
 }
 
+export async function resumeEventUpdateBatch(batchId: string): Promise<number> {
+  const { data, error } = await createAdminClient().rpc('resume_event_update_batch', {
+    p_batch_id: batchId,
+  });
+
+  if (error?.code === 'P0004') {
+    throw new ValidationError('Event update batch is not resumable', 409);
+  }
+  if (error || typeof data !== 'number') {
+    console.error('Event update batch resume error:', error);
+    throw new Error('Failed to resume event update batch');
+  }
+
+  return data;
+}
+
 export async function listEventUpdateBatchHistory(): Promise<EventUpdateBatchHistoryEntry[]> {
   const { data, error } = await createAdminClient().rpc('list_event_update_batch_history', {
     p_limit: 20,

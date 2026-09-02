@@ -13,6 +13,7 @@ import {
   setEventUpdateItemAttemptWorkflowRunId,
   retryEventUpdateBatchItem as retryEventUpdateBatchItemInDatabase,
   failPendingEventUpdateItemAttempt,
+  resumeEventUpdateBatch as resumeEventUpdateBatchInDatabase,
   updateEventUpdateBatchStatus,
   getEventUpdateBatchSnapshot as getEventUpdateBatchSnapshotInDb,
   listEventUpdateBatchHistory as listEventUpdateBatchHistoryInDb,
@@ -82,6 +83,32 @@ export async function startEventUpdateBatch(input?: {
     await updateEventUpdateBatchStatus({ batchId: batch.id, status: 'failed', failureReason: 'Unable to start workflow' });
     throw error;
   }
+}
+
+export async function resumeEventUpdateBatch(batchId: string): Promise<{
+  batchId: string;
+  workflowRunId: string;
+  itemCount: number;
+}> {
+  const itemCount = await resumeEventUpdateBatchInDatabase(batchId);
+
+  let run;
+  try {
+    run = await start(eventUpdateBatchWorkflow, [{ batchId }]);
+    await setEventUpdateBatchWorkflowRunId({
+      batchId,
+      workflowRunId: run.runId,
+    });
+  } catch (error) {
+    await updateEventUpdateBatchStatus({
+      batchId,
+      status: 'failed',
+      failureReason: 'Unable to resume workflow',
+    });
+    throw error;
+  }
+
+  return { batchId, workflowRunId: run.runId, itemCount };
 }
 
 async function markBatchRunningStep(batchId: string): Promise<void> {
