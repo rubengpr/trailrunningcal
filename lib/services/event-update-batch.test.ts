@@ -7,11 +7,12 @@ import type {
 const mocks = vi.hoisted(() => ({
   start: vi.fn(),
   crawlSite: vi.fn(),
-  generateEventDraftFromMarkdown: vi.fn(),
+  extractEventDraftDataFromMarkdown: vi.fn(),
+  completeEventUpdateItemWithDraft: vi.fn(),
   createEventUpdateBatch: vi.fn(),
   getEventUpdateBatch: vi.fn(),
   getPendingEventUpdateBatchItems: vi.fn(),
-  markEventUpdateItemCompleted: vi.fn(),
+  markEventUpdateItemSkipped: vi.fn(),
   markEventUpdateItemFailed: vi.fn(),
   markEventUpdateItemRunning: vi.fn(),
   setEventUpdateBatchWorkflowRunId: vi.fn(),
@@ -27,14 +28,15 @@ vi.mock('@/lib/services/crawl', () => ({
 }));
 
 vi.mock('@/lib/services/event-drafts', () => ({
-  generateEventDraftFromMarkdown: mocks.generateEventDraftFromMarkdown,
+  extractEventDraftDataFromMarkdown: mocks.extractEventDraftDataFromMarkdown,
 }));
 
 vi.mock('@/lib/db/event-update-batches', () => ({
   createEventUpdateBatch: mocks.createEventUpdateBatch,
   getEventUpdateBatch: mocks.getEventUpdateBatch,
   getPendingEventUpdateBatchItems: mocks.getPendingEventUpdateBatchItems,
-  markEventUpdateItemCompleted: mocks.markEventUpdateItemCompleted,
+  completeEventUpdateItemWithDraft: mocks.completeEventUpdateItemWithDraft,
+  markEventUpdateItemSkipped: mocks.markEventUpdateItemSkipped,
   markEventUpdateItemFailed: mocks.markEventUpdateItemFailed,
   markEventUpdateItemRunning: mocks.markEventUpdateItemRunning,
   setEventUpdateBatchWorkflowRunId: mocks.setEventUpdateBatchWorkflowRunId,
@@ -53,6 +55,8 @@ const batch: EventUpdateBatch = {
   workflowRunId: null,
   createdAt: '2026-06-25T00:00:00.000Z',
   updatedAt: '2026-06-25T00:00:00.000Z',
+  finishedAt: null,
+  failureReason: null,
 };
 
 const item = (id: string): EventUpdateBatchItem => ({
@@ -63,6 +67,10 @@ const item = (id: string): EventUpdateBatchItem => ({
   sourceUrl: `https://example.com/${id}`,
   status: 'pending',
   error: null,
+  outcome: null,
+  draftId: null,
+  skipReason: null,
+  eventName: null,
   createdAt: '2026-06-25T00:00:00.000Z',
   updatedAt: '2026-06-25T00:00:00.000Z',
 });
@@ -79,11 +87,7 @@ beforeEach(() => {
     usage: { totalCost: null },
     fallbackUsed: false,
   });
-  mocks.generateEventDraftFromMarkdown.mockResolvedValue({
-    id: 'draft-1',
-    eventId: 'event-1',
-    status: 'pending',
-    data: {
+  mocks.extractEventDraftDataFromMarkdown.mockResolvedValue({
       event: {
         name: 'Trail Event',
         description: 'Event description',
@@ -99,9 +103,6 @@ beforeEach(() => {
           elevationGainM: 900,
         },
       ],
-    },
-    createdAt: '2026-06-25T00:00:00.000Z',
-    updatedAt: '2026-06-25T00:00:00.000Z',
   });
 });
 
@@ -147,8 +148,7 @@ describe('startEventUpdateBatch', () => {
     ).rejects.toThrow(error);
 
     expect(mocks.updateEventUpdateBatchStatus).toHaveBeenCalledWith(
-      batch.id,
-      'failed',
+      { batchId: batch.id, status: 'failed', failureReason: 'Unable to start workflow' },
     );
   });
 
@@ -161,8 +161,7 @@ describe('startEventUpdateBatch', () => {
     ).rejects.toThrow(error);
 
     expect(mocks.updateEventUpdateBatchStatus).toHaveBeenCalledWith(
-      batch.id,
-      'failed',
+      { batchId: batch.id, status: 'failed', failureReason: 'Unable to start workflow' },
     );
   });
 });
@@ -180,40 +179,34 @@ describe('eventUpdateBatchWorkflow', () => {
 
     expect(mocks.updateEventUpdateBatchStatus).toHaveBeenNthCalledWith(
       1,
-      batch.id,
-      'running',
+      { batchId: batch.id, status: 'running' },
     );
     expect(mocks.markEventUpdateItemRunning).toHaveBeenNthCalledWith(
       1,
       firstItem.id,
     );
-    expect(mocks.markEventUpdateItemCompleted).toHaveBeenNthCalledWith(
+    expect(mocks.completeEventUpdateItemWithDraft).toHaveBeenNthCalledWith(
       1,
-      firstItem.id,
-      { error: null },
+      expect.objectContaining({ itemId: firstItem.id }),
     );
     expect(mocks.markEventUpdateItemRunning).toHaveBeenNthCalledWith(
       2,
       secondItem.id,
     );
-    expect(mocks.markEventUpdateItemCompleted).toHaveBeenNthCalledWith(
+    expect(mocks.completeEventUpdateItemWithDraft).toHaveBeenNthCalledWith(
       2,
-      secondItem.id,
-      { error: null },
+      expect.objectContaining({ itemId: secondItem.id }),
     );
     expect(mocks.crawlSite).toHaveBeenNthCalledWith(1, firstItem.sourceUrl);
     expect(mocks.crawlSite).toHaveBeenNthCalledWith(2, secondItem.sourceUrl);
-    expect(mocks.generateEventDraftFromMarkdown).toHaveBeenNthCalledWith(1, {
-      eventId: firstItem.eventId,
+    expect(mocks.extractEventDraftDataFromMarkdown).toHaveBeenNthCalledWith(1, {
       markdown: 'Nova edició 2027. Inscripcions 2027. Resultats 2026.',
     });
-    expect(mocks.generateEventDraftFromMarkdown).toHaveBeenNthCalledWith(2, {
-      eventId: secondItem.eventId,
+    expect(mocks.extractEventDraftDataFromMarkdown).toHaveBeenNthCalledWith(2, {
       markdown: 'Nova edició 2027. Inscripcions 2027. Resultats 2026.',
     });
     expect(mocks.updateEventUpdateBatchStatus).toHaveBeenLastCalledWith(
-      batch.id,
-      'completed',
+      { batchId: batch.id, status: 'completed' },
     );
   });
 
@@ -232,30 +225,29 @@ describe('eventUpdateBatchWorkflow', () => {
     expect(mocks.markEventUpdateItemRunning).toHaveBeenCalledWith(
       skippedItem.id,
     );
-    expect(mocks.markEventUpdateItemCompleted).toHaveBeenCalledWith(
+    expect(mocks.markEventUpdateItemSkipped).toHaveBeenCalledWith(
       skippedItem.id,
-      { error: 'Skipped: weak year signal: 2027=0, 2026=2' },
+      'weak year signal: 2027=0, 2026=2',
     );
-    expect(mocks.generateEventDraftFromMarkdown).not.toHaveBeenCalled();
+    expect(mocks.extractEventDraftDataFromMarkdown).not.toHaveBeenCalled();
     expect(mocks.markEventUpdateItemFailed).not.toHaveBeenCalled();
   });
 
   it('completes expected no-draft validation outcomes with a skip reason', async () => {
     const noDraftItem = item('1');
     mocks.getPendingEventUpdateBatchItems.mockResolvedValue([noDraftItem]);
-    mocks.generateEventDraftFromMarkdown.mockRejectedValue(
+    mocks.extractEventDraftDataFromMarkdown.mockRejectedValue(
       new ValidationError('No new edition data found', 422),
     );
 
     await eventUpdateBatchWorkflow({ batchId: batch.id });
 
-    expect(mocks.generateEventDraftFromMarkdown).toHaveBeenCalledWith({
-      eventId: noDraftItem.eventId,
+    expect(mocks.extractEventDraftDataFromMarkdown).toHaveBeenCalledWith({
       markdown: 'Nova edició 2027. Inscripcions 2027. Resultats 2026.',
     });
-    expect(mocks.markEventUpdateItemCompleted).toHaveBeenCalledWith(
+    expect(mocks.markEventUpdateItemSkipped).toHaveBeenCalledWith(
       noDraftItem.id,
-      { error: 'Skipped: No new edition data found' },
+      'No new edition data found',
     );
     expect(mocks.markEventUpdateItemFailed).not.toHaveBeenCalled();
   });
@@ -263,7 +255,7 @@ describe('eventUpdateBatchWorkflow', () => {
   it('marks an item failed when draft generation fails unexpectedly', async () => {
     const failedItem = item('1');
     mocks.getPendingEventUpdateBatchItems.mockResolvedValue([failedItem]);
-    mocks.generateEventDraftFromMarkdown.mockRejectedValue(
+    mocks.extractEventDraftDataFromMarkdown.mockRejectedValue(
       new Error('OpenRouter unavailable'),
     );
 
@@ -273,10 +265,9 @@ describe('eventUpdateBatchWorkflow', () => {
       failedItem.id,
       'OpenRouter unavailable',
     );
-    expect(mocks.markEventUpdateItemCompleted).not.toHaveBeenCalled();
+    expect(mocks.completeEventUpdateItemWithDraft).not.toHaveBeenCalled();
     expect(mocks.updateEventUpdateBatchStatus).toHaveBeenLastCalledWith(
-      batch.id,
-      'completed',
+      { batchId: batch.id, status: 'completed' },
     );
   });
 
@@ -294,10 +285,9 @@ describe('eventUpdateBatchWorkflow', () => {
       failedItem.id,
       'Spider Cloud timeout',
     );
-    expect(mocks.markEventUpdateItemCompleted).not.toHaveBeenCalled();
+    expect(mocks.completeEventUpdateItemWithDraft).not.toHaveBeenCalled();
     expect(mocks.updateEventUpdateBatchStatus).toHaveBeenLastCalledWith(
-      batch.id,
-      'completed',
+      { batchId: batch.id, status: 'completed' },
     );
   });
 
@@ -311,12 +301,10 @@ describe('eventUpdateBatchWorkflow', () => {
 
     expect(mocks.updateEventUpdateBatchStatus).toHaveBeenNthCalledWith(
       1,
-      batch.id,
-      'running',
+      { batchId: batch.id, status: 'running' },
     );
     expect(mocks.updateEventUpdateBatchStatus).toHaveBeenLastCalledWith(
-      batch.id,
-      'failed',
+      { batchId: batch.id, status: 'failed', failureReason: 'Workflow did not finish' },
     );
   });
 });

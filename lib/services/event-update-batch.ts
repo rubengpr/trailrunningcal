@@ -3,16 +3,23 @@ import { evaluateEditionSignal } from '@/lib/event-updates/edition-signal';
 import { ValidationError } from '@/lib/errors';
 import {
   createEventUpdateBatch,
+  completeEventUpdateItemWithDraft,
   getEventUpdateBatch,
   getPendingEventUpdateBatchItems,
-  markEventUpdateItemCompleted,
   markEventUpdateItemFailed,
   markEventUpdateItemRunning,
+  markEventUpdateItemSkipped,
   setEventUpdateBatchWorkflowRunId,
   updateEventUpdateBatchStatus,
+  getEventUpdateBatchSnapshot as getEventUpdateBatchSnapshotInDb,
+  listEventUpdateBatchHistory as listEventUpdateBatchHistoryInDb,
 } from '@/lib/db/event-update-batches';
+import type {
+  EventUpdateBatchHistoryEntry,
+  EventUpdateBatchSnapshot,
+} from '@/types/event-update.types';
 import { crawlSite } from '@/lib/services/crawl';
-import { generateEventDraftFromMarkdown } from '@/lib/services/event-drafts';
+import { extractEventDraftDataFromMarkdown } from '@/lib/services/event-drafts';
 
 interface EventUpdateBatchWorkflowInput {
   batchId: string;
@@ -21,6 +28,18 @@ interface EventUpdateBatchWorkflowInput {
 export interface EventUpdateBatchStartResult {
   batchId: string | null;
   workflowRunId: string | null;
+}
+
+export async function getEventUpdateBatchStatus(
+  batchId: string,
+): Promise<EventUpdateBatchSnapshot | null> {
+  return getEventUpdateBatchSnapshotInDb(batchId);
+}
+
+export async function listEventUpdateBatchHistory(): Promise<
+  EventUpdateBatchHistoryEntry[]
+> {
+  return listEventUpdateBatchHistoryInDb();
 }
 
 function toUtcDateString(date: Date): string {
@@ -57,7 +76,7 @@ export async function startEventUpdateBatch(input?: {
       workflowRunId: run.runId,
     };
   } catch (error) {
-    await updateEventUpdateBatchStatus(batch.id, 'failed');
+    await updateEventUpdateBatchStatus({ batchId: batch.id, status: 'failed', failureReason: 'Unable to start workflow' });
     throw error;
   }
 }
@@ -66,21 +85,21 @@ async function markBatchRunningStep(batchId: string): Promise<void> {
   'use step';
 
   console.log('Starting event update batch', { batchId });
-  await updateEventUpdateBatchStatus(batchId, 'running');
+  await updateEventUpdateBatchStatus({ batchId, status: 'running' });
 }
 
 async function markBatchCompletedStep(batchId: string): Promise<void> {
   'use step';
 
   console.log('Completing event update batch', { batchId });
-  await updateEventUpdateBatchStatus(batchId, 'completed');
+  await updateEventUpdateBatchStatus({ batchId, status: 'completed' });
 }
 
-async function markBatchFailedStep(batchId: string): Promise<void> {
+async function markBatchFailedStep(batchId: string, failureReason: string): Promise<void> {
   'use step';
 
   console.error('Failing event update batch', { batchId });
-  await updateEventUpdateBatchStatus(batchId, 'failed');
+  await updateEventUpdateBatchStatus({ batchId, status: 'failed', failureReason });
 }
 
 async function getEventUpdateBatchStep(batchId: string): Promise<void> {
@@ -124,27 +143,25 @@ async function processEventUpdateItemStep(input: {
     });
 
     if (!signal.eligible) {
-      await markEventUpdateItemCompleted(input.itemId, {
-        error: signal.reason,
-      });
+      await markEventUpdateItemSkipped(
+        input.itemId,
+        signal.reason.replace(/^Skipped:\s*/, ''),
+      );
       return;
     }
 
-    await generateEventDraftFromMarkdown({
-      eventId: input.eventId,
+    const draftData = await extractEventDraftDataFromMarkdown({
       markdown: crawl.markdown,
     });
-
-    await markEventUpdateItemCompleted(input.itemId, {
-      error: null,
+    await completeEventUpdateItemWithDraft({
+      itemId: input.itemId,
+      draftData,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
 
     if (error instanceof ValidationError) {
-      await markEventUpdateItemCompleted(input.itemId, {
-        error: `Skipped: ${message}`,
-      });
+      await markEventUpdateItemSkipped(input.itemId, message);
       return;
     }
 
@@ -182,7 +199,12 @@ export async function eventUpdateBatchWorkflow(
 
     await markBatchCompletedStep(input.batchId);
   } catch (error) {
-    await markBatchFailedStep(input.batchId);
+    await markBatchFailedStep(
+      input.batchId,
+      error instanceof Error && error.message === 'Event update batch not found'
+        ? 'Batch record was not found'
+        : 'Workflow did not finish',
+    );
     throw error;
   }
 }

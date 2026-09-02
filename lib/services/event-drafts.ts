@@ -82,16 +82,20 @@ export async function generateEventDraftFromMarkdown(input: {
   model?: OpenRouterScrapeModelId;
 }): Promise<EventDraft> {
   await assertNoPendingDraft(input.eventId);
+  const data = await extractEventDraftDataFromMarkdown(input);
 
+  return createEventDraft({ eventId: input.eventId, data });
+}
+
+export async function extractEventDraftDataFromMarkdown(input: {
+  markdown: string;
+  model?: OpenRouterScrapeModelId;
+}): Promise<EventDraftData> {
   const result = await extractFromMarkdown(
     input.markdown,
     input.model ?? DEFAULT_EVENT_DRAFT_MODEL,
   );
-
-  return createEventDraft({
-    eventId: input.eventId,
-    data: validateExtractedDraftData(result),
-  });
+  return validateExtractedDraftData(result);
 }
 
 export async function updateEventDraft(
