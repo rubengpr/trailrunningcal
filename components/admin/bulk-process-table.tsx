@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import { ArrowUpRight, Eye, FilePenLine, LoaderCircle, RotateCcw } from 'lucide-react';
 import { IconActionMenu } from '@/components/ui/icon-action-menu';
+import { TableActionButton } from '@/components/ui/table-action-button';
 import {
   Table,
   TableBody,
@@ -187,8 +188,7 @@ export function BulkProcessTable({
               <TableCell align="right">
                 <div className="inline-flex items-center justify-end gap-1">
                   {onViewResult ? (
-                    <button
-                      type="button"
+                    <TableActionButton
                       onClick={() => onViewResult(row.id)}
                       disabled={row.status !== 'completed' || viewingRowId !== null}
                       title={
@@ -196,28 +196,25 @@ export function BulkProcessTable({
                           ? t('actions.loading')
                           : t('actions.viewResult')
                       }
-                      className="inline-flex size-8 cursor-pointer items-center justify-center rounded text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-800 disabled:pointer-events-none disabled:opacity-40"
                     >
                       {viewingRowId === row.id ? (
                         <LoaderCircle className="size-4 animate-spin" strokeWidth={1.5} />
                       ) : (
                         <Eye className="size-4" strokeWidth={1.5} />
                       )}
-                    </button>
+                    </TableActionButton>
                   ) : null}
                   {row.status === 'failed' && onRetry ? (
-                    <button
-                      type="button"
+                    <TableActionButton
                       onClick={() => onRetry(row.id)}
                       disabled={retryingRowId !== null}
                       title={t('actions.retry')}
-                      className="inline-flex size-8 cursor-pointer items-center justify-center rounded text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-800 disabled:pointer-events-none disabled:opacity-40"
                     >
                       <RotateCcw
                         className={`size-4 ${retryingRowId === row.id ? 'animate-spin' : ''}`}
                         strokeWidth={1.5}
                       />
-                    </button>
+                    </TableActionButton>
                   ) : null}
                   {row.draftId ? (
                     <Link

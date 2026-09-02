@@ -19,6 +19,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { SectionHeader } from '@/components/ui/section-header';
+import { TableActionButton } from '@/components/ui/table-action-button';
 import {
   Table,
   TableHeader,
@@ -484,17 +485,15 @@ export function AdminEventsContent({ page, query }: AdminEventsContentProps) {
                   <TableCell align="right">
                     <div className="inline-flex items-center justify-end gap-1">
                       {hasPendingDraft && (
-                        <button
-                          type="button"
+                        <TableActionButton
                           onClick={() => setReviewEventId(event.id)}
                           title={t('updateSuggestion.reviewPendingDraft')}
-                          className="inline-flex size-8 cursor-pointer items-center justify-center rounded text-amber-600 transition-colors hover:bg-amber-100 hover:text-amber-700"
+                          tone="warning"
                         >
                           <Eye className="size-4" strokeWidth={1.5} />
-                        </button>
+                        </TableActionButton>
                       )}
-                      <button
-                        type="button"
+                      <TableActionButton
                         onClick={() => void handleGenerateDraft(eventDetail)}
                         disabled={!event.websiteUrl || isGeneratingDraft || hasPendingDraft}
                         title={
@@ -504,30 +503,26 @@ export function AdminEventsContent({ page, query }: AdminEventsContentProps) {
                               ? t('updateSuggestion.button')
                               : t('updateSuggestion.missingUrl')
                         }
-                        className="inline-flex size-8 items-center justify-center rounded text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-800 disabled:pointer-events-none disabled:opacity-40 cursor-pointer"
                       >
                         <RefreshCw
                           className={`size-4 ${isGeneratingDraft ? 'animate-spin' : ''}`}
                           strokeWidth={1.5}
                         />
-                      </button>
-                      <button
-                        type="button"
+                      </TableActionButton>
+                      <TableActionButton
                         onClick={() => setEventToEdit(eventDetail)}
                         title={t('edit.button')}
-                        className="inline-flex size-8 items-center justify-center rounded text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-800 cursor-pointer"
                       >
                         <TextCursor className="size-4" strokeWidth={1.5} />
-                      </button>
-                      <button
-                        type="button"
+                      </TableActionButton>
+                      <TableActionButton
                         onClick={() => setEventToDelete(eventDetail)}
                         disabled={isDeleting}
                         title={t('delete.button')}
-                        className="inline-flex size-8 items-center justify-center rounded text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 disabled:pointer-events-none disabled:opacity-40 cursor-pointer"
+                        tone="destructive"
                       >
                         <Trash2 className="size-4" strokeWidth={1.5} />
-                      </button>
+                      </TableActionButton>
                     </div>
                   </TableCell>
                 </TableRow>

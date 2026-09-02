@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import { Check, CircleAlert, Eye, LoaderCircle, TextCursor, Trash2 } from 'lucide-react';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { SectionHeader } from '@/components/ui/section-header';
+import { TableActionButton } from '@/components/ui/table-action-button';
 import { EventImportPreview } from '@/components/admin/event-import-preview';
 import { EventImportPreviewModal } from '@/components/admin/event-import-preview-modal';
 import {
@@ -255,41 +256,35 @@ export function AdminEventImportDraftsContent({
                           <CircleAlert className="size-4 text-red-600" strokeWidth={1.5} />
                         </span>
                       ) : null}
-                      <button
-                        type="button"
+                      <TableActionButton
                         onClick={() => setDraftToPreview(draft)}
                         title={t('view')}
-                        className="inline-flex size-8 cursor-pointer items-center justify-center rounded text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-800"
                       >
                         <Eye className="size-4" strokeWidth={1.5} />
-                      </button>
-                      <button
-                        type="button"
+                      </TableActionButton>
+                      <TableActionButton
                         onClick={() => void handleAccept(draft)}
                         disabled={acceptingDraftId !== null || isPublishing}
                         title={t('accept')}
-                        className="inline-flex size-8 cursor-pointer items-center justify-center rounded text-gray-400 transition-colors hover:bg-gray-100 hover:text-green-700 disabled:pointer-events-none disabled:opacity-35"
+                        tone="success"
                       >
                         {isPublishing
                           ? <LoaderCircle className="size-4 animate-spin" strokeWidth={1.5} />
                           : <Check className="size-4" strokeWidth={1.5} />}
-                      </button>
-                      <button
-                        type="button"
+                      </TableActionButton>
+                      <TableActionButton
                         onClick={() => setDraftToEdit(draft)}
                         title={t('edit')}
-                        className="inline-flex size-8 cursor-pointer items-center justify-center rounded text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-800"
                       >
                         <TextCursor className="size-4" strokeWidth={1.5} />
-                      </button>
-                      <button
-                        type="button"
+                      </TableActionButton>
+                      <TableActionButton
                         onClick={() => setDraftToDelete(draft)}
                         title={t('delete.button')}
-                        className="inline-flex size-8 cursor-pointer items-center justify-center rounded text-gray-400 transition-colors hover:bg-gray-100 hover:text-red-700"
+                        tone="destructive"
                       >
                         <Trash2 className="size-4" strokeWidth={1.5} />
-                      </button>
+                      </TableActionButton>
                     </div>
                   </TableCell>
                   </TableRow>
