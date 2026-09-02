@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Calendar, Globe, MapPin, Route } from 'lucide-react';
+import { Route } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { locales, type Locale } from '@/i18n';
@@ -9,14 +9,12 @@ import { buildEventAlternateLinks } from '@/lib/content/alternate-links';
 import { Breadcrumb } from '@/components/layout/breadcrumb';
 import { SponsorBannerSlot } from '@/components/sponsors/sponsor-banner-slot';
 import { EventCard } from '@/components/event/event-card';
-import { EventFavoriteButton } from '@/components/event/event-favorite-button';
 import { EventDistanceList } from '@/components/event/event-distance-list';
-import { EventShareWhatsappButton } from '@/components/event/event-share-whatsapp-button';
+import { EventDetailHeader } from '@/components/event/event-detail-header';
 import { EventFeatureFeedback } from '@/components/event/event-feature-feedback';
 import { EventPageViewTracker } from '@/components/event/event-page-view-tracker';
 import { EventResultsAccordion } from '@/components/event/event-results-accordion';
 import { EventTrackMapSection } from '@/components/event-track-map/event-track-map-section';
-import { ConfirmedDateBadge } from '@/components/race/confirmed-date-badge';
 import { RaceOrganizerClaimCard } from '@/components/race/race-organizer-claim-card';
 import { TrackedLink } from '@/components/ui/tracked-link';
 import {
@@ -212,63 +210,24 @@ export default async function EventPage({
             captureContext={{ page: 'event', event_id: eventData.event.id, event_slug: event }}
           />
 
-          <header className="mt-3 sm:mt-4 flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6">
-            <div className="flex flex-col flex-1 gap-1.5 sm:gap-1">
-              <div className="flex flex-row items-center gap-2">
-                <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold">
-                  {eventData.event.name}
-                </h1>
-              </div>
-              <div className="flex flex-row flex-wrap items-center gap-x-1.5 gap-y-1">
-                <Calendar className="h-4 w-4 shrink-0 text-black" />
-                <span className="text-sm lg:text-base text-gray-600 whitespace-nowrap">
-                  {formattedDate}
-                </span>
-                {eventData.dateRange.startDate && <ConfirmedDateBadge locale={locale} />}
-              </div>
-              <div className="flex flex-row flex-wrap items-center gap-x-1.5 gap-y-1 text-sm lg:text-base text-gray-600">
-                <MapPin className="h-4 w-4 shrink-0" />
-                <span>{locationLabel}</span>
-              </div>
-            </div>
-            <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto sm:items-end">
-              <div className="flex w-full flex-col gap-2">
-                {eventData.event.websiteUrl && (
-                  <TrackedLink
-                    href={eventData.event.websiteUrl}
-                    eventName={ANALYTICS_EVENTS.EVENT_OFFICIAL_WEBSITE_CLICKED}
-                    eventProperties={{ event_id: eventData.event.id, event_slug: event }}
-                    external
-                    className="flex w-full items-center justify-center gap-2 bg-gray-900 px-4 py-2 text-center font-medium whitespace-nowrap text-white rounded-md transition-colors hover:bg-gray-600 focus:outline-none cursor-pointer"
-                  >
-                    <Globe className="h-4 w-4" />
-                    {tEvent('officialWebsite')}
-                  </TrackedLink>
-                )}
-                <div className="flex flex-row gap-2">
-                  <EventShareWhatsappButton
-                    message={tEvent('share.message', {
-                      eventName: eventData.event.name,
-                      url: `${BASE_URL}/${locale}/e/${event}`,
-                    })}
-                    label={tEvent('share.label')}
-                    iconOnly
-                    className="flex-1"
-                    eventId={eventData.event.id}
-                    eventSlug={event}
-                  />
-                  <EventFavoriteButton
-                    eventId={eventData.event.id}
-                    eventSlug={event}
-                    saveLabel={tEvent('favorite.save')}
-                    removeLabel={tEvent('favorite.remove')}
-                    iconOnly
-                    className="flex-1"
-                  />
-                </div>
-              </div>
-            </div>
-          </header>
+          <EventDetailHeader
+            eventId={eventData.event.id}
+            eventSlug={event}
+            eventName={eventData.event.name}
+            websiteUrl={eventData.event.websiteUrl}
+            locale={localeTyped}
+            formattedDate={formattedDate}
+            locationLabel={locationLabel}
+            hasConfirmedDate={eventData.dateRange.startDate !== null}
+            officialWebsiteLabel={tEvent('officialWebsite')}
+            shareMessage={tEvent('share.message', {
+              eventName: eventData.event.name,
+              url: `${BASE_URL}/${locale}/e/${event}`,
+            })}
+            shareLabel={tEvent('share.label')}
+            saveFavoriteLabel={tEvent('favorite.save')}
+            removeFavoriteLabel={tEvent('favorite.remove')}
+          />
 
           {showResults ? (
             <EventResultsAccordion
