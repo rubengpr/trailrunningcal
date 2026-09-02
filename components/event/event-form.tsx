@@ -9,6 +9,7 @@ import { RaceTrackUpload } from '@/components/admin/race-track-upload';
 import { FormInput } from '@/components/ui/form-input';
 import { FormTextarea } from '@/components/ui/form-textarea';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
+import { FormErrorMessage } from '@/components/ui/error-message';
 import { SelectMenu } from '@/components/ui/select-menu';
 import { RaceDraftFields } from '@/components/event/race-draft-fields';
 import {
@@ -333,9 +334,7 @@ export function EventForm({
       </div>
 
       {error && (
-        <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          {error}
-        </p>
+        <FormErrorMessage message={error} />
       )}
 
       <div className="flex items-center justify-end gap-3">

@@ -75,6 +75,18 @@ export function ErrorMessage({
   );
 }
 
+interface FormErrorMessageProps {
+  message: string;
+}
+
+export function FormErrorMessage({ message }: FormErrorMessageProps): React.ReactElement {
+  return (
+    <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+      {message}
+    </p>
+  );
+}
+
 interface TerrainLoadErrorProps {
   message: string;
   onRetry: () => void;
