@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
+import { ListEmptyState } from '@/components/ui/list-empty-state';
 import { SectionHeader } from '@/components/ui/section-header';
 import { TableActionButton } from '@/components/ui/table-action-button';
 import {
@@ -30,7 +31,6 @@ import {
 import { EventImportPreview } from '@/components/admin/event-import-preview';
 import { EventImportPreviewModal } from '@/components/admin/event-import-preview-modal';
 import { EventRacesEditModal } from '@/components/admin/event-races-edit-modal';
-import { AdminListEmptyState } from '@/components/admin/admin-list-empty-state';
 import { AdminListSearch } from '@/components/admin/admin-list-search';
 import { EventWebsiteTableCell } from '@/components/event/event-website-table-cell';
 import {
@@ -399,7 +399,7 @@ export function AdminEventsContent({ page, query }: AdminEventsContentProps) {
       />
 
       {events.length === 0 ? (
-        <AdminListEmptyState message={query.search ? t('search.empty') : t('empty')} />
+        <ListEmptyState message={query.search ? t('search.empty') : t('empty')} />
       ) : (
         <Table>
           <TableHeader>

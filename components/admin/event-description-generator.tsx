@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { IconButton } from '@/components/ui/icon-button';
 import { BaseModal } from '@/components/ui/base-modal';
 import { SectionHeader } from '@/components/ui/section-header';
+import { ListEmptyState } from '@/components/ui/list-empty-state';
 import {
   OPENROUTER_SCRAPE_MODEL_IDS,
   type OpenRouterScrapeModelId,
@@ -382,9 +383,7 @@ export function EventDescriptionGenerator({
       )}
 
       {events.length === 0 ? (
-        <p className="rounded-lg border border-gray-200 bg-white p-6 text-sm text-gray-600">
-          {t('empty')}
-        </p>
+        <ListEmptyState message={t('empty')} />
       ) : (
         <div className="w-full rounded-2xl border border-gray-100 bg-white shadow-sm">
           <div className="overflow-x-auto">

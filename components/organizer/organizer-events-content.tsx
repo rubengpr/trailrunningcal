@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import { Pencil } from 'lucide-react';
 import { SectionHeader } from '@/components/ui/section-header';
+import { ListEmptyState } from '@/components/ui/list-empty-state';
 import { EventWebsiteTableCell } from '@/components/event/event-website-table-cell';
 import {
   Table,
@@ -37,9 +38,7 @@ export function OrganizerEventsContent({
       <SectionHeader title={t('title')} subtitle={subtitle} />
 
       {events.length === 0 ? (
-        <p className="rounded-lg border border-gray-200 bg-white p-6 text-sm text-gray-600">
-          {t('empty')}
-        </p>
+        <ListEmptyState message={t('empty')} />
       ) : (
         <Table>
           <TableHeader>

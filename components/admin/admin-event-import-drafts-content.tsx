@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import { Check, CircleAlert, Eye, LoaderCircle, TextCursor, Trash2 } from 'lucide-react';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { SectionHeader } from '@/components/ui/section-header';
+import { ListEmptyState } from '@/components/ui/list-empty-state';
 import { TableActionButton } from '@/components/ui/table-action-button';
 import { EventImportPreview } from '@/components/admin/event-import-preview';
 import { EventImportPreviewModal } from '@/components/admin/event-import-preview-modal';
@@ -17,7 +18,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { EventRacesEditModal } from '@/components/admin/event-races-edit-modal';
-import { AdminListEmptyState } from '@/components/admin/admin-list-empty-state';
 import { AdminListSearch } from '@/components/admin/admin-list-search';
 import { EventWebsiteTableCell } from '@/components/event/event-website-table-cell';
 import {
@@ -217,7 +217,7 @@ export function AdminEventImportDraftsContent({
         label={t('search.placeholder')}
       />
       {drafts.length === 0 ? (
-        <AdminListEmptyState message={search ? t('search.empty') : t('empty')} />
+        <ListEmptyState message={search ? t('search.empty') : t('empty')} />
       ) : (
         <Table>
             <TableHeader>
