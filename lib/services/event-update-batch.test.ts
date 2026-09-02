@@ -15,6 +15,9 @@ const mocks = vi.hoisted(() => ({
   markEventUpdateItemSkipped: vi.fn(),
   markEventUpdateItemFailed: vi.fn(),
   markEventUpdateItemRunning: vi.fn(),
+  retryEventUpdateBatchItem: vi.fn(),
+  failPendingEventUpdateItemAttempt: vi.fn(),
+  setEventUpdateItemAttemptWorkflowRunId: vi.fn(),
   setEventUpdateBatchWorkflowRunId: vi.fn(),
   updateEventUpdateBatchStatus: vi.fn(),
 }));
@@ -39,12 +42,17 @@ vi.mock('@/lib/db/event-update-batches', () => ({
   markEventUpdateItemSkipped: mocks.markEventUpdateItemSkipped,
   markEventUpdateItemFailed: mocks.markEventUpdateItemFailed,
   markEventUpdateItemRunning: mocks.markEventUpdateItemRunning,
+  retryEventUpdateBatchItem: mocks.retryEventUpdateBatchItem,
+  failPendingEventUpdateItemAttempt: mocks.failPendingEventUpdateItemAttempt,
+  setEventUpdateItemAttemptWorkflowRunId: mocks.setEventUpdateItemAttemptWorkflowRunId,
   setEventUpdateBatchWorkflowRunId: mocks.setEventUpdateBatchWorkflowRunId,
   updateEventUpdateBatchStatus: mocks.updateEventUpdateBatchStatus,
 }));
 
 import {
   eventUpdateBatchWorkflow,
+  eventUpdateItemRetryWorkflow,
+  retryEventUpdateBatchItem,
   startEventUpdateBatch,
 } from './event-update-batch';
 import { ValidationError } from '@/lib/errors';
@@ -81,6 +89,14 @@ beforeEach(() => {
   mocks.createEventUpdateBatch.mockResolvedValue(batch);
   mocks.getEventUpdateBatch.mockResolvedValue(batch);
   mocks.getPendingEventUpdateBatchItems.mockResolvedValue([]);
+  mocks.markEventUpdateItemRunning.mockResolvedValue(true);
+  mocks.retryEventUpdateBatchItem.mockResolvedValue({
+    batchId: batch.id,
+    itemId: 'item-1',
+    eventId: 'event-1',
+    sourceUrl: 'https://example.com/item-1',
+    targetYear: 2027,
+  });
   mocks.crawlSite.mockResolvedValue({
     markdown: 'Nova edició 2027. Inscripcions 2027. Resultats 2026.',
     pageStats: { total: 1, successCount: 1, errorCount: 0 },
@@ -306,5 +322,69 @@ describe('eventUpdateBatchWorkflow', () => {
     expect(mocks.updateEventUpdateBatchStatus).toHaveBeenLastCalledWith(
       { batchId: batch.id, status: 'failed', failureReason: 'Workflow did not finish' },
     );
+  });
+});
+
+describe('retryEventUpdateBatchItem', () => {
+  it('starts an item-only workflow and stores its run id', async () => {
+    const result = await retryEventUpdateBatchItem({
+      batchId: batch.id,
+      itemId: 'item-1',
+    });
+
+    expect(mocks.start).toHaveBeenCalledWith(eventUpdateItemRetryWorkflow, [{
+      batchId: batch.id,
+      itemId: 'item-1',
+      eventId: 'event-1',
+      sourceUrl: 'https://example.com/item-1',
+      targetYear: 2027,
+    }]);
+    expect(mocks.setEventUpdateItemAttemptWorkflowRunId).toHaveBeenCalledWith({
+      itemId: 'item-1',
+      workflowRunId: 'workflow-run-1',
+    });
+    expect(result).toEqual({
+      batchId: batch.id,
+      itemId: 'item-1',
+      workflowRunId: 'workflow-run-1',
+    });
+  });
+
+  it('marks the requeued item failed when scheduling fails', async () => {
+    const error = new Error('workflow start failed');
+    mocks.start.mockRejectedValue(error);
+
+    await expect(retryEventUpdateBatchItem({
+      batchId: batch.id,
+      itemId: 'item-1',
+    })).rejects.toThrow(error);
+
+    expect(mocks.failPendingEventUpdateItemAttempt).toHaveBeenCalledWith({
+      itemId: 'item-1',
+      errorMessage: 'Unable to start retry workflow',
+    });
+  });
+
+  it('returns 404 before retrying an item from a missing batch', async () => {
+    mocks.getEventUpdateBatch.mockResolvedValue(null);
+
+    await expect(retryEventUpdateBatchItem({
+      batchId: batch.id,
+      itemId: 'item-1',
+    })).rejects.toEqual(new ValidationError('Event update batch not found', 404));
+
+    expect(mocks.retryEventUpdateBatchItem).not.toHaveBeenCalled();
+  });
+
+  it('processes a retry without changing the batch lifecycle', async () => {
+    await eventUpdateItemRetryWorkflow({
+      itemId: 'item-1',
+      eventId: 'event-1',
+      sourceUrl: 'https://example.com/item-1',
+      targetYear: 2027,
+    });
+
+    expect(mocks.markEventUpdateItemRunning).toHaveBeenCalledWith('item-1');
+    expect(mocks.updateEventUpdateBatchStatus).not.toHaveBeenCalled();
   });
 });

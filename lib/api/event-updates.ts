@@ -16,3 +16,16 @@ export async function getEventUpdateBatchStatus(batchId: string): Promise<EventU
   if (!response.ok) throw new Error(body.error || 'Failed to fetch update batch');
   return body.data;
 }
+
+export async function retryEventUpdateBatchItem(input: {
+  batchId: string;
+  itemId: string;
+}): Promise<{ batchId: string; itemId: string; workflowRunId: string }> {
+  const response = await fetch(
+    `/api/events/updates/batches/${input.batchId}/items/${input.itemId}/retry`,
+    { method: 'POST' },
+  );
+  const body = await response.json();
+  if (!response.ok) throw new Error(body.error || 'Failed to retry event update item');
+  return body.data;
+}

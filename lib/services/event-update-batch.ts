@@ -10,6 +10,9 @@ import {
   markEventUpdateItemRunning,
   markEventUpdateItemSkipped,
   setEventUpdateBatchWorkflowRunId,
+  setEventUpdateItemAttemptWorkflowRunId,
+  retryEventUpdateBatchItem as retryEventUpdateBatchItemInDatabase,
+  failPendingEventUpdateItemAttempt,
   updateEventUpdateBatchStatus,
   getEventUpdateBatchSnapshot as getEventUpdateBatchSnapshotInDb,
   listEventUpdateBatchHistory as listEventUpdateBatchHistoryInDb,
@@ -134,7 +137,8 @@ async function processEventUpdateItemStep(input: {
       sourceUrl: input.sourceUrl,
     });
 
-    await markEventUpdateItemRunning(input.itemId);
+    const started = await markEventUpdateItemRunning(input.itemId);
+    if (!started) return;
 
     const crawl = await crawlSite(input.sourceUrl);
     const signal = evaluateEditionSignal({
@@ -177,6 +181,51 @@ async function processEventUpdateItemStep(input: {
   }
 }
 
+export async function retryEventUpdateBatchItem(input: {
+  batchId: string;
+  itemId: string;
+}): Promise<{
+  batchId: string;
+  itemId: string;
+  workflowRunId: string;
+}> {
+  const batch = await getEventUpdateBatch(input.batchId);
+  if (!batch) throw new ValidationError('Event update batch not found', 404);
+
+  const pending = await retryEventUpdateBatchItemInDatabase(input);
+
+  let run;
+  try {
+    run = await start(eventUpdateItemRetryWorkflow, [pending]);
+  } catch (error) {
+    await failPendingEventUpdateItemAttempt({
+      itemId: pending.itemId,
+      errorMessage: 'Unable to start retry workflow',
+    });
+    throw error;
+  }
+
+  try {
+    await setEventUpdateItemAttemptWorkflowRunId({
+      itemId: pending.itemId,
+      workflowRunId: run.runId,
+    });
+  } catch (error) {
+    console.error('Event update item retry workflow id update failed', {
+      batchId: pending.batchId,
+      itemId: pending.itemId,
+      workflowRunId: run.runId,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+
+  return {
+    batchId: pending.batchId,
+    itemId: pending.itemId,
+    workflowRunId: run.runId,
+  };
+}
+
 export async function eventUpdateBatchWorkflow(
   input: EventUpdateBatchWorkflowInput,
 ): Promise<void> {
@@ -207,4 +256,15 @@ export async function eventUpdateBatchWorkflow(
     );
     throw error;
   }
+}
+
+export async function eventUpdateItemRetryWorkflow(input: {
+  itemId: string;
+  eventId: string;
+  sourceUrl: string;
+  targetYear: number;
+}): Promise<void> {
+  'use workflow';
+
+  await processEventUpdateItemStep(input);
 }

@@ -231,50 +231,124 @@ export async function completeEventUpdateItemWithDraft(input: {
 }
 
 export async function markEventUpdateItemSkipped(itemId: string, skipReason: string): Promise<void> {
-  const { error } = await createAdminClient()
-    .from('event_update_batch_items')
-    .update({ status: 'completed', outcome: 'skipped', skip_reason: skipReason, error: null, updated_at: new Date().toISOString() })
-    .eq('id', itemId);
-  if (error) throw new Error('Failed to skip event update item');
+  const { error } = await createAdminClient().rpc('mark_event_update_item_skipped', {
+    p_item_id: itemId,
+    p_skip_reason: skipReason,
+  });
+
+  if (error) {
+    console.error('Event update item skip error:', error);
+    throw new Error('Failed to skip event update item');
+  }
 }
 
 export async function markEventUpdateItemRunning(
   itemId: string,
-): Promise<void> {
-  const supabase = createAdminClient();
-
-  const { error } = await supabase
-    .from('event_update_batch_items')
-    .update({
-      status: 'running',
-      error: null,
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', itemId);
+): Promise<boolean> {
+  const { data, error } = await createAdminClient().rpc('start_event_update_item_attempt', {
+    p_item_id: itemId,
+  });
 
   if (error) {
     console.error('Event update item running update error:', error);
     throw new Error('Failed to update event update item');
   }
+
+  return data === true;
 }
 
 export async function markEventUpdateItemFailed(
   itemId: string,
   errorMessage: string,
 ): Promise<void> {
-  const supabase = createAdminClient();
-
-  const { error } = await supabase
-    .from('event_update_batch_items')
-    .update({
-      status: 'failed',
-      error: errorMessage,
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', itemId);
+  const { error } = await createAdminClient().rpc('fail_event_update_item', {
+    p_item_id: itemId,
+    p_error: errorMessage,
+  });
 
   if (error) {
     console.error('Event update item failed update error:', error);
     throw new Error('Failed to fail event update item');
+  }
+}
+
+export interface EventUpdateRetryInput {
+  batchId: string;
+  itemId: string;
+  eventId: string;
+  sourceUrl: string;
+  targetYear: number;
+}
+
+export async function retryEventUpdateBatchItem(input: {
+  batchId: string;
+  itemId: string;
+}): Promise<EventUpdateRetryInput> {
+  const { data, error } = await createAdminClient().rpc('retry_event_update_batch_item', {
+    p_batch_id: input.batchId,
+    p_item_id: input.itemId,
+  });
+
+  if (error?.code === 'P0004') {
+    throw new ValidationError('Event update item is not retryable', 409);
+  }
+  if (error || !data || typeof data !== 'object') {
+    console.error('Event update item retry error:', error);
+    throw new Error('Failed to retry event update item');
+  }
+
+  const pending = data as {
+    batch_id?: unknown;
+    item_id?: unknown;
+    event_id?: unknown;
+    source_url?: unknown;
+    target_year?: unknown;
+  };
+  if (
+    typeof pending.batch_id !== 'string'
+    || typeof pending.item_id !== 'string'
+    || typeof pending.event_id !== 'string'
+    || typeof pending.source_url !== 'string'
+    || typeof pending.target_year !== 'number'
+  ) {
+    throw new Error('Failed to retry event update item');
+  }
+
+  return {
+    batchId: pending.batch_id,
+    itemId: pending.item_id,
+    eventId: pending.event_id,
+    sourceUrl: pending.source_url,
+    targetYear: pending.target_year,
+  };
+}
+
+export async function setEventUpdateItemAttemptWorkflowRunId(input: {
+  itemId: string;
+  workflowRunId: string;
+}): Promise<void> {
+  const { error } = await createAdminClient().rpc('set_event_update_item_attempt_workflow_run_id', {
+    p_item_id: input.itemId,
+    p_workflow_run_id: input.workflowRunId,
+  });
+
+  if (error) {
+    console.error('Event update item workflow run update error:', error);
+    throw new Error('Failed to update event update item workflow run');
+  }
+}
+
+export async function failPendingEventUpdateItemAttempt(input: {
+  itemId: string;
+  errorMessage: string;
+}): Promise<void> {
+  const { error } = await createAdminClient().rpc('fail_pending_event_update_item_attempt', {
+    p_item_id: input.itemId,
+    p_error: input.errorMessage,
+  });
+
+  if (error) {
+    console.error('Pending event update item failure error:', error);
+    throw new Error('Failed to fail pending event update item');
   }
 }
