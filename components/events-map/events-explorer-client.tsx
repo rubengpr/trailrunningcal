@@ -13,12 +13,8 @@ import type {
 import { EventsExplorerFiltersSection } from '@/components/events-map/events-explorer-filters-section';
 import { MobileFiltersButton } from '@/components/filters/mobile-filters-button';
 import { MobileFiltersModal } from '@/components/filters/mobile-filters-modal';
-import { SponsorBannerSlot } from '@/components/sponsors/sponsor-banner-slot';
-import { EventCard } from '@/components/event/event-card';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
-import { SearchError, RaceCardError } from '@/components/ui/error-message';
-import { EmptyState } from '@/components/ui/empty-state';
-import { Button } from '@/components/ui/button';
+import { SearchError } from '@/components/ui/error-message';
 import type {
   DesktopLayout,
   LayoutToggleButton,
@@ -26,7 +22,7 @@ import type {
 } from '@/components/ui/layout-toggle';
 import { DeferredEventsMap } from '@/components/events-map/deferred-events-map';
 import { MapToggleFab } from '@/components/events-map/map-toggle-fab';
-import { Search, RefreshCw } from 'lucide-react';
+import { EventsResultsPanel } from '@/components/events-map/events-results-panel';
 import { useMinWidthLg } from '@/hooks/use-min-width-lg';
 import { useEventMapLocations } from '@/hooks/use-event-map-locations';
 import { useScrollEdges } from '@/hooks/use-scroll-edges';
@@ -38,7 +34,6 @@ import {
   getRegionProvinceIds,
   type RegionId,
 } from '@/lib/geography/destinations';
-import { isFeaturedEvent } from '@/lib/featured-events/config';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import type { PageType } from '@/lib/analytics/card-impression-batcher';
 import { track } from '@/lib/analytics/track';
@@ -72,8 +67,6 @@ export function EventsExplorerClient({
   showDistanceFilter = true,
   regionId,
 }: EventsExplorerClientProps) {
-  const tResults = useTranslations('results');
-  const tFilters = useTranslations('filters');
   const tMap = useTranslations('map');
   const [mobileView, setMobileView] = useState<MobileView>('list');
   const [desktopLayout, setDesktopLayout] = useState<DesktopLayout>('both');
@@ -459,89 +452,23 @@ export function EventsExplorerClient({
             <div className="mx-auto w-full min-w-0 max-w-4xl px-4 sm:px-6 lg:max-w-7xl lg:px-8">
               <div className="flex min-w-0 flex-col gap-6 lg:flex-row lg:items-start lg:gap-8">
                 {showListPanel && (
-                  <div
-                    className={`min-w-0 w-full min-h-0 ${desktopLayout === 'both' ? 'lg:-mx-3 lg:w-[calc(50%+1.5rem)] lg:max-h-[calc(100vh-12rem)] lg:overflow-y-auto lg:px-3' : 'lg:w-full'} ${showMobileMapFab && mobileView === 'list' ? 'pb-20' : ''}`}
-                  >
-                    <SponsorBannerSlot
-                      page="homepage"
-                      locale={locale}
-                      className="mb-4 bg-white py-2"
-                    />
-                    <div className="grid min-h-[200px] min-w-0 grid-cols-1 gap-4">
-                      {isRefreshing ? (
-                        <p className="py-3 text-center text-sm text-gray-500">
-                          {tResults('loading')}
-                        </p>
-                      ) : null}
-                      {requestError === 'refresh' ? (
-                        <SearchError onRetry={handleRetry} />
-                      ) : events.length === 0 ? (
-                        <EmptyState
-                          icon={
-                            <Search className="mx-auto size-16 text-gray-400" strokeWidth={1.5} />
-                          }
-                          title={tResults('noRacesFound')}
-                          description={tResults('noRacesMessage')}
-                          action={
-                            <Button onClick={handleClearFilters}>
-                              <RefreshCw className="size-4 mr-2" strokeWidth={2} />
-                              {tFilters('clearFilters')}
-                            </Button>
-                          }
-                        />
-                      ) : (
-                        events.map((eventDetail, index) => {
-                          return (
-                            <div key={eventDetail.event.id} className="min-w-0">
-                              <ErrorBoundary fallback={<RaceCardError />}>
-                                <EventCard
-                                  eventDetail={eventDetail}
-                                  locale={locale}
-                                  isFeatured={
-                                    showsFeaturedCards &&
-                                    isFeaturedEvent(eventDetail.event.slug)
-                                  }
-                                  analyticsContext={{
-                                    source: 'calendar_explorer',
-                                    pageType,
-                                    listPosition: index + 1,
-                                    ...(isDesktopMap && layoutToggleVariant
-                                      ? { layoutToggleVariant }
-                                      : {}),
-                                  }}
-                                />
-                              </ErrorBoundary>
-                            </div>
-                          );
-                        })
-                      )}
-                    </div>
-                    {requestError === 'load-more' ? (
-                      <div className="mt-4">
-                        <SearchError onRetry={() => void handleLoadMore()} />
-                      </div>
-                    ) : null}
-                    {events.length > 0 ? (
-                      <div className="mt-6 flex flex-col items-center gap-2">
-                        {hasMore && requestError !== 'load-more' ? (
-                          <Button
-                            onClick={() => void handleLoadMore()}
-                            disabled={isLoadingMore || isRefreshing}
-                          >
-                            {isLoadingMore
-                              ? tResults('loadingMore')
-                              : tResults('loadMore')}
-                          </Button>
-                        ) : null}
-                        <p className="text-xs text-gray-500">
-                          {tResults('showingCount', {
-                            count: events.length,
-                            total,
-                          })}
-                        </p>
-                      </div>
-                    ) : null}
-                  </div>
+                  <EventsResultsPanel
+                    events={events}
+                    locale={locale}
+                    pageType={pageType}
+                    className={`min-h-0 min-w-0 w-full ${desktopLayout === 'both' ? 'lg:-mx-3 lg:w-[calc(50%+1.5rem)] lg:max-h-[calc(100vh-12rem)] lg:overflow-y-auto lg:px-3' : 'lg:w-full'} ${showMobileMapFab && mobileView === 'list' ? 'pb-20' : ''}`}
+                    isDesktopMap={isDesktopMap}
+                    layoutToggleVariant={layoutToggleVariant}
+                    showsFeaturedCards={showsFeaturedCards}
+                    isRefreshing={isRefreshing}
+                    isLoadingMore={isLoadingMore}
+                    requestError={requestError}
+                    hasMore={hasMore}
+                    total={total}
+                    onRetry={handleRetry}
+                    onClearFilters={handleClearFilters}
+                    onLoadMore={() => void handleLoadMore()}
+                  />
                 )}
 
                 {showMapPanel && (
