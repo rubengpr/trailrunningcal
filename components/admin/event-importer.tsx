@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
-import type { ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
@@ -16,6 +15,11 @@ import { SectionHeader } from '@/components/ui/section-header';
 import { EventImportPreview } from '@/components/admin/event-import-preview';
 import { EventImportPreviewModal } from '@/components/admin/event-import-preview-modal';
 import { ImportJsonEditor } from '@/components/admin/import-json-editor';
+import {
+    ImportPipelineProgress,
+    type ImportPipelineRowConfig,
+    type PersistedImportPipelineRow,
+} from '@/components/admin/import-pipeline-progress';
 import { ImportCostSummary } from '@/components/admin/import-cost-summary';
 import { ErrorMessage } from '@/components/ui/error-message';
 import { cleanUrl } from '@/lib/utils/url';
@@ -70,7 +74,7 @@ import { addPendingEvents } from '@/lib/api/pending-events';
 import { RaceConflictModal } from '@/components/ui/race-conflict-modal';
 import { useModal } from '@/hooks/use-modal';
 import type { ConflictingRace } from '@/types/race.types';
-import { XCircle, RotateCcw, Sparkles, FileText, ImageIcon, X, Play } from 'lucide-react';
+import { RotateCcw, Sparkles, FileText, ImageIcon, X, Play } from 'lucide-react';
 
 type ScrapeWorkflow = 'bulk' | 'full' | 'ingest' | 'llmFromFile' | 'research';
 type ScrapeSourceMode = 'scrapePage' | 'crawlSite';
@@ -86,106 +90,6 @@ const RESEARCH_ERROR_TRANSLATION_KEYS: Record<string, string> = {
     scheduling_error: 'research.errors.schedulingError',
     timeout: 'research.errors.timeout',
 };
-
-type FullPipelineRowKind = 'loading' | 'success' | 'error' | 'pending';
-
-interface FullPipelineRowConfig {
-    kind: FullPipelineRowKind;
-    /** Translation key for title line (omit when kind is pending). */
-    titleKey?: string;
-    errorDetail?: string | null;
-}
-
-interface PersistedPipelineRow {
-    kind: FullPipelineRowKind;
-    titleKey?: string;
-    errorDetail?: string | null;
-    durationMs: number | null;
-    pageStats?: PageStats | null;
-}
-
-function FullPipelineRowIcon({ kind }: { kind: FullPipelineRowKind }): React.ReactElement {
-    if (kind === 'loading') {
-        return (
-            <div
-                className="pipeline-loading-dot h-2.5 w-2.5 shrink-0 translate-y-px rounded-full bg-radial-[at_50%_50%] from-gray-300 to-gray-200"
-                aria-hidden
-            />
-        );
-    }
-    if (kind === 'success') {
-        return (
-            <div
-                className="h-2.5 w-2.5 shrink-0 translate-y-px rounded-full bg-radial-[at_50%_50%] from-green-300 to-green-200"
-                aria-hidden
-            />
-        );
-    }
-    if (kind === 'error') {
-        return (
-            <XCircle className="h-4 w-4 shrink-0 text-red-600" strokeWidth={2} aria-hidden />
-        );
-    }
-    return (
-        <span className="inline-flex h-4 w-4 shrink-0 items-center justify-center text-xs leading-none text-gray-300" aria-hidden>
-            —
-        </span>
-    );
-}
-
-function PageStatsBadges({ pageStats, size = 'sm' }: { pageStats: PageStats; size?: 'sm' | 'md' }): React.ReactElement {
-    const t = useTranslations('admin.events.import');
-    const cls = size === 'sm' ? 'px-2 text-[11px]' : 'px-2.5 py-1 text-xs';
-    return (
-        <>
-            <span className={`inline-flex items-center rounded-full border border-gray-200/80 bg-gray-100 font-medium text-gray-800 tabular-nums ${cls}`}>
-                {t('crawledPagesTotal', { scrapedPages: pageStats.total })}
-            </span>
-            <span className={`inline-flex items-center rounded-full border border-green-200/80 bg-green-100 font-medium text-green-800 tabular-nums ${cls}`}>
-                {t('crawledPagesHttpSuccess', { successPages: pageStats.successCount })}
-            </span>
-            <span className={`inline-flex items-center rounded-full border border-red-200/80 bg-red-100 font-medium text-red-800 tabular-nums ${cls}`}>
-                {t('crawledPagesHttpError', { errorPages: pageStats.errorCount })}
-            </span>
-        </>
-    );
-}
-
-function PipelineRow({ kind, title, durationMs, errorDetail, children }: {
-    kind: FullPipelineRowKind;
-    title?: string;
-    durationMs?: number | null;
-    errorDetail?: string | null;
-    children?: ReactNode;
-}): React.ReactElement {
-    const t = useTranslations('admin.events.import');
-    return (
-        <div className="flex items-start gap-3">
-            <div className="flex h-5 w-4 shrink-0 flex-col items-center justify-center">
-                <FullPipelineRowIcon kind={kind} />
-            </div>
-            <div className="min-w-0 flex-1">
-                {title !== undefined && (
-                    <>
-                        <p className={`flex flex-wrap items-center gap-x-2 text-sm font-medium leading-5 ${kind === 'error' ? 'text-red-700' : 'text-gray-900'}`}>
-                            <span>{title}</span>
-                            {durationMs != null && (
-                                <span className="text-xs font-normal text-gray-500 tabular-nums">
-                                    {t('fullPipelineStepDuration', { duration: formatDurationMs(durationMs) })}
-                                </span>
-                            )}
-                            {children}
-                        </p>
-                        {errorDetail && (
-                            <p className="mt-0.5 text-xs text-red-600">{errorDetail}</p>
-                        )}
-                    </>
-                )}
-            </div>
-        </div>
-    );
-}
-
 
 function isValidUrl(url: string): boolean {
     const trimmed = url.trim();
@@ -220,7 +124,7 @@ interface ScrapeState {
     jsonEditorValue: string;
     jsonEditorError: string | null;
     bulkRows: BulkProcessTableRow[];
-    persistedPipelineRows: PersistedPipelineRow[];
+    persistedPipelineRows: PersistedImportPipelineRow[];
 }
 
 function normalizeRaceTierArrays(
@@ -238,7 +142,7 @@ type ScrapeAction =
     | { type: 'CRAWL_SITE_EXTRACT_START' }
     // Run completion
     | { type: 'AGENT_SUCCESS'; event: TrailEventAgentEvent | null; races: TrailEventAgentRace[]; errorMessage: string | null; rawModelOutput: string; usage: OpenRouterScrapeUsage | null; markdown?: string }
-    | { type: 'IMPORT_SUCCESS'; result: EventImportResult; persistedRows: PersistedPipelineRow[]; showPipeline: boolean }
+    | { type: 'IMPORT_SUCCESS'; result: EventImportResult; persistedRows: PersistedImportPipelineRow[]; showPipeline: boolean }
     | { type: 'SCRAPE_ERROR'; error: string; markdown?: string }
     | { type: 'SCRAPE_COMPLETE'; durationMs: number }
     // UI / reset
@@ -1249,8 +1153,8 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
     const showLlmMetricsUi = workflow !== 'ingest' && workflow !== 'bulk' && workflow !== 'research';
 
     const fullPipelineSteps = useMemo((): {
-        row1: FullPipelineRowConfig;
-        row2: FullPipelineRowConfig;
+        row1: ImportPipelineRowConfig;
+        row2: ImportPipelineRowConfig;
     } | null => {
         if (workflow !== 'full' || !fullPipelineUiActive) {
             return null;
@@ -1258,7 +1162,7 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
         if (!isScraping && !hasScraped) {
             return null;
         }
-        let row1: FullPipelineRowConfig;
+        let row1: ImportPipelineRowConfig;
         if (isScraping && scrapePhase === 'crawling') {
             row1 = { kind: 'loading', titleKey: 'fullPipelineCrawlingWebsite' };
         } else if (isScraping && scrapePhase === 'llm') {
@@ -1273,7 +1177,7 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
             row1 = { kind: 'loading', titleKey: 'fullPipelineCrawlingWebsite' };
         }
 
-        let row2: FullPipelineRowConfig;
+        let row2: ImportPipelineRowConfig;
         if (isScraping && scrapePhase === 'crawling') {
             row2 = { kind: 'loading', titleKey: 'fullPipelineWaitingForCrawl' };
         } else if (isScraping && scrapePhase === 'llm') {
@@ -1781,52 +1685,15 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                             <RotateCcw className="h-4 w-4" strokeWidth={2} />
                         </IconButton>
                     </div>
-                    {(fullPipelineSteps !== null || persistedPipelineRows.length > 0) && (
-                        <div className="space-y-3 border-t border-gray-100 pt-4">
-                            {persistedPipelineRows.map((row, idx) => (
-                                <PipelineRow
-                                    key={`persisted-${idx}`}
-                                    kind={row.kind}
-                                    title={row.titleKey !== undefined ? t(row.titleKey) : undefined}
-                                    durationMs={row.durationMs}
-                                    errorDetail={row.errorDetail}
-                                >
-                                    {row.pageStats && (
-                                        <span className="inline-flex flex-wrap items-center gap-1.5">
-                                            <PageStatsBadges pageStats={row.pageStats} />
-                                        </span>
-                                    )}
-                                </PipelineRow>
-                            ))}
-                            {fullPipelineSteps !== null && (
-                                <>
-                                    <PipelineRow
-                                        kind={fullPipelineSteps.row1.kind}
-                                        title={fullPipelineSteps.row1.titleKey !== undefined ? t(fullPipelineSteps.row1.titleKey) : undefined}
-                                        durationMs={fullPipelineCrawlStepMs}
-                                        errorDetail={fullPipelineSteps.row1.errorDetail}
-                                    >
-                                        {workflow === 'full' && pageStats !== null && (
-                                            <span className="inline-flex flex-wrap items-center gap-1.5">
-                                                <PageStatsBadges pageStats={pageStats} />
-                                            </span>
-                                        )}
-                                    </PipelineRow>
-                                    <PipelineRow
-                                        kind={fullPipelineSteps.row2.kind}
-                                        title={fullPipelineSteps.row2.titleKey !== undefined ? t(fullPipelineSteps.row2.titleKey) : undefined}
-                                        durationMs={fullPipelineLlmStepMs}
-                                        errorDetail={fullPipelineSteps.row2.errorDetail}
-                                    />
-                                </>
-                            )}
-                        </div>
-                    )}
-                    {workflow === 'ingest' && pageStats !== null && (
-                        <div className="flex flex-wrap items-center gap-2">
-                            <PageStatsBadges pageStats={pageStats} size="md" />
-                        </div>
-                    )}
+                    <ImportPipelineProgress
+                        persistedRows={persistedPipelineRows}
+                        activeSteps={fullPipelineSteps}
+                        crawlStepDurationMs={fullPipelineCrawlStepMs}
+                        llmStepDurationMs={fullPipelineLlmStepMs}
+                        pageStats={pageStats}
+                        showFullPageStats={workflow === 'full'}
+                        showIngestPageStats={workflow === 'ingest'}
+                    />
                     {isScraping && (
                         <p className="text-xs text-gray-500 tabular-nums">
                             {t('runDurationRunning', {
