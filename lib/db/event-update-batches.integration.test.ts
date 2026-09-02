@@ -257,6 +257,94 @@ integrationDescribe('event update persistence integration', () => {
     ]);
   });
 
+  it('retries a failed item while preserving its prior error as an attempt', async () => {
+    const eventId = await createEventFixture('Retry history');
+    const batchId = await createBatchFixture();
+    const itemId = await createItemFixture({ batchId, eventId, status: 'failed' });
+    const { error: failureUpdateError } = await supabase
+      .from('event_update_batch_items')
+      .update({ error: 'Original crawl failure' })
+      .eq('id', itemId);
+    expect(failureUpdateError).toBeNull();
+
+    const { data: retry, error: retryError } = await supabase.rpc(
+      'retry_event_update_batch_item',
+      { p_batch_id: batchId, p_item_id: itemId },
+    );
+    expect(retryError).toBeNull();
+    expect(retry).toMatchObject({
+      batch_id: batchId,
+      item_id: itemId,
+      event_id: eventId,
+    });
+
+    const { data: item, error: itemError } = await supabase
+      .from('event_update_batch_items')
+      .select('status, attempt_count, error, outcome, draft_id, skip_reason')
+      .eq('id', itemId)
+      .single();
+    expect(itemError).toBeNull();
+    expect(item).toMatchObject({
+      status: 'pending',
+      attempt_count: 2,
+      error: null,
+      outcome: null,
+      draft_id: null,
+      skip_reason: null,
+    });
+
+    const { data: attempts, error: attemptsError } = await supabase
+      .from('event_update_batch_item_attempts')
+      .select('attempt_number, status, error')
+      .eq('batch_item_id', itemId)
+      .order('attempt_number');
+    expect(attemptsError).toBeNull();
+    expect(attempts).toEqual([
+      { attempt_number: 1, status: 'failed', error: 'Original crawl failure' },
+      { attempt_number: 2, status: 'pending', error: null },
+    ]);
+
+    const { data: started, error: startError } = await supabase.rpc(
+      'start_event_update_item_attempt',
+      { p_item_id: itemId },
+    );
+    expect(startError).toBeNull();
+    expect(started).toBe(true);
+
+    const { error: failError } = await supabase.rpc('fail_event_update_item', {
+      p_item_id: itemId,
+      p_error: 'Retry crawl failure',
+    });
+    expect(failError).toBeNull();
+
+    const { data: failedAttempts, error: failedAttemptsError } = await supabase
+      .from('event_update_batch_item_attempts')
+      .select('attempt_number, status, error, finished_at')
+      .eq('batch_item_id', itemId)
+      .order('attempt_number');
+    expect(failedAttemptsError).toBeNull();
+    expect(failedAttempts?.[1]).toMatchObject({
+      attempt_number: 2,
+      status: 'failed',
+      error: 'Retry crawl failure',
+    });
+    expect(failedAttempts?.[1]?.finished_at).toBeTruthy();
+  });
+
+  it('rejects retries for a different batch', async () => {
+    const eventId = await createEventFixture('Retry ownership');
+    const batchId = await createBatchFixture();
+    const otherBatchId = await createBatchFixture();
+    const itemId = await createItemFixture({ batchId, eventId, status: 'failed' });
+
+    const { error } = await supabase.rpc('retry_event_update_batch_item', {
+      p_batch_id: otherBatchId,
+      p_item_id: itemId,
+    });
+
+    expect(error?.code).toBe('P0004');
+  });
+
   it('enforces statuses, foreign keys, and unique workflow run IDs', async () => {
     const eventId = await createEventFixture('Constraints');
     const batchId = await createBatchFixture(`run-${randomUUID()}`);

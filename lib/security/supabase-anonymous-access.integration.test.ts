@@ -64,6 +64,7 @@ integrationDescribe('anonymous Supabase access', () => {
       'event_import_batch_items',
       'event_update_batches',
       'event_update_batch_items',
+      'event_update_batch_item_attempts',
       'event_description_batches',
       'event_description_batch_items',
     ];
@@ -91,6 +92,11 @@ integrationDescribe('anonymous Supabase access', () => {
         target_year: 2027,
         source_url: 'https://example.com',
       }),
+      supabase.rpc('retry_event_update_batch_item', {
+        p_batch_id: ZERO_UUID,
+        p_item_id: ZERO_UUID,
+      }),
+      supabase.rpc('start_event_update_item_attempt', { p_item_id: ZERO_UUID }),
       supabase.rpc('is_app_admin'),
       supabase.rpc('accept_event_draft', { p_draft_id: ZERO_UUID }),
       supabase.rpc('accept_event_import_item', { p_item_id: ZERO_UUID }),

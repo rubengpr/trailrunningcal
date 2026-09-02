@@ -1,0 +1,2 @@
+create index event_update_batch_item_attempts_draft_id_idx
+  on public.event_update_batch_item_attempts(draft_id);
