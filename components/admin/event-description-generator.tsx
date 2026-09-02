@@ -2,14 +2,17 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import Link from 'next/link';
 import toast from 'react-hot-toast';
-import { Check, Search, Sparkles } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { IconButton } from '@/components/ui/icon-button';
 import { BaseModal } from '@/components/ui/base-modal';
 import { SectionHeader } from '@/components/ui/section-header';
 import { ListEmptyState } from '@/components/ui/list-empty-state';
+import {
+  EventDescriptionRow,
+  type EventDescriptionRowStatus,
+} from '@/components/admin/event-description-row';
 import {
   OPENROUTER_SCRAPE_MODEL_IDS,
   type OpenRouterScrapeModelId,
@@ -23,13 +26,12 @@ import {
 } from '@/lib/api/events';
 import type { TrailEventDetail } from '@/types/event.types';
 import type { EventDescriptionBatchSnapshot } from '@/types/event-description.types';
-import { cleanUrl } from '@/lib/utils/url';
 
 interface EventDescriptionGeneratorProps {
   events: TrailEventDetail[];
 }
 
-type RowStatus = 'idle' | 'generating' | 'ready' | 'saving' | 'saved' | 'failed';
+type RowStatus = EventDescriptionRowStatus;
 
 function getInitialDescriptions(events: TrailEventDetail[]): Record<string, string> {
   return Object.fromEntries(
@@ -46,59 +48,6 @@ function getInitialUpdatedAt(events: TrailEventDetail[]): Record<string, string 
       eventDetail.event.id,
       eventDetail.event.updatedAt,
     ]),
-  );
-}
-
-function formatUpdatedAt(value: string | null): string {
-  if (!value) return '—';
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '—';
-
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = date.getFullYear();
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-
-  return `${day}-${month}-${year}, ${hours}:${minutes}`;
-}
-
-const STATUS_DOT_COLOR: Record<RowStatus, string> = {
-  idle: 'bg-gray-300',
-  generating: 'bg-purple-400',
-  ready: 'bg-blue-400',
-  saving: 'bg-purple-400',
-  saved: 'bg-green-400',
-  failed: 'bg-red-400',
-};
-
-function RowStatusBadge({ status, label }: { status: RowStatus; label: string }) {
-  return (
-    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-700">
-      <span className={`h-2 w-2 shrink-0 rounded-full ${STATUS_DOT_COLOR[status]}`} aria-hidden />
-      {label}
-    </span>
-  );
-}
-
-function DescriptionCell({
-  current,
-  draft,
-}: {
-  current: string;
-  draft: string;
-}) {
-  const text = draft || current;
-  if (!text) return <span className="text-gray-400">—</span>;
-
-  const truncated = text.length > 80 ? `${text.slice(0, 80)}…` : text;
-  const isDraft = draft.length > 0;
-
-  return (
-    <span className={isDraft ? 'text-blue-700' : 'text-gray-700'} title={text}>
-      {truncated}
-    </span>
   );
 }
 
@@ -425,87 +374,33 @@ export function EventDescriptionGenerator({
                 {events.map((eventDetail) => {
                   const event = eventDetail.event;
                   const status = statuses[event.id] ?? 'idle';
-                  const canGenerate = !!event.websiteUrl && status !== 'generating';
                   const currentDescription = currentDescriptions[event.id] ?? '';
                   const draftDescription = drafts[event.id] ?? '';
                   const updatedAt = updatedAtByEventId[event.id] ?? event.updatedAt;
                   const error = errors[event.id];
 
                   return (
-                    <tr key={event.id} className="group align-middle hover:bg-gray-100 transition-colors duration-150">
-                      <td className="py-3 pl-4 pr-2">
-                        <input
-                          type="checkbox"
-                          checked={selectedIds.has(event.id)}
-                          onChange={() => toggleSelected(event.id)}
-                          disabled={!event.websiteUrl}
-                          className="h-4 w-4"
-                        />
-                      </td>
-                      <td className="max-w-[200px] px-4 py-3">
-                        <Link
-                          href={`/${locale}/e/${event.slug}`}
-                          prefetch={false}
-                          className="block truncate text-sm font-medium text-gray-900 hover:underline"
-                        >
-                          {event.name}
-                        </Link>
-                      </td>
-                      <td className="max-w-[180px] px-4 py-3">
-                        {event.websiteUrl ? (
-                          <a
-                            href={event.websiteUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="block truncate text-gray-500 hover:text-gray-800 hover:underline"
-                          >
-                            {cleanUrl(event.websiteUrl)}
-                          </a>
-                        ) : (
-                          <span className="text-red-600">{t('missingUrl')}</span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3 text-right tabular-nums text-gray-700">
-                        {eventDetail.allRaceCount}
-                      </td>
-                      <td className="max-w-[240px] px-4 py-3">
-                        <button
-                          type="button"
-                          onClick={() => setDescriptionModalEventId(event.id)}
-                          className="text-left hover:opacity-70 transition-opacity w-full"
-                        >
-                          <DescriptionCell current={currentDescription} draft={draftDescription} />
-                        </button>
-                        {error && (
-                          <p className="mt-1 text-xs text-red-600">{error}</p>
-                        )}
-                      </td>
-                      <td className="whitespace-nowrap px-4 py-3 text-gray-500">
-                        {formatUpdatedAt(updatedAt)}
-                      </td>
-                      <td className="whitespace-nowrap px-4 py-3">
-                        <RowStatusBadge status={status} label={t(`rowStatus.${status}`)} />
-                      </td>
-                      <td className="whitespace-nowrap px-4 py-3 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          {status === 'ready' && (
-                            <IconButton
-                              onClick={() => setDescriptionModalEventId(event.id)}
-                              title={t('review')}
-                            >
-                              <Search className="h-4 w-4" strokeWidth={1.5} />
-                            </IconButton>
-                          )}
-                          <IconButton
-                            onClick={() => void handleGenerateOne(event.id)}
-                            disabled={!canGenerate}
-                            title={status === 'generating' ? t('generating') : t('generate')}
-                          >
-                            <Sparkles className="h-4 w-4" strokeWidth={1.5} />
-                          </IconButton>
-                        </div>
-                      </td>
-                    </tr>
+                    <EventDescriptionRow
+                      key={event.id}
+                      eventDetail={eventDetail}
+                      locale={locale}
+                      isSelected={selectedIds.has(event.id)}
+                      status={status}
+                      currentDescription={currentDescription}
+                      draftDescription={draftDescription}
+                      updatedAt={updatedAt}
+                      error={error}
+                      labels={{
+                        missingUrl: t('missingUrl'),
+                        review: t('review'),
+                        generating: t('generating'),
+                        generate: t('generate'),
+                        status: t(`rowStatus.${status}`),
+                      }}
+                      onToggleSelected={() => toggleSelected(event.id)}
+                      onOpenReview={() => setDescriptionModalEventId(event.id)}
+                      onGenerate={() => void handleGenerateOne(event.id)}
+                    />
                   );
                 })}
               </tbody>
