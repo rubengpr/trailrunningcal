@@ -20,9 +20,9 @@ import type {
   LayoutToggleButton,
   LayoutToggleVariant,
 } from '@/components/ui/layout-toggle';
-import { DeferredEventsMap } from '@/components/events-map/deferred-events-map';
 import { MapToggleFab } from '@/components/events-map/map-toggle-fab';
 import { EventsResultsPanel } from '@/components/events-map/events-results-panel';
+import { EventsMapPanel } from '@/components/events-map/events-map-panel';
 import { useMinWidthLg } from '@/hooks/use-min-width-lg';
 import { useEventMapLocations } from '@/hooks/use-event-map-locations';
 import { useScrollEdges } from '@/hooks/use-scroll-edges';
@@ -471,42 +471,20 @@ export function EventsExplorerClient({
                   />
                 )}
 
-                {showMapPanel && (
-                  <div className={`min-w-0 w-full min-h-0 shrink-0 ${desktopLayout === 'both' ? 'lg:w-1/2' : 'lg:w-full'} lg:self-start`}>
-                    {mapStatus === 'error' && markers.length === 0 ? (
-                      <SearchError onRetry={retryMap} />
-                    ) : mapStatus === 'ready' && markers.length === 0 ? (
-                      <p className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-6 text-center text-sm text-gray-600">
-                        {tMap('empty')}
-                      </p>
-                    ) : (
-                      <div className="relative w-full lg:sticky lg:top-6">
-                        {mapStatus === 'error' ? (
-                          <div className="mb-3">
-                            <SearchError onRetry={retryMap} />
-                          </div>
-                        ) : null}
-                        <DeferredEventsMap
-                          markers={markers}
-                          locale={locale}
-                          labels={labels}
-                          isReady={markers.length > 0}
-                          onVisible={activateMap}
-                          className={
-                            isDesktopMap
-                              ? mapPanelClassNameDesktop
-                              : mapPanelClassNameMobile
-                          }
-                        />
-                        {mapStatus === 'loading' && markers.length === 0 ? (
-                          <p className="pointer-events-none absolute inset-0 flex items-center justify-center text-sm text-gray-600">
-                            {tMap('loading')}
-                          </p>
-                        ) : null}
-                      </div>
-                    )}
-                  </div>
-                )}
+                {showMapPanel ? (
+                  <EventsMapPanel
+                    markers={markers}
+                    locale={locale}
+                    labels={labels}
+                    status={mapStatus}
+                    className={`min-h-0 min-w-0 w-full shrink-0 lg:self-start ${desktopLayout === 'both' ? 'lg:w-1/2' : 'lg:w-full'}`}
+                    mapClassName={
+                      isDesktopMap ? mapPanelClassNameDesktop : mapPanelClassNameMobile
+                    }
+                    onActivate={activateMap}
+                    onRetry={retryMap}
+                  />
+                ) : null}
               </div>
             </div>
           </section>
