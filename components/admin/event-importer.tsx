@@ -15,6 +15,7 @@ import { TabSwitcher } from '@/components/ui/tab-switcher';
 import { SectionHeader } from '@/components/ui/section-header';
 import { EventImportPreview } from '@/components/admin/event-import-preview';
 import { EventImportPreviewModal } from '@/components/admin/event-import-preview-modal';
+import { ImportJsonEditor } from '@/components/admin/import-json-editor';
 import { ImportCostSummary } from '@/components/admin/import-cost-summary';
 import { ErrorMessage } from '@/components/ui/error-message';
 import { cleanUrl } from '@/lib/utils/url';
@@ -1964,26 +1965,15 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                 ) : null}
             </EventImportPreviewModal>
             {workflow !== 'bulk' && workflow !== 'research' && jsonView && hasScraped && !isScraping && scrapeError === null && (
-                <div className="max-w-3xl flex flex-col gap-3">
-                    <textarea
-                        value={jsonEditorValue}
-                        onChange={(e) => dispatch({ type: 'JSON_EDITED', value: e.target.value })}
-                        className="w-full rounded-xl border border-gray-200 bg-white p-4 font-mono text-xs text-gray-800 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-200/80 resize-y"
-                        rows={30}
-                        spellCheck={false}
-                    />
-                    {jsonEditorError && (
-                        <p className="text-xs text-red-600">{jsonEditorError}</p>
-                    )}
-                    <div className="flex gap-2">
-                        <Button type="button" onClick={handleApplyJson}>
-                            {t('applyJson')}
-                        </Button>
-                        <Button type="button" variant="secondary" onClick={() => dispatch({ type: 'JSON_TAB_CLOSED' })}>
-                            {t('cancelJson')}
-                        </Button>
-                    </div>
-                </div>
+                <ImportJsonEditor
+                    value={jsonEditorValue}
+                    error={jsonEditorError}
+                    applyLabel={t('applyJson')}
+                    cancelLabel={t('cancelJson')}
+                    onChange={(value) => dispatch({ type: 'JSON_EDITED', value })}
+                    onApply={handleApplyJson}
+                    onCancel={() => dispatch({ type: 'JSON_TAB_CLOSED' })}
+                />
             )}
             <RaceConflictModal
                 isOpen={isConflictModalOpen}
