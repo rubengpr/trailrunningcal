@@ -930,7 +930,7 @@
         "status": { "pending": "Pendent", "running": "En curs", "completed": "Completat", "failed": "Fallat" },
         "outcome": { "drafted": "Esborrany creat", "skipped": "Omesa", "unclassified": "Sense resultat registrat" },
         "table": { "started": "Data", "duration": "Durada", "status": "Estat", "total": "Total", "drafted": "Esborranys", "skipped": "Omesos", "failed": "Fallats", "pending": "Pendents", "running": "En curs" },
-        "detail": { "title": "Detall de l’execució", "event": "Esdeveniment", "url": "URL", "status": "Estat", "outcome": "Resultat", "message": "Detall", "unknownEvent": "Esdeveniment no disponible" }
+        "detail": { "title": "Detall de l’execució", "event": "Esdeveniment", "url": "URL", "status": "Estat", "outcome": "Resultat", "message": "Detall", "unknownEvent": "Esdeveniment no disponible", "retry": "Torna-ho a provar" }
       },
       "drafts": {
         "title": "Esdeveniments en esborrany",

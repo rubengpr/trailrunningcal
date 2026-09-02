@@ -698,7 +698,7 @@
         "status": { "pending": "Pending", "running": "Running", "completed": "Completed", "failed": "Failed" },
         "outcome": { "drafted": "Draft created", "skipped": "Skipped", "unclassified": "No recorded outcome" },
         "table": { "started": "Date", "duration": "Duration", "status": "Status", "total": "Total", "drafted": "Drafts", "skipped": "Skipped", "failed": "Failed", "pending": "Pending", "running": "Running" },
-        "detail": { "title": "Run details", "event": "Event", "url": "URL", "status": "Status", "outcome": "Outcome", "message": "Detail", "unknownEvent": "Unavailable event" }
+        "detail": { "title": "Run details", "event": "Event", "url": "URL", "status": "Status", "outcome": "Outcome", "message": "Detail", "unknownEvent": "Unavailable event", "retry": "Retry" }
       }
     }
   },

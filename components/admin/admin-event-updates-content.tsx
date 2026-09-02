@@ -2,13 +2,14 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { CalendarDays, Clock3, ExternalLink, RefreshCw } from 'lucide-react';
+import { CalendarDays, Clock3, ExternalLink, RefreshCw, RotateCcw } from 'lucide-react';
 
 import { SectionHeader } from '@/components/ui/section-header';
 import { ErrorMessage } from '@/components/ui/error-message';
 import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/components/ui/table';
 import { Tooltip } from '@/components/ui/tooltip';
-import { getEventUpdateBatchStatus } from '@/lib/api/event-updates';
+import { IconButton } from '@/components/ui/icon-button';
+import { getEventUpdateBatchStatus, retryEventUpdateBatchItem } from '@/lib/api/event-updates';
 import type {
   EventUpdateBatchHistoryEntry,
   EventUpdateBatchItemStatus,
@@ -38,7 +39,9 @@ function StatusDot({ status, label }: { status: EventUpdateBatchItemStatus; labe
 }
 
 function isActive(snapshot: EventUpdateBatchSnapshot | null): boolean {
-  return snapshot?.batch.status === 'pending' || snapshot?.batch.status === 'running';
+  return snapshot?.batch.status === 'pending'
+    || snapshot?.batch.status === 'running'
+    || snapshot?.items.some((item) => item.status === 'pending' || item.status === 'running') === true;
 }
 
 function sortHistory(entries: EventUpdateBatchHistoryEntry[]): EventUpdateBatchHistoryEntry[] {
@@ -57,6 +60,8 @@ export function AdminEventUpdatesContent({
   const [snapshot, setSnapshot] = useState(initialSnapshot);
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [hasLoadError, setHasLoadError] = useState(false);
+  const [retryingItemId, setRetryingItemId] = useState<string | null>(null);
+  const [hasRetryError, setHasRetryError] = useState(false);
 
   const dateFormatter = useMemo(() => new Intl.DateTimeFormat(locale, {
     day: 'numeric', month: 'short',
@@ -89,6 +94,21 @@ export function AdminEventUpdatesContent({
       setLoadingId(null);
     }
   }, []);
+
+  const retry = useCallback(async (itemId: string): Promise<void> => {
+    if (!snapshot) return;
+
+    setRetryingItemId(itemId);
+    try {
+      await retryEventUpdateBatchItem({ batchId: snapshot.batch.id, itemId });
+      await load(snapshot.batch.id);
+      setHasRetryError(false);
+    } catch {
+      setHasRetryError(true);
+    } finally {
+      setRetryingItemId(null);
+    }
+  }, [load, snapshot]);
 
   useEffect(() => {
     if (!isActive(snapshot)) return;
@@ -151,7 +171,7 @@ export function AdminEventUpdatesContent({
               ))}
             </TableBody>
           </Table>
-          {hasLoadError && snapshot ? (
+          {(hasLoadError || hasRetryError) && snapshot ? (
             <ErrorMessage
               variant="inline"
               onRetry={() => void load(snapshot.batch.id)}
@@ -173,6 +193,7 @@ export function AdminEventUpdatesContent({
                   <TableCell header>{t('detail.url')}</TableCell>
                   <TableCell header>{t('detail.outcome')}</TableCell>
                   <TableCell header>{t('detail.message')}</TableCell>
+                  <TableCell header className="w-12 px-4"><span className="sr-only">{t('detail.retry')}</span></TableCell>
                 </TableHeader>
                 <TableBody>
                   {snapshot.items.map((item) => (
@@ -182,6 +203,18 @@ export function AdminEventUpdatesContent({
                       <TableCell className="max-w-[180px] truncate text-sm"><a className="inline-flex items-center gap-1 text-gray-600 hover:text-gray-900" href={item.sourceUrl} target="_blank" rel="noreferrer"><span className="truncate">{item.sourceUrl}</span><ExternalLink className="size-3 shrink-0" /></a></TableCell>
                       <TableCell className="text-sm">{item.outcome === 'drafted' && item.draftId ? <a className="font-medium text-emerald-700 hover:underline" href={`/${locale}/admin/eventos/borradores?draftId=${item.draftId}`}>{t('outcome.drafted')}</a> : item.outcome ? t(`outcome.${item.outcome}`) : t('outcome.unclassified')}</TableCell>
                       <TableCell className="max-w-[320px] text-sm text-gray-600">{item.status === 'failed' ? item.error : item.skipReason}</TableCell>
+                      <TableCell className="px-4 text-right">
+                        {item.status === 'failed' ? (
+                          <IconButton
+                            title={t('detail.retry')}
+                            aria-label={t('detail.retry')}
+                            disabled={retryingItemId !== null}
+                            onClick={() => void retry(item.id)}
+                          >
+                            <RotateCcw className={retryingItemId === item.id ? 'size-4 animate-spin' : 'size-4'} />
+                          </IconButton>
+                        ) : null}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
