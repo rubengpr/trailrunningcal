@@ -7,17 +7,15 @@ import { FormSelect } from '@/components/ui/form-select';
 import { Combobox } from '@/components/ui/combobox';
 import type { ComboboxOption } from '@/components/ui/combobox';
 import { Button } from '@/components/ui/button';
-import { IconButton } from '@/components/ui/icon-button';
-import { IconActionMenu } from '@/components/ui/icon-action-menu';
 import { TabSwitcher } from '@/components/ui/tab-switcher';
 import { SectionHeader } from '@/components/ui/section-header';
 import { EventImportPreview } from '@/components/admin/event-import-preview';
 import { EventImportPreviewModal } from '@/components/admin/event-import-preview-modal';
 import { ImportJsonEditor } from '@/components/admin/import-json-editor';
 import { ImportFileUploadPanel } from '@/components/admin/import-file-upload-panel';
+import { ImportWorkflowControls } from '@/components/admin/import-workflow-controls';
 import { ResearchWorkflowPanel } from '@/components/admin/research-workflow-panel';
 import {
-    ImportPipelineProgress,
     type ImportPipelineRowConfig,
     type PersistedImportPipelineRow,
 } from '@/components/admin/import-pipeline-progress';
@@ -52,7 +50,6 @@ import {
 } from '@/lib/api/events';
 import { OPENROUTER_SCRAPE_MODEL_IDS, OPENROUTER_VISION_MODEL_IDS } from '@/lib/integrations/openrouter/scrape-models';
 import type { OpenRouterScrapeModelId, OpenRouterVisionModelId } from '@/lib/integrations/openrouter/scrape-models';
-import { formatDurationMs } from '@/lib/utils/format-duration';
 import { triggerDownload } from '@/lib/utils/download';
 import { useLiveTimer } from '@/hooks/use-live-timer';
 import { useFileUpload } from '@/hooks/use-file-upload';
@@ -74,7 +71,7 @@ import { addPendingEvents } from '@/lib/api/pending-events';
 import { RaceConflictModal } from '@/components/ui/race-conflict-modal';
 import { useModal } from '@/hooks/use-modal';
 import type { ConflictingRace } from '@/types/race.types';
-import { RotateCcw, Sparkles, Play } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 type ScrapeWorkflow = 'bulk' | 'full' | 'ingest' | 'llmFromFile' | 'research';
 type ScrapeSourceMode = 'scrapePage' | 'crawlSite';
@@ -1466,79 +1463,28 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                             ))}
                         </FormSelect>
                     )}
-                    <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2">
-                        <Button
-                            type="button"
-                            onClick={handleRunWorkflow}
-                            disabled={!canRunWorkflow}
-                            isLoading={isScraping || isStartingBatch || isStartingResearch}
-                            loadingText={primaryLoadingLabel}
-                        >
-                            <span className="inline-flex items-center gap-2">
-                                <Play className="size-4 shrink-0" strokeWidth={2} aria-hidden />
-                                {t('runWorkflowButton')}
-                            </span>
-                        </Button>
-                        {workflow !== 'bulk' && workflow !== 'research' &&
-                            (scrapeMarkdown || (rawModelOutput !== null && rawModelOutput !== '')) && (
-                            <IconActionMenu
-                                triggerAriaLabel={t('downloadMenuTriggerLabel')}
-                                disabled={isScraping}
-                                items={[
-                                    {
-                                        id: 'markdown',
-                                        label: t('downloadMenuMarkdown'),
-                                        disabled: !scrapeMarkdown,
-                                        onSelect: handleDownloadMarkdown,
-                                    },
-                                    {
-                                        id: 'json',
-                                        label: t('downloadMenuJson'),
-                                        disabled: rawModelOutput === null || rawModelOutput === '',
-                                        onSelect: handleDownloadRawModelOutput,
-                                    },
-                                ]}
-                            />
-                        )}
-                        <Button
-                            type="button"
-                            variant="secondary"
-                            onClick={handleLoadDummyPreview}
-                            disabled={isScraping || isStartingBatch || isStartingResearch || workflow === 'research'}
-                        >
-                            {t('loadDummyPreview')}
-                        </Button>
-                        <IconButton
-                            onClick={handleRestart}
-                            disabled={isScraping || isStartingBatch || isStartingResearch}
-                            title={t('restart')}
-                        >
-                            <RotateCcw className="h-4 w-4" strokeWidth={2} />
-                        </IconButton>
-                    </div>
-                    <ImportPipelineProgress
-                        persistedRows={persistedPipelineRows}
-                        activeSteps={fullPipelineSteps}
+                    <ImportWorkflowControls
+                        workflow={workflow}
+                        canRun={canRunWorkflow}
+                        isScraping={isScraping}
+                        isStartingBatch={isStartingBatch}
+                        isStartingResearch={isStartingResearch}
+                        primaryLoadingLabel={primaryLoadingLabel}
+                        scrapeMarkdown={scrapeMarkdown}
+                        rawModelOutput={rawModelOutput}
+                        persistedPipelineRows={persistedPipelineRows}
+                        activePipelineSteps={fullPipelineSteps}
                         crawlStepDurationMs={fullPipelineCrawlStepMs}
                         llmStepDurationMs={fullPipelineLlmStepMs}
                         pageStats={pageStats}
-                        showFullPageStats={workflow === 'full'}
-                        showIngestPageStats={workflow === 'ingest'}
+                        liveElapsedMs={liveElapsedMs}
+                        lastRunDurationMs={lastRunDurationMs}
+                        onRun={handleRunWorkflow}
+                        onDownloadMarkdown={handleDownloadMarkdown}
+                        onDownloadJson={handleDownloadRawModelOutput}
+                        onLoadDummyPreview={handleLoadDummyPreview}
+                        onRestart={handleRestart}
                     />
-                    {isScraping && (
-                        <p className="text-xs text-gray-500 tabular-nums">
-                            {t('runDurationRunning', {
-                                duration: formatDurationMs(liveElapsedMs),
-                            })}
-                        </p>
-                    )}
-                    {!isScraping && lastRunDurationMs !== null && (
-                        <p className="text-xs text-gray-500 tabular-nums">
-                            {t('runDurationComplete', {
-                                duration: formatDurationMs(lastRunDurationMs),
-                            })}
-                        </p>
-                    )}
                 </div>
             </div>
             {showLlmMetricsUi &&
