@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/client';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { FormInput } from '@/components/ui/form-input';
+import { PasswordConfirmationFields } from '@/components/auth/password-confirmation-fields';
 import { FormCard } from '@/components/ui/form-card';
 import { Button } from '@/components/ui/button';
 import { InlineError } from '@/components/ui/inline-error';
@@ -99,31 +99,23 @@ export function UpdatePasswordForm({
       <FormCard title={t('title')} description={t('description')}>
         <form onSubmit={handleSubmit} noValidate>
           <div className="flex flex-col gap-6">
-            <FormInput
-              id="password"
-              label={t('password')}
-              type="password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
+            <PasswordConfirmationFields
+              password={password}
+              confirmation={repeatPassword}
+              passwordLabel={t('password')}
+              confirmationLabel={t('repeatPassword')}
+              passwordError={passwordError}
+              confirmationError={repeatPasswordError}
+              onPasswordChange={(value) => {
+                setPassword(value);
                 setPasswordError('');
                 setError(null);
               }}
-              error={passwordError}
-              showPasswordToggle
-            />
-            <FormInput
-              id="repeat-password"
-              label={t('repeatPassword')}
-              type="password"
-              value={repeatPassword}
-              onChange={(e) => {
-                setRepeatPassword(e.target.value);
+              onConfirmationChange={(value) => {
+                setRepeatPassword(value);
                 setRepeatPasswordError('');
                 setError(null);
               }}
-              error={repeatPasswordError}
-              showPasswordToggle
             />
             <InlineError error={error || undefined} />
             <Button

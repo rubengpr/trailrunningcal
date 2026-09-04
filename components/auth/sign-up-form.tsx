@@ -5,6 +5,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { FormInput } from '@/components/ui/form-input';
+import { PasswordConfirmationFields } from '@/components/auth/password-confirmation-fields';
 import { FormCard } from '@/components/ui/form-card';
 import { Button } from '@/components/ui/button';
 import { InlineError } from '@/components/ui/inline-error';
@@ -126,23 +127,14 @@ export function SignUpForm({
                 }}
                 error={emailError}
               />
-              <FormInput
-                id="password"
-                label={t('password')}
-                type="password"
+              <PasswordConfirmationFields
+                password={password}
+                confirmation={repeatPassword}
+                passwordLabel={t('password')}
+                confirmationLabel={t('repeatPassword')}
                 required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                showPasswordToggle
-              />
-              <FormInput
-                id="repeat-password"
-                label={t('repeatPassword')}
-                type="password"
-                required
-                value={repeatPassword}
-                onChange={(e) => setRepeatPassword(e.target.value)}
-                showPasswordToggle
+                onPasswordChange={setPassword}
+                onConfirmationChange={setRepeatPassword}
               />
               <InlineError error={error || undefined} />
               <Button
