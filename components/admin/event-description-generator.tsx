@@ -3,10 +3,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
-import { Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { IconButton } from '@/components/ui/icon-button';
-import { BaseModal } from '@/components/ui/base-modal';
+import { EventDescriptionReviewModal } from '@/components/admin/event-description-review-modal';
 import { SectionHeader } from '@/components/ui/section-header';
 import { ListEmptyState } from '@/components/ui/list-empty-state';
 import {
@@ -414,45 +412,7 @@ export function EventDescriptionGenerator({
         if (!modalEvent) return null;
         const current = currentDescriptions[descriptionModalEventId] ?? '';
         const draft = drafts[descriptionModalEventId] ?? '';
-        return (
-          <BaseModal
-            isOpen
-            onClose={() => setDescriptionModalEventId(null)}
-            title={modalEvent.event.name}
-            maxWidth="2xl"
-          >
-            <div className="flex flex-col gap-6">
-              {draft && (
-                <div className="flex flex-col gap-2">
-                  <p className="text-xs font-medium uppercase tracking-wide text-blue-600">{t('draft')}</p>
-                  <p className="whitespace-pre-line text-xs leading-5 text-gray-900">{draft}</p>
-                </div>
-              )}
-              {current && (
-                <div className="flex flex-col gap-2">
-                  <p className={`text-xs font-medium uppercase tracking-wide ${draft ? 'text-gray-400' : 'text-gray-500'}`}>{t('current')}</p>
-                  <p className={`whitespace-pre-line text-xs leading-5 ${draft ? 'text-gray-400' : 'text-gray-700'}`}>{current}</p>
-                </div>
-              )}
-              {!current && !draft && (
-                <p className="text-sm text-gray-400">{t('descriptionPlaceholder')}</p>
-              )}
-              {draft && (
-                <div className="flex justify-end">
-                  <IconButton
-                    onClick={() => {
-                      void handleSave(descriptionModalEventId);
-                      setDescriptionModalEventId(null);
-                    }}
-                    title={t('save')}
-                  >
-                    <Check className="h-4 w-4" strokeWidth={1.8} />
-                  </IconButton>
-                </div>
-              )}
-            </div>
-          </BaseModal>
-        );
+        return <EventDescriptionReviewModal eventName={modalEvent.event.name} currentDescription={current} draftDescription={draft} onClose={() => setDescriptionModalEventId(null)} onSave={() => { void handleSave(descriptionModalEventId); setDescriptionModalEventId(null); }} />;
       })()}
     </div>
   );
