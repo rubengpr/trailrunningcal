@@ -4,16 +4,15 @@ import { useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { Plus, Trash2 } from 'lucide-react';
-import { RaceTrackUpload } from '@/components/admin/race-track-upload';
+import { Plus } from 'lucide-react';
 import { FormInput } from '@/components/ui/form-input';
 import { FormTextarea } from '@/components/ui/form-textarea';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { FormErrorMessage } from '@/components/ui/error-message';
 import { SelectMenu } from '@/components/ui/select-menu';
-import { RaceDraftFields } from '@/components/event/race-draft-fields';
+import { RaceDraftEditor } from '@/components/event/race-draft-editor';
+import type { RaceDraft } from '@/components/event/race-draft-editor';
 import {
-  RaceTierFields,
   toRaceTierDrafts,
   toRaceTierWriteInputs,
   validateRaceTierDrafts,
@@ -31,18 +30,6 @@ import type { TrailEventDetail } from '@/types/event.types';
 import { isValidProvince } from '@/lib/geography/provinces';
 import { parseOptionalInteger } from '@/lib/events/utils';
 import { isValidResultsUrl } from '@/lib/races/utils';
-
-interface RaceDraft {
-  id?: string;
-  name: string;
-  date: string;
-  city: string;
-  province: string;
-  distanceKm: string;
-  elevationGainM: string;
-  resultsUrl: string;
-  tiers: RaceTierDraft[];
-}
 
 type RaceTextField = Exclude<keyof RaceDraft, 'tiers'>;
 
@@ -286,50 +273,33 @@ export function EventForm({
         </div>
 
         {races.map((race, index) => (
-          <div key={race.id ?? index} className="flex flex-col gap-4 border-t border-gray-100 pt-5 first:border-t-0 first:pt-0">
-            <div className="flex items-center justify-between gap-3">
-              <h3 className="text-sm font-medium text-gray-900">
-                {t('raceTitle', { number: index + 1 })}
-              </h3>
-              {races.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => removeRace(index)}
-                  className="inline-flex items-center justify-center gap-2 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none cursor-pointer"
-                >
-                  <Trash2 className="size-4" strokeWidth={2} />
-                  {t('removeRace')}
-                </button>
-              )}
-            </div>
-            <RaceDraftFields
-              idPrefix={`race-${index}`}
-              name={race.name}
-              date={race.date}
-              city={race.city}
-              province={race.province}
-              distanceKm={race.distanceKm}
-              elevationGainM={race.elevationGainM}
-              resultsUrl={race.resultsUrl}
-              showResultsUrl={isEditMode && Boolean(race.id)}
-              labels={{ name: t('raceName'), date: t('date'), city: t('city'), province: t('province'), provincePlaceholder: t('provincePlaceholder'), distance: t('distanceKm'), elevation: t('elevationGainM'), resultsUrl: t('resultsUrl'), resultsUrlPlaceholder: t('resultsUrlPlaceholder') }}
-              onFieldChange={(field, value) => updateRace(index, field, value)}
-            />
-            <RaceTierFields
-              idPrefix={`race-${index}`}
-              tiers={race.tiers}
-              disabled={isSaving}
-              onChange={(tiers) => updateRaceTiers(index, tiers)}
-            />
-            {apiMode === 'admin' && isEditMode && (
-              <RaceTrackUpload
-                raceId={race.id}
-                raceName={race.name}
-                initialHasTrack={race.id ? trackedRaceIds.includes(race.id) : false}
-                disabled={isSaving || isDeleting}
-              />
-            )}
-          </div>
+          <RaceDraftEditor
+            key={race.id ?? index}
+            race={race}
+            index={index}
+            raceCount={races.length}
+            isEditMode={isEditMode}
+            apiMode={apiMode}
+            isSaving={isSaving}
+            isDeleting={isDeleting}
+            hasTrack={race.id ? trackedRaceIds.includes(race.id) : false}
+            labels={{
+              title: t('raceTitle', { number: index + 1 }),
+              remove: t('removeRace'),
+              name: t('raceName'),
+              date: t('date'),
+              city: t('city'),
+              province: t('province'),
+              provincePlaceholder: t('provincePlaceholder'),
+              distance: t('distanceKm'),
+              elevation: t('elevationGainM'),
+              resultsUrl: t('resultsUrl'),
+              resultsUrlPlaceholder: t('resultsUrlPlaceholder'),
+            }}
+            onChange={(field, value) => updateRace(index, field, value)}
+            onRemove={() => removeRace(index)}
+            onTiersChange={(tiers) => updateRaceTiers(index, tiers)}
+          />
         ))}
       </div>
 
