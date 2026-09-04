@@ -2,16 +2,14 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Plus, Trash2 } from 'lucide-react';
-import { RaceTrackUpload } from '@/components/admin/race-track-upload';
+import { Plus } from 'lucide-react';
+import { RaceEditModalRow, type ModalRaceDraft } from '@/components/admin/race-edit-modal-row';
 import { ReviewActionButton } from '@/components/admin/review-action-button';
 import { BaseModal } from '@/components/ui/base-modal';
 import { FormErrorMessage } from '@/components/ui/error-message';
 import { FormInput } from '@/components/ui/form-input';
 import { FormTextarea } from '@/components/ui/form-textarea';
-import { RaceDraftFields } from '@/components/event/race-draft-fields';
 import {
-  RaceTierFields,
   toRaceTierDrafts,
   toRaceTierWriteInputs,
   validateRaceTierDrafts,
@@ -50,14 +48,6 @@ type EventRacesEditModalContentProps = Omit<
   event: TrailEventAgentEvent;
 };
 
-type ModalRaceDraft = Omit<
-  EventRaceWriteInput,
-  'distanceKm' | 'elevationGainM' | 'tiers'
-> & {
-  distanceKm: string;
-  elevationGainM: string;
-  tierDrafts: RaceTierDraft[];
-};
 
 function emptyRaceDraft(): ModalRaceDraft {
   return {
@@ -301,65 +291,7 @@ function EventRacesEditModalContent({
           </div>
           <div className="divide-y divide-gray-200">
             {raceDrafts.map((race, index) => (
-              <div
-                key={race.id ?? `race-draft-${index}`}
-                className="flex flex-col gap-3 py-8 first:pt-0 last:pb-0"
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex min-w-0 items-center gap-2">
-                    <RacePositionBadge number={index + 1} />
-                    <p className="min-w-0 truncate text-sm font-semibold text-gray-900">
-                      {race.name?.trim() || t('raceTitle', { number: index + 1 })}
-                    </p>
-                  </div>
-                  <ReviewActionButton
-                    title={t('removeRace')}
-                    disabled={isSaving || raceDrafts.length <= 1}
-                    onClick={() => removeRaceDraft(index)}
-                  >
-                    <Trash2 className="h-4 w-4" aria-hidden="true" />
-                  </ReviewActionButton>
-                </div>
-                <RaceDraftFields
-                  idPrefix={`modal-race-${index}`}
-                  name={race.name ?? ''}
-                  date={race.date ?? ''}
-                  city={race.city}
-                  province={race.province}
-                  distanceKm={race.distanceKm}
-                  elevationGainM={race.elevationGainM}
-                  resultsUrl={race.resultsUrl ?? ''}
-                  showResultsUrl={showResultsUrls && Boolean(race.id)}
-                  disabled={isSaving}
-                  layout="modal"
-                  labels={{ name: t('editFieldName'), date: t('editFieldDate'), city: t('editFieldCity'), province: t('editFieldProvince'), provincePlaceholder: formT('provincePlaceholder'), distance: t('editFieldDistance'), elevation: t('editFieldElevation'), resultsUrl: formT('resultsUrl'), resultsUrlPlaceholder: formT('resultsUrlPlaceholder') }}
-                  onFieldChange={(field, value) => updateRaceDraft(index, {
-                    ...race,
-                    [field]: field === 'date' ? value || null : value,
-                  })}
-                />
-                {showTrackUploads ? (
-                  <RaceTrackUpload
-                    raceId={race.id}
-                    raceName={race.name ?? ''}
-                    initialHasTrack={
-                      race.id ? trackedRaceIds.includes(race.id) : false
-                    }
-                    disabled={isSaving}
-                    onUploaded={(result) => onTrackUploaded?.(result.raceId)}
-                  />
-                ) : null}
-                {showTiers ? (
-                  <RaceTierFields
-                    idPrefix={`modal-race-${index}`}
-                    tiers={race.tierDrafts}
-                    disabled={isSaving}
-                    onChange={(tierDrafts) =>
-                      updateRaceDraft(index, { ...race, tierDrafts })
-                    }
-                  />
-                ) : null}
-              </div>
+              <RaceEditModalRow key={race.id ?? `race-draft-${index}`} race={race} index={index} raceCount={raceDrafts.length} isSaving={isSaving} showResultsUrls={showResultsUrls} showTrackUploads={showTrackUploads} showTiers={showTiers} trackedRaceIds={trackedRaceIds} onChange={(nextRace) => updateRaceDraft(index, nextRace)} onRemove={() => removeRaceDraft(index)} onTrackUploaded={onTrackUploaded} />
             ))}
           </div>
         </section>
