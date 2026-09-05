@@ -11,18 +11,13 @@ import type {
   PublicEventScope,
 } from '@/types/public-events.types';
 import { EventsExplorerFiltersSection } from '@/components/events-map/events-explorer-filters-section';
+import { EventsExplorerLayout } from '@/components/events-map/events-explorer-layout';
 import { MobileFiltersButton } from '@/components/filters/mobile-filters-button';
-import { MobileFiltersModal } from '@/components/filters/mobile-filters-modal';
-import { ErrorBoundary } from '@/components/ui/error-boundary';
-import { SearchError } from '@/components/ui/error-message';
 import type {
   DesktopLayout,
   LayoutToggleButton,
   LayoutToggleVariant,
 } from '@/components/ui/layout-toggle';
-import { MapToggleFab } from '@/components/events-map/map-toggle-fab';
-import { EventsResultsPanel } from '@/components/events-map/events-results-panel';
-import { EventsMapPanel } from '@/components/events-map/events-map-panel';
 import { useMinWidthLg } from '@/hooks/use-min-width-lg';
 import { useEventMapLocations } from '@/hooks/use-event-map-locations';
 import { useScrollEdges } from '@/hooks/use-scroll-edges';
@@ -446,77 +441,48 @@ export function EventsExplorerClient({
         />
       )}
 
-      <main className="min-w-0">
-        <ErrorBoundary fallback={<SearchError onRetry={handleRetry} />}>
-          <section id="carreras">
-            <div className="mx-auto w-full min-w-0 max-w-4xl px-4 sm:px-6 lg:max-w-7xl lg:px-8">
-              <div className="flex min-w-0 flex-col gap-6 lg:flex-row lg:items-start lg:gap-8">
-                {showListPanel && (
-                  <EventsResultsPanel
-                    events={events}
-                    locale={locale}
-                    pageType={pageType}
-                    className={`min-h-0 min-w-0 w-full ${desktopLayout === 'both' ? 'lg:-mx-3 lg:w-[calc(50%+1.5rem)] lg:max-h-[calc(100vh-12rem)] lg:overflow-y-auto lg:px-3' : 'lg:w-full'} ${showMobileMapFab && mobileView === 'list' ? 'pb-20' : ''}`}
-                    isDesktopMap={isDesktopMap}
-                    layoutToggleVariant={layoutToggleVariant}
-                    showsFeaturedCards={showsFeaturedCards}
-                    isRefreshing={isRefreshing}
-                    isLoadingMore={isLoadingMore}
-                    requestError={requestError}
-                    hasMore={hasMore}
-                    total={total}
-                    onRetry={handleRetry}
-                    onClearFilters={handleClearFilters}
-                    onLoadMore={() => void handleLoadMore()}
-                  />
-                )}
-
-                {showMapPanel ? (
-                  <EventsMapPanel
-                    markers={markers}
-                    locale={locale}
-                    labels={labels}
-                    status={mapStatus}
-                    className={`min-h-0 min-w-0 w-full shrink-0 lg:self-start ${desktopLayout === 'both' ? 'lg:w-1/2' : 'lg:w-full'}`}
-                    mapClassName={
-                      isDesktopMap ? mapPanelClassNameDesktop : mapPanelClassNameMobile
-                    }
-                    onActivate={activateMap}
-                    onRetry={retryMap}
-                  />
-                ) : null}
-              </div>
-            </div>
-          </section>
-        </ErrorBoundary>
-      </main>
-
-      {!isControlVariant && (
-        <MobileFiltersModal
-          isOpen={isFiltersModalOpen}
-          onClose={closeFiltersModal}
-          onApply={handleFiltersApplyAndClose}
-          onClear={handleClearFilters}
-          initialMonth={selectedMonth}
-          initialProvince={selectedProvince}
-          initialDistance={selectedDistance}
-          initialRaceType={selectedRaceType}
-          showProvinceFilter={showProvinceFilter}
-          showDistanceFilter={showDistanceFilter}
-          regionId={regionId}
-        />
-      )}
-
-      {showMobileMapFab && (
-        <div className="lg:hidden fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-1/2 z-20 -translate-x-1/2">
-          <MapToggleFab
-            view={mobileView === 'list' ? 'map' : 'list'}
-            label={mobileView === 'list' ? tMap('viewMap') : tMap('viewList')}
-            className={mapToggleFabClassName}
-            onClick={mobileView === 'list' ? handleViewMapClick : handleViewListClick}
-          />
-        </div>
-      )}
+      <EventsExplorerLayout
+        events={events}
+        markers={markers}
+        locale={locale}
+        labels={labels}
+        pageType={pageType}
+        desktopLayout={desktopLayout}
+        mobileView={mobileView}
+        showListPanel={showListPanel}
+        showMapPanel={showMapPanel}
+        showMobileMapFab={showMobileMapFab}
+        mapStatus={mapStatus}
+        mapClassName={isDesktopMap ? mapPanelClassNameDesktop : mapPanelClassNameMobile}
+        layoutToggleVariant={layoutToggleVariant}
+        showsFeaturedCards={showsFeaturedCards}
+        isDesktopMap={isDesktopMap}
+        isRefreshing={isRefreshing}
+        isLoadingMore={isLoadingMore}
+        requestError={requestError}
+        hasMore={hasMore}
+        total={total}
+        mapToggleFabClassName={mapToggleFabClassName}
+        isFiltersModalOpen={isFiltersModalOpen}
+        isControlVariant={isControlVariant}
+        selectedMonth={selectedMonth}
+        selectedProvince={selectedProvince}
+        selectedDistance={selectedDistance}
+        selectedRaceType={selectedRaceType}
+        showProvinceFilter={showProvinceFilter}
+        showDistanceFilter={showDistanceFilter}
+        regionId={regionId}
+        onRetry={handleRetry}
+        onClearFilters={handleClearFilters}
+        onLoadMore={() => void handleLoadMore()}
+        onActivateMap={activateMap}
+        onRetryMap={retryMap}
+        onCloseFiltersModal={closeFiltersModal}
+        onApplyFilters={handleFiltersApplyAndClose}
+        onViewMap={handleViewMapClick}
+        onViewList={handleViewListClick}
+        mapToggleLabel={mobileView === 'list' ? tMap('viewMap') : tMap('viewList')}
+      />
     </>
   );
 }

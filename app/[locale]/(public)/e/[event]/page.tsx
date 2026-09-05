@@ -8,7 +8,7 @@ import { getEventBySlug, getRecommendedEvents } from '@/lib/db/events';
 import { buildEventAlternateLinks } from '@/lib/content/alternate-links';
 import { Breadcrumb } from '@/components/layout/breadcrumb';
 import { SponsorBannerSlot } from '@/components/sponsors/sponsor-banner-slot';
-import { EventCard } from '@/components/event/event-card';
+import { EventDiscoverySection } from '@/components/event/event-discovery-section';
 import { EventDistanceList } from '@/components/event/event-distance-list';
 import { EventDetailHeader } from '@/components/event/event-detail-header';
 import { EventFeatureFeedback } from '@/components/event/event-feature-feedback';
@@ -16,7 +16,6 @@ import { EventPageViewTracker } from '@/components/event/event-page-view-tracker
 import { EventResultsAccordion } from '@/components/event/event-results-accordion';
 import { EventTrackMapSection } from '@/components/event-track-map/event-track-map-section';
 import { RaceOrganizerClaimCard } from '@/components/race/race-organizer-claim-card';
-import { TrackedLink } from '@/components/ui/tracked-link';
 import {
   formatEventDateRange,
   formatEventLocationLabel,
@@ -26,7 +25,6 @@ import { buildBreadcrumbJsonLd, buildEventJsonLd } from '@/lib/seo/json-ld';
 import { JsonLd } from '@/components/seo/json-ld';
 import { LOCALE_BY_LANGUAGE, SITE_NAME } from '@/lib/seo/meta-config';
 import { getDestinationPath, getProvinceByDbName } from '@/lib/geography/destinations';
-import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import type { EventTranslationLocale } from '@/types/event-translation.types';
 
 export const revalidate = false;
@@ -288,42 +286,23 @@ export default async function EventPage({
             />
           </div>
 
-          {provinceDestination && (
-            <div className="mt-12 flex flex-col gap-3">
-              <TrackedLink
-                href={getDestinationPath(
-                  locale,
-                  provinceDestination.regionId,
-                  provinceDestination.provinceId,
-                )}
-                eventName={ANALYTICS_EVENTS.EVENT_PROVINCE_LINK_CLICKED}
-                eventProperties={{
-                  event_id: eventData.event.id,
-                  event_slug: event,
-                  province: eventData.location.province ?? '',
-                }}
-                className="flex w-full items-center justify-between rounded-lg border border-gray-200 px-4 py-3 transition-colors hover:border-gray-300"
-              >
-                <span className="text-sm font-medium text-gray-900">
-                  {tEvent('provincePageLinkText', {
-                    province: tProvincia(`names.${provinceDestination.provinceId}`),
-                  })}
-                </span>
-                <span className="font-semibold text-gray-400">↗</span>
-              </TrackedLink>
-              {recommendedEvents.length > 0 && (
-                <div className="grid grid-cols-1 gap-2">
-                  {recommendedEvents.map((recommendedEvent) => (
-                    <EventCard
-                      key={recommendedEvent.event.id}
-                      eventDetail={recommendedEvent}
-                      locale={localeTyped}
-                    />
-                  ))}
-                </div>
+          {provinceDestination ? (
+            <EventDiscoverySection
+              eventId={eventData.event.id}
+              eventSlug={event}
+              province={eventData.location.province}
+              provinceHref={getDestinationPath(
+                locale,
+                provinceDestination.regionId,
+                provinceDestination.provinceId,
               )}
-            </div>
-          )}
+              provinceLinkLabel={tEvent('provincePageLinkText', {
+                province: tProvincia(`names.${provinceDestination.provinceId}`),
+              })}
+              recommendedEvents={recommendedEvents}
+              locale={localeTyped}
+            />
+          ) : null}
           {!eventData.event.organizerId && (
             <div className="mt-10">
               <RaceOrganizerClaimCard

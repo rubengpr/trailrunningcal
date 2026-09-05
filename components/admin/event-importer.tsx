@@ -3,8 +3,6 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
-import { FormSelect } from '@/components/ui/form-select';
-import { Combobox } from '@/components/ui/combobox';
 import type { ComboboxOption } from '@/components/ui/combobox';
 import { Button } from '@/components/ui/button';
 import { TabSwitcher } from '@/components/ui/tab-switcher';
@@ -13,6 +11,7 @@ import { EventImportPreview } from '@/components/admin/event-import-preview';
 import { EventImportPreviewModal } from '@/components/admin/event-import-preview-modal';
 import { ImportJsonEditor } from '@/components/admin/import-json-editor';
 import { ImportFileUploadPanel } from '@/components/admin/import-file-upload-panel';
+import { ImportWorkflowFields } from '@/components/admin/import-workflow-fields';
 import { ImportWorkflowControls } from '@/components/admin/import-workflow-controls';
 import { ResearchWorkflowPanel } from '@/components/admin/research-workflow-panel';
 import {
@@ -48,7 +47,10 @@ import {
     getEventResearchBatchStatus,
     retryEventResearchItem,
 } from '@/lib/api/events';
-import { OPENROUTER_SCRAPE_MODEL_IDS, OPENROUTER_VISION_MODEL_IDS } from '@/lib/integrations/openrouter/scrape-models';
+import {
+    OPENROUTER_SCRAPE_MODEL_IDS,
+    OPENROUTER_VISION_MODEL_IDS,
+} from '@/lib/integrations/openrouter/scrape-models';
 import type { OpenRouterScrapeModelId, OpenRouterVisionModelId } from '@/lib/integrations/openrouter/scrape-models';
 import { triggerDownload } from '@/lib/utils/download';
 import { useLiveTimer } from '@/hooks/use-live-timer';
@@ -1310,19 +1312,6 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                         disabled={isScraping || isStartingBatch || isStartingResearch}
                     />
 
-                    {(workflow === 'full' || workflow === 'ingest') && (
-                        <Combobox
-                            id="websiteUrl"
-                            label={t('websiteUrlLabel')}
-                            value={websiteUrl}
-                            onChange={setWebsiteUrl}
-                            options={pendingUrlOptions}
-                            placeholder={t('websiteUrlPlaceholder')}
-                            disabled={isScraping}
-                            className="max-w-xl"
-                        />
-                    )}
-
                     {workflow === 'bulk' && (
                         <div className="grid gap-2 w-full max-w-xl">
                             <label htmlFor="batchUrls" className="text-sm font-medium leading-none text-gray-900">
@@ -1361,50 +1350,6 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                         />
                     )}
 
-                    {workflow === 'full' && (
-                        <div className="grid max-w-xl grid-cols-2 gap-4">
-                            <FormSelect
-                                id="importSourceMode"
-                                label={t('importSourceModeLabel')}
-                                value={sourceMode}
-                                onChange={(e) => setSourceMode(e.target.value as ScrapeSourceMode)}
-                                disabled={isScraping}
-                            >
-                                <option value="scrapePage">{t('sourceScrapePage')}</option>
-                                <option value="crawlSite">{t('sourceCrawlSite')}</option>
-                            </FormSelect>
-                            <FormSelect
-                                id="openrouterModel"
-                                label={t('modelLabel')}
-                                value={selectedModelId}
-                                onChange={(e) =>
-                                    setSelectedModelId(e.target.value as OpenRouterScrapeModelId)
-                                }
-                                disabled={isScraping || isStartingBatch || isBatchRunning}
-                            >
-                                {OPENROUTER_SCRAPE_MODEL_IDS.map((id) => (
-                                    <option key={id} value={id}>
-                                        {id}
-                                    </option>
-                                ))}
-                            </FormSelect>
-                        </div>
-                    )}
-
-                    {workflow === 'ingest' && (
-                        <FormSelect
-                            id="importSourceMode"
-                            label={t('importSourceModeLabel')}
-                            value={sourceMode}
-                            onChange={(e) => setSourceMode(e.target.value as ScrapeSourceMode)}
-                            disabled={isScraping}
-                            containerClassName="max-w-xl"
-                        >
-                            <option value="scrapePage">{t('sourceScrapePage')}</option>
-                            <option value="crawlSite">{t('sourceCrawlSite')}</option>
-                        </FormSelect>
-                    )}
-
                     {workflow === 'llmFromFile' && (
                         <>
                             <ImportFileUploadPanel
@@ -1412,57 +1357,25 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                                 isScraping={isScraping}
                                 onClear={handleClearUpload}
                             />
-                            <Combobox
-                                id="websiteUrlForAccept"
-                                label={t('eventUrlForAcceptLabel')}
-                                value={websiteUrl}
-                                onChange={setWebsiteUrl}
-                                options={pendingUrlOptions}
-                                placeholder={t('websiteUrlPlaceholder')}
-                                helperText={t('urlForAcceptHint')}
-                                disabled={isScraping}
-                                className="max-w-xl"
-                            />
                         </>
                     )}
 
-                    {(workflow === 'bulk' || (workflow === 'llmFromFile' && uploadKind !== 'images')) && (
-                        <FormSelect
-                            id="openrouterModel"
-                            label={t('modelLabel')}
-                            value={selectedModelId}
-                            onChange={(e) =>
-                                setSelectedModelId(e.target.value as OpenRouterScrapeModelId)
-                            }
-                            disabled={isScraping || isStartingBatch || isBatchRunning}
-                            containerClassName="max-w-xl"
-                        >
-                            {OPENROUTER_SCRAPE_MODEL_IDS.map((id) => (
-                                <option key={id} value={id}>
-                                    {id}
-                                </option>
-                            ))}
-                        </FormSelect>
-                    )}
-
-                    {workflow === 'llmFromFile' && uploadKind === 'images' && (
-                        <FormSelect
-                            id="openrouterVisionModel"
-                            label={t('modelLabel')}
-                            value={selectedVisionModelId}
-                            onChange={(e) =>
-                                setSelectedVisionModelId(e.target.value as OpenRouterVisionModelId)
-                            }
-                            disabled={isScraping}
-                            containerClassName="max-w-xl"
-                        >
-                            {OPENROUTER_VISION_MODEL_IDS.map((id) => (
-                                <option key={id} value={id}>
-                                    {id}
-                                </option>
-                            ))}
-                        </FormSelect>
-                    )}
+                    <ImportWorkflowFields
+                        workflow={workflow}
+                        websiteUrl={websiteUrl}
+                        pendingUrlOptions={pendingUrlOptions}
+                        sourceMode={sourceMode}
+                        selectedModelId={selectedModelId}
+                        selectedVisionModelId={selectedVisionModelId}
+                        uploadKind={uploadKind}
+                        isScraping={isScraping}
+                        isStartingBatch={isStartingBatch}
+                        isBatchRunning={isBatchRunning}
+                        onWebsiteUrlChange={setWebsiteUrl}
+                        onSourceModeChange={setSourceMode}
+                        onModelChange={setSelectedModelId}
+                        onVisionModelChange={setSelectedVisionModelId}
+                    />
                     <ImportWorkflowControls
                         workflow={workflow}
                         canRun={canRunWorkflow}

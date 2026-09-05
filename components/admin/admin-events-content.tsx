@@ -2,18 +2,14 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import {
-  ChevronLeft,
-  ChevronRight,
-} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { ListEmptyState } from '@/components/ui/list-empty-state';
 import { SectionHeader } from '@/components/ui/section-header';
 import { AdminEventsTable } from '@/components/admin/admin-events-table';
+import { AdminEventsPagination } from '@/components/admin/admin-events-pagination';
 import { EventImportPreview } from '@/components/admin/event-import-preview';
 import { EventImportPreviewModal } from '@/components/admin/event-import-preview-modal';
 import { EventRacesEditModal } from '@/components/admin/event-races-edit-modal';
@@ -29,7 +25,6 @@ import {
   rejectEventDraft,
   updateEventDraft,
 } from '@/lib/api/event-drafts';
-import { buildAdminEventsHref } from '@/lib/events/admin-pagination';
 import type { AdminTrailEventDetail, TrailEventDetail } from '@/types/event.types';
 import type { EventDraft } from '@/types/event-draft.types';
 import type { AdminEventPage, AdminEventPageRequest } from '@/types/admin-events.types';
@@ -41,31 +36,6 @@ import type {
 interface AdminEventsContentProps {
   page: AdminEventPage;
   query: AdminEventPageRequest;
-}
-
-type PaginationItem = number | 'start-ellipsis' | 'end-ellipsis';
-
-function getPaginationItems(page: number, totalPages: number): PaginationItem[] {
-  const visiblePages = new Set([1, totalPages]);
-
-  for (let candidate = page - 2; candidate <= page + 2; candidate += 1) {
-    if (candidate >= 1 && candidate <= totalPages) {
-      visiblePages.add(candidate);
-    }
-  }
-
-  const pages = [...visiblePages].sort((a, b) => a - b);
-  const items: PaginationItem[] = [];
-
-  for (const [index, visiblePage] of pages.entries()) {
-    const previousPage = pages[index - 1];
-    if (previousPage !== undefined && visiblePage - previousPage > 1) {
-      items.push(index === 1 ? 'start-ellipsis' : 'end-ellipsis');
-    }
-    items.push(visiblePage);
-  }
-
-  return items;
 }
 
 function getPendingDraftsByEventId(
@@ -100,8 +70,6 @@ export function AdminEventsContent({ page, query }: AdminEventsContentProps) {
   const subtitle = total === 1
     ? t('eventCountOne')
     : t('eventCount', { count: total });
-
-  const paginationItems = getPaginationItems(page.page, totalPages);
 
   const reviewEventDetail = reviewEventId
     ? events.find((eventDetail) => eventDetail.event.id === reviewEventId) ?? null
@@ -372,70 +340,12 @@ export function AdminEventsContent({ page, query }: AdminEventsContentProps) {
       )}
 
       {totalPages > 1 ? (
-        <nav className="flex flex-wrap items-center justify-center gap-1">
-          {page.page > 1 ? (
-            <Link
-              href={buildAdminEventsHref(locale, {
-                ...query,
-                page: page.page - 1,
-              })}
-              title={t('pagination.previous')}
-              className="inline-flex size-9 items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-700 transition-colors hover:bg-gray-50"
-            >
-              <ChevronLeft className="size-4" />
-            </Link>
-          ) : (
-            <span className="inline-flex size-9 items-center justify-center rounded-lg border border-gray-200 bg-gray-50 text-gray-300">
-              <ChevronLeft className="size-4" />
-            </span>
-          )}
-
-          {paginationItems.map((item) =>
-            typeof item === 'number' ? (
-              item === page.page ? (
-                <span
-                  key={item}
-                  className="inline-flex size-9 items-center justify-center rounded-lg bg-black text-sm font-medium text-white"
-                >
-                  {item}
-                </span>
-              ) : (
-                <Link
-                  key={item}
-                  href={buildAdminEventsHref(locale, { ...query, page: item })}
-                  title={t('pagination.page', { page: item })}
-                  className="inline-flex size-9 items-center justify-center rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
-                >
-                  {item}
-                </Link>
-              )
-            ) : (
-              <span
-                key={item}
-                className="inline-flex size-9 items-center justify-center text-sm text-gray-400"
-              >
-                …
-              </span>
-            ),
-          )}
-
-          {page.page < totalPages ? (
-            <Link
-              href={buildAdminEventsHref(locale, {
-                ...query,
-                page: page.page + 1,
-              })}
-              title={t('pagination.next')}
-              className="inline-flex size-9 items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-700 transition-colors hover:bg-gray-50"
-            >
-              <ChevronRight className="size-4" />
-            </Link>
-          ) : (
-            <span className="inline-flex size-9 items-center justify-center rounded-lg border border-gray-200 bg-gray-50 text-gray-300">
-              <ChevronRight className="size-4" />
-            </span>
-          )}
-        </nav>
+        <AdminEventsPagination
+          page={page.page}
+          totalPages={totalPages}
+          query={query}
+          locale={locale}
+        />
       ) : null}
 
       <EventRacesEditModal
