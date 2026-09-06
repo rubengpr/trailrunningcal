@@ -8,6 +8,10 @@ import { loadPrompt, traced, wrapOpenAI } from 'braintrust';
 
 import { TRAIL_EVENT_AGENT_JSON_SCHEMA } from '@/lib/agents/trail-event-agent-schema';
 import {
+  observeLangfuseOpenAI,
+  traceAiWorkflow,
+} from '@/lib/integrations/langfuse/tracing';
+import {
   EVENT_RESEARCH_MAX_RETRIES,
   EVENT_RESEARCH_MODEL,
   EVENT_RESEARCH_PROJECT,
@@ -154,8 +158,24 @@ export async function researchEvent(
 ): Promise<EventResearchRunResult> {
   const model = input.model ?? EVENT_RESEARCH_MODEL;
 
-  return traced(
-    async (span) => {
+  return traceAiWorkflow(
+    {
+      name: 'research-trail-event',
+      input: { eventName: input.eventName },
+      metadata: {
+        model,
+        promptSlug: EVENT_RESEARCH_PROMPT_SLUG,
+        promptVersion: String(EVENT_RESEARCH_PROMPT_VERSION),
+      },
+      output: (result) => ({
+        failure: result.failure,
+        raceCount: result.result?.races.length ?? 0,
+        status: result.failure ? 'failed' : 'completed',
+      }),
+      tags: ['feature:event-research', 'provider:openai'],
+    },
+    () => traced(
+      async (span) => {
       const failure = (kind: EventResearchFailure): EventResearchRunResult => {
         span.log({
           output: { failure: kind },
@@ -185,12 +205,18 @@ export async function researchEvent(
         return failure(sanitizeResearchFailure(error));
       }
 
-      const client = wrapOpenAI(
-        new OpenAI({
-          apiKey: process.env.OPENAI_API_KEY,
-          maxRetries: EVENT_RESEARCH_MAX_RETRIES,
-          timeout: EVENT_RESEARCH_TIMEOUT_MS,
-        }),
+      const client = observeLangfuseOpenAI(
+        wrapOpenAI(
+          new OpenAI({
+            apiKey: process.env.OPENAI_API_KEY,
+            maxRetries: EVENT_RESEARCH_MAX_RETRIES,
+            timeout: EVENT_RESEARCH_TIMEOUT_MS,
+          }),
+        ),
+        {
+          generationMetadata: { provider: 'openai' },
+          tags: ['provider:openai'],
+        },
       );
       const params: TracedResponseParams = {
         model,
@@ -264,21 +290,22 @@ export async function researchEvent(
         },
         braintrustRootSpanId: span.rootSpanId,
       };
-    },
-    {
-      name: 'Event research',
-      type: 'task',
-      event: {
-        input: { eventName: input.eventName },
-        metadata: {
-          environment: process.env.VERCEL_ENV ?? process.env.NODE_ENV ?? 'development',
-          model,
-          promptSlug: EVENT_RESEARCH_PROMPT_SLUG,
-          promptVersion: EVENT_RESEARCH_PROMPT_VERSION,
-          nativeWebSearch: true,
-          ...input.traceMetadata,
+      },
+      {
+        name: 'Event research',
+        type: 'task',
+        event: {
+          input: { eventName: input.eventName },
+          metadata: {
+            environment: process.env.VERCEL_ENV ?? process.env.NODE_ENV ?? 'development',
+            model,
+            promptSlug: EVENT_RESEARCH_PROMPT_SLUG,
+            promptVersion: EVENT_RESEARCH_PROMPT_VERSION,
+            nativeWebSearch: true,
+            ...input.traceMetadata,
+          },
         },
       },
-    },
+    ),
   );
 }

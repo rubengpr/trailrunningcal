@@ -1,5 +1,6 @@
 import { createOpenRouterClient } from '@/lib/integrations/openrouter/client';
 import { runEventDescriptionAgent } from '@/lib/integrations/openrouter/event-description';
+import { traceAiWorkflow } from '@/lib/integrations/langfuse/tracing';
 import type { OpenRouterScrapeModelId } from '@/lib/integrations/openrouter/scrape-models';
 import { crawlSite } from '@/lib/services/crawl';
 import { getEventByIdForAdmin } from '@/lib/db/events';
@@ -67,10 +68,22 @@ export async function generateEventDescriptionDraft(
 
   const scrape = await crawlSite(websiteUrl);
   const client = createOpenRouterClient();
-  const agentResult = await runEventDescriptionAgent(
-    client,
-    buildAgentInput(eventDetail, scrape.markdown),
-    model,
+  const agentResult = await traceAiWorkflow(
+    {
+      name: 'generate-event-description',
+      input: { eventName: eventDetail.event.name, websiteUrl },
+      metadata: { model },
+      output: (result) => ({
+        descriptionLength: result.description?.length ?? 0,
+        status: result.errorMessage ? 'partial' : 'completed',
+      }),
+      tags: ['feature:event-description', 'provider:openrouter'],
+    },
+    () => runEventDescriptionAgent(
+      client,
+      buildAgentInput(eventDetail, scrape.markdown),
+      model,
+    ),
   );
 
   const descriptionResult = sanitizeEventDescription(agentResult.description);

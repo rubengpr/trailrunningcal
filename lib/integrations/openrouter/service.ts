@@ -1,4 +1,5 @@
 import { MarkdownTooLongError, MarkdownTooShortError } from '@/lib/errors';
+import { traceAiWorkflow } from '@/lib/integrations/langfuse/tracing';
 import { createOpenRouterClient } from '@/lib/integrations/openrouter/client';
 import {
   runMarkdownAgent,
@@ -31,21 +32,51 @@ export async function extractFromMarkdown(
   model: OpenRouterScrapeModelId,
 ): Promise<OpenRouterServiceResult> {
   validateMarkdownLength(markdown);
-  const client = createOpenRouterClient();
-  const result = await runMarkdownAgent(client, markdown, model);
-  const tierChecked = await recoverMissingRaceTiers(client, markdown, result);
-  const languageChecked = await checkDescriptionLang(client, tierChecked);
-  const formatChecked = await checkDescriptionFormat(client, languageChecked);
-  return filterFutureRaces(formatChecked);
+  return traceAiWorkflow(
+    {
+      name: 'extract-races-from-markdown',
+      input: { markdownLength: markdown.length },
+      metadata: { inputType: 'markdown', model },
+      output: (result) => ({
+        eventFound: result.event !== null,
+        raceCount: result.races.length,
+        status: result.errorMessage ? 'partial' : 'completed',
+      }),
+      tags: ['feature:race-import', 'provider:openrouter'],
+    },
+    async () => {
+      const client = createOpenRouterClient();
+      const result = await runMarkdownAgent(client, markdown, model);
+      const tierChecked = await recoverMissingRaceTiers(client, markdown, result);
+      const languageChecked = await checkDescriptionLang(client, tierChecked);
+      const formatChecked = await checkDescriptionFormat(client, languageChecked);
+      return filterFutureRaces(formatChecked);
+    },
+  );
 }
 
 export async function extractFromImages(
   images: string[],
   model: OpenRouterVisionModelId,
 ): Promise<OpenRouterServiceResult> {
-  const client = createOpenRouterClient();
-  const result = await runImagesAgent(client, images, model);
-  const languageChecked = await checkDescriptionLang(client, result);
-  const formatChecked = await checkDescriptionFormat(client, languageChecked);
-  return filterFutureRaces(formatChecked);
+  return traceAiWorkflow(
+    {
+      name: 'extract-races-from-images',
+      input: { imageCount: images.length },
+      metadata: { inputType: 'images', model },
+      output: (result) => ({
+        eventFound: result.event !== null,
+        raceCount: result.races.length,
+        status: result.errorMessage ? 'partial' : 'completed',
+      }),
+      tags: ['feature:race-import', 'provider:openrouter'],
+    },
+    async () => {
+      const client = createOpenRouterClient();
+      const result = await runImagesAgent(client, images, model);
+      const languageChecked = await checkDescriptionLang(client, result);
+      const formatChecked = await checkDescriptionFormat(client, languageChecked);
+      return filterFutureRaces(formatChecked);
+    },
+  );
 }

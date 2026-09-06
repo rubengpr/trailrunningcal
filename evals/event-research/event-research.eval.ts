@@ -2,6 +2,7 @@ import { execFileSync } from 'node:child_process';
 
 import { Eval, initDataset } from 'braintrust';
 import type { EvalCase } from 'braintrust';
+import { startTelemetry } from '@/instrumentation';
 
 import {
   DATASET_LABEL,
@@ -102,56 +103,69 @@ async function* selectedDatasetRow() {
   throw new Error(`Dataset row not found for event: ${selectedEventName}`);
 }
 
-Eval<
-  EventResearchInput,
-  EventResearchResult,
-  unknown,
-  EventResearchMetadata
->(PROJECT_NAME, {
-  data: runMode.startsWith('row-smoke') ? selectedDatasetRow() : evalData,
-  task: async (input) => (await provider).research(input),
-  scores: scorers,
-  experimentName: `event-research-${selectedProvider}-${runMode}-${timestamp}`,
-  description: `${selectedProvider === 'mistral' ? 'Mistral Small 4 direct' : selectedProvider === 'grok' ? 'Grok 4.20 via OpenRouter' : selectedProvider === 'openrouter' ? 'Gemini 3.6 Flash via OpenRouter' : selectedProvider === 'terra' ? 'GPT-5.6 Terra direct' : 'GPT-5.4 Mini direct'} native web-search ${runMode} for ${DATASET_NAME}.`,
-  trialCount,
-  maxConcurrency:
-    selectedProvider === 'mistral' ? MISTRAL_MAX_CONCURRENCY : MAX_CONCURRENCY,
-  metadata: {
-    provider: selectedProvider === 'mistral' ? 'mistral' : selectedProvider === 'openai' || selectedProvider === 'terra' ? 'openai' : 'openrouter',
-    providerConnection:
-      selectedProvider === 'mistral' || selectedProvider === 'openai' || selectedProvider === 'terra'
-        ? 'direct'
-        : 'openrouter',
-    model:
-      selectedProvider === 'mistral'
-        ? MISTRAL_MODEL
-        : selectedProvider === 'grok'
-        ? GROK_MODEL
-        : selectedProvider === 'openrouter'
-          ? OPENROUTER_MODEL
-          : selectedProvider === 'terra'
-            ? TERRA_MODEL
-          : MODEL,
-    searchEngine:
-      selectedProvider === 'mistral'
-        ? 'mistral-native'
-        : selectedProvider === 'openai'
-          || selectedProvider === 'terra'
-          ? 'openai-native'
-          : OPENROUTER_SEARCH_ENGINE,
-    promptSlug: 'event-research-v0',
-    promptVersion: PROMPT_VERSION,
-    dataset: DATASET_NAME,
-    datasetLabel: DATASET_LABEL,
-    datasetVersion: DATASET_VERSION,
-    reasoningEffort: selectedProvider === 'mistral' ? null : REASONING_EFFORT,
-    searchContextSize:
-      selectedProvider === 'openai' ? SEARCH_CONTEXT_SIZE : null,
-    trialCount,
-    runMode,
-    selectedEventName: selectedEventName || null,
-    inputEventName: inputEventName || null,
-    gitRevision: gitRevision(),
-  },
-  tags: ['event-research', 'native-web-search', runMode],
+async function run(): Promise<void> {
+  const telemetry = await startTelemetry();
+
+  try {
+    await Eval<
+      EventResearchInput,
+      EventResearchResult,
+      unknown,
+      EventResearchMetadata
+    >(PROJECT_NAME, {
+      data: runMode.startsWith('row-smoke') ? selectedDatasetRow() : evalData,
+      task: async (input) => (await provider).research(input),
+      scores: scorers,
+      experimentName: `event-research-${selectedProvider}-${runMode}-${timestamp}`,
+      description: `${selectedProvider === 'mistral' ? 'Mistral Small 4 direct' : selectedProvider === 'grok' ? 'Grok 4.20 via OpenRouter' : selectedProvider === 'openrouter' ? 'Gemini 3.6 Flash via OpenRouter' : selectedProvider === 'terra' ? 'GPT-5.6 Terra direct' : 'GPT-5.4 Mini direct'} native web-search ${runMode} for ${DATASET_NAME}.`,
+      trialCount,
+      maxConcurrency:
+        selectedProvider === 'mistral' ? MISTRAL_MAX_CONCURRENCY : MAX_CONCURRENCY,
+      metadata: {
+        provider: selectedProvider === 'mistral' ? 'mistral' : selectedProvider === 'openai' || selectedProvider === 'terra' ? 'openai' : 'openrouter',
+        providerConnection:
+          selectedProvider === 'mistral' || selectedProvider === 'openai' || selectedProvider === 'terra'
+            ? 'direct'
+            : 'openrouter',
+        model:
+          selectedProvider === 'mistral'
+            ? MISTRAL_MODEL
+            : selectedProvider === 'grok'
+            ? GROK_MODEL
+            : selectedProvider === 'openrouter'
+              ? OPENROUTER_MODEL
+              : selectedProvider === 'terra'
+                ? TERRA_MODEL
+              : MODEL,
+        searchEngine:
+          selectedProvider === 'mistral'
+            ? 'mistral-native'
+            : selectedProvider === 'openai'
+              || selectedProvider === 'terra'
+              ? 'openai-native'
+              : OPENROUTER_SEARCH_ENGINE,
+        promptSlug: 'event-research-v0',
+        promptVersion: PROMPT_VERSION,
+        dataset: DATASET_NAME,
+        datasetLabel: DATASET_LABEL,
+        datasetVersion: DATASET_VERSION,
+        reasoningEffort: selectedProvider === 'mistral' ? null : REASONING_EFFORT,
+        searchContextSize:
+          selectedProvider === 'openai' ? SEARCH_CONTEXT_SIZE : null,
+        trialCount,
+        runMode,
+        selectedEventName: selectedEventName || null,
+        inputEventName: inputEventName || null,
+        gitRevision: gitRevision(),
+      },
+      tags: ['event-research', 'native-web-search', runMode],
+    });
+  } finally {
+    await telemetry?.flush();
+  }
+}
+
+void run().catch((error) => {
+  console.error(error instanceof Error ? error.message : 'Unknown error');
+  process.exitCode = 1;
 });

@@ -1,4 +1,5 @@
 import { franc } from 'franc';
+import { traceAiWorkflow } from '@/lib/integrations/langfuse/tracing';
 import { createOpenAIClient } from '@/lib/integrations/openai/client';
 import {
   buildEventDescriptionTranslationPrompt,
@@ -126,29 +127,40 @@ export async function translateEventDescription(input: {
   locale: EventTranslationLocale;
   additionalInstructions?: string[];
 }): Promise<string> {
-  const client = createOpenAIClient();
-  const completion = await client.chat.completions.create({
-    model: MODEL,
-    temperature: 0,
-    messages: [{
-      role: 'user',
-      content: buildEventDescriptionTranslationPrompt({
-        description: input.source,
+  return traceAiWorkflow(
+    {
+      name: 'translate-event-description',
+      input: { locale: input.locale, source: input.source },
+      metadata: { locale: input.locale, model: MODEL },
+      output: (translation) => translation,
+      tags: ['feature:event-description-translation', 'provider:openai'],
+    },
+    async () => {
+      const client = createOpenAIClient();
+      const completion = await client.chat.completions.create({
+        model: MODEL,
+        temperature: 0,
+        messages: [{
+          role: 'user',
+          content: buildEventDescriptionTranslationPrompt({
+            description: input.source,
+            locale: input.locale,
+            additionalInstructions: input.additionalInstructions,
+          }),
+        }],
+      });
+      const translation = completion.choices[0]?.message?.content ?? '';
+      const validation = validateEventTranslation({
+        source: input.source,
+        translation,
         locale: input.locale,
-        additionalInstructions: input.additionalInstructions,
-      }),
-    }],
-  });
-  const translation = completion.choices[0]?.message?.content ?? '';
-  const validation = validateEventTranslation({
-    source: input.source,
-    translation,
-    locale: input.locale,
-  });
+      });
 
-  if (validation.value) return validation.value;
-  throw new EventTranslationValidationError(
-    validation.error ?? 'Invalid event translation',
-    translation,
+      if (validation.value) return validation.value;
+      throw new EventTranslationValidationError(
+        validation.error ?? 'Invalid event translation',
+        translation,
+      );
+    },
   );
 }

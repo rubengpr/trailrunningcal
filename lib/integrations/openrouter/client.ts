@@ -1,4 +1,5 @@
 import OpenAI from 'openai';
+import { observeLangfuseOpenAI } from '@/lib/integrations/langfuse/tracing';
 import { requireApiKey } from '@/lib/integrations/utils';
 
 const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1';
@@ -42,10 +43,16 @@ export function createOpenRouterClient(
   apiKey: string = requireApiKey('OPENROUTER_API_KEY'),
 ): OpenAI {
   const defaultHeaders = optionalOpenRouterHeaders();
-  return new OpenAI({
-    apiKey,
-    baseURL: OPENROUTER_BASE_URL,
-    timeout: 15_000,
-    ...(defaultHeaders ? { defaultHeaders } : {}),
-  });
+  return observeLangfuseOpenAI(
+    new OpenAI({
+      apiKey,
+      baseURL: OPENROUTER_BASE_URL,
+      timeout: 15_000,
+      ...(defaultHeaders ? { defaultHeaders } : {}),
+    }),
+    {
+      generationMetadata: { provider: 'openrouter' },
+      tags: ['provider:openrouter'],
+    },
+  );
 }

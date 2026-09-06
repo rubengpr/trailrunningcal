@@ -1,4 +1,5 @@
 import { readFile, writeFile } from 'node:fs/promises';
+import { startTelemetry } from '@/instrumentation';
 import {
   getEventTranslationCandidates,
   getEventTranslationCandidatesByIds,
@@ -262,7 +263,15 @@ async function main(): Promise<void> {
   return generateBatch(options);
 }
 
-main().catch((error) => {
-  console.error(error instanceof Error ? error.message : 'Unknown error');
-  process.exitCode = 1;
-});
+void (async () => {
+  const telemetry = await startTelemetry();
+
+  try {
+    await main();
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : 'Unknown error');
+    process.exitCode = 1;
+  } finally {
+    await telemetry?.flush();
+  }
+})();
