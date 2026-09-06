@@ -29,6 +29,10 @@ import type { EventTranslationLocale } from '@/types/event-translation.types';
 
 export const revalidate = 86400;
 
+export function generateStaticParams() {
+  return [];
+}
+
 const DEFAULT_OG_IMAGE = `${BASE_URL}/og-image.png`;
 
 export async function generateMetadata({
