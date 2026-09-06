@@ -55,6 +55,22 @@ afterEach(() => {
 });
 
 describe('DeferredEventTrackMap', () => {
+  it('loads immediately when routes were fetched after visibility', async () => {
+    render(
+      <DeferredEventTrackMap
+        activePoint={null}
+        eventId="event-1"
+        eventSlug="pedraforca-xtrail"
+        routes={routes}
+        errorTitle="Error"
+        errorMessage="Try another map"
+        loadImmediately
+      />,
+    );
+
+    expect(await screen.findByTestId('loaded-track-map')).toBeDefined();
+  });
+
   it('loads only after a quarter of the placeholder is visible', async () => {
     const { container } = render(
       <DeferredEventTrackMap

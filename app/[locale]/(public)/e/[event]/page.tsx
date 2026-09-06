@@ -274,9 +274,9 @@ export default async function EventPage({
 
           <EventTrackMapSection
             eventId={eventData.event.id}
-            eventName={eventData.event.name}
             eventSlug={event}
             races={eventData.races}
+            trackedRaceIds={eventData.trackedRaceIds}
           />
 
           <div className="mt-10 sm:mt-12">

@@ -100,6 +100,7 @@ describe('findRaceTrackTargetById', () => {
 
     await expect(findRaceTrackTargetById('race-1')).resolves.toEqual({
       id: 'race-1',
+      eventId: 'event-1',
       eventSlug: 'pedraforca-xtrail',
     });
     expect(mocks.from).toHaveBeenNthCalledWith(1, 'races');

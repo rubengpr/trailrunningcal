@@ -7,7 +7,7 @@ import type { EventTrackMapProps } from '@/components/event-track-map/event-trac
 import { useDeferredVisibility } from '@/hooks/use-deferred-visibility';
 
 const MAP_VISIBILITY_THRESHOLD = 0.25;
-const MAP_CLASS_NAME = 'h-[336px] w-full bg-stone-100 sm:h-[480px]';
+export const EVENT_TRACK_MAP_CLASS_NAME = 'h-[336px] w-full bg-stone-100 sm:h-[480px]';
 
 let modulePromise: Promise<{
   default: typeof import('@/components/event-track-map/event-track-map').EventTrackMap;
@@ -20,7 +20,7 @@ function loadMap() {
   return modulePromise;
 }
 
-function preloadMap(): void {
+export function preloadEventTrackMap(): void {
   const promise = loadMap();
   void promise.catch(() => {
     if (modulePromise === promise) modulePromise = null;
@@ -29,27 +29,31 @@ function preloadMap(): void {
 
 const LazyEventTrackMap = lazy(loadMap);
 
-function Placeholder({ testId }: { testId?: string }) {
+export function EventTrackMapPlaceholder({ testId }: { testId?: string }) {
   return (
     <div
-      className={MAP_CLASS_NAME}
+      className={EVENT_TRACK_MAP_CLASS_NAME}
       data-event-track-map-placeholder
       data-testid={testId}
     />
   );
 }
 
-export function DeferredEventTrackMap(props: EventTrackMapProps) {
+export function DeferredEventTrackMap(
+  { loadImmediately = false, ...props }: EventTrackMapProps & { loadImmediately?: boolean },
+) {
   const { isVisible, targetRef } = useDeferredVisibility<HTMLDivElement>({
-    preload: preloadMap,
+    preload: preloadEventTrackMap,
     threshold: MAP_VISIBILITY_THRESHOLD,
   });
 
-  if (!isVisible) {
+  const shouldLoad = loadImmediately || isVisible;
+
+  if (!shouldLoad) {
     return (
       <div
         ref={targetRef}
-        className={MAP_CLASS_NAME}
+        className={EVENT_TRACK_MAP_CLASS_NAME}
         data-event-track-map-placeholder
       />
     );
@@ -60,13 +64,13 @@ export function DeferredEventTrackMap(props: EventTrackMapProps) {
       title={props.errorTitle}
       message={props.errorMessage}
       showRetry={false}
-      className={MAP_CLASS_NAME}
+      className={EVENT_TRACK_MAP_CLASS_NAME}
     />
   );
 
   return (
     <ErrorBoundary fallback={fallback}>
-      <Suspense fallback={<Placeholder />}>
+      <Suspense fallback={<EventTrackMapPlaceholder />}>
         <LazyEventTrackMap {...props} />
       </Suspense>
     </ErrorBoundary>

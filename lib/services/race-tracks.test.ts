@@ -5,12 +5,16 @@ const mocks = vi.hoisted(() => ({
   findRaceTrackTargetById: vi.fn(),
   findRaceTrackTargets: vi.fn(),
   updateRaceTrackGeometry: vi.fn(),
+  revalidateEventTrackRoutes: vi.fn(),
 }));
 
 vi.mock('@/lib/db/race-tracks', () => ({
   findRaceTrackTargetById: mocks.findRaceTrackTargetById,
   findRaceTrackTargets: mocks.findRaceTrackTargets,
   updateRaceTrackGeometry: mocks.updateRaceTrackGeometry,
+}));
+vi.mock('@/lib/cache/revalidation', () => ({
+  revalidateEventTrackRoutes: mocks.revalidateEventTrackRoutes,
 }));
 
 import { importRaceTrack, saveRaceTrack } from '@/lib/services/race-tracks';
@@ -31,6 +35,7 @@ beforeEach(() => {
   ]);
   mocks.findRaceTrackTargetById.mockResolvedValue({
     id: 'race-1',
+    eventId: 'event-1',
     eventSlug: 'pedraforca-xtrail',
   });
 });

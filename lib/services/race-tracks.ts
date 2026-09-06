@@ -3,6 +3,7 @@ import {
   findRaceTrackTargets,
   updateRaceTrackGeometry,
 } from '@/lib/db/race-tracks';
+import { revalidateEventTrackRoutes } from '@/lib/cache/revalidation';
 import { ValidationError } from '@/lib/errors';
 import { parseTrackFile, type ParsedTrack } from '@/lib/race-tracks/parse';
 import { requireLocalTrackImportProject } from '@/lib/race-tracks/project';
@@ -38,12 +39,13 @@ export async function importRaceTrack(
   }
 
   const parsed = parseTrackFile(input.bytes);
-  const { raceId, eventSlug } = input.raceId
+  const { raceId, eventId, eventSlug } = input.raceId
     ? await resolveRaceTrackTargetById(input.raceId)
     : await resolveRaceTrackTargetByName(input.eventSlug, input.raceName);
 
   if (input.mode === 'apply') {
     await updateRaceTrackGeometry(raceId, parsed.geometry);
+    revalidateEventTrackRoutes(eventId);
   }
 
   return {
@@ -56,20 +58,24 @@ export async function importRaceTrack(
 
 async function resolveRaceTrackTargetById(
   raceId: string,
-): Promise<{ raceId: string; eventSlug: string }> {
+): Promise<{ raceId: string; eventId: string; eventSlug: string }> {
   const target = await findRaceTrackTargetById(raceId);
 
   if (!target) {
     throw new ValidationError('Race not found', 404);
   }
 
-  return { raceId: target.id, eventSlug: target.eventSlug };
+  return {
+    raceId: target.id,
+    eventId: target.eventId,
+    eventSlug: target.eventSlug,
+  };
 }
 
 async function resolveRaceTrackTargetByName(
   eventSlug: string | undefined,
   raceName: string | undefined,
-): Promise<{ raceId: string; eventSlug: string }> {
+): Promise<{ raceId: string; eventId: string; eventSlug: string }> {
   if (!eventSlug || !raceName) {
     throw new ValidationError('Invalid input', 400);
   }
@@ -84,7 +90,16 @@ async function resolveRaceTrackTargetByName(
     throw new ValidationError('Multiple races match', 409);
   }
 
-  return { raceId: matches[0]!.id, eventSlug };
+  const target = await findRaceTrackTargetById(matches[0]!.id);
+  if (!target) {
+    throw new ValidationError('Race not found', 404);
+  }
+
+  return {
+    raceId: target.id,
+    eventId: target.eventId,
+    eventSlug: target.eventSlug,
+  };
 }
 
 export async function saveRaceTrack(
@@ -98,6 +113,7 @@ export async function saveRaceTrack(
   }
 
   await updateRaceTrackGeometry(race.id, parsed.geometry);
+  revalidateEventTrackRoutes(race.eventId);
 
   return {
     raceId: race.id,

@@ -1,4 +1,7 @@
-import { createAdminClient } from '@/lib/supabase/server';
+import {
+  createAdminClient,
+  createStaticClient,
+} from '@/lib/supabase/server';
 import type { TrackGeometry } from '@/types/race-track.types';
 
 export interface RaceTrackTarget {
@@ -8,6 +11,7 @@ export interface RaceTrackTarget {
 
 export interface RaceTrackTargetById {
   id: string;
+  eventId: string;
   eventSlug: string;
 }
 
@@ -23,6 +27,24 @@ export async function getTrackedRaceIdsForEvent(
 
   if (error) {
     console.error('Failed to load event track statuses:', error);
+    throw new Error('Failed to load event track statuses');
+  }
+
+  return (data ?? []).map((race) => race.id);
+}
+
+export async function getPublicTrackedRaceIdsForEvent(
+  eventId: string,
+): Promise<string[]> {
+  const supabase = createStaticClient();
+  const { data, error } = await supabase
+    .from('races')
+    .select('id')
+    .eq('event_id', eventId)
+    .not('track_geometry', 'is', null);
+
+  if (error) {
+    console.error('Failed to load public event track statuses:', error);
     throw new Error('Failed to load event track statuses');
   }
 
@@ -84,7 +106,7 @@ export async function findRaceTrackTargetById(
     throw new Error('Failed to resolve event');
   }
 
-  return { id: race.id, eventSlug: event.slug };
+  return { id: race.id, eventId: race.event_id, eventSlug: event.slug };
 }
 
 export async function findRaceTrackTargets(

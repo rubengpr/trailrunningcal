@@ -1,4 +1,4 @@
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { locales } from '@/i18n';
 import { getTypePath, RACE_CATEGORY_SLUGS } from '@/lib/races/race-types';
 import {
@@ -75,6 +75,10 @@ export function revalidateEventPages(eventSlug: string) {
   for (const locale of locales) {
     revalidatePath(`/${locale}/e/${eventSlug}`);
   }
+}
+
+export function revalidateEventTrackRoutes(eventId: string) {
+  revalidateTag(`event-track-routes:${eventId}`, 'max');
 }
 
 export function revalidateEventRelatedPages(detail: TrailEventDetail): void {

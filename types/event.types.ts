@@ -97,9 +97,8 @@ export interface TrailEventDetail {
   location: TrailEventLocation;
 }
 
-export interface TrailEventDetailWithTracks
-  extends Omit<TrailEventDetail, 'races'> {
-  races: TrailEventRaceWithTrack[];
+export interface PublicTrailEventDetail extends TrailEventDetail {
+  trackedRaceIds: string[];
 }
 
 export interface PublicEventDetail {
