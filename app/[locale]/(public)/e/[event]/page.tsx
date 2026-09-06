@@ -27,7 +27,7 @@ import { LOCALE_BY_LANGUAGE, SITE_NAME } from '@/lib/seo/meta-config';
 import { getDestinationPath, getProvinceByDbName } from '@/lib/geography/destinations';
 import type { EventTranslationLocale } from '@/types/event-translation.types';
 
-export const revalidate = false;
+export const revalidate = 86400;
 
 const DEFAULT_OG_IMAGE = `${BASE_URL}/og-image.png`;
 
