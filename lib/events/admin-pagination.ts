@@ -3,6 +3,7 @@ import type {
   AdminEventSortColumn,
   AdminEventSortDirection,
 } from '@/types/admin-events.types';
+import { isValidProvince } from '@/lib/geography/provinces';
 
 export const ADMIN_EVENTS_PAGE_SIZE = 50;
 export const ADMIN_EVENTS_SEARCH_MAX_LENGTH = 200;
@@ -30,6 +31,10 @@ function parseSortDirection(
   return value === 'desc' ? 'desc' : 'asc';
 }
 
+function parseProvince(value: string | undefined): string | undefined {
+  return isValidProvince(value) ? value : undefined;
+}
+
 export function parseAdminEventPageRequest(
   searchParams: SearchParams,
 ): AdminEventPageRequest {
@@ -38,6 +43,7 @@ export function parseAdminEventPageRequest(
     search: (firstValue(searchParams.q) ?? '')
       .trim()
       .slice(0, ADMIN_EVENTS_SEARCH_MAX_LENGTH),
+    province: parseProvince(firstValue(searchParams.province)),
     sortColumn: parseSortColumn(firstValue(searchParams.sort)),
     sortDirection: parseSortDirection(firstValue(searchParams.direction)),
   };
@@ -54,6 +60,9 @@ export function buildAdminEventsHref(
   }
   if (input.search) {
     searchParams.set('q', input.search);
+  }
+  if (input.province) {
+    searchParams.set('province', input.province);
   }
   if (input.sortColumn !== 'dates') {
     searchParams.set('sort', input.sortColumn);

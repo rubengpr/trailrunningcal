@@ -13,7 +13,7 @@ import { AdminEventsPagination } from '@/components/admin/admin-events-paginatio
 import { EventImportPreview } from '@/components/admin/event-import-preview';
 import { EventImportPreviewModal } from '@/components/admin/event-import-preview-modal';
 import { EventRacesEditModal } from '@/components/admin/event-races-edit-modal';
-import { AdminListSearch } from '@/components/admin/admin-list-search';
+import { AdminEventsFilters } from '@/components/admin/admin-events-filters';
 import {
   deleteEvent,
   updateEvent,
@@ -311,11 +311,11 @@ export function AdminEventsContent({ page, query }: AdminEventsContentProps) {
         }
       />
 
-      <AdminListSearch
+      <AdminEventsFilters
         action={`/${locale}/admin/eventos/activos`}
         inputId="admin-event-search"
         initialQuery={query.search}
-        label={t('search.placeholder')}
+        initialProvince={query.province}
         hiddenFields={{
           sort: query.sortColumn !== 'dates' ? query.sortColumn : undefined,
           direction: query.sortDirection !== 'asc' ? query.sortDirection : undefined,
@@ -323,7 +323,11 @@ export function AdminEventsContent({ page, query }: AdminEventsContentProps) {
       />
 
       {events.length === 0 ? (
-        <ListEmptyState message={query.search ? t('search.empty') : t('empty')} />
+        <ListEmptyState message={query.search
+          ? t('search.empty')
+          : query.province
+            ? t('filters.emptyProvince', { province: query.province })
+            : t('empty')} />
       ) : (
         <AdminEventsTable
           events={events}

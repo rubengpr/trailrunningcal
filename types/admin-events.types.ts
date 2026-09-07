@@ -6,6 +6,7 @@ export type AdminEventSortDirection = 'asc' | 'desc';
 export interface AdminEventPageRequest {
   page: number;
   search: string;
+  province?: string;
   sortColumn: AdminEventSortColumn;
   sortDirection: AdminEventSortDirection;
 }

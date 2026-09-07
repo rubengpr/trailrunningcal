@@ -1269,6 +1269,11 @@
       "placeholder": "Nom o URL de l’esdeveniment",
       "empty": "No hi ha esdeveniments que coincideixin amb la cerca."
     },
+    "filters": {
+      "province": "Província",
+      "allProvinces": "Totes les províncies",
+      "emptyProvince": "No hi ha esdeveniments a {province}."
+    },
     "pagination": {
       "previous": "Pàgina anterior",
       "next": "Pàgina següent",

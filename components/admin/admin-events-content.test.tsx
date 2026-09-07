@@ -117,6 +117,7 @@ const DRAFT_ID = '8e40792f-1a1a-4d30-8d15-ec70a12a04d5';
 const query: AdminEventPageRequest = {
   page: 1,
   search: '',
+  province: undefined,
   sortColumn: 'dates',
   sortDirection: 'asc',
 };
@@ -339,6 +340,24 @@ describe('AdminEventsContent provinces', () => {
         .getAttribute('href'),
     ).toBe('/es/admin/eventos/activos?sort=province');
     expect(screen.getByText('Barcelona')).toBeTruthy();
+  });
+
+  it('shows the selected province and a province-specific empty state', () => {
+    render(
+      <AdminEventsContent
+        page={{
+          events: [],
+          page: 1,
+          pageSize: 50,
+          total: 0,
+          totalPages: 0,
+        }}
+        query={{ ...query, province: 'Girona' }}
+      />,
+    );
+
+    expect(screen.getByRole('combobox').textContent).toContain('Girona');
+    expect(screen.getByText('filters.emptyProvince')).toBeTruthy();
   });
 });
 

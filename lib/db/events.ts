@@ -241,6 +241,7 @@ export async function getUpcomingEventsPage({
 export async function getAdminEventsPage({
   page,
   search,
+  province,
   sortColumn,
   sortDirection,
 }: AdminEventPageRequest): Promise<AdminEventPage> {
@@ -253,6 +254,7 @@ export async function getAdminEventsPage({
       p_limit: ADMIN_EVENTS_PAGE_SIZE,
       p_offset: offset,
       p_search: search || null,
+      p_province: province ?? null,
       p_sort_column: sortColumn,
       p_sort_direction: sortDirection,
     },

@@ -1301,6 +1301,11 @@
       "placeholder": "Nombre o URL del evento",
       "empty": "No hay eventos que coincidan con la búsqueda."
     },
+    "filters": {
+      "province": "Provincia",
+      "allProvinces": "Todas las provincias",
+      "emptyProvince": "No hay eventos en {province}."
+    },
     "pagination": {
       "previous": "Página anterior",
       "next": "Página siguiente",

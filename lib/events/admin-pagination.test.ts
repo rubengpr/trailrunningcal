@@ -10,11 +10,13 @@ describe('admin event pagination URL state', () => {
     expect(parseAdminEventPageRequest({
       page: '3',
       q: '  ultra  ',
+      province: 'Girona',
       sort: 'name',
       direction: 'desc',
     })).toEqual({
       page: 3,
       search: 'ultra',
+      province: 'Girona',
       sortColumn: 'name',
       sortDirection: 'desc',
     });
@@ -26,11 +28,13 @@ describe('admin event pagination URL state', () => {
       q: 'x'.repeat(ADMIN_EVENTS_SEARCH_MAX_LENGTH + 10),
       sort: 'unknown',
       direction: 'sideways',
+      province: 'Not a province',
     });
 
     expect(result).toEqual({
       page: 1,
       search: 'x'.repeat(ADMIN_EVENTS_SEARCH_MAX_LENGTH),
+      province: undefined,
       sortColumn: 'dates',
       sortDirection: 'asc',
     });
@@ -50,15 +54,17 @@ describe('admin event pagination URL state', () => {
     expect(buildAdminEventsHref('es', {
       page: 4,
       search: 'trail & mountain',
+      province: 'Girona',
       sortColumn: 'name',
       sortDirection: 'desc',
     })).toBe(
-      '/es/admin/eventos/activos?page=4&q=trail+%26+mountain&sort=name&direction=desc',
+      '/es/admin/eventos/activos?page=4&q=trail+%26+mountain&province=Girona&sort=name&direction=desc',
     );
 
     expect(buildAdminEventsHref('ca', {
       page: 1,
       search: '',
+      province: undefined,
       sortColumn: 'dates',
       sortDirection: 'asc',
     })).toBe('/ca/admin/eventos/activos');
@@ -66,6 +72,7 @@ describe('admin event pagination URL state', () => {
     expect(buildAdminEventsHref('es', {
       page: 1,
       search: '',
+      province: undefined,
       sortColumn: 'province',
       sortDirection: 'asc',
     })).toBe('/es/admin/eventos/activos?sort=province');

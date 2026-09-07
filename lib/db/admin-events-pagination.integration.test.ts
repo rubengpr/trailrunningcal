@@ -15,11 +15,12 @@ function projectRefFromUrl(url: string): string {
   return new URL(url).hostname.split('.')[0] ?? '';
 }
 
-function rpcParameters(search: string, offset: number) {
+function rpcParameters(search: string, offset: number, province: string | null = null) {
   return {
     p_limit: 50,
     p_offset: offset,
     p_search: search,
+    p_province: province,
     p_sort_column: 'name',
     p_sort_direction: 'asc',
   };
@@ -79,29 +80,42 @@ integrationDescribe('get_admin_events_page integration', () => {
     eventIds.push(...events.map((event) => event.id as string));
 
     const { error: raceError } = await admin.from('races').insert(
-      events.slice(1).map((event, index) => ({
-        event_id: event.id,
-        name: 'Admin pagination race',
-        date: `2031-10-${((index % 28) + 1).toString().padStart(2, '0')}`,
-        distance_km: 21,
-        elevation_gain_m: 500,
-        city: 'Test City',
-        province: 'Barcelona',
-      })),
+      [
+        ...events.slice(1).map((event, index) => ({
+          event_id: event.id,
+          name: 'Admin pagination race',
+          date: `2031-10-${((index % 28) + 1).toString().padStart(2, '0')}`,
+          distance_km: 21,
+          elevation_gain_m: 500,
+          city: 'Test City',
+          province: 'Barcelona',
+        })),
+        {
+          event_id: events[1].id,
+          name: 'Admin pagination Girona race',
+          date: '2031-10-29',
+          distance_km: 21,
+          elevation_gain_m: 500,
+          city: 'Girona',
+          province: 'Girona',
+        },
+      ],
     );
     if (raceError) throw raceError;
 
-    const [firstPage, secondPage, datePage, anonymousPage] = await Promise.all([
+    const [firstPage, secondPage, datePage, barcelonaPage, gironaPage, anonymousPage] = await Promise.all([
       admin.rpc('get_admin_events_page', rpcParameters(search, 0)),
       admin.rpc('get_admin_events_page', rpcParameters(search, 50)),
       admin.rpc('get_admin_events_page', {
         ...rpcParameters(search, 0),
         p_sort_column: 'dates',
       }),
+      admin.rpc('get_admin_events_page', rpcParameters(search, 0, 'Barcelona')),
+      admin.rpc('get_admin_events_page', rpcParameters(search, 0, 'Girona')),
       anonymous.rpc('get_admin_events_page', rpcParameters(search, 0)),
     ]);
 
-    for (const result of [firstPage, secondPage, datePage]) {
+    for (const result of [firstPage, secondPage, datePage, barcelonaPage, gironaPage]) {
       if (result.error) throw result.error;
     }
 
@@ -116,6 +130,9 @@ integrationDescribe('get_admin_events_page integration', () => {
       ),
     ).toEqual([]);
     expect(datePage.data?.[0].event_ids[0]).toBe(events[0].id);
+    expect(barcelonaPage.data?.[0]).toEqual(expect.objectContaining({ total_count: 54 }));
+    expect(gironaPage.data?.[0]).toEqual(expect.objectContaining({ total_count: 1 }));
+    expect(gironaPage.data?.[0].event_ids).toContain(events[1].id);
     expect(anonymousPage.error).not.toBeNull();
   });
 });

@@ -66,6 +66,7 @@ describe('getAdminEventsPage', () => {
     const result = await getAdminEventsPage({
       page: 2,
       search: 'trail',
+      province: 'Girona',
       sortColumn: 'name',
       sortDirection: 'desc',
     });
@@ -74,6 +75,7 @@ describe('getAdminEventsPage', () => {
       p_limit: 50,
       p_offset: 50,
       p_search: 'trail',
+      p_province: 'Girona',
       p_sort_column: 'name',
       p_sort_direction: 'desc',
     });
@@ -100,6 +102,7 @@ describe('getAdminEventsPage', () => {
     const result = await getAdminEventsPage({
       page: 1,
       search: 'missing',
+      province: undefined,
       sortColumn: 'dates',
       sortDirection: 'asc',
     });
@@ -117,6 +120,7 @@ describe('getAdminEventsPage', () => {
     await expect(getAdminEventsPage({
       page: 1,
       search: '',
+      province: undefined,
       sortColumn: 'dates',
       sortDirection: 'asc',
     })).rejects.toThrow('Failed to fetch admin event page');
