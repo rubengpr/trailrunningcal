@@ -1,6 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { locales } from '@/i18n';
-import { revalidateEventPages, revalidateProvincePage } from './revalidation';
+import {
+  revalidateCategoryPages,
+  revalidateDestinationPages,
+  revalidateEventPages,
+  revalidateProvincePage,
+} from './revalidation';
+import { DESTINATION_PROVINCE_IDS, REGION_IDS } from '@/lib/geography/destinations';
+import { RACE_CATEGORY_SLUGS } from '@/lib/races/race-types';
 
 const { revalidatePath, revalidateTag } = vi.hoisted(() => ({
   revalidatePath: vi.fn(),
@@ -42,5 +49,31 @@ describe('revalidateEventPages', () => {
     expect(revalidatePath).toHaveBeenCalledWith('/ca/e/vertical-la-bandera');
     expect(revalidatePath).toHaveBeenCalledWith('/en/e/vertical-la-bandera');
     expect(revalidatePath).toHaveBeenCalledWith('/fr/e/vertical-la-bandera');
+  });
+});
+
+describe('public listing page revalidation', () => {
+  beforeEach(() => {
+    revalidatePath.mockReset();
+  });
+
+  it('revalidates every localized event-type page', () => {
+    revalidateCategoryPages();
+
+    expect(revalidatePath).toHaveBeenCalledTimes(
+      locales.length * RACE_CATEGORY_SLUGS.length,
+    );
+    expect(revalidatePath).toHaveBeenCalledWith('/es/t/ultra-trail');
+    expect(revalidatePath).toHaveBeenCalledWith('/fr/t/backyard');
+  });
+
+  it('revalidates every localized region and destination page', () => {
+    revalidateDestinationPages();
+
+    expect(revalidatePath).toHaveBeenCalledTimes(
+      locales.length * (REGION_IDS.length + DESTINATION_PROVINCE_IDS.length),
+    );
+    expect(revalidatePath).toHaveBeenCalledWith('/es/d/cataluna');
+    expect(revalidatePath).toHaveBeenCalledWith('/fr/d/cataluna/barcelona');
   });
 });

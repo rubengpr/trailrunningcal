@@ -20,6 +20,10 @@ import {
 
 export const revalidate = 86400;
 
+export function generateStaticParams() {
+  return [];
+}
+
 export async function generateMetadata({
   params,
 }: {

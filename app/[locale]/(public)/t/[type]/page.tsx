@@ -12,6 +12,10 @@ import { buildBreadcrumbJsonLd, type FaqItem } from '@/lib/seo/json-ld';
 
 export const revalidate = 86400;
 
+export function generateStaticParams() {
+  return [];
+}
+
 export async function generateMetadata({
   params,
 }: {
