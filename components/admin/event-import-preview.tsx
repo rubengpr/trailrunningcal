@@ -2,18 +2,9 @@
 
 import { useState, type ReactNode } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import {
-  Calendar,
-  Check,
-  Coins,
-  Globe,
-  MapPin,
-  TextCursor,
-  WholeWord,
-  X,
-} from 'lucide-react';
 import { EventRacesEditModal } from '@/components/admin/event-races-edit-modal';
-import { ReviewActionButton } from '@/components/admin/review-action-button';
+import { EventImportPreviewHeader } from '@/components/admin/event-import-preview-header';
+import { EventImportPreviewRaceRow } from '@/components/admin/event-import-preview-race-row';
 import type { Locale } from '@/i18n';
 import {
   buildEventDateRange,
@@ -69,62 +60,6 @@ function toPreviewRace(
   };
 }
 
-function formatTierPrice(priceEur: number, locale: Locale): string {
-  return new Intl.NumberFormat(locale === 'ca' ? 'ca-ES' : 'es-ES', {
-    currency: 'EUR',
-    maximumFractionDigits: 0,
-    minimumFractionDigits: 0,
-    style: 'currency',
-  }).format(priceEur);
-}
-
-function formatTierDeadline(endsAt: string, locale: Locale): string {
-  const [year, month, day] = endsAt.split('-').map(Number);
-  const date = new Date(Date.UTC(year, month - 1, day));
-
-  return new Intl.DateTimeFormat(locale === 'ca' ? 'ca-ES' : 'es-ES', {
-    day: '2-digit',
-    month: '2-digit',
-    timeZone: 'UTC',
-    year: 'numeric',
-  }).format(date);
-}
-
-function parseLocalDate(dateString: string): Date | null {
-  const [year, month, day] = dateString.split('-').map(Number);
-
-  if (!year || !month || !day) {
-    return null;
-  }
-
-  const date = new Date(year, month - 1, day);
-
-  return Number.isNaN(date.getTime()) ? null : date;
-}
-
-function formatRaceDate(
-  dateString: string | null,
-  locale: Locale,
-  fallback: string,
-): string {
-  if (!dateString) {
-    return fallback;
-  }
-
-  const date = parseLocalDate(dateString);
-
-  if (!date) {
-    return fallback;
-  }
-
-  return new Intl.DateTimeFormat(locale === 'ca' ? 'ca-ES' : 'es-ES', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  }).format(date);
-}
-
 function formatEventLocation(
   races: TrailEventRace[],
   t: ReturnType<typeof useTranslations>,
@@ -162,7 +97,6 @@ export function EventImportPreview({
   readOnly = false,
 }: EventImportPreviewProps): React.ReactElement {
   const t = useTranslations('admin.events.import.results');
-  const pricingT = useTranslations('event.pricing');
   const locale = useLocale() as Locale;
   const [isEditing, setIsEditing] = useState(false);
   const [isSavingReview, setIsSavingReview] = useState(false);
@@ -244,187 +178,38 @@ export function EventImportPreview({
       tabIndex={0}
     >
       <div className="overflow-hidden rounded-[7px] bg-linear-to-br from-white via-gray-50 to-gray-100">
-        <section className="border-b border-gray-100 p-5 sm:p-6">
-          <div className="min-w-0">
-            <div className="flex min-w-0 items-start justify-between gap-3">
-              <div className="flex min-w-0 items-center gap-2">
-                <h2 className="text-xl font-semibold leading-tight text-gray-950">
-                  {event.name}
-                </h2>
-                {websiteUrl && (
-                  <a
-                    href={websiteUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title={t('websiteUrl')}
-                    className="inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-gray-700 transition-colors hover:bg-gray-100"
-                  >
-                    <Globe className="h-4 w-4" aria-hidden="true" />
-                  </a>
-                )}
-              </div>
-              {!readOnly && (
-                <div className={`${onSaveDraft ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100'} flex shrink-0 items-center gap-1 transition-opacity`}>
-                  {onSaveDraft && (
-                    <button
-                      type="button"
-                      disabled={isActionDisabled || isSavingDraft || isDraftSaved}
-                      onClick={() => void onSaveDraft(event, races)}
-                      className="inline-flex h-8 items-center rounded-md px-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-100 disabled:pointer-events-none disabled:opacity-35"
-                    >
-                      {isDraftSaved ? t('draftSaved') : isSavingDraft ? t('savingDraft') : t('saveDraft')}
-                    </button>
-                  )}
-                  <ReviewActionButton
-                    title={isAccepted ? t('reviewAccepted') : t('acceptEvent')}
-                    disabled={isActionDisabled}
-                    onClick={() => void onAccept()}
-                    variant="primary"
-                  >
-                    {isAccepting ? (
-                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                    ) : (
-                      <Check className="h-4 w-4" aria-hidden="true" />
-                    )}
-                  </ReviewActionButton>
-                  <ReviewActionButton
-                    title={t('editReview')}
-                    disabled={isActionDisabled}
-                    onClick={handleStartEdit}
-                  >
-                    <TextCursor className="h-3.5 w-3.5" aria-hidden="true" />
-                  </ReviewActionButton>
-                  {showReject && (
-                    <ReviewActionButton
-                      title={isRejected ? t('reviewRejected') : t('rejectEvent')}
-                      disabled={isActionDisabled}
-                      onClick={onReject}
-                    >
-                      <X className="h-4 w-4" aria-hidden="true" />
-                    </ReviewActionButton>
-                  )}
-                </div>
-              )}
-            </div>
-            <dl className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
-              <div>
-                <dt className="sr-only">{t('date')}</dt>
-                <dd className="flex items-center gap-2 text-gray-900">
-                  <Calendar className="h-4 w-4 shrink-0 text-gray-400" aria-hidden="true" />
-                  <span>{eventDate}</span>
-                </dd>
-              </div>
-              <div>
-                <dt className="sr-only">{t('location')}</dt>
-                <dd className="flex items-center gap-2 text-gray-900">
-                  <MapPin className="h-4 w-4 shrink-0 text-gray-400" aria-hidden="true" />
-                  <span>{eventLocation}</span>
-                </dd>
-              </div>
-            </dl>
-          </div>
-          {description && (
-            <div className="mt-5 max-w-4xl">
-              <p className="whitespace-pre-line text-sm leading-6 text-gray-600">
-                {description}
-              </p>
-              <span
-                title={t('descriptionCharacterCount', {
-                  count: description.length,
-                })}
-                className="mt-3 inline-flex items-center gap-1 rounded-full border border-gray-200/60 bg-gray-50 px-2 text-[11px] font-medium tabular-nums text-gray-600"
-              >
-                <WholeWord className="size-3" strokeWidth={2} aria-hidden="true" />
-                {description.length}
-              </span>
-            </div>
-          )}
-        </section>
+        <EventImportPreviewHeader
+          event={event}
+          races={races}
+          eventDate={eventDate}
+          eventLocation={eventLocation}
+          description={description}
+          websiteUrl={websiteUrl}
+          readOnly={readOnly}
+          isActionDisabled={isActionDisabled}
+          isAccepted={isAccepted}
+          isAccepting={isAccepting}
+          isRejected={isRejected}
+          showReject={showReject}
+          onAccept={onAccept}
+          onReject={onReject}
+          onEdit={handleStartEdit}
+          onSaveDraft={onSaveDraft}
+          isSavingDraft={isSavingDraft}
+          isDraftSaved={isDraftSaved}
+        />
 
         <section className="p-5 sm:p-6">
           <div className="space-y-1">
-            {races.map((race, index) => {
-              const raceName = race.name?.trim() ?? '';
-              const city = race.city.trim() || t('unknown');
-              const province = race.province.trim() || t('unknown');
-              const elevation = race.elevationGainM === null
-                ? t('elevationUnknown')
-                : String(Math.round(race.elevationGainM));
-              const contextFields = [
-                ...(showRaceDates
-                  ? [formatRaceDate(race.date, locale, t('unknown'))]
-                  : []),
-                ...(showRaceLocations ? [city, province] : []),
-              ];
-              const metricFields = [
-                String(Math.round(race.distanceKm)),
-                elevation,
-              ];
-
-              return (
-                <article
-                  key={`${race.date ?? 'unknown'}-${race.distanceKm}-${index}`}
-                  className="grid grid-cols-[2rem_minmax(0,1fr)] items-start gap-3 rounded-md px-2 py-2.5 text-sm font-normal text-gray-700 transition-colors hover:bg-gray-50"
-                >
-                  <span className="tabular-nums text-gray-400">
-                    {String(index + 1).padStart(2, '0')}
-                  </span>
-                  <div className="grid min-w-0 gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
-                    <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
-                      {raceName && <span>{raceName}</span>}
-                      {contextFields.map((field, fieldIndex) => (
-                        <span
-                          key={`${field}-${fieldIndex}`}
-                          className="inline-flex items-center gap-x-2"
-                        >
-                          {(raceName || fieldIndex > 0) && (
-                            <span className="text-gray-300" aria-hidden="true">
-                              ·
-                            </span>
-                          )}
-                          <span>{field}</span>
-                        </span>
-                      ))}
-                    </div>
-                    <div className="flex items-center gap-x-2 tabular-nums sm:justify-end">
-                      {metricFields.map((field, fieldIndex) => (
-                        <span
-                          key={`${field}-${fieldIndex}`}
-                          className="inline-flex items-center gap-x-2"
-                        >
-                          {fieldIndex > 0 && (
-                            <span className="text-gray-300" aria-hidden="true">
-                              ·
-                            </span>
-                          )}
-                          <span>{field}</span>
-                        </span>
-                      ))}
-                    </div>
-                    {race.tiers.length > 0 ? (
-                      <div className="flex flex-wrap items-center gap-1.5 text-xs text-gray-600 sm:col-span-2">
-                        <Coins className="size-3.5 shrink-0 text-gray-400" />
-                        {race.tiers.map((tier, tierIndex) => (
-                          <span
-                            className="rounded-md border border-gray-200 bg-gray-50 px-2 py-0.5 tabular-nums"
-                            key={`${tier.endsAt ?? 'default'}-${tierIndex}`}
-                          >
-                            {tier.priceEur === 0
-                              ? pricingT('free')
-                              : formatTierPrice(tier.priceEur, locale)}
-                            {tier.endsAt
-                              ? ` ${pricingT('until', {
-                                  date: formatTierDeadline(tier.endsAt, locale),
-                                })}`
-                              : ''}
-                          </span>
-                        ))}
-                      </div>
-                    ) : null}
-                  </div>
-                </article>
-              );
-            })}
+            {races.map((race, index) => (
+              <EventImportPreviewRaceRow
+                key={`${race.date ?? 'unknown'}-${race.distanceKm}-${index}`}
+                race={race}
+                index={index}
+                showDate={showRaceDates}
+                showLocation={showRaceLocations}
+              />
+            ))}
           </div>
         </section>
       </div>
