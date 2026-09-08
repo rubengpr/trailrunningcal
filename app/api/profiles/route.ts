@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
-import { updateProfile } from '@/lib/db/profiles';
+import { updateUserProfile } from '@/lib/services/profiles';
 import { handleRouteError } from '@/lib/utils/handle-error';
 import { parseProfileInput } from './validation';
 import { assertRequestBody, parseJsonBody } from '@/app/api/request-validation';
@@ -12,7 +12,7 @@ export async function PATCH(request: NextRequest) {
     const body = await parseJsonBody(request);
     assertRequestBody(body);
     const input = parseProfileInput(body);
-    const data = await updateProfile(user.id, input);
+    const data = await updateUserProfile(user.id, input);
 
     return NextResponse.json({ success: true, data });
   } catch (error) {

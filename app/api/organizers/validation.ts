@@ -1,13 +1,7 @@
 import { ValidationError } from '@/lib/errors';
+import type { OrganizerInput } from '@/types/organizer-input.types';
 
-export type OrganizerInput = {
-  organizationName: string;
-  organizationWebsite?: string;
-  facebookUrl?: string;
-  instagramUrl?: string;
-  youtubeUrl?: string;
-  tiktokUrl?: string;
-};
+export type { OrganizerInput } from '@/types/organizer-input.types';
 
 function validateOptionalUrl(value: unknown): void {
   if (value === undefined || value === null || value === '') return;

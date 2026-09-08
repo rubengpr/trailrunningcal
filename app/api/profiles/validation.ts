@@ -1,9 +1,7 @@
 import { ValidationError } from '@/lib/errors';
+import type { ProfileInput } from '@/types/profile.types';
 
-export type ProfileInput = {
-  userName: string;
-  userRole?: string | null;
-};
+export type { ProfileInput } from '@/types/profile.types';
 
 export function parseProfileInput(body: Record<string, unknown>): ProfileInput {
   const { userName, userRole } = body;

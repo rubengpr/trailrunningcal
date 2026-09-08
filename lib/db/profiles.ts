@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
-import type { ProfileInput } from '@/app/api/profiles/validation';
+import type { ProfileInput } from '@/types/profile.types';
 
 export async function updateProfile(userId: string, input: ProfileInput) {
   const supabase = await createClient();

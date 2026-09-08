@@ -1,5 +1,6 @@
 import { createClient, createStaticClient } from '@/lib/supabase/server';
 import type { Organizer } from '@/types/organizer.types';
+import type { OrganizerInput } from '@/types/organizer-input.types';
 
 type OrganizerRow = {
   name: string | null;
@@ -59,14 +60,7 @@ export async function getOrganizerByOwnerId(
 
 export async function updateOrganizer(
   ownerId: string,
-  input: {
-    organizationName: string;
-    organizationWebsite?: string;
-    facebookUrl?: string;
-    instagramUrl?: string;
-    youtubeUrl?: string;
-    tiktokUrl?: string;
-  },
+  input: OrganizerInput,
 ) {
   const supabase = await createClient();
 
