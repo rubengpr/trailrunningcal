@@ -6,11 +6,10 @@ import {
   revalidateHomepages,
 } from '@/lib/cache/revalidation';
 import { deleteEventForAdmin, getEventByIdForAdmin } from '@/lib/db/events';
-import { parseUuidParam } from '@/app/api/events/description-batches/validation';
+import { parseJsonBody, parseUuidParam } from '@/app/api/request-validation';
 import { handleRouteError } from '@/lib/utils/handle-error';
 import { parseEventPatchInput } from '@/app/api/events/validation';
 import { createEventEdition, updateEventWithRaces } from '@/lib/services/events';
-import { parseJsonBody } from '@/app/api/request-validation';
 
 export async function PATCH(
   request: Request,

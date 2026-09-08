@@ -2,6 +2,7 @@ import type { OpenRouterScrapeModelId } from '@/lib/integrations/openrouter/scra
 import { DEFAULT_EVENT_DESCRIPTION_MODEL } from '@/lib/services/event-description';
 import {
   assertRequestBody,
+  parseUuidParam,
   ValidationError,
 } from '@/app/api/request-validation';
 import {
@@ -13,17 +14,6 @@ export { ValidationError };
 export interface ParsedEventDescriptionBatchInput {
   eventIds: string[];
   model: OpenRouterScrapeModelId;
-}
-
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-
-export function parseUuidParam(value: string, label: string): string {
-  if (!UUID_PATTERN.test(value)) {
-    throw new ValidationError(`Invalid ${label}`, 400);
-  }
-
-  return value;
 }
 
 function parseEventIds(value: unknown): string[] {

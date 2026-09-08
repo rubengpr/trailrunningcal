@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
-import { parseUuidParam } from '@/app/api/events/description-batches/validation';
+import { parseUuidParam } from '@/app/api/request-validation';
 import { deletePendingEvent } from '@/lib/db/pending-events';
 import { handleRouteError } from '@/lib/utils/handle-error';
 

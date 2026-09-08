@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { parseUuidParam } from '@/app/api/events/description-batches/validation';
+import { parseUuidParam } from '@/app/api/request-validation';
 import { requireCronSecret } from '@/lib/auth/cron';
 import {
   resumeEventUpdateBatch,

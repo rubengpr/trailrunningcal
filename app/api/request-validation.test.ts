@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseJsonBody } from './request-validation';
+import { parseJsonBody, parseUuidParam } from './request-validation';
 
 describe('parseJsonBody', () => {
   it('returns parsed JSON', async () => {
@@ -24,5 +24,18 @@ describe('parseJsonBody', () => {
       message: 'Invalid request body',
       status: 400,
     });
+  });
+});
+
+describe('parseUuidParam', () => {
+  it('accepts a UUID', () => {
+    expect(parseUuidParam('5cd34b8e-8803-4b2d-bbae-8c7ba2a0a9ba', 'event id'))
+      .toBe('5cd34b8e-8803-4b2d-bbae-8c7ba2a0a9ba');
+  });
+
+  it('returns a validation error for an invalid UUID', () => {
+    expect(() => parseUuidParam('not-a-uuid', 'event id')).toThrowError(
+      'Invalid event id',
+    );
   });
 });

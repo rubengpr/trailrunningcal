@@ -32,7 +32,7 @@ vi.mock('@/lib/cache/revalidation', () => ({
 
 import { PATCH } from './route';
 
-const RACE_ID = 'race-1';
+const RACE_ID = '5cd34b8e-8803-4b2d-bbae-8c7ba2a0a9ba';
 const supabase = { kind: 'user-client' };
 const context = { params: Promise.resolve({ raceId: RACE_ID }) };
 

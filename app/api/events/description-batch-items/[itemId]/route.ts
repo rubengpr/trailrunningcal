@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
 import { getEventDescriptionItemResult } from '@/lib/db/event-description-batches';
 import { handleRouteError } from '@/lib/utils/handle-error';
-import { parseUuidParam } from '@/app/api/events/description-batches/validation';
+import { parseUuidParam } from '@/app/api/request-validation';
 
 export async function GET(
   _request: NextRequest,

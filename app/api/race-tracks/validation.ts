@@ -1,4 +1,4 @@
-import { parseUuidParam } from '@/app/api/events/description-batches/validation';
+import { parseUuidParam } from '@/app/api/request-validation';
 import { ValidationError } from '@/lib/errors';
 import { MAX_TRACK_UPLOAD_SIZE_BYTES } from '@/lib/race-tracks/limits';
 import type { TrackImportMode } from '@/types/race-track.types';

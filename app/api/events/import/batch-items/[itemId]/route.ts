@@ -6,9 +6,8 @@ import {
   updateItemResult,
 } from '@/lib/services/event-import-batch';
 import { parseEventInput } from '@/app/api/events/validation';
-import { parseUuidParam } from '@/app/api/events/description-batches/validation';
+import { parseJsonBody, parseUuidParam } from '@/app/api/request-validation';
 import { handleRouteError } from '@/lib/utils/handle-error';
-import { parseJsonBody } from '@/app/api/request-validation';
 
 export async function GET(
   _request: Request,

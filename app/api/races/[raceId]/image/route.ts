@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
 import { getRaceAccessContext } from '@/lib/auth/organizer';
 import { handleRouteError } from '@/lib/utils/handle-error';
+import { parseUuidParam } from '@/app/api/request-validation';
 import {
   getRaceImage,
   uploadRaceImage,
@@ -18,7 +19,8 @@ export async function GET(
 ) {
   try {
     const { isAdmin } = await requireAuth();
-    const { raceId } = await context.params;
+    const { raceId: rawRaceId } = await context.params;
+    const raceId = parseUuidParam(rawRaceId, 'race id');
     const supabase = isAdmin ? createAdminClient() : await createClient();
     const raceContext = await getRaceAccessContext(supabase, raceId, isAdmin);
     if (!raceContext) {
@@ -39,7 +41,8 @@ export async function POST(
 ) {
   try {
     const { isAdmin } = await requireAuth();
-    const { raceId } = await context.params;
+    const { raceId: rawRaceId } = await context.params;
+    const raceId = parseUuidParam(rawRaceId, 'race id');
     const supabase = isAdmin ? createAdminClient() : await createClient();
 
     const raceContext = await getRaceAccessContext(supabase, raceId, isAdmin);
@@ -70,7 +73,8 @@ export async function DELETE(
 ) {
   try {
     const { isAdmin } = await requireAuth();
-    const { raceId } = await context.params;
+    const { raceId: rawRaceId } = await context.params;
+    const raceId = parseUuidParam(rawRaceId, 'race id');
     const supabase = isAdmin ? createAdminClient() : await createClient();
 
     const raceContext = await getRaceAccessContext(supabase, raceId, isAdmin);

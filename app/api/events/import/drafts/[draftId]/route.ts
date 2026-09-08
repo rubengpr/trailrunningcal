@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
 import { parseEventInput } from '@/app/api/events/validation';
-import { parseUuidParam } from '@/app/api/events/description-batches/validation';
+import { parseJsonBody, parseUuidParam } from '@/app/api/request-validation';
 import { handleRouteError } from '@/lib/utils/handle-error';
-import { parseJsonBody } from '@/app/api/request-validation';
 import { getDraft, rejectDraft, updateDraft } from '@/lib/services/event-import-drafts';
 
 export async function GET(_request: Request, { params }: { params: Promise<{ draftId: string }> }): Promise<NextResponse> {

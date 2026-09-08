@@ -4,6 +4,7 @@ import { updateEventDescriptionForAdmin } from '@/lib/db/events';
 import { sanitizeEventDescription } from '@/lib/services/event-description';
 import { handleRouteError } from '@/lib/utils/handle-error';
 import { ValidationError } from '@/lib/errors';
+import { parseUuidParam } from '@/app/api/request-validation';
 
 export async function PATCH(
   request: NextRequest,
@@ -12,7 +13,8 @@ export async function PATCH(
   try {
     await requireAdmin();
 
-    const { eventId } = await context.params;
+    const { eventId: rawEventId } = await context.params;
+    const eventId = parseUuidParam(rawEventId, 'event id');
     const body = await request.json().catch(() => null);
 
     if (typeof body !== 'object' || body === null) {

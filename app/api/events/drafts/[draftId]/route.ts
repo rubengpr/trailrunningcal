@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { parseUuidParam } from '@/app/api/events/description-batches/validation';
+import { parseUuidParam } from '@/app/api/request-validation';
 import { requireAdmin } from '@/lib/auth';
 import {
   revalidateEventRelatedPages,

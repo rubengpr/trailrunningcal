@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
 import { getBatchStatus } from '@/lib/services/event-import-batch';
-import { parseUuidParam } from '@/app/api/events/description-batches/validation';
+import { parseUuidParam } from '@/app/api/request-validation';
 import { handleRouteError } from '@/lib/utils/handle-error';
 
 export async function GET(

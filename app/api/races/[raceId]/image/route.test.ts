@@ -30,7 +30,7 @@ vi.mock('@/lib/services/race-image', () => ({
 
 import { DELETE, GET, POST } from './route';
 
-const RACE_ID = 'race-1';
+const RACE_ID = '5cd34b8e-8803-4b2d-bbae-8c7ba2a0a9ba';
 const ownerClient = { kind: 'owner' };
 const adminClient = { kind: 'admin' };
 const raceContext = {

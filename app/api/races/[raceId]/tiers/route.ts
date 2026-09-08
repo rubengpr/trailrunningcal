@@ -6,15 +6,20 @@ import { handleRouteError } from '@/lib/utils/handle-error';
 import { revalidateEventPages, revalidateHomepages } from '@/lib/cache/revalidation';
 import { updateTierPrice } from '@/lib/db/race-tiers';
 import { getEventSlugForRace } from '@/lib/db/races';
-import { assertRequestBody, parseJsonBody } from '@/app/api/request-validation';
+import {
+  assertRequestBody,
+  parseJsonBody,
+  parseUuidParam,
+} from '@/app/api/request-validation';
 
 export async function PATCH(
   request: NextRequest,
   context: { params: Promise<{ raceId: string }> },
 ) {
   try {
-    const { raceId } = await context.params;
     const { isAdmin } = await requireAuth();
+    const { raceId: rawRaceId } = await context.params;
+    const raceId = parseUuidParam(rawRaceId, 'race id');
     const supabase = await createClient();
 
     const body = await parseJsonBody(request);
