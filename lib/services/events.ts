@@ -1,6 +1,11 @@
 import { createAdminClient, createClient } from '@/lib/supabase/server';
 import { ValidationError } from '@/lib/errors';
 import { getEventByIdForAdmin, getEventByIdForOrganizer } from '@/lib/db/events';
+import { deleteEventForAdmin } from '@/lib/db/events';
+import {
+  revalidateEventRelatedPages,
+  revalidateHomepages,
+} from '@/lib/cache/revalidation';
 import type {
   EventRaceTierWriteInput,
   TrailEventDetail,
@@ -187,4 +192,15 @@ export async function createEventEdition(
   }
 
   return detail;
+}
+
+export async function removeAdminEvent(eventId: string): Promise<void> {
+  const detail = await getEventByIdForAdmin(eventId);
+  if (!detail) {
+    throw new ValidationError('Event not found', 404);
+  }
+
+  await deleteEventForAdmin(eventId);
+  revalidateHomepages();
+  revalidateEventRelatedPages(detail);
 }

@@ -5,11 +5,15 @@ import {
   revalidateEventRelatedPages,
   revalidateHomepages,
 } from '@/lib/cache/revalidation';
-import { deleteEventForAdmin, getEventByIdForAdmin } from '@/lib/db/events';
+import { getEventByIdForAdmin } from '@/lib/db/events';
 import { parseJsonBody, parseUuidParam } from '@/app/api/request-validation';
 import { handleRouteError } from '@/lib/utils/handle-error';
 import { parseEventPatchInput } from '@/app/api/events/validation';
-import { createEventEdition, updateEventWithRaces } from '@/lib/services/events';
+import {
+  createEventEdition,
+  removeAdminEvent,
+  updateEventWithRaces,
+} from '@/lib/services/events';
 
 export async function PATCH(
   request: Request,
@@ -56,16 +60,7 @@ export async function DELETE(
 
     const { eventId } = await context.params;
     const parsedEventId = parseUuidParam(eventId, 'event id');
-    const eventDetail = await getEventByIdForAdmin(parsedEventId);
-
-    if (!eventDetail) {
-      throw new ValidationError('Event not found', 404);
-    }
-
-    await deleteEventForAdmin(parsedEventId);
-
-    revalidateHomepages();
-    revalidateEventRelatedPages(eventDetail);
+    await removeAdminEvent(parsedEventId);
 
     return NextResponse.json({ success: true, data: null });
   } catch (error) {

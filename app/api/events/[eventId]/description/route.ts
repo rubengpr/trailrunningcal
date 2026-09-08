@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
-import { updateEventDescriptionForAdmin } from '@/lib/db/events';
-import { sanitizeEventDescription } from '@/lib/services/event-description';
+import { updateEventDescription } from '@/lib/services/event-description';
 import { handleRouteError } from '@/lib/utils/handle-error';
 import { ValidationError } from '@/lib/errors';
 import { parseUuidParam } from '@/app/api/request-validation';
@@ -21,13 +20,7 @@ export async function PATCH(
       throw new ValidationError('Invalid request body', 400);
     }
 
-    const result = sanitizeEventDescription(body.description);
-
-    if (result.error) {
-      return NextResponse.json({ error: result.error }, { status: 400 });
-    }
-
-    const data = await updateEventDescriptionForAdmin(eventId, result.value);
+    const data = await updateEventDescription(eventId, body.description);
 
     return NextResponse.json({ success: true, data });
   } catch (error) {

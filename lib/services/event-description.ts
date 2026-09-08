@@ -4,6 +4,8 @@ import { traceAiWorkflow } from '@/lib/integrations/langfuse/tracing';
 import type { OpenRouterScrapeModelId } from '@/lib/integrations/openrouter/scrape-models';
 import { crawlSite } from '@/lib/services/crawl';
 import { getEventByIdForAdmin } from '@/lib/db/events';
+import { updateEventDescriptionForAdmin } from '@/lib/db/events';
+import { ValidationError } from '@/lib/errors';
 import type { EventDescriptionDraftResult } from '@/types/event-description.types';
 import type { TrailEventDetail } from '@/types/event.types';
 
@@ -36,6 +38,18 @@ export function sanitizeEventDescription(description: unknown): {
   }
 
   return { value: trimmed, error: null };
+}
+
+export async function updateEventDescription(
+  eventId: string,
+  description: unknown,
+) {
+  const result = sanitizeEventDescription(description);
+  if (result.error) {
+    throw new ValidationError(result.error, 400);
+  }
+
+  return updateEventDescriptionForAdmin(eventId, result.value);
 }
 
 function buildAgentInput(
