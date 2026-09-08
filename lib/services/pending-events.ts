@@ -1,5 +1,6 @@
 import { createAdminClient } from '@/lib/supabase/server';
 import {
+  deletePendingEvent,
   isUrlInEvents,
   isUrlInPendingEvents,
   insertPendingEvent,
@@ -20,6 +21,10 @@ export async function createPendingEvent(
   if (exists) throw new Error('URL already exists in pending events');
 
   return insertPendingEvent(supabase, url);
+}
+
+export async function removePendingEvent(id: string): Promise<void> {
+  await deletePendingEvent(id);
 }
 
 export async function createPendingEvents(

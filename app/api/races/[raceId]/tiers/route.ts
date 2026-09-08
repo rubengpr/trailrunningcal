@@ -3,9 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { getOrganizerRaceContext } from '@/lib/auth/organizer';
 import { requireAuth } from '@/lib/auth';
 import { handleRouteError } from '@/lib/utils/handle-error';
-import { revalidateEventPages, revalidateHomepages } from '@/lib/cache/revalidation';
-import { updateTierPrice } from '@/lib/db/race-tiers';
-import { getEventSlugForRace } from '@/lib/db/races';
+import { updateRaceTier } from '@/lib/services/race-tiers';
 import {
   assertRequestBody,
   parseJsonBody,
@@ -40,13 +38,7 @@ export async function PATCH(
       }
     }
 
-    const data = await updateTierPrice(raceId, priceEur, isAdmin);
-
-    revalidateHomepages();
-    const eventSlug = await getEventSlugForRace(raceId, isAdmin);
-    if (eventSlug) {
-      revalidateEventPages(eventSlug);
-    }
+    const data = await updateRaceTier(raceId, priceEur, isAdmin);
 
     return NextResponse.json({ success: true, data });
   } catch (error) {

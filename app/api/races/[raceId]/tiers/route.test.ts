@@ -6,10 +6,7 @@ const mocks = vi.hoisted(() => ({
   requireAuth: vi.fn(),
   createClient: vi.fn(),
   getOrganizerRaceContext: vi.fn(),
-  updateTierPrice: vi.fn(),
-  getEventSlugForRace: vi.fn(),
-  revalidateHomepages: vi.fn(),
-  revalidateEventPages: vi.fn(),
+  updateRaceTier: vi.fn(),
 }));
 
 vi.mock('@/lib/auth', () => ({ requireAuth: mocks.requireAuth }));
@@ -19,15 +16,8 @@ vi.mock('@/lib/supabase/server', () => ({
 vi.mock('@/lib/auth/organizer', () => ({
   getOrganizerRaceContext: mocks.getOrganizerRaceContext,
 }));
-vi.mock('@/lib/db/race-tiers', () => ({
-  updateTierPrice: mocks.updateTierPrice,
-}));
-vi.mock('@/lib/db/races', () => ({
-  getEventSlugForRace: mocks.getEventSlugForRace,
-}));
-vi.mock('@/lib/cache/revalidation', () => ({
-  revalidateHomepages: mocks.revalidateHomepages,
-  revalidateEventPages: mocks.revalidateEventPages,
+vi.mock('@/lib/services/race-tiers', () => ({
+  updateRaceTier: mocks.updateRaceTier,
 }));
 
 import { PATCH } from './route';
@@ -53,8 +43,7 @@ beforeEach(() => {
     organizerId: 'organizer-1',
     race: { id: RACE_ID },
   });
-  mocks.updateTierPrice.mockResolvedValue([{ price_eur: 35 }]);
-  mocks.getEventSlugForRace.mockResolvedValue('trail-event');
+  mocks.updateRaceTier.mockResolvedValue([{ price_eur: 35 }]);
 });
 
 describe('race tier authorization', () => {
@@ -66,7 +55,7 @@ describe('race tier authorization', () => {
 
     expect(response.status).toBe(401);
     expect(patchRequest.json).not.toHaveBeenCalled();
-    expect(mocks.updateTierPrice).not.toHaveBeenCalled();
+    expect(mocks.updateRaceTier).not.toHaveBeenCalled();
   });
 
   it('returns 403 without updating a tier for a non-owner', async () => {
@@ -76,9 +65,7 @@ describe('race tier authorization', () => {
 
     expect(response.status).toBe(403);
     await expect(response.json()).resolves.toEqual({ error: 'Forbidden' });
-    expect(mocks.updateTierPrice).not.toHaveBeenCalled();
-    expect(mocks.revalidateHomepages).not.toHaveBeenCalled();
-    expect(mocks.revalidateEventPages).not.toHaveBeenCalled();
+    expect(mocks.updateRaceTier).not.toHaveBeenCalled();
   });
 
   it('allows an owner to update a tier', async () => {
@@ -89,10 +76,7 @@ describe('race tier authorization', () => {
       success: true,
       data: [{ price_eur: 35 }],
     });
-    expect(mocks.updateTierPrice).toHaveBeenCalledWith(RACE_ID, 35, false);
-    expect(mocks.revalidateHomepages).toHaveBeenCalledOnce();
-    expect(mocks.getEventSlugForRace).toHaveBeenCalledWith(RACE_ID, false);
-    expect(mocks.revalidateEventPages).toHaveBeenCalledWith('trail-event');
+    expect(mocks.updateRaceTier).toHaveBeenCalledWith(RACE_ID, 35, false);
   });
 
   it('allows an admin without an ownership lookup', async () => {
@@ -105,17 +89,14 @@ describe('race tier authorization', () => {
 
     expect(response.status).toBe(200);
     expect(mocks.getOrganizerRaceContext).not.toHaveBeenCalled();
-    expect(mocks.updateTierPrice).toHaveBeenCalledWith(RACE_ID, null, true);
-    expect(mocks.getEventSlugForRace).toHaveBeenCalledWith(RACE_ID, true);
+    expect(mocks.updateRaceTier).toHaveBeenCalledWith(RACE_ID, null, true);
   });
 
-  it('still revalidates homepages when the parent event is unavailable', async () => {
-    mocks.getEventSlugForRace.mockResolvedValue(null);
+  it('delegates unavailable-parent handling to the service', async () => {
 
     const response = await PATCH(request(35), context);
 
     expect(response.status).toBe(200);
-    expect(mocks.revalidateHomepages).toHaveBeenCalledOnce();
-    expect(mocks.revalidateEventPages).not.toHaveBeenCalled();
+    expect(mocks.updateRaceTier).toHaveBeenCalledWith(RACE_ID, 35, false);
   });
 });
