@@ -11,6 +11,7 @@ import {
   updateEventDraft,
 } from '@/lib/services/event-drafts';
 import { handleRouteError } from '@/lib/utils/handle-error';
+import { parseJsonBody } from '@/app/api/request-validation';
 import { parseDraftActionInput } from './validation';
 
 export async function PATCH(
@@ -22,7 +23,7 @@ export async function PATCH(
 
     const { draftId } = await context.params;
     const parsedDraftId = parseUuidParam(draftId, 'draft id');
-    const input = parseDraftActionInput(await request.json());
+    const input = parseDraftActionInput(await parseJsonBody(request));
 
     switch (input.action) {
       case 'accept': {

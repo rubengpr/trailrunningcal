@@ -8,6 +8,7 @@ import {
 } from '@/lib/services/event-import';
 import { parseInput } from './validation';
 import { handleRouteError } from '@/lib/utils/handle-error';
+import { parseJsonBody } from '@/app/api/request-validation';
 
 export const maxDuration = 60;
 
@@ -15,7 +16,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     await requireAdmin();
 
-    const body = await request.json();
+    const body = await parseJsonBody(request);
     const input = parseInput(body);
 
     if (input.workflow === 'crawlSiteExtract') {

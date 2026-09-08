@@ -4,6 +4,7 @@ import { parseEventInput } from '@/app/api/events/validation';
 import { createEventWithRaces } from '@/lib/services/events';
 import { handleRouteError } from '@/lib/utils/handle-error';
 import { getUpcomingEventsPage } from '@/lib/db/events';
+import { parseJsonBody } from '@/app/api/request-validation';
 import { parsePublicEventPageRequest } from './public-validation';
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
@@ -21,7 +22,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     await requireAdmin();
 
-    const body = await request.json();
+    const body = await parseJsonBody(request);
     const input = parseEventInput(body);
     const data = await createEventWithRaces(input);
 

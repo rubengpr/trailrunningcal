@@ -9,3 +9,11 @@ export function assertRequestBody(
     throw new ValidationError('Invalid request body', 400);
   }
 }
+
+export async function parseJsonBody(request: Request): Promise<unknown> {
+  try {
+    return await request.json();
+  } catch {
+    throw new ValidationError('Invalid request body', 400);
+  }
+}

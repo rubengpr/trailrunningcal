@@ -10,6 +10,7 @@ import { parseUuidParam } from '@/app/api/events/description-batches/validation'
 import { handleRouteError } from '@/lib/utils/handle-error';
 import { parseEventPatchInput } from '@/app/api/events/validation';
 import { createEventEdition, updateEventWithRaces } from '@/lib/services/events';
+import { parseJsonBody } from '@/app/api/request-validation';
 
 export async function PATCH(
   request: Request,
@@ -20,7 +21,7 @@ export async function PATCH(
 
     const { eventId } = await context.params;
     const parsedEventId = parseUuidParam(eventId, 'event id');
-    const input = parseEventPatchInput(await request.json());
+    const input = parseEventPatchInput(await parseJsonBody(request));
     const previousDetail = await getEventByIdForAdmin(parsedEventId);
 
     if (!previousDetail) {

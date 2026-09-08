@@ -8,6 +8,7 @@ import {
 import { parseEventInput } from '@/app/api/events/validation';
 import { parseUuidParam } from '@/app/api/events/description-batches/validation';
 import { handleRouteError } from '@/lib/utils/handle-error';
+import { parseJsonBody } from '@/app/api/request-validation';
 
 export async function GET(
   _request: Request,
@@ -40,7 +41,7 @@ export async function PATCH(
 
     const { itemId } = await params;
     const parsedItemId = parseUuidParam(itemId, 'Invalid item ID');
-    const input = parseEventInput(await request.json());
+    const input = parseEventInput(await parseJsonBody(request));
     const data = await updateItemResult(parsedItemId, input);
 
     return NextResponse.json({ success: true, data });

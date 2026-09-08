@@ -11,6 +11,7 @@ import { handleRouteError } from '@/lib/utils/handle-error';
 import { parseUuidParam } from '@/app/api/events/description-batches/validation';
 import { parseEventPatchInput } from '@/app/api/events/validation';
 import { updateOrganizerEventWithRaces } from '@/lib/services/events';
+import { parseJsonBody } from '@/app/api/request-validation';
 
 export async function PATCH(
   request: Request,
@@ -31,7 +32,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const input = parseEventPatchInput(await request.json());
+    const input = parseEventPatchInput(await parseJsonBody(request));
 
     if (input.mode !== 'update-races') {
       throw new ValidationError('Invalid mode', 400);

@@ -6,12 +6,14 @@ import {
   validateUrlsPayload,
   validateAndNormalizeUrls,
 } from '@/app/api/url-list-validation';
+import { assertRequestBody, parseJsonBody } from '@/app/api/request-validation';
 
 export async function POST(request: NextRequest) {
   try {
     await requireAdmin();
 
-    const body = await request.json();
+    const body = await parseJsonBody(request);
+    assertRequestBody(body);
     const { urls } = body;
 
     validateUrlsPayload(urls);

@@ -6,6 +6,7 @@ import { handleRouteError } from '@/lib/utils/handle-error';
 import { revalidateEventPages, revalidateHomepages } from '@/lib/cache/revalidation';
 import { updateTierPrice } from '@/lib/db/race-tiers';
 import { getEventSlugForRace } from '@/lib/db/races';
+import { assertRequestBody, parseJsonBody } from '@/app/api/request-validation';
 
 export async function PATCH(
   request: NextRequest,
@@ -16,7 +17,9 @@ export async function PATCH(
     const { isAdmin } = await requireAuth();
     const supabase = await createClient();
 
-    const { priceEur } = await request.json();
+    const body = await parseJsonBody(request);
+    assertRequestBody(body);
+    const { priceEur } = body;
 
     if (
       priceEur !== null &&
