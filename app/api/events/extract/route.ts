@@ -2,9 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
 import { handleRouteError } from '@/lib/utils/handle-error';
 import { parseInput } from './validation';
-import { extractFromMarkdown, extractFromImages } from '@/lib/integrations/openrouter/service';
-import { EMPTY_PAGE_STATS } from '@/lib/services/event-import';
 import { parseJsonBody } from '@/app/api/request-validation';
+import { extractEvent } from '@/lib/services/event-extraction';
 
 export const maxDuration = 60;
 
@@ -15,22 +14,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const body = await parseJsonBody(request);
     const input = parseInput(body);
 
-    const result =
-      input.mode === 'images'
-        ? await extractFromImages(input.images, input.model)
-        : await extractFromMarkdown(input.markdown, input.model);
+    const data = await extractEvent(input);
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        event: result.event,
-        races: result.races,
-        errorMessage: result.errorMessage,
-        rawModelOutput: result.rawModelOutput,
-        usage: result.usage,
-        pageStats: EMPTY_PAGE_STATS,
-      },
-    });
+    return NextResponse.json({ success: true, data });
   } catch (error) {
     return handleRouteError(error);
   }

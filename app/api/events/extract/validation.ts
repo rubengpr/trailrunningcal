@@ -7,15 +7,14 @@ import type {
   OpenRouterVisionModelId,
 } from '@/lib/integrations/openrouter/scrape-models';
 import { ValidationError } from '@/lib/errors';
+import type { EventExtractionInput } from '@/lib/services/event-extraction';
 
 export { ValidationError };
 
 const MAX_SCRAPE_MARKDOWN_BYTES = 2 * 1024 * 1024;
 const MAX_IMAGES = 5;
 
-export type ParsedInput =
-  | { mode: 'markdown'; markdown: string; model: OpenRouterScrapeModelId }
-  | { mode: 'images'; images: string[]; model: OpenRouterVisionModelId };
+export type ParsedInput = EventExtractionInput;
 
 function utf8ByteLength(value: string): number {
   return new TextEncoder().encode(value).length;

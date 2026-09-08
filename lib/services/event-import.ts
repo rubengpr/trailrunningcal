@@ -9,14 +9,7 @@ import type {
   EventImportStep,
   EventImportStepName,
 } from '@/types/events-import-api.types';
-import type { PageStats } from '@/types/races-scrape-api.types';
 import { checkDuplicateEvents } from '@/lib/guards/duplicate-events';
-
-export const EMPTY_PAGE_STATS: PageStats = {
-  total: 0,
-  successCount: 0,
-  errorCount: 0,
-};
 
 interface TimedResult<T> {
   result: T;
