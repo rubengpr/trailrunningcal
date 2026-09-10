@@ -126,8 +126,13 @@ describe('eventImportDraftPublicationWorkflow', () => {
         { locale: 'fr', description: 'Translation fr' },
       ],
     });
-    expect(mocks.revalidateListings).toHaveBeenCalledOnce();
-    expect(mocks.revalidateEvent).toHaveBeenCalledWith('trail-1');
+    expect(mocks.revalidateListings).toHaveBeenCalledWith(
+      'event-import-publication',
+    );
+    expect(mocks.revalidateEvent).toHaveBeenCalledWith(
+      'trail-1',
+      'event-import-publication',
+    );
   });
 
   it('fails without publishing when a translation exhausts its attempts', async () => {

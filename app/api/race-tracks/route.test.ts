@@ -117,6 +117,7 @@ describe('POST /api/race-tracks', () => {
     expect(response.status).toBe(200);
     expect(mocks.revalidateEventPages).toHaveBeenCalledWith(
       'pedraforca-xtrail',
+      'race-track-import',
     );
   });
 
@@ -138,6 +139,7 @@ describe('POST /api/race-tracks', () => {
     );
     expect(mocks.revalidateEventPages).toHaveBeenCalledWith(
       'pedraforca-xtrail',
+      'race-track-import',
     );
   });
 

@@ -201,6 +201,6 @@ export async function removeAdminEvent(eventId: string): Promise<void> {
   }
 
   await deleteEventForAdmin(eventId);
-  revalidateHomepages();
-  revalidateEventRelatedPages(detail);
+  revalidateHomepages('admin-event-delete');
+  revalidateEventRelatedPages(detail, 'admin-event-delete');
 }

@@ -12,9 +12,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const body = await request.json().catch(() => null);
     const slugs = parseRevalidateEventSlugs(body);
 
-    for (const slug of slugs) {
-      revalidateEventPages(slug);
-    }
+    revalidateEventPages(slugs, 'event-translation-promotion');
 
     return NextResponse.json({ success: true, data: { slugs } });
   } catch (error) {

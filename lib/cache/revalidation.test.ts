@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { locales } from '@/i18n';
 import {
   revalidateCategoryPages,
@@ -16,6 +16,10 @@ const { revalidatePath, revalidateTag } = vi.hoisted(() => ({
 
 vi.mock('next/cache', () => ({ revalidatePath, revalidateTag }));
 
+const consoleInfo = vi.spyOn(console, 'info').mockImplementation(() => {});
+
+afterAll(() => consoleInfo.mockRestore());
+
 describe('revalidateProvincePage', () => {
   beforeEach(() => {
     revalidatePath.mockReset();
@@ -23,7 +27,7 @@ describe('revalidateProvincePage', () => {
   });
 
   it('revalidates every localized destination page for a newly supported province', () => {
-    revalidateProvincePage('Granada');
+    revalidateProvincePage('Granada', 'test');
 
     // Every locale of the province page, plus its community page.
     expect(revalidatePath).toHaveBeenCalledTimes(locales.length * 2);
@@ -33,6 +37,9 @@ describe('revalidateProvincePage', () => {
     expect(revalidatePath).toHaveBeenCalledWith('/fr/d/andalucia/granada');
     expect(revalidatePath).toHaveBeenCalledWith('/es/d/andalucia');
     expect(revalidatePath).toHaveBeenCalledWith('/fr/d/andalucia');
+    expect(consoleInfo).toHaveBeenCalledWith(expect.stringContaining(
+      '"affectedPathCount":4',
+    ));
   });
 });
 
@@ -42,13 +49,25 @@ describe('revalidateEventPages', () => {
   });
 
   it('revalidates every localized public event page', () => {
-    revalidateEventPages('vertical-la-bandera');
+    revalidateEventPages('vertical-la-bandera', 'test');
 
     expect(revalidatePath).toHaveBeenCalledTimes(locales.length);
     expect(revalidatePath).toHaveBeenCalledWith('/es/e/vertical-la-bandera');
     expect(revalidatePath).toHaveBeenCalledWith('/ca/e/vertical-la-bandera');
     expect(revalidatePath).toHaveBeenCalledWith('/en/e/vertical-la-bandera');
     expect(revalidatePath).toHaveBeenCalledWith('/fr/e/vertical-la-bandera');
+    expect(consoleInfo).toHaveBeenLastCalledWith(expect.stringContaining(
+      '"source":"test"',
+    ));
+  });
+
+  it('records one aggregate count for an event batch', () => {
+    revalidateEventPages(['event-one', 'event-two'], 'translation-promotion');
+
+    expect(revalidatePath).toHaveBeenCalledTimes(locales.length * 2);
+    expect(consoleInfo).toHaveBeenLastCalledWith(expect.stringContaining(
+      `"affectedPathCount":${locales.length * 2}`,
+    ));
   });
 });
 
@@ -58,7 +77,7 @@ describe('public listing page revalidation', () => {
   });
 
   it('revalidates every localized event-type page', () => {
-    revalidateCategoryPages();
+    revalidateCategoryPages('test');
 
     expect(revalidatePath).toHaveBeenCalledTimes(
       locales.length * RACE_CATEGORY_SLUGS.length,
@@ -68,7 +87,7 @@ describe('public listing page revalidation', () => {
   });
 
   it('revalidates every localized region and destination page', () => {
-    revalidateDestinationPages();
+    revalidateDestinationPages('test');
 
     expect(revalidatePath).toHaveBeenCalledTimes(
       locales.length * (REGION_IDS.length + DESTINATION_PROVINCE_IDS.length),

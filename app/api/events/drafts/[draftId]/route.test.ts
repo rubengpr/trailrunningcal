@@ -169,14 +169,16 @@ describe('PATCH /api/events/drafts/[draftId]', () => {
       data: updatedDetail,
     });
     expect(mocks.acceptEventDraft).toHaveBeenCalledWith(DRAFT_ID);
-    expect(mocks.revalidateHomepages).toHaveBeenCalledOnce();
+    expect(mocks.revalidateHomepages).toHaveBeenCalledWith('event-draft-accept');
     expect(mocks.revalidateEventRelatedPages).toHaveBeenNthCalledWith(
       1,
       eventDetail,
+      'event-draft-accept',
     );
     expect(mocks.revalidateEventRelatedPages).toHaveBeenNthCalledWith(
       2,
       updatedDetail,
+      'event-draft-accept',
     );
   });
 });

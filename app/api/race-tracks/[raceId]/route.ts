@@ -35,7 +35,7 @@ export async function POST(
       bytes: new Uint8Array(await file.arrayBuffer()),
     });
 
-    revalidateEventPages(data.eventSlug);
+    revalidateEventPages(data.eventSlug, 'race-track-save');
 
     return NextResponse.json({ success: true, data });
   } catch (error) {

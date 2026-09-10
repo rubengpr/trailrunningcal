@@ -56,6 +56,10 @@ describe('saveRaceTrack', () => {
       'race-1',
       expect.objectContaining({ type: 'LineString' }),
     );
+    expect(mocks.revalidateEventTrackRoutes).toHaveBeenCalledWith(
+      'event-1',
+      'race-track-save',
+    );
   });
 
   it('returns 404 without updating when the race does not exist', async () => {
@@ -151,6 +155,10 @@ describe('importRaceTrack', () => {
     expect(mocks.updateRaceTrackGeometry).toHaveBeenCalledWith(
       'race-1',
       expect.objectContaining({ type: 'LineString' }),
+    );
+    expect(mocks.revalidateEventTrackRoutes).toHaveBeenCalledWith(
+      'event-1',
+      'race-track-import',
     );
   });
 

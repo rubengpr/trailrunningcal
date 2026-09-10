@@ -9,10 +9,10 @@ export async function updateRaceTier(
 ) {
   const data = await updateTierPrice(raceId, priceEur, isAdmin);
 
-  revalidateHomepages();
+  revalidateHomepages('race-tier-update');
   const eventSlug = await getEventSlugForRace(raceId, isAdmin);
   if (eventSlug) {
-    revalidateEventPages(eventSlug);
+    revalidateEventPages(eventSlug, 'race-tier-update');
   }
 
   return data;

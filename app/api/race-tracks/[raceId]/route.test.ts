@@ -111,6 +111,7 @@ describe('POST /api/race-tracks/[raceId]', () => {
     });
     expect(mocks.revalidateEventPages).toHaveBeenCalledWith(
       'pedraforca-xtrail',
+      'race-track-save',
     );
   });
 

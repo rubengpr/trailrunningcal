@@ -41,9 +41,9 @@ export async function PATCH(
       updatedDetail = await createEventEdition(parsedEventId, input);
     }
 
-    revalidateHomepages();
-    revalidateEventRelatedPages(previousDetail);
-    revalidateEventRelatedPages(updatedDetail);
+    revalidateHomepages('admin-event-update');
+    revalidateEventRelatedPages(previousDetail, 'admin-event-update');
+    revalidateEventRelatedPages(updatedDetail, 'admin-event-update');
 
     return NextResponse.json({ success: true, data: updatedDetail });
   } catch (error) {

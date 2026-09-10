@@ -12,19 +12,46 @@ import {
 } from '@/lib/geography/destinations';
 import type { TrailEventDetail } from '@/types/event.types';
 
-export function revalidateHomepages() {
+type RevalidationScope =
+  | 'category-pages'
+  | 'destination-pages'
+  | 'event-pages'
+  | 'event-track-routes'
+  | 'homepages'
+  | 'province-pages'
+  | 'region-pages';
+
+function logRevalidation(
+  source: string,
+  scope: RevalidationScope,
+  affectedPathCount: number,
+  affectedTagCount = 0,
+): void {
+  console.info(JSON.stringify({
+    level: 'info',
+    message: 'cache_revalidation',
+    source,
+    scope,
+    affectedPathCount,
+    affectedTagCount,
+  }));
+}
+
+export function revalidateHomepages(source: string) {
   for (const locale of locales) {
     revalidatePath(`/${locale}`);
   }
+  logRevalidation(source, 'homepages', locales.length);
 }
 
-export function revalidateRegionPage(regionId: RegionId) {
+export function revalidateRegionPage(regionId: RegionId, source: string) {
   for (const locale of locales) {
     revalidatePath(getRegionPath(locale, regionId));
   }
+  logRevalidation(source, 'region-pages', locales.length);
 }
 
-export function revalidateProvincePage(province: string) {
+export function revalidateProvincePage(province: string, source: string) {
   const destination = getProvinceByDbName(province);
 
   if (!destination) {
@@ -36,22 +63,28 @@ export function revalidateProvincePage(province: string) {
       getDestinationPath(locale, destination.province.regionId, destination.id),
     );
   }
+  logRevalidation(source, 'province-pages', locales.length);
 
   // The community page lists every race in its provinces.
-  revalidateRegionPage(destination.province.regionId);
+  revalidateRegionPage(destination.province.regionId, source);
 }
 
-export function revalidateCategoryPages() {
+export function revalidateCategoryPages(source: string) {
   for (const locale of locales) {
     for (const slug of RACE_CATEGORY_SLUGS) {
       revalidatePath(getTypePath(locale, slug));
     }
   }
+  logRevalidation(
+    source,
+    'category-pages',
+    locales.length * RACE_CATEGORY_SLUGS.length,
+  );
 }
 
-export function revalidateDestinationPages() {
+export function revalidateDestinationPages(source: string) {
   for (const regionId of REGION_IDS) {
-    revalidateRegionPage(regionId);
+    revalidateRegionPage(regionId, source);
   }
 
   for (const provinceId of DESTINATION_PROVINCE_IDS) {
@@ -63,29 +96,46 @@ export function revalidateDestinationPages() {
       );
     }
   }
+  logRevalidation(
+    source,
+    'destination-pages',
+    locales.length * DESTINATION_PROVINCE_IDS.length,
+  );
 }
 
-export function revalidatePublicListingPages() {
-  revalidateHomepages();
-  revalidateCategoryPages();
-  revalidateDestinationPages();
+export function revalidatePublicListingPages(source: string) {
+  revalidateHomepages(source);
+  revalidateCategoryPages(source);
+  revalidateDestinationPages(source);
 }
 
-export function revalidateEventPages(eventSlug: string) {
-  for (const locale of locales) {
-    revalidatePath(`/${locale}/e/${eventSlug}`);
+export function revalidateEventPages(eventSlugs: string | string[], source: string) {
+  const slugs = Array.isArray(eventSlugs) ? eventSlugs : [eventSlugs];
+  for (const eventSlug of slugs) {
+    for (const locale of locales) {
+      revalidatePath(`/${locale}/e/${eventSlug}`);
+    }
   }
+  logRevalidation(
+    source,
+    'event-pages',
+    locales.length * slugs.length,
+  );
 }
 
-export function revalidateEventTrackRoutes(eventId: string) {
+export function revalidateEventTrackRoutes(eventId: string, source: string) {
   revalidateTag(`event-track-routes:${eventId}`, 'max');
+  logRevalidation(source, 'event-track-routes', 0, 1);
 }
 
-export function revalidateEventRelatedPages(detail: TrailEventDetail): void {
-  revalidateEventPages(detail.event.slug);
-  revalidateCategoryPages();
+export function revalidateEventRelatedPages(
+  detail: TrailEventDetail,
+  source: string,
+): void {
+  revalidateEventPages(detail.event.slug, source);
+  revalidateCategoryPages(source);
 
   for (const race of detail.races) {
-    if (race.province) revalidateProvincePage(race.province);
+    if (race.province) revalidateProvincePage(race.province, source);
   }
 }

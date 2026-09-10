@@ -46,7 +46,10 @@ describe('POST /api/internal/revalidate-events', () => {
       success: true,
       data: { slugs: ['trail-event', 'another-event'] },
     });
-    expect(mocks.revalidateEventPages).toHaveBeenCalledWith('trail-event');
-    expect(mocks.revalidateEventPages).toHaveBeenCalledWith('another-event');
+    expect(mocks.revalidateEventPages).toHaveBeenCalledOnce();
+    expect(mocks.revalidateEventPages).toHaveBeenCalledWith(
+      ['trail-event', 'another-event'],
+      'event-translation-promotion',
+    );
   });
 });

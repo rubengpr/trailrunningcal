@@ -31,9 +31,12 @@ describe('updateRaceTier', () => {
       { price_eur: 35 },
     ]);
     expect(mocks.updateTierPrice).toHaveBeenCalledWith(RACE_ID, 35, false);
-    expect(mocks.revalidateHomepages).toHaveBeenCalledOnce();
+    expect(mocks.revalidateHomepages).toHaveBeenCalledWith('race-tier-update');
     expect(mocks.getEventSlugForRace).toHaveBeenCalledWith(RACE_ID, false);
-    expect(mocks.revalidateEventPages).toHaveBeenCalledWith('trail-running-cal');
+    expect(mocks.revalidateEventPages).toHaveBeenCalledWith(
+      'trail-running-cal',
+      'race-tier-update',
+    );
   });
 
   it('still revalidates homepages when the race has no event slug', async () => {
@@ -41,7 +44,7 @@ describe('updateRaceTier', () => {
 
     await updateRaceTier(RACE_ID, null, true);
 
-    expect(mocks.revalidateHomepages).toHaveBeenCalledOnce();
+    expect(mocks.revalidateHomepages).toHaveBeenCalledWith('race-tier-update');
     expect(mocks.revalidateEventPages).not.toHaveBeenCalled();
   });
 });

@@ -126,8 +126,8 @@ async function publishStep(input: {
 async function revalidatePublishedEventStep(slug: string): Promise<void> {
   'use step';
 
-  revalidatePublicListingPages();
-  revalidateEventPages(slug);
+  revalidatePublicListingPages('event-import-publication');
+  revalidateEventPages(slug, 'event-import-publication');
 }
 
 async function failJobStep(jobId: string, error: string): Promise<void> {

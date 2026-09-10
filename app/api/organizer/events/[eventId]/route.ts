@@ -44,9 +44,9 @@ export async function PATCH(
       input,
     );
 
-    revalidateHomepages();
-    revalidateEventRelatedPages(organizerContext.event);
-    revalidateEventRelatedPages(updatedDetail);
+    revalidateHomepages('organizer-event-update');
+    revalidateEventRelatedPages(organizerContext.event, 'organizer-event-update');
+    revalidateEventRelatedPages(updatedDetail, 'organizer-event-update');
 
     return NextResponse.json({ success: true, data: updatedDetail });
   } catch (error) {

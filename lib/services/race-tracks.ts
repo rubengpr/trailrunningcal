@@ -45,7 +45,7 @@ export async function importRaceTrack(
 
   if (input.mode === 'apply') {
     await updateRaceTrackGeometry(raceId, parsed.geometry);
-    revalidateEventTrackRoutes(eventId);
+    revalidateEventTrackRoutes(eventId, 'race-track-import');
   }
 
   return {
@@ -113,7 +113,7 @@ export async function saveRaceTrack(
   }
 
   await updateRaceTrackGeometry(race.id, parsed.geometry);
-  revalidateEventTrackRoutes(race.eventId);
+  revalidateEventTrackRoutes(race.eventId, 'race-track-save');
 
   return {
     raceId: race.id,

@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (input.mode === 'apply') {
-      revalidateEventPages(data.eventSlug);
+      revalidateEventPages(data.eventSlug, 'race-track-import');
     }
 
     return NextResponse.json({ success: true, data });

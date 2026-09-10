@@ -186,14 +186,18 @@ describe('PATCH /api/organizer/events/[eventId]', () => {
         races: updateBody.races,
       },
     );
-    expect(mocks.revalidateHomepages).toHaveBeenCalledOnce();
+    expect(mocks.revalidateHomepages).toHaveBeenCalledWith(
+      'organizer-event-update',
+    );
     expect(mocks.revalidateEventRelatedPages).toHaveBeenNthCalledWith(
       1,
       previousDetail,
+      'organizer-event-update',
     );
     expect(mocks.revalidateEventRelatedPages).toHaveBeenNthCalledWith(
       2,
       updatedDetail,
+      'organizer-event-update',
     );
   });
 });

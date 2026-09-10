@@ -30,11 +30,11 @@ export async function PATCH(
         const { previousDetail, updatedDetail } =
           await acceptEventDraft(parsedDraftId);
 
-        revalidateHomepages();
+        revalidateHomepages('event-draft-accept');
         if (previousDetail) {
-          revalidateEventRelatedPages(previousDetail);
+          revalidateEventRelatedPages(previousDetail, 'event-draft-accept');
         }
-        revalidateEventRelatedPages(updatedDetail);
+        revalidateEventRelatedPages(updatedDetail, 'event-draft-accept');
 
         return NextResponse.json({ success: true, data: updatedDetail });
       }
