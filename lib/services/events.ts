@@ -1,4 +1,3 @@
-import { createAdminClient, createClient } from '@/lib/supabase/server';
 import { ValidationError } from '@/lib/errors';
 import { getEventByIdForAdmin, getEventByIdForOrganizer } from '@/lib/db/events';
 import { deleteEventForAdmin } from '@/lib/db/events';
@@ -6,108 +5,38 @@ import {
   revalidateEventRelatedPages,
   revalidateHomepages,
 } from '@/lib/cache/revalidation';
-import type {
-  EventRaceTierWriteInput,
-  TrailEventDetail,
-} from '@/types/event.types';
-import type {
-  TrailEventAgentEvent,
-  TrailEventAgentRace,
-} from '@/types/trail-event-agent.types';
+import type { TrailEventDetail } from '@/types/event.types';
 import { isValidProvince } from '@/lib/geography/provinces';
+import {
+  insertEvent,
+  insertEventEdition,
+  updateEvent,
+  updateOrganizerEvent,
+} from '@/lib/db/event-writes';
+import type {
+  EventRaceWriteInput,
+  EventWriteInput,
+} from '@/types/event-write.types';
 
-export type EventRaceWriteInput = Omit<TrailEventAgentRace, 'name'> & {
-  name: string | null;
-  id?: string;
-  resultsUrl?: string | null;
-  tiers: EventRaceTierWriteInput[];
-};
-
-function toRacePayload(race: EventRaceWriteInput): Record<string, unknown> {
-  if (!isValidProvince(race.province)) {
+function validateRaces(races: EventRaceWriteInput[]): void {
+  if (races.some((race) => !isValidProvince(race.province))) {
     throw new ValidationError('Invalid province', 400);
   }
-
-  return {
-    ...(race.id ? { id: race.id } : {}),
-    name: race.name,
-    date: race.date,
-    city: race.city,
-    province: race.province,
-    distance_km: race.distanceKm,
-    elevation_gain_m: race.elevationGainM,
-    ...(race.resultsUrl !== undefined
-      ? { results_url: race.resultsUrl }
-      : {}),
-    tiers: race.tiers.map((tier) => ({
-      price_eur: tier.priceEur,
-      ends_at: tier.endsAt,
-    })),
-  };
-}
-
-export interface EventWithRacesInput {
-  event: TrailEventAgentEvent;
-  races: EventRaceWriteInput[];
-}
-
-export interface UpdateEventWithRacesInput {
-  event: TrailEventAgentEvent;
-  races: EventRaceWriteInput[];
 }
 
 export async function createEventWithRaces(
-  input: EventWithRacesInput,
+  input: EventWriteInput,
 ): Promise<{ id: string }> {
-  const supabase = createAdminClient();
-
-  const { data, error } = await supabase.rpc('create_event_with_results', {
-    p_event: {
-      name: input.event.name,
-      description: input.event.description,
-      website_url: input.event.websiteUrl,
-    },
-    p_races: input.races.map(toRacePayload),
-  });
-
-  if (error || !data) {
-    console.error('Create event with races transaction error:', error);
-    throw new Error('Failed to create event');
-  }
-
-  return { id: data as string };
+  validateRaces(input.races);
+  return { id: await insertEvent(input) };
 }
 
 export async function updateEventWithRaces(
   eventId: string,
-  input: UpdateEventWithRacesInput,
+  input: EventWriteInput,
 ): Promise<TrailEventDetail> {
-  const supabase = createAdminClient();
-
-  const { data, error } = await supabase.rpc('update_event_with_results', {
-    p_event_id: eventId,
-    p_event: {
-      name: input.event.name,
-      description: input.event.description,
-      website_url: input.event.websiteUrl,
-    },
-    p_races: input.races.map(toRacePayload),
-  });
-
-  if (error || !data) {
-    if (error?.code === 'P0002') {
-      throw new ValidationError('Event not found', 404);
-    }
-
-    if (error?.code === 'P0003') {
-      throw new ValidationError('Race does not belong to event', 400);
-    }
-
-    console.error('Update event with races transaction error:', error);
-    throw new Error('Failed to update event');
-  }
-
-  const detail = await getEventByIdForAdmin(data as string);
+  validateRaces(input.races);
+  const detail = await getEventByIdForAdmin(await updateEvent(eventId, input));
 
   if (!detail) {
     throw new ValidationError('Event not found', 404);
@@ -119,39 +48,13 @@ export async function updateEventWithRaces(
 export async function updateOrganizerEventWithRaces(
   eventId: string,
   organizerId: string,
-  input: UpdateEventWithRacesInput,
+  input: EventWriteInput,
 ): Promise<TrailEventDetail> {
-  const supabase = await createClient();
-
-  const { data, error } = await supabase.rpc('update_organizer_event_with_results', {
-    p_event_id: eventId,
-    p_organizer_id: organizerId,
-    p_event: {
-      name: input.event.name,
-      description: input.event.description,
-      website_url: input.event.websiteUrl,
-    },
-    p_races: input.races.map(toRacePayload),
-  });
-
-  if (error || !data) {
-    if (error?.code === 'P0002') {
-      throw new ValidationError('Event not found', 404);
-    }
-
-    if (error?.code === 'P0003') {
-      throw new ValidationError('Race does not belong to event', 400);
-    }
-
-    if (error?.code === 'P0004') {
-      throw new ValidationError('Forbidden', 403);
-    }
-
-    console.error('Update organizer event with races transaction error:', error);
-    throw new Error('Failed to update event');
-  }
-
-  const detail = await getEventByIdForOrganizer(data as string, organizerId);
+  validateRaces(input.races);
+  const detail = await getEventByIdForOrganizer(
+    await updateOrganizerEvent(eventId, organizerId, input),
+    organizerId,
+  );
 
   if (!detail) {
     throw new ValidationError('Event not found', 404);
@@ -162,30 +65,12 @@ export async function updateOrganizerEventWithRaces(
 
 export async function createEventEdition(
   eventId: string,
-  input: EventWithRacesInput,
+  input: EventWriteInput,
 ): Promise<TrailEventDetail> {
-  const supabase = createAdminClient();
-
-  const { data, error } = await supabase.rpc('create_event_edition_with_results', {
-    p_event_id: eventId,
-    p_event: {
-      name: input.event.name,
-      description: input.event.description,
-      website_url: input.event.websiteUrl,
-    },
-    p_races: input.races.map(toRacePayload),
-  });
-
-  if (error || !data) {
-    if (error?.code === 'P0002') {
-      throw new ValidationError('Event not found', 404);
-    }
-
-    console.error('Create event edition transaction error:', error);
-    throw new Error('Failed to create event edition');
-  }
-
-  const detail = await getEventByIdForAdmin(data as string);
+  validateRaces(input.races);
+  const detail = await getEventByIdForAdmin(
+    await insertEventEdition(eventId, input),
+  );
 
   if (!detail) {
     throw new ValidationError('Event not found', 404);

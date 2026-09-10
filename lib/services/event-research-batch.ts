@@ -1,6 +1,6 @@
 import { start } from 'workflow/api';
 
-import { parseEventInput } from '@/app/api/events/validation';
+import { parseEventInput } from '@/lib/events/write-validation';
 import {
   completeEventResearchItem,
   createEventResearchBatch,
