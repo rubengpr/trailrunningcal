@@ -15,6 +15,7 @@ export const API_AUTHORIZATION_POLICY = {
   'POST /api/events/[eventId]/description-draft': 'admin',
   'PATCH /api/events/[eventId]/description': 'admin',
   'POST /api/events/[eventId]/drafts': 'admin',
+  'GET /api/events/[eventId]/tracks': 'public',
   'PATCH /api/events/[eventId]': 'admin',
   'DELETE /api/events/[eventId]': 'admin',
   'GET /api/events/description-batch-items/[itemId]': 'admin',
@@ -44,6 +45,7 @@ export const API_AUTHORIZATION_POLICY = {
   'GET /api/events/updates/batches': 'admin',
   'GET /api/events/updates/batches/[batchId]': 'admin',
   'POST /api/events/updates/batches/[batchId]/items/[itemId]/retry': 'admin',
+  'POST /api/events/updates/batches/[batchId]/resume': 'admin',
   'GET /api/events': 'public',
   'POST /api/events': 'admin',
   'GET /api/health': 'public',
@@ -64,6 +66,7 @@ export const API_AUTHORIZATION_POLICY = {
 export const PUBLIC_API_REASONS = {
   'POST /api/event-locations': 'Returns coordinates for public calendar locations.',
   'GET /api/events': 'Returns paginated public calendar event data.',
+  'GET /api/events/[eventId]/tracks': 'Returns published route geometry for a public calendar event.',
   'POST /api/events/favorites': 'Returns public event data for locally stored favorites.',
   'GET /api/health': 'Exposes operational health data without protected records.',
   'GET /api/me': 'Reports anonymous users as non-admin without exposing identity data.',
