@@ -12,6 +12,7 @@ const mocks = vi.hoisted(() => ({
   createBatch: vi.fn(),
   failItem: vi.fn(),
   getBatch: vi.fn(),
+  getBatchSummaries: vi.fn(),
   listBatches: vi.fn(),
   getItem: vi.fn(),
   getItems: vi.fn(),
@@ -28,6 +29,7 @@ vi.mock('@/lib/db/event-research-batches', () => ({
   completeEventResearchItem: mocks.completeItem,
   createEventResearchBatch: mocks.createBatch,
   failEventResearchItem: mocks.failItem,
+  getBatchSummaries: mocks.getBatchSummaries,
   getEventResearchBatch: mocks.getBatch,
   listEventResearchBatches: mocks.listBatches,
   getEventResearchItem: mocks.getItem,
@@ -258,12 +260,10 @@ describe('listEventResearchBatchHistory', () => {
   it('returns each persisted batch with its item status summary', async () => {
     const older = { ...batch, id: 'batch-older' };
     mocks.listBatches.mockResolvedValue([batch, older]);
-    mocks.getItems
-      .mockResolvedValueOnce([
-        { ...item(1), status: 'completed' },
-        { ...item(2), status: 'failed', error: 'timeout' },
-      ])
-      .mockResolvedValueOnce([item(3)]);
+    mocks.getBatchSummaries.mockResolvedValue(new Map([
+      [batch.id, { total: 2, pending: 0, running: 0, completed: 1, failed: 1 }],
+      [older.id, { total: 1, pending: 1, running: 0, completed: 0, failed: 0 }],
+    ]));
 
     await expect(listEventResearchBatchHistory()).resolves.toEqual([
       {
@@ -276,5 +276,10 @@ describe('listEventResearchBatchHistory', () => {
       },
     ]);
     expect(mocks.listBatches).toHaveBeenCalledWith();
+    expect(mocks.getBatchSummaries).toHaveBeenCalledWith([
+      batch.id,
+      older.id,
+    ]);
+    expect(mocks.getItems).not.toHaveBeenCalled();
   });
 });

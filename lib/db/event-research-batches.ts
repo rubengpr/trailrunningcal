@@ -13,7 +13,9 @@ import type {
   EventResearchBatchItem,
   EventResearchBatchItemRow,
   EventResearchBatchRow,
+  EventResearchBatchSummary,
   EventResearchBatchStatus,
+  EventResearchItemStatus,
   EventResearchUsage,
 } from '@/types/event-research.types';
 import type { TrailEventAgentParsed } from '@/types/trail-event-agent.types';
@@ -126,6 +128,41 @@ export async function listEventResearchBatches(
   }
 
   return ((data ?? []) as EventResearchBatchRow[]).map(toBatch);
+}
+
+export async function getBatchSummaries(
+  batchIds: string[],
+): Promise<Map<string, EventResearchBatchSummary>> {
+  if (batchIds.length === 0) return new Map();
+
+  const { data, error } = await createAdminClient()
+    .from('event_research_batch_items')
+    .select('batch_id, status')
+    .in('batch_id', batchIds);
+
+  if (error) {
+    console.error('Event research batch summaries fetch error:', error);
+    throw new Error('Failed to fetch event research batch summaries');
+  }
+
+  const summaries = new Map<string, EventResearchBatchSummary>();
+  for (const row of (data ?? []) as Array<{
+    batch_id: string;
+    status: EventResearchItemStatus;
+  }>) {
+    const summary = summaries.get(row.batch_id) ?? {
+      total: 0,
+      pending: 0,
+      running: 0,
+      completed: 0,
+      failed: 0,
+    };
+    summary.total += 1;
+    summary[row.status] += 1;
+    summaries.set(row.batch_id, summary);
+  }
+
+  return summaries;
 }
 
 export async function getEventResearchItems(

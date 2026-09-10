@@ -5,6 +5,7 @@ import {
   completeEventResearchItem,
   createEventResearchBatch,
   failEventResearchItem,
+  getBatchSummaries,
   getEventResearchBatch,
   listEventResearchBatches,
   getEventResearchItem,
@@ -95,14 +96,18 @@ export async function listEventResearchBatchHistory(): Promise<
   EventResearchBatchHistoryEntry[]
 > {
   const batches = await listEventResearchBatches();
-  const entries = await Promise.all(
-    batches.map(async (batch) => ({
-      batch,
-      summary: buildSummary(await getEventResearchItems(batch.id)),
-    })),
-  );
+  const summaries = await getBatchSummaries(batches.map(({ id }) => id));
 
-  return entries;
+  return batches.map((batch) => ({
+    batch,
+    summary: summaries.get(batch.id) ?? {
+      total: 0,
+      pending: 0,
+      running: 0,
+      completed: 0,
+      failed: 0,
+    },
+  }));
 }
 
 export async function startEventResearchBatch(eventNames: string[]): Promise<{
