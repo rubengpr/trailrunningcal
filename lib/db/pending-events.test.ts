@@ -5,13 +5,14 @@ const mocks = vi.hoisted(() => ({
   select: vi.fn(),
   eq: vi.fn(),
   order: vi.fn(),
+  rpc: vi.fn(),
 }));
 
 vi.mock('@/lib/supabase/server', () => ({
-  createAdminClient: () => ({ from: mocks.from }),
+  createAdminClient: () => ({ from: mocks.from, rpc: mocks.rpc }),
 }));
 
-import { getPendingEvents } from './pending-events';
+import { enqueuePendingEvents, getPendingEvents } from './pending-events';
 
 beforeEach(() => {
   vi.resetAllMocks();
@@ -55,5 +56,43 @@ describe('getPendingEvents', () => {
     expect(mocks.order).toHaveBeenCalledWith('created_at', {
       ascending: false,
     });
+  });
+});
+
+describe('enqueuePendingEvents', () => {
+  it('delegates the whole queue operation to one atomic RPC', async () => {
+    const added = [{
+      id: 'pending-1',
+      url: 'https://example.com/new',
+      status: 'pending',
+      createdAt: '2026-09-10T20:00:00.000Z',
+      updatedAt: '2026-09-10T20:00:00.000Z',
+    }];
+    const skipped = [{
+      url: 'https://example.com/existing',
+      reason: 'alreadyInEvents',
+    }];
+    mocks.rpc.mockResolvedValue({ data: { added, skipped }, error: null });
+
+    await expect(enqueuePendingEvents([
+      'https://example.com/new',
+      'https://example.com/existing',
+    ])).resolves.toEqual({ added, skipped });
+
+    expect(mocks.rpc).toHaveBeenCalledOnce();
+    expect(mocks.rpc).toHaveBeenCalledWith('enqueue_pending_events', {
+      p_urls: [
+        'https://example.com/new',
+        'https://example.com/existing',
+      ],
+    });
+  });
+
+  it('propagates transaction failures instead of returning a partial result', async () => {
+    mocks.rpc.mockResolvedValue({ data: null, error: { message: 'failed' } });
+
+    await expect(enqueuePendingEvents(['https://example.com/new'])).rejects.toThrow(
+      'Failed to enqueue pending events',
+    );
   });
 });

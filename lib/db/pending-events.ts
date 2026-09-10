@@ -1,6 +1,10 @@
 import { createAdminClient } from '@/lib/supabase/server';
 import { ValidationError } from '@/lib/errors';
-import type { PendingEvent, PendingEventRow } from '@/types/pending-event.types';
+import type {
+  PendingEvent,
+  PendingEventRow,
+  SkippedUrl,
+} from '@/types/pending-event.types';
 
 function toPendingEvent(row: PendingEventRow): PendingEvent {
   return {
@@ -11,8 +15,6 @@ function toPendingEvent(row: PendingEventRow): PendingEvent {
     updatedAt: row.updated_at,
   };
 }
-
-type AdminClient = ReturnType<typeof createAdminClient>;
 
 export async function getPendingEvents(): Promise<PendingEvent[]> {
   const supabase = createAdminClient();
@@ -29,32 +31,6 @@ export async function getPendingEvents(): Promise<PendingEvent[]> {
   }
 
   return ((data ?? []) as PendingEventRow[]).map(toPendingEvent);
-}
-
-export async function isUrlInEvents(
-  supabase: AdminClient,
-  url: string,
-): Promise<boolean> {
-  const { data, error } = await supabase
-    .from('events')
-    .select('id')
-    .eq('website_url', url)
-    .limit(1);
-  if (error) throw error;
-  return (data?.length ?? 0) > 0;
-}
-
-export async function isUrlInPendingEvents(
-  supabase: AdminClient,
-  url: string,
-): Promise<boolean> {
-  const { data, error } = await supabase
-    .from('pending_events')
-    .select('id')
-    .eq('url', url)
-    .limit(1);
-  if (error) throw error;
-  return (data?.length ?? 0) > 0;
 }
 
 export async function deletePendingEvent(id: string): Promise<void> {
@@ -77,20 +53,53 @@ export async function deletePendingEvent(id: string): Promise<void> {
   }
 }
 
-export async function insertPendingEvent(
-  supabase: AdminClient,
-  url: string,
-): Promise<PendingEvent | null> {
-  const { data, error } = await supabase
-    .from('pending_events')
-    .insert({ url })
-    .select('id, url, status, created_at, updated_at')
-    .single();
+function isPendingEvent(value: unknown): value is PendingEvent {
+  if (typeof value !== 'object' || value === null) return false;
+  const row = value as Record<string, unknown>;
+  return (
+    typeof row.id === 'string' &&
+    typeof row.url === 'string' &&
+    ['pending', 'done', 'skipped'].includes(String(row.status)) &&
+    typeof row.createdAt === 'string' &&
+    typeof row.updatedAt === 'string'
+  );
+}
 
-  if (error || !data) {
-    console.error('Pending event insert error:', error);
-    return null;
+function isSkippedUrl(value: unknown): value is SkippedUrl {
+  if (typeof value !== 'object' || value === null) return false;
+  const row = value as Record<string, unknown>;
+  return typeof row.url === 'string' && typeof row.reason === 'string';
+}
+
+export async function enqueuePendingEvents(urls: string[]): Promise<{
+  added: PendingEvent[];
+  skipped: SkippedUrl[];
+}> {
+  if (urls.length === 0) return { added: [], skipped: [] };
+
+  const { data, error } = await createAdminClient().rpc(
+    'enqueue_pending_events',
+    { p_urls: urls },
+  );
+
+  if (error) {
+    console.error('Pending event enqueue error:', error);
+    throw new Error('Failed to enqueue pending events');
   }
 
-  return toPendingEvent(data as PendingEventRow);
+  if (typeof data !== 'object' || data === null || Array.isArray(data)) {
+    throw new Error('Invalid pending event enqueue result');
+  }
+
+  const result = data as Record<string, unknown>;
+  if (
+    !Array.isArray(result.added) ||
+    !result.added.every(isPendingEvent) ||
+    !Array.isArray(result.skipped) ||
+    !result.skipped.every(isSkippedUrl)
+  ) {
+    throw new Error('Invalid pending event enqueue result');
+  }
+
+  return { added: result.added, skipped: result.skipped };
 }
