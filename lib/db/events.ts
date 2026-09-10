@@ -559,7 +559,7 @@ export async function getEventsByUrl(
 
   if (error) {
     console.error('Failed to fetch event URL conflicts:', error);
-    return [];
+    throw new Error('Failed to fetch event URL conflicts');
   }
 
   return (data ?? []).map(
