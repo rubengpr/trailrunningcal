@@ -1,0 +1,6 @@
+interface:
+  display_name: "Backend API Audit"
+  short_description: "Audit backend and API refactor opportunities"
+  default_prompt: "Use $backend-api-audit to audit this repository for concrete backend and API refactor opportunities."
+policy:
+  allow_implicit_invocation: false
