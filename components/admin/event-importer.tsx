@@ -38,10 +38,6 @@ import {
     getEventImportBatchStatus,
     getEventImportItemResult,
     updateEventImportItemResult,
-    startEventResearchBatch,
-    getEventResearchBatchHistory,
-    getEventResearchBatchStatus,
-    retryEventResearchItem,
 } from '@/lib/api/events';
 import {
     OPENROUTER_SCRAPE_MODEL_IDS,
@@ -54,10 +50,6 @@ import { useFileUpload } from '@/hooks/use-file-upload';
 
 import { normalizeUrl } from '@/lib/validation';
 import type { EventImportBatchSnapshot, EventImportResult, EventImportWorkflow } from '@/types/events-import-api.types';
-import type {
-    EventResearchBatchHistoryEntry,
-    EventResearchBatchSnapshot,
-} from '@/types/event-research.types';
 import type {
     TrailEventAgentEvent,
     TrailEventAgentRace,
@@ -83,7 +75,8 @@ import {
     computeFullPipelineCrawlStepMs,
     computeFullPipelineLlmStepMs,
 } from '@/components/admin/event-importer/full-pipeline-steps';
-import { computeBatchRows, computeResearchRows } from '@/components/admin/event-importer/bulk-process-rows';
+import { computeBatchRows } from '@/components/admin/event-importer/bulk-process-rows';
+import { useResearchWorkflow } from '@/components/admin/event-importer/use-research-workflow';
 
 interface EventImporterProps {
     pendingEntries: PendingEvent[];
@@ -124,16 +117,10 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
     const [isSavingDraft, setIsSavingDraft] = useState(false);
     const [isAddingToPending, setIsAddingToPending] = useState(false);
     const fetchedBatchItemIds = useRef<Set<string>>(new Set());
-    const [researchNamesInput, setResearchNamesInput] = useState('');
-    const [researchHistory, setResearchHistory] = useState<EventResearchBatchHistoryEntry[]>([]);
-    const [isLoadingResearchHistory, setIsLoadingResearchHistory] = useState(false);
-    const [researchHistoryError, setResearchHistoryError] = useState(false);
-    const [activeResearchBatchId, setActiveResearchBatchId] = useState<string | null>(null);
-    const [researchSnapshot, setResearchSnapshot] = useState<EventResearchBatchSnapshot | null>(null);
-    const [isStartingResearch, setIsStartingResearch] = useState(false);
-    const [retryingResearchItemId, setRetryingResearchItemId] = useState<string | null>(null);
     const [importConflicts, setImportConflicts] = useState<ConflictingRace[]>([]);
     const { isOpen: isConflictModalOpen, open: openConflictModal, close: closeConflictModal } = useModal();
+
+    const research = useResearchWorkflow({ t, workflow });
 
     const [state, dispatch] = useReducer(scrapeReducer, initialScrapeState);
     const {
@@ -210,28 +197,6 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
     const isBatchRunning =
         batchSnapshot?.batch.status === 'pending' || batchSnapshot?.batch.status === 'running';
 
-    const parsedResearchNames = useMemo((): string[] => {
-        const unique = new Map<string, string>();
-        for (const rawName of researchNamesInput.split(/\r?\n/)) {
-            const name = rawName.trim();
-            if (!name) continue;
-            const key = name.normalize('NFKC').toLocaleLowerCase('es');
-            if (!unique.has(key)) unique.set(key, name);
-        }
-        return [...unique.values()];
-    }, [researchNamesInput]);
-
-    const isResearchRunning =
-        researchSnapshot?.batch.status === 'pending' ||
-        researchSnapshot?.batch.status === 'running';
-
-    const canRunResearch =
-        parsedResearchNames.length > 0 &&
-        parsedResearchNames.length <= 50 &&
-        parsedResearchNames.every((name) => name.length >= 2 && name.length <= 200) &&
-        !isStartingResearch &&
-        !isResearchRunning;
-
     const canRunBatch =
         parsedBatchUrls.length > 0 &&
         parsedBatchUrls.every(isValidUrl) &&
@@ -243,7 +208,7 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
         (workflow === 'bulk'
             ? canRunBatch
             : workflow === 'research'
-                ? canRunResearch
+                ? research.canRunResearch
             : workflow === 'full' || workflow === 'ingest'
                 ? isValidUrl(websiteUrl)
                 : uploadKind === 'images'
@@ -330,76 +295,13 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
         }
     };
 
-    const fetchResearchStatus = useCallback(async (batchId: string): Promise<EventResearchBatchSnapshot> => {
-        const data = await getEventResearchBatchStatus(batchId);
-        setResearchSnapshot(data);
-        return data;
-    }, []);
-
-    const fetchResearchHistory = useCallback(async (): Promise<void> => {
-        setIsLoadingResearchHistory(true);
-        setResearchHistoryError(false);
-        try {
-            setResearchHistory(await getEventResearchBatchHistory());
-        } catch {
-            setResearchHistoryError(true);
-        } finally {
-            setIsLoadingResearchHistory(false);
-        }
-    }, []);
-
-    const handleSelectResearchBatch = async (batchId: string): Promise<void> => {
-        setActiveResearchBatchId(batchId);
-        setResearchSnapshot(null);
-        try {
-            await fetchResearchStatus(batchId);
-        } catch (error) {
-            toast.error(error instanceof Error ? error.message : t('research.pollError'));
-        }
-    };
-
-    const handleStartResearch = async (): Promise<void> => {
-        setIsStartingResearch(true);
-        setResearchSnapshot(null);
-        setActiveResearchBatchId(null);
-        try {
-            const data = await startEventResearchBatch(parsedResearchNames);
-            setActiveResearchBatchId(data.batchId);
-            await fetchResearchStatus(data.batchId);
-            await fetchResearchHistory();
-            toast.success(parsedResearchNames.length === 1
-                ? t('research.startSuccessOne')
-                : t('research.startSuccess', { count: parsedResearchNames.length }));
-        } catch (error) {
-            toast.error(error instanceof Error ? error.message : t('research.runError'));
-        } finally {
-            setIsStartingResearch(false);
-        }
-    };
-
-    const handleRetryResearchItem = async (itemId: string): Promise<void> => {
-        if (retryingResearchItemId) return;
-        setRetryingResearchItemId(itemId);
-        try {
-            const data = await retryEventResearchItem(itemId);
-            setActiveResearchBatchId(data.batchId);
-            await fetchResearchStatus(data.batchId);
-            await fetchResearchHistory();
-            toast.success(t('research.retrySuccess'));
-        } catch (error) {
-            toast.error(error instanceof Error ? error.message : t('research.retryError'));
-        } finally {
-            setRetryingResearchItemId(null);
-        }
-    };
-
     const handleRunWorkflow = async () => {
         if (workflow === 'bulk') {
             await handleStartBatchImport();
             return;
         }
         if (workflow === 'research') {
-            await handleStartResearch();
+            await research.handleStartResearch();
             return;
         }
 
@@ -521,23 +423,6 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
 
         return () => window.clearInterval(intervalId);
     }, [activeBatchId, batchSnapshot, fetchBatchStatus, t]);
-
-    useEffect(() => {
-        if (!activeResearchBatchId || !isResearchRunning) return;
-        const intervalId = window.setInterval(() => {
-            void fetchResearchStatus(activeResearchBatchId).catch((error) => {
-                console.error('Event research batch polling error:', error);
-                toast.error(t('research.pollError'));
-                setActiveResearchBatchId(null);
-            });
-        }, 3000);
-        return () => window.clearInterval(intervalId);
-    }, [activeResearchBatchId, fetchResearchStatus, isResearchRunning, t]);
-
-    useEffect(() => {
-        if (workflow !== 'research') return;
-        void fetchResearchHistory();
-    }, [fetchResearchHistory, workflow]);
 
     useEffect(() => {
         if (!batchSnapshot || isBatchRunning) return;
@@ -789,14 +674,12 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
     };
 
     const handleRestart = (): void => {
-        if (isScraping || isStartingBatch || isStartingResearch) return;
+        if (isScraping || isStartingBatch || research.isStartingResearch) return;
         setWebsiteUrl('');
         setBatchUrlsInput('');
         setActiveBatchId(null);
         setBatchSnapshot(null);
-        setResearchNamesInput('');
-        setActiveResearchBatchId(null);
-        setResearchSnapshot(null);
+        research.resetResearch();
         setViewingBatchItemId(null);
         setSavedDraftId(null);
         setSavedBatchDraftId(null);
@@ -898,11 +781,6 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
         [batchSnapshot],
     );
 
-    const researchRows = useMemo(
-        (): BulkProcessTableRow[] => computeResearchRows(researchSnapshot, t),
-        [researchSnapshot, t],
-    );
-
     const reviewingBatchItem = reviewingBatchItemId
         ? batchSnapshot?.items.find((item) => item.id === reviewingBatchItemId) ?? null
         : null;
@@ -933,7 +811,7 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                         ]}
                         activeId={workflow}
                         onChange={(id) => handleWorkflowChange(id as ScrapeWorkflow)}
-                        disabled={isScraping || isStartingBatch || isStartingResearch}
+                        disabled={isScraping || isStartingBatch || research.isStartingResearch}
                     />
 
                     {workflow === 'bulk' && (
@@ -960,17 +838,17 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
 
                     {workflow === 'research' && (
                         <ResearchWorkflowPanel
-                            namesInput={researchNamesInput}
-                            parsedNamesCount={parsedResearchNames.length}
-                            isStarting={isStartingResearch}
-                            isRunning={isResearchRunning}
-                            history={researchHistory}
-                            activeBatchId={activeResearchBatchId}
-                            isLoadingHistory={isLoadingResearchHistory}
-                            hasHistoryError={researchHistoryError}
-                            onNamesInputChange={setResearchNamesInput}
-                            onSelectBatch={(batchId) => void handleSelectResearchBatch(batchId)}
-                            onRetryHistory={() => void fetchResearchHistory()}
+                            namesInput={research.researchNamesInput}
+                            parsedNamesCount={research.parsedResearchNames.length}
+                            isStarting={research.isStartingResearch}
+                            isRunning={research.isResearchRunning}
+                            history={research.researchHistory}
+                            activeBatchId={research.activeResearchBatchId}
+                            isLoadingHistory={research.isLoadingResearchHistory}
+                            hasHistoryError={research.researchHistoryError}
+                            onNamesInputChange={research.setResearchNamesInput}
+                            onSelectBatch={(batchId) => void research.handleSelectResearchBatch(batchId)}
+                            onRetryHistory={() => void research.fetchResearchHistory()}
                         />
                     )}
 
@@ -1005,7 +883,7 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                         canRun={canRunWorkflow}
                         isScraping={isScraping}
                         isStartingBatch={isStartingBatch}
-                        isStartingResearch={isStartingResearch}
+                        isStartingResearch={research.isStartingResearch}
                         primaryLoadingLabel={primaryLoadingLabel}
                         scrapeMarkdown={scrapeMarkdown}
                         rawModelOutput={rawModelOutput}
@@ -1099,24 +977,24 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                     />
                 </div>
             )}
-            {workflow === 'research' && researchRows.length > 0 && (
+            {workflow === 'research' && research.researchRows.length > 0 && (
                 <div>
-                    {researchSnapshot ? (
+                    {research.researchSnapshot ? (
                         <p className="mb-2 text-xs text-gray-500">
                             {t('research.statusSummary', {
-                                completed: researchSnapshot.summary.completed,
-                                failed: researchSnapshot.summary.failed,
-                                total: researchSnapshot.summary.total,
+                                completed: research.researchSnapshot.summary.completed,
+                                failed: research.researchSnapshot.summary.failed,
+                                total: research.researchSnapshot.summary.total,
                             })}
                         </p>
                     ) : null}
                     <BulkProcessTable
-                        rows={researchRows}
+                        rows={research.researchRows}
                         translationsNamespace="admin.events.import.research"
                         primaryColumnKey="eventName"
-                        retryingRowId={retryingResearchItemId}
+                        retryingRowId={research.retryingResearchItemId}
                         onRetry={(itemId) => {
-                            void handleRetryResearchItem(itemId);
+                            void research.handleRetryResearchItem(itemId);
                         }}
                     />
                 </div>
