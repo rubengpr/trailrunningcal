@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import { useMemo, useReducer, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
 import type { ComboboxOption } from '@/components/ui/combobox';
@@ -27,17 +27,11 @@ import {
     DUMMY_SCRAPED_EVENT_RACES,
 } from '@/components/admin/scrape-preview.mock';
 import { BulkProcessTable } from '@/components/admin/bulk-process-table';
-import type { BulkProcessTableRow } from '@/components/admin/bulk-process-table';
 import {
     runTrailEventAgent,
     runEventImport,
     acceptScrapedEvent,
-    acceptEventImportItem,
     saveEventImportDraft,
-    startEventImportBatch,
-    getEventImportBatchStatus,
-    getEventImportItemResult,
-    updateEventImportItemResult,
 } from '@/lib/api/events';
 import {
     OPENROUTER_SCRAPE_MODEL_IDS,
@@ -49,7 +43,7 @@ import { useLiveTimer } from '@/hooks/use-live-timer';
 import { useFileUpload } from '@/hooks/use-file-upload';
 
 import { normalizeUrl } from '@/lib/validation';
-import type { EventImportBatchSnapshot, EventImportResult, EventImportWorkflow } from '@/types/events-import-api.types';
+import type { EventImportResult, EventImportWorkflow } from '@/types/events-import-api.types';
 import type {
     TrailEventAgentEvent,
     TrailEventAgentRace,
@@ -75,8 +69,8 @@ import {
     computeFullPipelineCrawlStepMs,
     computeFullPipelineLlmStepMs,
 } from '@/components/admin/event-importer/full-pipeline-steps';
-import { computeBatchRows } from '@/components/admin/event-importer/bulk-process-rows';
 import { useResearchWorkflow } from '@/components/admin/event-importer/use-research-workflow';
+import { useBatchImport } from '@/components/admin/event-importer/use-batch-import';
 
 interface EventImporterProps {
     pendingEntries: PendingEvent[];
@@ -104,19 +98,9 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
     const [selectedVisionModelId, setSelectedVisionModelId] = useState<OpenRouterVisionModelId>(
         OPENROUTER_VISION_MODEL_IDS[0],
     );
-    const [batchUrlsInput, setBatchUrlsInput] = useState('');
-    const [activeBatchId, setActiveBatchId] = useState<string | null>(null);
-    const [batchSnapshot, setBatchSnapshot] = useState<EventImportBatchSnapshot | null>(null);
-    const [isStartingBatch, setIsStartingBatch] = useState(false);
-    const [viewingBatchItemId, setViewingBatchItemId] = useState<string | null>(null);
-    const [reviewingBatchItemId, setReviewingBatchItemId] = useState<string | null>(null);
-    const [reviewingBatchResult, setReviewingBatchResult] = useState<EventImportResult | null>(null);
-    const [isAcceptingBatchItem, setIsAcceptingBatchItem] = useState(false);
     const [savedDraftId, setSavedDraftId] = useState<string | null>(null);
-    const [savedBatchDraftId, setSavedBatchDraftId] = useState<string | null>(null);
     const [isSavingDraft, setIsSavingDraft] = useState(false);
     const [isAddingToPending, setIsAddingToPending] = useState(false);
-    const fetchedBatchItemIds = useRef<Set<string>>(new Set());
     const [importConflicts, setImportConflicts] = useState<ConflictingRace[]>([]);
     const { isOpen: isConflictModalOpen, open: openConflictModal, close: closeConflictModal } = useModal();
 
@@ -154,10 +138,15 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
         dispatch({ type: 'RESULTS_CLEARED' });
     };
 
-    const closeBatchReview = useCallback((): void => {
-        setReviewingBatchItemId(null);
-        setReviewingBatchResult(null);
-    }, []);
+    const batch = useBatchImport({
+        t,
+        selectedModelId,
+        resetScrapeResults,
+        isSavingDraft,
+        setIsSavingDraft,
+        setImportConflicts,
+        openConflictModal,
+    });
 
     const handleAddToPending = async (): Promise<void> => {
         if (isAddingToPending || !websiteUrl) return;
@@ -184,29 +173,10 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
         uploadKind,
     } = fileUpload;
 
-    const parsedBatchUrls = useMemo((): string[] => {
-        const urls = batchUrlsInput
-            .split(/\r?\n/)
-            .map((url) => url.trim())
-            .filter(Boolean)
-            .map(normalizeUrl);
-
-        return Array.from(new Set(urls));
-    }, [batchUrlsInput]);
-
-    const isBatchRunning =
-        batchSnapshot?.batch.status === 'pending' || batchSnapshot?.batch.status === 'running';
-
-    const canRunBatch =
-        parsedBatchUrls.length > 0 &&
-        parsedBatchUrls.every(isValidUrl) &&
-        !isStartingBatch &&
-        !isBatchRunning;
-
     const canRunWorkflow =
         !isScraping &&
         (workflow === 'bulk'
-            ? canRunBatch
+            ? batch.canRunBatch
             : workflow === 'research'
                 ? research.canRunResearch
             : workflow === 'full' || workflow === 'ingest'
@@ -228,7 +198,7 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
             clearFullPipelineStepRefs();
         }
         if (next !== 'bulk') {
-            closeBatchReview();
+            batch.closeBatchReview();
         }
         setWorkflow(next);
         if (next !== 'llmFromFile') {
@@ -259,45 +229,9 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
         llmEndedAtRef.current = extractStep ? extractStep.durationMs : null;
     };
 
-    const fetchBatchStatus = useCallback(async (batchId: string): Promise<EventImportBatchSnapshot> => {
-        const data = await getEventImportBatchStatus(batchId);
-        setBatchSnapshot(data);
-        return data;
-    }, []);
-
-    const handleStartBatchImport = async (): Promise<void> => {
-        setIsStartingBatch(true);
-        setBatchSnapshot(null);
-        setActiveBatchId(null);
-        closeBatchReview();
-        resetScrapeResults();
-
-        try {
-            const result = await startEventImportBatch({
-                urls: parsedBatchUrls,
-                model: selectedModelId,
-            });
-
-            if (!result.ok) {
-                setImportConflicts(result.conflicts);
-                openConflictModal();
-                return;
-            }
-
-            setActiveBatchId(result.data.batchId);
-            await fetchBatchStatus(result.data.batchId);
-            toast.success(parsedBatchUrls.length === 1 ? t('bulk.startSuccessOne') : t('bulk.startSuccess', { count: parsedBatchUrls.length }));
-        } catch (err) {
-            const errorMessage = err instanceof Error ? err.message : t('bulk.runError');
-            toast.error(errorMessage);
-        } finally {
-            setIsStartingBatch(false);
-        }
-    };
-
     const handleRunWorkflow = async () => {
         if (workflow === 'bulk') {
-            await handleStartBatchImport();
+            await batch.handleStartBatchImport();
             return;
         }
         if (workflow === 'research') {
@@ -404,54 +338,6 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
         }
     };
 
-    useEffect(() => {
-        if (!activeBatchId || !batchSnapshot) {
-            return;
-        }
-
-        if (batchSnapshot.batch.status !== 'pending' && batchSnapshot.batch.status !== 'running') {
-            return;
-        }
-
-        const intervalId = window.setInterval(() => {
-            void fetchBatchStatus(activeBatchId).catch((error) => {
-                console.error('Race import batch polling error:', error);
-                toast.error(t('bulk.pollError'));
-                setActiveBatchId(null);
-            });
-        }, 3000);
-
-        return () => window.clearInterval(intervalId);
-    }, [activeBatchId, batchSnapshot, fetchBatchStatus, t]);
-
-    useEffect(() => {
-        if (!batchSnapshot || isBatchRunning) return;
-
-        const completedItems = batchSnapshot.items.filter(
-            (item) => item.status === 'completed' && !fetchedBatchItemIds.current.has(item.id),
-        );
-        if (completedItems.length === 0) return;
-
-        const itemIds = completedItems.map((item) => item.id);
-        itemIds.forEach((id) => fetchedBatchItemIds.current.add(id));
-    }, [batchSnapshot, isBatchRunning]);
-
-    const handleViewBatchResult = async (itemId: string): Promise<void> => {
-        setSavedBatchDraftId(null);
-        setViewingBatchItemId(itemId);
-
-        try {
-            const result = await getEventImportItemResult(itemId);
-            setReviewingBatchResult(result);
-            setReviewingBatchItemId(itemId);
-        } catch (err) {
-            const errorMessage = err instanceof Error ? err.message : t('bulk.resultError');
-            toast.error(errorMessage);
-        } finally {
-            setViewingBatchItemId(null);
-        }
-    };
-
     const handleAccept = async () => {
         if (!scrapedEvent) return;
         dispatch({ type: 'ACCEPTING_INDEX', index: 0 });
@@ -508,111 +394,6 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
         races: TrailEventAgentRace[],
     ): void => {
         dispatch({ type: 'REVIEW_EDITED', event, races });
-    };
-
-    const handleAcceptBatchItem = async (): Promise<void> => {
-        if (!reviewingBatchItemId || isAcceptingBatchItem) return;
-
-        setIsAcceptingBatchItem(true);
-
-        try {
-            const { eventId, eventSlug } = await acceptEventImportItem(reviewingBatchItemId);
-            const updatedAt = new Date().toISOString();
-
-            setBatchSnapshot((current) => {
-                if (!current) return current;
-
-                return {
-                    ...current,
-                    items: current.items.map((item) =>
-                        item.id === reviewingBatchItemId
-                            ? {
-                                ...item,
-                                reviewStatus: 'accepted',
-                                acceptedEventId: eventId,
-                                acceptedEventSlug: eventSlug,
-                                reviewedAt: updatedAt,
-                                updatedAt,
-                            }
-                            : item,
-                    ),
-                };
-            });
-            closeBatchReview();
-            toast.success(t('results.acceptSuccess'));
-        } catch {
-            toast.error(t('bulk.acceptError'));
-        } finally {
-            setIsAcceptingBatchItem(false);
-        }
-    };
-
-    const handleSaveBatchReview = async (
-        event: TrailEventAgentEvent,
-        races: TrailEventAgentRace[],
-    ): Promise<void> => {
-        if (!reviewingBatchItemId) return;
-
-        try {
-            const result = await updateEventImportItemResult(
-                reviewingBatchItemId,
-                { event, races },
-            );
-            setReviewingBatchResult(result);
-            setBatchSnapshot((current) => {
-                if (!current) return current;
-
-                const updatedAt = new Date().toISOString();
-                return {
-                    ...current,
-                    items: current.items.map((item) =>
-                        item.id === reviewingBatchItemId
-                            ? {
-                                ...item,
-                                raceCount: result.races.length,
-                                updatedAt,
-                            }
-                            : item,
-                    ),
-                };
-            });
-            toast.success(t('bulk.reviewSaveSuccess'));
-        } catch (error) {
-            toast.error(
-                error instanceof Error
-                    ? error.message
-                    : t('bulk.reviewSaveError'),
-            );
-            throw error;
-        }
-    };
-
-    const handleSaveBatchDraft = async (
-        event: TrailEventAgentEvent,
-        races: TrailEventAgentRace[],
-    ): Promise<void> => {
-        if (!reviewingBatchItem || isSavingDraft || savedBatchDraftId) return;
-        setIsSavingDraft(true);
-        try {
-            const draft = await saveEventImportDraft({
-                event,
-                races,
-                sourceUrl: reviewingBatchItem.url,
-                batchItemId: reviewingBatchItem.id,
-            });
-            setSavedBatchDraftId(draft.id);
-            setBatchSnapshot((current) => current ? {
-                ...current,
-                items: current.items.map((item) => item.id === reviewingBatchItem.id
-                    ? { ...item, savedDraftId: draft.id }
-                    : item),
-            } : current);
-            toast.success(t('results.draftSaved'));
-        } catch (error) {
-            toast.error(error instanceof Error ? error.message : t('results.draftSaveError'));
-        } finally {
-            setIsSavingDraft(false);
-        }
     };
 
     const handleSwitchToJsonView = (): void => {
@@ -674,17 +455,11 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
     };
 
     const handleRestart = (): void => {
-        if (isScraping || isStartingBatch || research.isStartingResearch) return;
+        if (isScraping || batch.isStartingBatch || research.isStartingResearch) return;
         setWebsiteUrl('');
-        setBatchUrlsInput('');
-        setActiveBatchId(null);
-        setBatchSnapshot(null);
+        batch.resetBatch();
         research.resetResearch();
-        setViewingBatchItemId(null);
         setSavedDraftId(null);
-        setSavedBatchDraftId(null);
-        closeBatchReview();
-        fetchedBatchItemIds.current.clear();
         fileUpload.clearUpload();
         runStartedAtRef.current = null;
         clearFullPipelineStepRefs();
@@ -776,15 +551,6 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
         });
     }, [workflow, fullPipelineUiActive, isScraping, scrapePhase, liveElapsedMs]);
 
-    const batchRows = useMemo(
-        (): BulkProcessTableRow[] => computeBatchRows(batchSnapshot),
-        [batchSnapshot],
-    );
-
-    const reviewingBatchItem = reviewingBatchItemId
-        ? batchSnapshot?.items.find((item) => item.id === reviewingBatchItemId) ?? null
-        : null;
-
     return (
         <div className="flex flex-col gap-8">
             <SectionHeader
@@ -811,7 +577,7 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                         ]}
                         activeId={workflow}
                         onChange={(id) => handleWorkflowChange(id as ScrapeWorkflow)}
-                        disabled={isScraping || isStartingBatch || research.isStartingResearch}
+                        disabled={isScraping || batch.isStartingBatch || research.isStartingResearch}
                     />
 
                     {workflow === 'bulk' && (
@@ -821,16 +587,16 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                             </label>
                             <textarea
                                 id="batchUrls"
-                                value={batchUrlsInput}
-                                onChange={(event) => setBatchUrlsInput(event.target.value)}
+                                value={batch.batchUrlsInput}
+                                onChange={(event) => batch.setBatchUrlsInput(event.target.value)}
                                 placeholder={t('bulk.urlsPlaceholder')}
-                                disabled={isStartingBatch || isBatchRunning}
+                                disabled={batch.isStartingBatch || batch.isBatchRunning}
                                 className="min-h-32 w-full resize-y rounded-xl border border-gray-200 bg-white p-3 text-sm text-gray-800 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-200/80 disabled:cursor-not-allowed disabled:opacity-60"
                                 spellCheck={false}
                             />
-                            {parsedBatchUrls.length > 0 && (
+                            {batch.parsedBatchUrls.length > 0 && (
                                 <p className="text-xs text-gray-500">
-                                    {parsedBatchUrls.length === 1 ? t('bulk.urlsHintOne') : t('bulk.urlsHint', { count: parsedBatchUrls.length })}
+                                    {batch.parsedBatchUrls.length === 1 ? t('bulk.urlsHintOne') : t('bulk.urlsHint', { count: batch.parsedBatchUrls.length })}
                                 </p>
                             )}
                         </div>
@@ -871,8 +637,8 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                         selectedVisionModelId={selectedVisionModelId}
                         uploadKind={uploadKind}
                         isScraping={isScraping}
-                        isStartingBatch={isStartingBatch}
-                        isBatchRunning={isBatchRunning}
+                        isStartingBatch={batch.isStartingBatch}
+                        isBatchRunning={batch.isBatchRunning}
                         onWebsiteUrlChange={setWebsiteUrl}
                         onSourceModeChange={setSourceMode}
                         onModelChange={setSelectedModelId}
@@ -882,7 +648,7 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                         workflow={workflow}
                         canRun={canRunWorkflow}
                         isScraping={isScraping}
-                        isStartingBatch={isStartingBatch}
+                        isStartingBatch={batch.isStartingBatch}
                         isStartingResearch={research.isStartingResearch}
                         primaryLoadingLabel={primaryLoadingLabel}
                         scrapeMarkdown={scrapeMarkdown}
@@ -957,22 +723,22 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                     isDraftSaved={savedDraftId !== null}
                 />
             )}
-            {workflow === 'bulk' && batchRows.length > 0 && (
+            {workflow === 'bulk' && batch.batchRows.length > 0 && (
                 <div>
-                    {batchSnapshot && (
+                    {batch.batchSnapshot && (
                         <p className="mb-2 text-xs text-gray-500">
                             {t('bulk.statusSummary', {
-                                completed: batchSnapshot.summary.completed,
-                                failed: batchSnapshot.summary.failed,
+                                completed: batch.batchSnapshot.summary.completed,
+                                failed: batch.batchSnapshot.summary.failed,
                             })}
                         </p>
                     )}
                     <BulkProcessTable
-                        rows={batchRows}
+                        rows={batch.batchRows}
                         translationsNamespace="admin.events.import.bulk"
-                        viewingRowId={viewingBatchItemId}
+                        viewingRowId={batch.viewingBatchItemId}
                         onViewResult={(itemId) => {
-                            void handleViewBatchResult(itemId);
+                            void batch.handleViewBatchResult(itemId);
                         }}
                     />
                 </div>
@@ -1000,26 +766,26 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                 </div>
             )}
             <EventImportPreviewModal
-                isOpen={reviewingBatchResult !== null && reviewingBatchItem !== null}
+                isOpen={batch.reviewingBatchResult !== null && batch.reviewingBatchItem !== null}
                 closeLabel={t('bulk.closePreview')}
-                onClose={closeBatchReview}
+                onClose={batch.closeBatchReview}
             >
-                {reviewingBatchResult && reviewingBatchItem ? (
+                {batch.reviewingBatchResult && batch.reviewingBatchItem ? (
                     <EventImportPreview
-                        event={reviewingBatchResult.event}
-                        races={reviewingBatchResult.races}
+                        event={batch.reviewingBatchResult.event}
+                        races={batch.reviewingBatchResult.races}
                         isLoading={false}
                         error={null}
-                        onAccept={handleAcceptBatchItem}
-                        isAccepted={reviewingBatchItem.reviewStatus === 'accepted'}
-                        isAccepting={isAcceptingBatchItem}
+                        onAccept={batch.handleAcceptBatchItem}
+                        isAccepted={batch.reviewingBatchItem.reviewStatus === 'accepted'}
+                        isAccepting={batch.isAcceptingBatchItem}
                         onReject={() => undefined}
                         isRejected={false}
                         showReject={false}
-                        onSaveReview={handleSaveBatchReview}
-                        onSaveDraft={handleSaveBatchDraft}
+                        onSaveReview={batch.handleSaveBatchReview}
+                        onSaveDraft={batch.handleSaveBatchDraft}
                         isSavingDraft={isSavingDraft}
-                        isDraftSaved={savedBatchDraftId !== null || reviewingBatchItem.savedDraftId !== null}
+                        isDraftSaved={batch.savedBatchDraftId !== null || batch.reviewingBatchItem.savedDraftId !== null}
                     />
                 ) : null}
             </EventImportPreviewModal>
