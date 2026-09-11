@@ -14,7 +14,6 @@ import { ImportFileUploadPanel } from '@/components/admin/import-file-upload-pan
 import { ImportWorkflowFields } from '@/components/admin/import-workflow-fields';
 import { ImportWorkflowControls } from '@/components/admin/import-workflow-controls';
 import { ResearchWorkflowPanel } from '@/components/admin/research-workflow-panel';
-import { type ImportPipelineRowConfig } from '@/components/admin/import-pipeline-progress';
 import { ImportCostSummary } from '@/components/admin/import-cost-summary';
 import { cleanUrl } from '@/lib/utils/url';
 import {
@@ -80,6 +79,11 @@ import {
     isValidUrl,
     findStep,
 } from '@/components/admin/event-importer/workflow-helpers';
+import {
+    computeFullPipelineSteps,
+    computeFullPipelineCrawlStepMs,
+    computeFullPipelineLlmStepMs,
+} from '@/components/admin/event-importer/full-pipeline-steps';
 
 interface EventImporterProps {
     pendingEntries: PendingEvent[];
@@ -841,97 +845,52 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
 
     const showLlmMetricsUi = workflow !== 'ingest' && workflow !== 'bulk' && workflow !== 'research';
 
-    const fullPipelineSteps = useMemo((): {
-        row1: ImportPipelineRowConfig;
-        row2: ImportPipelineRowConfig;
-    } | null => {
-        if (workflow !== 'full' || !fullPipelineUiActive) {
-            return null;
-        }
-        if (!isScraping && !hasScraped) {
-            return null;
-        }
-        let row1: ImportPipelineRowConfig;
-        if (isScraping && scrapePhase === 'crawling') {
-            row1 = { kind: 'loading', titleKey: 'fullPipelineCrawlingWebsite' };
-        } else if (isScraping && scrapePhase === 'llm') {
-            row1 = { kind: 'success', titleKey: 'fullPipelineCrawlSuccess' };
-        } else if (!isScraping && hasScraped && scrapeError && !scrapeMarkdown) {
-            row1 = { kind: 'error', titleKey: 'crawlError', errorDetail: scrapeError };
-        } else if (!isScraping && hasScraped && scrapeError && scrapeMarkdown) {
-            row1 = { kind: 'success', titleKey: 'fullPipelineCrawlSuccess' };
-        } else if (!isScraping && hasScraped && !scrapeError) {
-            row1 = { kind: 'success', titleKey: 'fullPipelineCrawlSuccess' };
-        } else {
-            row1 = { kind: 'loading', titleKey: 'fullPipelineCrawlingWebsite' };
-        }
+    const fullPipelineSteps = useMemo(
+        () =>
+            computeFullPipelineSteps({
+                workflow,
+                fullPipelineUiActive,
+                isScraping,
+                hasScraped,
+                scrapePhase,
+                scrapeError,
+                scrapeMarkdown,
+            }),
+        [
+            workflow,
+            fullPipelineUiActive,
+            isScraping,
+            hasScraped,
+            scrapePhase,
+            scrapeError,
+            scrapeMarkdown,
+        ],
+    );
 
-        let row2: ImportPipelineRowConfig;
-        if (isScraping && scrapePhase === 'crawling') {
-            row2 = { kind: 'loading', titleKey: 'fullPipelineWaitingForCrawl' };
-        } else if (isScraping && scrapePhase === 'llm') {
-            row2 = { kind: 'loading', titleKey: 'fullPipelineParsingWithLlm' };
-        } else if (!isScraping && hasScraped && !scrapeError) {
-            row2 = { kind: 'success', titleKey: 'fullPipelineParseSuccess' };
-        } else if (!isScraping && hasScraped && scrapeError && !scrapeMarkdown) {
-            row2 = { kind: 'pending' };
-        } else if (!isScraping && hasScraped && scrapeError && scrapeMarkdown) {
-            row2 = { kind: 'error', titleKey: 'llmError', errorDetail: scrapeError };
-        } else if (isScraping) {
-            row2 = { kind: 'loading', titleKey: 'fullPipelineWaitingForCrawl' };
-        } else {
-            row2 = { kind: 'pending' };
-        }
-
-        return { row1, row2 };
-    }, [
-        workflow,
-        fullPipelineUiActive,
-        isScraping,
-        hasScraped,
-        scrapePhase,
-        scrapeError,
-        scrapeMarkdown,
-    ]);
-
-    const fullPipelineCrawlStepMs = useMemo((): number | null => {
+    const fullPipelineCrawlStepMs = useMemo(() => {
         // Keep this memo recalculating on the live timer tick while crawling is active.
         void liveElapsedMs;
-        if (workflow !== 'full' || !fullPipelineUiActive) {
-            return null;
-        }
-        if (crawlStartedAtRef.current === null) {
-            return null;
-        }
-        if (crawlEndedAtRef.current !== null) {
-            return Math.round(
-                crawlEndedAtRef.current - crawlStartedAtRef.current,
-            );
-        }
-        if (isScraping && scrapePhase === 'crawling') {
-            return Math.round(performance.now() - crawlStartedAtRef.current);
-        }
-        return null;
+        return computeFullPipelineCrawlStepMs({
+            workflow,
+            fullPipelineUiActive,
+            isScraping,
+            scrapePhase,
+            startedAt: crawlStartedAtRef.current,
+            endedAt: crawlEndedAtRef.current,
+        });
     }, [workflow, fullPipelineUiActive, isScraping, scrapePhase, liveElapsedMs]);
 
-    const fullPipelineLlmStepMs = useMemo((): number | null => {
+    const fullPipelineLlmStepMs = useMemo(() => {
         // Keep this memo recalculating on the live timer tick while LLM extraction is active.
         void liveElapsedMs;
-        if (workflow !== 'full' || !fullPipelineUiActive) {
-            return null;
-        }
-        if (llmStartedAtRef.current === null) {
-            return null;
-        }
-        if (llmEndedAtRef.current !== null) {
-            return Math.round(
-                llmEndedAtRef.current - llmStartedAtRef.current,
-            );
-        }
-        if (isScraping && scrapePhase === 'llm') {
-            return Math.round(performance.now() - llmStartedAtRef.current);
-        }
-        return null;
+        return computeFullPipelineLlmStepMs({
+            workflow,
+            fullPipelineUiActive,
+            isScraping,
+            scrapePhase,
+            startedAt: llmStartedAtRef.current,
+            endedAt: llmEndedAtRef.current,
+        });
     }, [workflow, fullPipelineUiActive, isScraping, scrapePhase, liveElapsedMs]);
 
     const batchRows = useMemo((): BulkProcessTableRow[] => {
