@@ -1,7 +1,11 @@
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { locales } from '@/i18n';
 import { toPublicEventDetail } from '@/lib/events/utils';
-import { getTypePath, RACE_CATEGORY_SLUGS } from '@/lib/races/race-types';
+import {
+  getRaceCategorySlugsForRace,
+  getTypePath,
+  RACE_CATEGORY_SLUGS,
+} from '@/lib/races/race-types';
 import {
   DESTINATION_PROVINCE_IDS,
   GEOGRAPHY,
@@ -159,10 +163,19 @@ export function revalidateEventMutation(
       !== JSON.stringify(toPublicEventDetail(updatedDetail));
 
   if (listingChanged) {
+    const categorySlugs = new Set(
+      details.flatMap((detail) => detail.races.flatMap((race) =>
+        getRaceCategorySlugsForRace({
+          ...race,
+          eventName: detail.event.name,
+        }),
+      )),
+    );
+
     for (const locale of locales) {
       paths.add(`/${locale}`);
 
-      for (const category of RACE_CATEGORY_SLUGS) {
+      for (const category of categorySlugs) {
         paths.add(getTypePath(locale, category));
       }
     }

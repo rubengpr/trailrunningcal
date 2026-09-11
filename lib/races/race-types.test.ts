@@ -87,12 +87,27 @@ describe('race category predicates', () => {
     expect(config.matches(race({ name: 'Ultra Trail Barcelona' }))).toBe(false);
   });
 
-  it('matches vertical kilometer races by keyword or ratio', () => {
+  it('matches vertical kilometer races with the public-events SQL rules', () => {
     const config = getRaceCategoryConfig('km-vertical');
 
     expect(config.matches(race({ name: 'Km Vertical de la Vall' }))).toBe(true);
-    expect(config.matches(race({ distanceKm: 3.5, elevationGainM: 700 }))).toBe(true);
-    expect(config.matches(race({ distanceKm: 5, elevationGainM: 700 }))).toBe(false);
+    expect(config.matches(race({ name: 'Cursa Vertik de la Vall' }))).toBe(true);
+    expect(config.matches(race({ name: 'KV de la Vall' }))).toBe(true);
+    expect(config.matches(race({ distanceKm: 8, elevationGainM: 800 }))).toBe(true);
+    expect(config.matches(race({ distanceKm: 8, elevationGainM: 799 }))).toBe(false);
+    expect(config.matches(race({ distanceKm: 8.1, elevationGainM: 900 }))).toBe(false);
+    expect(config.matches(race({ distanceKm: 0, elevationGainM: 900 }))).toBe(false);
+  });
+
+  it('matches vertical kilometer keywords in the event name', () => {
+    const config = getRaceCategoryConfig('km-vertical');
+
+    expect(config.matches({
+      eventName: 'Vertical de la Vall',
+      name: 'Open',
+      distanceKm: 10,
+      elevationGainM: 300,
+    })).toBe(true);
   });
 });
 

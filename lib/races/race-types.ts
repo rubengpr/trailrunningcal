@@ -38,15 +38,17 @@ export interface RaceCategoryConfig {
 }
 
 type RaceCategoryInput = {
+  eventName?: string;
   name: string | null;
   distanceKm: number;
   elevationGainM: number | null;
 };
 
-const VK_KEYWORDS = ['kilómetro vertical', 'quilòmetre vertical', 'km vertical'];
 const MARCHA_KEYWORDS = ['marcha', 'marxa', 'caminada'];
-const VK_DISTANCE_MAX = 4;
-const VK_ELEVATION_MIN = 600;
+const VK_DISTANCE_MAX = 8;
+const VK_ELEVATION_MIN = 500;
+const VK_ELEVATION_RATIO_MIN = 100;
+const VK_ABBREVIATION = /(^|[^\p{L}\p{N}])(?:kmv|kv)(?=[^\p{L}\p{N}]|$)/iu;
 
 function normalizedName(race: Pick<RaceCategoryInput, 'name'>): string {
   return race.name?.toLowerCase() ?? '';
@@ -61,16 +63,20 @@ export function isNonCompetitiveRace(
 }
 
 function isVkRace(race: RaceCategoryInput): boolean {
-  const lowerName = normalizedName(race);
+  const lowerName = [race.eventName, race.name]
+    .filter((name): name is string => Boolean(name))
+    .join(' ')
+    .toLowerCase();
   const hasKeyword =
-    VK_KEYWORDS.some((kw) => lowerName.includes(kw)) ||
-    lowerName.includes(' kv ') ||
-    lowerName.startsWith('kv ') ||
-    lowerName.endsWith(' kv');
+    lowerName.includes('vertical') ||
+    lowerName.includes('vertik') ||
+    VK_ABBREVIATION.test(lowerName);
   const hasRatio =
-    race.distanceKm < VK_DISTANCE_MAX &&
+    race.distanceKm > 0 &&
+    race.distanceKm <= VK_DISTANCE_MAX &&
     race.elevationGainM !== null &&
-    race.elevationGainM >= VK_ELEVATION_MIN;
+    race.elevationGainM >= VK_ELEVATION_MIN &&
+    race.elevationGainM / race.distanceKm >= VK_ELEVATION_RATIO_MIN;
 
   return hasKeyword || hasRatio;
 }

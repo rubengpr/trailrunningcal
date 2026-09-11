@@ -132,9 +132,10 @@ describe('revalidateEventMutation', () => {
       races: [...eventDetail.races, { ...eventDetail.races[0], id: 'race-2' }],
     }, 'test');
 
-    expect(revalidatePath).toHaveBeenCalledTimes(40);
+    expect(revalidatePath).toHaveBeenCalledTimes(20);
     expect(revalidatePath).toHaveBeenCalledWith('/es');
-    expect(revalidatePath).toHaveBeenCalledWith('/fr/t/backyard');
+    expect(revalidatePath).toHaveBeenCalledWith('/fr/t/media-maraton');
+    expect(revalidatePath).not.toHaveBeenCalledWith('/fr/t/backyard');
     expect(revalidatePath).toHaveBeenCalledWith('/es/d/cataluna/barcelona');
     expect(revalidatePath).toHaveBeenCalledWith('/es/d/cataluna');
     expect(consoleInfo).toHaveBeenLastCalledWith(expect.stringContaining(
@@ -155,7 +156,7 @@ describe('revalidateEventMutation', () => {
       },
     }, 'test');
 
-    expect(revalidatePath).toHaveBeenCalledTimes(48);
+    expect(revalidatePath).toHaveBeenCalledTimes(28);
     expect(revalidatePath).toHaveBeenCalledWith('/es/e/trail-event');
     expect(revalidatePath).toHaveBeenCalledWith('/es/e/moved-trail-event');
     expect(revalidatePath).toHaveBeenCalledWith('/es/d/cataluna/barcelona');
@@ -165,10 +166,22 @@ describe('revalidateEventMutation', () => {
   it('revalidates the deleted event and its listing paths', () => {
     revalidateEventMutation(eventDetail, null, 'test');
 
-    expect(revalidatePath).toHaveBeenCalledTimes(40);
+    expect(revalidatePath).toHaveBeenCalledTimes(20);
     expect(revalidatePath).toHaveBeenCalledWith('/es/e/trail-event');
     expect(revalidatePath).toHaveBeenCalledWith('/es');
     expect(revalidatePath).toHaveBeenCalledWith('/es/d/cataluna/barcelona');
+  });
+
+  it('invalidates the union of old and new matching categories', () => {
+    revalidateEventMutation(eventDetail, {
+      ...eventDetail,
+      races: [{ ...eventDetail.races[0], distanceKm: 50 }],
+    }, 'test');
+
+    expect(revalidatePath).toHaveBeenCalledTimes(24);
+    expect(revalidatePath).toHaveBeenCalledWith('/es/t/media-maraton');
+    expect(revalidatePath).toHaveBeenCalledWith('/es/t/ultra-trail');
+    expect(revalidatePath).not.toHaveBeenCalledWith('/es/t/maraton');
   });
 });
 
