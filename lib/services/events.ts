@@ -2,8 +2,7 @@ import { ValidationError } from '@/lib/errors';
 import { getEventByIdForAdmin, getEventByIdForOrganizer } from '@/lib/db/events';
 import { deleteEventForAdmin } from '@/lib/db/events';
 import {
-  revalidateEventRelatedPages,
-  revalidateHomepages,
+  revalidateEventMutation,
 } from '@/lib/cache/revalidation';
 import type { TrailEventDetail } from '@/types/event.types';
 import { isValidProvince } from '@/lib/geography/provinces';
@@ -86,6 +85,5 @@ export async function removeAdminEvent(eventId: string): Promise<void> {
   }
 
   await deleteEventForAdmin(eventId);
-  revalidateHomepages('admin-event-delete');
-  revalidateEventRelatedPages(detail, 'admin-event-delete');
+  revalidateEventMutation(detail, null, 'admin-event-delete');
 }

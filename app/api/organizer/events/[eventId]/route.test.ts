@@ -6,8 +6,7 @@ const mocks = vi.hoisted(() => ({
   createClient: vi.fn(),
   getOrganizerEventContext: vi.fn(),
   updateOrganizerEventWithRaces: vi.fn(),
-  revalidateEventRelatedPages: vi.fn(),
-  revalidateHomepages: vi.fn(),
+  revalidateEventMutation: vi.fn(),
 }));
 
 vi.mock('@/lib/auth', () => ({ requireAuth: mocks.requireAuth }));
@@ -19,8 +18,7 @@ vi.mock('@/lib/services/events', () => ({
   updateOrganizerEventWithRaces: mocks.updateOrganizerEventWithRaces,
 }));
 vi.mock('@/lib/cache/revalidation', () => ({
-  revalidateEventRelatedPages: mocks.revalidateEventRelatedPages,
-  revalidateHomepages: mocks.revalidateHomepages,
+  revalidateEventMutation: mocks.revalidateEventMutation,
 }));
 
 import { PATCH } from './route';
@@ -186,16 +184,8 @@ describe('PATCH /api/organizer/events/[eventId]', () => {
         races: updateBody.races,
       },
     );
-    expect(mocks.revalidateHomepages).toHaveBeenCalledWith(
-      'organizer-event-update',
-    );
-    expect(mocks.revalidateEventRelatedPages).toHaveBeenNthCalledWith(
-      1,
+    expect(mocks.revalidateEventMutation).toHaveBeenCalledWith(
       previousDetail,
-      'organizer-event-update',
-    );
-    expect(mocks.revalidateEventRelatedPages).toHaveBeenNthCalledWith(
-      2,
       updatedDetail,
       'organizer-event-update',
     );

@@ -1,5 +1,6 @@
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { locales } from '@/i18n';
+import { toPublicEventDetail } from '@/lib/events/utils';
 import { getTypePath, RACE_CATEGORY_SLUGS } from '@/lib/races/race-types';
 import {
   DESTINATION_PROVINCE_IDS,
@@ -16,6 +17,7 @@ type RevalidationScope =
   | 'category-pages'
   | 'destination-pages'
   | 'event-pages'
+  | 'event-mutation'
   | 'event-track-routes'
   | 'homepages'
   | 'province-pages'
@@ -26,6 +28,7 @@ function logRevalidation(
   scope: RevalidationScope,
   affectedPathCount: number,
   affectedTagCount = 0,
+  listingChanged?: boolean,
 ): void {
   console.info(JSON.stringify({
     level: 'info',
@@ -34,6 +37,7 @@ function logRevalidation(
     scope,
     affectedPathCount,
     affectedTagCount,
+    ...(listingChanged === undefined ? {} : { listingChanged }),
   }));
 }
 
@@ -128,14 +132,63 @@ export function revalidateEventTrackRoutes(eventId: string, source: string) {
   logRevalidation(source, 'event-track-routes', 0, 1);
 }
 
-export function revalidateEventRelatedPages(
-  detail: TrailEventDetail,
+/**
+ * Revalidates the paths whose rendered output can change after an event
+ * mutation. Event pages are always refreshed; listing pages are refreshed only
+ * when their PublicEventDetail projection changed.
+ */
+export function revalidateEventMutation(
+  previousDetail: TrailEventDetail | null,
+  updatedDetail: TrailEventDetail | null,
   source: string,
 ): void {
-  revalidateEventPages(detail.event.slug, source);
-  revalidateCategoryPages(source);
+  const paths = new Set<string>();
+  const details = [previousDetail, updatedDetail].filter(
+    (detail): detail is TrailEventDetail => detail !== null,
+  );
 
-  for (const race of detail.races) {
-    if (race.province) revalidateProvincePage(race.province, source);
+  for (const detail of details) {
+    for (const locale of locales) {
+      paths.add(`/${locale}/e/${detail.event.slug}`);
+    }
   }
+
+  const listingChanged = previousDetail === null
+    || updatedDetail === null
+    || JSON.stringify(toPublicEventDetail(previousDetail))
+      !== JSON.stringify(toPublicEventDetail(updatedDetail));
+
+  if (listingChanged) {
+    for (const locale of locales) {
+      paths.add(`/${locale}`);
+
+      for (const category of RACE_CATEGORY_SLUGS) {
+        paths.add(getTypePath(locale, category));
+      }
+    }
+
+    for (const detail of details) {
+      for (const race of detail.races) {
+        const destination = getProvinceByDbName(race.province);
+        if (!destination) continue;
+
+        for (const locale of locales) {
+          paths.add(
+            getDestinationPath(
+              locale,
+              destination.province.regionId,
+              destination.id,
+            ),
+          );
+          paths.add(getRegionPath(locale, destination.province.regionId));
+        }
+      }
+    }
+  }
+
+  for (const path of paths) {
+    revalidatePath(path);
+  }
+
+  logRevalidation(source, 'event-mutation', paths.size, 0, listingChanged);
 }

@@ -2,8 +2,7 @@ import { NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
 import { getOrganizerEventContext } from '@/lib/auth/organizer';
 import {
-  revalidateEventRelatedPages,
-  revalidateHomepages,
+  revalidateEventMutation,
 } from '@/lib/cache/revalidation';
 import { ValidationError } from '@/lib/errors';
 import { createClient } from '@/lib/supabase/server';
@@ -44,9 +43,11 @@ export async function PATCH(
       input,
     );
 
-    revalidateHomepages('organizer-event-update');
-    revalidateEventRelatedPages(organizerContext.event, 'organizer-event-update');
-    revalidateEventRelatedPages(updatedDetail, 'organizer-event-update');
+    revalidateEventMutation(
+      organizerContext.event,
+      updatedDetail,
+      'organizer-event-update',
+    );
 
     return NextResponse.json({ success: true, data: updatedDetail });
   } catch (error) {

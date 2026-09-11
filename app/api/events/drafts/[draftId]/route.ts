@@ -2,8 +2,7 @@ import { NextResponse } from 'next/server';
 import { parseUuidParam } from '@/app/api/request-validation';
 import { requireAdmin } from '@/lib/auth';
 import {
-  revalidateEventRelatedPages,
-  revalidateHomepages,
+  revalidateEventMutation,
 } from '@/lib/cache/revalidation';
 import {
   acceptEventDraft,
@@ -30,11 +29,11 @@ export async function PATCH(
         const { previousDetail, updatedDetail } =
           await acceptEventDraft(parsedDraftId);
 
-        revalidateHomepages('event-draft-accept');
-        if (previousDetail) {
-          revalidateEventRelatedPages(previousDetail, 'event-draft-accept');
-        }
-        revalidateEventRelatedPages(updatedDetail, 'event-draft-accept');
+        revalidateEventMutation(
+          previousDetail,
+          updatedDetail,
+          'event-draft-accept',
+        );
 
         return NextResponse.json({ success: true, data: updatedDetail });
       }

@@ -6,6 +6,8 @@ const mocks = vi.hoisted(() => ({
   createClient: vi.fn(),
   getEventByIdForAdmin: vi.fn(),
   getEventByIdForOrganizer: vi.fn(),
+  deleteEventForAdmin: vi.fn(),
+  revalidateEventMutation: vi.fn(),
 }));
 
 vi.mock('@/lib/supabase/server', () => ({
@@ -15,11 +17,16 @@ vi.mock('@/lib/supabase/server', () => ({
 vi.mock('@/lib/db/events', () => ({
   getEventByIdForAdmin: mocks.getEventByIdForAdmin,
   getEventByIdForOrganizer: mocks.getEventByIdForOrganizer,
+  deleteEventForAdmin: mocks.deleteEventForAdmin,
+}));
+vi.mock('@/lib/cache/revalidation', () => ({
+  revalidateEventMutation: mocks.revalidateEventMutation,
 }));
 
 import {
   createEventEdition,
   createEventWithRaces,
+  removeAdminEvent,
   updateEventWithRaces,
   updateOrganizerEventWithRaces,
 } from './events';
@@ -213,5 +220,19 @@ describe('event services race tiers', () => {
     });
 
     expect(mocks.rpc).not.toHaveBeenCalled();
+  });
+
+  it('revalidates a deleted event through the mutation planner', async () => {
+    const detail = { event: { id: EVENT_ID }, races: [] };
+    mocks.getEventByIdForAdmin.mockResolvedValue(detail);
+
+    await removeAdminEvent(EVENT_ID);
+
+    expect(mocks.deleteEventForAdmin).toHaveBeenCalledWith(EVENT_ID);
+    expect(mocks.revalidateEventMutation).toHaveBeenCalledWith(
+      detail,
+      null,
+      'admin-event-delete',
+    );
   });
 });

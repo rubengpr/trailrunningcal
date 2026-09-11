@@ -7,8 +7,7 @@ const mocks = vi.hoisted(() => ({
   acceptEventDraft: vi.fn(),
   rejectEventDraft: vi.fn(),
   updateEventDraft: vi.fn(),
-  revalidateEventRelatedPages: vi.fn(),
-  revalidateHomepages: vi.fn(),
+  revalidateEventMutation: vi.fn(),
 }));
 
 vi.mock('@/lib/auth', () => ({ requireAdmin: mocks.requireAdmin }));
@@ -18,8 +17,7 @@ vi.mock('@/lib/services/event-drafts', () => ({
   updateEventDraft: mocks.updateEventDraft,
 }));
 vi.mock('@/lib/cache/revalidation', () => ({
-  revalidateEventRelatedPages: mocks.revalidateEventRelatedPages,
-  revalidateHomepages: mocks.revalidateHomepages,
+  revalidateEventMutation: mocks.revalidateEventMutation,
 }));
 
 import { PATCH } from './route';
@@ -169,14 +167,8 @@ describe('PATCH /api/events/drafts/[draftId]', () => {
       data: updatedDetail,
     });
     expect(mocks.acceptEventDraft).toHaveBeenCalledWith(DRAFT_ID);
-    expect(mocks.revalidateHomepages).toHaveBeenCalledWith('event-draft-accept');
-    expect(mocks.revalidateEventRelatedPages).toHaveBeenNthCalledWith(
-      1,
+    expect(mocks.revalidateEventMutation).toHaveBeenCalledWith(
       eventDetail,
-      'event-draft-accept',
-    );
-    expect(mocks.revalidateEventRelatedPages).toHaveBeenNthCalledWith(
-      2,
       updatedDetail,
       'event-draft-accept',
     );

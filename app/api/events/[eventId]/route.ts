@@ -2,8 +2,7 @@ import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
 import { ValidationError } from '@/lib/errors';
 import {
-  revalidateEventRelatedPages,
-  revalidateHomepages,
+  revalidateEventMutation,
 } from '@/lib/cache/revalidation';
 import { getEventByIdForAdmin } from '@/lib/db/events';
 import { parseJsonBody, parseUuidParam } from '@/app/api/request-validation';
@@ -41,9 +40,7 @@ export async function PATCH(
       updatedDetail = await createEventEdition(parsedEventId, input);
     }
 
-    revalidateHomepages('admin-event-update');
-    revalidateEventRelatedPages(previousDetail, 'admin-event-update');
-    revalidateEventRelatedPages(updatedDetail, 'admin-event-update');
+    revalidateEventMutation(previousDetail, updatedDetail, 'admin-event-update');
 
     return NextResponse.json({ success: true, data: updatedDetail });
   } catch (error) {
