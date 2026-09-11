@@ -1,5 +1,7 @@
+import type { useTranslations } from 'next-intl';
 import { normalizeUrl } from '@/lib/validation';
 import type { EventImportStep } from '@/types/events-import-api.types';
+import type { ScrapePhase, ScrapeWorkflow } from '@/components/admin/event-importer/scrape-reducer';
 
 export const RESEARCH_ERROR_TRANSLATION_KEYS: Record<string, string> = {
     api_error: 'research.errors.apiError',
@@ -34,4 +36,37 @@ export function findStep(
         seen += 1;
     }
     return null;
+}
+
+export function computeShowImportPreview(
+    workflow: ScrapeWorkflow,
+    isScraping: boolean,
+    hasScraped: boolean,
+    scrapeError: string | null,
+): boolean {
+    return workflow === 'bulk' || workflow === 'research'
+        ? false
+        : workflow !== 'ingest'
+        ? isScraping || hasScraped
+        : hasScraped && scrapeError !== null;
+}
+
+export function computePrimaryLoadingLabel(
+    t: ReturnType<typeof useTranslations>,
+    workflow: ScrapeWorkflow,
+    scrapePhase: ScrapePhase,
+): string {
+    return workflow === 'ingest'
+        ? t('crawlingMarkdown')
+        : workflow === 'bulk'
+            ? t('bulk.running')
+            : workflow === 'research'
+                ? t('research.running')
+            : workflow === 'full' && scrapePhase === 'crawling'
+                ? t('crawlingMarkdown')
+                : t('scraping');
+}
+
+export function computeShowLlmMetricsUi(workflow: ScrapeWorkflow): boolean {
+    return workflow !== 'ingest' && workflow !== 'bulk' && workflow !== 'research';
 }

@@ -1,104 +1,19 @@
-import type { BulkProcessTableRow } from '@/components/admin/bulk-process-table';
-import type { PersistedImportPipelineRow } from '@/components/admin/import-pipeline-progress';
-import type { EventImportResult } from '@/types/events-import-api.types';
-import type {
-    TrailEventAgentEvent,
-    TrailEventAgentRace,
-} from '@/types/trail-event-agent.types';
-import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
-import type { PageStats, ScrapeUsage } from '@/types/races-scrape-api.types';
+import {
+    normalizeRaceTierArrays,
+    initialScrapeState,
+    type ScrapeAction,
+    type ScrapeState,
+} from '@/components/admin/event-importer/scrape-types';
 
-export type ScrapeWorkflow = 'bulk' | 'full' | 'ingest' | 'llmFromFile' | 'research';
-export type ScrapeSourceMode = 'scrapePage' | 'crawlSite';
-
-export type ScrapePhase = 'idle' | 'crawling' | 'llm';
-
-export interface ScrapeState {
-    isScraping: boolean;
-    scrapePhase: ScrapePhase;
-    fullPipelineUiActive: boolean;
-    lastRunDurationMs: number | null;
-    scrapedRaces: TrailEventAgentRace[];
-    scrapeError: string | null;
-    scrapeEmptyMessage: string | null;
-    hasScraped: boolean;
-    scrapeMarkdown: string | null;
-    rawModelOutput: string | null;
-    scrapeUsage: OpenRouterScrapeUsage | null;
-    spiderUsage: ScrapeUsage | null;
-    pageStats: PageStats | null;
-    scrapedEvent: TrailEventAgentEvent | null;
-    acceptedIndexes: Set<number>;
-    acceptingIndex: number | null;
-    rejectedIndexes: Set<number>;
-    jsonView: boolean;
-    jsonEditorValue: string;
-    jsonEditorError: string | null;
-    bulkRows: BulkProcessTableRow[];
-    persistedPipelineRows: PersistedImportPipelineRow[];
-}
-
-export function normalizeRaceTierArrays(
-    races: TrailEventAgentRace[],
-): TrailEventAgentRace[] {
-    return races.map((race) => ({
-        ...race,
-        tiers: Array.isArray(race.tiers) ? race.tiers : [],
-    }));
-}
-
-export type ScrapeAction =
-    // Workflow start
-    | { type: 'SCRAPE_START' }
-    | { type: 'CRAWL_SITE_EXTRACT_START' }
-    // Run completion
-    | { type: 'AGENT_SUCCESS'; event: TrailEventAgentEvent | null; races: TrailEventAgentRace[]; errorMessage: string | null; rawModelOutput: string; usage: OpenRouterScrapeUsage | null; markdown?: string }
-    | { type: 'IMPORT_SUCCESS'; result: EventImportResult; persistedRows: PersistedImportPipelineRow[]; showPipeline: boolean }
-    | { type: 'SCRAPE_ERROR'; error: string; markdown?: string }
-    | { type: 'SCRAPE_COMPLETE'; durationMs: number }
-    // UI / reset
-    | { type: 'PIPELINE_HIDDEN' }
-    | { type: 'RESULTS_CLEARED' }
-    | { type: 'PREVIEW_LOADED'; scrapedEvent: TrailEventAgentEvent | null; scrapedRaces: TrailEventAgentRace[]; markdown: string; rawModelOutput: string | null; usage: OpenRouterScrapeUsage | null; spiderUsage: ScrapeUsage | null; pageStats: PageStats | null; showPipeline: boolean; durationMs: number; emptyMessage?: string | null }
-    | { type: 'WORKFLOW_RESET' }
-    // Race review
-    | { type: 'ACCEPTING_INDEX'; index: number | null }
-    | { type: 'RACE_ACCEPT'; index: number }
-    | { type: 'RACE_REJECT'; index: number }
-    | { type: 'RACE_EDITED'; index: number; race: TrailEventAgentRace }
-    | { type: 'EVENT_REJECT' }
-    | { type: 'REVIEW_EDITED'; event: TrailEventAgentEvent; races: TrailEventAgentRace[] }
-    // JSON editor
-    | { type: 'JSON_TAB_OPENED'; value: string }
-    | { type: 'JSON_TAB_CLOSED' }
-    | { type: 'JSON_EDITED'; value: string }
-    | { type: 'JSON_IMPORTED'; event: TrailEventAgentEvent | null; races: TrailEventAgentRace[]; errorMessage: string | null }
-    | { type: 'JSON_PARSE_FAILED'; error: string | null };
-
-export const initialScrapeState: ScrapeState = {
-    isScraping: false,
-    scrapePhase: 'idle',
-    fullPipelineUiActive: false,
-    lastRunDurationMs: null,
-    scrapedRaces: [],
-    scrapeError: null,
-    scrapeEmptyMessage: null,
-    hasScraped: false,
-    scrapeMarkdown: null,
-    rawModelOutput: null,
-    scrapeUsage: null,
-    spiderUsage: null,
-    pageStats: null,
-    scrapedEvent: null,
-    acceptedIndexes: new Set(),
-    acceptingIndex: null,
-    rejectedIndexes: new Set(),
-    jsonView: false,
-    jsonEditorValue: '',
-    jsonEditorError: null,
-    bulkRows: [],
-    persistedPipelineRows: [],
-};
+export {
+    type ScrapeWorkflow,
+    type ScrapeSourceMode,
+    type ScrapePhase,
+    type ScrapeState,
+    type ScrapeAction,
+    normalizeRaceTierArrays,
+    initialScrapeState,
+} from '@/components/admin/event-importer/scrape-types';
 
 export function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeState {
     switch (action.type) {
@@ -125,6 +40,10 @@ export function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeS
                 jsonEditorValue: '',
                 jsonEditorError: null,
                 persistedPipelineRows: [],
+                crawlStepStartedAt: null,
+                crawlStepEndedAt: null,
+                llmStepStartedAt: null,
+                llmStepEndedAt: null,
             };
         case 'CRAWL_SITE_EXTRACT_START':
             return {
@@ -150,6 +69,10 @@ export function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeS
                 persistedPipelineRows: [],
                 fullPipelineUiActive: true,
                 scrapePhase: 'crawling',
+                crawlStepStartedAt: action.startedAt,
+                crawlStepEndedAt: null,
+                llmStepStartedAt: null,
+                llmStepEndedAt: null,
             };
         // Run completion
         case 'AGENT_SUCCESS':
@@ -185,6 +108,10 @@ export function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeS
                 fullPipelineUiActive: action.showPipeline,
                 persistedPipelineRows: action.persistedRows,
                 scrapePhase: action.result.workflow === 'crawlSite' || action.result.workflow === 'scrapePage' ? 'crawling' : 'llm',
+                crawlStepStartedAt: action.crawlStepStartedAt,
+                crawlStepEndedAt: action.crawlStepEndedAt,
+                llmStepStartedAt: action.llmStepStartedAt,
+                llmStepEndedAt: action.llmStepEndedAt,
             };
         case 'SCRAPE_ERROR':
             return {
@@ -197,7 +124,14 @@ export function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeS
             return { ...state, isScraping: false, scrapePhase: 'idle', lastRunDurationMs: action.durationMs };
         // UI / reset
         case 'PIPELINE_HIDDEN':
-            return { ...state, fullPipelineUiActive: false };
+            return {
+                ...state,
+                fullPipelineUiActive: false,
+                crawlStepStartedAt: null,
+                crawlStepEndedAt: null,
+                llmStepStartedAt: null,
+                llmStepEndedAt: null,
+            };
         case 'RESULTS_CLEARED':
             return {
                 ...state,
@@ -234,6 +168,10 @@ export function scrapeReducer(state: ScrapeState, action: ScrapeAction): ScrapeS
                 spiderUsage: action.spiderUsage,
                 pageStats: action.pageStats,
                 fullPipelineUiActive: action.showPipeline,
+                crawlStepStartedAt: null,
+                crawlStepEndedAt: null,
+                llmStepStartedAt: null,
+                llmStepEndedAt: null,
             };
         case 'WORKFLOW_RESET':
             return { ...initialScrapeState };
