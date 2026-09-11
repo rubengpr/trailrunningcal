@@ -75,7 +75,6 @@ import {
     scrapeReducer,
 } from '@/components/admin/event-importer/scrape-reducer';
 import {
-    RESEARCH_ERROR_TRANSLATION_KEYS,
     isValidUrl,
     findStep,
 } from '@/components/admin/event-importer/workflow-helpers';
@@ -84,6 +83,7 @@ import {
     computeFullPipelineCrawlStepMs,
     computeFullPipelineLlmStepMs,
 } from '@/components/admin/event-importer/full-pipeline-steps';
+import { computeBatchRows, computeResearchRows } from '@/components/admin/event-importer/bulk-process-rows';
 
 interface EventImporterProps {
     pendingEntries: PendingEvent[];
@@ -893,45 +893,15 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
         });
     }, [workflow, fullPipelineUiActive, isScraping, scrapePhase, liveElapsedMs]);
 
-    const batchRows = useMemo((): BulkProcessTableRow[] => {
-        return batchSnapshot?.items.map((item) => ({
-            id: item.id,
-            url: item.url,
-            status: item.status,
-            reviewStatus: item.reviewStatus,
-            acceptedEventId: item.acceptedEventId,
-            acceptedEventSlug: item.acceptedEventSlug,
-            raceCount: item.raceCount,
-            error: item.error,
-            updatedAt: item.updatedAt,
-            markdown: item.markdown,
-            rawModelOutput: item.rawModelOutput,
-        })) ?? [];
-    }, [batchSnapshot]);
+    const batchRows = useMemo(
+        (): BulkProcessTableRow[] => computeBatchRows(batchSnapshot),
+        [batchSnapshot],
+    );
 
-    const researchRows = useMemo((): BulkProcessTableRow[] => {
-        return researchSnapshot?.items.map((item) => ({
-            id: item.id,
-            label: item.eventName,
-            url: null,
-            status: item.status,
-            reviewStatus: 'pending',
-            acceptedEventId: null,
-            acceptedEventSlug: null,
-            raceCount: item.raceCount,
-            error: item.error
-                ? t(RESEARCH_ERROR_TRANSLATION_KEYS[item.error] ?? 'research.errors.unknown')
-                : null,
-            negativeMessage:
-                item.status === 'completed' && item.draftId === null
-                    ? item.result?.errorMessage ?? null
-                    : null,
-            updatedAt: item.updatedAt,
-            markdown: null,
-            rawModelOutput: null,
-            draftId: item.draftId,
-        })) ?? [];
-    }, [researchSnapshot, t]);
+    const researchRows = useMemo(
+        (): BulkProcessTableRow[] => computeResearchRows(researchSnapshot, t),
+        [researchSnapshot, t],
+    );
 
     const reviewingBatchItem = reviewingBatchItemId
         ? batchSnapshot?.items.find((item) => item.id === reviewingBatchItemId) ?? null
