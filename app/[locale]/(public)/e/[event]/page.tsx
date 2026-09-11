@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { createHash } from 'node:crypto';
 import { Route } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
@@ -34,6 +35,24 @@ export function generateStaticParams() {
 }
 
 const DEFAULT_OG_IMAGE = `${BASE_URL}/og-image.png`;
+
+function getRenderFingerprint(
+  eventData: Awaited<ReturnType<typeof getEventBySlug>>,
+  recommendedEvents: Awaited<ReturnType<typeof getRecommendedEvents>>,
+): string {
+  return createHash('sha256').update(JSON.stringify({
+    event: eventData?.event,
+    races: eventData?.races,
+    dateRange: eventData?.dateRange,
+    location: eventData?.location,
+    recommendedEvents: recommendedEvents.map(({ event, races, dateRange, location }) => ({
+      event,
+      races,
+      dateRange,
+      location,
+    })),
+  })).digest('hex').slice(0, 16);
+}
 
 export async function generateMetadata({
   params,
@@ -160,6 +179,16 @@ export default async function EventPage({
       7,
     )
     : [];
+
+  console.info(JSON.stringify({
+    level: 'info',
+    message: 'isr_event_page_render',
+    eventId: eventData.event.id,
+    eventSlug: event,
+    locale: localeTyped,
+    fingerprint: getRenderFingerprint(eventData, recommendedEvents),
+    recommendedEventIds: recommendedEvents.map(({ event: recommendation }) => recommendation.id),
+  }));
 
   const jsonLd = buildEventJsonLd(eventData, event, localeTyped);
   const breadcrumbJsonLd = buildBreadcrumbJsonLd([
