@@ -28,6 +28,10 @@ Disallow: /
 User-agent: Applebot-Extended
 Disallow: /
 
+# --- SEO analysis crawlers: blocked to prevent full cache sweeps ---
+User-agent: Barkrowler
+Disallow: /
+
 # --- AI SEARCH bots: allowed for GEO (Generative Engine Optimization) ---
 # These bots retrieve content to cite in real-time AI search answers
 
