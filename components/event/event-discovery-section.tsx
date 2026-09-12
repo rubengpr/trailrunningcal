@@ -2,7 +2,7 @@ import { EventCard } from '@/components/event/event-card';
 import { TrackedLink } from '@/components/ui/tracked-link';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import type { Locale } from '@/i18n';
-import type { TrailEventDetail } from '@/types/event.types';
+import type { PublicEventDetail } from '@/types/event.types';
 
 interface EventDiscoverySectionProps {
   eventId: string;
@@ -10,7 +10,7 @@ interface EventDiscoverySectionProps {
   province: string | null;
   provinceHref: string;
   provinceLinkLabel: string;
-  recommendedEvents: TrailEventDetail[];
+  recommendedEvents: PublicEventDetail[];
   locale: Locale;
 }
 

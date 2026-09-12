@@ -21,14 +21,16 @@ import {
   formatEventDateRange,
   formatEventLocationLabel,
   shouldShowEventResults,
+  toPublicEventDetail,
 } from '@/lib/events/utils';
 import { buildBreadcrumbJsonLd, buildEventJsonLd } from '@/lib/seo/json-ld';
 import { JsonLd } from '@/components/seo/json-ld';
 import { LOCALE_BY_LANGUAGE, SITE_NAME } from '@/lib/seo/meta-config';
 import { getDestinationPath, getProvinceByDbName } from '@/lib/geography/destinations';
 import type { EventTranslationLocale } from '@/types/event-translation.types';
+import type { PublicEventDetail } from '@/types/event.types';
 
-export const revalidate = 86400;
+export const revalidate = 604800;
 
 export function generateStaticParams() {
   return [];
@@ -38,7 +40,7 @@ const DEFAULT_OG_IMAGE = `${BASE_URL}/og-image.png`;
 
 function getRenderFingerprint(
   eventData: Awaited<ReturnType<typeof getEventBySlug>>,
-  recommendedEvents: Awaited<ReturnType<typeof getRecommendedEvents>>,
+  recommendedEvents: PublicEventDetail[],
 ): string {
   return createHash('sha256').update(JSON.stringify({
     event: eventData?.event,
@@ -179,6 +181,7 @@ export default async function EventPage({
       7,
     )
     : [];
+  const publicRecommendedEvents = recommendedEvents.map(toPublicEventDetail);
 
   console.info(JSON.stringify({
     level: 'info',
@@ -186,7 +189,7 @@ export default async function EventPage({
     eventId: eventData.event.id,
     eventSlug: event,
     locale: localeTyped,
-    fingerprint: getRenderFingerprint(eventData, recommendedEvents),
+    fingerprint: getRenderFingerprint(eventData, publicRecommendedEvents),
     recommendedEventIds: recommendedEvents.map(({ event: recommendation }) => recommendation.id),
   }));
 
@@ -332,7 +335,7 @@ export default async function EventPage({
               provinceLinkLabel={tEvent('provincePageLinkText', {
                 province: tProvincia(`names.${provinceDestination.provinceId}`),
               })}
-              recommendedEvents={recommendedEvents}
+              recommendedEvents={publicRecommendedEvents}
               locale={localeTyped}
             />
           ) : null}
