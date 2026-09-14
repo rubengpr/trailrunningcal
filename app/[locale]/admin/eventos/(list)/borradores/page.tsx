@@ -1,8 +1,11 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { isAdminEmail } from '@/lib/auth';
-import { getEventImportDrafts } from '@/lib/db/event-import-drafts';
-import { parseAdminEventPageRequest } from '@/lib/events/admin-pagination';
+import { getEventImportDraftsPage } from '@/lib/db/event-import-drafts';
+import {
+  buildEventImportDraftsHref,
+  parseEventImportDraftPageRequest,
+} from '@/lib/event-import/draft-pagination';
 import { AdminEventImportDraftsContent } from '@/components/admin/admin-event-import-drafts-content';
 
 export default async function AdminEventosBorradoresPage({
@@ -13,22 +16,15 @@ export default async function AdminEventosBorradoresPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const [{ locale }, rawSearchParams] = await Promise.all([params, searchParams]);
-  const { search } = parseAdminEventPageRequest(rawSearchParams);
-  const rawDraftId = rawSearchParams.draftId;
-  const draftId = typeof rawDraftId === 'string' ? rawDraftId : null;
+  const input = parseEventImportDraftPageRequest(rawSearchParams);
   const supabase = await createClient();
   const { data: { user }, error } = await supabase.auth.getUser();
   if (error || !user || !isAdminEmail(user.email)) redirect(`/${locale}/admin/login`);
-  const drafts = await getEventImportDrafts();
-  const normalizedSearch = search.toLocaleLowerCase();
-  const filteredDrafts = draftId
-    ? drafts.filter((draft) => draft.id === draftId)
-    : normalizedSearch
-      ? drafts.filter((draft) => (
-        draft.data.event.name.toLocaleLowerCase().includes(normalizedSearch) ||
-        draft.sourceUrl?.toLocaleLowerCase().includes(normalizedSearch)
-      ))
-      : drafts;
+  const page = await getEventImportDraftsPage(input);
+  const lastPage = Math.max(page.totalPages, 1);
+  if (input.page > lastPage) {
+    redirect(buildEventImportDraftsHref(locale, { ...input, page: lastPage }));
+  }
 
-  return <AdminEventImportDraftsContent initialDrafts={filteredDrafts} search={search} />;
+  return <AdminEventImportDraftsContent initialPage={page} query={input} />;
 }

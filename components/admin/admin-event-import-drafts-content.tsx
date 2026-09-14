@@ -27,13 +27,19 @@ import {
   updateEventImportDraft,
 } from '@/lib/api/events';
 import type { EventRaceWriteInput } from '@/lib/api/events';
-import type { EventImportDraft } from '@/types/event-import-draft.types';
 import type { TrailEventAgentEvent } from '@/types/trail-event-agent.types';
 import { formatEventDateRangeNumeric } from '@/lib/events/utils';
+import { AdminPagination } from '@/components/admin/admin-pagination';
+import { buildEventImportDraftsHref } from '@/lib/event-import/draft-pagination';
+import type {
+  EventImportDraft,
+  EventImportDraftPage,
+  EventImportDraftPageRequest,
+} from '@/types/event-import-draft.types';
 
 interface AdminEventImportDraftsContentProps {
-  initialDrafts: EventImportDraft[];
-  search: string;
+  initialPage: EventImportDraftPage;
+  query: EventImportDraftPageRequest;
 }
 
 function getDraftDateRange(draft: EventImportDraft): {
@@ -51,37 +57,39 @@ function getDraftDateRange(draft: EventImportDraft): {
 }
 
 export function AdminEventImportDraftsContent({
-  initialDrafts,
-  search,
+  initialPage,
+  query,
 }: AdminEventImportDraftsContentProps): React.ReactElement {
   const t = useTranslations('admin.events.drafts');
   const eventsT = useTranslations('adminEvents');
   const locale = useLocale();
-  const [drafts, setDrafts] = useState(initialDrafts);
+  const [drafts, setDrafts] = useState(initialPage.drafts);
+  const [total, setTotal] = useState(initialPage.total);
   const [draftToPreview, setDraftToPreview] = useState<EventImportDraft | null>(null);
   const [draftToEdit, setDraftToEdit] = useState<EventImportDraft | null>(null);
   const [draftToDelete, setDraftToDelete] = useState<EventImportDraft | null>(null);
   const [acceptingDraftId, setAcceptingDraftId] = useState<string | null>(null);
   const [publicationJobs, setPublicationJobs] = useState<Record<string, string>>(() =>
-    Object.fromEntries(initialDrafts.flatMap((draft) =>
+    Object.fromEntries(initialPage.drafts.flatMap((draft) =>
       draft.publication?.status === 'pending' || draft.publication?.status === 'running'
         ? [[draft.id, draft.publication.jobId]]
         : [],
     )),
   );
   const [failedPublications, setFailedPublications] = useState<Record<string, true>>(() =>
-    Object.fromEntries(initialDrafts.flatMap((draft) =>
+    Object.fromEntries(initialPage.drafts.flatMap((draft) =>
       draft.publication?.status === 'failed' ? [[draft.id, true]] : [],
     )),
   );
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSavingEdit, setIsSavingEdit] = useState(false);
-  const draftCount = drafts.length === 1
+  const draftCount = total === 1
     ? t('draftCountOne')
-    : t('draftCount', { count: drafts.length });
+    : t('draftCount', { count: total });
 
   const removeDraft = useCallback((draftId: string): void => {
     setDrafts((current) => current.filter((draft) => draft.id !== draftId));
+    setTotal((current) => Math.max(0, current - 1));
     setDraftToPreview((current) => current?.id === draftId ? null : current);
     setDraftToEdit((current) => current?.id === draftId ? null : current);
     setDraftToDelete((current) => current?.id === draftId ? null : current);
@@ -213,11 +221,11 @@ export function AdminEventImportDraftsContent({
       <AdminListSearch
         action={`/${locale}/admin/eventos/borradores`}
         inputId="admin-event-draft-search"
-        initialQuery={search}
+        initialQuery={query.search}
         label={t('search.placeholder')}
       />
       {drafts.length === 0 ? (
-        <ListEmptyState message={search ? t('search.empty') : t('empty')} />
+        <ListEmptyState message={query.search ? t('search.empty') : t('empty')} />
       ) : (
         <Table>
             <TableHeader>
@@ -293,6 +301,17 @@ export function AdminEventImportDraftsContent({
             </TableBody>
         </Table>
       )}
+
+      {initialPage.totalPages > 1 ? (
+        <AdminPagination
+          page={initialPage.page}
+          totalPages={initialPage.totalPages}
+          getHref={(page) => buildEventImportDraftsHref(locale, {
+            ...query,
+            page,
+          })}
+        />
+      ) : null}
       <EventImportPreviewModal
         isOpen={draftToPreview !== null}
         closeLabel={t('closePreview')}

@@ -9,7 +9,7 @@ import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { ListEmptyState } from '@/components/ui/list-empty-state';
 import { SectionHeader } from '@/components/ui/section-header';
 import { AdminEventsTable } from '@/components/admin/admin-events-table';
-import { AdminEventsPagination } from '@/components/admin/admin-events-pagination';
+import { AdminPagination } from '@/components/admin/admin-pagination';
 import { EventImportPreview } from '@/components/admin/event-import-preview';
 import { EventImportPreviewModal } from '@/components/admin/event-import-preview-modal';
 import { EventRacesEditModal } from '@/components/admin/event-races-edit-modal';
@@ -28,6 +28,7 @@ import {
 import type { AdminTrailEventDetail, TrailEventDetail } from '@/types/event.types';
 import type { EventDraft } from '@/types/event-draft.types';
 import type { AdminEventPage, AdminEventPageRequest } from '@/types/admin-events.types';
+import { buildAdminEventsHref } from '@/lib/events/admin-pagination';
 import type {
   TrailEventAgentEvent,
   TrailEventAgentRace,
@@ -344,11 +345,13 @@ export function AdminEventsContent({ page, query }: AdminEventsContentProps) {
       )}
 
       {totalPages > 1 ? (
-        <AdminEventsPagination
+        <AdminPagination
           page={page.page}
           totalPages={totalPages}
-          query={query}
-          locale={locale}
+          getHref={(targetPage) => buildAdminEventsHref(locale, {
+            ...query,
+            page: targetPage,
+          })}
         />
       ) : null}
 

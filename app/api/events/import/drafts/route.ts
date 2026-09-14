@@ -5,11 +5,18 @@ import { handleRouteError } from '@/lib/utils/handle-error';
 import { parseJsonBody } from '@/app/api/request-validation';
 import { createDraft, listDrafts } from '@/lib/services/event-import-drafts';
 import { parseDraftCreateInput } from './validation';
+import { parseEventImportDraftPageRequest } from '@/lib/event-import/draft-pagination';
 
-export async function GET(): Promise<NextResponse> {
+export async function GET(request: Request): Promise<NextResponse> {
   try {
     await requireAdmin();
-    return NextResponse.json({ success: true, data: await listDrafts() });
+    const url = new URL(request.url);
+    const input = parseEventImportDraftPageRequest({
+      page: url.searchParams.get('page') ?? undefined,
+      q: url.searchParams.get('q') ?? undefined,
+      draftId: url.searchParams.get('draftId') ?? undefined,
+    });
+    return NextResponse.json({ success: true, data: await listDrafts(input) });
   } catch (error) { return handleRouteError(error); }
 }
 

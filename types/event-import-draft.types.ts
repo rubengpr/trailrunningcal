@@ -25,6 +25,20 @@ export interface EventImportDraft {
   updatedAt: string;
 }
 
+export interface EventImportDraftPageRequest {
+  page: number;
+  search: string;
+  draftId: string | null;
+}
+
+export interface EventImportDraftPage {
+  drafts: EventImportDraft[];
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+}
+
 export interface EventImportDraftRow {
   id: string;
   source_url: string | null;

@@ -3,16 +3,13 @@
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { buildAdminEventsHref } from '@/lib/events/admin-pagination';
-import type { AdminEventPageRequest } from '@/types/admin-events.types';
 
 type PaginationItem = number | 'start-ellipsis' | 'end-ellipsis';
 
-interface AdminEventsPaginationProps {
+interface AdminPaginationProps {
   page: number;
   totalPages: number;
-  query: AdminEventPageRequest;
-  locale: string;
+  getHref: (page: number) => string;
 }
 
 function getPaginationItems(page: number, totalPages: number): PaginationItem[] {
@@ -38,12 +35,11 @@ function getPaginationItems(page: number, totalPages: number): PaginationItem[] 
   return items;
 }
 
-export function AdminEventsPagination({
+export function AdminPagination({
   page,
   totalPages,
-  query,
-  locale,
-}: AdminEventsPaginationProps): React.ReactElement {
+  getHref,
+}: AdminPaginationProps): React.ReactElement {
   const t = useTranslations('adminEvents');
   const paginationItems = getPaginationItems(page, totalPages);
 
@@ -51,7 +47,7 @@ export function AdminEventsPagination({
     <nav className="flex flex-wrap items-center justify-center gap-1">
       {page > 1 ? (
         <Link
-          href={buildAdminEventsHref(locale, { ...query, page: page - 1 })}
+          href={getHref(page - 1)}
           title={t('pagination.previous')}
           className="inline-flex size-9 items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-700 transition-colors hover:bg-gray-50"
         >
@@ -75,7 +71,7 @@ export function AdminEventsPagination({
           ) : (
             <Link
               key={item}
-              href={buildAdminEventsHref(locale, { ...query, page: item })}
+              href={getHref(item)}
               title={t('pagination.page', { page: item })}
               className="inline-flex size-9 items-center justify-center rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
             >
@@ -94,7 +90,7 @@ export function AdminEventsPagination({
 
       {page < totalPages ? (
         <Link
-          href={buildAdminEventsHref(locale, { ...query, page: page + 1 })}
+          href={getHref(page + 1)}
           title={t('pagination.next')}
           className="inline-flex size-9 items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-700 transition-colors hover:bg-gray-50"
         >

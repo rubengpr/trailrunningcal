@@ -2,7 +2,7 @@ import { ValidationError } from '@/lib/errors';
 import {
   createEventImportDraft as createInDatabase,
   getEventImportDraft,
-  getEventImportDrafts,
+  getEventImportDraftsPage,
   rejectEventImportDraft as rejectInDatabase,
   updateEventImportDraft as updateInDatabase,
 } from '@/lib/db/event-import-drafts';
@@ -11,6 +11,7 @@ import {
   startEventImportDraftPublication,
 } from '@/lib/services/event-import-draft-publication';
 import type { EventImportDraftData } from '@/types/event-import-draft.types';
+import type { EventImportDraftPageRequest } from '@/types/event-import-draft.types';
 
 export async function createDraft(input: {
   data: EventImportDraftData;
@@ -20,8 +21,8 @@ export async function createDraft(input: {
   return createInDatabase(input);
 }
 
-export async function listDrafts() {
-  return getEventImportDrafts();
+export async function listDrafts(input: EventImportDraftPageRequest) {
+  return getEventImportDraftsPage(input);
 }
 
 export async function getDraft(id: string) {
