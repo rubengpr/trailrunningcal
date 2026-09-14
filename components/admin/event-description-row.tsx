@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Search, Sparkles } from 'lucide-react';
 import { IconButton } from '@/components/ui/icon-button';
 import { cleanUrl } from '@/lib/utils/url';
-import type { TrailEventDetail } from '@/types/event.types';
+import type { EventDescriptionCandidate } from '@/types/event-description.types';
 
 export type EventDescriptionRowStatus =
   | 'idle'
@@ -21,7 +21,7 @@ interface EventDescriptionRowLabels {
 }
 
 interface EventDescriptionRowProps {
-  eventDetail: TrailEventDetail;
+  event: EventDescriptionCandidate;
   locale: string;
   isSelected: boolean;
   status: EventDescriptionRowStatus;
@@ -73,7 +73,7 @@ function DescriptionCell({ current, draft }: { current: string; draft: string })
 }
 
 export function EventDescriptionRow({
-  eventDetail,
+  event,
   locale,
   isSelected,
   status,
@@ -86,7 +86,6 @@ export function EventDescriptionRow({
   onOpenReview,
   onGenerate,
 }: EventDescriptionRowProps): React.ReactElement {
-  const event = eventDetail.event;
   const canGenerate = Boolean(event.websiteUrl) && status !== 'generating';
 
   return (
@@ -124,7 +123,7 @@ export function EventDescriptionRow({
         )}
       </td>
       <td className="px-4 py-3 text-right tabular-nums text-gray-700">
-        {eventDetail.allRaceCount}
+        {event.raceCount}
       </td>
       <td className="max-w-[240px] px-4 py-3">
         <button

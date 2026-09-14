@@ -25,7 +25,10 @@ vi.mock('@/lib/db/race-tracks', () => ({
   getTrackedRaceIdsByEventIds: mocks.getTrackedRaceIdsByEventIds,
 }));
 
-import { getAdminEventsPage } from '@/lib/db/events';
+import {
+  getAdminEventsPage,
+  getEventDescriptionCandidatesPage,
+} from '@/lib/db/events';
 
 const FIRST_ID = '7a0a4eb8-e4a4-4e8d-8d0c-1d0ed0e2cf11';
 const SECOND_ID = '94e16324-c0cd-4f29-a43b-d09830c874a2';
@@ -124,5 +127,57 @@ describe('getAdminEventsPage', () => {
       sortColumn: 'dates',
       sortDirection: 'asc',
     })).rejects.toThrow('Failed to fetch admin event page');
+  });
+});
+
+describe('getEventDescriptionCandidatesPage', () => {
+  it('returns a bounded page without loading race details', async () => {
+    mocks.rpc.mockResolvedValue({
+      data: [{
+        candidates: [{
+          id: FIRST_ID,
+          name: 'First',
+          slug: 'first',
+          website_url: 'https://example.com',
+          description: 'Description',
+          updated_at: '2026-09-14T12:00:00.000Z',
+          race_count: 3,
+        }],
+        total_count: '51',
+      }],
+      error: null,
+    });
+
+    await expect(getEventDescriptionCandidatesPage(2)).resolves.toEqual({
+      events: [{
+        id: FIRST_ID,
+        name: 'First',
+        slug: 'first',
+        websiteUrl: 'https://example.com',
+        description: 'Description',
+        updatedAt: '2026-09-14T12:00:00.000Z',
+        raceCount: 3,
+      }],
+      page: 2,
+      pageSize: 50,
+      total: 51,
+      totalPages: 2,
+    });
+    expect(mocks.rpc).toHaveBeenCalledWith(
+      'get_event_description_candidates_page',
+      { p_limit: 50, p_offset: 50 },
+    );
+    expect(mocks.in).not.toHaveBeenCalled();
+  });
+
+  it('rejects malformed totals from the database', async () => {
+    mocks.rpc.mockResolvedValue({
+      data: [{ candidates: [], total_count: 'invalid' }],
+      error: null,
+    });
+
+    await expect(getEventDescriptionCandidatesPage(1)).rejects.toThrow(
+      'Failed to fetch event description candidates',
+    );
   });
 });

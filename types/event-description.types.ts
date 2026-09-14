@@ -2,6 +2,24 @@ import type { OpenRouterScrapeModelId } from '@/lib/integrations/openrouter/scra
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 import type { PageStats } from '@/types/races-scrape-api.types';
 
+export interface EventDescriptionCandidate {
+  id: string;
+  name: string;
+  slug: string;
+  websiteUrl: string | null;
+  description: string | null;
+  updatedAt: string | null;
+  raceCount: number;
+}
+
+export interface EventDescriptionCandidatePage {
+  events: EventDescriptionCandidate[];
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+}
+
 export type EventDescriptionBatchStatus =
   | 'pending'
   | 'running'

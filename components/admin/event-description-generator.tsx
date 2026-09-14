@@ -11,6 +11,7 @@ import {
   EventDescriptionRow,
   type EventDescriptionRowStatus,
 } from '@/components/admin/event-description-row';
+import { AdminPagination } from '@/components/admin/admin-pagination';
 import {
   OPENROUTER_SCRAPE_MODEL_IDS,
   type OpenRouterScrapeModelId,
@@ -22,38 +23,43 @@ import {
   saveEventDescription,
   startEventDescriptionBatch,
 } from '@/lib/api/events';
-import type { TrailEventDetail } from '@/types/event.types';
-import type { EventDescriptionBatchSnapshot } from '@/types/event-description.types';
+import { buildEventDescriptionsHref } from '@/lib/event-description/pagination';
+import type {
+  EventDescriptionBatchSnapshot,
+  EventDescriptionCandidate,
+  EventDescriptionCandidatePage,
+} from '@/types/event-description.types';
 
 interface EventDescriptionGeneratorProps {
-  events: TrailEventDetail[];
+  page: EventDescriptionCandidatePage;
 }
 
 type RowStatus = EventDescriptionRowStatus;
 
-function getInitialDescriptions(events: TrailEventDetail[]): Record<string, string> {
+function getInitialDescriptions(events: EventDescriptionCandidate[]): Record<string, string> {
   return Object.fromEntries(
-    events.map((eventDetail) => [
-      eventDetail.event.id,
-      eventDetail.event.description ?? '',
+    events.map((event) => [
+      event.id,
+      event.description ?? '',
     ]),
   );
 }
 
-function getInitialUpdatedAt(events: TrailEventDetail[]): Record<string, string | null> {
+function getInitialUpdatedAt(events: EventDescriptionCandidate[]): Record<string, string | null> {
   return Object.fromEntries(
-    events.map((eventDetail) => [
-      eventDetail.event.id,
-      eventDetail.event.updatedAt,
+    events.map((event) => [
+      event.id,
+      event.updatedAt,
     ]),
   );
 }
 
 export function EventDescriptionGenerator({
-  events,
+  page,
 }: EventDescriptionGeneratorProps) {
   const t = useTranslations('adminEventDescriptions');
   const locale = useLocale();
+  const events = page.events;
   const [model, setModel] = useState<OpenRouterScrapeModelId>(
     'openai/gpt-5.4-mini',
   );
@@ -83,13 +89,13 @@ export function EventDescriptionGenerator({
   const selectedEventIds = useMemo(() => [...selectedIds], [selectedIds]);
 
   const selectableEvents = useMemo(
-    () => events.filter((e) => !!e.event.websiteUrl),
+    () => events.filter((event) => !!event.websiteUrl),
     [events],
   );
 
   const allSelectableSelected =
     selectableEvents.length > 0 &&
-    selectableEvents.every((e) => selectedIds.has(e.event.id));
+    selectableEvents.every((event) => selectedIds.has(event.id));
 
   const toggleSelected = (eventId: string): void => {
     setSelectedIds((current) => {
@@ -107,7 +113,7 @@ export function EventDescriptionGenerator({
     if (allSelectableSelected) {
       setSelectedIds(new Set());
     } else {
-      setSelectedIds(new Set(selectableEvents.map((e) => e.event.id)));
+      setSelectedIds(new Set(selectableEvents.map((event) => event.id)));
     }
   };
 
@@ -283,9 +289,9 @@ export function EventDescriptionGenerator({
       });
   }, [batchSnapshot, t]);
 
-  const subtitle = events.length === 1
+  const subtitle = page.total === 1
     ? t('eventCountOne')
-    : t('eventCount', { count: events.length });
+    : t('eventCount', { count: page.total });
 
   return (
     <div className="flex flex-col gap-8">
@@ -369,8 +375,7 @@ export function EventDescriptionGenerator({
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {events.map((eventDetail) => {
-                  const event = eventDetail.event;
+                {events.map((event) => {
                   const status = statuses[event.id] ?? 'idle';
                   const currentDescription = currentDescriptions[event.id] ?? '';
                   const draftDescription = drafts[event.id] ?? '';
@@ -380,7 +385,7 @@ export function EventDescriptionGenerator({
                   return (
                     <EventDescriptionRow
                       key={event.id}
-                      eventDetail={eventDetail}
+                      event={event}
                       locale={locale}
                       isSelected={selectedIds.has(event.id)}
                       status={status}
@@ -407,12 +412,20 @@ export function EventDescriptionGenerator({
         </div>
       )}
 
+      {page.totalPages > 1 ? (
+        <AdminPagination
+          page={page.page}
+          totalPages={page.totalPages}
+          getHref={(nextPage) => buildEventDescriptionsHref(locale, nextPage)}
+        />
+      ) : null}
+
       {descriptionModalEventId && (() => {
-        const modalEvent = events.find((e) => e.event.id === descriptionModalEventId);
+        const modalEvent = events.find((event) => event.id === descriptionModalEventId);
         if (!modalEvent) return null;
         const current = currentDescriptions[descriptionModalEventId] ?? '';
         const draft = drafts[descriptionModalEventId] ?? '';
-        return <EventDescriptionReviewModal eventName={modalEvent.event.name} currentDescription={current} draftDescription={draft} onClose={() => setDescriptionModalEventId(null)} onSave={() => { void handleSave(descriptionModalEventId); setDescriptionModalEventId(null); }} />;
+        return <EventDescriptionReviewModal eventName={modalEvent.name} currentDescription={current} draftDescription={draft} onClose={() => setDescriptionModalEventId(null)} onSave={() => { void handleSave(descriptionModalEventId); setDescriptionModalEventId(null); }} />;
       })()}
     </div>
   );

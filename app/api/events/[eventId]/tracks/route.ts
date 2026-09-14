@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { parseUuidParam } from '@/app/api/request-validation';
 import { defaultLocale, locales, type Locale } from '@/i18n';
-import { getEventTrackRoutes } from '@/lib/db/events';
+import { getEventTrackRoutes } from '@/lib/db/race-tracks';
 import { ValidationError } from '@/lib/errors';
 import { handleRouteError } from '@/lib/utils/handle-error';
 

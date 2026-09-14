@@ -1,6 +1,4 @@
 import { cache } from 'react';
-import { unstable_cache } from 'next/cache';
-import { getTranslations } from 'next-intl/server';
 import {
   createAdminClient,
   createClient,
@@ -18,7 +16,6 @@ import type {
   PublicTrailEventDetail,
   TrailEventRace,
   EventRaceTier,
-  TrailEventRaceWithTrack,
 } from '@/types/event.types';
 import type {
   PublicEventPage,
@@ -31,19 +28,19 @@ import type {
 import type { EventTranslationLocale } from '@/types/event-translation.types';
 import {
   buildEventDetail,
-  selectRelevantEventRaces,
   toPublicEventDetail,
 } from '@/lib/events/utils';
 import { getPendingDraftsByEventIds } from '@/lib/db/event-drafts';
 import { getTrackedRaceIdsByEventIds } from '@/lib/db/race-tracks';
 import { PUBLIC_EVENTS_PAGE_SIZE } from '@/lib/db/public-events-pagination';
 import { ADMIN_EVENTS_PAGE_SIZE } from '@/lib/events/admin-pagination';
-import { toTrackGeometry } from '@/lib/race-tracks/routes';
 import { getEventTranslation } from '@/lib/db/event-translations';
 import { getPublicTrackedRaceIdsForEvent } from '@/lib/db/race-tracks';
-import { buildTrackRoutes } from '@/lib/race-tracks/routes';
-import type { TrackRoute } from '@/types/race-track.types';
-import type { Locale } from '@/i18n';
+import { EVENT_DESCRIPTION_PAGE_SIZE } from '@/lib/event-description/pagination';
+import type {
+  EventDescriptionCandidate,
+  EventDescriptionCandidatePage,
+} from '@/types/event-description.types';
 
 type PublicEventPageRow = Pick<EventRow, 'id' | 'name' | 'slug'> & {
   start_date: string;
@@ -139,20 +136,60 @@ export function toTrailEventRace(row: EventRaceRow): TrailEventRace {
   };
 }
 
-export const getEvents = cache(async function getEvents(): Promise<
-  TrailEventDetail[]
-> {
-  const supabase = createStaticClient();
+interface EventDescriptionCandidateRow {
+  id: string;
+  name: string;
+  slug: string;
+  website_url: string | null;
+  description: string | null;
+  updated_at: string | null;
+  race_count: number | string;
+}
 
-  const { data, error } = await supabase.rpc('get_events_with_races');
+export async function getEventDescriptionCandidatesPage(
+  page: number,
+): Promise<EventDescriptionCandidatePage> {
+  const { data, error } = await createAdminClient().rpc(
+    'get_event_description_candidates_page',
+    {
+      p_limit: EVENT_DESCRIPTION_PAGE_SIZE,
+      p_offset: (page - 1) * EVENT_DESCRIPTION_PAGE_SIZE,
+    },
+  );
 
-  if (error || !data) {
-    console.error('Failed to fetch events with races:', error);
-    return [];
+  const result = data?.[0] as {
+    candidates?: EventDescriptionCandidateRow[];
+    total_count?: number | string;
+  } | undefined;
+  if (error || !result || !Array.isArray(result.candidates)) {
+    console.error('Failed to fetch event description candidates:', error);
+    throw new Error('Failed to fetch event description candidates');
   }
 
-  return toEventDetails(data as EventWithRacesRow[]);
-});
+  const total = Number(result.total_count);
+  if (!Number.isSafeInteger(total) || total < 0) {
+    console.error('Invalid event description candidate total:', result.total_count);
+    throw new Error('Failed to fetch event description candidates');
+  }
+
+  const events = result.candidates.map<EventDescriptionCandidate>((candidate) => ({
+    id: candidate.id,
+    name: candidate.name,
+    slug: candidate.slug,
+    websiteUrl: candidate.website_url,
+    description: candidate.description,
+    updatedAt: candidate.updated_at,
+    raceCount: Number(candidate.race_count),
+  }));
+
+  return {
+    events,
+    page,
+    pageSize: EVENT_DESCRIPTION_PAGE_SIZE,
+    total,
+    totalPages: Math.ceil(total / EVENT_DESCRIPTION_PAGE_SIZE),
+  };
+}
 
 export async function getUpcomingEventsPage({
   page,
@@ -642,88 +679,6 @@ export const getEventBySlug = cache(async function getEventBySlug(
     trackedRaceIds,
   };
 });
-
-async function getEventTrackRoutesUncached(
-  eventId: string,
-  locale: Locale,
-): Promise<TrackRoute[] | null> {
-  const supabase = createStaticClient();
-  const { data: event, error: eventError } = await supabase
-    .from('events')
-    .select('id, name')
-    .eq('id', eventId)
-    .maybeSingle();
-
-  if (eventError) {
-    console.error('Failed to load event tracks:', eventError);
-    throw new Error('Failed to load event tracks');
-  }
-  if (!event) return null;
-
-  const { data: raceData, error: raceError } = await supabase
-    .from('races')
-    .select('id, name, date, distance_km, track_geometry')
-    .eq('event_id', eventId)
-    .not('track_geometry', 'is', null);
-
-  if (raceError) {
-    console.error('Failed to load event track geometry:', raceError);
-    throw new Error('Failed to load event tracks');
-  }
-
-  const races = (raceData ?? []).flatMap<TrailEventRaceWithTrack>((race) => {
-    const geometry = toTrackGeometry(race.track_geometry);
-    if (!geometry) return [];
-    return [{
-      id: race.id,
-      name: race.name,
-      date: race.date,
-      distanceKm: race.distance_km,
-      elevationGainM: null,
-      city: '',
-      province: '',
-      mapUrl: null,
-      resultsUrl: null,
-      tiers: [],
-      trackGeometry: geometry,
-    }];
-  });
-
-  const relevantRaceIds = new Set(
-    selectRelevantEventRaces(races).map((race) => race.id),
-  );
-  const t = await getTranslations({ locale, namespace: 'event.trackMap' });
-
-  return buildTrackRoutes(
-    races.flatMap((race) =>
-      relevantRaceIds.has(race.id) && race.trackGeometry
-        ? [{
-            raceId: race.id,
-            raceName: race.name ?? t('unnamedRoute', {
-              eventName: event.name,
-              distance: race.distanceKm,
-            }),
-            distanceKm: race.distanceKm,
-            geometry: race.trackGeometry,
-          }]
-        : [],
-    ),
-  );
-}
-
-export async function getEventTrackRoutes(
-  eventId: string,
-  locale: Locale,
-): Promise<TrackRoute[] | null> {
-  return unstable_cache(
-    () => getEventTrackRoutesUncached(eventId, locale),
-    ['event-track-routes', eventId, locale],
-    {
-      revalidate: 86400,
-      tags: [`event-track-routes:${eventId}`],
-    },
-  )();
-}
 
 export async function getEventByIdForAdmin(
   eventId: string,

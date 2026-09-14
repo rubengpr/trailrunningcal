@@ -4,7 +4,7 @@ const mocks = vi.hoisted(() => ({
   getEventTrackRoutes: vi.fn(),
 }));
 
-vi.mock('@/lib/db/events', () => ({
+vi.mock('@/lib/db/race-tracks', () => ({
   getEventTrackRoutes: mocks.getEventTrackRoutes,
 }));
 

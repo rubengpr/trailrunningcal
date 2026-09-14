@@ -40,7 +40,9 @@ integrationDescribe('anonymous Supabase access', () => {
         .from('organizers')
         .select('id, name, website, facebook_url, instagram_url, youtube_url, tiktok_url')
         .limit(1),
-      supabase.rpc('get_events_with_races'),
+      supabase.rpc('get_public_events_page', {
+        p_reference_date: '2099-01-01',
+      }),
       supabase.rpc('get_recommended_events', {
         p_province: 'Barcelona',
         p_exclude_event_id: ZERO_UUID,

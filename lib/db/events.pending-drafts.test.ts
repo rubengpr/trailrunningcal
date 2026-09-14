@@ -24,7 +24,7 @@ vi.mock('@/lib/db/race-tracks', () => ({
   getTrackedRaceIdsByEventIds: mocks.getTrackedRaceIdsByEventIds,
 }));
 
-import { getAdminEventsPage, getEvents } from './events';
+import { getAdminEventsPage, getUpcomingEventsPage } from './events';
 
 const EVENT_ID_WITH_DRAFT = '7a0a4eb8-e4a4-4e8d-8d0c-1d0ed0e2cf11';
 const EVENT_ID_WITHOUT_DRAFT = '94e16324-c0cd-4f29-a43b-d09830c874a2';
@@ -41,22 +41,18 @@ describe('event list visibility', () => {
           id: EVENT_ID_WITH_DRAFT,
           name: 'Event With Draft',
           slug: 'event-with-draft',
-          website_url: 'https://example.com/with-draft',
-          organizer_id: null,
-          description: null,
-          hero_image_filename: null,
-          updated_at: null,
+          start_date: '2027-05-01',
+          end_date: '2027-05-01',
+          total_count: 2,
           races: [],
         },
         {
           id: EVENT_ID_WITHOUT_DRAFT,
           name: 'Event Without Draft',
           slug: 'event-without-draft',
-          website_url: 'https://example.com/without-draft',
-          organizer_id: null,
-          description: null,
-          hero_image_filename: null,
-          updated_at: null,
+          start_date: '2027-06-01',
+          end_date: '2027-06-01',
+          total_count: 2,
           races: [],
         },
       ],
@@ -123,11 +119,20 @@ describe('event list visibility', () => {
       error: null,
     });
 
-    const publicEvents = await getEvents();
+    const publicEvents = await getUpcomingEventsPage({
+      page: 1,
+      referenceDate: '2026-09-14',
+      filters: {
+        months: [],
+        provinces: [],
+        distanceRanges: [],
+        raceTypes: [],
+      },
+    });
 
     expect(mocks.getPendingDraftsByEventIds).not.toHaveBeenCalled();
-    expect(publicEvents).toHaveLength(2);
-    expect(publicEvents.every((event) => !('pendingDraft' in event))).toBe(true);
+    expect(publicEvents.events).toHaveLength(2);
+    expect(publicEvents.events.every((event) => !('pendingDraft' in event))).toBe(true);
 
     const result = await getAdminEventsPage({
       page: 1,
