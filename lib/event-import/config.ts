@@ -1,0 +1,2 @@
+export const EVENT_IMPORT_CONCURRENCY = 4;
+export const EVENT_IMPORT_MAX_BATCH_SIZE = 50;

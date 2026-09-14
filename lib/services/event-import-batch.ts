@@ -31,6 +31,7 @@ import type {
   TrailEventAgentRace,
 } from '@/types/trail-event-agent.types';
 import { isValidProvince } from '@/lib/geography/provinces';
+import { EVENT_IMPORT_CONCURRENCY } from '@/lib/event-import/config';
 
 interface EventImportBatchWorkflowInput {
   batchId: string;
@@ -247,12 +248,15 @@ export async function eventImportBatchWorkflow(
     const batch = await getEventImportBatchStep(input.batchId);
     const items = await getPendingBatchItemsStep(input.batchId);
 
-    for (const item of items) {
-      await processEventImportItemStep({
-        itemId: item.id,
-        url: item.url,
-        model: batch.model,
-      });
+    for (let index = 0; index < items.length; index += EVENT_IMPORT_CONCURRENCY) {
+      const group = items.slice(index, index + EVENT_IMPORT_CONCURRENCY);
+      await Promise.all(group.map((item) =>
+        processEventImportItemStep({
+          itemId: item.id,
+          url: item.url,
+          model: batch.model,
+        }),
+      ));
     }
 
     await markBatchCompletedStep(input.batchId);

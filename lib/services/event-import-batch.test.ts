@@ -3,8 +3,14 @@ import type { EventImportResult } from '@/types/events-import-api.types';
 
 const mocks = vi.hoisted(() => ({
   acceptItem: vi.fn(),
+  getEventImportBatch: vi.fn(),
   getItemResultState: vi.fn(),
+  getPendingBatchItems: vi.fn(),
+  markBatchItemCompleted: vi.fn(),
+  markBatchItemRunning: vi.fn(),
+  processCrawlSiteExtract: vi.fn(),
   saveItemResult: vi.fn(),
+  updateBatchStatus: vi.fn(),
 }));
 
 vi.mock('workflow/api', () => ({ start: vi.fn() }));
@@ -12,24 +18,29 @@ vi.mock('@/lib/guards/duplicate-events', () => ({
   checkDuplicateEvents: vi.fn(),
 }));
 vi.mock('@/lib/services/event-import', () => ({
-  processCrawlSiteExtract: vi.fn(),
+  processCrawlSiteExtract: mocks.processCrawlSiteExtract,
 }));
 vi.mock('@/lib/db/event-import-batches', () => ({
   createEventImportBatch: vi.fn(),
   acceptItem: mocks.acceptItem,
   getBatchSnapshotData: vi.fn(),
-  getPendingBatchItems: vi.fn(),
-  getEventImportBatch: vi.fn(),
+  getPendingBatchItems: mocks.getPendingBatchItems,
+  getEventImportBatch: mocks.getEventImportBatch,
   getItemResultState: mocks.getItemResultState,
-  markBatchItemCompleted: vi.fn(),
+  markBatchItemCompleted: mocks.markBatchItemCompleted,
   markBatchItemFailed: vi.fn(),
-  markBatchItemRunning: vi.fn(),
+  markBatchItemRunning: mocks.markBatchItemRunning,
   saveItemResult: mocks.saveItemResult,
   setBatchWorkflowRunId: vi.fn(),
-  updateBatchStatus: vi.fn(),
+  updateBatchStatus: mocks.updateBatchStatus,
 }));
 
-import { acceptItem, updateItemResult } from './event-import-batch';
+import {
+  acceptItem,
+  eventImportBatchWorkflow,
+  updateItemResult,
+} from './event-import-batch';
+import { EVENT_IMPORT_CONCURRENCY } from '@/lib/event-import/config';
 
 const ITEM_ID = '8e40792f-1a1a-4d30-8d15-ec70a12a04d5';
 const original: EventImportResult = {
@@ -206,5 +217,38 @@ describe('acceptItem', () => {
       status: 400,
     });
     expect(mocks.acceptItem).not.toHaveBeenCalled();
+  });
+});
+
+describe('eventImportBatchWorkflow', () => {
+  it('processes items with bounded concurrency', async () => {
+    const itemCount = EVENT_IMPORT_CONCURRENCY * 2 + 1;
+    mocks.getEventImportBatch.mockResolvedValue({
+      id: 'batch-1',
+      model: 'openai/gpt-5.4-mini',
+    });
+    mocks.getPendingBatchItems.mockResolvedValue(
+      Array.from({ length: itemCount }, (_, index) => ({
+        id: `item-${index}`,
+        url: `https://example.com/events/${index}`,
+      })),
+    );
+
+    let active = 0;
+    let maximumActive = 0;
+    mocks.processCrawlSiteExtract.mockImplementation(async () => {
+      active += 1;
+      maximumActive = Math.max(maximumActive, active);
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      active -= 1;
+      return { races: [] };
+    });
+
+    await eventImportBatchWorkflow({ batchId: 'batch-1' });
+
+    expect(maximumActive).toBe(EVENT_IMPORT_CONCURRENCY);
+    expect(mocks.processCrawlSiteExtract).toHaveBeenCalledTimes(itemCount);
+    expect(mocks.updateBatchStatus).toHaveBeenNthCalledWith(1, 'batch-1', 'running');
+    expect(mocks.updateBatchStatus).toHaveBeenLastCalledWith('batch-1', 'completed');
   });
 });
