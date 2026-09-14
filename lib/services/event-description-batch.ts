@@ -16,6 +16,7 @@ import type {
   EventDescriptionBatchItem,
   EventDescriptionBatchSnapshot,
 } from '@/types/event-description.types';
+import { EVENT_DESCRIPTION_CONCURRENCY } from '@/lib/event-description/config';
 
 interface EventDescriptionBatchWorkflowInput {
   batchId: string;
@@ -169,12 +170,19 @@ export async function eventDescriptionBatchWorkflow(
     const batch = await getEventDescriptionBatchStep(input.batchId);
     const items = await getPendingBatchItemsStep(input.batchId);
 
-    for (const item of items) {
-      await processEventDescriptionItemStep({
-        itemId: item.id,
-        eventId: item.eventId,
-        model: batch.model,
-      });
+    for (
+      let index = 0;
+      index < items.length;
+      index += EVENT_DESCRIPTION_CONCURRENCY
+    ) {
+      const group = items.slice(index, index + EVENT_DESCRIPTION_CONCURRENCY);
+      await Promise.all(group.map((item) =>
+        processEventDescriptionItemStep({
+          itemId: item.id,
+          eventId: item.eventId,
+          model: batch.model,
+        }),
+      ));
     }
 
     await markBatchCompletedStep(input.batchId);

@@ -1,4 +1,5 @@
 import type { OpenRouterScrapeModelId } from '@/lib/integrations/openrouter/scrape-models';
+import { EVENT_DESCRIPTION_MAX_BATCH_SIZE } from '@/lib/event-description/config';
 import { DEFAULT_EVENT_DESCRIPTION_MODEL } from '@/lib/services/event-description';
 import {
   assertRequestBody,
@@ -19,6 +20,12 @@ export interface ParsedEventDescriptionBatchInput {
 function parseEventIds(value: unknown): string[] {
   if (!Array.isArray(value) || value.length === 0) {
     throw new ValidationError('At least one event is required', 400);
+  }
+  if (value.length > EVENT_DESCRIPTION_MAX_BATCH_SIZE) {
+    throw new ValidationError(
+      `Too many events (max ${EVENT_DESCRIPTION_MAX_BATCH_SIZE})`,
+      400,
+    );
   }
 
   const ids = value.map((eventId) => {
