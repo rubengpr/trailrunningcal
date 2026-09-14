@@ -32,6 +32,20 @@ Disallow: /
 User-agent: Barkrowler
 Disallow: /
 
+# Public SEO databases crawl continuously even when we are not running an audit.
+# Dedicated audit bots remain allowed so audits can be run deliberately and scoped.
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
 # --- AI SEARCH bots: allowed for GEO (Generative Engine Optimization) ---
 # These bots retrieve content to cite in real-time AI search answers
 
