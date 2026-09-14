@@ -30,8 +30,6 @@ import { getDestinationPath, getProvinceByDbName } from '@/lib/geography/destina
 import type { EventTranslationLocale } from '@/types/event-translation.types';
 import type { PublicEventDetail } from '@/types/event.types';
 
-export const revalidate = 604800;
-
 export function generateStaticParams() {
   return [];
 }
