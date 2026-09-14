@@ -1,13 +1,10 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { getEventByIdForOrganizer } from '@/lib/db/events';
-import type { TrailRace } from '@/types/race.types';
-import { toTrailRace } from '@/lib/db/races';
 import type { TrailEventDetail } from '@/types/event.types';
-import type { RaceRow } from '@/types/race.types';
 
 export interface OrganizerRaceContext {
   organizerId: string;
-  race: TrailRace;
+  heroImageFilename: string | null;
 }
 
 export interface OrganizerEventContext {
@@ -17,20 +14,12 @@ export interface OrganizerEventContext {
 
 async function getOrganizerIdForUser(
   supabase: SupabaseClient,
+  userId: string,
 ): Promise<string | null> {
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    return null;
-  }
-
   const { data: organizer, error: organizerError } = await supabase
     .from('organizers')
     .select('id')
-    .eq('owner_id', user.id)
+    .eq('owner_id', userId)
     .single();
 
   if (organizerError || !organizer) {
@@ -42,16 +31,17 @@ async function getOrganizerIdForUser(
 
 export async function getOrganizerRaceContext(
   supabase: SupabaseClient,
+  userId: string,
   raceId: string,
 ): Promise<OrganizerRaceContext | null> {
-  const organizerId = await getOrganizerIdForUser(supabase);
+  const organizerId = await getOrganizerIdForUser(supabase, userId);
   if (!organizerId) {
     return null;
   }
 
   const { data: raceRow, error: raceError } = await supabase
     .from('races')
-    .select('*')
+    .select('organizer_id, hero_image_filename')
     .eq('id', raceId)
     .single();
 
@@ -59,22 +49,22 @@ export async function getOrganizerRaceContext(
     return null;
   }
 
-  const row = raceRow as RaceRow;
-  if (row.organizer_id !== organizerId) {
+  if (raceRow.organizer_id !== organizerId) {
     return null;
   }
 
   return {
     organizerId,
-    race: toTrailRace(row),
+    heroImageFilename: raceRow.hero_image_filename,
   };
 }
 
 export async function getOrganizerEventContext(
   supabase: SupabaseClient,
+  userId: string,
   eventId: string,
 ): Promise<OrganizerEventContext | null> {
-  const organizerId = await getOrganizerIdForUser(supabase);
+  const organizerId = await getOrganizerIdForUser(supabase, userId);
   if (!organizerId) {
     return null;
   }
@@ -92,16 +82,17 @@ export async function getOrganizerEventContext(
 
 export async function getRaceAccessContext(
   supabase: SupabaseClient,
+  userId: string,
   raceId: string,
   isAdmin: boolean,
 ): Promise<OrganizerRaceContext | null> {
   if (!isAdmin) {
-    return getOrganizerRaceContext(supabase, raceId);
+    return getOrganizerRaceContext(supabase, userId, raceId);
   }
 
   const { data, error } = await supabase
     .from('races')
-    .select('*')
+    .select('organizer_id, hero_image_filename')
     .eq('id', raceId)
     .single();
 
@@ -109,13 +100,12 @@ export async function getRaceAccessContext(
     return null;
   }
 
-  const row = data as RaceRow;
-  if (!row.organizer_id) {
+  if (!data.organizer_id) {
     return null;
   }
 
   return {
-    organizerId: row.organizer_id,
-    race: toTrailRace(row),
+    organizerId: data.organizer_id,
+    heroImageFilename: data.hero_image_filename,
   };
 }

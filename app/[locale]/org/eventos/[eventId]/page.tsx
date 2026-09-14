@@ -20,7 +20,11 @@ export default async function OrganizerEventEditPage({
     redirect(`/${locale}/login`);
   }
 
-  const organizerContext = await getOrganizerEventContext(supabase, eventId);
+  const organizerContext = await getOrganizerEventContext(
+    supabase,
+    user.id,
+    eventId,
+  );
 
   if (!organizerContext) {
     redirect(`/${locale}/org/eventos`);

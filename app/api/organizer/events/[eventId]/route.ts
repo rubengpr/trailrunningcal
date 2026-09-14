@@ -17,13 +17,14 @@ export async function PATCH(
   context: { params: Promise<{ eventId: string }> },
 ) {
   try {
-    await requireAuth();
+    const { user } = await requireAuth();
 
     const { eventId } = await context.params;
     const parsedEventId = parseUuidParam(eventId, 'event id');
     const supabase = await createClient();
     const organizerContext = await getOrganizerEventContext(
       supabase,
+      user.id,
       parsedEventId,
     );
 

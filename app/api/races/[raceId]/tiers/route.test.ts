@@ -41,7 +41,7 @@ beforeEach(() => {
   mocks.createClient.mockResolvedValue(supabase);
   mocks.getOrganizerRaceContext.mockResolvedValue({
     organizerId: 'organizer-1',
-    race: { id: RACE_ID },
+    heroImageFilename: null,
   });
   mocks.updateRaceTier.mockResolvedValue([{ price_eur: 35 }]);
 });
@@ -77,6 +77,11 @@ describe('race tier authorization', () => {
       data: [{ price_eur: 35 }],
     });
     expect(mocks.updateRaceTier).toHaveBeenCalledWith(RACE_ID, 35, false);
+    expect(mocks.getOrganizerRaceContext).toHaveBeenCalledWith(
+      supabase,
+      'user-1',
+      RACE_ID,
+    );
   });
 
   it('allows an admin without an ownership lookup', async () => {

@@ -4,7 +4,6 @@ import {
   getOrganizerEventContext,
   getRaceAccessContext,
 } from '@/lib/auth/organizer';
-import type { RaceRow } from '@/types/race.types';
 
 const mocks = vi.hoisted(() => ({
   getEventByIdForOrganizer: vi.fn(),
@@ -38,17 +37,8 @@ const eventDetail = {
   },
 };
 
-function raceRow(organizerId: string): RaceRow {
+function raceRow(organizerId: string) {
   return {
-    id: RACE_ID,
-    name: 'Trail Race',
-    date: '2027-05-01',
-    distance_km: 21,
-    elevation_gain_m: 900,
-    race_tiers: null,
-    city: 'Barcelona',
-    province: 'Barcelona',
-    description: null,
     organizer_id: organizerId,
     hero_image_filename: 'main-123.webp',
   };
@@ -73,11 +63,19 @@ describe('getRaceAccessContext', () => {
       from: vi.fn().mockReturnValue(raceQuery),
     } as unknown as SupabaseClient;
 
-    const result = await getRaceAccessContext(client, RACE_ID, true);
+    const result = await getRaceAccessContext(
+      client,
+      'admin-1',
+      RACE_ID,
+      true,
+    );
 
     expect(result?.organizerId).toBe('organizer-1');
-    expect(result?.race.id).toBe(RACE_ID);
+    expect(result?.heroImageFilename).toBe('main-123.webp');
     expect(client.auth.getUser).not.toHaveBeenCalled();
+    expect(raceQuery.select).toHaveBeenCalledWith(
+      'organizer_id, hero_image_filename',
+    );
   });
 
   it('allows an organizer to access their own race', async () => {
@@ -95,10 +93,20 @@ describe('getRaceAccessContext', () => {
       ),
     } as unknown as SupabaseClient;
 
-    const result = await getRaceAccessContext(client, RACE_ID, false);
+    const result = await getRaceAccessContext(
+      client,
+      'user-1',
+      RACE_ID,
+      false,
+    );
 
     expect(result?.organizerId).toBe('organizer-1');
-    expect(result?.race.id).toBe(RACE_ID);
+    expect(result?.heroImageFilename).toBe('main-123.webp');
+    expect(client.auth.getUser).not.toHaveBeenCalled();
+    expect(organizerQuery.select).toHaveBeenCalledWith('id');
+    expect(raceQuery.select).toHaveBeenCalledWith(
+      'organizer_id, hero_image_filename',
+    );
   });
 
   it('rejects a race owned by another organizer', async () => {
@@ -117,7 +125,7 @@ describe('getRaceAccessContext', () => {
     } as unknown as SupabaseClient;
 
     await expect(
-      getRaceAccessContext(client, RACE_ID, false),
+      getRaceAccessContext(client, 'user-1', RACE_ID, false),
     ).resolves.toBeNull();
   });
 });
@@ -136,7 +144,11 @@ describe('getOrganizerEventContext', () => {
     } as unknown as SupabaseClient;
     mocks.getEventByIdForOrganizer.mockResolvedValue(eventDetail);
 
-    const result = await getOrganizerEventContext(client, EVENT_ID);
+    const result = await getOrganizerEventContext(
+      client,
+      'user-1',
+      EVENT_ID,
+    );
 
     expect(result).toEqual({
       organizerId: 'organizer-1',
@@ -146,6 +158,7 @@ describe('getOrganizerEventContext', () => {
       EVENT_ID,
       'organizer-1',
     );
+    expect(client.auth.getUser).not.toHaveBeenCalled();
   });
 
   it('rejects a missing organizer event', async () => {
@@ -161,6 +174,8 @@ describe('getOrganizerEventContext', () => {
     } as unknown as SupabaseClient;
     mocks.getEventByIdForOrganizer.mockResolvedValue(null);
 
-    await expect(getOrganizerEventContext(client, EVENT_ID)).resolves.toBeNull();
+    await expect(
+      getOrganizerEventContext(client, 'user-1', EVENT_ID),
+    ).resolves.toBeNull();
   });
 });

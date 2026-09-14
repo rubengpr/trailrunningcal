@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import { deleteRaceImage, uploadRaceImage } from './race-image';
+import { deleteRaceImage, getRaceImage, uploadRaceImage } from './race-image';
 
 const ORGANIZER_ID = 'organizer-1';
 const RACE_ID = 'race-1';
@@ -49,6 +49,24 @@ function createClient(input?: {
 
 beforeEach(() => {
   vi.restoreAllMocks();
+});
+
+describe('getRaceImage', () => {
+  it('uses the authorized context without re-reading the race', async () => {
+    const { client } = createClient();
+
+    await expect(getRaceImage(client, {
+      organizerId: ORGANIZER_ID,
+      raceId: RACE_ID,
+      filename: EXISTING_FILENAME,
+    })).resolves.toMatchObject({
+      hasImage: true,
+      filename: EXISTING_FILENAME,
+    });
+
+    expect(client.from).not.toHaveBeenCalled();
+    expect(client.storage.from).not.toHaveBeenCalled();
+  });
 });
 
 describe('uploadRaceImage', () => {

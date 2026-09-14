@@ -184,6 +184,11 @@ describe('PATCH /api/organizer/events/[eventId]', () => {
         races: updateBody.races,
       },
     );
+    expect(mocks.getOrganizerEventContext).toHaveBeenCalledWith(
+      supabase,
+      'user-1',
+      EVENT_ID,
+    );
     expect(mocks.revalidateEventMutation).toHaveBeenCalledWith(
       previousDetail,
       updatedDetail,

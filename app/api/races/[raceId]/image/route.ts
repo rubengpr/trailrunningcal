@@ -18,16 +18,25 @@ export async function GET(
   context: { params: Promise<{ raceId: string }> },
 ) {
   try {
-    const { isAdmin } = await requireAuth();
+    const { user, isAdmin } = await requireAuth();
     const { raceId: rawRaceId } = await context.params;
     const raceId = parseUuidParam(rawRaceId, 'race id');
     const supabase = isAdmin ? createAdminClient() : await createClient();
-    const raceContext = await getRaceAccessContext(supabase, raceId, isAdmin);
+    const raceContext = await getRaceAccessContext(
+      supabase,
+      user.id,
+      raceId,
+      isAdmin,
+    );
     if (!raceContext) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const result = await getRaceImage(supabase, raceId);
+    const result = await getRaceImage(supabase, {
+      organizerId: raceContext.organizerId,
+      raceId,
+      filename: raceContext.heroImageFilename,
+    });
 
     return NextResponse.json({ success: true, data: result });
   } catch (error) {
@@ -40,12 +49,17 @@ export async function POST(
   context: { params: Promise<{ raceId: string }> },
 ) {
   try {
-    const { isAdmin } = await requireAuth();
+    const { user, isAdmin } = await requireAuth();
     const { raceId: rawRaceId } = await context.params;
     const raceId = parseUuidParam(rawRaceId, 'race id');
     const supabase = isAdmin ? createAdminClient() : await createClient();
 
-    const raceContext = await getRaceAccessContext(supabase, raceId, isAdmin);
+    const raceContext = await getRaceAccessContext(
+      supabase,
+      user.id,
+      raceId,
+      isAdmin,
+    );
     if (!raceContext) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
@@ -57,7 +71,7 @@ export async function POST(
     const filename = await uploadRaceImage(supabase, {
       organizerId: raceContext.organizerId,
       raceId,
-      existingFilename: raceContext.race.heroImageFilename?.trim() || null,
+      existingFilename: raceContext.heroImageFilename?.trim() || null,
       file,
     });
 
@@ -72,12 +86,17 @@ export async function DELETE(
   context: { params: Promise<{ raceId: string }> },
 ) {
   try {
-    const { isAdmin } = await requireAuth();
+    const { user, isAdmin } = await requireAuth();
     const { raceId: rawRaceId } = await context.params;
     const raceId = parseUuidParam(rawRaceId, 'race id');
     const supabase = isAdmin ? createAdminClient() : await createClient();
 
-    const raceContext = await getRaceAccessContext(supabase, raceId, isAdmin);
+    const raceContext = await getRaceAccessContext(
+      supabase,
+      user.id,
+      raceId,
+      isAdmin,
+    );
     if (!raceContext) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
@@ -86,7 +105,7 @@ export async function DELETE(
       supabase,
       raceContext.organizerId,
       raceId,
-      raceContext.race.heroImageFilename?.trim() || null,
+      raceContext.heroImageFilename?.trim() || null,
     );
 
     return NextResponse.json({ success: true, data: null });

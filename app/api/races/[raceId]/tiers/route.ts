@@ -15,7 +15,7 @@ export async function PATCH(
   context: { params: Promise<{ raceId: string }> },
 ) {
   try {
-    const { isAdmin } = await requireAuth();
+    const { user, isAdmin } = await requireAuth();
     const { raceId: rawRaceId } = await context.params;
     const raceId = parseUuidParam(rawRaceId, 'race id');
     const supabase = await createClient();
@@ -32,7 +32,7 @@ export async function PATCH(
     }
 
     if (!isAdmin) {
-      const context = await getOrganizerRaceContext(supabase, raceId);
+      const context = await getOrganizerRaceContext(supabase, user.id, raceId);
       if (!context) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
       }

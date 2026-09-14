@@ -38,20 +38,14 @@ function pickFilenameFromList(files: { name: string }[]): string | null {
 
 export async function getRaceImage(
   supabase: SupabaseClient,
-  raceId: string,
+  input: {
+    organizerId: string;
+    raceId: string;
+    filename: string | null;
+  },
 ): Promise<RaceImageResult> {
-  const { data: raceRow, error: raceError } = await supabase
-    .from('races')
-    .select('organizer_id, hero_image_filename')
-    .eq('id', raceId)
-    .single();
-
-  if (raceError || !raceRow || !raceRow.organizer_id) {
-    return { hasImage: false };
-  }
-
-  const organizerId = raceRow.organizer_id;
-  let filename: string | null = raceRow.hero_image_filename?.trim() || null;
+  const { organizerId, raceId } = input;
+  let filename = input.filename?.trim() || null;
 
   if (!filename) {
     const folderPath = `${organizerId}/${raceId}`;

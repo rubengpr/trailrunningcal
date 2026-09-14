@@ -35,18 +35,7 @@ const ownerClient = { kind: 'owner' };
 const adminClient = { kind: 'admin' };
 const raceContext = {
   organizerId: 'organizer-1',
-  race: {
-    id: RACE_ID,
-    name: 'Trail Race',
-    date: '2027-05-01',
-    distanceKm: 21,
-    elevationGainM: 900,
-    city: 'Barcelona',
-    province: 'Barcelona',
-    description: null,
-    organizerId: 'organizer-1',
-    heroImageFilename: 'main-123.webp',
-  },
+  heroImageFilename: 'main-123.webp',
 };
 const context = { params: Promise.resolve({ raceId: RACE_ID }) };
 
@@ -107,10 +96,15 @@ describe('race image authorization', () => {
     });
     expect(mocks.getRaceAccessContext).toHaveBeenCalledWith(
       ownerClient,
+      'user-1',
       RACE_ID,
       false,
     );
-    expect(mocks.getRaceImage).toHaveBeenCalledWith(ownerClient, RACE_ID);
+    expect(mocks.getRaceImage).toHaveBeenCalledWith(ownerClient, {
+      organizerId: 'organizer-1',
+      raceId: RACE_ID,
+      filename: 'main-123.webp',
+    });
   });
 
   it('allows an admin to upload an image with the admin client', async () => {
@@ -132,6 +126,7 @@ describe('race image authorization', () => {
     expect(mocks.createClient).not.toHaveBeenCalled();
     expect(mocks.getRaceAccessContext).toHaveBeenCalledWith(
       adminClient,
+      'admin-1',
       RACE_ID,
       true,
     );
