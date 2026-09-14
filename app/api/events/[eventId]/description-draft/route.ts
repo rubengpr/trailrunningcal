@@ -3,7 +3,11 @@ import { requireAdmin } from '@/lib/auth';
 import { handleRouteError } from '@/lib/utils/handle-error';
 import { DEFAULT_EVENT_DESCRIPTION_MODEL, generateEventDescriptionDraft } from '@/lib/services/event-description';
 import { parseImportModel } from '@/app/api/events/import/validation';
-import { parseUuidParam } from '@/app/api/request-validation';
+import {
+  assertRequestBody,
+  parseJsonBody,
+  parseUuidParam,
+} from '@/app/api/request-validation';
 
 export const maxDuration = 60;
 
@@ -16,7 +20,8 @@ export async function POST(
 
     const { eventId: rawEventId } = await context.params;
     const eventId = parseUuidParam(rawEventId, 'event id');
-    const body = await request.json().catch(() => ({}));
+    const body = await parseJsonBody(request);
+    assertRequestBody(body);
     const model =
       typeof body.model === 'string' && body.model.length > 0
         ? parseImportModel(body.model)
