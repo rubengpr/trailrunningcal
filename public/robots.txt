@@ -46,6 +46,10 @@ Disallow: /
 User-agent: MJ12bot
 Disallow: /
 
+# --- Low-value search crawlers: blocked to reduce cache warming ---
+User-agent: PetalBot
+Disallow: /
+
 # --- AI SEARCH bots: allowed for GEO (Generative Engine Optimization) ---
 # These bots retrieve content to cite in real-time AI search answers
 
