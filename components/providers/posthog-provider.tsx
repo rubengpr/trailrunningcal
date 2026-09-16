@@ -22,6 +22,9 @@ export function PostHogProvider() {
             canvasQuality: '0.4',
           },
         },
+        request_queue_config: {
+          flush_interval_ms: 5000,
+        },
         debug: process.env.NODE_ENV === 'development',
       });
     };
