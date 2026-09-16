@@ -28,7 +28,20 @@ export default async function proxy(request: NextRequest) {
   return response;
 }
 
-// Proxy executes for page routes; PostHog ingest is handled by Next rewrites.
+// Keep locale negotiation and the public-only locale redirects in Proxy, but let
+// already-localized content routes go straight to the Vercel CDN/route handler.
+// PostHog ingest is handled by Next rewrites.
 export const config = {
-  matcher: ['/((?!api|auth|ingest|_next|_vercel|.*\\..*).*)'],
+  matcher: [
+    '/',
+    '/es',
+    '/ca',
+    '/en',
+    '/fr',
+    '/en/admin/:path*',
+    '/en/org/:path*',
+    '/fr/admin/:path*',
+    '/fr/org/:path*',
+    '/((?!api|auth|ingest|_next|_vercel|es(?:/|$)|ca(?:/|$)|en(?:/|$)|fr(?:/|$)|.*\\..*).*)',
+  ],
 };
