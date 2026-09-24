@@ -813,18 +813,9 @@ export function NaakNutritionCard({
           onClick={() => setIsOpen(true)}
         >
           <span
-            className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_68%_45%,rgba(255,255,255,0.48),transparent_23%),radial-gradient(ellipse_at_76%_48%,rgba(255,242,0,0.58),transparent_17%),linear-gradient(108deg,#000_8%,#070707_44%,#282828_70%,#000_100%)]"
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_56%_115%_at_53%_40%,rgba(255,242,0,0.38)_0%,rgba(211,210,182,0.3)_18%,rgba(104,104,97,0.38)_42%,rgba(28,28,28,0.62)_64%,transparent_83%),linear-gradient(90deg,#000_0%,#050505_100%)]"
             aria-hidden="true"
           />
-          <svg
-            viewBox="0 0 620 180"
-            className="pointer-events-none absolute -right-8 -top-7 h-[155%] w-2/3 text-[#fff200]/25"
-            fill="none"
-            aria-hidden="true"
-          >
-            <path d="M8 147 114 70l72 34 82-79 66 62 68-35 92 73 118-94" stroke="currentColor" strokeWidth="2" />
-            <path d="M0 166 104 92l76 33 88-75 64 58 72-34 91 69 125-91" stroke="currentColor" strokeWidth="1" />
-          </svg>
           <span className="absolute right-5 top-5 grid h-9 w-12 place-items-center rounded-md bg-[#fff200] shadow-[0_8px_20px_rgba(0,0,0,0.28)] sm:right-7 sm:top-7 sm:h-10 sm:w-14">
             <Image
               src="/assets/sponsors/naak/logo.svg"
