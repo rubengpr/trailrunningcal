@@ -147,8 +147,6 @@
     "naakNutrition": {
       "sponsored": "En collaboration avec Näak",
       "reset": "Recommencer",
-      "progress": "Étape {current} sur {total}",
-      "complete": "Plan terminé",
       "back": "Retour",
       "continue": "Continuer",
       "showPlan": "Voir mon plan",

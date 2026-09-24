@@ -862,11 +862,6 @@ export function NaakNutritionCard({
               style={{ width: `${progress}%` }}
             />
           </div>
-          <p className="mt-2 text-right text-[10px] font-bold uppercase tracking-[0.14em] text-white/35">
-            {step === RESULT_STEP
-              ? t('complete')
-              : t('progress', { current: step + 1, total: FORM_STEP_COUNT })}
-          </p>
         </header>
 
         <div
