@@ -825,6 +825,15 @@ export function NaakNutritionCard({
             <path d="M8 147 114 70l72 34 82-79 66 62 68-35 92 73 118-94" stroke="currentColor" strokeWidth="2" />
             <path d="M0 166 104 92l76 33 88-75 64 58 72-34 91 69 125-91" stroke="currentColor" strokeWidth="1" />
           </svg>
+          <span className="absolute right-5 top-5 grid h-9 w-12 place-items-center rounded-md bg-[#fff200] shadow-[0_8px_20px_rgba(0,0,0,0.28)] sm:right-7 sm:top-7 sm:h-10 sm:w-14">
+            <Image
+              src="/assets/sponsors/naak/logo.svg"
+              alt=""
+              width={106}
+              height={82}
+              className="h-auto w-9 text-black sm:w-11"
+            />
+          </span>
           <div className="relative flex flex-col items-center gap-5 text-center sm:flex-row sm:items-center sm:gap-8 sm:text-left">
             <NutritionCalculatorMark />
             <div className="min-w-0 flex-1">
