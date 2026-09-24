@@ -144,6 +144,152 @@
     "banner": {
       "otsoAlt": "Promoció d'OTSO per a esdeveniments de trail running"
     },
+    "naakNutrition": {
+      "sponsored": "En col·laboració amb Näak",
+      "reset": "Reiniciar",
+      "progress": "Pas {current} de {total}",
+      "complete": "Pla completat",
+      "back": "Tornar",
+      "continue": "Continuar",
+      "showPlan": "Veure el meu pla",
+      "intro": {
+        "eyebrow": "Nutrició per a la teva cursa · Näak",
+        "title": "Converteix la teva distància en un pla d'energia",
+        "description": "Configura una recomanació visual per a {eventName} en menys de dos minuts.",
+        "cta": "Calcular la meva nutrició"
+      },
+      "distance": {
+        "title": "Quina distància correràs?",
+        "description": "Tria la teva prova de {eventName}.",
+        "metrics": "{distance} km · {elevation} m+"
+      },
+      "estimate": {
+        "title": "Quant de temps esperes estar en cursa?",
+        "description": "Farem servir aquesta estimació per presentar la teva estratègia.",
+        "hours": "Hores",
+        "minutes": "Minuts",
+        "index": "Índex UTMB/ITRA",
+        "optional": "opcional"
+      },
+      "goal": {
+        "title": "Quin és el teu objectiu per a aquesta cursa?",
+        "options": {
+          "compete": "Vull competir",
+          "improve": "Vull millorar el meu temps",
+          "finish": "Vull arribar a meta"
+        }
+      },
+      "weather": {
+        "title": "Quines condicions meteorològiques esperes?",
+        "options": {
+          "cold": { "label": "Fred", "detail": "Menys de 10 °C" },
+          "mild": { "label": "Temperat", "detail": "Entre 10 i 24 °C" },
+          "hot": { "label": "Calor", "detail": "Més de 24 °C" }
+        }
+      },
+      "fuel": {
+        "title": "Quins formats prefereixes durant l'activitat?",
+        "description": "En pots seleccionar més d'un.",
+        "options": {
+          "liquid": { "label": "Líquid", "detail": "Beguda energètica" },
+          "semiLiquid": { "label": "Semilíquid", "detail": "Gel o puré" },
+          "solid": { "label": "Sòlid", "detail": "Barreta o gofra" }
+        }
+      },
+      "caffeine": {
+        "title": "Vols productes amb cafeïna?",
+        "options": { "yes": "Sí", "no": "No" }
+      },
+      "restrictions": {
+        "title": "Tens restriccions alimentàries?",
+        "description": "Selecciona totes les que corresponguin.",
+        "options": {
+          "glutenFree": "Sense gluten",
+          "nutFree": "Sense fruits secs ni cacauets",
+          "vegan": "Vegà",
+          "none": "Sense restriccions"
+        }
+      },
+      "stomach": {
+        "title": "Com de sensible és el teu estómac?",
+        "options": {
+          "anything": "Puc menjar qualsevol cosa",
+          "occasional": "Tinc molèsties ocasionals",
+          "frequent": "Tinc molèsties freqüents"
+        }
+      },
+      "sweat": {
+        "title": "Com descriuries el teu nivell de sudoració?",
+        "options": {
+          "low": "Gairebé no suo",
+          "moderate": "Suo moderadament",
+          "high": "Suo molt"
+        }
+      },
+      "profile": {
+        "title": "Les teves preferències",
+        "description": "Completa el perfil per visualitzar la teva recomanació.",
+        "name": "Nom complet",
+        "weight": "Pes",
+        "birthdate": "Data de naixement",
+        "day": "Dia",
+        "month": "Mes",
+        "year": "Any",
+        "gender": "Gènere",
+        "country": "País",
+        "select": "Seleccionar",
+        "genders": {
+          "woman": "Dona",
+          "man": "Home",
+          "nonBinary": "No binari",
+          "preferNot": "Prefereixo no indicar-ho"
+        },
+        "countries": {
+          "spain": "Espanya",
+          "france": "França",
+          "andorra": "Andorra",
+          "portugal": "Portugal",
+          "other": "Un altre"
+        }
+      },
+      "errors": {
+        "chooseOne": "Selecciona una opció per continuar.",
+        "time": "Introdueix entre 1 i 48 hores i entre 0 i 59 minuts.",
+        "fuel": "Selecciona almenys un format de nutrició.",
+        "restriction": "Selecciona una restricció o indica que no en tens cap.",
+        "name": "Introdueix un nom vàlid.",
+        "weight": "Introdueix un pes vàlid.",
+        "birthdate": "Completa la teva data de naixement.",
+        "gender": "Selecciona una opció de gènere.",
+        "country": "Selecciona un país."
+      },
+      "result": {
+        "eyebrow": "El teu pla de nutrició Näak",
+        "title": "{name}, aquest és el teu pla de cursa",
+        "description": "Una rotació visual preparada per a {eventName}.",
+        "distance": "Distància",
+        "elevation": "Desnivell positiu",
+        "time": "Temps estimat",
+        "timeValue": "{hours} h {minutes} min",
+        "targetsTitle": "Objectius per hora",
+        "targets": {
+          "carbs": "Carbohidrats / h",
+          "calories": "Calories / h",
+          "water": "Aigua / h",
+          "sodium": "Sodi / h"
+        },
+        "rotationEyebrow": "Rotació recomanada",
+        "rotationTitle": "Què prendre i quan",
+        "timeline": {
+          "beforeStart": "Abans de sortir",
+          "start": "0:00",
+          "fortyMinutes": "0:40",
+          "eightyMinutes": "1:20"
+        },
+        "viewProduct": "Veure a Näak",
+        "restart": "Crear un altre pla"
+      }
+    },
     "dateTbd": "Data per confirmar",
     "favorite": {
       "label": "Preferit",

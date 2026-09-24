@@ -144,6 +144,152 @@
     "banner": {
       "otsoAlt": "Promotion OTSO pour les événements de trail"
     },
+    "naakNutrition": {
+      "sponsored": "En collaboration avec Näak",
+      "reset": "Recommencer",
+      "progress": "Étape {current} sur {total}",
+      "complete": "Plan terminé",
+      "back": "Retour",
+      "continue": "Continuer",
+      "showPlan": "Voir mon plan",
+      "intro": {
+        "eyebrow": "Nutrition de course · Näak",
+        "title": "Transforme ta distance en plan énergétique",
+        "description": "Crée une recommandation visuelle pour {eventName} en moins de deux minutes.",
+        "cta": "Calculer ma nutrition"
+      },
+      "distance": {
+        "title": "Quelle distance vas-tu courir ?",
+        "description": "Choisis ta course de {eventName}.",
+        "metrics": "{distance} km · {elevation} m+"
+      },
+      "estimate": {
+        "title": "Combien de temps penses-tu courir ?",
+        "description": "Nous utiliserons cette estimation pour présenter ta stratégie.",
+        "hours": "Heures",
+        "minutes": "Minutes",
+        "index": "Indice UTMB/ITRA",
+        "optional": "facultatif"
+      },
+      "goal": {
+        "title": "Quel est ton objectif pour cette course ?",
+        "options": {
+          "compete": "Je veux être compétitif",
+          "improve": "Je veux améliorer mon temps",
+          "finish": "Je veux atteindre l’arrivée"
+        }
+      },
+      "weather": {
+        "title": "Quelles conditions météo prévois-tu ?",
+        "options": {
+          "cold": { "label": "Froid", "detail": "Moins de 10 °C" },
+          "mild": { "label": "Doux", "detail": "Entre 10 et 24 °C" },
+          "hot": { "label": "Chaud", "detail": "Plus de 24 °C" }
+        }
+      },
+      "fuel": {
+        "title": "Quels formats préfères-tu pendant l’effort ?",
+        "description": "Tu peux en sélectionner plusieurs.",
+        "options": {
+          "liquid": { "label": "Liquide", "detail": "Boisson énergétique" },
+          "semiLiquid": { "label": "Semi-liquide", "detail": "Gel ou purée" },
+          "solid": { "label": "Solide", "detail": "Barre ou gaufre" }
+        }
+      },
+      "caffeine": {
+        "title": "Souhaites-tu des produits caféinés ?",
+        "options": { "yes": "Oui", "no": "Non" }
+      },
+      "restrictions": {
+        "title": "As-tu des restrictions alimentaires ?",
+        "description": "Sélectionne toutes les réponses applicables.",
+        "options": {
+          "glutenFree": "Sans gluten",
+          "nutFree": "Sans fruits à coque ni cacahuètes",
+          "vegan": "Végane",
+          "none": "Aucune restriction"
+        }
+      },
+      "stomach": {
+        "title": "Ton estomac est-il sensible ?",
+        "options": {
+          "anything": "Je peux manger de tout",
+          "occasional": "J’ai parfois des problèmes",
+          "frequent": "J’ai souvent des problèmes"
+        }
+      },
+      "sweat": {
+        "title": "Comment décrirais-tu ton niveau de transpiration ?",
+        "options": {
+          "low": "Je transpire à peine",
+          "moderate": "Je transpire modérément",
+          "high": "Je transpire beaucoup"
+        }
+      },
+      "profile": {
+        "title": "Tes préférences",
+        "description": "Complète ton profil pour afficher ta recommandation.",
+        "name": "Nom complet",
+        "weight": "Poids",
+        "birthdate": "Date de naissance",
+        "day": "Jour",
+        "month": "Mois",
+        "year": "Année",
+        "gender": "Genre",
+        "country": "Pays",
+        "select": "Sélectionner",
+        "genders": {
+          "woman": "Femme",
+          "man": "Homme",
+          "nonBinary": "Non binaire",
+          "preferNot": "Je préfère ne pas répondre"
+        },
+        "countries": {
+          "spain": "Espagne",
+          "france": "France",
+          "andorra": "Andorre",
+          "portugal": "Portugal",
+          "other": "Autre"
+        }
+      },
+      "errors": {
+        "chooseOne": "Sélectionne une option pour continuer.",
+        "time": "Saisis entre 1 et 48 heures et entre 0 et 59 minutes.",
+        "fuel": "Sélectionne au moins un format de nutrition.",
+        "restriction": "Sélectionne une restriction ou indique que tu n’en as aucune.",
+        "name": "Saisis un nom valide.",
+        "weight": "Saisis un poids valide.",
+        "birthdate": "Complète ta date de naissance.",
+        "gender": "Sélectionne une option de genre.",
+        "country": "Sélectionne un pays."
+      },
+      "result": {
+        "eyebrow": "Ton plan nutrition Näak",
+        "title": "{name}, voici ton plan de course",
+        "description": "Une rotation visuelle préparée pour {eventName}.",
+        "distance": "Distance",
+        "elevation": "Dénivelé positif",
+        "time": "Temps estimé",
+        "timeValue": "{hours} h {minutes} min",
+        "targetsTitle": "Objectifs horaires",
+        "targets": {
+          "carbs": "Glucides / h",
+          "calories": "Calories / h",
+          "water": "Eau / h",
+          "sodium": "Sodium / h"
+        },
+        "rotationEyebrow": "Rotation recommandée",
+        "rotationTitle": "Quoi prendre et quand",
+        "timeline": {
+          "beforeStart": "Avant le départ",
+          "start": "0:00",
+          "fortyMinutes": "0:40",
+          "eightyMinutes": "1:20"
+        },
+        "viewProduct": "Voir sur Näak",
+        "restart": "Créer un autre plan"
+      }
+    },
     "dateTbd": "Date à confirmer",
     "favorite": {
       "label": "Favori",

@@ -9,6 +9,7 @@ import { getEventBySlug, getRecommendedEvents } from '@/lib/db/events';
 import { buildEventAlternateLinks } from '@/lib/content/alternate-links';
 import { Breadcrumb } from '@/components/layout/breadcrumb';
 import { SponsorBannerSlot } from '@/components/sponsors/sponsor-banner-slot';
+import { NaakNutritionCard } from '@/components/sponsors/naak-nutrition-card';
 import { EventDiscoverySection } from '@/components/event/event-discovery-section';
 import { EventDistanceList } from '@/components/event/event-distance-list';
 import { EventDetailHeader } from '@/components/event/event-detail-header';
@@ -283,11 +284,26 @@ export default async function EventPage({
             </div>
           )}
 
-          <SponsorBannerSlot
-            page="event_page"
-            locale={localeTyped}
-            className="my-6 sm:my-8"
-          />
+          {event === 'mallorca-by-utmb' && eventData.races.length > 0 ? (
+            <NaakNutritionCard
+              eventName={eventData.event.name}
+              races={eventData.races.map((race) => ({
+                id: race.id,
+                name:
+                  race.name ??
+                  `${eventData.event.name} - ${race.distanceKm} km`,
+                distanceKm: race.distanceKm,
+                elevationGainM: race.elevationGainM,
+              }))}
+              className="my-6 sm:my-8"
+            />
+          ) : (
+            <SponsorBannerSlot
+              page="event_page"
+              locale={localeTyped}
+              className="my-6 sm:my-8"
+            />
+          )}
 
           <section className="mt-8 sm:mt-10">
             <div className="mb-4 flex items-center gap-2">
