@@ -812,9 +812,13 @@ export function NaakNutritionCard({
           className="group relative block min-h-64 w-full overflow-hidden rounded-[1.35rem] bg-[#050505] px-5 py-7 text-left text-white shadow-[0_18px_50px_-30px_rgba(0,0,0,0.7)] transition-transform duration-300 hover:-translate-y-0.5 motion-reduce:transition-none motion-reduce:hover:translate-y-0 sm:min-h-72 sm:px-10 sm:py-8"
           onClick={() => setIsOpen(true)}
         >
+          <span
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_68%_45%,rgba(255,255,255,0.48),transparent_23%),radial-gradient(ellipse_at_76%_48%,rgba(255,242,0,0.58),transparent_17%),linear-gradient(108deg,#000_8%,#070707_44%,#282828_70%,#000_100%)]"
+            aria-hidden="true"
+          />
           <svg
             viewBox="0 0 620 180"
-            className="pointer-events-none absolute -right-8 -top-7 h-[155%] w-2/3 text-[#fff200]/20"
+            className="pointer-events-none absolute -right-8 -top-7 h-[155%] w-2/3 text-[#fff200]/25"
             fill="none"
             aria-hidden="true"
           >
