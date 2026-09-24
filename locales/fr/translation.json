@@ -335,6 +335,22 @@
         },
         "event_page": {
           "alt": "Promotion des purées énergétiques Baouw pour les événements de trail"
+        },
+        "discount": {
+          "homepage": {
+            "alt": "10 % de réduction sur la nutrition sportive naturelle Baouw"
+          },
+          "event_page": {
+            "alt": "10 % de réduction sur la nutrition sportive naturelle Baouw"
+          }
+        },
+        "store": {
+          "homepage": {
+            "alt": "Nutrition sportive Baouw 100 % naturelle"
+          },
+          "event_page": {
+            "alt": "Nutrition sportive Baouw 100 % naturelle"
+          }
         }
       },
       "inverse": {

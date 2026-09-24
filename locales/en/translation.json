@@ -335,6 +335,22 @@
         },
         "event_page": {
           "alt": "Baouw energy puree promotion for trail running events"
+        },
+        "discount": {
+          "homepage": {
+            "alt": "10% off Baouw natural sports nutrition"
+          },
+          "event_page": {
+            "alt": "10% off Baouw natural sports nutrition"
+          }
+        },
+        "store": {
+          "homepage": {
+            "alt": "Baouw 100% natural sports nutrition"
+          },
+          "event_page": {
+            "alt": "Baouw 100% natural sports nutrition"
+          }
         }
       },
       "inverse": {
