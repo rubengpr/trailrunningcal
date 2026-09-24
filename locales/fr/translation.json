@@ -151,10 +151,10 @@
       "continue": "Continuer",
       "showPlan": "Voir mon plan",
       "intro": {
-        "eyebrow": "Nutrition de course · Näak",
-        "title": "Transforme ta distance en plan énergétique",
-        "description": "Crée une recommandation visuelle pour {eventName} en moins de deux minutes.",
-        "cta": "Calculer ma nutrition"
+        "eyebrow": "Näak pour {eventName}",
+        "productName": "Nutrition Calculator",
+        "description": "Indique ta course et tes objectifs. Reçois ton plan nutritionnel personnalisé et ta sélection de produits.",
+        "cta": "Créer mon plan"
       },
       "distance": {
         "title": "Quelle distance vas-tu courir ?",

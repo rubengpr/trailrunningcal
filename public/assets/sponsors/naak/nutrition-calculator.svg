@@ -1,0 +1,8 @@
+<svg width="176" height="160" viewBox="0 0 176 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="27" y="4" width="122" height="122" fill="#FFF200"/>
+  <path d="M31 100L59 64L74 64L98 45L111 52L125 37L145 91V122H31V100Z" fill="#111111"/>
+  <path d="M59 64V33M98 45V25M125 37V20" stroke="#111111" stroke-width="2"/>
+  <path d="M27 126H149" stroke="#FFF200" stroke-width="5"/>
+  <text x="88" y="145" fill="white" font-family="Arial, sans-serif" font-size="16" font-weight="800" text-anchor="middle">NUTRITION</text>
+  <text x="88" y="159" fill="#FFF200" font-family="Arial, sans-serif" font-size="10" font-weight="800" letter-spacing="4" text-anchor="middle">CALCULATOR</text>
+</svg>

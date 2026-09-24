@@ -179,6 +179,18 @@ function BrandMark({ compact = false }: { compact?: boolean }) {
   );
 }
 
+function NutritionCalculatorMark() {
+  return (
+    <Image
+      src="/assets/sponsors/naak/nutrition-calculator.svg"
+      alt=""
+      width={176}
+      height={160}
+      className="h-28 w-auto drop-shadow-[0_12px_24px_rgba(0,0,0,0.35)] sm:h-32"
+    />
+  );
+}
+
 export function NaakNutritionCard({
   eventName,
   races,
@@ -797,7 +809,7 @@ export function NaakNutritionCard({
         <button
           type="button"
           data-testid="naak-nutrition-card-trigger"
-          className="group relative block w-full overflow-hidden rounded-[1.35rem] bg-[#050505] px-5 py-5 text-left text-white shadow-[0_18px_50px_-30px_rgba(0,0,0,0.7)] transition-transform duration-300 hover:-translate-y-0.5 motion-reduce:transition-none motion-reduce:hover:translate-y-0 sm:px-7 sm:py-6"
+          className="group relative block min-h-64 w-full overflow-hidden rounded-[1.35rem] bg-[#050505] px-5 py-7 text-left text-white shadow-[0_18px_50px_-30px_rgba(0,0,0,0.7)] transition-transform duration-300 hover:-translate-y-0.5 motion-reduce:transition-none motion-reduce:hover:translate-y-0 sm:min-h-72 sm:px-10 sm:py-8"
           onClick={() => setIsOpen(true)}
         >
           <svg
@@ -809,26 +821,23 @@ export function NaakNutritionCard({
             <path d="M8 147 114 70l72 34 82-79 66 62 68-35 92 73 118-94" stroke="currentColor" strokeWidth="2" />
             <path d="M0 166 104 92l76 33 88-75 64 58 72-34 91 69 125-91" stroke="currentColor" strokeWidth="1" />
           </svg>
-          <div className="relative flex items-center gap-4 sm:gap-6">
-            <BrandMark />
+          <div className="relative flex flex-col items-center gap-5 text-center sm:flex-row sm:items-center sm:gap-8 sm:text-left">
+            <NutritionCalculatorMark />
             <div className="min-w-0 flex-1">
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#fff200]">
-                {t('intro.eyebrow')}
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#fff200]">
+                {t('intro.eyebrow', { eventName })}
               </p>
-              <h2 className="mt-1 text-xl font-semibold tracking-tight sm:text-2xl">
-                {t('intro.title')}
+              <h2 className="mt-1 text-3xl font-semibold tracking-tight sm:text-4xl">
+                {t('intro.productName')}
               </h2>
-              <p className="mt-1 hidden max-w-2xl text-sm leading-5 text-white/55 sm:block">
+              <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-white/65 sm:mx-0 sm:text-base">
                 {t('intro.description', { eventName })}
               </p>
+              <span className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#fff200] px-5 py-3 text-sm font-bold text-black">
+                {t('intro.cta')}
+                <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none" aria-hidden="true" />
+              </span>
             </div>
-            <span className="relative hidden shrink-0 items-center gap-2 rounded-full bg-[#fff200] px-5 py-3 text-sm font-bold text-black sm:inline-flex">
-              {t('intro.cta')}
-              <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none" aria-hidden="true" />
-            </span>
-            <span className="relative grid size-10 shrink-0 place-items-center rounded-full bg-[#fff200] text-black sm:hidden">
-              <ArrowRight className="size-4" aria-hidden="true" />
-            </span>
           </div>
         </button>
       </aside>

@@ -151,10 +151,10 @@
       "continue": "Continue",
       "showPlan": "View my plan",
       "intro": {
-        "eyebrow": "Race nutrition · Näak",
-        "title": "Turn your distance into an energy plan",
-        "description": "Build a visual recommendation for {eventName} in under two minutes.",
-        "cta": "Calculate my nutrition"
+        "eyebrow": "Näak for {eventName}",
+        "productName": "Nutrition Calculator",
+        "description": "Specify your race and goals. Get your personalized nutrition plan and product selection.",
+        "cta": "Create my plan"
       },
       "distance": {
         "title": "Which distance are you racing?",

@@ -151,10 +151,10 @@
       "continue": "Continuar",
       "showPlan": "Veure el meu pla",
       "intro": {
-        "eyebrow": "Nutrició per a la teva cursa · Näak",
-        "title": "Converteix la teva distància en un pla d'energia",
-        "description": "Configura una recomanació visual per a {eventName} en menys de dos minuts.",
-        "cta": "Calcular la meva nutrició"
+        "eyebrow": "Näak per a {eventName}",
+        "productName": "Nutrition Calculator",
+        "description": "Defineix la teva cursa i els teus objectius. Obté el teu pla de nutrició personalitzat i la teva selecció de productes.",
+        "cta": "Crear el meu pla"
       },
       "distance": {
         "title": "Quina distància correràs?",
