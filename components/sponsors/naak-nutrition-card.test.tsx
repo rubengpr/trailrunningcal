@@ -4,13 +4,14 @@ import { cleanup, fireEvent, render, screen, within } from '@testing-library/rea
 import { NextIntlClientProvider } from 'next-intl';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import es from '@/locales/es/translation.json';
+import { getMallorcaNaakCourse } from '@/lib/sponsors/naak-mallorca-profiles';
 import { NaakNutritionCard, type NaakRaceOption } from './naak-nutrition-card';
 
 const RACES: NaakRaceOption[] = [
-  { id: '138', name: 'Serra de Tramuntana', distanceKm: 138, elevationGainM: 5350 },
-  { id: '104', name: 'Camins de Pedra en Sec', distanceKm: 104, elevationGainM: 3740 },
-  { id: '56', name: 'Els Tres Mils', distanceKm: 56, elevationGainM: 2450 },
-  { id: '26', name: 'Camins de s’Arxiduc', distanceKm: 26, elevationGainM: 1000 },
+  { id: '138', name: 'Serra de Tramuntana', distanceKm: 138, elevationGainM: 5350, course: getMallorcaNaakCourse(138) },
+  { id: '104', name: 'Camins de Pedra en Sec', distanceKm: 104, elevationGainM: 3740, course: getMallorcaNaakCourse(104) },
+  { id: '56', name: 'Els Tres Mils', distanceKm: 56, elevationGainM: 2450, course: getMallorcaNaakCourse(56) },
+  { id: '26', name: 'Camins de s’Arxiduc', distanceKm: 26, elevationGainM: 1000, course: getMallorcaNaakCourse(26) },
 ];
 
 afterEach(() => {
@@ -128,18 +129,33 @@ describe('NaakNutritionCard', () => {
     expect(screen.getByText('138 km')).not.toBeNull();
     expect(screen.getByText(/5[.\s]?350 m/)).not.toBeNull();
     expect(screen.getByText('21 h 22 min')).not.toBeNull();
-    expect(screen.getByText('45 g')).not.toBeNull();
-    expect(screen.getByText('236 kcal')).not.toBeNull();
-    expect(screen.getByText('700 ml')).not.toBeNull();
-    expect(screen.getByText('700 mg')).not.toBeNull();
+    expect(screen.getByText('45g')).not.toBeNull();
+    expect(screen.getByText('236kcal')).not.toBeNull();
+    expect(screen.getByText('700ml')).not.toBeNull();
+    expect(screen.getByText('700mg')).not.toBeNull();
+    expect(screen.getByText('Total: 962 g')).not.toBeNull();
 
-    const productLinks = screen.getAllByRole('link', { name: 'Ver en Näak' });
+    const productLinks = screen.getAllByRole('link');
     expect(productLinks).toHaveLength(4);
     for (const link of productLinks) {
       expect(link.getAttribute('rel')).toBe('sponsored noopener noreferrer');
       expect(link.getAttribute('href')).toMatch(/^https:\/\/eu\.naak\.com\//);
       expect(link.getAttribute('href')).not.toContain('utm_');
     }
+  });
+
+  it('renders every 40-minute intake to the estimated finish and supports all result views', () => {
+    renderCard();
+    completeFlow();
+
+    expect(screen.getByText('21:20')).not.toBeNull();
+    expect(screen.getByRole('tab', { name: 'Perfil' }).getAttribute('aria-selected')).toBe('true');
+    fireEvent.click(screen.getByRole('tab', { name: 'Cronología' }));
+    expect(screen.getByRole('tabpanel').id).toBe('naak-result-panel-timeline');
+    expect(screen.getByText('START')).not.toBeNull();
+    expect(screen.getByText('FINISH')).not.toBeNull();
+    fireEvent.click(screen.getByRole('tab', { name: 'Tabla' }));
+    expect(screen.getAllByText('En carrera').length).toBeGreaterThan(10);
   });
 
   it('resets the completed flow without network or browser storage', () => {

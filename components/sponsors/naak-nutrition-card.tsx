@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import Image from 'next/image';
 import {
   ArrowRight,
   ChevronLeft,
-  Clock3,
+  ChevronRight,
   Cookie,
   Droplets,
   Flame,
@@ -14,18 +14,25 @@ import {
 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { FormErrorMessage } from '@/components/ui/error-message';
+import type { NaakCourseProfile, NaakElevationPoint } from '@/lib/sponsors/naak-mallorca-profiles';
 
 export interface NaakRaceOption {
   id: string;
   name: string;
   distanceKm: number;
   elevationGainM: number | null;
+  course: NaakCourseProfile | null;
 }
 
 interface NaakNutritionCardProps {
   eventName: string;
   races: NaakRaceOption[];
   className?: string;
+  initialResult?: {
+    expectedHours: string;
+    expectedMinutes: string;
+    raceId: string;
+  };
 }
 
 type RaceGoal = 'compete' | 'improve' | 'finish';
@@ -65,42 +72,61 @@ interface ChoiceButtonProps {
   selected: boolean;
 }
 
+type ResultTab = 'timeline' | 'profile' | 'table';
+
 interface ProductRecommendation {
+  category: FuelType;
   image: string;
+  id: 'gel' | 'puree' | 'waffle' | 'drinkMix';
   name: string;
-  timingKey: 'beforeStart' | 'start' | 'fortyMinutes' | 'eightyMinutes';
   url: string;
+}
+
+interface NutritionIntake {
+  product: ProductRecommendation;
+  timeMinutes: number;
 }
 
 const FORM_STEP_COUNT = 10;
 const RESULT_STEP = FORM_STEP_COUNT;
+const INTAKE_INTERVAL_MINUTES = 40;
 
 const PRODUCTS: ProductRecommendation[] = [
   {
-    image: '/assets/sponsors/naak/boost-drink-mix-neutral.jpg',
-    name: 'BOOST Drink Mix 60 · Neutral',
-    timingKey: 'beforeStart',
-    url: 'https://eu.naak.com/en-eu/products/boost-drink-mix-60-neutral-bag',
-  },
-  {
-    image: '/assets/sponsors/naak/ultra-gel-salted-maple.jpg',
+    category: 'semiLiquid',
+    image: '/assets/sponsors/naak/ultra-gel-salted-maple-cutout.png',
+    id: 'gel',
     name: 'ULTRA Gel 200 · Salted Maple',
-    timingKey: 'start',
     url: 'https://eu.naak.com/products/ultra-gel-200-salted-maple',
   },
   {
-    image: '/assets/sponsors/naak/ultra-puree-apple-strawberry.jpg',
+    category: 'semiLiquid',
+    image: '/assets/sponsors/naak/ultra-puree-apple-strawberry-cutout.png',
+    id: 'puree',
     name: 'ULTRA Puree 200 · Apple Strawberry',
-    timingKey: 'fortyMinutes',
     url: 'https://eu.naak.com/en-eu/products/ultra-puree-200-apple-strawberry',
   },
   {
-    image: '/assets/sponsors/naak/ultra-waffle-salted-caramel.jpg',
+    category: 'solid',
+    image: '/assets/sponsors/naak/ultra-waffle-salted-caramel-cutout.png',
+    id: 'waffle',
     name: 'ULTRA Waffle 140 · Salted Caramel',
-    timingKey: 'eightyMinutes',
     url: 'https://eu.naak.com/collections/hiking/products/ultra-waffle-140-salted-caramel',
   },
+  {
+    category: 'liquid',
+    image: '/assets/sponsors/naak/boost-drink-mix-neutral-cutout.png',
+    id: 'drinkMix',
+    name: 'BOOST Drink Mix 60 · Neutral',
+    url: 'https://eu.naak.com/en-eu/products/boost-drink-mix-60-neutral-bag',
+  },
 ];
+
+const STRATEGY_ASSETS = {
+  flask: '/assets/sponsors/naak/naak-flask.png',
+  gel: '/assets/sponsors/naak/naak-gel.png',
+  shaker: '/assets/sponsors/naak/naak-shaker.png',
+} as const;
 
 const DAYS = Array.from({ length: 31 }, (_, index) => index + 1);
 const MONTHS = Array.from({ length: 12 }, (_, index) => index + 1);
@@ -109,6 +135,44 @@ const YEARS = Array.from({ length: 83 }, (_, index) => CURRENT_YEAR - 16 - index
 
 const INPUT_CLASS =
   'w-full rounded-xl border border-white/25 bg-white/[0.06] px-4 py-3 text-base text-white outline-none transition-colors placeholder:text-white/35 focus:border-[#fff200] focus:ring-2 focus:ring-[#fff200]/20';
+
+function formatRaceTime(minutes: number): string {
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = Math.round(minutes % 60);
+  return `${hours}:${String(remainingMinutes).padStart(2, '0')}`;
+}
+
+function createIntakes(totalMinutes: number): NutritionIntake[] {
+  const intakes: NutritionIntake[] = [];
+
+  for (let timeMinutes = 0, index = 0; timeMinutes < totalMinutes; timeMinutes += INTAKE_INTERVAL_MINUTES, index += 1) {
+    intakes.push({ product: PRODUCTS[index % PRODUCTS.length], timeMinutes });
+  }
+
+  return intakes;
+}
+
+function getProfilePath(points: NaakElevationPoint[], width: number, height: number): string {
+  if (points.length === 0) return '';
+
+  const maxDistance = points.at(-1)?.[0] ?? 1;
+  const elevations = points.map(([, elevation]) => elevation);
+  const minElevation = Math.min(...elevations);
+  const maxElevation = Math.max(...elevations);
+  const elevationRange = Math.max(1, maxElevation - minElevation);
+  const topPadding = 14;
+  const chartHeight = height - topPadding - 10;
+
+  const line = points
+    .map(([distance, elevation], index) => {
+      const x = (distance / maxDistance) * width;
+      const y = topPadding + (1 - (elevation - minElevation) / elevationRange) * chartHeight;
+      return `${index === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`;
+    })
+    .join(' ');
+
+  return `${line} L ${width} ${height} L 0 ${height} Z`;
+}
 
 function getInitialAnswers(): NutritionAnswers {
   return {
@@ -195,16 +259,28 @@ export function NaakNutritionCard({
   eventName,
   races,
   className = '',
+  initialResult,
 }: NaakNutritionCardProps) {
   const t = useTranslations('event.naakNutrition');
   const locale = useLocale();
   const contentRef = useRef<HTMLDivElement>(null);
-  const [isOpen, setIsOpen] = useState(false);
-  const [step, setStep] = useState(0);
-  const [answers, setAnswers] = useState<NutritionAnswers>(getInitialAnswers);
+  const [isOpen, setIsOpen] = useState(Boolean(initialResult));
+  const [step, setStep] = useState(initialResult ? RESULT_STEP : 0);
+  const [answers, setAnswers] = useState<NutritionAnswers>(() => ({
+    ...getInitialAnswers(),
+    raceId: initialResult?.raceId ?? '',
+    expectedHours: initialResult?.expectedHours ?? '',
+    expectedMinutes: initialResult?.expectedMinutes ?? '',
+  }));
   const [validationError, setValidationError] = useState<string | null>(null);
+  const [resultTab, setResultTab] = useState<ResultTab>('profile');
 
   const selectedRace = races.find((race) => race.id === answers.raceId);
+  const totalMinutes = Math.max(
+    1,
+    Number(answers.expectedHours || 0) * 60 + Number(answers.expectedMinutes || 0),
+  );
+  const intakes = useMemo(() => createIntakes(totalMinutes), [totalMinutes]);
   const progress = step === RESULT_STEP ? 100 : ((step + 1) / FORM_STEP_COUNT) * 100;
 
   useEffect(() => {
@@ -310,6 +386,7 @@ export function NaakNutritionCard({
     setAnswers(getInitialAnswers());
     setStep(0);
     setValidationError(null);
+    setResultTab('profile');
     if (collapse) setIsOpen(false);
   }
 
@@ -683,26 +760,210 @@ export function NaakNutritionCard({
   function renderResult() {
     if (!selectedRace) return null;
 
+    const course = selectedRace.course;
+    const totalHours = totalMinutes / 60;
+    const timelineWidth = Math.max(980, intakes.length * 104 + 220);
+    const profileDistanceKm = course?.points.at(-1)?.[0] ?? selectedRace.distanceKm;
+    const targetDefinitions = [
+      { icon: Cookie, rate: 45, unit: 'g', label: t('result.targets.carbs'), totalLabel: t('result.targetsTotals.carbs') },
+      { icon: Flame, rate: 236, unit: 'kcal', label: t('result.targets.calories'), totalLabel: t('result.targetsTotals.calories') },
+      { icon: Droplets, rate: 700, unit: 'ml', label: t('result.targets.water'), totalLabel: t('result.targetsTotals.water') },
+      { icon: Zap, rate: 700, unit: 'mg', label: t('result.targets.sodium'), totalLabel: t('result.targetsTotals.sodium') },
+    ];
     const targets = [
-      { icon: Cookie, value: '45 g', label: t('result.targets.carbs') },
-      { icon: Flame, value: '236 kcal', label: t('result.targets.calories') },
-      { icon: Droplets, value: '700 ml', label: t('result.targets.water') },
-      { icon: Zap, value: '700 mg', label: t('result.targets.sodium') },
+      ...targetDefinitions.map((target) => ({
+        ...target,
+        total: Math.round(target.rate * totalHours),
+      })),
     ];
 
+    const activeTabIndex = (['timeline', 'profile', 'table'] as ResultTab[]).indexOf(resultTab);
+    const onTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+      const tabs: ResultTab[] = ['timeline', 'profile', 'table'];
+      let nextIndex = activeTabIndex;
+
+      if (event.key === 'ArrowRight') nextIndex = (activeTabIndex + 1) % tabs.length;
+      if (event.key === 'ArrowLeft') nextIndex = (activeTabIndex - 1 + tabs.length) % tabs.length;
+      if (event.key === 'Home') nextIndex = 0;
+      if (event.key === 'End') nextIndex = tabs.length - 1;
+      if (nextIndex === activeTabIndex) return;
+
+      event.preventDefault();
+      setResultTab(tabs[nextIndex]);
+      document.getElementById(`naak-result-tab-${tabs[nextIndex]}`)?.focus();
+    };
+
+    const scrollTimeline = (direction: 'backward' | 'forward') => {
+      document
+        .getElementById('naak-result-scroll')
+        ?.scrollBy({ left: direction === 'forward' ? 640 : -640, behavior: 'smooth' });
+    };
+
+    const renderIntakeMarker = (intake: NutritionIntake, variant: 'timeline' | 'profile') => {
+      const left =
+        variant === 'timeline'
+          ? intake.timeMinutes === 0
+            ? 4
+            : 10 + (intake.timeMinutes / totalMinutes) * 82
+          : 10 + (intake.timeMinutes / totalMinutes) * 82;
+      const laneTop =
+        intake.product.category === 'liquid'
+          ? 24
+          : intake.product.category === 'semiLiquid'
+            ? 98
+            : 172;
+      const baselineTop = 240;
+
+      return (
+        <div
+          key={`${intake.product.id}-${intake.timeMinutes}`}
+          className="absolute z-20 w-16 -translate-x-1/2 text-center"
+          style={{ left: `${left}%`, top: `${laneTop}px` }}
+          title={`${formatRaceTime(intake.timeMinutes)} · ${intake.product.name}`}
+        >
+          <div className="relative mx-auto h-10 w-10">
+            <Image
+              src={intake.product.image}
+              alt={intake.product.name}
+              fill
+              sizes="40px"
+              className="object-contain"
+            />
+          </div>
+          {variant === 'timeline' ? (
+            <>
+              <span
+                className="mx-auto mt-1 block w-px bg-black"
+                style={{ height: `${baselineTop - laneTop - 44}px` }}
+                aria-hidden="true"
+              />
+              <span
+                className="absolute left-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-black"
+                style={{ top: `${baselineTop - laneTop}px` }}
+                aria-hidden="true"
+              />
+              {intake.timeMinutes > 0 && (
+                <p
+                  className="absolute left-1/2 -translate-x-1/2 whitespace-nowrap text-[11px] font-bold tabular-nums text-black"
+                  style={{ top: `${baselineTop - laneTop + 14}px` }}
+                >
+                  {formatRaceTime(intake.timeMinutes)}
+                </p>
+              )}
+            </>
+          ) : (
+            <>
+              <p className="mt-1 text-[11px] font-bold tabular-nums text-black">
+                {formatRaceTime(intake.timeMinutes)}
+              </p>
+              <span className="mx-auto mt-1 block h-10 w-px bg-black" aria-hidden="true" />
+            </>
+          )}
+        </div>
+      );
+    };
+
+    const renderCourseProfile = () => {
+      if (!course) {
+        return <p className="p-6 text-sm text-black/55">{t('result.profileUnavailable')}</p>;
+      }
+
+      const chartHeight = 216;
+      const profilePath = getProfilePath(course.points, timelineWidth, chartHeight);
+
+      return (
+        <>
+          <svg
+            aria-label={t('result.profileChartLabel')}
+            className="absolute left-0 top-[202px] z-0 h-[216px]"
+            role="img"
+            style={{ width: `${timelineWidth}px` }}
+            viewBox={`0 0 ${timelineWidth} ${chartHeight}`}
+            preserveAspectRatio="none"
+          >
+            {[0.25, 0.5, 0.75].map((ratio) => (
+              <line
+                key={ratio}
+                x1="0"
+                x2={timelineWidth}
+                y1={ratio * chartHeight}
+                y2={ratio * chartHeight}
+                stroke="rgba(15,23,42,0.14)"
+                strokeDasharray="4 5"
+              />
+            ))}
+            <path d={profilePath} fill="#101010" />
+          </svg>
+          <div className="absolute left-0 top-[418px] z-10 h-7 bg-[#fff200]" style={{ width: `${timelineWidth}px` }} />
+          <div className="absolute left-0 top-[418px] z-20 flex h-7 w-full">
+            {course.checkpoints.map((checkpoint) => (
+              <span
+                key={checkpoint.name}
+                className="absolute h-7 border-l border-black/60"
+                style={{ left: `${(checkpoint.distanceKm / profileDistanceKm) * 100}%` }}
+              />
+            ))}
+          </div>
+          <div className="absolute left-0 top-[452px] h-16" style={{ width: `${timelineWidth}px` }}>
+            <p className="absolute top-0 text-xs font-bold text-black" style={{ left: 0 }}>
+              {course.start}
+            </p>
+            {course.checkpoints.map((checkpoint) => (
+              <div
+                key={checkpoint.name}
+                className="absolute top-0 -translate-x-1/2 text-center"
+                style={{ left: `${(checkpoint.distanceKm / profileDistanceKm) * 100}%` }}
+              >
+                <span className="inline-block bg-[#ff617d] px-1.5 py-1 text-[10px] font-bold text-white">
+                  {new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(checkpoint.distanceKm)} km
+                </span>
+                <p className="mt-1 whitespace-nowrap text-xs font-bold text-black">{checkpoint.name}</p>
+              </div>
+            ))}
+            <p className="absolute right-0 top-0 text-right text-xs font-bold text-black">{course.finish}</p>
+          </div>
+        </>
+      );
+    };
+
+    const renderTimeline = () => (
+      <div className="relative h-[300px]" style={{ width: `${timelineWidth}px` }}>
+        {(['liquid', 'semiLiquid', 'solid'] as FuelType[]).map((category, index) => (
+          <div
+            key={category}
+            className="absolute left-0 right-0 border-t border-dashed border-black/15"
+            style={{ top: `${index * 74 + 55}px` }}
+          >
+            <span className="absolute left-0 -top-3 bg-white pr-2 text-[10px] font-bold uppercase tracking-wide text-black/65">
+              {t(`fuel.options.${category}.label`)}
+            </span>
+          </div>
+        ))}
+        <div className="absolute h-2 bg-[#fff200]" style={{ left: '4%', right: '6%', top: '236px' }} />
+        <div className="absolute z-30 size-11 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-black bg-white text-center text-[10px] font-bold leading-[2.5rem]" style={{ left: '4%', top: '240px' }}>
+          {t('result.timeline.start')}
+        </div>
+        <div className="absolute size-11 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-black bg-white text-center text-[10px] font-bold leading-[2.5rem]" style={{ left: '94%', top: '240px' }}>
+          {t('result.timeline.finish')}
+        </div>
+        {intakes.map((intake) => renderIntakeMarker(intake, 'timeline'))}
+      </div>
+    );
+
     return (
-      <div className="-mx-5 -my-7 rounded-b-[1.35rem] bg-[#f6f5f1] px-5 py-7 text-black sm:-mx-8 sm:-my-9 sm:px-8 sm:py-9">
+      <div className="-mx-5 -my-7 bg-white text-black sm:-mx-8 sm:-my-9">
+        <div className="px-5 py-8 sm:px-9 sm:py-11">
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-black/45">
-          {t('result.eyebrow')}
+          {t('result.planFor')}
         </p>
-        <h3 className="mt-2 max-w-3xl text-3xl font-semibold tracking-tight sm:text-5xl">
-          {t('result.title', { name: answers.fullName.trim() })}
+        <h3 className="mt-2 max-w-4xl text-3xl font-semibold tracking-tight sm:text-5xl">
+          {eventName} · {selectedRace.name}
         </h3>
         <p className="mt-3 max-w-2xl text-sm leading-6 text-black/55 sm:text-base">
           {t('result.description', { eventName })}
         </p>
 
-        <div className="mt-7 grid gap-3 rounded-2xl border border-black/10 bg-white p-4 sm:grid-cols-3 sm:p-5">
+        <div className="mt-7 grid gap-3 border-y border-black/10 py-4 sm:grid-cols-3 sm:py-5">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-black/40">
               {t('result.distance')}
@@ -737,59 +998,232 @@ export function NaakNutritionCard({
         <h4 className="mt-8 text-sm font-bold uppercase tracking-[0.14em]">
           {t('result.targetsTitle')}
         </h4>
-        <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
-          {targets.map(({ icon: Icon, label, value }) => (
-            <div key={label} className="rounded-2xl bg-[#fff200] p-4 sm:p-5">
-              <Icon className="size-5" strokeWidth={2.2} aria-hidden="true" />
-              <p className="mt-5 text-xl font-bold tracking-tight sm:text-2xl">{value}</p>
-              <p className="mt-1 text-[10px] font-bold uppercase leading-4 tracking-[0.12em] text-black/65">
-                {label}
-              </p>
+        <div className="group/targets mt-3 grid grid-cols-2 gap-1 sm:grid-cols-4">
+          {targets.map(({ icon: Icon, label, rate, total, totalLabel, unit }) => (
+            <div key={label} className="relative h-28 overflow-hidden bg-[#fff200] p-4 sm:p-5">
+              <div className="absolute inset-x-4 top-4 transition-transform duration-300 ease-out group-hover/targets:-translate-y-28 motion-reduce:transition-none sm:inset-x-5 sm:top-5">
+                <Icon className="size-5" strokeWidth={2.2} aria-hidden="true" />
+                <p className="mt-3 text-xl font-bold tracking-tight sm:text-2xl">{rate}{unit}</p>
+                <p className="mt-1 text-[10px] font-bold uppercase leading-4 tracking-[0.12em] text-black/65">
+                  {label}
+                </p>
+              </div>
+              <div className="absolute inset-x-4 top-4 translate-y-28 transition-transform duration-300 ease-out group-hover/targets:translate-y-0 motion-reduce:transition-none sm:inset-x-5 sm:top-5">
+                <Icon className="size-5" strokeWidth={2.2} aria-hidden="true" />
+                <p className="mt-3 text-xl font-bold tracking-tight tabular-nums sm:text-2xl">{total}{unit}</p>
+                <p className="mt-1 text-[10px] font-bold uppercase leading-4 tracking-[0.12em] text-black/65">
+                  {totalLabel}
+                </p>
+              </div>
+              <span className="sr-only">{t('result.total', { value: total, unit })}</span>
             </div>
           ))}
         </div>
 
-        <div className="mt-9 flex items-end justify-between gap-4">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-black/40">
-              {t('result.rotationEyebrow')}
-            </p>
-            <h4 className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl">
-              {t('result.rotationTitle')}
-            </h4>
+        <div className="mt-10 flex justify-center">
+          <div role="tablist" aria-label={t('result.views.label')} className="inline-flex rounded-full bg-[#f1f1f1] p-1">
+            {(['timeline', 'profile', 'table'] as ResultTab[]).map((tab) => (
+              <button
+                key={tab}
+                id={`naak-result-tab-${tab}`}
+                type="button"
+                role="tab"
+                aria-selected={resultTab === tab}
+                aria-controls={`naak-result-panel-${tab}`}
+                tabIndex={resultTab === tab ? 0 : -1}
+                onClick={() => setResultTab(tab)}
+                onKeyDown={onTabKeyDown}
+                className={`rounded-full px-3 py-2 text-xs font-bold uppercase tracking-wide transition-colors sm:px-5 ${
+                  resultTab === tab ? 'bg-black text-[#fff200]' : 'text-black/60 hover:text-black'
+                }`}
+              >
+                {t(`result.views.${tab}`)}
+              </button>
+            ))}
           </div>
-          <Clock3 className="hidden size-7 text-black/25 sm:block" aria-hidden="true" />
         </div>
 
-        <div className="relative mt-5 grid gap-3 sm:grid-cols-4 sm:gap-4">
-          <div className="absolute left-[12.5%] right-[12.5%] top-5 hidden h-px bg-black/15 sm:block" />
-          {PRODUCTS.map((product) => (
-            <article key={product.name} className="relative rounded-2xl border border-black/10 bg-white p-3 shadow-sm">
-              <span className="relative z-10 inline-flex rounded-full bg-black px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-white">
-                {t(`result.timeline.${product.timingKey}`)}
-              </span>
-              <div className="relative mt-3 aspect-square overflow-hidden rounded-xl bg-[#f3f1ea]">
-                <Image
-                  src={product.image}
-                  alt={product.name}
-                  fill
-                  sizes="(min-width: 640px) 190px, 45vw"
-                  className="object-contain p-2"
-                />
-              </div>
-              <h5 className="mt-3 min-h-10 text-sm font-semibold leading-5">{product.name}</h5>
-              <a
-                href={product.url}
-                target="_blank"
-                rel="sponsored noopener noreferrer"
-                className="mt-3 inline-flex items-center gap-1 text-xs font-bold underline decoration-black/25 underline-offset-4 transition-colors hover:decoration-black"
-              >
-                {t('result.viewProduct')}
-                <ArrowRight className="size-3.5 -rotate-45" aria-hidden="true" />
-              </a>
-            </article>
-          ))}
+        {resultTab === 'table' ? (
+          <div id="naak-result-panel-table" role="tabpanel" aria-labelledby="naak-result-tab-table" className="mt-7 overflow-x-auto rounded-2xl border border-black/10">
+            <table className="w-full min-w-[620px] border-collapse text-left text-sm">
+              <thead className="bg-[#f3f3f3] text-xs font-bold uppercase tracking-[0.12em] text-black/55">
+                <tr>
+                  <th className="px-4 py-3">{t('result.table.time')}</th>
+                  <th className="px-4 py-3">{t('result.table.segment')}</th>
+                  <th className="px-4 py-3">{t('result.table.product')}</th>
+                  <th className="px-4 py-3">{t('result.table.format')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  ...intakes.map((intake) => ({
+                    kind: 'intake' as const,
+                    at: intake.timeMinutes,
+                    intake,
+                  })),
+                  ...(course?.checkpoints.map((checkpoint) => ({
+                    kind: 'checkpoint' as const,
+                    at: Math.round((checkpoint.distanceKm / profileDistanceKm) * totalMinutes),
+                    checkpoint,
+                  })) ?? []),
+                ]
+                  .sort((a, b) => a.at - b.at)
+                  .map((row, index) => (
+                    <tr key={`${row.kind}-${row.at}-${index}`} className="border-t border-black/10">
+                      <td className="px-4 py-3 font-bold tabular-nums">{formatRaceTime(row.at)}</td>
+                      {row.kind === 'checkpoint' ? (
+                        <>
+                          <td className="px-4 py-3 font-semibold">{row.checkpoint.name}</td>
+                          <td className="px-4 py-3 text-black/55">{t('result.table.checkpoint')}</td>
+                          <td className="px-4 py-3 text-black/55">—</td>
+                        </>
+                      ) : (
+                        <>
+                          <td className="px-4 py-3">{t('result.table.race')}</td>
+                          <td className="px-4 py-2">
+                            <div className="flex items-center gap-3">
+                              <div className="relative size-10 shrink-0">
+                                <Image
+                                  src={row.intake.product.image}
+                                  alt={row.intake.product.name}
+                                  fill
+                                  sizes="40px"
+                                  className="object-contain"
+                                />
+                              </div>
+                              <span className="font-semibold">{row.intake.product.name}</span>
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 text-black/55">{t(`fuel.options.${row.intake.product.category}.label`)}</td>
+                        </>
+                      )}
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div
+            id={`naak-result-panel-${resultTab}`}
+            role="tabpanel"
+            aria-labelledby={`naak-result-tab-${resultTab}`}
+            className="relative mt-7"
+          >
+            <button
+              type="button"
+              aria-label={t('result.scrollBack')}
+              onClick={() => scrollTimeline('backward')}
+              className="absolute left-2 top-1/2 z-30 grid size-10 -translate-y-1/2 place-items-center rounded-full bg-white shadow-lg ring-1 ring-black/10 transition-transform hover:scale-105"
+            >
+              <ChevronLeft className="size-5" aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              aria-label={t('result.scrollForward')}
+              onClick={() => scrollTimeline('forward')}
+              className="absolute right-2 top-1/2 z-30 grid size-10 -translate-y-1/2 place-items-center rounded-full bg-white shadow-lg ring-1 ring-black/10 transition-transform hover:scale-105"
+            >
+              <ChevronRight className="size-5" aria-hidden="true" />
+            </button>
+            <div id="naak-result-scroll" className="overflow-x-auto scroll-smooth pb-3">
+              {resultTab === 'timeline' ? renderTimeline() : (
+                <div className="relative h-[520px]" style={{ width: `${timelineWidth}px` }}>
+                  <div className="absolute inset-x-0 top-0 h-[202px] bg-[#fafafa]" />
+                  {(['liquid', 'semiLiquid', 'solid'] as FuelType[]).map((category, index) => (
+                    <div
+                      key={category}
+                      className="absolute inset-x-0 border-t border-dashed border-black/15"
+                      style={{ top: `${index * 74 + 55}px` }}
+                    >
+                      <span className="absolute left-3 -top-3 bg-white px-1.5 text-[10px] font-bold uppercase tracking-wide text-black/65">
+                        {t(`fuel.options.${category}.label`)}
+                      </span>
+                    </div>
+                  ))}
+                  {intakes.map((intake) => renderIntakeMarker(intake, 'profile'))}
+                  {renderCourseProfile()}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        <div className="mt-10 grid gap-4 lg:grid-cols-2">
+          <section className="rounded-2xl bg-[#f2f2f2] p-5">
+            <h4 className="text-sm font-bold uppercase tracking-[0.08em]">{t('result.preRace.title')}</h4>
+            <div className="mt-4 space-y-3 border-t border-black/10 pt-4">
+              {[
+                { emoji: '🍚', key: 'meal' },
+                { image: STRATEGY_ASSETS.flask, key: 'drink' },
+                { image: STRATEGY_ASSETS.gel, key: 'gel' },
+              ].map((item) => (
+                <div key={item.key} className="flex items-center gap-3">
+                  <div className="relative grid size-9 shrink-0 place-items-center overflow-hidden rounded-lg bg-white">
+                    {'emoji' in item ? (
+                      <span aria-hidden="true">{item.emoji}</span>
+                    ) : (
+                      <Image src={item.image} alt="" fill sizes="36px" className="object-contain p-1" />
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold">{t(`result.preRace.items.${item.key}.name`)}</p>
+                    <p className="text-xs text-black/55">{t(`result.preRace.items.${item.key}.description`)}</p>
+                  </div>
+                  <span className="bg-[#fff200] px-2 py-1 text-xs font-bold tabular-nums">{t(`result.preRace.items.${item.key}.time`)}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+          <section className="rounded-2xl bg-[#f2f2f2] p-5">
+            <h4 className="text-sm font-bold uppercase tracking-[0.08em]">{t('result.postRace.title')}</h4>
+            <div className="mt-4 space-y-3 border-t border-black/10 pt-4">
+              {[
+                { image: STRATEGY_ASSETS.shaker, key: 'shake' },
+                { emoji: '🍲', key: 'meal' },
+              ].map((item) => (
+                <div key={item.key} className="flex items-center gap-3">
+                  <div className="relative grid size-9 shrink-0 place-items-center overflow-hidden rounded-lg bg-white">
+                    {'emoji' in item ? (
+                      <span aria-hidden="true">{item.emoji}</span>
+                    ) : (
+                      <Image src={item.image} alt="" fill sizes="36px" className="object-contain p-1" />
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold">{t(`result.postRace.items.${item.key}.name`)}</p>
+                    <p className="text-xs text-black/55">{t(`result.postRace.items.${item.key}.description`)}</p>
+                  </div>
+                  <span className="bg-[#fff200] px-2 py-1 text-xs font-bold tabular-nums">{t(`result.postRace.items.${item.key}.time`)}</span>
+                </div>
+              ))}
+            </div>
+          </section>
         </div>
+
+        <section className="mt-8 rounded-2xl bg-[#f2f2f2] p-5 sm:p-7">
+          <h4 className="text-xl font-semibold tracking-tight">{t('result.summaryTitle')}</h4>
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
+            {PRODUCTS.map((product) => {
+              const count = intakes.filter((intake) => intake.product.id === product.id).length;
+              return (
+                <a
+                  key={product.id}
+                  href={product.url}
+                  target="_blank"
+                  rel="sponsored noopener noreferrer"
+                  className="group flex items-center gap-3 rounded-xl bg-white p-3 ring-1 ring-black/5 transition-shadow hover:shadow-md"
+                >
+                  <div className="relative size-14 shrink-0 overflow-hidden rounded-lg bg-[#f6f5f1]">
+                    <Image src={product.image} alt={product.name} fill sizes="56px" className="object-contain p-1" />
+                  </div>
+                  <p className="min-w-0 flex-1 text-sm font-semibold leading-5">{product.name}</p>
+                  <span className="text-sm font-bold tabular-nums">×{count}</span>
+                  <ArrowRight className="size-4 shrink-0 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+                </a>
+              );
+            })}
+          </div>
+        </section>
 
         <button
           type="button"
@@ -799,6 +1233,7 @@ export function NaakNutritionCard({
           <RotateCcw className="size-4" aria-hidden="true" />
           {t('result.restart')}
         </button>
+        </div>
       </div>
     );
   }
@@ -816,22 +1251,21 @@ export function NaakNutritionCard({
             className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_56%_115%_at_53%_40%,rgba(255,242,0,0.38)_0%,rgba(211,210,182,0.3)_18%,rgba(104,104,97,0.38)_42%,rgba(28,28,28,0.62)_64%,transparent_83%),linear-gradient(90deg,#000_0%,#050505_100%)]"
             aria-hidden="true"
           />
-          <span className="absolute right-5 top-5 grid h-9 w-12 place-items-center rounded-md bg-[#fff200] shadow-[0_8px_20px_rgba(0,0,0,0.28)] sm:right-7 sm:top-7 sm:h-10 sm:w-14">
-            <Image
-              src="/assets/sponsors/naak/logo.svg"
-              alt=""
-              width={106}
-              height={82}
-              className="h-auto w-9 text-black sm:w-11"
-            />
-          </span>
           <div className="relative flex flex-col items-center gap-5 text-center sm:flex-row sm:items-center sm:gap-8 sm:text-left">
             <NutritionCalculatorMark />
             <div className="min-w-0 flex-1">
-              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#fff200]">
-                {t('intro.eyebrow', { eventName })}
-              </p>
-              <h2 className="mt-1 text-3xl font-semibold tracking-tight sm:text-4xl">
+              <div className="mb-2 flex justify-center sm:justify-start">
+                <span className="inline-flex h-8 w-11 items-center justify-center rounded-md bg-[#fff200] px-1.5 shadow-[0_6px_16px_rgba(0,0,0,0.24)]">
+                  <Image
+                    src="/assets/sponsors/naak/logo.svg"
+                    alt=""
+                    width={106}
+                    height={82}
+                    className="h-auto w-8"
+                  />
+                </span>
+              </div>
+              <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
                 {t('intro.productName')}
               </h2>
               <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-white/65 sm:mx-0 sm:text-base">
@@ -850,8 +1284,14 @@ export function NaakNutritionCard({
 
   return (
     <aside className={`w-full min-w-0 ${className}`} data-testid="naak-nutrition-card">
-      <div className="overflow-hidden rounded-[1.35rem] bg-[#050505] text-white shadow-[0_24px_70px_-36px_rgba(0,0,0,0.85)]">
-        <header className="border-b border-white/10 px-5 py-4 sm:px-8">
+      <div
+        className={
+          step === RESULT_STEP
+            ? 'bg-white text-black'
+            : 'overflow-hidden rounded-[1.35rem] bg-[#050505] text-white shadow-[0_24px_70px_-36px_rgba(0,0,0,0.85)]'
+        }
+      >
+        {step < RESULT_STEP ? <header className="border-b border-white/10 px-5 py-4 sm:px-8">
           <div className="flex items-center gap-3">
             <BrandMark compact />
             <div className="min-w-0 flex-1">
@@ -875,12 +1315,12 @@ export function NaakNutritionCard({
               style={{ width: `${progress}%` }}
             />
           </div>
-        </header>
+        </header> : null}
 
         <div
           ref={contentRef}
           tabIndex={-1}
-          className="min-h-[390px] px-5 py-7 outline-none sm:min-h-[430px] sm:px-8 sm:py-9"
+          className={`${step === RESULT_STEP ? '' : 'min-h-[390px] px-5 py-7 sm:min-h-[430px] sm:px-8 sm:py-9'} outline-none`}
         >
           {renderStep()}
         </div>

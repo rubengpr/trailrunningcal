@@ -7,6 +7,7 @@ import { locales, type Locale } from '@/i18n';
 import { BASE_URL } from '@/lib/config';
 import { getEventBySlug, getRecommendedEvents } from '@/lib/db/events';
 import { buildEventAlternateLinks } from '@/lib/content/alternate-links';
+import { getMallorcaNaakCourse } from '@/lib/sponsors/naak-mallorca-profiles';
 import { Breadcrumb } from '@/components/layout/breadcrumb';
 import { SponsorBannerSlot } from '@/components/sponsors/sponsor-banner-slot';
 import { NaakNutritionCard } from '@/components/sponsors/naak-nutrition-card';
@@ -161,6 +162,16 @@ export default async function EventPage({
   const showResults = shouldShowEventResults(eventData.races);
   const resultsYear = eventData.dateRange.startDate?.slice(0, 4)
     ?? new Date().getFullYear().toString();
+  // Local-only result mount for visual QA in the page context. Production keeps
+  // the nutrition calculator's compact entry card until a runner starts it.
+  const mallorcaPreviewRace =
+    event === 'mallorca-by-utmb' && process.env.NODE_ENV === 'development'
+      ? eventData.races.reduce<(typeof eventData.races)[number] | null>(
+        (longestRace, race) =>
+          longestRace === null || race.distanceKm > longestRace.distanceKm ? race : longestRace,
+        null,
+      )
+      : null;
 
   const destinationProvince =
     !eventData.location.isMultipleLocations && eventData.location.province
@@ -294,7 +305,15 @@ export default async function EventPage({
                   `${eventData.event.name} - ${race.distanceKm} km`,
                 distanceKm: race.distanceKm,
                 elevationGainM: race.elevationGainM,
+                course: getMallorcaNaakCourse(race.distanceKm),
               }))}
+              initialResult={mallorcaPreviewRace
+                ? {
+                  raceId: mallorcaPreviewRace.id,
+                  expectedHours: '10',
+                  expectedMinutes: '50',
+                }
+                : undefined}
               className="my-6 sm:my-8"
             />
           ) : (

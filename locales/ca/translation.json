@@ -151,8 +151,7 @@
       "continue": "Continuar",
       "showPlan": "Veure el meu pla",
       "intro": {
-        "eyebrow": "Näak per a {eventName}",
-        "productName": "Nutrition Calculator",
+        "productName": "Calculadora de nutrició",
         "description": "Defineix la teva cursa i els teus objectius. Obté el teu pla de nutrició personalitzat i la teva selecció de productes.",
         "cta": "Crear el meu pla"
       },
@@ -262,29 +261,54 @@
         "country": "Selecciona un país."
       },
       "result": {
-        "eyebrow": "El teu pla de nutrició Näak",
-        "title": "{name}, aquest és el teu pla de cursa",
-        "description": "Una rotació visual preparada per a {eventName}.",
+        "planFor": "El teu pla de nutrició per a",
+        "description": "Una estratègia visual simulada per a {eventName}.",
         "distance": "Distància",
         "elevation": "Desnivell positiu",
         "time": "Temps estimat",
         "timeValue": "{hours} h {minutes} min",
-        "targetsTitle": "Objectius per hora",
+        "targetsTitle": "Objectius nutricionals per al dia de cursa",
+        "total": "Total: {value} {unit}",
         "targets": {
           "carbs": "Carbohidrats / h",
           "calories": "Calories / h",
           "water": "Aigua / h",
           "sodium": "Sodi / h"
         },
-        "rotationEyebrow": "Rotació recomanada",
-        "rotationTitle": "Què prendre i quan",
-        "timeline": {
-          "beforeStart": "Abans de sortir",
-          "start": "0:00",
-          "fortyMinutes": "0:40",
-          "eightyMinutes": "1:20"
+        "targetsTotals": {
+          "carbs": "Carbohidrats totals",
+          "calories": "Calories totals",
+          "water": "Aigua total",
+          "sodium": "Sodi total"
         },
-        "viewProduct": "Veure a Näak",
+        "views": {
+          "label": "Vistes del pla",
+          "timeline": "Cronologia",
+          "profile": "Perfil",
+          "table": "Taula"
+        },
+        "timeline": { "start": "START", "finish": "FINISH" },
+        "scrollBack": "Desplaçar la cronologia cap enrere",
+        "scrollForward": "Desplaçar la cronologia cap endavant",
+        "profileChartLabel": "Perfil d'elevació de la cursa",
+        "profileUnavailable": "El perfil oficial no està disponible per a aquesta distància.",
+        "table": { "time": "Hora", "segment": "Tram", "product": "Producte", "format": "Format", "checkpoint": "Avituallament", "race": "En cursa" },
+        "preRace": {
+          "title": "Estratègia abans de la cursa",
+          "items": {
+            "meal": { "name": "Àpat baix en fibra", "description": "Carbohidrats fàcils de digerir", "time": "T−3:00" },
+            "drink": { "name": "Beguda BOOST", "description": "Hidratació abans de la sortida", "time": "T−1:30" },
+            "gel": { "name": "ULTRA Gel 200", "description": "Energia ràpida abans de sortir", "time": "T−0:30" }
+          }
+        },
+        "postRace": {
+          "title": "Estratègia després de la cursa",
+          "items": {
+            "shake": { "name": "Batuda de recuperació", "description": "Proteïna per iniciar la recuperació", "time": "+0:30" },
+            "meal": { "name": "Àpat complet", "description": "Carbohidrats, proteïna, greix i fibra", "time": "+1:00" }
+          }
+        },
+        "summaryTitle": "En total, hauràs de consumir durant tota la cursa",
         "restart": "Crear un altre pla"
       }
     },

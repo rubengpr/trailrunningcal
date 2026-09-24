@@ -151,8 +151,7 @@
       "continue": "Continuar",
       "showPlan": "Ver mi plan",
       "intro": {
-        "eyebrow": "Näak para {eventName}",
-        "productName": "Nutrition Calculator",
+        "productName": "Calculadora de nutrición",
         "description": "Define tu carrera y tus objetivos. Obtén tu plan de nutrición personalizado y tu selección de productos.",
         "cta": "Crear mi plan"
       },
@@ -262,29 +261,61 @@
         "country": "Selecciona un país."
       },
       "result": {
-        "eyebrow": "Tu plan de nutrición Näak",
-        "title": "{name}, este es tu plan de carrera",
-        "description": "Una rotación visual preparada para {eventName}.",
+        "planFor": "Tu plan de nutrición para",
+        "description": "Una estrategia visual simulada para {eventName}.",
         "distance": "Distancia",
         "elevation": "Desnivel positivo",
         "time": "Tiempo estimado",
         "timeValue": "{hours} h {minutes} min",
-        "targetsTitle": "Objetivos por hora",
+        "targetsTitle": "Objetivos nutricionales para el día de carrera",
+        "total": "Total: {value} {unit}",
         "targets": {
           "carbs": "Carbohidratos / h",
           "calories": "Calorías / h",
           "water": "Agua / h",
           "sodium": "Sodio / h"
         },
-        "rotationEyebrow": "Rotación recomendada",
-        "rotationTitle": "Qué tomar y cuándo",
-        "timeline": {
-          "beforeStart": "Antes de salir",
-          "start": "0:00",
-          "fortyMinutes": "0:40",
-          "eightyMinutes": "1:20"
+        "targetsTotals": {
+          "carbs": "Carbohidratos totales",
+          "calories": "Calorías totales",
+          "water": "Agua total",
+          "sodium": "Sodio total"
         },
-        "viewProduct": "Ver en Näak",
+        "views": {
+          "label": "Vistas del plan",
+          "timeline": "Cronología",
+          "profile": "Perfil",
+          "table": "Tabla"
+        },
+        "timeline": { "start": "START", "finish": "FINISH" },
+        "scrollBack": "Desplazar cronología hacia atrás",
+        "scrollForward": "Desplazar cronología hacia adelante",
+        "profileChartLabel": "Perfil de elevación de la carrera",
+        "profileUnavailable": "El perfil oficial no está disponible para esta distancia.",
+        "table": {
+          "time": "Hora",
+          "segment": "Tramo",
+          "product": "Producto",
+          "format": "Formato",
+          "checkpoint": "Avituallamiento",
+          "race": "En carrera"
+        },
+        "preRace": {
+          "title": "Estrategia antes de la carrera",
+          "items": {
+            "meal": { "name": "Comida baja en fibra", "description": "Carbohidratos de fácil digestión", "time": "T−3:00" },
+            "drink": { "name": "Bebida BOOST", "description": "Hidratación antes de la salida", "time": "T−1:30" },
+            "gel": { "name": "ULTRA Gel 200", "description": "Energía rápida antes de salir", "time": "T−0:30" }
+          }
+        },
+        "postRace": {
+          "title": "Estrategia después de la carrera",
+          "items": {
+            "shake": { "name": "Batido de recuperación", "description": "Proteína para iniciar la recuperación", "time": "+0:30" },
+            "meal": { "name": "Comida completa", "description": "Carbohidratos, proteína, grasa y fibra", "time": "+1:00" }
+          }
+        },
+        "summaryTitle": "En total, necesitarás consumir durante toda la carrera",
         "restart": "Crear otro plan"
       }
     },
