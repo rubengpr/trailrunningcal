@@ -4,6 +4,7 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import { getPostsForLocale } from '@/lib/content/blog-utils';
 import { isBlogLocale, type Locale } from '@/i18n';
 import { getContactPath } from '@/lib/i18n/paths';
+import { getLegalPath, LEGAL_DOCUMENT_IDS } from '@/lib/i18n/paths';
 import { getTypePath } from '@/lib/races/race-types';
 import {
   DESTINATION_PROVINCE_GROUPS,
@@ -26,11 +27,12 @@ const MAX_FOOTER_POSTS = 5;
 
 export async function Footer() {
   const locale = (await getLocale()) as Locale;
-  const [t, tNav, tProvince, tGeography] = await Promise.all([
+  const [t, tNav, tProvince, tGeography, tLegal] = await Promise.all([
     getTranslations('footer'),
     getTranslations('navigation'),
     getTranslations('provincia.names'),
     getTranslations('geography.regions'),
+    getTranslations('legal'),
   ]);
   const blogPosts = isBlogLocale(locale)
     ? getPostsForLocale(locale).slice(0, MAX_FOOTER_POSTS)
@@ -140,17 +142,34 @@ export async function Footer() {
             </div>}
           </nav>
         </div>
-        <div className="mt-8 pt-6 border-t border-gray-100 flex items-center gap-4">
-          <p className="text-sm text-gray-500">
-            {t('copyright', { year: new Date().getFullYear() })}
-          </p>
-          <Link
-            href={getContactPath(locale)}
-            prefetch={false}
-            className="text-sm text-gray-500 hover:text-gray-900 hover:underline transition-colors"
+        <div className="mt-8 flex flex-col gap-4 border-t border-gray-100 pt-6 text-sm sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <p className="text-gray-500">
+              {t('copyright', { year: new Date().getFullYear() })}
+            </p>
+            <Link
+              href={getContactPath(locale)}
+              prefetch={false}
+              className="text-gray-500 transition-colors hover:text-gray-900 hover:underline"
+            >
+              {t('contact')}
+            </Link>
+          </div>
+          <nav
+            className="flex flex-wrap items-center gap-x-4 gap-y-2"
+            aria-label={tLegal('navigationLabel')}
           >
-            {t('contact')}
-          </Link>
+            {LEGAL_DOCUMENT_IDS.map((documentId) => (
+              <Link
+                key={documentId}
+                href={getLegalPath(locale, documentId)}
+                prefetch={false}
+                className="text-gray-500 transition-colors hover:text-gray-900 hover:underline"
+              >
+                {tLegal(`documents.${documentId}.shortTitle`)}
+              </Link>
+            ))}
+          </nav>
         </div>
       </div>
     </footer>

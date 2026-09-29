@@ -173,4 +173,13 @@ describe('sitemap public locale scope', () => {
     expect(sitemapUrls).toContain(`${BASE_URL}/fr/contact`);
     expect(sitemapUrls).not.toContain(`${BASE_URL}/fr/blog`);
   });
+
+  it('keeps legal pages out of the sitemap', async () => {
+    const urls = (await sitemap()).map((entry) => entry.url);
+
+    expect(urls).not.toContain(`${BASE_URL}/es/aviso-legal`);
+    expect(urls).not.toContain(`${BASE_URL}/ca/privacitat`);
+    expect(urls).not.toContain(`${BASE_URL}/en/cookies`);
+    expect(urls).not.toContain(`${BASE_URL}/fr/conditions-utilisation`);
+  });
 });

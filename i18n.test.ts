@@ -6,9 +6,13 @@ import es from '@/locales/es/translation.json';
 import { blogLocales, localeTags, locales } from '@/i18n';
 import {
   getContactPath,
+  getLegalDocumentId,
+  getLegalPath,
   getPublicBackofficeRedirectPath,
   getFavoritesPath,
+  LEGAL_DOCUMENT_IDS,
 } from '@/lib/i18n/paths';
+import { buildLegalAlternateLinks } from '@/lib/content/alternate-links';
 
 const PUBLIC_NAMESPACES = [
   'map',
@@ -29,6 +33,7 @@ const PUBLIC_NAMESPACES = [
   'errors',
   'auth',
   'footer',
+  'legal',
   'signUp',
   'signUpSuccess',
   'login',
@@ -78,6 +83,41 @@ describe('public locale contract', () => {
     expect(getFavoritesPath('en')).toBe('/en/my-events');
     expect(getContactPath('fr')).toBe('/fr/contact');
     expect(getFavoritesPath('fr')).toBe('/fr/mes-evenements');
+  });
+
+  it('maps every legal document to its localized public path', () => {
+    const expectedPaths = {
+      es: ['/es/aviso-legal', '/es/privacidad', '/es/cookies', '/es/condiciones-de-uso'],
+      ca: ['/ca/avis-legal', '/ca/privacitat', '/ca/cookies', '/ca/condicions-us'],
+      en: ['/en/legal-notice', '/en/privacy', '/en/cookies', '/en/terms-of-use'],
+      fr: ['/fr/mentions-legales', '/fr/confidentialite', '/fr/cookies', '/fr/conditions-utilisation'],
+    } as const;
+
+    for (const locale of locales) {
+      expect(
+        LEGAL_DOCUMENT_IDS.map((documentId) => getLegalPath(locale, documentId)),
+      ).toEqual(expectedPaths[locale]);
+    }
+  });
+
+  it('only resolves legal slugs for the matching locale', () => {
+    expect(getLegalDocumentId('es', 'privacidad')).toBe('privacy');
+    expect(getLegalDocumentId('ca', 'privacitat')).toBe('privacy');
+    expect(getLegalDocumentId('en', 'privacy')).toBe('privacy');
+    expect(getLegalDocumentId('fr', 'confidentialite')).toBe('privacy');
+    expect(getLegalDocumentId('es', 'privacy')).toBeNull();
+    expect(getLegalDocumentId('fr', 'aviso-legal')).toBeNull();
+    expect(getLegalDocumentId('en', 'unknown')).toBeNull();
+  });
+
+  it('builds legal alternate links with Spanish as x-default', () => {
+    expect(buildLegalAlternateLinks('privacy')).toEqual({
+      es: 'https://www.trailrunningcal.com/es/privacidad',
+      ca: 'https://www.trailrunningcal.com/ca/privacitat',
+      en: 'https://www.trailrunningcal.com/en/privacy',
+      fr: 'https://www.trailrunningcal.com/fr/confidentialite',
+      'x-default': 'https://www.trailrunningcal.com/es/privacidad',
+    });
   });
 
   it('keeps public-only locales limited to public routes', () => {

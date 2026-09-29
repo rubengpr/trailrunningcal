@@ -144,6 +144,68 @@
     "banner": {
       "otsoAlt": "Promotion OTSO pour les événements de trail"
     },
+    "brands": {
+      "title": "Marques à l’événement",
+      "description": "Découvrez les marques et les expériences présentes pendant l’événement.",
+      "brands": {
+        "trailBrand": {
+          "name": "Trail Brand",
+          "description": "Essayez les nouvelles Trail xMax® ou d’autres modèles de moyenne distance."
+        },
+        "lesBatons": {
+          "name": "Les Bâtons",
+          "description": "Réparations et entretien gratuits, pièces de rechange et petits cadeaux pour les coureurs."
+        },
+        "summitFuel": {
+          "name": "Summit Fuel",
+          "description": "Dégustations gratuites, échantillons et packs promotionnels pour les coureurs."
+        }
+      }
+    },
+    "productRecommendation": {
+      "title": "Nos recommandations",
+      "brand": "Trail Brand",
+      "brands": { "trailBrand": "Trail Brand", "lesBatons": "Les Bâtons", "summitFuel": "Summit Fuel" },
+      "toggle": "Afficher les détails de {product}",
+      "viewMore": "Voir plus",
+      "products": {
+        "distance": {
+          "name": "Trail xMax®",
+          "reason": "Amorti et accroche pour les forts dénivelés.",
+          "details": "Conçue pour protéger les jambes lors des longues sorties et des descentes en montagne, avec une semelle adaptée aux terrains techniques."
+        },
+        "vertical": {
+          "name": "Trail Grip KV®",
+          "reason": "Accroche précise pour les pentes explosives.",
+          "details": "Sa semelle à forte accroche apporte sécurité et réactivité dans les montées courtes, raides et irrégulières."
+        },
+        "short": {
+          "name": "Trail Flow®",
+          "reason": "Légèreté et réactivité pour les courtes distances.",
+          "details": "Un profil agile et léger pour courir vite sur des parcours courts, dynamiques et rythmés."
+        },
+        "poles": {
+          "name": "LB Carbon Fold",
+          "reason": "Un appui léger pour les longues montées et descentes.",
+          "details": "Des bâtons pliables en carbone pour économiser de l'énergie dans les montées soutenues et gagner en stabilité dans les descentes."
+        },
+        "fuel": {
+          "name": "Summit Gel",
+          "reason": "Une énergie rapide pour les efforts prolongés.",
+          "details": "Un gel facile à digérer pour maintenir un apport énergétique régulier durant les heures clés de la course."
+        },
+        "fuelShort": {
+          "name": "Summit Quick Gel",
+          "reason": "Un coup de boost pour les courses courtes et intenses.",
+          "details": "Un gel léger et à absorption rapide pour maintenir le rythme quand la course exige de forcer dès le départ."
+        },
+        "polesShort": {
+          "name": "LB Sprint Fold",
+          "reason": "Un appui compact pour les pentes très raides.",
+          "details": "Des bâtons pliables ultralégers pour gagner en efficacité dans les montées courtes et techniques sans s'encombrer."
+        }
+      }
+    },
     "dateTbd": "Date à confirmer",
     "favorite": {
       "label": "Favori",
@@ -299,7 +361,10 @@
     "otsoHomepageAlt": "Promotion OTSO pour les trailers",
     "preview": {
       "alt": "Bannière promotionnelle pour {brand}",
-      "stickyMessage": "15 % de réduction chez {brand} avec le code"
+      "stickyMessage": "15 % de réduction chez {brand} avec le code",
+      "trailBrand": {
+        "stickyMessage": "15 % de réduction chez Trail Brand avec le code"
+      }
     },
     "sponsors": {
       "salssa": {
@@ -432,6 +497,235 @@
     "byProvince": "Province",
     "blog": "Blog",
     "contact": "Contact"
+  },
+  "legal": {
+    "navigationLabel": "Informations légales",
+    "lastUpdatedLabel": "Dernière mise à jour",
+    "lastUpdated": "24 septembre 2026",
+    "documents": {
+      "legalNotice": {
+        "title": "Mentions légales",
+        "shortTitle": "Mentions légales",
+        "description": "Informations sur la propriété, l'objectif et les conditions générales d'accès à Trailrunningcal.",
+        "sections": [
+          {
+            "title": "Identification du titulaire",
+            "paragraphs": [
+              "Trailrunningcal est un projet géré par Ruben Godoy Prats, domicilié Avenida Diagonal 696, 08034 Barcelona, Espagne. Tu peux contacter le titulaire à info@trailrunningcal.com.",
+              "Trailrunningcal n'exerce actuellement aucune activité économique et ne propose aucun service payant. Si cette situation change, ces informations seront mises à jour avant le début de l'activité concernée."
+            ]
+          },
+          {
+            "title": "Objet du site",
+            "paragraphs": [
+              "Trailrunningcal fournit des informations permettant de découvrir et de planifier des courses de trail et de montagne. Les données publiées proviennent des organisateurs, de sources publiques et de notre propre travail de vérification et de sélection."
+            ]
+          },
+          {
+            "title": "Utilisation des informations",
+            "paragraphs": [
+              "Les dates, parcours, tarifs, règlements et autres détails des courses peuvent changer. Vérifie toujours les informations sur le site officiel de l'organisateur avant de t'inscrire.",
+              "L'accès au site suppose une utilisation licite et respectueuse. Il est interdit de l'utiliser pour endommager le service, introduire du contenu malveillant, obtenir un accès non autorisé ou porter atteinte aux droits de tiers."
+            ]
+          },
+          {
+            "title": "Propriété intellectuelle",
+            "paragraphs": [
+              "Le design, la marque, le code et les contenus originaux de Trailrunningcal sont protégés par la réglementation applicable. Les marques, photographies et documents de tiers appartiennent à leurs titulaires respectifs et sont utilisés avec leur autorisation ou conformément à la base juridique applicable."
+            ]
+          },
+          {
+            "title": "Liens externes et responsabilité",
+            "paragraphs": [
+              "Trailrunningcal contient des liens vers les sites des organisateurs et d'autres tiers. Le titulaire ne contrôle pas leur disponibilité, leur sécurité, leur contenu ou leurs conditions et ne participe pas aux inscriptions ou paiements effectués en dehors de ce site.",
+              "Des efforts raisonnables sont faits pour maintenir les informations à jour et le service disponible, mais l'absence totale d'erreurs, d'interruptions ou de contenus obsolètes ne peut être garantie."
+            ]
+          },
+          {
+            "title": "Droit applicable",
+            "paragraphs": [
+              "Ce site est régi par le droit espagnol. Tout litige sera soumis aux juridictions compétentes selon les règles applicables, sans limiter les droits impératifs des consommateurs."
+            ]
+          }
+        ]
+      },
+      "privacy": {
+        "title": "Politique de confidentialité",
+        "shortTitle": "Confidentialité",
+        "description": "Comment Trailrunningcal collecte, utilise, conserve et protège les données personnelles.",
+        "sections": [
+          {
+            "title": "Responsable du traitement",
+            "paragraphs": [
+              "Le responsable du traitement est Ruben Godoy Prats, titulaire de Trailrunningcal, domicilié Avenida Diagonal 696, 08034 Barcelona, Espagne. Pour toute question relative à la confidentialité, écris à info@trailrunningcal.com."
+            ]
+          },
+          {
+            "title": "Données traitées",
+            "paragraphs": ["Selon ton utilisation du service, nous pouvons traiter les catégories de données suivantes :"],
+            "items": [
+              "Données de compte et d'authentification, telles que l'e-mail et les identifiants de session.",
+              "Données de profil et d'organisateur, telles que le nom, la fonction, l'organisation, le site web et les profils sociaux.",
+              "Favoris, courses gérées et demandes de revendication d'un événement.",
+              "Demandes envoyées par e-mail et commentaires volontaires sur le produit.",
+              "Données techniques et d'utilisation, telles que l'appareil, le navigateur, les pages consultées, les interactions, les erreurs et les enregistrements de session lorsque PostHog est actif.",
+              "Données professionnelles publiées par les organisateurs ou disponibles dans des sources publiques afin de documenter les courses."
+            ]
+          },
+          {
+            "title": "Finalités et bases juridiques",
+            "paragraphs": ["Nous traitons les données uniquement à des fins liées à Trailrunningcal :"],
+            "items": [
+              "Créer et maintenir les comptes, favoris et profils d'organisateur afin de fournir les fonctionnalités demandées par l'utilisateur.",
+              "Répondre aux demandes, traiter les revendications d'événements et prévenir les abus sur la base de la demande de la personne concernée et de l'intérêt légitime à gérer et protéger le service.",
+              "Maintenir et améliorer le calendrier, corriger les erreurs et analyser l'utilisation agrégée sur la base de l'intérêt légitime, avec des mesures de minimisation.",
+              "Utiliser PostHog pour l'analyse avancée, l'identification et l'enregistrement de sessions sur la base du consentement lorsqu'il est requis. Son mécanisme de consentement reste actuellement à mettre en place."
+            ]
+          },
+          {
+            "title": "Prestataires et destinataires",
+            "paragraphs": [
+              "Les données peuvent être traitées par Supabase pour la base de données et l'authentification, Vercel pour l'hébergement et l'analyse agrégée, Cloudflare pour la sécurité et l'analyse web, PostHog pour l'analyse produit, les flags, les erreurs et l'enregistrement de sessions, et Resend pour les e-mails opérationnels. Nous ne vendons pas de données personnelles."
+            ]
+          },
+          {
+            "title": "Conservation",
+            "paragraphs": [
+              "Les données de compte, de profil et de favoris sont conservées tant que le compte reste actif et jusqu'à ce que leur suppression soit demandée. Les demandes et revendications sont conservées jusqu'à leur résolution puis, si nécessaire, pendant les délais légaux applicables. Les données techniques sont conservées selon la configuration et les critères de chaque prestataire.",
+              "Lorsque les données ne sont plus nécessaires, elles sont supprimées ou leur traitement est limité pendant les périodes requises pour répondre à d'éventuelles responsabilités."
+            ]
+          },
+          {
+            "title": "Transferts internationaux",
+            "paragraphs": [
+              "Certains prestataires peuvent traiter des données en dehors de l'Espace économique européen. Dans ce cas, des décisions d'adéquation, des clauses contractuelles types ou d'autres garanties reconnues par le RGPD seront utilisées. PostHog est configuré pour utiliser son infrastructure européenne."
+            ]
+          },
+          {
+            "title": "Tes droits",
+            "paragraphs": [
+              "Tu peux demander l'accès, la rectification, l'effacement, l'opposition, la limitation ou la portabilité, ainsi que retirer ton consentement, en écrivant à info@trailrunningcal.com et en précisant ta demande. Tu peux aussi demander la suppression de ton compte par ce moyen.",
+              "Si tu estimes que le traitement ne respecte pas la réglementation, tu peux déposer une réclamation auprès de l'Agence espagnole de protection des données sur aepd.es."
+            ]
+          },
+          {
+            "title": "Mineurs, sécurité et modifications",
+            "paragraphs": [
+              "Trailrunningcal ne s'adresse pas aux enfants de moins de 14 ans. Si un compte créé sans l'autorisation requise est détecté, il pourra être supprimé.",
+              "Des mesures techniques et organisationnelles raisonnables sont appliquées pour protéger les données. Cette politique peut être mise à jour lorsque le service, ses prestataires ou la réglementation évoluent ; la date ci-dessus indique la dernière révision."
+            ]
+          }
+        ]
+      },
+      "cookies": {
+        "title": "Politique relative aux cookies",
+        "shortTitle": "Cookies",
+        "description": "Informations sur les cookies et technologies similaires utilisés par Trailrunningcal.",
+        "sections": [
+          {
+            "title": "Que sont les cookies ?",
+            "paragraphs": [
+              "Les cookies et technologies similaires permettent d'enregistrer ou de consulter des informations sur un appareil. Certains sont nécessaires à la fourniture du service, tandis que d'autres nous aident à comprendre comment le site est utilisé."
+            ]
+          },
+          {
+            "title": "Technologies nécessaires",
+            "paragraphs": [
+              "Supabase utilise le stockage de session pour authentifier les utilisateurs, maintenir les comptes connectés et protéger les espaces privés. Ces technologies sont nécessaires lorsqu'un compte est utilisé et ne servent pas à la publicité."
+            ]
+          },
+          {
+            "title": "Analyse agrégée sans cookies",
+            "items": [
+              "Vercel Web Analytics mesure les pages vues et les données techniques agrégées sans utiliser de cookies tiers ni conserver d'identifiants personnels persistants.",
+              "Cloudflare Web Analytics recueille des mesures de performance et de trafic sans cookies et déclare ne pas collecter ni utiliser les données personnelles des visiteurs."
+            ],
+            "paragraphs": []
+          },
+          {
+            "title": "PostHog",
+            "paragraphs": [
+              "PostHog est utilisé pour l'analyse produit, les événements d'interaction, les flags et expériences, la détection d'erreurs et l'enregistrement de sessions. Il se connecte via le point d'accès propriétaire /ingest et est configuré pour la région européenne.",
+              "Il peut enregistrer des identifiants dans des cookies ou le stockage local, consigner des interactions et associer l'activité des utilisateurs authentifiés à leur identifiant et à leur e-mail. Les enregistrements de session peuvent inclure une représentation visuelle de la navigation.",
+              "Dans la configuration actuelle, PostHog démarre automatiquement. Un mécanisme de consentement préalable et de préférences reste à mettre en place ; cette politique d'information ne remplace pas le consentement lorsqu'il est légalement requis."
+            ]
+          },
+          {
+            "title": "Comment contrôler ces technologies",
+            "paragraphs": [
+              "Tu peux supprimer ou bloquer les cookies dans les paramètres de ton navigateur, mais cela peut te déconnecter ou empêcher le fonctionnement des espaces privés. Pour demander des informations ou la suppression des données associées à ton compte, écris à info@trailrunningcal.com."
+            ]
+          },
+          {
+            "title": "Mises à jour",
+            "paragraphs": [
+              "Cette politique sera révisée lorsque des technologies de stockage ou d'analyse seront ajoutées, supprimées ou modifiées. La date ci-dessus indique la dernière mise à jour."
+            ]
+          }
+        ]
+      },
+      "terms": {
+        "title": "Conditions d'utilisation",
+        "shortTitle": "Conditions d'utilisation",
+        "description": "Règles applicables à l'accès et à l'utilisation de Trailrunningcal et de ses comptes utilisateur.",
+        "sections": [
+          {
+            "title": "Objet et acceptation",
+            "paragraphs": [
+              "Trailrunningcal est un calendrier d'information permettant de découvrir des courses de trail et de montagne. En y accédant ou en créant un compte, tu acceptes ces conditions et t'engages à utiliser le service de manière licite."
+            ]
+          },
+          {
+            "title": "Informations sur les courses",
+            "paragraphs": [
+              "Trailrunningcal vérifie et met à jour les données avec soin, mais n'organise pas les courses et ne garantit pas que les dates, parcours, exigences, prix ou disponibilités resteront inchangés. Les informations officielles de l'organisateur prévalent toujours.",
+              "Les inscriptions, paiements, assurances, annulations et la participation sont gérés directement avec chaque organisateur selon ses propres conditions."
+            ]
+          },
+          {
+            "title": "Comptes et organisateurs",
+            "paragraphs": [
+              "Tu dois fournir des informations exactes, protéger tes identifiants et nous prévenir si tu détectes un accès non autorisé. Les organisateurs qui revendiquent un événement doivent être habilités à le représenter et maintenir ses informations à jour.",
+              "Tu peux demander la suppression de ton compte en écrivant à info@trailrunningcal.com depuis l'adresse associée au compte."
+            ]
+          },
+          {
+            "title": "Utilisations interdites",
+            "items": [
+              "Accéder ou tenter d'accéder à des comptes, données ou systèmes sans autorisation.",
+              "Introduire un logiciel malveillant, automatiser des requêtes abusives ou perturber la disponibilité du service.",
+              "Publier des informations fausses ou illicites ou porter atteinte aux droits de tiers.",
+              "Réutiliser massivement les contenus ou la base de données sans autorisation."
+            ],
+            "paragraphs": []
+          },
+          {
+            "title": "Propriété intellectuelle et contenus",
+            "paragraphs": [
+              "Trailrunningcal conserve les droits sur son design, sa marque, son code et ses contenus originaux. En fournissant des éléments pour une course, tu confirmes être autorisé à les utiliser et autorises leur publication dans le service pendant la durée nécessaire à l'affichage de l'événement."
+            ]
+          },
+          {
+            "title": "Disponibilité et responsabilité",
+            "paragraphs": [
+              "Le service peut être modifié, suspendu ou interrompu. Dans les limites autorisées par la loi, Trailrunningcal n'est pas responsable des décisions prises uniquement à partir d'informations non confirmées ni des services, contenus ou transactions gérés par des tiers."
+            ]
+          },
+          {
+            "title": "Mineurs",
+            "paragraphs": [
+              "Le service ne s'adresse pas aux enfants de moins de 14 ans. Les personnes n'ayant pas atteint cet âge ne doivent pas créer de compte sans l'autorisation requise de leurs représentants légaux."
+            ]
+          },
+          {
+            "title": "Modifications et droit applicable",
+            "paragraphs": [
+              "Ces conditions peuvent être mises à jour pour refléter les évolutions du service ou de la réglementation. Le droit espagnol s'applique et les litiges seront résolus par les autorités compétentes selon les règles légalement applicables."
+            ]
+          }
+        ]
+      }
+    }
   },
   "signUp": {
     "title": "Créer un compte",
@@ -745,5 +1039,32 @@
     "salomon-ultra-pirineu": "L’un des grands rendez-vous d’ultra trail des Pyrénées catalanes, avec des parcours exigeants et une ambiance de course remarquable.",
     "trail-l-albiol": "Des sentiers forestiers techniques autour de l’Albiol, avec vue vers la Serra de Prades et de superbes parcours.",
     "olla-de-nuria": "Un défi emblématique de haute montagne autour de Núria, entouré des sommets des Pyrénées catalanes."
+  },
+  "sponsorDashboard": {
+    "campaignName": "Campaña Product Launch",
+    "campaignId": "2026-09-v2",
+    "brandName": "Peakhill Trails",
+    "navbar": {
+      "dashboard": "Tableau de campagne",
+      "docs": "Docs",
+      "help": "Aide",
+      "notifications": "Notifications",
+      "profile": "Profil de Ruben",
+      "project": "Product Launch",
+      "siteName": "Trailrunningcal",
+      "workspace": "Peakhill Trails"
+    },
+    "period": {
+      "label": "Période de données",
+      "last30Days": "30 derniers jours",
+      "lastMonth": "Mois dernier",
+      "all": "Tout"
+    },
+    "metricsLabel": "Indicateurs de campagne",
+    "metrics": { "impressions": "Impressions", "clicks": "Clics", "ctr": "CTR" },
+    "chart": {
+      "title": "Impressions quotidiennes",
+      "summary": "Impressions quotidiennes de la bannière du {start} au {end} : {impressions} impressions au total."
+    }
   }
 }

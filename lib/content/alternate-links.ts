@@ -2,7 +2,11 @@ import { BASE_URL } from '@/lib/config';
 import { locales, type Locale } from '@/i18n';
 import { getTypePath, type RaceCategorySlug } from '@/lib/races/race-types';
 import { getPostBySlug, getPostTranslations } from '@/lib/content/blog-utils';
-import { getContactPath } from '@/lib/i18n/paths';
+import {
+  getContactPath,
+  getLegalPath,
+  type LegalDocumentId,
+} from '@/lib/i18n/paths';
 
 export { getTypePath } from '@/lib/races/race-types';
 export {
@@ -57,6 +61,19 @@ export function buildContactAlternateLinks(): Record<string, string> {
     locales.map((locale) => [locale, `${BASE_URL}${getContactPath(locale)}`]),
   );
   alternates['x-default'] = `${BASE_URL}/es/contacto`;
+  return alternates;
+}
+
+export function buildLegalAlternateLinks(
+  documentId: LegalDocumentId,
+): Record<string, string> {
+  const alternates = Object.fromEntries(
+    locales.map((locale) => [
+      locale,
+      `${BASE_URL}${getLegalPath(locale, documentId)}`,
+    ]),
+  );
+  alternates['x-default'] = `${BASE_URL}${getLegalPath('es', documentId)}`;
   return alternates;
 }
 
