@@ -12,7 +12,13 @@ vi.mock('@/lib/supabase/server', () => ({
 
 import { getEventImportDraftsPage } from './event-import-drafts';
 
-const input = { page: 2, search: 'ultra', draftId: null };
+const input = {
+  page: 2,
+  search: 'ultra',
+  draftId: null,
+  sortColumn: 'name' as const,
+  sortDirection: 'desc' as const,
+};
 
 beforeEach(() => {
   vi.resetAllMocks();
@@ -58,6 +64,8 @@ describe('getEventImportDraftsPage', () => {
       p_offset: EVENT_IMPORT_DRAFTS_PAGE_SIZE,
       p_search: 'ultra',
       p_draft_id: null,
+      p_sort_column: 'name',
+      p_sort_direction: 'desc',
     });
     expect(inIds).toHaveBeenCalledWith('id', ['draft-2', 'draft-1']);
     expect(result).toMatchObject({ page: 2, total: 52, totalPages: 2 });
@@ -79,6 +87,8 @@ describe('getEventImportDraftsPage', () => {
       page: 1,
       search: '',
       draftId: null,
+      sortColumn: 'dates',
+      sortDirection: 'asc',
     })).resolves.toEqual({
       drafts: [],
       page: 1,

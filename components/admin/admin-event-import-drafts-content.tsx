@@ -3,7 +3,18 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
-import { Check, CircleAlert, Eye, LoaderCircle, TextCursor, Trash2 } from 'lucide-react';
+import {
+  Check,
+  ChevronDown,
+  ChevronUp,
+  ChevronsUpDown,
+  CircleAlert,
+  Eye,
+  LoaderCircle,
+  TextCursor,
+  Trash2,
+} from 'lucide-react';
+import Link from 'next/link';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { SectionHeader } from '@/components/ui/section-header';
 import { ListEmptyState } from '@/components/ui/list-empty-state';
@@ -35,6 +46,7 @@ import type {
   EventImportDraft,
   EventImportDraftPage,
   EventImportDraftPageRequest,
+  EventImportDraftSortColumn,
 } from '@/types/event-import-draft.types';
 
 interface AdminEventImportDraftsContentProps {
@@ -54,6 +66,22 @@ function getDraftDateRange(draft: EventImportDraft): {
     startDate: dates[0] ?? null,
     endDate: dates.at(-1) ?? null,
   };
+}
+
+function DraftSortIcon({
+  column,
+  query,
+}: {
+  column: EventImportDraftSortColumn;
+  query: EventImportDraftPageRequest;
+}): React.ReactElement {
+  if (column !== query.sortColumn) {
+    return <ChevronsUpDown className="size-3.5 text-gray-300" strokeWidth={1.5} />;
+  }
+
+  return query.sortDirection === 'asc'
+    ? <ChevronUp className="size-3.5" strokeWidth={2} />
+    : <ChevronDown className="size-3.5" strokeWidth={2} />;
 }
 
 export function AdminEventImportDraftsContent({
@@ -86,6 +114,19 @@ export function AdminEventImportDraftsContent({
   const draftCount = total === 1
     ? t('draftCountOne')
     : t('draftCount', { count: total });
+
+  const getSortHref = (column: EventImportDraftSortColumn): string => {
+    const sortDirection = query.sortColumn === column && query.sortDirection === 'asc'
+      ? 'desc'
+      : 'asc';
+
+    return buildEventImportDraftsHref(locale, {
+      ...query,
+      page: 1,
+      sortColumn: column,
+      sortDirection,
+    });
+  };
 
   const removeDraft = useCallback((draftId: string): void => {
     setDrafts((current) => current.filter((draft) => draft.id !== draftId));
@@ -229,10 +270,25 @@ export function AdminEventImportDraftsContent({
       ) : (
         <Table>
             <TableHeader>
-              <TableCell header>{eventsT('columns.name')}</TableCell>
+              <TableCell header>
+                <Link href={getSortHref('name')} className="inline-flex items-center gap-1 transition-colors hover:text-gray-800">
+                  {eventsT('columns.name')}
+                  <DraftSortIcon column="name" query={query} />
+                </Link>
+              </TableCell>
               <TableCell header>{eventsT('columns.website')}</TableCell>
-              <TableCell header align="right">{eventsT('columns.races')}</TableCell>
-              <TableCell header>{eventsT('columns.dates')}</TableCell>
+              <TableCell header align="right">
+                <Link href={getSortHref('races')} className="inline-flex items-center gap-1 transition-colors hover:text-gray-800">
+                  {eventsT('columns.races')}
+                  <DraftSortIcon column="races" query={query} />
+                </Link>
+              </TableCell>
+              <TableCell header>
+                <Link href={getSortHref('dates')} className="inline-flex items-center gap-1 transition-colors hover:text-gray-800">
+                  {eventsT('columns.dates')}
+                  <DraftSortIcon column="dates" query={query} />
+                </Link>
+              </TableCell>
               <TableCell header align="right">{eventsT('columns.actions')}</TableCell>
             </TableHeader>
             <TableBody>

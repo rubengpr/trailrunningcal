@@ -1,5 +1,7 @@
 import type {
   EventImportDraftPageRequest,
+  EventImportDraftSortColumn,
+  EventImportDraftSortDirection,
 } from '@/types/event-import-draft.types';
 
 export const EVENT_IMPORT_DRAFTS_PAGE_SIZE = 50;
@@ -11,6 +13,14 @@ type SearchParams = Record<string, string | string[] | undefined>;
 
 function firstValue(value: string | string[] | undefined): string | undefined {
   return Array.isArray(value) ? value[0] : value;
+}
+
+function parseSortColumn(value: string | undefined): EventImportDraftSortColumn {
+  return value === 'name' || value === 'races' ? value : 'dates';
+}
+
+function parseSortDirection(value: string | undefined): EventImportDraftSortDirection {
+  return value === 'desc' ? 'desc' : 'asc';
 }
 
 export function parseEventImportDraftPageRequest(
@@ -25,6 +35,8 @@ export function parseEventImportDraftPageRequest(
       .trim()
       .slice(0, SEARCH_MAX_LENGTH),
     draftId: rawDraftId && UUID_PATTERN.test(rawDraftId) ? rawDraftId : null,
+    sortColumn: parseSortColumn(firstValue(searchParams.sort)),
+    sortDirection: parseSortDirection(firstValue(searchParams.direction)),
   };
 }
 
@@ -36,6 +48,8 @@ export function buildEventImportDraftsHref(
   if (input.page > 1) searchParams.set('page', input.page.toString());
   if (input.search) searchParams.set('q', input.search);
   if (input.draftId) searchParams.set('draftId', input.draftId);
+  if (input.sortColumn !== 'dates') searchParams.set('sort', input.sortColumn);
+  if (input.sortDirection !== 'asc') searchParams.set('direction', input.sortDirection);
 
   const query = searchParams.toString();
   const pathname = `/${locale}/admin/eventos/borradores`;

@@ -15,6 +15,8 @@ export async function GET(request: Request): Promise<NextResponse> {
       page: url.searchParams.get('page') ?? undefined,
       q: url.searchParams.get('q') ?? undefined,
       draftId: url.searchParams.get('draftId') ?? undefined,
+      sort: url.searchParams.get('sort') ?? undefined,
+      direction: url.searchParams.get('direction') ?? undefined,
     });
     return NextResponse.json({ success: true, data: await listDrafts(input) });
   } catch (error) { return handleRouteError(error); }
