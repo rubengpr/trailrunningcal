@@ -5,6 +5,7 @@ import { DateAuthorString } from '@/components/blog/blog-date-author-string';
 import { BlogHeaderImage } from '@/components/blog/blog-header-image';
 import { BlogDivider } from '@/components/blog/blog-divider';
 import { RaceCard } from '@/components/race/race-card';
+import { SponsoredArticleHero } from '@/components/blog/sponsored-article-hero';
 
 const components: MDXComponents = {
   h1: ({ children }) => (
@@ -74,6 +75,7 @@ const components: MDXComponents = {
   BlogHeaderImage,
   BlogDivider,
   RaceCard,
+  SponsoredArticleHero,
 };
 
 export function useMDXComponents(): MDXComponents {
