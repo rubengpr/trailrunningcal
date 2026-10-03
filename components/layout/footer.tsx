@@ -71,7 +71,7 @@ export async function Footer() {
                 {t('brandName')}
               </span>
             </Link>
-            <p className="text-base leading-relaxed text-gray-600">{t('description')}</p>
+            <p className="max-w-[14rem] text-base leading-relaxed text-gray-600">{t('description')}</p>
             <div className="mt-3 flex items-center gap-4 text-[#31564b]">
               <a
                 href="https://www.instagram.com/trailrunningcal"
@@ -195,7 +195,7 @@ export async function Footer() {
                     key={post.slug}
                     href={`/${blogLocale}/blog/${post.slug}`}
                     prefetch={false}
-                    className="py-1 text-xs leading-relaxed text-[#173f34] transition-colors hover:text-[#082f26] hover:underline sm:text-sm"
+                    className="py-1 text-xs leading-relaxed text-[#547064] transition-colors hover:text-[#082f26] hover:underline sm:text-sm"
                   >
                     {isBlogLocale(locale)
                       ? post.footerTitle ?? post.title
