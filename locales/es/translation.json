@@ -510,8 +510,14 @@
     }
   },
   "footer": {
+    "brandName": "Trailrunningcal",
     "copyright": "© {year} Trail Running Cal",
-    "description": "Tu calendario de carreras de trail running en España. Encuentra tu próxima carrera de montaña.",
+    "description": "Encuentra tu próxima carrera de trail running en España.",
+    "newsletterTitle": "Newsletter",
+    "newsletterDescription": "Recibe noticias, descuentos y carreras recomendadas, cada semana.",
+    "newsletterEmailLabel": "Tu email",
+    "newsletterEmailPlaceholder": "Tu email",
+    "newsletterSubmit": "Suscribirme",
     "byDistance": "Distancia",
     "byProvince": "Provincia",
     "blog": "Blog",
@@ -1847,6 +1853,10 @@
     "salomon-ultra-pirineu": "La gran cita del ultra trail en el Pirineu Català, con perfiles exigentes y un ambiente de carrera de referencia estatal.",
     "trail-l-albiol": "Trail entre bosques y masías de l'Albiol, con vistas a la Serra de Prades y un recorrido técnico muy disfrutable.",
     "olla-de-nuria": "Una subida mítica al Santuari de Núria rodeada de alta montaña pirenaica, con el cremallera como testigo del recorrido."
+  },
+  "featuredEventVariants": {
+    "eyebrow": "Exploración de formato", "title": "Evento destacado · tres direcciones", "note": "Vista previa de formatos de visibilidad para organizadores.", "label": "Evento destacado", "name": "Carrera de Montaña de Girona", "date": "15 noviembre 2026", "day": "15", "month": "nov", "location": "Girona · Palamós", "elevation": "13K +500M · 21K +800M · 50,3K +1600M", "description": "Tres recorridos para descubrir las Gavarres, desde el casco antiguo de Girona hasta la costa de Palamós.", "descriptionShort": "Tres recorridos entre Girona, las Gavarres y la costa de Palamós.", "imageAlt": "Corredor de trail por un sendero rocoso junto al mar en la Costa Brava",
+    "kicker": { "postcard": "CMG Girona · Klassmark", "immersive": "Costa y Gavarres", "split": "Edición 2026" }
   },
   "sponsorDashboard": {
     "campaignName": "Campaña Product Launch",

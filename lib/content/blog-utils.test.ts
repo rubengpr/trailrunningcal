@@ -20,6 +20,7 @@ import { getAllBlogPosts, getPostBySlug, getPostsForLocale } from './blog-utils'
 
 const ES_POST_CONTENT = `---
 title: "Test Post ES"
+footerTitle: "Short test title"
 excerpt: "An excerpt"
 date: "2025-06-15"
 readTime: "5 min"
@@ -104,6 +105,12 @@ describe('getAllBlogPosts', () => {
       const dateB = new Date(posts[i + 1].date).getTime();
       expect(dateA).toBeGreaterThanOrEqual(dateB);
     }
+  });
+
+  it('should read an optional footer title without replacing the full title', () => {
+    const post = getPostBySlug('test-post', 'es');
+    expect(post?.title).toBe('Test Post ES');
+    expect(post?.footerTitle).toBe('Short test title');
   });
 
   it('should return empty array when posts directory does not exist', () => {

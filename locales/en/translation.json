@@ -491,11 +491,22 @@
     }
   },
   "footer": {
+    "brandName": "Trailrunningcal",
     "copyright": "© {year} Trail Running Cal",
-    "description": "Your trail running race calendar for Spain. Find your next mountain race.",
+    "description": "Find your next trail running race in Spain.",
+    "newsletterTitle": "Newsletter",
+    "newsletterDescription": "Get news, discounts and recommended races every week.",
+    "newsletterEmailLabel": "Your email",
+    "newsletterEmailPlaceholder": "Your email",
+    "newsletterSubmit": "Subscribe",
     "byDistance": "Distance",
     "byProvince": "Province",
     "blog": "Blog",
+    "blogPosts": {
+      "technicalUltras": "Trail shoes for technical ultras",
+      "halfMarathonsCatalonia": "Trail half marathons in Catalonia",
+      "bestRacesSpain": "5 trail races in Spain"
+    },
     "contact": "Contact"
   },
   "legal": {
@@ -1039,6 +1050,10 @@
     "salomon-ultra-pirineu": "One of the leading ultra trail events in the Catalan Pyrenees, with demanding tracks and an outstanding race atmosphere.",
     "trail-l-albiol": "Technical forest trails around l'Albiol, with views towards Serra de Prades and highly enjoyable tracks.",
     "olla-de-nuria": "An iconic high-mountain challenge around Núria, surrounded by the peaks of the Catalan Pyrenees."
+  },
+  "featuredEventVariants": {
+    "eyebrow": "Format exploration", "title": "Featured event · three directions", "note": "Preview of visibility formats for organizers.", "label": "Featured event", "name": "Girona Mountain Race", "date": "November 15, 2026", "day": "15", "month": "Nov", "location": "Girona · Palamós", "elevation": "13K +500M · 21K +800M · 50.3K +1600M", "description": "Three routes to discover the Gavarres, from Girona’s old town to the coast of Palamós.", "descriptionShort": "Three routes across Girona, the Gavarres and the Palamós coast.", "imageAlt": "Trail runner on a rocky coastal path on the Costa Brava",
+    "kicker": { "postcard": "CMG Girona · Klassmark", "immersive": "Coast and Gavarres", "split": "2026 edition" }
   },
   "sponsorDashboard": {
     "campaignName": "Product Launch Campaign",

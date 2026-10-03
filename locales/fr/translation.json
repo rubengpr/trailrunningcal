@@ -491,11 +491,22 @@
     }
   },
   "footer": {
+    "brandName": "Trailrunningcal",
     "copyright": "© {year} Trail Running Cal",
-    "description": "Ton calendrier de courses de trail en Espagne. Trouve ta prochaine course de montagne.",
+    "description": "Trouve ta prochaine course de trail en Espagne.",
+    "newsletterTitle": "Newsletter",
+    "newsletterDescription": "Reçois chaque semaine les actualités, réductions et courses recommandées.",
+    "newsletterEmailLabel": "Ton e-mail",
+    "newsletterEmailPlaceholder": "Ton e-mail",
+    "newsletterSubmit": "S’inscrire",
     "byDistance": "Distance",
     "byProvince": "Province",
     "blog": "Blog",
+    "blogPosts": {
+      "technicalUltras": "Chaussures de trail pour ultras techniques",
+      "halfMarathonsCatalonia": "Semi-marathons de trail en Catalogne",
+      "bestRacesSpain": "5 courses de trail en Espagne"
+    },
     "contact": "Contact"
   },
   "legal": {
@@ -1039,6 +1050,10 @@
     "salomon-ultra-pirineu": "L’un des grands rendez-vous d’ultra trail des Pyrénées catalanes, avec des parcours exigeants et une ambiance de course remarquable.",
     "trail-l-albiol": "Des sentiers forestiers techniques autour de l’Albiol, avec vue vers la Serra de Prades et de superbes parcours.",
     "olla-de-nuria": "Un défi emblématique de haute montagne autour de Núria, entouré des sommets des Pyrénées catalanes."
+  },
+  "featuredEventVariants": {
+    "eyebrow": "Exploration de format", "title": "Événement mis en avant · trois directions", "note": "Aperçu de formats de visibilité pour les organisateurs.", "label": "Événement mis en avant", "name": "Course de montagne de Girona", "date": "15 novembre 2026", "day": "15", "month": "nov", "location": "Girona · Palamós", "elevation": "13K +500M · 21K +800M · 50,3K +1600M", "description": "Trois parcours pour découvrir les Gavarres, de la vieille ville de Girona à la côte de Palamós.", "descriptionShort": "Trois parcours entre Girona, les Gavarres et la côte de Palamós.", "imageAlt": "Coureur de trail sur un sentier rocheux côtier de la Costa Brava",
+    "kicker": { "postcard": "CMG Girona · Klassmark", "immersive": "Côte et Gavarres", "split": "Édition 2026" }
   },
   "sponsorDashboard": {
     "campaignName": "Campaña Product Launch",
