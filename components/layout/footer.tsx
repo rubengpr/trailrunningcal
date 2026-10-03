@@ -57,8 +57,8 @@ export async function Footer() {
       />
       <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[#f6f1e4]/95 via-[#f6f1e4]/85 to-[#f6f1e4]/45 xl:hidden" />
       <div className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 xl:px-8 xl:py-12">
-        <div className="grid gap-x-8 gap-y-10 md:grid-cols-2 xl:grid-cols-[minmax(12rem,1.25fr)_minmax(7rem,0.75fr)_minmax(7rem,0.75fr)_minmax(9rem,1fr)_minmax(15rem,1.35fr)] xl:gap-x-6 xl:gap-y-7">
-          <div className="order-1 flex max-w-sm flex-col gap-3">
+        <div className="grid grid-cols-2 gap-x-8 gap-y-10 xl:grid-cols-[minmax(12rem,1.25fr)_minmax(7rem,0.75fr)_minmax(7rem,0.75fr)_minmax(9rem,1fr)_minmax(15rem,1.35fr)] xl:gap-x-6 xl:gap-y-7">
+          <div className="order-1 col-span-2 flex max-w-sm flex-col gap-3 md:col-span-1">
             <Link href={`/${locale}`} prefetch={false} className="flex items-center gap-2 w-fit">
               <Image
                 src="/assets/web-app-manifest-192x192.png"
@@ -103,7 +103,7 @@ export async function Footer() {
               </a>
             </div>
           </div>
-          <div className="order-2 flex flex-col gap-4 xl:order-5">
+          <div className="order-2 col-span-2 mt-4 flex flex-col gap-4 md:col-span-1 md:mt-0 xl:order-5">
             <p className="text-sm font-medium uppercase tracking-wider text-[#31564b]">
               {t('newsletterTitle')}
             </p>
@@ -185,8 +185,8 @@ export async function Footer() {
                 ))}
               </div>
             </div>
-            <div className="order-5 flex flex-col gap-4 xl:order-4">
-              <p className="text-sm font-medium uppercase tracking-wider text-[#31564b]">
+            <div className="order-5 col-span-2 flex flex-col gap-4 md:col-span-1 xl:order-4">
+              <p className="text-sm font-medium uppercase tracking-wider text-[#123d31]">
                 {t('blog')}
               </p>
               <div className="flex flex-col gap-1">
@@ -195,7 +195,7 @@ export async function Footer() {
                     key={post.slug}
                     href={`/${blogLocale}/blog/${post.slug}`}
                     prefetch={false}
-                    className="py-1 text-xs leading-relaxed text-[#547064] transition-colors hover:text-[#082f26] hover:underline sm:text-sm"
+                    className="py-1 text-xs leading-relaxed text-[#173f34] transition-colors hover:text-[#082f26] hover:underline sm:text-sm"
                   >
                     {isBlogLocale(locale)
                       ? post.footerTitle ?? post.title
