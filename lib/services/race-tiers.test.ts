@@ -17,20 +17,26 @@ vi.mock('@/lib/db/race-tiers', () => ({ updateTierPrice: mocks.updateTierPrice }
 import { updateRaceTier } from './race-tiers';
 
 const RACE_ID = '5cd34b8e-8803-4b2d-bbae-8c7ba2a0a9ba';
+const TIER_ID = 'e64908d5-4a4e-44c5-9eff-9a7ce3b7ee55';
 
 describe('updateRaceTier', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mocks.updateTierPrice.mockResolvedValue([{ price_eur: 35 }]);
+    mocks.updateTierPrice.mockResolvedValue({ price_eur: 35 });
   });
 
   it('updates the tier and revalidates its event pages', async () => {
     mocks.getEventSlugForRace.mockResolvedValue('trail-running-cal');
 
-    await expect(updateRaceTier(RACE_ID, 35, false)).resolves.toEqual([
-      { price_eur: 35 },
-    ]);
-    expect(mocks.updateTierPrice).toHaveBeenCalledWith(RACE_ID, 35, false);
+    await expect(updateRaceTier(RACE_ID, TIER_ID, 35, false)).resolves.toEqual({
+      price_eur: 35,
+    });
+    expect(mocks.updateTierPrice).toHaveBeenCalledWith(
+      RACE_ID,
+      TIER_ID,
+      35,
+      false,
+    );
     expect(mocks.revalidateHomepages).toHaveBeenCalledWith('race-tier-update');
     expect(mocks.getEventSlugForRace).toHaveBeenCalledWith(RACE_ID, false);
     expect(mocks.revalidateEventPages).toHaveBeenCalledWith(
@@ -42,7 +48,7 @@ describe('updateRaceTier', () => {
   it('still revalidates homepages when the race has no event slug', async () => {
     mocks.getEventSlugForRace.mockResolvedValue(null);
 
-    await updateRaceTier(RACE_ID, null, true);
+    await updateRaceTier(RACE_ID, TIER_ID, null, true);
 
     expect(mocks.revalidateHomepages).toHaveBeenCalledWith('race-tier-update');
     expect(mocks.revalidateEventPages).not.toHaveBeenCalled();

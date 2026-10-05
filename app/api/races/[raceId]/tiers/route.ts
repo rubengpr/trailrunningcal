@@ -22,7 +22,13 @@ export async function PATCH(
 
     const body = await parseJsonBody(request);
     assertRequestBody(body);
-    const { priceEur } = body;
+    const { priceEur, tierId } = body;
+
+    if (typeof tierId !== 'string') {
+      return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
+    }
+
+    const parsedTierId = parseUuidParam(tierId, 'tier id');
 
     if (
       priceEur !== null &&
@@ -38,7 +44,7 @@ export async function PATCH(
       }
     }
 
-    const data = await updateRaceTier(raceId, priceEur, isAdmin);
+    const data = await updateRaceTier(raceId, parsedTierId, priceEur, isAdmin);
 
     return NextResponse.json({ success: true, data });
   } catch (error) {
