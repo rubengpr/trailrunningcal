@@ -63,26 +63,33 @@ export async function startEventUpdateBatch(input?: {
     };
   }
 
+  let run;
   try {
-    const run = await start(eventUpdateBatchWorkflow, [
+    run = await start(eventUpdateBatchWorkflow, [
       {
         batchId: batch.id,
       },
     ]);
 
-    await setEventUpdateBatchWorkflowRunId({
-      batchId: batch.id,
-      workflowRunId: run.runId,
-    });
-
-    return {
-      batchId: batch.id,
-      workflowRunId: run.runId,
-    };
   } catch (error) {
     await updateEventUpdateBatchStatus({ batchId: batch.id, status: 'failed', failureReason: 'Unable to start workflow' });
     throw error;
   }
+
+  try {
+    await setEventUpdateBatchWorkflowRunId({
+      batchId: batch.id,
+      workflowRunId: run.runId,
+    });
+  } catch (error) {
+    console.error('Event update batch workflow id update failed', {
+      batchId: batch.id,
+      workflowRunId: run.runId,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+
+  return { batchId: batch.id, workflowRunId: run.runId };
 }
 
 export async function resumeEventUpdateBatch(batchId: string): Promise<{
@@ -95,10 +102,6 @@ export async function resumeEventUpdateBatch(batchId: string): Promise<{
   let run;
   try {
     run = await start(eventUpdateBatchWorkflow, [{ batchId }]);
-    await setEventUpdateBatchWorkflowRunId({
-      batchId,
-      workflowRunId: run.runId,
-    });
   } catch (error) {
     await updateEventUpdateBatchStatus({
       batchId,
@@ -106,6 +109,19 @@ export async function resumeEventUpdateBatch(batchId: string): Promise<{
       failureReason: 'Unable to resume workflow',
     });
     throw error;
+  }
+
+  try {
+    await setEventUpdateBatchWorkflowRunId({
+      batchId,
+      workflowRunId: run.runId,
+    });
+  } catch (error) {
+    console.error('Event update batch resume workflow id update failed', {
+      batchId,
+      workflowRunId: run.runId,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
   }
 
   return { batchId, workflowRunId: run.runId, itemCount };

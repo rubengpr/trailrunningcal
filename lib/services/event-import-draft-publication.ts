@@ -41,13 +41,9 @@ export async function startEventImportDraftPublication(
   const { publication, created } = await createEventImportDraftTranslationJob(draftId);
   if (publication.status === 'accepted' || !created) return publication;
 
+  let run;
   try {
-    const run = await start(eventImportDraftPublicationWorkflow, [{ jobId: publication.jobId }]);
-    await setEventImportDraftTranslationJobWorkflowRunId({
-      jobId: publication.jobId,
-      workflowRunId: run.runId,
-    });
-    return publication;
+    run = await start(eventImportDraftPublicationWorkflow, [{ jobId: publication.jobId }]);
   } catch (error) {
     await updateEventImportDraftTranslationJobStatus({
       jobId: publication.jobId,
@@ -56,6 +52,21 @@ export async function startEventImportDraftPublication(
     });
     throw error;
   }
+
+  try {
+    await setEventImportDraftTranslationJobWorkflowRunId({
+      jobId: publication.jobId,
+      workflowRunId: run.runId,
+    });
+  } catch (error) {
+    console.error('Event import draft publication workflow id update failed', {
+      jobId: publication.jobId,
+      workflowRunId: run.runId,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+
+  return publication;
 }
 
 export async function getEventImportDraftPublicationStatus(

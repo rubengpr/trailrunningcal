@@ -134,26 +134,33 @@ export async function startEventImportBatch(input: {
   await checkDuplicateEvents(input.urls);
   const batch = await createEventImportBatch(input);
 
+  let run;
   try {
-    const run = await start(eventImportBatchWorkflow, [
+    run = await start(eventImportBatchWorkflow, [
       {
         batchId: batch.id,
       },
     ]);
 
-    await setBatchWorkflowRunId({
-      batchId: batch.id,
-      workflowRunId: run.runId,
-    });
-
-    return {
-      batchId: batch.id,
-      workflowRunId: run.runId,
-    };
   } catch (error) {
     await updateBatchStatus(batch.id, 'failed');
     throw error;
   }
+
+  try {
+    await setBatchWorkflowRunId({
+      batchId: batch.id,
+      workflowRunId: run.runId,
+    });
+  } catch (error) {
+    console.error('Event import batch workflow id update failed', {
+      batchId: batch.id,
+      workflowRunId: run.runId,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+
+  return { batchId: batch.id, workflowRunId: run.runId };
 }
 
 async function markBatchRunningStep(batchId: string): Promise<void> {

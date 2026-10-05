@@ -172,17 +172,16 @@ describe('startEventUpdateBatch', () => {
     );
   });
 
-  it('marks the batch failed when workflow run id persistence fails', async () => {
+  it('keeps the launched batch recoverable when workflow run id persistence fails', async () => {
     const error = new Error('workflow run id persistence failed');
     mocks.setEventUpdateBatchWorkflowRunId.mockRejectedValue(error);
 
-    await expect(
-      startEventUpdateBatch({ referenceDate: '2026-06-25' }),
-    ).rejects.toThrow(error);
+    await expect(startEventUpdateBatch({ referenceDate: '2026-06-25' })).resolves.toEqual({
+      batchId: batch.id,
+      workflowRunId: 'workflow-run-1',
+    });
 
-    expect(mocks.updateEventUpdateBatchStatus).toHaveBeenCalledWith(
-      { batchId: batch.id, status: 'failed', failureReason: 'Unable to start workflow' },
-    );
+    expect(mocks.updateEventUpdateBatchStatus).not.toHaveBeenCalled();
   });
 });
 
