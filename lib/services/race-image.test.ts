@@ -19,6 +19,7 @@ function createClient(input?: {
   uploadError?: unknown;
   removeErrors?: unknown[];
   updateErrors?: unknown[];
+  updateData?: Array<Record<string, unknown> | null>;
 }) {
   const upload = vi.fn().mockResolvedValue({ error: input?.uploadError ?? null });
   const removeErrors = [...(input?.removeErrors ?? [])];
@@ -26,14 +27,22 @@ function createClient(input?: {
     error: removeErrors.shift() ?? null,
   }));
   const updateErrors = [...(input?.updateErrors ?? [])];
+  const updateData = [...(input?.updateData ?? [])];
   const updates: Array<Record<string, unknown>> = [];
   const update = vi.fn().mockImplementation((value: Record<string, unknown>) => {
     updates.push(value);
-    const secondEq = vi.fn().mockResolvedValue({
+    const maybeSingle = vi.fn().mockResolvedValue({
+      data: updateData.length > 0 ? updateData.shift() : { id: RACE_ID },
       error: updateErrors.shift() ?? null,
     });
+    const select = vi.fn().mockReturnValue({ maybeSingle });
+    const filenameFilter = vi.fn().mockReturnValue({ select });
+    const organizerFilter = vi.fn().mockReturnValue({
+      eq: filenameFilter,
+      is: filenameFilter,
+    });
     return {
-      eq: vi.fn().mockReturnValue({ eq: secondEq }),
+      eq: vi.fn().mockReturnValue({ eq: organizerFilter }),
     };
   });
 
@@ -125,6 +134,24 @@ describe('uploadRaceImage', () => {
     expect(removedPaths).toHaveLength(1);
     expect(removedPaths[0]).not.toContain(EXISTING_FILENAME);
   });
+
+  it('removes the new file and returns a conflict when another upload wins', async () => {
+    const { client, remove } = createClient({ updateData: [null] });
+
+    await expect(uploadRaceImage(client, {
+      organizerId: ORGANIZER_ID,
+      raceId: RACE_ID,
+      existingFilename: EXISTING_FILENAME,
+      file: imageFile(),
+    })).rejects.toMatchObject({
+      message: 'Race image changed concurrently',
+      status: 409,
+    });
+
+    expect(remove).toHaveBeenCalledWith([
+      expect.stringMatching(new RegExp(`^${ORGANIZER_ID}/${RACE_ID}/main-\\d+\\.webp$`)),
+    ]);
+  });
 });
 
 describe('deleteRaceImage', () => {
@@ -159,5 +186,21 @@ describe('deleteRaceImage', () => {
       { hero_image_filename: null },
       { hero_image_filename: EXISTING_FILENAME },
     ]);
+  });
+
+  it('does not clear an image replaced after authorization', async () => {
+    const { client, remove } = createClient({ updateData: [null] });
+
+    await expect(deleteRaceImage(
+      client,
+      ORGANIZER_ID,
+      RACE_ID,
+      EXISTING_FILENAME,
+    )).rejects.toMatchObject({
+      message: 'Race image changed concurrently',
+      status: 409,
+    });
+
+    expect(remove).not.toHaveBeenCalled();
   });
 });
