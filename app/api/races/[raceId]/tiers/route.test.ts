@@ -23,12 +23,13 @@ vi.mock('@/lib/services/race-tiers', () => ({
 import { PATCH } from './route';
 
 const RACE_ID = '5cd34b8e-8803-4b2d-bbae-8c7ba2a0a9ba';
+const TIER_ID = 'e64908d5-4a4e-44c5-9eff-9a7ce3b7ee55';
 const supabase = { kind: 'user-client' };
 const context = { params: Promise.resolve({ raceId: RACE_ID }) };
 
-function request(priceEur: number | null) {
+function request(priceEur: number | null, tierId = TIER_ID) {
   return {
-    json: vi.fn().mockResolvedValue({ priceEur }),
+    json: vi.fn().mockResolvedValue({ priceEur, tierId }),
   } as unknown as NextRequest;
 }
 
@@ -43,7 +44,7 @@ beforeEach(() => {
     organizerId: 'organizer-1',
     heroImageFilename: null,
   });
-  mocks.updateRaceTier.mockResolvedValue([{ price_eur: 35 }]);
+  mocks.updateRaceTier.mockResolvedValue({ price_eur: 35 });
 });
 
 describe('race tier authorization', () => {
@@ -74,9 +75,14 @@ describe('race tier authorization', () => {
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
       success: true,
-      data: [{ price_eur: 35 }],
+      data: { price_eur: 35 },
     });
-    expect(mocks.updateRaceTier).toHaveBeenCalledWith(RACE_ID, 35, false);
+    expect(mocks.updateRaceTier).toHaveBeenCalledWith(
+      RACE_ID,
+      TIER_ID,
+      35,
+      false,
+    );
     expect(mocks.getOrganizerRaceContext).toHaveBeenCalledWith(
       supabase,
       'user-1',
@@ -94,7 +100,12 @@ describe('race tier authorization', () => {
 
     expect(response.status).toBe(200);
     expect(mocks.getOrganizerRaceContext).not.toHaveBeenCalled();
-    expect(mocks.updateRaceTier).toHaveBeenCalledWith(RACE_ID, null, true);
+    expect(mocks.updateRaceTier).toHaveBeenCalledWith(
+      RACE_ID,
+      TIER_ID,
+      null,
+      true,
+    );
   });
 
   it('delegates unavailable-parent handling to the service', async () => {
@@ -102,6 +113,18 @@ describe('race tier authorization', () => {
     const response = await PATCH(request(35), context);
 
     expect(response.status).toBe(200);
-    expect(mocks.updateRaceTier).toHaveBeenCalledWith(RACE_ID, 35, false);
+    expect(mocks.updateRaceTier).toHaveBeenCalledWith(
+      RACE_ID,
+      TIER_ID,
+      35,
+      false,
+    );
+  });
+
+  it('rejects a missing tier id', async () => {
+    const response = await PATCH(request(35, ''), context);
+
+    expect(response.status).toBe(400);
+    expect(mocks.updateRaceTier).not.toHaveBeenCalled();
   });
 });

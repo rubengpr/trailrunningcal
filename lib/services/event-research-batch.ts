@@ -116,17 +116,28 @@ export async function startEventResearchBatch(eventNames: string[]): Promise<{
 }> {
   const batch = await createEventResearchBatch(eventNames);
 
+  let run;
   try {
-    const run = await start(eventResearchBatchWorkflow, [{ batchId: batch.id }]);
-    await setEventResearchWorkflowRunId({
-      batchId: batch.id,
-      workflowRunId: run.runId,
-    });
-    return { batchId: batch.id, workflowRunId: run.runId };
+    run = await start(eventResearchBatchWorkflow, [{ batchId: batch.id }]);
   } catch (error) {
     await updateEventResearchBatchStatus(batch.id, 'failed');
     throw error;
   }
+
+  try {
+    await setEventResearchWorkflowRunId({
+      batchId: batch.id,
+      workflowRunId: run.runId,
+    });
+  } catch (error) {
+    console.error('Event research workflow id update failed', {
+      batchId: batch.id,
+      workflowRunId: run.runId,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+
+  return { batchId: batch.id, workflowRunId: run.runId };
 }
 
 export async function retryEventResearchItem(itemId: string): Promise<{

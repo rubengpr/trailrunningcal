@@ -111,6 +111,22 @@ describe('startEventImportDraftPublication', () => {
 
     expect(mocks.start).not.toHaveBeenCalled();
   });
+
+  it('does not fail a launched publication when persisting its run id fails', async () => {
+    mocks.createJob.mockResolvedValue({
+      publication: { status: 'pending', jobId: 'job-1' },
+      created: true,
+    });
+    mocks.start.mockResolvedValue({ runId: 'workflow-1' });
+    mocks.setWorkflowRunId.mockRejectedValue(new Error('database unavailable'));
+
+    await expect(startEventImportDraftPublication('draft-1')).resolves.toEqual({
+      status: 'pending',
+      jobId: 'job-1',
+    });
+
+    expect(mocks.updateJob).not.toHaveBeenCalled();
+  });
 });
 
 describe('eventImportDraftPublicationWorkflow', () => {

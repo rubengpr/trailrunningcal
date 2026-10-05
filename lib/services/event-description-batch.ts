@@ -60,26 +60,33 @@ export async function startEventDescriptionBatch(input: {
 }): Promise<{ batchId: string; workflowRunId: string }> {
   const batch = await createEventDescriptionBatch(input);
 
+  let run;
   try {
-    const run = await start(eventDescriptionBatchWorkflow, [
+    run = await start(eventDescriptionBatchWorkflow, [
       {
         batchId: batch.id,
       },
     ]);
 
-    await setEventDescriptionBatchWorkflowRunId({
-      batchId: batch.id,
-      workflowRunId: run.runId,
-    });
-
-    return {
-      batchId: batch.id,
-      workflowRunId: run.runId,
-    };
   } catch (error) {
     await updateEventDescriptionBatchStatus(batch.id, 'failed');
     throw error;
   }
+
+  try {
+    await setEventDescriptionBatchWorkflowRunId({
+      batchId: batch.id,
+      workflowRunId: run.runId,
+    });
+  } catch (error) {
+    console.error('Event description batch workflow id update failed', {
+      batchId: batch.id,
+      workflowRunId: run.runId,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+
+  return { batchId: batch.id, workflowRunId: run.runId };
 }
 
 async function markBatchRunningStep(batchId: string): Promise<void> {
