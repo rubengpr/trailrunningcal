@@ -115,25 +115,62 @@ const audienceSegments = {
     { color: '#a8a29e', key: 'other', weight: 0.7 },
   ],
   region: [
-    { color: '#0f766e', key: 'catalonia', weight: 48 },
-    { color: '#2563eb', key: 'valencia', weight: 12 },
-    { color: '#d97706', key: 'andalusia', weight: 10 },
-    { color: '#7c3aed', key: 'basqueCountry', weight: 5 },
-    { color: '#db2777', key: 'galicia', weight: 5 },
-    { color: '#0891b2', key: 'aragon', weight: 4 },
-    { color: '#dc2626', key: 'canaryIslands', weight: 3 },
-    { color: '#4f46e5', key: 'castileAndLeon', weight: 3 },
-    { color: '#ea580c', key: 'navarre', weight: 2 },
-    { color: '#059669', key: 'cantabria', weight: 2 },
-    { color: '#0284c7', key: 'asturias', weight: 2 },
-    { color: '#c026d3', key: 'murcia', weight: 2 },
-    { color: '#ca8a04', key: 'balearicIslands', weight: 1.3 },
-    { color: '#475569', key: 'madrid', weight: 0.5 },
-    { color: '#e11d48', key: 'laRioja', weight: 0.4 },
-    { color: '#14b8a6', key: 'extremadura', weight: 0.3 },
-    { color: '#a8a29e', key: 'andorra', weight: 0.2 },
+    { color: '#0f766e', key: 'catalonia', weight: 1 },
+    { color: '#2563eb', key: 'valencia', weight: 1 },
+    { color: '#d97706', key: 'andalusia', weight: 1 },
+    { color: '#7c3aed', key: 'basqueCountry', weight: 1 },
+    { color: '#db2777', key: 'galicia', weight: 1 },
+    { color: '#0891b2', key: 'aragon', weight: 1 },
+    { color: '#dc2626', key: 'canaryIslands', weight: 1 },
+    { color: '#4f46e5', key: 'castileAndLeon', weight: 1 },
+    { color: '#ea580c', key: 'navarre', weight: 1 },
+    { color: '#059669', key: 'cantabria', weight: 1 },
+    { color: '#a8a29e', key: 'unassigned', weight: 1 },
+    { color: '#0284c7', key: 'asturias', weight: 1 },
+    { color: '#c026d3', key: 'murcia', weight: 1 },
+    { color: '#ca8a04', key: 'balearicIslands', weight: 1 },
+    { color: '#475569', key: 'madrid', weight: 1 },
+    { color: '#65a30d', key: 'castileLaMancha', weight: 1 },
+    { color: '#14b8a6', key: 'extremadura', weight: 1 },
+    { color: '#e11d48', key: 'laRioja', weight: 1 },
+    { color: '#94a3b8', key: 'andorra', weight: 1 },
   ],
 } as const;
+
+// Google event-page visits grouped by the saved PostHog insight's event-region
+// property (Sep 6–Oct 5, 2026). Values follow the region segment order above.
+const regionDailyEventCounts = [
+  [609, 34, 40, 32, 25, 28, 39, 7, 3, 11, 8, 19, 10, 19, 10, 2, 7, 4, 5],
+  [408, 54, 39, 34, 24, 25, 36, 12, 7, 22, 10, 8, 5, 14, 8, 3, 6, 4, 2],
+  [255, 20, 26, 13, 18, 25, 14, 6, 15, 15, 6, 15, 9, 10, 7, 1, 4, 0, 0],
+  [253, 30, 37, 10, 12, 19, 20, 11, 12, 21, 6, 4, 17, 3, 6, 5, 8, 6, 0],
+  [199, 34, 34, 12, 18, 12, 14, 19, 17, 12, 7, 9, 10, 2, 4, 0, 6, 2, 0],
+  [235, 37, 49, 15, 20, 14, 18, 12, 17, 11, 3, 8, 6, 9, 9, 1, 9, 6, 1],
+  [234, 60, 66, 40, 27, 23, 18, 33, 28, 15, 12, 21, 9, 20, 3, 1, 7, 8, 5],
+  [282, 72, 94, 31, 70, 18, 20, 31, 16, 14, 13, 22, 32, 20, 7, 11, 4, 3, 3],
+  [253, 66, 54, 17, 37, 14, 11, 13, 8, 12, 9, 24, 15, 5, 8, 6, 8, 8, 3],
+  [309, 59, 55, 38, 35, 20, 15, 43, 20, 21, 8, 11, 14, 12, 2, 8, 12, 3, 2],
+  [317, 52, 36, 28, 27, 18, 23, 19, 25, 13, 9, 5, 15, 3, 5, 6, 7, 2, 3],
+  [236, 60, 34, 16, 22, 17, 34, 12, 9, 5, 16, 7, 14, 6, 4, 8, 2, 2, 2],
+  [403, 65, 40, 38, 29, 22, 54, 14, 8, 18, 18, 26, 9, 17, 7, 9, 3, 6, 0],
+  [836, 98, 70, 75, 41, 69, 67, 26, 13, 23, 50, 31, 5, 10, 8, 25, 18, 7, 4],
+  [960, 132, 102, 45, 46, 44, 38, 36, 21, 64, 28, 19, 10, 12, 10, 32, 13, 2, 2],
+  [384, 139, 86, 40, 38, 30, 52, 37, 33, 26, 15, 21, 14, 16, 9, 8, 10, 5, 6],
+  [277, 75, 69, 38, 32, 40, 17, 21, 20, 10, 12, 13, 8, 14, 19, 12, 4, 10, 1],
+  [217, 56, 52, 29, 20, 24, 21, 20, 19, 16, 19, 14, 6, 4, 9, 18, 4, 14, 0],
+  [222, 62, 55, 28, 22, 25, 17, 18, 9, 13, 12, 26, 3, 3, 8, 11, 15, 24, 5],
+  [185, 75, 66, 36, 34, 49, 26, 29, 23, 29, 7, 22, 8, 12, 14, 7, 10, 10, 0],
+  [353, 94, 95, 88, 20, 92, 13, 35, 39, 12, 14, 43, 5, 11, 19, 40, 8, 1, 4],
+  [471, 124, 144, 56, 53, 81, 17, 27, 29, 31, 18, 19, 14, 26, 35, 46, 19, 6, 3],
+  [257, 104, 130, 29, 50, 40, 22, 26, 33, 22, 19, 15, 19, 9, 27, 14, 9, 2, 2],
+  [162, 55, 82, 33, 35, 27, 12, 22, 20, 18, 18, 3, 10, 5, 18, 13, 15, 10, 4],
+  [149, 60, 51, 27, 38, 21, 19, 18, 20, 10, 23, 7, 10, 11, 14, 10, 16, 6, 0],
+  [178, 69, 44, 16, 28, 13, 17, 23, 17, 13, 16, 7, 13, 3, 13, 13, 5, 3, 1],
+  [164, 78, 58, 28, 34, 16, 21, 32, 11, 24, 30, 3, 9, 19, 7, 10, 10, 0, 1],
+  [220, 122, 94, 54, 32, 37, 16, 64, 33, 35, 42, 9, 43, 57, 7, 4, 5, 4, 2],
+  [193, 145, 90, 72, 58, 37, 33, 32, 43, 14, 37, 18, 18, 12, 36, 5, 13, 7, 1],
+  [200, 85, 61, 27, 48, 33, 22, 16, 32, 12, 21, 13, 26, 6, 7, 5, 13, 6, 0],
+] as const;
 
 const deviceSegments = [
   { color: '#0f766e', key: 'mobile', weight: 66 },
@@ -143,6 +180,17 @@ const deviceSegments = [
 
 function getAudienceDistribution(view: AudienceView, dayIndex: number) {
   const segments = audienceSegments[view];
+
+  if (view === 'region') {
+    const values = regionDailyEventCounts[dayIndex % regionDailyEventCounts.length];
+    const total = values.reduce<number>((sum, value) => sum + value, 0);
+
+    return segments.map((segment, index) => ({
+      ...segment,
+      percentage: (values[index] / total) * 100,
+    }));
+  }
+
   const values = segments.map(({ weight }, index) => Math.max(
     0.05,
     weight + ((dayIndex * (index + 3) + index * 7) % 9 - 4) *

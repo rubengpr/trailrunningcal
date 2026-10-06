@@ -1931,10 +1931,12 @@
           "castileAndLeon": "Castilla y León",
           "navarre": "Navarra",
           "cantabria": "Cantabria",
+          "unassigned": "Sin comunidad",
           "asturias": "Asturias",
           "murcia": "Murcia",
           "balearicIslands": "Islas Baleares",
           "madrid": "Madrid",
+          "castileLaMancha": "Castilla-La Mancha",
           "laRioja": "La Rioja",
           "extremadura": "Extremadura",
           "andorra": "Andorra"
