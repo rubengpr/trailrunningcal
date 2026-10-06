@@ -38,4 +38,20 @@ describe('getSponsorPreviewConfig', () => {
       'utm_campaign=event_page_image_banner',
     );
   });
+
+  it('builds a sticky preview for Trail Brand', () => {
+    const config = getSponsorPreviewConfig({
+      bannerType: 'sticky_banner',
+      page: 'homepage',
+      brand: 'trail-brand',
+      destinationUrl: 'https://trailbrand.com',
+      format: 'sticky',
+      isDevelopment: true,
+    });
+
+    expect(config?.code).toBe('TRC15');
+    expect(config?.destinationUrl).toContain(
+      'utm_campaign=homepage_sticky_banner',
+    );
+  });
 });

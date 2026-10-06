@@ -5,7 +5,8 @@ export type SponsorBrand =
   | 'inverse'
   | 'naak'
   | 'nutribay'
-  | 'racepace';
+  | 'racepace'
+  | 'trail-brand';
 
 export type SponsorCreativeVariant =
   | 'control'

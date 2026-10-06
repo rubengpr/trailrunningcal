@@ -6,6 +6,8 @@ import type {
 } from '@/lib/sponsors/banner-config';
 import type { Locale } from '@/i18n';
 
+type SponsorTrackedCreativeVariant = SponsorCreativeVariant | 'preview';
+
 export const ANALYTICS_EVENTS = {
   BREADCRUMB_LINK_CLICKED: 'breadcrumb_link_clicked',
   CALENDAR_VIEW_MAP_CLICKED: 'calendar_view_map_clicked',
@@ -285,17 +287,17 @@ export interface AnalyticsEventProperties {
   };
   [ANALYTICS_EVENTS.SPONSOR_BANNER_CLICKED]: {
     brand: SponsorBrand;
-    creative_variant: SponsorCreativeVariant;
+    creative_variant: SponsorTrackedCreativeVariant;
     page: 'homepage' | 'event_page';
-    banner_type: 'image_banner';
+    banner_type: 'image_banner' | 'sticky_banner';
     locale: string;
     destination_url: string;
   };
   [ANALYTICS_EVENTS.SPONSOR_BANNER_IMPRESSION]: {
     brand: SponsorBrand;
-    creative_variant: SponsorCreativeVariant;
+    creative_variant: SponsorTrackedCreativeVariant;
     page: 'homepage' | 'event_page';
-    banner_type: 'image_banner';
+    banner_type: 'image_banner' | 'sticky_banner';
     locale: string;
     destination_url: string;
   };

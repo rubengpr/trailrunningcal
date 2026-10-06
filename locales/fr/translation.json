@@ -1056,9 +1056,23 @@
     "kicker": { "postcard": "CMG Girona · Klassmark", "immersive": "Côte et Gavarres", "split": "Édition 2026" }
   },
   "sponsorDashboard": {
-    "campaignName": "Campaña Product Launch",
-    "campaignId": "2026-09-v2",
     "brandName": "Peakhill Trails",
+    "campaign": {
+      "label": "Emplacement de campagne",
+      "banner": {
+        "label": "Campagne de bannière",
+        "name": "Bannière Trail Brand",
+        "id": "trail-brand-banner-v1",
+        "previewAlt": "Aperçu de la campagne de bannière Trail Brand",
+        "openPreview": "Ouvrir l’aperçu de la campagne",
+        "closePreview": "Fermer l’aperçu de la campagne"
+      },
+      "sticky": {
+        "label": "Campagne sticky",
+        "name": "Sticky Trail Brand",
+        "id": "trail-brand-sticky-v1"
+      }
+    },
     "navbar": {
       "dashboard": "Tableau de campagne",
       "docs": "Docs",
@@ -1076,10 +1090,67 @@
       "all": "Tout"
     },
     "metricsLabel": "Indicateurs de campagne",
-    "metrics": { "impressions": "Impressions", "clicks": "Clics", "ctr": "CTR" },
+    "metrics": { "impressions": "Impressions", "uniqueUsers": "Visiteurs uniques", "clicks": "Clics", "ctr": "CTR" },
     "chart": {
       "title": "Impressions quotidiennes",
-      "summary": "Impressions quotidiennes de la bannière du {start} au {end} : {impressions} impressions au total."
+      "summary": "Diffusion quotidienne de la campagne du {start} au {end} : {impressions} impressions et {uniqueUsers} visiteurs uniques."
+    },
+    "audience": {
+      "title": "Répartition de l’audience",
+      "source": {
+        "country": "Modélisée à partir des visiteurs uniques Trailrunningcal des 30 derniers jours.",
+        "region": "Modélisée à partir des visites Google des pages d’événements, regroupées selon la région de l’événement."
+      },
+      "groupBy": "Regrouper l’audience par",
+      "country": "Pays",
+      "region": "Région de l’événement",
+      "summary": {
+        "country": "Répartition quotidienne de l’audience par pays.",
+        "region": "Répartition quotidienne des visites Google des pages d’événements par région de l’événement."
+      },
+      "segments": {
+        "country": {
+          "spain": "Espagne",
+          "france": "France",
+          "portugal": "Portugal",
+          "unitedKingdom": "Royaume-Uni",
+          "unitedStates": "États-Unis",
+          "other": "Autres"
+        },
+        "region": {
+          "catalonia": "Catalogne",
+          "valencia": "Valence",
+          "andalusia": "Andalousie",
+          "basqueCountry": "Pays basque",
+          "galicia": "Galice",
+          "aragon": "Aragon",
+          "canaryIslands": "Îles Canaries",
+          "castileAndLeon": "Castille-et-León",
+          "navarre": "Navarre",
+          "cantabria": "Cantabrie",
+          "asturias": "Asturies",
+          "murcia": "Murcie",
+          "balearicIslands": "Îles Baléares",
+          "madrid": "Madrid",
+          "laRioja": "La Rioja",
+          "extremadura": "Estrémadure",
+          "andorra": "Andorre"
+        }
+      }
+    },
+    "device": {
+      "title": "Répartition par appareil",
+      "source": "Modélisée à partir des visiteurs uniques Trailrunningcal des 30 derniers jours.",
+      "summary": "Répartition quotidienne de l’audience par type d’appareil.",
+      "segments": {
+        "mobile": "Mobile",
+        "desktop": "Ordinateur",
+        "tablet": "Tablette"
+      }
+    },
+    "actions": {
+      "downloadReport": "Télécharger le rapport",
+      "downloading": "Préparation du rapport"
     }
   }
 }

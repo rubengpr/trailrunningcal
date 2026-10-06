@@ -1827,9 +1827,23 @@
     "kicker": { "postcard": "CMG Girona · Klassmark", "immersive": "Costa i Gavarres", "split": "Edició 2026" }
   },
   "sponsorDashboard": {
-    "campaignName": "Campaña Product Launch",
-    "campaignId": "2026-09-v2",
     "brandName": "Peakhill Trails",
+    "campaign": {
+      "label": "Ubicació de la campanya",
+      "banner": {
+        "label": "Campanya de bàner",
+        "name": "Bàner de Trail Brand",
+        "id": "trail-brand-banner-v1",
+        "previewAlt": "Vista prèvia de la campanya de bàner de Trail Brand",
+        "openPreview": "Obrir la vista prèvia de la campanya",
+        "closePreview": "Tancar la vista prèvia de la campanya"
+      },
+      "sticky": {
+        "label": "Campanya sticky",
+        "name": "Sticky de Trail Brand",
+        "id": "trail-brand-sticky-v1"
+      }
+    },
     "navbar": {
       "dashboard": "Tauler de campanya",
       "docs": "Docs",
@@ -1847,10 +1861,67 @@
       "all": "Tot"
     },
     "metricsLabel": "Mètriques de la campanya",
-    "metrics": { "impressions": "Impressions", "clicks": "Clics", "ctr": "CTR" },
+    "metrics": { "impressions": "Impressions", "uniqueUsers": "Visitants únics", "clicks": "Clics", "ctr": "CTR" },
     "chart": {
       "title": "Impressions diàries",
-      "summary": "Impressions diàries del bàner de {start} a {end}: {impressions} impressions en total."
+      "summary": "Distribució diària de la campanya del {start} al {end}: {impressions} impressions i {uniqueUsers} visitants únics."
+    },
+    "audience": {
+      "title": "Distribució de l’audiència",
+      "source": {
+        "country": "Modelat amb els visitants únics de Trailrunningcal dels últims 30 dies.",
+        "region": "Modelat amb les visites des de Google a pàgines d’esdeveniment, agrupades per la regió de l’esdeveniment."
+      },
+      "groupBy": "Agrupar l’audiència per",
+      "country": "País",
+      "region": "Regió de l’esdeveniment",
+      "summary": {
+        "country": "Distribució diària de l’audiència per país.",
+        "region": "Distribució diària de visites des de Google a pàgines d’esdeveniment per regió de l’esdeveniment."
+      },
+      "segments": {
+        "country": {
+          "spain": "Espanya",
+          "france": "França",
+          "portugal": "Portugal",
+          "unitedKingdom": "Regne Unit",
+          "unitedStates": "Estats Units",
+          "other": "Altres"
+        },
+        "region": {
+          "catalonia": "Catalunya",
+          "valencia": "Comunitat Valenciana",
+          "andalusia": "Andalusia",
+          "basqueCountry": "País Basc",
+          "galicia": "Galícia",
+          "aragon": "Aragó",
+          "canaryIslands": "Illes Canàries",
+          "castileAndLeon": "Castella i Lleó",
+          "navarre": "Navarra",
+          "cantabria": "Cantàbria",
+          "asturias": "Astúries",
+          "murcia": "Múrcia",
+          "balearicIslands": "Illes Balears",
+          "madrid": "Madrid",
+          "laRioja": "La Rioja",
+          "extremadura": "Extremadura",
+          "andorra": "Andorra"
+        }
+      }
+    },
+    "device": {
+      "title": "Distribució per dispositiu",
+      "source": "Modelat amb els visitants únics de Trailrunningcal dels últims 30 dies.",
+      "summary": "Distribució diària de l’audiència per tipus de dispositiu.",
+      "segments": {
+        "mobile": "Mòbil",
+        "desktop": "Ordinador",
+        "tablet": "Tauleta"
+      }
+    },
+    "actions": {
+      "downloadReport": "Descarregar informe",
+      "downloading": "Preparant informe"
     }
   }
 }

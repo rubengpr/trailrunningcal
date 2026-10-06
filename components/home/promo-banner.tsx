@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { ExternalLink } from 'lucide-react';
 
 interface PromoBannerProps {
   alt: string;
@@ -73,6 +74,55 @@ export function PromoBanner({
           {content}
         </a>
       ) : content}
+    </aside>
+  );
+}
+
+interface PromoTextStripProps {
+  backgroundColor: string;
+  code: string;
+  href?: string;
+  isVisible?: boolean;
+  message: string;
+  onClick?: () => void;
+}
+
+export function PromoTextStrip({
+  backgroundColor,
+  code,
+  href,
+  isVisible = false,
+  message,
+  onClick,
+}: PromoTextStripProps) {
+  if (!isVisible) return null;
+
+  const content = (
+    <p className="flex min-h-9 items-center justify-center gap-1.5 px-4 py-2 text-center text-xs font-medium text-white sm:text-sm">
+      <span>{message}</span>
+      <span className="font-semibold underline underline-offset-2">{code}</span>
+      {href && <ExternalLink aria-hidden className="size-3 shrink-0" />}
+    </p>
+  );
+
+  return (
+    <aside
+      className="w-full border-b border-black/15"
+      style={{ backgroundColor }}
+    >
+      {href ? (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={onClick}
+          className="block w-full"
+        >
+          {content}
+        </a>
+      ) : (
+        content
+      )}
     </aside>
   );
 }

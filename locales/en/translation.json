@@ -1056,9 +1056,23 @@
     "kicker": { "postcard": "CMG Girona · Klassmark", "immersive": "Coast and Gavarres", "split": "2026 edition" }
   },
   "sponsorDashboard": {
-    "campaignName": "Product Launch Campaign",
-    "campaignId": "2026-09-v2",
     "brandName": "Peakhill Trails",
+    "campaign": {
+      "label": "Campaign placement",
+      "banner": {
+        "label": "Banner campaign",
+        "name": "Trail Brand Banner",
+        "id": "trail-brand-banner-v1",
+        "previewAlt": "Trail Brand banner campaign preview",
+        "openPreview": "Open campaign preview",
+        "closePreview": "Close campaign preview"
+      },
+      "sticky": {
+        "label": "Sticky campaign",
+        "name": "Trail Brand Sticky",
+        "id": "trail-brand-sticky-v1"
+      }
+    },
     "navbar": {
       "dashboard": "Campaign dashboard",
       "docs": "Docs",
@@ -1076,10 +1090,67 @@
       "all": "All"
     },
     "metricsLabel": "Campaign metrics",
-    "metrics": { "impressions": "Impressions", "clicks": "Clicks", "ctr": "CTR" },
+    "metrics": { "impressions": "Impressions", "uniqueUsers": "Unique visitors", "clicks": "Clicks", "ctr": "CTR" },
     "chart": {
       "title": "Daily impressions",
-      "summary": "Daily banner impressions from {start} to {end}: {impressions} total impressions."
+      "summary": "Daily campaign delivery from {start} to {end}: {impressions} total impressions and {uniqueUsers} unique visitors."
+    },
+    "audience": {
+      "title": "Audience distribution",
+      "source": {
+        "country": "Modelled from Trailrunningcal’s last 30 days of unique visitors.",
+        "region": "Modelled from Google visits to event pages, grouped by the viewed event’s region."
+      },
+      "groupBy": "Group audience by",
+      "country": "Country",
+      "region": "Event region",
+      "summary": {
+        "country": "Daily audience distribution by country.",
+        "region": "Daily distribution of Google event-page visits by the viewed event’s region."
+      },
+      "segments": {
+        "country": {
+          "spain": "Spain",
+          "france": "France",
+          "portugal": "Portugal",
+          "unitedKingdom": "United Kingdom",
+          "unitedStates": "United States",
+          "other": "Other"
+        },
+        "region": {
+          "catalonia": "Catalonia",
+          "valencia": "Valencia",
+          "andalusia": "Andalusia",
+          "basqueCountry": "Basque Country",
+          "galicia": "Galicia",
+          "aragon": "Aragon",
+          "canaryIslands": "Canary Islands",
+          "castileAndLeon": "Castile and León",
+          "navarre": "Navarre",
+          "cantabria": "Cantabria",
+          "asturias": "Asturias",
+          "murcia": "Murcia",
+          "balearicIslands": "Balearic Islands",
+          "madrid": "Madrid",
+          "laRioja": "La Rioja",
+          "extremadura": "Extremadura",
+          "andorra": "Andorra"
+        }
+      }
+    },
+    "device": {
+      "title": "Device distribution",
+      "source": "Modelled from Trailrunningcal’s last 30 days of unique visitors.",
+      "summary": "Daily audience distribution by device type.",
+      "segments": {
+        "mobile": "Mobile",
+        "desktop": "Desktop",
+        "tablet": "Tablet"
+      }
+    },
+    "actions": {
+      "downloadReport": "Download report",
+      "downloading": "Preparing report"
     }
   }
 }

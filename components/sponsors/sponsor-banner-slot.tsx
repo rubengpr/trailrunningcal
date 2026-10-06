@@ -1,8 +1,12 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { PromoBanner } from '@/components/home/promo-banner';
+import {
+  PromoBanner,
+  PromoTextStrip,
+} from '@/components/home/promo-banner';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { track } from '@/lib/analytics/track';
 import {
@@ -10,7 +14,10 @@ import {
   type SponsorBannerConfig,
   type SponsorPage,
 } from '@/lib/sponsors/banner-config';
-import { getSponsorPreviewConfig } from '@/lib/sponsors/preview-config';
+import {
+  getSponsorPreviewConfig,
+  isSponsorPreviewEnabled,
+} from '@/lib/sponsors/preview-config';
 import { useFeatureFlagVariant } from '@/hooks/use-feature-flag-variant';
 import type { Locale } from '@/i18n';
 
@@ -45,6 +52,7 @@ export function SponsorBannerSlot({
   const previewConfig = useMemo(
     () =>
       getSponsorPreviewConfig({
+        bannerType: 'image_banner',
         page,
       }),
     [page],
@@ -113,6 +121,8 @@ export function SponsorBannerSlot({
     );
   }
 
+  if (isSponsorPreviewEnabled()) return null;
+
   if (!config) return null;
 
   const alt = tBanner(config.altKey);
@@ -127,6 +137,108 @@ export function SponsorBannerSlot({
         href={config.destinationUrl}
         onClick={handleClick}
         isVisible
+      />
+    </div>
+  );
+}
+
+function getSponsorPageFromPathname(pathname: string, locale: Locale): SponsorPage {
+  return pathname.startsWith(`/${locale}/e/`) ? 'event_page' : 'homepage';
+}
+
+interface SponsorStickyBannerSlotProps {
+  locale: Locale;
+}
+
+export function SponsorStickyBannerSlot({
+  locale,
+}: SponsorStickyBannerSlotProps) {
+  const pathname = usePathname();
+  const tBanner = useTranslations('banner');
+  const impressionTrackedRef = useRef(false);
+  const bannerRef = useRef<HTMLDivElement>(null);
+  const page = getSponsorPageFromPathname(pathname, locale);
+  const previewConfig = useMemo(
+    () =>
+      getSponsorPreviewConfig({
+        bannerType: 'sticky_banner',
+        page,
+      }),
+    [page],
+  );
+
+  useEffect(() => {
+    impressionTrackedRef.current = false;
+  }, [previewConfig?.brandKey, page]);
+
+  useEffect(() => {
+    if (!previewConfig || impressionTrackedRef.current) return;
+
+    const bannerElement = bannerRef.current;
+    if (!bannerElement) return;
+
+    const trackImpression = () => {
+      if (impressionTrackedRef.current) return;
+      impressionTrackedRef.current = true;
+      track(ANALYTICS_EVENTS.SPONSOR_BANNER_IMPRESSION, {
+        brand: 'trail-brand',
+        creative_variant: 'preview',
+        page,
+        banner_type: 'sticky_banner',
+        locale,
+        destination_url: previewConfig.destinationUrl ?? '',
+      });
+    };
+
+    if (!('IntersectionObserver' in window)) {
+      trackImpression();
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return;
+        trackImpression();
+        observer.disconnect();
+      },
+      { threshold: 0.5 },
+    );
+
+    observer.observe(bannerElement);
+
+    return () => observer.disconnect();
+  }, [locale, page, previewConfig]);
+
+  const handleClick = useCallback(() => {
+    if (!previewConfig) return;
+
+    track(ANALYTICS_EVENTS.SPONSOR_BANNER_CLICKED, {
+      brand: 'trail-brand',
+      creative_variant: 'preview',
+      page,
+      banner_type: 'sticky_banner',
+      locale,
+      destination_url: previewConfig.destinationUrl ?? '',
+    });
+  }, [locale, page, previewConfig]);
+
+  if (
+    !previewConfig ||
+    !previewConfig.code ||
+    !previewConfig.stickyMessageKey
+  ) {
+    return null;
+  }
+
+  return (
+    <div ref={bannerRef}>
+      <PromoTextStrip
+        backgroundColor={previewConfig.stickyColor}
+        code={previewConfig.code}
+        href={previewConfig.destinationUrl}
+        isVisible
+        message={tBanner(previewConfig.stickyMessageKey)}
+        onClick={handleClick}
       />
     </div>
   );
