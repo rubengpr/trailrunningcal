@@ -35,6 +35,7 @@ export const ANALYTICS_EVENTS = {
   MAP_VIEW_LIST_CLICKED: 'map_view_list_clicked',
   NAVBAR_FILTER_ICON_CLICKED: 'navbar_filter_icon_clicked',
   NAVBAR_LINK_CLICKED: 'navbar_link_clicked',
+  NEWSLETTER_SUBSCRIBE_CLICKED: 'newsletter_subscribe_clicked',
   RACE_FAVORITE_CLICKED: 'race_favorite_clicked',
   RACE_CARD_CLICKED: 'race_card_clicked',
   RACE_CARD_IMPRESSIONS_BATCH: 'race_card_impressions_batch',
@@ -220,6 +221,9 @@ export interface AnalyticsEventProperties {
     link_text: string;
     link_href: string;
     locale: string;
+  };
+  [ANALYTICS_EVENTS.NEWSLETTER_SUBSCRIBE_CLICKED]: {
+    locale: Locale;
   };
   [ANALYTICS_EVENTS.RACE_FAVORITE_CLICKED]: {
     race_id: string;

@@ -1,8 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { getLocale, getTranslations } from 'next-intl/server';
-import { ArrowRight } from 'lucide-react';
 import { FacebookIcon, InstagramIcon, LinkedInIcon, XIcon } from '@/components/icons/brand-icons';
+import { NewsletterForm } from '@/components/layout/newsletter-form';
 import { getPostsForLocale } from '@/lib/content/blog-utils';
 import { isBlogLocale, type Locale } from '@/i18n';
 import { getLegalPath, LEGAL_DOCUMENT_IDS } from '@/lib/i18n/paths';
@@ -108,26 +108,12 @@ export async function Footer() {
               {t('newsletterTitle')}
             </p>
             <p className="text-sm leading-relaxed text-[#547064]">{t('newsletterDescription')}</p>
-            <form className="flex w-full max-w-sm border border-[#547064] bg-[#f6f1e4]/70">
-              <label className="sr-only" htmlFor="footer-newsletter-email">
-                {t('newsletterEmailLabel')}
-              </label>
-              <input
-                id="footer-newsletter-email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                placeholder={t('newsletterEmailPlaceholder')}
-                className="min-w-0 flex-1 bg-transparent px-3 py-2.5 text-sm text-[#082f26] outline-none placeholder:text-[#547064]"
-              />
-              <button
-                type="button"
-                aria-label={t('newsletterSubmit')}
-                className="flex size-11 shrink-0 items-center justify-center border-l border-[#547064] text-[#31564b] transition-colors hover:bg-[#31564b] hover:text-[#f6f1e4]"
-              >
-                <ArrowRight className="size-5" strokeWidth={1.5} />
-              </button>
-            </form>
+            <NewsletterForm
+              locale={locale}
+              emailLabel={t('newsletterEmailLabel')}
+              emailPlaceholder={t('newsletterEmailPlaceholder')}
+              submitLabel={t('newsletterSubmit')}
+            />
           </div>
           <nav className="contents">
             <div className="order-3 flex flex-col gap-4 xl:order-2 xl:mr-6">
