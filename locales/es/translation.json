@@ -1955,6 +1955,15 @@
         "tablet": "Tableta"
       }
     },
+    "breakdown": {
+      "title": "Resumen de distribución",
+      "summary": "Proporción durante el periodo de informe seleccionado.",
+      "view": "Mostrar distribución",
+      "audience": "Distribución de la audiencia",
+      "device": "Distribución por dispositivo",
+      "total": "Total del periodo",
+      "chartSummary": "{view} durante el periodo de informe seleccionado."
+    },
     "actions": {
       "downloadReport": "Descargar informe",
       "downloading": "Preparando informe"

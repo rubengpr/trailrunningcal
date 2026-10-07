@@ -22,6 +22,7 @@ const ALL_VIEW_START = '2026-01-01';
 type ReportingPeriod = 'last30Days' | 'lastMonth' | 'all';
 type Campaign = 'banner' | 'sticky';
 type AudienceView = 'country' | 'region';
+type BreakdownView = 'audience' | 'device';
 
 export interface SponsorDashboardDay {
   date: string;
@@ -297,6 +298,7 @@ export function SponsorDashboard({
   const [audienceView, setAudienceView] = useState<AudienceView>('region');
   const [activeAudienceIndex, setActiveAudienceIndex] = useState<number | null>(null);
   const [activeDeviceIndex, setActiveDeviceIndex] = useState<number | null>(null);
+  const [breakdownView, setBreakdownView] = useState<BreakdownView>('audience');
   const days = useMemo(
     () => getDaysForPeriod(data[campaign].dailyImpressions, period),
     [campaign, data, period],
@@ -318,6 +320,36 @@ export function SponsorDashboard({
     () => days.map((_, index) => getDeviceDistribution(index)),
     [days],
   );
+  const pieDistribution = useMemo(() => {
+    if (breakdownView === 'audience') {
+      return audienceSegments[audienceView].map((segment, index) => ({
+        ...segment,
+        percentage: audienceDistribution.reduce(
+          (total, distribution) => total + distribution[index].percentage,
+          0,
+        ) / audienceDistribution.length,
+      }));
+    }
+
+    return deviceSegments.map((segment, index) => ({
+      ...segment,
+      percentage: deviceDistribution.reduce(
+        (total, distribution) => total + distribution[index].percentage,
+        0,
+      ) / deviceDistribution.length,
+    }));
+  }, [audienceDistribution, audienceView, breakdownView, deviceDistribution]);
+  const pieGradient = useMemo(() => {
+    let start = 0;
+    const stops = pieDistribution.map(({ color, percentage }) => {
+      const end = start + percentage;
+      const stop = `${color} ${start}% ${end}%`;
+      start = end;
+      return stop;
+    });
+
+    return `conic-gradient(${stops.join(', ')})`;
+  }, [pieDistribution]);
   const activeX = activeIndex === null ? 0 : (activeIndex / Math.max(days.length - 1, 1)) * 100;
   const activeY = activeDay === null
     ? 0
@@ -702,6 +734,56 @@ export function SponsorDashboard({
                 {t(`device.segments.${key}`)}
               </span>
             ))}
+          </div>
+        </section>
+
+        <section className="mt-3 rounded-2xl border border-stone-200 bg-stone-50 p-4 shadow-sm md:p-5">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h2 className="text-base font-semibold tracking-tight">{t('breakdown.title')}</h2>
+              <p className="mt-1 text-xs text-stone-500">{t('breakdown.summary')}</p>
+            </div>
+            <label className="relative">
+              <span className="sr-only">{t('breakdown.view')}</span>
+              <select
+                className="cursor-pointer appearance-none rounded-lg border border-stone-200 bg-white py-1.5 pl-2.5 pr-8 text-xs font-medium text-stone-700 shadow-sm outline-none transition-colors hover:border-stone-300 focus:border-stone-400"
+                value={breakdownView}
+                onChange={(event) => setBreakdownView(event.target.value as BreakdownView)}
+              >
+                <option value="audience">{t('breakdown.audience')}</option>
+                <option value="device">{t('breakdown.device')}</option>
+              </select>
+              <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-2.5 top-1/2 size-3.5 -translate-y-1/2 text-stone-500" />
+            </label>
+          </div>
+
+          <div className="mt-4 grid items-center gap-5 sm:grid-cols-[10rem_1fr]">
+            <div
+              aria-label={t('breakdown.chartSummary', { view: t(`breakdown.${breakdownView}`) })}
+              className="relative mx-auto size-40 rounded-full"
+              role="img"
+              style={{ background: pieGradient }}
+            >
+              <div className="absolute inset-[29%] grid place-items-center rounded-full bg-stone-50 text-center shadow-[0_0_0_1px_rgba(231,229,228,0.9)]">
+                <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-stone-500">{t('breakdown.total')}</span>
+                <span className="text-sm font-semibold tabular-nums text-stone-900">100%</span>
+              </div>
+            </div>
+            <div className="grid gap-x-4 gap-y-2 text-xs text-stone-600 sm:grid-cols-2">
+              {pieDistribution.map(({ color, key, percentage }) => (
+                <div key={key} className="flex min-w-0 items-center justify-between gap-3">
+                  <span className="flex min-w-0 items-center gap-1.5">
+                    <i aria-hidden="true" className="size-2 shrink-0 rounded-full" style={{ backgroundColor: color }} />
+                    <span className="truncate">
+                      {breakdownView === 'audience'
+                        ? t(`audience.segments.${audienceView}.${key}`)
+                        : t(`device.segments.${key}`)}
+                    </span>
+                  </span>
+                  <span className="shrink-0 tabular-nums text-stone-500">{percentage.toFixed(1)}%</span>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
       </div>

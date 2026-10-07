@@ -1923,6 +1923,15 @@
         "tablet": "Tauleta"
       }
     },
+    "breakdown": {
+      "title": "Resum de distribució",
+      "summary": "Proporció durant el període d’informe seleccionat.",
+      "view": "Mostra la distribució",
+      "audience": "Distribució de l’audiència",
+      "device": "Distribució per dispositiu",
+      "total": "Total del període",
+      "chartSummary": "{view} durant el període d’informe seleccionat."
+    },
     "actions": {
       "downloadReport": "Descarregar informe",
       "downloading": "Preparant informe"

@@ -1152,6 +1152,15 @@
         "tablet": "Tablette"
       }
     },
+    "breakdown": {
+      "title": "Vue d’ensemble de la répartition",
+      "summary": "Part sur la période de reporting sélectionnée.",
+      "view": "Afficher la répartition",
+      "audience": "Répartition de l’audience",
+      "device": "Répartition par appareil",
+      "total": "Total de la période",
+      "chartSummary": "{view} sur la période de reporting sélectionnée."
+    },
     "actions": {
       "downloadReport": "Télécharger le rapport",
       "downloading": "Préparation du rapport"

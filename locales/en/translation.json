@@ -1152,6 +1152,15 @@
         "tablet": "Tablet"
       }
     },
+    "breakdown": {
+      "title": "Distribution overview",
+      "summary": "Share across the selected reporting period.",
+      "view": "Show distribution",
+      "audience": "Audience distribution",
+      "device": "Device distribution",
+      "total": "Period total",
+      "chartSummary": "{view} for the selected reporting period."
+    },
     "actions": {
       "downloadReport": "Download report",
       "downloading": "Preparing report"
