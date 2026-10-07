@@ -7,6 +7,7 @@ interface UseMultiSelectMenuOptions {
   minWidth?: number;
   offset?: number;
   preferredMenuHeight?: number;
+  placement?: 'auto' | 'bottom';
 }
 
 interface DropdownStyle {
@@ -27,6 +28,7 @@ export function useMultiSelectMenu({
   minWidth = 160,
   offset = 4,
   preferredMenuHeight,
+  placement = 'auto',
 }: UseMultiSelectMenuOptions = {}) {
   const [open, setOpen] = useState(false);
   const [dropdownStyle, setDropdownStyle] = useState<DropdownStyle>(DEFAULT_DROPDOWN_STYLE);
@@ -55,7 +57,7 @@ export function useMultiSelectMenu({
         0,
         rect.top - offset - viewportPadding,
       );
-      const shouldOpenAbove = preferredMenuHeight !== undefined &&
+      const shouldOpenAbove = placement === 'auto' && preferredMenuHeight !== undefined &&
         availableBelow < preferredMenuHeight &&
         availableAbove > availableBelow;
       const availableHeight = shouldOpenAbove
@@ -76,7 +78,7 @@ export function useMultiSelectMenu({
     }
 
     setOpen(true);
-  }, [usePortalPosition, minWidth, offset, preferredMenuHeight]);
+  }, [usePortalPosition, minWidth, offset, preferredMenuHeight, placement]);
 
   const toggleOpen = useCallback((): void => {
     if (open) {

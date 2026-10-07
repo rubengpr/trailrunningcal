@@ -17,14 +17,16 @@ interface FilterSelectProps {
   placeholder: string;
   options: FilterSelectOption[];
   color?: 'white' | 'black';
+  searchable?: boolean;
 }
 
-export function FilterSelect({ value, onValueChange, placeholder, options, color = 'white' }: FilterSelectProps) {
-  const { open, containerRef, triggerRef, dropdownRef, dropdownStyle, toggleOpen, closeMenu } = useMultiSelectMenu({
+export function FilterSelect({ value, onValueChange, placeholder, options, color = 'white', searchable = false }: FilterSelectProps) {
+  const { open, containerRef, triggerRef, dropdownRef, dropdownStyle, toggleOpen } = useMultiSelectMenu({
     usePortalPosition: true,
     minWidth: 160,
     offset: 4,
     preferredMenuHeight: MULTI_SELECT_MENU_MAX_HEIGHT,
+    placement: 'bottom',
   });
 
   function handleToggle(optionValue: string) {
@@ -32,11 +34,6 @@ export function FilterSelect({ value, onValueChange, placeholder, options, color
       ? value.filter((v) => v !== optionValue)
       : [...value, optionValue];
     onValueChange(next);
-  }
-
-  function handleClear() {
-    onValueChange([]);
-    closeMenu();
   }
 
   const isActive = value.length > 0;
@@ -58,9 +55,8 @@ export function FilterSelect({ value, onValueChange, placeholder, options, color
     <MultiSelectOptionsMenu
       options={options}
       selectedValues={value}
-      placeholder={placeholder}
+      searchable={searchable}
       onToggleOption={handleToggle}
-      onClear={handleClear}
       dropdownRef={dropdownRef}
       style={{ position: 'absolute', top: dropdownStyle.top, left: dropdownStyle.left, minWidth: dropdownStyle.minWidth, maxHeight: dropdownStyle.maxHeight, zIndex: 9999 }}
     />

@@ -38,6 +38,8 @@
     "terrainRetry": "Try again"
   },
   "filters": {
+    "searchOptions": "Search options…",
+    "noMatchingOptions": "No matches found",
     "clearFilters": "Clear filters",
     "filtersLabel": "Filter",
     "filterRacesButton": "Filter races",

@@ -16,6 +16,7 @@ interface FilterPillProps {
   onClear: () => void;
   color: 'white' | 'black';
   size: 'sm' | 'md';
+  searchable?: boolean;
 }
 
 export function FilterPill({
@@ -26,6 +27,7 @@ export function FilterPill({
   onClear,
   color,
   size,
+  searchable = false,
 }: FilterPillProps) {
   const {
     open,
@@ -34,12 +36,12 @@ export function FilterPill({
     dropdownRef,
     dropdownStyle,
     toggleOpen,
-    closeMenu,
   } = useMultiSelectMenu({
     usePortalPosition: true,
     minWidth: 160,
     offset: 4,
     preferredMenuHeight: MULTI_SELECT_MENU_MAX_HEIGHT,
+    placement: 'bottom',
   });
   const isSelected = selectedValues.length > 0;
 
@@ -59,12 +61,8 @@ export function FilterPill({
     <MultiSelectOptionsMenu
       options={options}
       selectedValues={selectedValues}
-      placeholder={label}
+      searchable={searchable}
       onToggleOption={onToggleOption}
-      onClear={() => {
-        onClear();
-        closeMenu();
-      }}
       dropdownRef={dropdownRef}
       style={{
         position: 'absolute',

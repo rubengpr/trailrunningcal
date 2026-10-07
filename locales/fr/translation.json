@@ -38,6 +38,8 @@
     "terrainRetry": "Réessayer"
   },
   "filters": {
+    "searchOptions": "Rechercher des options…",
+    "noMatchingOptions": "Aucun résultat",
     "clearFilters": "Effacer les filtres",
     "filtersLabel": "Filtrer",
     "filterRacesButton": "Filtrer les courses",

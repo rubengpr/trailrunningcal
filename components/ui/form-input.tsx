@@ -5,9 +5,10 @@ import { Eye, EyeOff } from 'lucide-react';
 
 interface FormInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
   id: string;
-  label: string | React.ReactNode;
+  label?: string | React.ReactNode;
   error?: string;
   helperText?: string;
+  reserveMessageSpace?: boolean;
   showPasswordToggle?: boolean;
   labelRightContent?: React.ReactNode;
   type?: React.InputHTMLAttributes<HTMLInputElement>['type'];
@@ -18,6 +19,7 @@ export function FormInput({
   label,
   error,
   helperText,
+  reserveMessageSpace = true,
   showPasswordToggle = false,
   labelRightContent,
   type = 'text',
@@ -39,14 +41,14 @@ export function FormInput({
           </label>
           {labelRightContent}
         </div>
-      ) : (
+      ) : label ? (
         <label
           htmlFor={id}
           className="text-sm font-medium leading-none"
         >
           {label}
         </label>
-      )}
+      ) : null}
       <div className="relative">
         <input
           id={id}
@@ -68,10 +70,12 @@ export function FormInput({
           </button>
         )}
       </div>
-      <div className="h-5">
-        {error && <p className="text-sm text-red-500 ml-1">{error}</p>}
-        {helperText && !error && <p className="text-xs text-gray-500 ml-1">{helperText}</p>}
-      </div>
+      {(reserveMessageSpace || error || helperText) && (
+        <div className="h-5">
+          {error && <p className="text-sm text-red-500 ml-1">{error}</p>}
+          {helperText && !error && <p className="text-xs text-gray-500 ml-1">{helperText}</p>}
+        </div>
+      )}
     </div>
   );
 }

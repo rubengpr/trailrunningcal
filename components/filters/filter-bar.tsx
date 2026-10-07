@@ -121,6 +121,7 @@ export function FilterBar({
           label={tFilters('monthLabel')}
           selectedValues={selectedMonth}
           options={monthOptions}
+          searchable
           onToggleOption={(value) => toggleSelectedValues(selectedMonth, value, onMonthSelect)}
           onClear={() => onMonthSelect([])}
           color={color}
@@ -132,6 +133,7 @@ export function FilterBar({
           onValueChange={onMonthSelect}
           placeholder={tFilters('monthLabel')}
           options={monthOptions}
+          searchable
           color={color}
         />
       )}
@@ -142,6 +144,7 @@ export function FilterBar({
             label={tFilters('provinceLabel')}
             selectedValues={selectedProvince}
             options={provinceOptions}
+            searchable
             onToggleOption={(value) => toggleSelectedValues(selectedProvince, value, onProvinceSelect)}
             onClear={() => onProvinceSelect([])}
             color={color}
@@ -153,6 +156,7 @@ export function FilterBar({
             onValueChange={onProvinceSelect}
             placeholder={tFilters('provinceLabel')}
             options={provinceOptions}
+            searchable
             color={color}
           />
         )

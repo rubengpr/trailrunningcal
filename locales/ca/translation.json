@@ -38,6 +38,8 @@
     "terrainRetry": "Tornar a intentar"
   },
   "filters": {
+    "searchOptions": "Cerca opcions…",
+    "noMatchingOptions": "No hi ha coincidències",
     "clearFilters": "Netejar filtres",
     "filtersLabel": "Filtrar",
     "filterRacesButton": "Filtrar curses",
