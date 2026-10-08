@@ -47,4 +47,6 @@ For business context, metrics, positioning, and audience — invoke the `/produc
 
 ## Workflow
 
+- **Draft API access:** use HTTP with `Authorization: Bearer $AGENT_API_TOKEN` for authorized draft work. Select local or production explicitly; never print the token. Endpoint permissions and curl examples: [docs/agent-api.md](docs/agent-api.md).
+
 - Run `pnpm tsc --noEmit` before pushing — Vercel type-checks on every build and failures break the deployment.

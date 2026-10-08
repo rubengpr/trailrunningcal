@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { requireAdmin } from '@/lib/auth';
+import { requireDraftAccess } from '@/lib/auth/draft-access';
 import { parseEventInput } from '@/app/api/events/validation';
 import { handleRouteError } from '@/lib/utils/handle-error';
 import { parseJsonBody } from '@/app/api/request-validation';
@@ -9,7 +9,7 @@ import { parseEventImportDraftPageRequest } from '@/lib/event-import/draft-pagin
 
 export async function GET(request: Request): Promise<NextResponse> {
   try {
-    await requireAdmin();
+    await requireDraftAccess(request, 'read');
     const url = new URL(request.url);
     const input = parseEventImportDraftPageRequest({
       page: url.searchParams.get('page') ?? undefined,
@@ -24,7 +24,7 @@ export async function GET(request: Request): Promise<NextResponse> {
 
 export async function POST(request: Request): Promise<NextResponse> {
   try {
-    await requireAdmin();
+    await requireDraftAccess(request, 'create');
     const body = await parseJsonBody(request);
     const data = parseEventInput(body);
     const metadata = parseDraftCreateInput(body);

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { requireAdmin } from '@/lib/auth';
+import { requireDraftAccess } from '@/lib/auth/draft-access';
 import { parseUuidParam } from '@/app/api/request-validation';
 import { getDraftPublicationStatus } from '@/lib/services/event-import-drafts';
 import { handleRouteError } from '@/lib/utils/handle-error';
@@ -9,7 +9,7 @@ export async function GET(
   { params }: { params: Promise<{ draftId: string }> },
 ): Promise<NextResponse> {
   try {
-    await requireAdmin();
+    await requireDraftAccess(request, 'read');
     const draftId = parseUuidParam((await params).draftId, 'Invalid draft ID');
     const jobId = new URL(request.url).searchParams.get('jobId');
     if (!jobId) return NextResponse.json({ error: 'Job ID is required' }, { status: 400 });
