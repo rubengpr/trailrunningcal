@@ -1252,6 +1252,7 @@
       },
       "drafts": {
         "title": "Esdeveniments en esborrany",
+        "completeInformation": "Informació completa",
         "empty": "No hi ha esborranys importats.",
         "draftCount": "{count} esborranys",
         "draftCountOne": "1 esborrany",

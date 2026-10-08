@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
 import {
   Check,
+  CircleCheck,
   ChevronDown,
   ChevronUp,
   ChevronsUpDown,
@@ -68,6 +69,26 @@ function getDraftDateRange(draft: EventImportDraft): {
   };
 }
 
+function hasCompleteInformation(draft: EventImportDraft, today: string): boolean {
+  return Boolean(draft.data.event.description?.trim())
+    && draft.data.races.length > 0
+    && draft.data.races.every((race) => {
+      const date = race.date;
+      const timestamp = date ? Date.parse(`${date}T00:00:00Z`) : NaN;
+
+      return date !== null
+        && /^\d{4}-\d{2}-\d{2}$/.test(date)
+        && Number.isFinite(timestamp)
+        && new Date(timestamp).toISOString().slice(0, 10) === date
+        && date > today
+        && Number.isFinite(race.distanceKm)
+        && race.distanceKm > 0
+        && race.elevationGainM !== null
+        && Number.isInteger(race.elevationGainM)
+        && race.elevationGainM > 0;
+    });
+}
+
 function DraftSortIcon({
   column,
   query,
@@ -91,6 +112,12 @@ export function AdminEventImportDraftsContent({
   const t = useTranslations('admin.events.drafts');
   const eventsT = useTranslations('adminEvents');
   const locale = useLocale();
+  const today = new Intl.DateTimeFormat('sv-SE', {
+    timeZone: 'Europe/Madrid',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date());
   const [drafts, setDrafts] = useState(initialPage.drafts);
   const [total, setTotal] = useState(initialPage.total);
   const [draftToPreview, setDraftToPreview] = useState<EventImportDraft | null>(null);
@@ -314,7 +341,16 @@ export function AdminEventImportDraftsContent({
                     {formatEventDateRangeNumeric(getDraftDateRange(draft), eventsT('noDates'))}
                   </TableCell>
                   <TableCell align="right">
-                    <div className="flex justify-end gap-1">
+                    <div className="flex items-center justify-end gap-1">
+                      {hasCompleteInformation(draft, today) ? (
+                        <span
+                          className="mr-2 inline-flex shrink-0 items-center justify-center text-emerald-600"
+                          title={t('completeInformation')}
+                        >
+                          <CircleCheck className="size-4 [&>circle]:fill-emerald-50" strokeWidth={2} />
+                          <span className="sr-only">{t('completeInformation')}</span>
+                        </span>
+                      ) : null}
                       {hasFailedPublication ? (
                         <span className="mt-2" title={t('acceptError')}>
                           <CircleAlert className="size-4 text-red-600" strokeWidth={1.5} />

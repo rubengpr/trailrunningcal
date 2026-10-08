@@ -1014,6 +1014,9 @@
   },
   "admin": {
     "events": {
+      "drafts": {
+        "completeInformation": "Complete information"
+      },
       "updates": {
         "title": "Event updates",
         "subtitle": "Track scheduled event updates.",

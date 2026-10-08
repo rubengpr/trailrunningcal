@@ -1284,6 +1284,7 @@
       },
       "drafts": {
         "title": "Eventos en borrador",
+        "completeInformation": "Información completa",
         "empty": "No hay borradores importados.",
         "draftCount": "{count} borradores",
         "draftCountOne": "1 borrador",

@@ -1014,6 +1014,9 @@
   },
   "admin": {
     "events": {
+      "drafts": {
+        "completeInformation": "Informations complètes"
+      },
       "updates": {
         "title": "Mises à jour des événements",
         "subtitle": "Suivez les mises à jour programmées des événements.",
