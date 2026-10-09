@@ -1,6 +1,6 @@
 ---
 name: prepare-brand-outreach
-description: Research, qualify, and prepare initial commercial outreach for one Trail Running Cal brand lead, or run a daily review of existing commercial outreach to create eligible Gmail follow-up drafts. Use when the user provides a brand URL for cold outreach or asks to review unanswered outreach from ruben@trailrunningcal.com according to cadence, reply, out-of-office, suppression, and CRM rules.
+description: Research, qualify, and prepare initial commercial outreach for one Trailrunningcal brand lead, or run a daily review of existing commercial outreach to create eligible Gmail follow-up drafts. Use when the user provides a brand URL for cold outreach or asks to review unanswered outreach from ruben@trailrunningcal.com according to cadence, reply, out-of-office, suppression, and CRM rules.
 ---
 
 # Prepare Brand Outreach
@@ -14,7 +14,7 @@ Never send, schedule, or enroll an email in a sequence.
 
 ## Required context
 
-- Read the installed 'product-context' skill for current Trail Running Cal positioning.
+- Read the installed 'product-context' skill for current Trailrunningcal positioning.
 - Apply the installed 'brand-sponsor-fit' rubric only for initial-lead qualification and FitScore.
 - Read [references/notion-crm.md](references/notion-crm.md) before using Notion.
 - Read [references/email-template.md](references/email-template.md) only in 'initial' mode.
@@ -33,13 +33,13 @@ An existing commercial thread blocks an 'initial' draft. Do not fall back to a s
 
 Apply this method only when a draft is otherwise eligible.
 
-1. Identify one current business priority the company is visibly investing in and that Trail Running Cal can credibly support among trail runners in Catalonia or Spain.
+1. Identify one current business priority the company is visibly investing in and that Trailrunningcal can credibly support among trail runners in Spain, using the current national race coverage from `product-context`.
 2. Select exactly one objective: enter or grow in Spain; build awareness for a new product, range, or category; strengthen trail-running positioning; extend the value of a sponsorship or activation; or support a new Spanish distributor, store, or sales channel.
 3. Select the strongest verifiable signal supporting that objective: a launch or category push; Spanish expansion; trail-running investment; athlete, race, team, or circuit sponsorship; channel entry; or a relevant campaign or activation.
-4. Translate the evidence internally using: verifiable signal → likely strategic objective → credible Trail Running Cal contribution. Lead the email with the objective and contribution; use the signal only as supporting context.
+4. Translate the evidence internally using: verifiable signal → likely strategic objective → credible Trailrunningcal contribution. Lead the email with the objective and contribution; use the signal only as supporting context.
 5. Frame an inferred objective as a commercial hypothesis, such as `creo que podemos ayudaros a...`, rather than claiming to know an unconfirmed internal plan.
 6. Prefer awareness, discovery, consideration, adoption, or Spanish market entry outcomes. Mention increasing sales only when a concrete, measurable conversion or affiliate format supports the claim; never promise sales.
-7. Treat a wider European, French, or Southern European expansion only as context. Describe Trail Running Cal's contribution specifically to Spain; never imply reach in markets the product does not serve.
+7. Treat a wider European, French, or Southern European expansion only as context. Describe Trailrunningcal's contribution specifically to Spain; never imply reach in markets the product does not serve.
 8. Prefer official company sources and reliable public sources. Use the company's own terminology where practical. Record the source URL and publication or access date for every dynamic claim used.
 9. Reject a strategic point that could be sent unchanged to a direct competitor. Never invent or exaggerate a launch, expansion, priority, objective, outcome, or source.
 10. If no sufficiently specific and verifiable point exists, classify the opportunity as 'research needed' and do not create a draft.
@@ -128,7 +128,7 @@ Run this branch only in 'daily-follow-up-review' mode.
 
 1. Fetch the current Notion Leads database and its schema.
 2. Build the candidate set from existing leads with evidence of previous email outreach. Use Notion to identify commercial leads and Gmail to confirm the actual sent message and recipient.
-3. Search Gmail for commercial messages sent by 'ruben@trailrunningcal.com'. Do not treat every sent email as outreach. Include a thread only when it matches a Notion lead or is clearly a Trail Running Cal sponsorship, advertising, affiliate, or brand-presence message.
+3. Search Gmail for commercial messages sent by 'ruben@trailrunningcal.com'. Do not treat every sent email as outreach. Include a thread only when it matches a Notion lead or is clearly a Trailrunningcal sponsorship, advertising, affiliate, or brand-presence message.
 4. Exclude opportunities marked 'Acuerdo' or 'Cerrado sin éxito', explicit opt-outs, hard bounces, and recipients or companies with suppression signals.
 5. Deduplicate candidates by Gmail thread ID, then normalized recipient address and company domain.
 6. Sort candidates by the oldest date on which a follow-up became eligible.

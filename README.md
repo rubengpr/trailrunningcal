@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="public/logo.svg" alt="Trail Running Cal" width="150" />
+  <img src="public/logo.svg" alt="Trailrunningcal" width="150" />
 </p>
 
-<h1 align="center">Trail Running Cal</h1>
+<h1 align="center">Trailrunningcal</h1>
 
 <p align="center"><strong>An AI-powered platform for discovering and planning trail and mountain races in Spain.</strong></p>
 
@@ -12,7 +12,7 @@
   <a href="#architecture">Technical overview</a>
 </p>
 
-Trail Running Cal brings fragmented race information into one maintained, searchable calendar. It helps runners discover events by date, location, distance, race type, and difficulty through a map-and-list experience available in Spanish, Catalan, English, and French.
+Trailrunningcal brings fragmented race information into one maintained, searchable calendar. It helps runners discover events by date, location, distance, race type, and difficulty through a map-and-list experience available in Spanish, Catalan, English, and French.
 
 The product covers trail and mountain races across all of Spain. Road running and worldwide race aggregation are intentionally out of scope.
 
@@ -28,7 +28,7 @@ Commercial snapshot, September 2026 (PostHog, excluding internal and test accoun
 | Organic Search traffic | 84.7% |
 | Mobile visitors | 71.5% |
 
-Trail Running Cal is actively developed and operated by one product engineer using AI coding agents to increase delivery speed while retaining human ownership of product decisions, architecture, review, testing, and production outcomes.
+Trailrunningcal is actively developed and operated by one product engineer using AI coding agents to increase delivery speed while retaining human ownership of product decisions, architecture, review, testing, and production outcomes.
 
 ## The problem
 
@@ -39,7 +39,7 @@ This creates two related problems:
 - Runners cannot reliably search and compare the full calendar from one place.
 - Maintaining a useful database manually does not scale across hundreds of changing events.
 
-Trail Running Cal addresses both sides: a public discovery product for runners and an AI-assisted curation system for keeping its underlying data structured and current.
+Trailrunningcal addresses both sides: a public discovery product for runners and an AI-assisted curation system for keeping its underlying data structured and current.
 
 ## What the product does
 
@@ -164,7 +164,7 @@ types/                  Shared domain types
 
 ## Ownership
 
-Trail Running Cal was conceived, built, and is operated end-to-end by [Ruben Godoy](https://github.com/rubengpr). The work spans product discovery, UX, architecture, data modeling, AI workflow design, implementation, testing, analytics, SEO, operations, and commercial validation.
+Trailrunningcal was conceived, built, and is operated end-to-end by [Ruben Godoy](https://github.com/rubengpr). The work spans product discovery, UX, architecture, data modeling, AI workflow design, implementation, testing, analytics, SEO, operations, and commercial validation.
 
 AI coding agents produce much of the implementation under human direction. Product judgment, requirements, system design, review, verification, and responsibility for production behavior remain human-owned.
 

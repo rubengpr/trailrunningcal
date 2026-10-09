@@ -34,7 +34,7 @@ Select exactly one verifiable signal from:
 Build the point as:
 
 ```text
-Verifiable fact → strategic objective → how Trail Running Cal helps
+Verifiable fact → strategic objective → how Trailrunningcal helps
 ```
 
 Before drafting, establish internally:
@@ -44,14 +44,14 @@ Category:
 Fact:
 Source and date:
 Strategic objective:
-Trail Running Cal contribution:
+Trailrunningcal contribution:
 Final sentence:
 Confidence: high | medium | low
 ```
 
 Draft only at high or medium confidence. The final sentence must state an outcome for the company, not merely mention an event. If the sentence could be sent unchanged to a direct competitor, it is too generic. If no valid point exists, return `RESEARCH NEEDED` rather than inventing one.
 
-Frame an inferred objective as a hypothesis rather than a known internal plan. Limit Trail Running Cal's contribution to Catalonia or Spain; never imply reach in France, Europe, or Southern Europe. Mention sales only when a concrete measurable conversion or affiliate format supports the claim, and never promise increased sales.
+Frame an inferred objective as a hypothesis rather than a known internal plan. Describe Trailrunningcal's national race coverage in Spain using `product-context`; never imply reach in France, Europe, or Southern Europe. Mention sales only when a concrete measurable conversion or affiliate format supports the claim, and never promise increased sales.
 
 Examples of valid outcomes:
 
@@ -84,7 +84,7 @@ Translate naturally when the established working language is Catalan, English, o
 
 - Target 50–75 words and a reading time of roughly 7–12 seconds.
 - Reply in the existing Gmail thread.
-- Do not reintroduce Ruben or explain Trail Running Cal again.
+- Do not reintroduce Ruben or explain Trailrunningcal again.
 - Do not repeat traffic metrics from the initial message.
 - Do not resend or attach the Media Kit; ask permission to send it.
 - Include exactly one validated strategic outcome.

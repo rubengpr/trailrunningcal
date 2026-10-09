@@ -1,17 +1,21 @@
 ---
 name: product-context
-description: Business, product, and market context for Trail Running Cal. Load when discussing strategy, roadmap, prioritization, or product decisions.
+description: Business, product, and market context for Trailrunningcal. Load when discussing strategy, roadmap, prioritization, or product decisions.
 ---
 
-# Trail Running Cal — product context
+# Trailrunningcal — product context
+
+## Brand name
+
+Always use **Trailrunningcal** in communication, email subjects, and email bodies; never use "Trail Running Cal". The existing SEO/schema name is **Trail Running Calendar**.
 
 ## What it is
 
-Trail Running Cal (**Trail Running Calendar** in SEO/schema) is a public quadrilingual (Spanish, Catalan, English, and French) web product at [trailrunningcal.com](https://www.trailrunningcal.com) that helps people discover and plan trail and mountain races in Catalonia, Spain, and is actively expanding to Valencia. Blog content remains Spanish and Catalan only. It is maintained by one single product engineer with limited resources.
+Trailrunningcal (**Trail Running Calendar** in SEO/schema) is a public quadrilingual (Spanish, Catalan, English, and French) web product at [trailrunningcal.com](https://www.trailrunningcal.com) that helps people discover and plan trail and mountain races across all of Spain. The expansion beyond Catalonia and Valencia is already complete, as confirmed by Ruben on 8 October 2026. Blog content remains Spanish and Catalan only. It is maintained by one single product engineer with limited resources.
 
 ## Core user promise
 
-A single, maintained calendar of races across all Catalan provinces (Barcelona, Girona, Lleida, Tarragona) and growing Valencia coverage, from popular races to ultras, with search and filters (month, province, distance, race type, difficulty) and a map + list experience so runners can find their next event.
+A single, maintained calendar of races across all of Spain, from popular races to ultras, with search and filters (month, province, distance, race type, difficulty) and a map + list experience so runners can find their next event.
 
 ## Audience
 
@@ -23,7 +27,7 @@ Public calendar and race detail pages, category/programmatic-style exploration (
 
 ## Positioning
 
-Regional authority: "reference platform" / "most complete calendar" for trail running in Catalonia, with Valencia as the active expansion market — not a generic global race DB.
+A Spain-wide discovery and planning platform for trail and mountain races, built on local knowledge, maintained listings, and a curated calendar.
 
 ## Vision
 
@@ -31,24 +35,33 @@ Be the default discovery layer for trail racing in Spain. Strong SEO and structu
 
 ## 2026 focus
 
-Main goal for 2026 is to scale from Catalonia to trail and mountain racing across Spain: broader race coverage, discovery, and SEO at national level, with the same curation and calendar quality bar.
+The geographic expansion from Catalonia to all of Spain has already been completed. The current focus is to maintain and deepen national race coverage, discovery, and SEO, with the same curation and calendar quality bar.
 
 ## Scope / non-goals
 
-Today the product and listings center on Catalonia, with Valencia as the active expansion market; 2026 work targets Spain-wide trail/mountain coverage (see 2026 focus). Still out of scope: road running and worldwide coverage.
+The product and listings cover trail and mountain races across all of Spain. Road running and worldwide coverage remain out of scope. National listing coverage does not imply that traffic is evenly distributed across regions; use analytics to substantiate audience geography when needed.
 
 ## Core tech stack
 
 Next.js (App Router), React, and TypeScript, deployed on Vercel. Supabase (Postgres + Auth) is the backend. Architecture is React Server Components plus Route Handler APIs, with server-side services over the database and client-side fetches to those APIs. next-intl for public UI in Spanish, Catalan, English, and French (`es`, `ca`, `en`, `fr`), while the blog remains `es` and `ca` only; MapLibre GL for the race map; PostHog, Vercel Analytics, and Cloudflare Web Analytics for observability.
 
-## Main metrics (August 2026)
+## Main metrics (September 2026)
 
-Trailing-three-month figures are the ones used in commercial outreach.
+Audience figures verified in PostHog project `trailrunningcal` (103358) on 8 October 2026, using `$pageview` events, the Europe/Madrid timezone, and the project's internal/test traffic exclusions. Unique users are deduplicated across each complete period, not summed from daily or monthly counts.
 
-| Metric                          | Value   |
-| ------------------------------- | ------- |
-| Unique users (last 3 months)    | ~17,000 |
-| Pageviews (last 3 months)       | ~37,000 |
-| Listed events                   | ~410    |
-| Mobile share                    | 67%     |
-| Organic traffic (Google Search) | 85%     |
+Use September monthly figures in commercial outreach: around 20,000 unique visitors and 33,000 pageviews in September 2026. Always state the period.
+
+| Metric | Value |
+| ------ | ----- |
+| Unique users (1–30 September 2026) | 20,726 |
+| Pageviews (1–30 September 2026) | 33,379 |
+| Unique users (1 July–30 September 2026) | 31,986 |
+| Pageviews (1 July–30 September 2026) | 55,998 |
+
+Other figures below were last recorded in August 2026 and were not reverified with this audience update.
+
+| Metric | Value |
+| ------ | ----- |
+| Listed events | ~410 |
+| Mobile share | 67% |
+| Organic traffic (Google Search) | 85% |
