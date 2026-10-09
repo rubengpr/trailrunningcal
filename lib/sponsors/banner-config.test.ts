@@ -14,7 +14,6 @@ describe('getSponsorBannerConfig', () => {
     ['inverse', 'inverse', 'inverse-banner.png'],
     ['naak', 'naak', 'naak-banner.png'],
     ['nutribay', 'nutribay', 'nutribay-banner.png'],
-    ['racepace', 'racepace', 'racepace-banner.png'],
   ] as const)('maps %s to the %s creative', (variant, brand, filename) => {
     const config = getSponsorBannerConfig({
       page: 'homepage',
@@ -50,6 +49,10 @@ describe('getSponsorBannerConfig', () => {
     });
   });
 
+  it.each(['homepage', 'event_page'] as const)('hides a retired variant on %s', (page) => {
+    expect(getSponsorBannerConfig({ page, posthogVariant: 'racepace' })).toBeNull();
+  });
+
   it('returns no banner when the flag is unavailable or unknown', () => {
     expect(getSponsorBannerConfig({ page: 'homepage', posthogVariant: false })).toBeNull();
     expect(getSponsorBannerConfig({ page: 'homepage', posthogVariant: null })).toBeNull();
@@ -70,21 +73,22 @@ describe('getSponsorBrand', () => {
     expect(getSponsorBrand('baouw-descuento')).toBe('baouw');
     expect(getSponsorBrand('baouw-tienda')).toBe('baouw');
     expect(getSponsorBrand('sticky_banner')).toBeNull();
+    expect(getSponsorBrand('racepace')).toBeNull();
   });
 });
 
 describe('buildSponsorUrl', () => {
   it('tags the destination with the page and image banner format', () => {
     const url = buildSponsorUrl(
-      'https://findracepace.com/',
+      'https://example.com',
       'event_page',
-      'racepace',
+      'naak',
     );
 
     expect(url).toContain('utm_source=trailrunningcal');
     expect(url).toContain('utm_medium=banner');
     expect(url).toContain('utm_campaign=event_page_image_banner');
-    expect(url).toContain('utm_content=racepace');
+    expect(url).toContain('utm_content=naak');
   });
 
   it('preserves query params already on the destination', () => {

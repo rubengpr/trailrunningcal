@@ -70,6 +70,14 @@ function renderBanner(page: 'homepage' | 'event_page') {
 }
 
 describe('SponsorBannerSlot', () => {
+  it.each(['homepage', 'event_page'] as const)('does not render or track a retired variant on %s', (page) => {
+    vi.mocked(useFeatureFlagVariant).mockReturnValue('racepace');
+    const { container } = renderBanner(page);
+
+    expect(container.innerHTML).toBe('');
+    expect(track).not.toHaveBeenCalled();
+  });
+
   it('tracks a visible creative impression and click', () => {
     vi.mocked(useFeatureFlagVariant).mockReturnValue('naak');
     renderBanner('homepage');
@@ -105,11 +113,11 @@ describe('SponsorBannerSlot', () => {
   });
 
   it('uses the same PostHog variant on event pages', () => {
-    vi.mocked(useFeatureFlagVariant).mockReturnValue('racepace');
+    vi.mocked(useFeatureFlagVariant).mockReturnValue('naak');
     renderBanner('event_page');
 
     const banner = screen.getByRole('link', {
-      name: 'RacePace, tu copiloto para trail ultra',
+      name: 'Promoción de Näak Boost Energy para eventos de trail running',
     });
 
     expect(banner.getAttribute('href')).toContain('event_page_image_banner');

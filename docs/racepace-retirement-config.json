@@ -1,0 +1,106 @@
+{
+  "project_id": 103358,
+  "flag_id": 259461,
+  "key": "sponsor-banner-creative",
+  "captured_at": "2026-10-09T11:01:53Z",
+  "previous_updated_at": "2026-09-24T15:24:08.685458Z",
+  "previous_version": 3,
+  "active": true,
+  "filters_before": {
+    "groups": [
+      {
+        "properties": [],
+        "rollout_percentage": 100,
+        "aggregation_group_type_index": null
+      }
+    ],
+    "early_exit": false,
+    "multivariate": {
+      "variants": [
+        {
+          "key": "control",
+          "name": "ASICS",
+          "rollout_percentage": 16.67
+        },
+        {
+          "key": "inverse",
+          "name": "Inverse",
+          "rollout_percentage": 16.67
+        },
+        {
+          "key": "naak",
+          "name": "Näak",
+          "rollout_percentage": 16.67
+        },
+        {
+          "key": "nutribay",
+          "name": "Nutri-Bay",
+          "rollout_percentage": 16.66
+        },
+        {
+          "key": "racepace",
+          "name": "RacePace",
+          "rollout_percentage": 16.66
+        },
+        {
+          "key": "baouw-descuento",
+          "name": "Baouw — descuento",
+          "rollout_percentage": 8.34
+        },
+        {
+          "key": "baouw-tienda",
+          "name": "Baouw — tienda",
+          "rollout_percentage": 8.33
+        }
+      ]
+    },
+    "aggregation_group_type_index": null
+  },
+  "filters_after": {
+    "groups": [
+      {
+        "properties": [],
+        "rollout_percentage": 100,
+        "aggregation_group_type_index": null
+      }
+    ],
+    "early_exit": false,
+    "multivariate": {
+      "variants": [
+        {
+          "key": "control",
+          "name": "ASICS",
+          "rollout_percentage": 20
+        },
+        {
+          "key": "inverse",
+          "name": "Inverse",
+          "rollout_percentage": 20
+        },
+        {
+          "key": "naak",
+          "name": "Näak",
+          "rollout_percentage": 20
+        },
+        {
+          "key": "nutribay",
+          "name": "Nutri-Bay",
+          "rollout_percentage": 20
+        },
+        {
+          "key": "baouw-descuento",
+          "name": "Baouw — descuento",
+          "rollout_percentage": 10
+        },
+        {
+          "key": "baouw-tienda",
+          "name": "Baouw — tienda",
+          "rollout_percentage": 10
+        }
+      ]
+    },
+    "aggregation_group_type_index": null
+  },
+  "applied_at": "2026-10-09T11:02:10.386102Z",
+  "applied_version": 4
+}

@@ -443,14 +443,6 @@
         "event_page": {
           "alt": "Nutri-Bay promotion for trail running events"
         }
-      },
-      "racepace": {
-        "homepage": {
-          "alt": "RacePace, your ultra trail copilot"
-        },
-        "event_page": {
-          "alt": "RacePace, your ultra trail copilot"
-        }
       }
     }
   },

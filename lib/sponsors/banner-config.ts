@@ -5,7 +5,6 @@ export type SponsorBrand =
   | 'inverse'
   | 'naak'
   | 'nutribay'
-  | 'racepace'
   | 'trail-brand';
 
 export type SponsorCreativeVariant =
@@ -15,8 +14,7 @@ export type SponsorCreativeVariant =
   | 'baouw-tienda'
   | 'inverse'
   | 'naak'
-  | 'nutribay'
-  | 'racepace';
+  | 'nutribay';
 
 export interface SponsorImage {
   src: string;
@@ -92,12 +90,6 @@ const SPONSOR_CREATIVES: Record<SponsorCreativeVariant, SponsorCreative> = {
     destinationUrl: 'https://es.nutri-bay.com/',
     image: image('/assets/sponsors/nutribay-banner.png'),
     altKey: 'sponsors.nutribay',
-  },
-  racepace: {
-    brand: 'racepace',
-    destinationUrl: 'https://findracepace.com/',
-    image: image('/assets/sponsors/racepace-banner.png'),
-    altKey: 'sponsors.racepace',
   },
 };
 
