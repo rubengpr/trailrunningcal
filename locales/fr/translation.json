@@ -1,4 +1,7 @@
 {
+  "sidebar": {
+    "blog": "Blog"
+  },
   "title": "Calendrier des courses de trail en Espagne",
   "subtitle": "Découvre les courses de trail et de montagne en Espagne. Trouve ta prochaine course par mois, province, distance et type.",
   "map": {
@@ -1005,6 +1008,172 @@
     "contentSectionsTitle": "Questions fréquentes"
   },
   "admin": {
+    "blog": {
+      "evaluateArticle": "Évaluer l’article",
+      "retryEvaluation": "Réessayer l’évaluation",
+      "evaluationFailed": "Impossible de terminer l’évaluation. L’article reste disponible.",
+      "evaluationRequestFailed": "Impossible de demander une évaluation. Actualisez le détail avant de réessayer.",
+      "criticalErrors": "Erreurs critiques",
+      "noCriticalErrors": "Aucune erreur critique détectée",
+      "scoreBreakdown": "Détail du score",
+      "recommendations": "Recommandations",
+      "noRecommendations": "Aucune recommandation supplémentaire",
+      "criticalCount": "{count, plural, =0 {Aucune erreur critique} one {# erreur critique} other {# erreurs critiques}}",
+      "findingField": "Champ : {field}",
+      "scoreSources": "Backend : {deterministic} · LLM : {llm}",
+      "scorerHelp": "Évaluation éditoriale et SEO indicative. Elle ne vérifie pas les faits externes et ne prédit pas le classement.",
+      "evaluationStates": {
+        "not_evaluated": "Non évalué",
+        "queued": "Évaluation…",
+        "running": "Évaluation…",
+        "failed": "Erreur d’évaluation",
+        "completed": "Prêt pour révision"
+      },
+      "editorialStates": {
+        "requires_corrections": "Corrections nécessaires",
+        "needs_improvement": "Améliorations nécessaires",
+        "ready_for_review": "Prêt pour révision"
+      },
+      "scoringCategories": {
+        "utility": "Utilité et réponse à la demande",
+        "rigor": "Rigueur",
+        "structure": "Structure",
+        "metadata": "Mot-clé et métadonnées",
+        "clarity": "Clarté et style"
+      },
+      "evaluationFields": {
+        "article": "Article",
+        "instructions": "Instructions",
+        "title": "Titre visible",
+        "seoTitle": "Titre SEO",
+        "metaDescription": "Méta-description",
+        "primaryKeyword": "Mot-clé principal",
+        "slug": "Slug"
+      },
+      "findingCodes": {
+        "missing_h2": "Sections h2 manquantes",
+        "invalid_hierarchy": "Hiérarchie de titres invalide",
+        "empty_heading": "Titre de section vide",
+        "empty_metadata": "Métadonnée obligatoire vide",
+        "invalid_slug": "Slug invalide",
+        "short_title": "Titre trop court",
+        "empty_keyword": "Mot-clé vide",
+        "empty_content": "Contenu vide",
+        "unsafe_html": "HTML interdit ou non sécurisé",
+        "links_not_allowed": "Liens interdits",
+        "images_not_allowed": "Images interdites",
+        "unrelated_title": "Titre sans rapport avec le contenu",
+        "truncated_content": "Contenu tronqué",
+        "missing_essential_topic": "Sujet essentiel manquant",
+        "contradiction": "Contradiction importante",
+        "unsupported_claim": "Affirmation non étayée",
+        "false_attribution": "Attribution non justifiée",
+        "length_outside_target": "Longueur hors de l’objectif indicatif",
+        "keyword_length": "Longueur du mot-clé hors de l’objectif",
+        "keyword_not_literal": "Mot-clé absent littéralement",
+        "improve_coverage": "Améliorer la couverture de la demande",
+        "improve_rigor": "Améliorer la rigueur",
+        "improve_structure": "Améliorer la structure",
+        "improve_metadata": "Améliorer le mot-clé ou les métadonnées",
+        "improve_style": "Améliorer la clarté et le style",
+        "slug_length": "Nombre de mots du slug hors de la cible indicative"
+      },
+      "noEvaluation": "Sans évaluation",
+      "readFailed": "Impossible d’actualiser les informations. Les données affichées peuvent être obsolètes.",
+      "failures": {
+        "timeout": "La génération a dépassé le délai d’attente.",
+        "api_error": "Impossible de terminer la génération.",
+        "refused": "Le modèle n’a pas pu répondre à cette demande.",
+        "incomplete": "L’article généré est incomplet.",
+        "invalid_content": "Le contenu généré ne respecte pas le format demandé.",
+        "start_failed": "Impossible de démarrer la génération.",
+        "save_failed": "Impossible d’enregistrer l’article généré.",
+        "workflow_error": "Impossible de terminer la tâche de génération."
+      },
+      "tooShort": "Saisissez au moins 10 caractères pour décrire l’article.",
+      "tooLong": "Les instructions ne peuvent pas dépasser 5 000 caractères.",
+      "characterCount": "{count}/{max}",
+      "sending": "Envoi…",
+      "sendingNotice": "Envoi de la demande de génération…",
+      "acceptedNotice": "Demande acceptée. Vous pouvez consulter le brouillon dans le tableau.",
+      "requestFailed": "La demande n’a pas pu être acceptée. Vos instructions ont été conservées ; cliquez à nouveau sur Générer pour réessayer.",
+      "generationPending": "Génération…",
+      "failedStatus": "Erreur",
+      "generationNotice": "Nous générons le brouillon de l’article.",
+      "takingLong": "La génération prend plus de temps que prévu.",
+      "generationFailedTitle": "L’article n’a pas pu être généré",
+      "generationFailed": "La génération a échoué. Vous pouvez envoyer une nouvelle demande depuis la liste.",
+      "demoResetTitle": "La démo a été réinitialisée",
+      "demoReset": "Ce brouillon existait uniquement dans la session précédente. Revenez à la liste pour en créer un nouveau.",
+      "promptPlaceholder": "Décrivez l’article à créer…",
+      "submitArticle": "Générer",
+      "preparing": "Préparation…",
+      "viewEvaluation": "Voir l’évaluation SEO",
+      "closeEvaluation": "Fermer",
+      "newArticle": "Nouvel article",
+      "dateColumn": "Date",
+      "scoreColumn": "Score SEO",
+      "demoLabel": "Démonstration",
+      "drafts": "Articles en brouillon",
+      "generateArticle": "Générer un article",
+      "title": "Titre",
+      "createdAt": "Date de création",
+      "seoScore": "Score SEO",
+      "empty": "Aucun brouillon pour le moment.",
+      "back": "Retour aux brouillons",
+      "formHelp": "Décrivez l’article à préparer pour Trailrunningcal.",
+      "language": "Langue de l’article",
+      "spanish": "Espagnol",
+      "instructions": "Instructions de l’article",
+      "placeholder": "Exemple : un guide pour choisir sa première course de trail en Espagne, destiné aux débutants. Expliquez distance, dénivelé et terrain, avec des liens vers le calendrier.",
+      "inputHelp": "Précisez le sujet, le public, l’objectif et les points à traiter.",
+      "required": "Saisissez les instructions de l’article avant de continuer.",
+      "generating": "Préparation de l’exemple…",
+      "generateDraft": "Générer un brouillon",
+      "progress": "Simulation de la génération. Un article d’exemple va s’ouvrir.",
+      "unrelated": "Voici les instructions saisies. L’article et l’évaluation sont des exemples fixes qui ne répondent pas à cette saisie.",
+      "evaluation": "Respect des critères SEO",
+      "scoreHelp": "Score d’exemple, sans évaluation automatique. Mesure les critères de l’article, pas les résultats de référencement.",
+      "passed": "Respecté",
+      "pending": "À compléter",
+      "readOnly": "Brouillon d’exemple · Lecture seule",
+      "metadata": "Métadonnées de l’article",
+      "keyword": "Mot-clé principal",
+      "slug": "Slug proposé",
+      "seoTitle": "Titre SEO",
+      "description": "Méta-description",
+      "categories": {
+        "structure": "Structure",
+        "metadata": "Métadonnées",
+        "keyword": "Mot-clé",
+        "links": "Liens",
+        "images": "Images"
+      },
+      "checks": {
+        "structure": {
+          "passed": "Titres hiérarchisés et sections avec un objectif clair.",
+          "pending": "Revoir la hiérarchie des titres et la clarté des sections."
+        },
+        "metadata": {
+          "passed": "Titre SEO et description propres à l’article.",
+          "pending": "Développer la description pour mieux exprimer la valeur de l’article."
+        },
+        "keyword": {
+          "passed": "Sujet principal présent dans le titre et l’introduction.",
+          "pending": "Aligner le titre SEO sur le mot-clé principal."
+        },
+        "links": {
+          "passed": "Lien interne pertinent vers le calendrier.",
+          "pending": "Ajouter des sources officielles étayant les recommandations."
+        },
+        "images": {
+          "passed": "Image pertinente avec un texte alternatif descriptif.",
+          "pending": "Ajouter une image pertinente et un texte alternatif."
+        }
+      },
+      "observedWords": "Longueur observée : {count} mots.",
+      "observedCharacters": "Longueur observée : {count} caractères."
+    },
     "events": {
       "drafts": {
         "completeInformation": "Informations complètes"

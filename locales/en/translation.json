@@ -1,4 +1,7 @@
 {
+  "sidebar": {
+    "blog": "Blog"
+  },
   "title": "Trail running race calendar in Spain",
   "subtitle": "Discover trail and mountain races across Spain. Find your next race by month, province, distance and race type.",
   "map": {
@@ -1005,6 +1008,172 @@
     "contentSectionsTitle": "Frequently asked questions"
   },
   "admin": {
+    "blog": {
+      "evaluateArticle": "Evaluate article",
+      "retryEvaluation": "Retry evaluation",
+      "evaluationFailed": "Could not complete the evaluation. The article remains available.",
+      "evaluationRequestFailed": "Could not request an evaluation. Refresh the detail before trying again.",
+      "criticalErrors": "Critical errors",
+      "noCriticalErrors": "No critical errors detected",
+      "scoreBreakdown": "Score breakdown",
+      "recommendations": "Recommendations",
+      "noRecommendations": "No additional recommendations",
+      "criticalCount": "{count, plural, =0 {No critical errors} one {# critical error} other {# critical errors}}",
+      "findingField": "Field: {field}",
+      "scoreSources": "Backend: {deterministic} · LLM: {llm}",
+      "scorerHelp": "Indicative editorial and SEO evaluation. It does not verify external facts or predict rankings.",
+      "evaluationStates": {
+        "not_evaluated": "Not evaluated",
+        "queued": "Evaluating…",
+        "running": "Evaluating…",
+        "failed": "Evaluation error",
+        "completed": "Ready for review"
+      },
+      "editorialStates": {
+        "requires_corrections": "Requires corrections",
+        "needs_improvement": "Needs improvement",
+        "ready_for_review": "Ready for review"
+      },
+      "scoringCategories": {
+        "utility": "Usefulness and request coverage",
+        "rigor": "Rigor",
+        "structure": "Structure",
+        "metadata": "Keyword and metadata",
+        "clarity": "Clarity and style"
+      },
+      "evaluationFields": {
+        "article": "Article",
+        "instructions": "Instructions",
+        "title": "Visible title",
+        "seoTitle": "SEO title",
+        "metaDescription": "Meta description",
+        "primaryKeyword": "Primary keyword",
+        "slug": "Slug"
+      },
+      "findingCodes": {
+        "missing_h2": "Missing h2 sections",
+        "invalid_hierarchy": "Invalid heading hierarchy",
+        "empty_heading": "Empty heading",
+        "empty_metadata": "Empty required metadata",
+        "invalid_slug": "Invalid slug",
+        "short_title": "Title too short",
+        "empty_keyword": "Empty keyword",
+        "empty_content": "Empty content",
+        "unsafe_html": "Unsupported or unsafe HTML",
+        "links_not_allowed": "Links not allowed",
+        "images_not_allowed": "Images not allowed",
+        "unrelated_title": "Title unrelated to the content",
+        "truncated_content": "Truncated content",
+        "missing_essential_topic": "Essential topic missing",
+        "contradiction": "Significant contradiction",
+        "unsupported_claim": "Unsupported claim",
+        "false_attribution": "Unsubstantiated attribution",
+        "length_outside_target": "Length outside the suggested target",
+        "keyword_length": "Keyword length outside the target",
+        "keyword_not_literal": "Keyword not present literally",
+        "improve_coverage": "Improve coverage of the request",
+        "improve_rigor": "Improve rigor",
+        "improve_structure": "Improve structure",
+        "improve_metadata": "Improve keyword or metadata",
+        "improve_style": "Improve clarity and style",
+        "slug_length": "Slug word count outside the advisory target"
+      },
+      "noEvaluation": "No evaluation",
+      "readFailed": "Could not refresh the information. The displayed data may be outdated.",
+      "failures": {
+        "timeout": "Article generation timed out.",
+        "api_error": "Could not complete article generation.",
+        "refused": "The model could not respond to this request.",
+        "incomplete": "The generated article is incomplete.",
+        "invalid_content": "The generated content does not meet the required format.",
+        "start_failed": "Could not start article generation.",
+        "save_failed": "Could not save the generated article.",
+        "workflow_error": "Could not complete the generation job."
+      },
+      "tooShort": "Enter at least 10 characters to describe the article.",
+      "tooLong": "Instructions cannot exceed 5,000 characters.",
+      "characterCount": "{count}/{max}",
+      "sending": "Sending…",
+      "sendingNotice": "Sending the generation request…",
+      "acceptedNotice": "Request accepted. You can view the draft in the table.",
+      "requestFailed": "The request could not be accepted. Your instructions have been kept; press Generate again to retry.",
+      "generationPending": "Generating…",
+      "failedStatus": "Error",
+      "generationNotice": "We are generating the article draft.",
+      "takingLong": "Generation is taking longer than usual.",
+      "generationFailedTitle": "The article could not be generated",
+      "generationFailed": "Generation failed. You can submit a new request from the list.",
+      "demoResetTitle": "The demo has been reset",
+      "demoReset": "This draft only existed in the previous session. Return to the list to create a new one.",
+      "promptPlaceholder": "Describe the article you want to create…",
+      "submitArticle": "Generate",
+      "preparing": "Preparing…",
+      "viewEvaluation": "View SEO evaluation",
+      "closeEvaluation": "Close",
+      "newArticle": "New article",
+      "dateColumn": "Date",
+      "scoreColumn": "SEO Score",
+      "demoLabel": "Demo",
+      "drafts": "Draft articles",
+      "generateArticle": "Generate article",
+      "title": "Title",
+      "createdAt": "Created on",
+      "seoScore": "SEO score",
+      "empty": "No drafts yet.",
+      "back": "Back to drafts",
+      "formHelp": "Describe the article you want to prepare for Trailrunningcal.",
+      "language": "Article language",
+      "spanish": "Spanish",
+      "instructions": "Article instructions",
+      "placeholder": "Example: a guide to choosing a first trail race in Spain for beginners. Explain distance, elevation and terrain, with calendar links.",
+      "inputHelp": "Include the topic, audience, goal and points to cover.",
+      "required": "Enter article instructions before continuing.",
+      "generating": "Preparing example…",
+      "generateDraft": "Generate draft",
+      "progress": "Simulating generation. A sample article will open shortly.",
+      "unrelated": "These are the instructions you entered. The article and evaluation are fixed examples and do not respond to this input.",
+      "evaluation": "SEO criteria compliance",
+      "scoreHelp": "Sample score, without automated evaluation. Measures article criteria, not search ranking results.",
+      "passed": "Met",
+      "pending": "Pending",
+      "readOnly": "Sample draft · Read only",
+      "metadata": "Article metadata",
+      "keyword": "Primary keyword",
+      "slug": "Suggested slug",
+      "seoTitle": "SEO title",
+      "description": "Meta description",
+      "categories": {
+        "structure": "Structure",
+        "metadata": "Metadata",
+        "keyword": "Keyword",
+        "links": "Links",
+        "images": "Images"
+      },
+      "checks": {
+        "structure": {
+          "passed": "Ordered headings and sections with a clear purpose.",
+          "pending": "Review heading hierarchy and section clarity."
+        },
+        "metadata": {
+          "passed": "SEO title and description specific to the article.",
+          "pending": "Expand the description to better express the article’s value."
+        },
+        "keyword": {
+          "passed": "Main topic present in the title and introduction.",
+          "pending": "Align the SEO title with the primary keyword."
+        },
+        "links": {
+          "passed": "Relevant internal link to the calendar.",
+          "pending": "Add official sources supporting the recommendations."
+        },
+        "images": {
+          "passed": "Related image with descriptive alternative text.",
+          "pending": "Add a related image and alternative text."
+        }
+      },
+      "observedWords": "Observed length: {count} words.",
+      "observedCharacters": "Observed length: {count} characters."
+    },
     "events": {
       "drafts": {
         "completeInformation": "Complete information"
