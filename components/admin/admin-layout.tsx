@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { Calendar, Trophy } from 'lucide-react';
+import { Calendar, Trophy, BookOpen } from 'lucide-react';
 import { DashboardLayout } from '@/components/ui/dashboard-layout';
 import type { NavItem } from '@/components/ui/sidebar';
 
@@ -25,6 +25,12 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       href: `/${locale}/admin/eventos`,
       label: t('events'),
       icon: <Trophy className="size-4" strokeWidth={1.5} />,
+      match: 'prefix',
+    },
+    {
+      href: `/${locale}/admin/blog`,
+      label: t('blog'),
+      icon: <BookOpen className="size-4" strokeWidth={1.5} />,
       match: 'prefix',
     },
   ];
