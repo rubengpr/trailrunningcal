@@ -1,10 +1,10 @@
 import { start } from 'workflow/api';
-import { createDraft, getDraft, listDrafts, markFailed, setRunId } from '@/lib/db/blog-drafts';
+import { createDraft, deleteDraft, getDraft, listDrafts, markFailed, setRunId } from '@/lib/db/blog-drafts';
 import { articleWorkflow } from '@/lib/workflows/blog-article';
 import { evaluationWorkflow } from '@/lib/workflows/blog-evaluation';
 import { claim, fail } from '@/lib/db/blog-evaluations';
 import { ValidationError } from '@/lib/errors';
-import { validateInstructions } from '@/lib/blog/utils';
+import { canDelete, validateInstructions } from '@/lib/blog/utils';
 import type { DraftDetail, DraftInput, DraftPage } from '@/types/blog-draft-record.types';
 
 export function list(page: number): Promise<DraftPage> {
@@ -13,6 +13,15 @@ export function list(page: number): Promise<DraftPage> {
 
 export function get(id: string): Promise<DraftDetail | null> {
   return getDraft(id);
+}
+
+export async function remove(id: string): Promise<void> {
+  const draft = await getDraft(id);
+  if (!draft) throw new ValidationError('Blog draft not found', 404);
+  if (!canDelete(draft)) throw new ValidationError('Blog draft is processing', 409);
+  if (await deleteDraft(id)) return;
+  if (!await getDraft(id)) throw new ValidationError('Blog draft not found', 404);
+  throw new ValidationError('Blog draft is processing', 409);
 }
 
 export async function generate(input: DraftInput): Promise<DraftDetail> {
