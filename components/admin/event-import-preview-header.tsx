@@ -1,7 +1,8 @@
-import { Calendar, Check, Globe, MapPin, TextCursor, WholeWord, X } from 'lucide-react';
+import { Calendar, Check, Globe, MapPin, TextCursor, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { ReviewActionButton } from '@/components/admin/review-action-button';
+import { CharacterCountBadge } from '@/components/ui/character-count-badge';
 import type {
   TrailEventAgentEvent,
   TrailEventAgentRace,
@@ -132,13 +133,7 @@ export function EventImportPreviewHeader({
       {description && (
         <div className="mt-5 max-w-4xl">
           <p className="whitespace-pre-line text-sm leading-6 text-gray-600">{description}</p>
-          <span
-            title={t('descriptionCharacterCount', { count: description.length })}
-            className="mt-3 inline-flex items-center gap-1 rounded-full border border-gray-200/60 bg-gray-50 px-2 text-[11px] font-medium tabular-nums text-gray-600"
-          >
-            <WholeWord className="size-3" strokeWidth={2} aria-hidden="true" />
-            {description.length}
-          </span>
+          <CharacterCountBadge count={description.length} label={t('descriptionCharacterCount', { count: description.length })} className="mt-3" />
         </div>
       )}
     </section>
