@@ -1,5 +1,14 @@
 import type { DraftDetail, DraftInput, DraftPage } from '@/types/blog-draft-record.types';
 
+export class DraftRequestError extends Error {
+  constructor(public readonly status: number) { super('Request failed'); }
+}
+
+export async function deleteDraft(id: string, signal?: AbortSignal): Promise<void> {
+  const response = await fetch(`/api/blog-drafts/${encodeURIComponent(id)}`, { method: 'DELETE', signal });
+  if (!response.ok) throw new DraftRequestError(response.status);
+}
+
 async function readResponse<T>(response: Response): Promise<T> {
   const body = await response.json();
   if (!response.ok) throw new Error(body.error || 'Request failed');

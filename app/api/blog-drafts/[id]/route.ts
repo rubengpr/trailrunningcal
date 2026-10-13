@@ -1,8 +1,18 @@
 import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
 import { parseUuidParam } from '@/app/api/request-validation';
-import { get } from '@/lib/services/blog-drafts';
+import { get, remove } from '@/lib/services/blog-drafts';
 import { handleRouteError } from '@/lib/utils/handle-error';
+
+export async function DELETE(_request: Request, context: { params: Promise<{ id: string }> }): Promise<NextResponse> {
+  try {
+    await requireAdmin();
+    await remove(parseUuidParam((await context.params).id, 'draft id'));
+    return NextResponse.json({ success: true, data: null });
+  } catch (error) {
+    return handleRouteError(error);
+  }
+}
 
 export async function GET(
   _request: Request,
