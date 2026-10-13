@@ -22,7 +22,7 @@ export function BlogDraftView({ initial }: { initial: DraftDetail }) {
     value => value.status === 'queued' || value.status === 'running' || value.evaluationStatus === 'queued' || value.evaluationStatus === 'running');
   const failureCodes = ['timeout', 'api_error', 'refused', 'incomplete', 'invalid_content', 'start_failed', 'save_failed', 'workflow_error'];
   const title = draft.title || draft.instructions.replace(/\s+/g, ' ').slice(0, 80);
-  const deleteAction = <BlogDeleteAction draft={draft} onConflict={() => {
+  const deleteAction = <BlogDeleteAction menu draft={draft} onConflict={() => {
     update(current => current); void refresh();
   }} onDeleted={() => {
     update(current => current);

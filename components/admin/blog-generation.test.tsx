@@ -193,7 +193,11 @@ describe('connected generation UI', () => {
 describe('draft deletion UI', () => {
   const completed:DraftDetail={...pending,status:'completed',title:'Borrador para eliminar',contentHtml:'<p>Artículo disponible.</p>'};
   const completedPage:DraftPage={drafts:[{...completed,score:null}],pagination:{page:1,pageSize:50,total:1,totalPages:1}};
-  function open() { fireEvent.click(screen.getByRole('button',{name:es.admin.blog.delete.button})); }
+  function open() {
+    const menu = screen.queryByRole('button', { name: es.admin.blog.delete.actions });
+    if (menu) fireEvent.click(menu);
+    fireEvent.click(screen.getByRole('button',{name:es.admin.blog.delete.button}));
+  }
   async function confirm() { await act(async()=>fireEvent.click(screen.getByText(es.admin.blog.delete.confirm,{selector:'button'}))); }
   it('opens confirmation without row navigation and permits cancellation',()=>{
     show(<BlogDraftList initial={completedPage} />);open();
@@ -221,7 +225,8 @@ describe('draft deletion UI', () => {
   it.each([['running','not_evaluated'],['completed','queued'],['completed','running']])('disables active work %s/%s',(status,evaluationStatus)=>{
     const draft={...completed,status,evaluationStatus} as DraftDetail;
     show(<BlogDraftView initial={draft} />);
-    expect((screen.getByRole('button',{name:es.admin.blog.delete.processing}) as HTMLButtonElement).disabled).toBe(true);
+    fireEvent.click(screen.getByRole('button',{name:es.admin.blog.delete.actions}));
+    expect((screen.getByRole('button',{name:es.admin.blog.delete.button}) as HTMLButtonElement).disabled).toBe(true);
   });
   it('refreshes a conflicting evaluation and disables confirmation',async()=>{
     mocks.deleteDraft.mockRejectedValue(new mocks.DraftRequestError(409));mocks.getDraft.mockResolvedValue({...completed,evaluationStatus:'running'});
