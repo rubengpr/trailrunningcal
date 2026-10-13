@@ -48,7 +48,7 @@ export function Breadcrumb({ items, captureContext }: BreadcrumbProps) {
             {item.href ? (
               <Link
                 href={item.href}
-                className="inline-flex min-h-[1em] items-center hover:text-gray-900 transition-colors"
+                className="inline-flex min-h-[1em] cursor-pointer items-center hover:text-gray-900 transition-colors"
                 onClick={() => handleLinkClick(item)}
               >
                 {item.name}
