@@ -5,6 +5,14 @@ import type { GeneratedArticle } from '@/types/blog-article.types';
 
 export const PAGE_SIZE = 50;
 
+export async function deleteDraft(id: string): Promise<boolean> {
+  const { data, error } = await createAdminClient().from('blog_drafts').delete()
+    .eq('id', id).in('status', ['completed', 'failed'])
+    .in('evaluation_status', ['not_evaluated', 'completed', 'failed']).select('id').maybeSingle();
+  if (error) throw error;
+  return data !== null;
+}
+
 export async function listDrafts(page: number): Promise<DraftPage> {
   const offset = (page - 1) * PAGE_SIZE;
   const { data, count, error } = await createAdminClient()

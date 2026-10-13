@@ -2,10 +2,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   from: vi.fn(), select: vi.fn(), order: vi.fn(), range: vi.fn(), eq: vi.fn(), maybeSingle: vi.fn(),
-  insert: vi.fn(), update: vi.fn(), single: vi.fn(), neq: vi.fn(),
+  insert: vi.fn(), update: vi.fn(), single: vi.fn(), neq: vi.fn(), delete: vi.fn(), in: vi.fn(),
 }));
 vi.mock('@/lib/supabase/server', () => ({ createAdminClient: () => ({ from: mocks.from }) }));
-import { completeDraft, createDraft, getDraft, listDrafts } from './blog-drafts';
+import { completeDraft, createDraft, deleteDraft, getDraft, listDrafts } from './blog-drafts';
 import type { GeneratedArticle } from '@/types/blog-article.types';
 
 beforeEach(() => {
@@ -17,9 +17,22 @@ beforeEach(() => {
   mocks.insert.mockReturnValue(mocks);
   mocks.update.mockReturnValue(mocks);
   mocks.neq.mockReturnValue(mocks);
+  mocks.delete.mockReturnValue(mocks);
+  mocks.in.mockReturnValue(mocks);
 });
 
 describe('draft queries', () => {
+  it('deletes atomically only when both lifecycle states allow it', async () => {
+    mocks.maybeSingle.mockResolvedValue({data:{id:'id'},error:null});
+    expect(await deleteDraft('id')).toBe(true);
+    expect(mocks.in.mock.calls).toEqual([['status',['completed','failed']],['evaluation_status',['not_evaluated','completed','failed']]]);
+    expect(mocks.from).toHaveBeenCalledWith('blog_drafts');
+  });
+  it('reports a missing conditional deletion and propagates errors', async () => {
+    mocks.maybeSingle.mockResolvedValueOnce({data:null,error:null}).mockResolvedValueOnce({data:null,error:new Error('DB')});
+    expect(await deleteDraft('id')).toBe(false);
+    await expect(deleteDraft('id')).rejects.toThrow('DB');
+  });
   it('lets Supabase generate the UUID and initial state', async () => {
     mocks.single.mockResolvedValue({ data: { id: 'id' }, error: null });
     mocks.maybeSingle.mockResolvedValue({ data: { id: 'id', status: 'queued', evaluation: null }, error: null });
