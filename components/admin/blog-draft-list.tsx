@@ -12,6 +12,7 @@ import { AdminPagination } from '@/components/admin/admin-pagination';
 import { ErrorMessage } from '@/components/ui/error-message';
 import type { DraftPage } from '@/types/blog-draft-record.types';
 import { BlogDraftForm } from '@/components/admin/blog-draft-form';
+import { BlogDeleteAction } from '@/components/admin/blog-delete-action';
 import {
   Table,
   TableBody,
@@ -27,7 +28,7 @@ export function BlogDraftList({ initial }: { initial: DraftPage }) {
   const { accepted } = useBlog();
   const handled = useRef(accepted?.id);
   const load = useCallback((signal: AbortSignal) => listDrafts(initial.pagination.page, signal), [initial.pagination.page]);
-  const { data, update, readFailed, now } = usePolledResource(initial, load,
+  const { data, update, refresh, readFailed, now } = usePolledResource(initial, load,
     value => value.drafts.some(d => d.status === 'queued' || d.status === 'running' || d.evaluationStatus === 'queued' || d.evaluationStatus === 'running'));
   useEffect(() => {
     if (!accepted || handled.current === accepted.id) return;
@@ -40,6 +41,18 @@ export function BlogDraftList({ initial }: { initial: DraftPage }) {
     }
   }, [accepted, data, initial.pagination.page, locale, router, update]);
   const sorted = data.drafts;
+  function remove(id: string) {
+    const next = update(current => {
+      const exists = current.drafts.some(draft => draft.id === id);
+      const total = Math.max(0, current.pagination.total - (exists ? 1 : 0));
+      return { drafts: current.drafts.filter(draft => draft.id !== id),
+        pagination: { ...current.pagination, total, totalPages: Math.ceil(total / current.pagination.pageSize) } };
+    });
+    const lastPage = Math.max(1, next.pagination.totalPages);
+    if (next.pagination.page > lastPage) {
+      router.replace(lastPage === 1 ? `/${locale}/admin/blog` : `/${locale}/admin/blog?page=${lastPage}`);
+    } else void refresh();
+  }
   const dateFormatter = new Intl.DateTimeFormat(locale, {
     dateStyle: 'medium',
     timeZone: 'Europe/Paris',
@@ -60,11 +73,12 @@ export function BlogDraftList({ initial }: { initial: DraftPage }) {
             <TableCell header>{t('title')}</TableCell>
             <TableCell header className="whitespace-nowrap">{t('dateColumn')}</TableCell>
             <TableCell header align="right" className="whitespace-nowrap">{t('scoreColumn')}</TableCell>
+            <TableCell header align="right">{t('delete.actions')}</TableCell>
           </TableHeader>
           <TableBody>
             {sorted.map(draft => (
               <TableRow key={draft.id} clickable className="align-middle" onClick={event => {
-                if (event.defaultPrevented || (event.target instanceof Element && event.target.closest('a'))) return;
+                if (event.defaultPrevented || (event.target instanceof Element && event.target.closest('a,button,[role="dialog"]'))) return;
                 router.push(`/${locale}/admin/blog/${draft.id}`);
               }}>
                 <TableCell className="min-w-[200px]">
@@ -89,6 +103,11 @@ export function BlogDraftList({ initial }: { initial: DraftPage }) {
                   ) : (
                     <span className="text-sm tabular-nums">{draft.score}</span>
                   )}
+                </TableCell>
+                <TableCell align="right">
+                  <BlogDeleteAction draft={draft} onDeleted={remove} onConflict={() => {
+                    update(current => current); void refresh();
+                  }} />
                 </TableCell>
               </TableRow>
             ))}

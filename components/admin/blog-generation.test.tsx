@@ -9,9 +9,11 @@ import { BlogDraftView } from '@/components/admin/blog-draft-view';
 import es from '@/locales/es/translation.json';
 import type { DraftDetail, DraftPage } from '@/types/blog-draft-record.types';
 
-const mocks = vi.hoisted(() => ({ generateDraft: vi.fn(), listDrafts: vi.fn(), getDraft: vi.fn(), evaluateDraft: vi.fn(), replace: vi.fn(), push: vi.fn() }));
+const mocks = vi.hoisted(() => ({ generateDraft: vi.fn(), listDrafts: vi.fn(), getDraft: vi.fn(), evaluateDraft: vi.fn(), deleteDraft: vi.fn(), replace: vi.fn(), push: vi.fn(), refresh: vi.fn(),
+  DraftRequestError: class extends Error { constructor(public readonly status:number) {super('Request failed');} },
+}));
 vi.mock('@/lib/api/blog-drafts', () => mocks);
-vi.mock('next/navigation', () => ({ useRouter: () => ({ replace: mocks.replace, push: mocks.push }) }));
+vi.mock('next/navigation', () => ({ useRouter: () => ({ replace: mocks.replace, push: mocks.push, refresh: mocks.refresh }) }));
 const pending: DraftDetail = {
   id: 'a1ff4789-cbd0-40c7-9802-92c0b97a1914', title: null, instructions: 'Una guía para la primera carrera',
   status: 'running', createdAt: '2026-10-12T10:00:00Z', updatedAt: '2026-10-12T10:00:00Z',
@@ -185,5 +187,78 @@ describe('connected generation UI', () => {
     show(<BlogDraftView initial={{ ...pending, status: 'failed', errorCode: 'invalid_content' }} />);
     expect(screen.getByText(es.admin.blog.failures.invalid_content)).toBeTruthy();
     expect(screen.queryByText(es.admin.blog.metadata)).toBeNull();
+  });
+});
+
+describe('draft deletion UI', () => {
+  const completed:DraftDetail={...pending,status:'completed',title:'Borrador para eliminar',contentHtml:'<p>Artículo disponible.</p>'};
+  const completedPage:DraftPage={drafts:[{...completed,score:null}],pagination:{page:1,pageSize:50,total:1,totalPages:1}};
+  function open() { fireEvent.click(screen.getByRole('button',{name:es.admin.blog.delete.button})); }
+  async function confirm() { await act(async()=>fireEvent.click(screen.getByText(es.admin.blog.delete.confirm,{selector:'button'}))); }
+  it('opens confirmation without row navigation and permits cancellation',()=>{
+    show(<BlogDraftList initial={completedPage} />);open();
+    expect(screen.getByRole('dialog')).toBeTruthy();
+    expect(mocks.push).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByText(es.admin.blog.delete.cancel,{selector:'button'}));
+    expect(screen.queryByRole('dialog')).toBeNull();expect(mocks.deleteDraft).not.toHaveBeenCalled();
+  });
+  it('retains the row until acceptance, blocks repeated requests and closing, then shows the empty state',async()=>{
+    let resolve!:()=>void;mocks.deleteDraft.mockReturnValue(new Promise<void>(r=>{resolve=r;}));mocks.listDrafts.mockResolvedValue(empty);
+    show(<BlogDraftList initial={completedPage} />);open();await confirm();
+    expect(screen.getByRole('link',{name:completed.title!})).toBeTruthy();
+    fireEvent.keyDown(document,{key:'Escape'});expect(screen.getByRole('dialog')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button',{name:es.admin.blog.delete.deleting}));expect(mocks.deleteDraft).toHaveBeenCalledTimes(1);
+    await act(async()=>resolve());
+    expect(screen.queryByRole('dialog')).toBeNull();expect(screen.queryByRole('link',{name:completed.title!})).toBeNull();
+    expect(screen.getByText(es.admin.blog.empty)).toBeTruthy();
+  });
+  it('keeps the modal and article after an error and permits retry',async()=>{
+    mocks.deleteDraft.mockRejectedValueOnce(new Error('Network')).mockResolvedValueOnce(undefined);
+    show(<BlogDraftView initial={completed} />);open();await confirm();
+    expect(screen.getByText(es.admin.blog.delete.failed)).toBeTruthy();expect(screen.getByText('Artículo disponible.')).toBeTruthy();
+    await confirm();expect(mocks.replace).toHaveBeenCalledWith('/es/admin/blog');expect(mocks.refresh).toHaveBeenCalled();
+  });
+  it.each([['running','not_evaluated'],['completed','queued'],['completed','running']])('disables active work %s/%s',(status,evaluationStatus)=>{
+    const draft={...completed,status,evaluationStatus} as DraftDetail;
+    show(<BlogDraftView initial={draft} />);
+    expect((screen.getByRole('button',{name:es.admin.blog.delete.processing}) as HTMLButtonElement).disabled).toBe(true);
+  });
+  it('refreshes a conflicting evaluation and disables confirmation',async()=>{
+    mocks.deleteDraft.mockRejectedValue(new mocks.DraftRequestError(409));mocks.getDraft.mockResolvedValue({...completed,evaluationStatus:'running'});
+    show(<BlogDraftView initial={completed} />);open();await confirm();
+    expect(screen.getByText(es.admin.blog.delete.processing)).toBeTruthy();
+    expect((screen.getByText(es.admin.blog.delete.confirm,{selector:'button'}) as HTMLButtonElement).disabled).toBe(true);
+    expect(screen.getByText('Artículo disponible.')).toBeTruthy();
+  });
+  it('returns to the list when another admin already deleted the draft',async()=>{
+    mocks.deleteDraft.mockRejectedValue(new mocks.DraftRequestError(404));
+    show(<BlogDraftView initial={completed} />);open();await confirm();
+    expect(mocks.replace).toHaveBeenCalledWith('/es/admin/blog');expect(screen.queryByRole('dialog')).toBeNull();
+  });
+  it('moves to the last valid page when removing its last row',async()=>{
+    mocks.deleteDraft.mockResolvedValue(undefined);
+    show(<BlogDraftList initial={{...completedPage,pagination:{page:2,pageSize:50,total:51,totalPages:2}}} />);open();await confirm();
+    expect(mocks.replace).toHaveBeenCalledWith('/es/admin/blog');
+  });
+  it('does not restore a deleted row from an older polling response',async()=>{
+    const queued={...pending,id:'other',instructions:'Otro artículo pendiente'};
+    let oldRead!:(value:DraftPage)=>void;
+    mocks.listDrafts.mockReturnValueOnce(new Promise<DraftPage>(r=>{oldRead=r;})).mockReturnValue(new Promise(()=>{}));
+    mocks.deleteDraft.mockResolvedValue(undefined);
+    const both:DraftPage={drafts:[{...completed,score:null},{...queued,score:null}],pagination:{page:1,pageSize:50,total:2,totalPages:1}};
+    show(<BlogDraftList initial={both} />);
+    await act(async()=>vi.advanceTimersByTimeAsync(3000));
+    open();await confirm();
+    await act(async()=>oldRead(both));
+    expect(screen.queryByRole('link',{name:completed.title!})).toBeNull();
+    expect(screen.getByRole('link',{name:queued.instructions})).toBeTruthy();
+  });
+  it('preserves a newly accepted article while deletion is in flight',async()=>{
+    let resolve!:()=>void;mocks.deleteDraft.mockReturnValue(new Promise<void>(r=>{resolve=r;}));mocks.generateDraft.mockResolvedValue({...pending,id:'new'});mocks.listDrafts.mockReturnValue(new Promise(()=>{}));
+    show(<BlogDraftList initial={completedPage} />);open();await confirm();
+    await send();
+    await act(async()=>resolve());
+    expect(screen.getByRole('link',{name:pending.instructions})).toBeTruthy();
+    expect(screen.queryByRole('link',{name:completed.title!})).toBeNull();
   });
 });

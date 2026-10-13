@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import type { ReactNode } from 'react';
 import { Heading1 } from 'lucide-react';
 import { sanitizeContent } from '@/lib/blog/sanitize';
 import { countCharacters } from '@/lib/blog/text';
@@ -11,7 +12,7 @@ import { BlogDraftSection } from '@/components/admin/blog-draft-section';
 import { BlogArticleContent } from '@/components/admin/blog-article-content';
 import type { DraftDetail } from '@/types/blog-draft-record.types';
 
-export function BlogDraftDetail({ draft, onEvaluationAccepted }: { draft: DraftDetail; onEvaluationAccepted:(draft:DraftDetail)=>void }) {
+export function BlogDraftDetail({ draft, onEvaluationAccepted, actions }: { draft: DraftDetail; onEvaluationAccepted:(draft:DraftDetail)=>void; actions?: ReactNode }) {
   const t = useTranslations('admin.blog');
   const contentHtml = sanitizeContent(draft.contentHtml ?? '');
   const characterCount = countCharacters(contentHtml);
@@ -28,7 +29,10 @@ export function BlogDraftDetail({ draft, onEvaluationAccepted }: { draft: DraftD
             <Heading1 aria-hidden="true" className="ml-1.5 inline-block size-[0.85em] translate-y-[0.125em] align-baseline text-gray-400" />
           </span>
         </h1>
-        <BlogEvaluationSummary draft={draft} onAccepted={onEvaluationAccepted} />
+        <div className="flex items-center gap-2">
+          <BlogEvaluationSummary draft={draft} onAccepted={onEvaluationAccepted} />
+          {actions}
+        </div>
       </header>
       <div>
         <div className="min-w-0 space-y-8">
