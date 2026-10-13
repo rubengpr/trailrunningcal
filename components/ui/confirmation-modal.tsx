@@ -2,6 +2,7 @@
 
 import { BaseModal, type BaseModalMaxWidth } from '@/components/ui/base-modal';
 import { Button } from '@/components/ui/button';
+import { ErrorMessage } from '@/components/ui/error-message';
 
 interface ConfirmationModalProps {
     isOpen: boolean;
@@ -18,6 +19,8 @@ interface ConfirmationModalProps {
     highlight?: string;
     highlightVariant?: 'text' | 'code';
     maxWidth?: BaseModalMaxWidth;
+    errorMessage?: string;
+    confirmDisabled?: boolean;
 }
 
 export function ConfirmationModal({
@@ -34,6 +37,8 @@ export function ConfirmationModal({
     highlight,
     highlightVariant = 'text',
     maxWidth,
+    errorMessage,
+    confirmDisabled = false,
 }: ConfirmationModalProps) {
     const highlightClasses = {
         text: 'text-sm font-medium text-gray-800',
@@ -45,6 +50,7 @@ export function ConfirmationModal({
             isOpen={isOpen}
             onClose={onClose}
             title={title}
+            closeLabel={cancelButtonText}
             maxWidth={maxWidth}
         >
             <div className="flex flex-col gap-4">
@@ -54,6 +60,7 @@ export function ConfirmationModal({
                         {highlight}
                     </p>
                 )}
+                {errorMessage ? <ErrorMessage message={errorMessage} showRetry={false} variant="compact" /> : null}
                 <div className="flex flex-row justify-end gap-3">
                     <Button
                         type="button"
@@ -67,6 +74,7 @@ export function ConfirmationModal({
                         type="button"
                         variant={variant === 'destructive' ? 'secondary' : 'primary'}
                         onClick={onConfirm}
+                        disabled={confirmDisabled}
                         isLoading={isSubmitting}
                         loadingText={loadingText}
                         className={variant === 'destructive' ? 'border-red-300 text-red-600 hover:bg-red-50' : ''}
