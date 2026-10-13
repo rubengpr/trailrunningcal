@@ -87,12 +87,7 @@ export function BlogDraftList({ initial }: { initial: DraftPage }) {
                   ) : draft.score === null ? (
                     <span className={draft.evaluationStatus === 'failed' ? 'text-sm text-red-700' : 'text-sm text-gray-500'}>{t('evaluationStates.'+draft.evaluationStatus)}</span>
                   ) : (
-                    <span className={`inline-flex rounded-full px-3 py-1 text-sm font-semibold tabular-nums ${
-                      draft.score >= 90 ? 'bg-green-50 text-green-700'
-                        : draft.score >= 50 ? 'bg-orange-50 text-orange-700' : 'bg-red-50 text-red-700'
-                    }`}>
-                      {draft.score}
-                    </span>
+                    <span className="text-sm tabular-nums">{draft.score}</span>
                   )}
                 </TableCell>
               </TableRow>
