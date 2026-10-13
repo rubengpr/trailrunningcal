@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import { BaseModal } from '@/components/ui/base-modal';
+import { HeartbeatIcon } from '@/components/ui/heartbeat-icon';
 
 export function BlogSeoModal({ score, children }: {
   score: number; children: ReactNode;
@@ -33,12 +34,13 @@ export function BlogSeoModal({ score, children }: {
         type="button"
         aria-label={`${t('viewEvaluation')}: ${score}`}
         onClick={() => setIsOpen(true)}
-        className={`inline-flex cursor-pointer items-center justify-center rounded-full px-3 py-1 text-sm font-semibold tabular-nums transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 ${
+        className={`inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium tabular-nums transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 ${
           score >= 90 ? 'bg-green-50 text-green-700 hover:bg-green-100'
             : score >= 50 ? 'bg-orange-50 text-orange-700 hover:bg-orange-100'
               : 'bg-red-50 text-red-700 hover:bg-red-100'
         }`}
       >
+        <HeartbeatIcon className="size-4 shrink-0" />
         {score}
       </button>
       {isOpen ? (
