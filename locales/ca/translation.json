@@ -1205,6 +1205,19 @@
   },
   "admin": {
     "blog": {
+      "delete": {
+        "actions": "Accions",
+        "button": "Eliminar esborrany",
+        "title": "Eliminar esborrany",
+        "message": "L’esborrany i la seva avaluació s’eliminaran permanentment. Aquesta acció no es pot desfer.",
+        "confirm": "Eliminar",
+        "cancel": "Cancel·lar",
+        "deleting": "Eliminant…",
+        "success": "Esborrany eliminat.",
+        "missing": "L’esborrany ja no existeix.",
+        "processing": "No es pot eliminar mentre es genera o s’avalua l’article.",
+        "failed": "No s’ha pogut eliminar l’esborrany. Torna-ho a provar."
+      },
       "evaluateArticle": "Avaluar article",
       "retryEvaluation": "Reintentar avaluació",
       "evaluationFailed": "No s’ha pogut completar l’avaluació. L’article continua disponible.",

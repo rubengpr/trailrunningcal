@@ -1009,6 +1009,19 @@
   },
   "admin": {
     "blog": {
+      "delete": {
+        "actions": "Actions",
+        "button": "Supprimer le brouillon",
+        "title": "Supprimer le brouillon",
+        "message": "Le brouillon et son évaluation seront définitivement supprimés. Cette action est irréversible.",
+        "confirm": "Supprimer",
+        "cancel": "Annuler",
+        "deleting": "Suppression…",
+        "success": "Brouillon supprimé.",
+        "missing": "Le brouillon n’existe plus.",
+        "processing": "Suppression impossible pendant la génération ou l’évaluation de l’article.",
+        "failed": "Impossible de supprimer le brouillon. Réessayez."
+      },
       "evaluateArticle": "Évaluer l’article",
       "retryEvaluation": "Réessayer l’évaluation",
       "evaluationFailed": "Impossible de terminer l’évaluation. L’article reste disponible.",

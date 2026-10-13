@@ -1009,6 +1009,19 @@
   },
   "admin": {
     "blog": {
+      "delete": {
+        "actions": "Actions",
+        "button": "Delete draft",
+        "title": "Delete draft",
+        "message": "The draft and its evaluation will be permanently deleted. This action cannot be undone.",
+        "confirm": "Delete",
+        "cancel": "Cancel",
+        "deleting": "Deleting…",
+        "success": "Draft deleted.",
+        "missing": "The draft no longer exists.",
+        "processing": "Cannot delete while the article is being generated or evaluated.",
+        "failed": "Could not delete the draft. Please try again."
+      },
       "evaluateArticle": "Evaluate article",
       "retryEvaluation": "Retry evaluation",
       "evaluationFailed": "Could not complete the evaluation. The article remains available.",

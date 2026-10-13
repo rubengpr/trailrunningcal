@@ -1237,6 +1237,19 @@
   },
   "admin": {
     "blog": {
+      "delete": {
+        "actions": "Acciones",
+        "button": "Eliminar borrador",
+        "title": "Eliminar borrador",
+        "message": "El borrador y su evaluación se eliminarán permanentemente. Esta acción no se puede deshacer.",
+        "confirm": "Eliminar",
+        "cancel": "Cancelar",
+        "deleting": "Eliminando…",
+        "success": "Borrador eliminado.",
+        "missing": "El borrador ya no existe.",
+        "processing": "No se puede eliminar mientras se genera o evalúa el artículo.",
+        "failed": "No se ha podido eliminar el borrador. Inténtalo de nuevo."
+      },
       "evaluateArticle": "Evaluar artículo",
       "retryEvaluation": "Reintentar evaluación",
       "evaluationFailed": "No se ha podido completar la evaluación. El artículo sigue disponible.",
