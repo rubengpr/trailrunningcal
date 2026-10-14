@@ -1,3 +1,4 @@
+import type { SelectionContext } from '@/types/blog-selection.types';
 export type EvaluationStatus = 'not_evaluated' | 'queued' | 'running' | 'completed' | 'failed';
 export type EditorialStatus = 'requires_corrections' | 'needs_improvement' | 'ready_for_review';
 export type Category = 'utility' | 'rigor' | 'structure' | 'metadata' | 'clarity';
@@ -26,6 +27,7 @@ export interface Evaluation {
   createdAt: string;
 }
 export interface ScoringInput {
+  generationContext?: SelectionContext | null;
   instructions: string;
   title: string;
   contentHtml: string;

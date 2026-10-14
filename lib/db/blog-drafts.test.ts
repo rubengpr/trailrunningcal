@@ -1,3 +1,4 @@
+import { context } from '@/tests/fixtures/blog-selection';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
@@ -82,7 +83,7 @@ describe('draft queries', () => {
     expect(await getDraft('id')).toEqual({
       id: 'id', title: 'Title', instructions: 'Input', status: 'completed', createdAt: 'created',
       updatedAt: 'updated', contentHtml: '<p>Article</p>', primaryKeyword: 'trail', slug: 'slug',
-      seoTitle: 'SEO', metaDescription: 'Description', errorCode: null,
+      seoTitle: 'SEO', metaDescription: 'Description', errorCode: null, generationContext: null,
       evaluationStatus: 'completed', evaluationErrorCode: null, editorialStatus: 'needs_improvement', criticalCount: 0,
       evaluation: { score: 76, criteria: [], criticalErrors: [], recommendations: [], createdAt: 'evaluated' },
     });
@@ -104,4 +105,11 @@ describe('draft queries', () => {
     await expect(listDrafts(1)).rejects.toBe(error);
     await expect(getDraft('id')).rejects.toBe(error);
   });
+});
+
+it('inserts source context with instructions and returns the same stored snapshot', async () => {
+  mocks.single.mockResolvedValue({data: {id: 'id'}, error: null});
+  mocks.maybeSingle.mockResolvedValue({data: {id: 'id', status: 'queued', evaluation: null, generation_context: context}, error: null});
+  expect((await createDraft('Encargo', context)).generationContext).toEqual(context);
+  expect(mocks.insert).toHaveBeenCalledWith({instructions: 'Encargo', generation_context: context});
 });

@@ -1,3 +1,4 @@
+import type { EventSelectionPage } from '@/types/blog-selection.types';
 import type { DraftDetail, DraftInput, DraftPage } from '@/types/blog-draft-record.types';
 
 export class DraftRequestError extends Error {
@@ -31,4 +32,9 @@ export async function generateDraft(input: DraftInput, signal?: AbortSignal): Pr
 
 export async function evaluateDraft(id: string, signal?: AbortSignal): Promise<DraftDetail> {
   return readResponse<DraftDetail>(await fetch(`/api/blog-drafts/${encodeURIComponent(id)}/evaluation`,{method:'POST',signal}));
+}
+
+export async function listEvents(regionId: string, search: string, page: number, signal?: AbortSignal): Promise<EventSelectionPage> {
+  const params = new URLSearchParams({regionId, search, page: String(page)});
+  return readResponse<EventSelectionPage>(await fetch(`/api/blog-drafts/events?${params}`, {signal, cache: 'no-store'}));
 }

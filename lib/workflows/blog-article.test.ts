@@ -1,3 +1,4 @@
+import { context } from '@/tests/fixtures/blog-selection';
 vi.mock('workflow', () => ({ FatalError: class extends Error {}, getWorkflowMetadata: () => ({workflowRunId:'run'}) }));
 vi.mock('@/lib/workflows/blog-evaluation', () => ({runEvaluation:vi.fn()}));
 import { runEvaluation } from '@/lib/workflows/blog-evaluation';
@@ -50,4 +51,11 @@ describe('blog workflow', () => {
     expect(mocks.markFailed).toHaveBeenCalledWith('id', 'save_failed');
     expect(mocks.generate).toHaveBeenCalledTimes(1);
   });
+});
+
+it('generates from the persisted selection without rereading events', async () => {
+  mocks.getDraft.mockResolvedValue({instructions: 'Encargo autonómico', generationContext: context});
+  await articleWorkflow({id: 'id'});
+  expect(mocks.generate).toHaveBeenCalledWith('Encargo autonómico', context);
+  expect(mocks.completeDraft).toHaveBeenCalledTimes(1);
 });

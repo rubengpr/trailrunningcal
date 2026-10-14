@@ -10,6 +10,7 @@ interface AdminPaginationProps {
   page: number;
   totalPages: number;
   getHref: (page: number) => string;
+  onPageChange?: (page: number) => void;
 }
 
 function getPaginationItems(page: number, totalPages: number): PaginationItem[] {
@@ -39,6 +40,7 @@ export function AdminPagination({
   page,
   totalPages,
   getHref,
+  onPageChange,
 }: AdminPaginationProps): React.ReactElement {
   const t = useTranslations('adminEvents');
   const paginationItems = getPaginationItems(page, totalPages);
@@ -48,8 +50,9 @@ export function AdminPagination({
       {page > 1 ? (
         <Link
           href={getHref(page - 1)}
+          onClick={onPageChange ? event => { event.preventDefault(); onPageChange(page - 1); } : undefined}
           title={t('pagination.previous')}
-          className="inline-flex size-9 items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-700 transition-colors hover:bg-gray-50"
+          className="inline-flex cursor-pointer size-9 items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-700 transition-colors hover:bg-gray-50"
         >
           <ChevronLeft className="size-4" />
         </Link>
@@ -72,8 +75,9 @@ export function AdminPagination({
             <Link
               key={item}
               href={getHref(item)}
+              onClick={onPageChange ? event => { event.preventDefault(); onPageChange(item); } : undefined}
               title={t('pagination.page', { page: item })}
-              className="inline-flex size-9 items-center justify-center rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+              className="inline-flex cursor-pointer size-9 items-center justify-center rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
             >
               {item}
             </Link>
@@ -91,8 +95,9 @@ export function AdminPagination({
       {page < totalPages ? (
         <Link
           href={getHref(page + 1)}
+          onClick={onPageChange ? event => { event.preventDefault(); onPageChange(page + 1); } : undefined}
           title={t('pagination.next')}
-          className="inline-flex size-9 items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-700 transition-colors hover:bg-gray-50"
+          className="inline-flex cursor-pointer size-9 items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-700 transition-colors hover:bg-gray-50"
         >
           <ChevronRight className="size-4" />
         </Link>

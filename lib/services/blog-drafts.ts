@@ -1,3 +1,4 @@
+import { snapshot, instructions as selectionInstructions } from '@/lib/services/blog-selection';
 import { start } from 'workflow/api';
 import { createDraft, deleteDraft, getDraft, listDrafts, markFailed, setRunId } from '@/lib/db/blog-drafts';
 import { articleWorkflow } from '@/lib/workflows/blog-article';
@@ -25,12 +26,13 @@ export async function remove(id: string): Promise<void> {
 }
 
 export async function generate(input: DraftInput): Promise<DraftDetail> {
-  const instructions = input.instructions.trim();
-  const error = validateInstructions(instructions);
+  const context = 'regionId' in input ? await snapshot(input) : undefined;
+  const instructions = context ? selectionInstructions(context) : (input as {instructions: string}).instructions.trim();
+  const error = context ? null : validateInstructions(instructions);
   if (error) {
     throw new ValidationError(error === 'tooShort' ? 'instructions_too_short' : 'instructions_too_long', 422);
   }
-  const draft = await createDraft(instructions);
+  const draft = context ? await createDraft(instructions, context) : await createDraft(instructions);
   let run;
   try {
     run = await start(articleWorkflow, [{ id: draft.id }]);

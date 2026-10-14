@@ -1,9 +1,11 @@
+import { context as selectionContext } from '@/tests/fixtures/blog-selection';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AuthError, ForbiddenError } from '@/lib/errors';
 
 const mocks = vi.hoisted(() => ({
-  requireAdmin: vi.fn(), listDrafts: vi.fn(), getDraft: vi.fn(), createDraft: vi.fn(), markFailed: vi.fn(), setRunId: vi.fn(), start: vi.fn(),
+  requireAdmin: vi.fn(), selectedEvents: vi.fn(), listDrafts: vi.fn(), getDraft: vi.fn(), createDraft: vi.fn(), markFailed: vi.fn(), setRunId: vi.fn(), start: vi.fn(),
 }));
+vi.mock('@/lib/db/blog-events', () => ({selectedEvents: mocks.selectedEvents}));
 vi.mock('@/lib/auth', () => ({ requireAdmin: mocks.requireAdmin }));
 vi.mock('@/lib/db/blog-drafts', () => ({
   listDrafts: mocks.listDrafts, getDraft: mocks.getDraft, createDraft: mocks.createDraft, markFailed: mocks.markFailed, setRunId: mocks.setRunId,
@@ -148,5 +150,35 @@ describe('POST generation', () => {
     } else expect(mocks.createDraft).not.toHaveBeenCalled();
     expect(mocks.listDrafts).not.toHaveBeenCalled();
     expect(mocks.getDraft).not.toHaveBeenCalled();
+  });
+});
+
+
+describe('regional POST generation', () => {
+  const selection = {regionId: 'catalonia', eventIds: selectionContext.events.map(event => event.id)};
+  it.each([null, [], {regionId: 1, eventIds: []}, {regionId: 'catalonia'}, {eventIds: []}, {...selection, instructions: 'mixed'}, {...selection, eventIds: ['bad-uuid']}])('rejects malformed selection %#', async body => {
+    expect((await POST(request(body))).status).toBe(400);
+    expect(mocks.selectedEvents).not.toHaveBeenCalled(); expect(mocks.start).not.toHaveBeenCalled();
+  });
+  it.each(['andorra','ceuta','melilla','invalid'])('rejects region %s without queries or workflows', async regionId => {
+    expect((await POST(request({...selection, regionId}))).status).toBe(422);
+    expect(mocks.selectedEvents).not.toHaveBeenCalled(); expect(mocks.createDraft).not.toHaveBeenCalled(); expect(mocks.start).not.toHaveBeenCalled();
+  });
+  it('rejects incomplete and duplicated selections before lookup', async () => {
+    for (const eventIds of [selection.eventIds.slice(1), selection.eventIds.map(() => selection.eventIds[0])]) {
+      expect((await POST(request({...selection, eventIds}))).status).toBe(422);
+    }
+    expect(mocks.selectedEvents).not.toHaveBeenCalled(); expect(mocks.start).not.toHaveBeenCalled();
+  });
+  it('rejects events removed or moved out of the region', async () => {
+    mocks.selectedEvents.mockResolvedValue(selectionContext.events.slice(1));
+    expect((await POST(request(selection))).status).toBe(422);
+    expect(mocks.createDraft).not.toHaveBeenCalled(); expect(mocks.start).not.toHaveBeenCalled();
+  });
+  it('persists the ordered server snapshot before starting one workflow', async () => {
+    mocks.selectedEvents.mockResolvedValue([...selectionContext.events].reverse());
+    expect((await POST(request(selection))).status).toBe(202);
+    expect(mocks.createDraft).toHaveBeenCalledWith(expect.stringContaining('Cataluña'), selectionContext);
+    expect(mocks.start).toHaveBeenCalledTimes(1);
   });
 });

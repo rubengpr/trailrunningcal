@@ -170,7 +170,11 @@
     "productRecommendation": {
       "title": "Recommended for you",
       "brand": "Trail Brand",
-      "brands": { "trailBrand": "Trail Brand", "lesBatons": "Les Bâtons", "summitFuel": "Summit Fuel" },
+      "brands": {
+        "trailBrand": "Trail Brand",
+        "lesBatons": "Les Bâtons",
+        "summitFuel": "Summit Fuel"
+      },
       "toggle": "Show details for {product}",
       "viewMore": "View more",
       "products": {
@@ -570,7 +574,9 @@
           },
           {
             "title": "Data we process",
-            "paragraphs": ["Depending on how you use the service, we may process the following categories of data:"],
+            "paragraphs": [
+              "Depending on how you use the service, we may process the following categories of data:"
+            ],
             "items": [
               "Account and authentication data, such as email and session identifiers.",
               "Profile and organizer data, such as name, role, organization, website and social profiles.",
@@ -582,7 +588,9 @@
           },
           {
             "title": "Purposes and legal bases",
-            "paragraphs": ["We process data only for purposes related to Trailrunningcal:"],
+            "paragraphs": [
+              "We process data only for purposes related to Trailrunningcal:"
+            ],
             "items": [
               "Creating and maintaining accounts, favorites and organizer profiles to provide features requested by the user.",
               "Responding to queries, processing event claims and preventing abuse based on the data subject's request and the legitimate interest in operating and protecting the service.",
@@ -1009,6 +1017,20 @@
   },
   "admin": {
     "blog": {
+      "selection": {
+        "heading": "Selection",
+        "region": "Autonomous community",
+        "regionPlaceholder": "Select a community",
+        "count": "{count}/5 events",
+        "search": "Search events",
+        "searchPlaceholder": "Search by name…",
+        "loading": "Loading events…",
+        "empty": "No events match this search.",
+        "required": "Select a community and exactly five events.",
+        "readFailed": "Events could not be loaded.",
+        "requestFailed": "The article could not be requested. Check that all five events still belong to the community and try again.",
+        "remove": "Remove {name}"
+      },
       "delete": {
         "actions": "Actions",
         "button": "Delete draft",
@@ -1198,10 +1220,38 @@
         "title": "Event updates",
         "subtitle": "Track scheduled event updates.",
         "empty": "There are no scheduled updates yet.",
-        "status": { "pending": "Pending", "running": "Running", "completed": "Completed", "failed": "Failed" },
-        "outcome": { "drafted": "Draft created", "skipped": "Skipped", "unclassified": "No recorded outcome" },
-        "table": { "started": "Date", "duration": "Duration", "status": "Status", "total": "Total", "drafted": "Drafts", "skipped": "Skipped", "failed": "Failed", "pending": "Pending", "running": "Running" },
-        "detail": { "title": "Run details", "event": "Event", "url": "URL", "status": "Status", "outcome": "Outcome", "message": "Detail", "unknownEvent": "Unavailable event", "retry": "Retry" }
+        "status": {
+          "pending": "Pending",
+          "running": "Running",
+          "completed": "Completed",
+          "failed": "Failed"
+        },
+        "outcome": {
+          "drafted": "Draft created",
+          "skipped": "Skipped",
+          "unclassified": "No recorded outcome"
+        },
+        "table": {
+          "started": "Date",
+          "duration": "Duration",
+          "status": "Status",
+          "total": "Total",
+          "drafted": "Drafts",
+          "skipped": "Skipped",
+          "failed": "Failed",
+          "pending": "Pending",
+          "running": "Running"
+        },
+        "detail": {
+          "title": "Run details",
+          "event": "Event",
+          "url": "URL",
+          "status": "Status",
+          "outcome": "Outcome",
+          "message": "Detail",
+          "unknownEvent": "Unavailable event",
+          "retry": "Retry"
+        }
       }
     }
   },
@@ -1234,8 +1284,24 @@
     "olla-de-nuria": "An iconic high-mountain challenge around Núria, surrounded by the peaks of the Catalan Pyrenees."
   },
   "featuredEventVariants": {
-    "eyebrow": "Format exploration", "title": "Featured event · three directions", "note": "Preview of visibility formats for organizers.", "label": "Featured event", "name": "Girona Mountain Race", "date": "November 15, 2026", "day": "15", "month": "Nov", "location": "Girona · Palamós", "elevation": "13K +500M · 21K +800M · 50.3K +1600M", "description": "Three routes to discover the Gavarres, from Girona’s old town to the coast of Palamós.", "descriptionShort": "Three routes across Girona, the Gavarres and the Palamós coast.", "imageAlt": "Trail runner on a rocky coastal path on the Costa Brava",
-    "kicker": { "postcard": "CMG Girona · Klassmark", "immersive": "Coast and Gavarres", "split": "2026 edition" }
+    "eyebrow": "Format exploration",
+    "title": "Featured event · three directions",
+    "note": "Preview of visibility formats for organizers.",
+    "label": "Featured event",
+    "name": "Girona Mountain Race",
+    "date": "November 15, 2026",
+    "day": "15",
+    "month": "Nov",
+    "location": "Girona · Palamós",
+    "elevation": "13K +500M · 21K +800M · 50.3K +1600M",
+    "description": "Three routes to discover the Gavarres, from Girona’s old town to the coast of Palamós.",
+    "descriptionShort": "Three routes across Girona, the Gavarres and the Palamós coast.",
+    "imageAlt": "Trail runner on a rocky coastal path on the Costa Brava",
+    "kicker": {
+      "postcard": "CMG Girona · Klassmark",
+      "immersive": "Coast and Gavarres",
+      "split": "2026 edition"
+    }
   },
   "sponsorDashboard": {
     "brandName": "Peakhill Trails",
@@ -1272,7 +1338,12 @@
       "all": "All"
     },
     "metricsLabel": "Campaign metrics",
-    "metrics": { "impressions": "Impressions", "uniqueUsers": "Unique visitors", "clicks": "Clicks", "ctr": "CTR" },
+    "metrics": {
+      "impressions": "Impressions",
+      "uniqueUsers": "Unique visitors",
+      "clicks": "Clicks",
+      "ctr": "CTR"
+    },
     "chart": {
       "title": "Daily impressions",
       "summary": "Daily campaign delivery from {start} to {end}: {impressions} total impressions and {uniqueUsers} unique visitors."

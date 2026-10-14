@@ -1,3 +1,4 @@
+import type { SelectionContext } from '@/types/blog-selection.types';
 import { FatalError, getWorkflowMetadata } from 'workflow';
 import { runEvaluation } from '@/lib/workflows/blog-evaluation';
 import { completeDraft, getDraft, markFailed, markRunning } from '@/lib/db/blog-drafts';
@@ -5,19 +6,19 @@ import { generate } from '@/lib/services/blog-article';
 import { GenerationError } from '@/lib/blog/content';
 import type { GeneratedArticle, GenerationFailure } from '@/types/blog-article.types';
 
-export async function prepareStep(id: string): Promise<string> {
+export async function prepareStep(id: string): Promise<{instructions: string; context?: SelectionContext | null}> {
   'use step';
   const draft = await getDraft(id);
   if (!draft) throw new FatalError('Draft not found');
   await markRunning(id);
-  return draft.instructions;
+  return {instructions: draft.instructions, context: draft.generationContext};
 }
 
-export async function generateStep(instructions: string): Promise<
+export async function generateStep(instructions: string, context?: SelectionContext | null): Promise<
   { result: GeneratedArticle; error: null } | { result: null; error: GenerationFailure }
 > {
   'use step';
-  try { return { result: await generate(instructions), error: null }; } catch (error) {
+  try { return { result: context ? await generate(instructions, context) : await generate(instructions), error: null }; } catch (error) {
     return { result: null, error: error instanceof GenerationError ? error.code : 'api_error' };
   }
 }
@@ -43,8 +44,8 @@ export async function articleWorkflow(input: { id: string }): Promise<void> {
   let failure = 'workflow_error';
   let attemptId: string;
   try {
-    const instructions = await prepareStep(input.id);
-    const generated = await generateStep(instructions);
+    const source = await prepareStep(input.id);
+    const generated = await generateStep(source.instructions, source.context);
     if (!generated.result) {
       failure = generated.error;
       throw new FatalError(failure);

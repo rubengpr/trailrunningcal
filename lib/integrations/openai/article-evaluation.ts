@@ -7,7 +7,7 @@ import type { DeterministicResult, ScoringInput } from '@/types/blog-evaluation.
 export async function evaluateArticle(input: ScoringInput, checks: DeterministicResult): Promise<unknown> {
   try {
     const metadata = {
-      instructions:input.instructions,title:input.title,primaryKeyword:input.primaryKeyword,
+      generationContext: input.generationContext, instructions:input.instructions,title:input.title,primaryKeyword:input.primaryKeyword,
       slug:input.slug,seoTitle:input.seoTitle,metaDescription:input.metaDescription,
     };
     const metrics = {

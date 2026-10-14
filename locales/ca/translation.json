@@ -167,7 +167,11 @@
     "productRecommendation": {
       "title": "Et recomanem",
       "brand": "Trail Brand",
-      "brands": { "trailBrand": "Trail Brand", "lesBatons": "Les Bâtons", "summitFuel": "Summit Fuel" },
+      "brands": {
+        "trailBrand": "Trail Brand",
+        "lesBatons": "Les Bâtons",
+        "summitFuel": "Summit Fuel"
+      },
       "toggle": "Mostra els detalls de {product}",
       "viewMore": "Veure'n més",
       "products": {
@@ -582,7 +586,9 @@
           },
           {
             "title": "Dades tractades",
-            "paragraphs": ["Segons l'ús que facis del servei, podem tractar les categories de dades següents:"],
+            "paragraphs": [
+              "Segons l'ús que facis del servei, podem tractar les categories de dades següents:"
+            ],
             "items": [
               "Dades de compte i autenticació, com ara l'email i els identificadors de sessió.",
               "Dades de perfil i d'organitzador, com ara nom, càrrec, organització, web i perfils socials.",
@@ -594,7 +600,9 @@
           },
           {
             "title": "Finalitats i bases jurídiques",
-            "paragraphs": ["Tractem les dades únicament per a finalitats relacionades amb Trailrunningcal:"],
+            "paragraphs": [
+              "Tractem les dades únicament per a finalitats relacionades amb Trailrunningcal:"
+            ],
             "items": [
               "Crear i mantenir comptes, preferits i perfils d'organitzador per prestar les funcions sol·licitades per l'usuari.",
               "Respondre consultes, tramitar reclamacions d'esdeveniments i prevenir abusos sobre la base de la sol·licitud de l'interessat i de l'interès legítim a gestionar i protegir el servei.",
@@ -1205,6 +1213,20 @@
   },
   "admin": {
     "blog": {
+      "selection": {
+        "heading": "Selecció",
+        "region": "Comunitat autònoma",
+        "regionPlaceholder": "Selecciona una comunitat",
+        "count": "{count}/5 esdeveniments",
+        "search": "Cerca esdeveniments",
+        "searchPlaceholder": "Cerca per nom…",
+        "loading": "Carregant esdeveniments…",
+        "empty": "No hi ha esdeveniments per a aquesta cerca.",
+        "required": "Selecciona una comunitat i exactament cinc esdeveniments.",
+        "readFailed": "No s’han pogut carregar els esdeveniments.",
+        "requestFailed": "No s’ha pogut sol·licitar l’article. Comprova que els cinc esdeveniments continuen pertanyent a la comunitat i torna-ho a provar.",
+        "remove": "Treure {name}"
+      },
       "delete": {
         "actions": "Accions",
         "button": "Eliminar esborrany",
@@ -1420,10 +1442,38 @@
         "title": "Actualitzacions d’esdeveniments",
         "subtitle": "Seguiment de les actualitzacions programades d’esdeveniments.",
         "empty": "Encara no hi ha actualitzacions programades.",
-        "status": { "pending": "Pendent", "running": "En curs", "completed": "Completat", "failed": "Fallat" },
-        "outcome": { "drafted": "Esborrany creat", "skipped": "Omesa", "unclassified": "Sense resultat registrat" },
-        "table": { "started": "Data", "duration": "Durada", "status": "Estat", "total": "Total", "drafted": "Esborranys", "skipped": "Omesos", "failed": "Fallats", "pending": "Pendents", "running": "En curs" },
-        "detail": { "title": "Detall de l’execució", "event": "Esdeveniment", "url": "URL", "status": "Estat", "outcome": "Resultat", "message": "Detall", "unknownEvent": "Esdeveniment no disponible", "retry": "Torna-ho a provar" }
+        "status": {
+          "pending": "Pendent",
+          "running": "En curs",
+          "completed": "Completat",
+          "failed": "Fallat"
+        },
+        "outcome": {
+          "drafted": "Esborrany creat",
+          "skipped": "Omesa",
+          "unclassified": "Sense resultat registrat"
+        },
+        "table": {
+          "started": "Data",
+          "duration": "Durada",
+          "status": "Estat",
+          "total": "Total",
+          "drafted": "Esborranys",
+          "skipped": "Omesos",
+          "failed": "Fallats",
+          "pending": "Pendents",
+          "running": "En curs"
+        },
+        "detail": {
+          "title": "Detall de l’execució",
+          "event": "Esdeveniment",
+          "url": "URL",
+          "status": "Estat",
+          "outcome": "Resultat",
+          "message": "Detall",
+          "unknownEvent": "Esdeveniment no disponible",
+          "retry": "Torna-ho a provar"
+        }
       },
       "drafts": {
         "title": "Esdeveniments en esborrany",
@@ -2001,8 +2051,24 @@
     "olla-de-nuria": "Una pujada mítica al Santuari de Núria envoltada d'alta muntanya pirinenca, amb el cremallera com a testimoni del recorregut."
   },
   "featuredEventVariants": {
-    "eyebrow": "Exploració de format", "title": "Esdeveniment destacat · tres direccions", "note": "Vista prèvia de formats de visibilitat per a organitzadors.", "label": "Esdeveniment destacat", "name": "Carrera de Muntanya de Girona", "date": "15 novembre 2026", "day": "15", "month": "nov", "location": "Girona · Palamós", "elevation": "13K +500M · 21K +800M · 50,3K +1600M", "description": "Tres recorreguts per descobrir les Gavarres, des del nucli antic de Girona fins a la costa de Palamós.", "descriptionShort": "Tres recorreguts entre Girona, les Gavarres i la costa de Palamós.", "imageAlt": "Corredor de trail per un corriol rocós vora el mar a la Costa Brava",
-    "kicker": { "postcard": "CMG Girona · Klassmark", "immersive": "Costa i Gavarres", "split": "Edició 2026" }
+    "eyebrow": "Exploració de format",
+    "title": "Esdeveniment destacat · tres direccions",
+    "note": "Vista prèvia de formats de visibilitat per a organitzadors.",
+    "label": "Esdeveniment destacat",
+    "name": "Carrera de Muntanya de Girona",
+    "date": "15 novembre 2026",
+    "day": "15",
+    "month": "nov",
+    "location": "Girona · Palamós",
+    "elevation": "13K +500M · 21K +800M · 50,3K +1600M",
+    "description": "Tres recorreguts per descobrir les Gavarres, des del nucli antic de Girona fins a la costa de Palamós.",
+    "descriptionShort": "Tres recorreguts entre Girona, les Gavarres i la costa de Palamós.",
+    "imageAlt": "Corredor de trail per un corriol rocós vora el mar a la Costa Brava",
+    "kicker": {
+      "postcard": "CMG Girona · Klassmark",
+      "immersive": "Costa i Gavarres",
+      "split": "Edició 2026"
+    }
   },
   "sponsorDashboard": {
     "brandName": "Peakhill Trails",
@@ -2039,7 +2105,12 @@
       "all": "Tot"
     },
     "metricsLabel": "Mètriques de la campanya",
-    "metrics": { "impressions": "Impressions", "uniqueUsers": "Visitants únics", "clicks": "Clics", "ctr": "CTR" },
+    "metrics": {
+      "impressions": "Impressions",
+      "uniqueUsers": "Visitants únics",
+      "clicks": "Clics",
+      "ctr": "CTR"
+    },
     "chart": {
       "title": "Impressions diàries",
       "summary": "Distribució diària de la campanya del {start} al {end}: {impressions} impressions i {uniqueUsers} visitants únics."

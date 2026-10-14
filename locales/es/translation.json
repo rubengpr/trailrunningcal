@@ -167,7 +167,11 @@
     "productRecommendation": {
       "title": "Te recomendamos",
       "brand": "Trail Brand",
-      "brands": { "trailBrand": "Trail Brand", "lesBatons": "Les Bâtons", "summitFuel": "Summit Fuel" },
+      "brands": {
+        "trailBrand": "Trail Brand",
+        "lesBatons": "Les Bâtons",
+        "summitFuel": "Summit Fuel"
+      },
       "toggle": "Mostrar detalles de {product}",
       "viewMore": "Ver más",
       "products": {
@@ -582,7 +586,9 @@
           },
           {
             "title": "Datos tratados",
-            "paragraphs": ["Según el uso que hagas del servicio, podemos tratar las siguientes categorías de datos:"],
+            "paragraphs": [
+              "Según el uso que hagas del servicio, podemos tratar las siguientes categorías de datos:"
+            ],
             "items": [
               "Datos de cuenta y autenticación, como email e identificadores de sesión.",
               "Datos de perfil y de organizador, como nombre, cargo, organización, web y perfiles sociales.",
@@ -594,7 +600,9 @@
           },
           {
             "title": "Finalidades y bases jurídicas",
-            "paragraphs": ["Tratamos los datos únicamente para finalidades relacionadas con Trailrunningcal:"],
+            "paragraphs": [
+              "Tratamos los datos únicamente para finalidades relacionadas con Trailrunningcal:"
+            ],
             "items": [
               "Crear y mantener cuentas, favoritos y perfiles de organizador para prestar las funciones solicitadas por el usuario.",
               "Responder consultas, tramitar reclamaciones de eventos y prevenir abusos sobre la base de la solicitud del interesado y del interés legítimo en gestionar y proteger el servicio.",
@@ -1237,6 +1245,20 @@
   },
   "admin": {
     "blog": {
+      "selection": {
+        "heading": "Selección",
+        "region": "Comunidad autónoma",
+        "regionPlaceholder": "Selecciona una comunidad",
+        "count": "{count}/5 eventos",
+        "search": "Buscar eventos",
+        "searchPlaceholder": "Buscar por nombre…",
+        "loading": "Cargando eventos…",
+        "empty": "No hay eventos para esta búsqueda.",
+        "required": "Selecciona una comunidad y exactamente cinco eventos.",
+        "readFailed": "No se han podido cargar los eventos.",
+        "requestFailed": "No se ha podido solicitar el artículo. Comprueba que los cinco eventos siguen perteneciendo a la comunidad e inténtalo de nuevo.",
+        "remove": "Quitar {name}"
+      },
       "delete": {
         "actions": "Acciones",
         "button": "Eliminar borrador",
@@ -1452,10 +1474,38 @@
         "title": "Actualizaciones de eventos",
         "subtitle": "Seguimiento de las actualizaciones programadas de eventos.",
         "empty": "Aún no hay actualizaciones programadas.",
-        "status": { "pending": "Pendiente", "running": "En curso", "completed": "Completado", "failed": "Fallido" },
-        "outcome": { "drafted": "Borrador creado", "skipped": "Omitido", "unclassified": "Sin resultado registrado" },
-        "table": { "started": "Fecha", "duration": "Duración", "status": "Estado", "total": "Total", "drafted": "Borradores", "skipped": "Omitidos", "failed": "Fallidos", "pending": "Pendientes", "running": "En curso" },
-        "detail": { "title": "Detalle de la ejecución", "event": "Evento", "url": "URL", "status": "Estado", "outcome": "Resultado", "message": "Detalle", "unknownEvent": "Evento no disponible", "retry": "Reintentar" }
+        "status": {
+          "pending": "Pendiente",
+          "running": "En curso",
+          "completed": "Completado",
+          "failed": "Fallido"
+        },
+        "outcome": {
+          "drafted": "Borrador creado",
+          "skipped": "Omitido",
+          "unclassified": "Sin resultado registrado"
+        },
+        "table": {
+          "started": "Fecha",
+          "duration": "Duración",
+          "status": "Estado",
+          "total": "Total",
+          "drafted": "Borradores",
+          "skipped": "Omitidos",
+          "failed": "Fallidos",
+          "pending": "Pendientes",
+          "running": "En curso"
+        },
+        "detail": {
+          "title": "Detalle de la ejecución",
+          "event": "Evento",
+          "url": "URL",
+          "status": "Estado",
+          "outcome": "Resultado",
+          "message": "Detalle",
+          "unknownEvent": "Evento no disponible",
+          "retry": "Reintentar"
+        }
       },
       "drafts": {
         "title": "Eventos en borrador",
@@ -2033,8 +2083,24 @@
     "olla-de-nuria": "Una subida mítica al Santuari de Núria rodeada de alta montaña pirenaica, con el cremallera como testigo del recorrido."
   },
   "featuredEventVariants": {
-    "eyebrow": "Exploración de formato", "title": "Evento destacado · tres direcciones", "note": "Vista previa de formatos de visibilidad para organizadores.", "label": "Evento destacado", "name": "Carrera de Montaña de Girona", "date": "15 noviembre 2026", "day": "15", "month": "nov", "location": "Girona · Palamós", "elevation": "13K +500M · 21K +800M · 50,3K +1600M", "description": "Tres recorridos para descubrir las Gavarres, desde el casco antiguo de Girona hasta la costa de Palamós.", "descriptionShort": "Tres recorridos entre Girona, las Gavarres y la costa de Palamós.", "imageAlt": "Corredor de trail por un sendero rocoso junto al mar en la Costa Brava",
-    "kicker": { "postcard": "CMG Girona · Klassmark", "immersive": "Costa y Gavarres", "split": "Edición 2026" }
+    "eyebrow": "Exploración de formato",
+    "title": "Evento destacado · tres direcciones",
+    "note": "Vista previa de formatos de visibilidad para organizadores.",
+    "label": "Evento destacado",
+    "name": "Carrera de Montaña de Girona",
+    "date": "15 noviembre 2026",
+    "day": "15",
+    "month": "nov",
+    "location": "Girona · Palamós",
+    "elevation": "13K +500M · 21K +800M · 50,3K +1600M",
+    "description": "Tres recorridos para descubrir las Gavarres, desde el casco antiguo de Girona hasta la costa de Palamós.",
+    "descriptionShort": "Tres recorridos entre Girona, las Gavarres y la costa de Palamós.",
+    "imageAlt": "Corredor de trail por un sendero rocoso junto al mar en la Costa Brava",
+    "kicker": {
+      "postcard": "CMG Girona · Klassmark",
+      "immersive": "Costa y Gavarres",
+      "split": "Edición 2026"
+    }
   },
   "sponsorDashboard": {
     "brandName": "Peakhill Trails",
@@ -2071,7 +2137,12 @@
       "all": "Todo"
     },
     "metricsLabel": "Métricas de campaña",
-    "metrics": { "impressions": "Impresiones", "uniqueUsers": "Visitantes únicos", "clicks": "Clics", "ctr": "CTR" },
+    "metrics": {
+      "impressions": "Impresiones",
+      "uniqueUsers": "Visitantes únicos",
+      "clicks": "Clics",
+      "ctr": "CTR"
+    },
     "chart": {
       "title": "Impresiones diarias",
       "summary": "Entrega diaria de la campaña del {start} al {end}: {impressions} impresiones y {uniqueUsers} visitantes únicos."

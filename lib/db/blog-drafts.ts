@@ -1,3 +1,4 @@
+import type { SelectionContext } from '@/types/blog-selection.types';
 import { editorialStatus } from '@/lib/blog/scoring/rubric';
 import { createAdminClient } from '@/lib/supabase/server';
 import type { DraftDetail, DraftDetailRow, DraftPage, DraftSummaryRow } from '@/types/blog-draft-record.types';
@@ -39,14 +40,14 @@ export async function listDrafts(page: number): Promise<DraftPage> {
 export async function getDraft(id: string): Promise<DraftDetail | null> {
   const { data, error } = await createAdminClient()
     .from('blog_drafts')
-    .select('id,title,instructions,status,created_at,updated_at,content_html,primary_keyword,slug,seo_title,meta_description,error_code,evaluation_status,evaluation_error_code,evaluation:blog_draft_evaluations(score,criteria,critical_errors,recommendations,created_at)')
+    .select('id,title,instructions,status,created_at,updated_at,generation_context,content_html,primary_keyword,slug,seo_title,meta_description,error_code,evaluation_status,evaluation_error_code,evaluation:blog_draft_evaluations(score,criteria,critical_errors,recommendations,created_at)')
     .eq('id', id)
     .maybeSingle();
   if (error) throw error;
   if (!data) return null;
   const row = data as unknown as DraftDetailRow;
   return {
-    id: row.id, title: row.title, instructions: row.instructions, status: row.status,
+    id: row.id, title: row.title, instructions: row.instructions, status: row.status, generationContext: row.generation_context ?? null,
     createdAt: row.created_at, updatedAt: row.updated_at, contentHtml: row.content_html,
     primaryKeyword: row.primary_keyword, slug: row.slug, seoTitle: row.seo_title,
     metaDescription: row.meta_description, errorCode: row.error_code,
@@ -59,9 +60,9 @@ export async function getDraft(id: string): Promise<DraftDetail | null> {
   };
 }
 
-export async function createDraft(instructions: string): Promise<DraftDetail> {
+export async function createDraft(instructions: string, context?: SelectionContext): Promise<DraftDetail> {
   const { data, error } = await createAdminClient().from('blog_drafts')
-    .insert({ instructions }).select('id').single();
+    .insert({ instructions, ...(context ? {generation_context: context} : {}) }).select('id').single();
   if (error) throw error;
   const draft = await getDraft(data.id);
   if (!draft) throw new Error('Created draft missing');

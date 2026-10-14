@@ -1,3 +1,4 @@
+import { parseUuidParam } from '@/app/api/request-validation';
 import { ValidationError } from '@/lib/errors';
 import type { DraftInput } from '@/types/blog-draft-record.types';
 
@@ -5,7 +6,14 @@ export function parseInput(body: unknown): DraftInput {
   if (typeof body !== 'object' || body === null || Array.isArray(body)) {
     throw new ValidationError('Invalid request body', 400);
   }
-  const { instructions } = body as Record<string, unknown>;
+  const record = body as Record<string, unknown>;
+  if ('regionId' in record || 'eventIds' in record) {
+    if ('instructions' in record || typeof record.regionId !== 'string' || !Array.isArray(record.eventIds) || record.eventIds.some(id => typeof id !== 'string')) {
+      throw new ValidationError('Invalid selection', 400);
+    }
+    return {regionId: record.regionId, eventIds: record.eventIds.map(id => parseUuidParam(id as string, 'event id').toLowerCase())};
+  }
+  const { instructions } = record;
   if (typeof instructions !== 'string') {
     throw new ValidationError('Invalid instructions', 400);
   }

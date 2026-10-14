@@ -1,3 +1,4 @@
+import { context } from '@/tests/fixtures/blog-selection';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { inspect } from '@/lib/blog/scoring/rules';
 import type { ScoringInput } from '@/types/blog-evaluation.types';
@@ -43,4 +44,11 @@ describe('evaluator request',()=>{
     mocks.create.mockRejectedValue(Object.assign(new Error(),{name:'APIConnectionTimeoutError'}));
     await expect(evaluateArticle(input,inspect(input))).rejects.toMatchObject({code:'timeout'});
   });
+});
+
+it('sends the same stored event snapshot as evidence to the evaluator', async () => {
+  mocks.create.mockResolvedValue({status: 'completed', output: [], output_text: '{"criteria":[]}'});
+  const regional = {...input, generationContext: context};
+  await evaluateArticle(regional, inspect(regional));
+  expect(JSON.parse(mocks.create.mock.calls[0][0].input).generationContext).toEqual(context);
 });

@@ -1,4 +1,5 @@
 'use client';
+import { allowedLinks } from '@/lib/blog/links';
 
 import { useTranslations } from 'next-intl';
 import type { ReactNode } from 'react';
@@ -14,7 +15,8 @@ import type { DraftDetail } from '@/types/blog-draft-record.types';
 
 export function BlogDraftDetail({ draft, onEvaluationAccepted, actions }: { draft: DraftDetail; onEvaluationAccepted:(draft:DraftDetail)=>void; actions?: ReactNode }) {
   const t = useTranslations('admin.blog');
-  const contentHtml = sanitizeContent(draft.contentHtml ?? '');
+  const links = allowedLinks(draft.generationContext);
+  const contentHtml = sanitizeContent(draft.contentHtml ?? '', links);
   const characterCount = countCharacters(contentHtml);
   const title = draft.title ?? '';
   const lastSpace = title.lastIndexOf(' ');
@@ -36,7 +38,7 @@ export function BlogDraftDetail({ draft, onEvaluationAccepted, actions }: { draf
       </header>
       <div>
         <div className="min-w-0 space-y-8">
-          <BlogDraftInstructions instructions={draft.instructions} />
+          <BlogDraftInstructions instructions={draft.instructions} context={draft.generationContext} />
           <BlogDraftSection title={t('metadata')}>
             <dl className="mt-4 grid gap-4 sm:grid-cols-2">
               {metadata.map(([key, value]) => (
@@ -52,7 +54,7 @@ export function BlogDraftDetail({ draft, onEvaluationAccepted, actions }: { draf
               <h2 className="text-sm font-semibold">{t('articleHeading')}</h2>
               <CharacterCountBadge count={characterCount} label={t('articleCharacterCount', { count: characterCount })} />
             </div>
-            <BlogArticleContent html={contentHtml} />
+            <BlogArticleContent html={contentHtml} links={links} />
           </article>
         </div>
       </div>

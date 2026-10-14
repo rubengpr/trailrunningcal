@@ -9,7 +9,7 @@ import { BlogDraftView } from '@/components/admin/blog-draft-view';
 import es from '@/locales/es/translation.json';
 import type { DraftDetail, DraftPage } from '@/types/blog-draft-record.types';
 
-const mocks = vi.hoisted(() => ({ generateDraft: vi.fn(), listDrafts: vi.fn(), getDraft: vi.fn(), evaluateDraft: vi.fn(), deleteDraft: vi.fn(), replace: vi.fn(), push: vi.fn(), refresh: vi.fn(),
+const mocks = vi.hoisted(() => ({ generateDraft: vi.fn(), listEvents: vi.fn(), listDrafts: vi.fn(), getDraft: vi.fn(), evaluateDraft: vi.fn(), deleteDraft: vi.fn(), replace: vi.fn(), push: vi.fn(), refresh: vi.fn(),
   DraftRequestError: class extends Error { constructor(public readonly status:number) {super('Request failed');} },
 }));
 vi.mock('@/lib/api/blog-drafts', () => mocks);
@@ -25,13 +25,26 @@ const page: DraftPage = { drafts: [{ ...pending, score: null }], pagination: { p
 function show(children: ReactNode) {
   return render(<NextIntlClientProvider locale="es" messages={es}><BlogProvider>{children}</BlogProvider></NextIntlClientProvider>);
 }
-async function send(value = pending.instructions) {
-  fireEvent.change(screen.getByRole('textbox'), { target: { value } });
-  await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Generar' })));
+const candidates = Array.from({length: 6}, (_, index) => ({id: `event-${index}`, name: `Evento ${index + 1}`, slug: `evento-${index}`, description: null,
+  races: [{id: `race-${index}`, name: null, city: 'Bagà', province: 'Barcelona', distanceKm: 21, elevationGainM: null}]}));
+async function chooseRegion(name = 'Cataluña') {
+  fireEvent.click(screen.getByRole('combobox'));
+  fireEvent.click(screen.getByRole('option', {name}));
+  await act(async () => vi.advanceTimersByTimeAsync(250));
+}
+async function selectEvents(count = 5) {
+  if (!screen.queryByRole('searchbox')) await chooseRegion();
+  const boxes = screen.getAllByRole('checkbox').slice(0, count);
+  boxes.forEach(box => { if (!(box as HTMLInputElement).checked) fireEvent.click(box); });
+}
+async function send() {
+  await selectEvents();
+  await act(async () => fireEvent.click(screen.getByRole('button', {name: 'Generar'})));
 }
 beforeEach(() => {
   vi.useFakeTimers(); vi.setSystemTime(new Date('2026-10-12T10:00:00Z')); vi.resetAllMocks();
   mocks.listDrafts.mockResolvedValue(page);
+  mocks.listEvents.mockResolvedValue({events: candidates, pagination: {page: 1, pageSize: 50, total: 6, totalPages: 1}});
 });
 
 describe('connected evaluation UI', () => {
@@ -105,42 +118,89 @@ describe('connected generation UI', () => {
     expect(mocks.push).toHaveBeenCalledTimes(2);
     expect(mocks.push).toHaveBeenLastCalledWith('/es/admin/blog/'+pending.id);
   });
-  it.each(['', '   ', 'x'.repeat(9), 'x'.repeat(5001)])('validates input case %#', async input => {
-    show(<BlogDraftList initial={empty} />); await send(input);
+  it.each([0, 1, 2, 3, 4])('rejects %s selected events', async count => {
+    show(<BlogDraftList initial={empty} />); await selectEvents(count);
+    await act(async () => fireEvent.click(screen.getByRole('button', {name: 'Generar'})));
     expect(mocks.generateDraft).not.toHaveBeenCalled();
-    expect(document.activeElement).toBe(screen.getByRole('textbox'));
+    expect(screen.getByText(es.admin.blog.selection.required)).toBeTruthy();
   });
-  it('only clears input and adds a row after acceptance, without navigation', async () => {
+  it('clears selection only after acceptance and preserves the community without navigation', async () => {
     let resolve!: (value: DraftDetail) => void;
-    mocks.generateDraft.mockReturnValue(new Promise<DraftDetail>(r => { resolve = r; }));
+    mocks.generateDraft.mockReturnValue(new Promise<DraftDetail>(r => {resolve = r;}));
     show(<BlogDraftList initial={empty} />); await send();
-    expect((screen.getByRole('textbox') as HTMLTextAreaElement).value).toBe(pending.instructions);
-    expect((screen.getByRole('textbox') as HTMLTextAreaElement).disabled).toBe(true);
-    expect(screen.queryByRole('link', { name: pending.instructions })).toBeNull();
+    expect(screen.getByText('5/5 eventos')).toBeTruthy();
+    expect((screen.getByRole('combobox') as HTMLButtonElement).disabled).toBe(true);
+    expect(mocks.generateDraft).toHaveBeenCalledWith({regionId: 'catalonia', eventIds: candidates.slice(0,5).map(event => event.id)}, expect.any(AbortSignal));
+    await act(async () => fireEvent.click(screen.getByRole('button', {name: es.admin.blog.sending})));
+    expect(mocks.generateDraft).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole('link', {name: pending.instructions})).toBeNull();
     await act(async () => resolve(pending));
-    expect((screen.getByRole('textbox') as HTMLTextAreaElement).value).toBe('');
-    expect(screen.getByRole('link', { name: pending.instructions })).toBeTruthy();
+    expect(screen.getByText('0/5 eventos')).toBeTruthy();
+    expect(screen.getByRole('combobox').textContent).toContain('Cataluña');
+    expect(screen.getByRole('link', {name: pending.instructions})).toBeTruthy();
     expect(mocks.replace).not.toHaveBeenCalled();
   });
-  it('preserves input after rejection', async () => {
+  it('preserves selection after rejection', async () => {
     mocks.generateDraft.mockRejectedValue(new Error('Failed'));
     show(<BlogDraftList initial={empty} />); await send();
-    expect((screen.getByRole('textbox') as HTMLTextAreaElement).value).toBe(pending.instructions);
-    expect(screen.getByText(es.admin.blog.requestFailed)).toBeTruthy();
-    expect(screen.queryByRole('link', { name: pending.instructions })).toBeNull();
+    expect(screen.getByText('5/5 eventos')).toBeTruthy();
+    expect(screen.getByText(es.admin.blog.selection.requestFailed)).toBeTruthy();
+    expect(screen.queryByRole('link', {name: pending.instructions})).toBeNull();
   });
-  it('preserves input when list and detail are swapped within the section', () => {
-    const tree = (children: ReactNode) => <NextIntlClientProvider locale="es" messages={es}>
-      <BlogProvider>{children}</BlogProvider></NextIntlClientProvider>;
-    const view = render(tree(<BlogDraftList initial={empty} />));
-    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Input conservado en navegación' } });
+  it('preserves selection while navigating within Blog', async () => {
+    const tree = (children: ReactNode) => <NextIntlClientProvider locale="es" messages={es}><BlogProvider>{children}</BlogProvider></NextIntlClientProvider>;
+    const view = render(tree(<BlogDraftList initial={empty} />)); await selectEvents(1);
     view.rerender(tree(<BlogDraftView initial={pending} />));
     view.rerender(tree(<BlogDraftList initial={empty} />));
-    expect((screen.getByRole('textbox') as HTMLTextAreaElement).value).toBe('Input conservado en navegación');
+    expect(screen.getByText('1/5 eventos')).toBeTruthy();
+  });
+  it('clears selection when changing community and omits excluded territories', async () => {
+    show(<BlogDraftList initial={empty} />); await selectEvents(2);
+    fireEvent.click(screen.getByRole('combobox'));
+    expect(screen.queryByRole('option', {name: 'Andorra'})).toBeNull();
+    expect(screen.queryByRole('option', {name: 'Ceuta'})).toBeNull();
+    expect(screen.queryByRole('option', {name: 'Melilla'})).toBeNull();
+    fireEvent.click(screen.getByRole('option', {name: 'Aragón'}));
+    expect(screen.getByText('0/5 eventos')).toBeTruthy();
+  });
+  it('limits selection to five and enables another after removal', async () => {
+    show(<BlogDraftList initial={empty} />); await selectEvents();
+    expect((screen.getAllByRole('checkbox')[5] as HTMLInputElement).disabled).toBe(true);
+    fireEvent.click(screen.getByRole('button', {name: candidates[0].name}));
+    expect((screen.getAllByRole('checkbox')[5] as HTMLInputElement).disabled).toBe(false);
+  });
+  it('preserves selected events across search pages and reports failed reads', async () => {
+    show(<BlogDraftList initial={empty} />); await selectEvents(1);
+    mocks.listEvents.mockRejectedValueOnce(new Error('Network'));
+    fireEvent.change(screen.getByRole('searchbox'), {target: {value: 'Ultra'}});
+    await act(async () => vi.advanceTimersByTimeAsync(250));
+    expect(screen.getByText(es.admin.blog.selection.readFailed)).toBeTruthy();
+    expect(screen.getByText('1/5 eventos')).toBeTruthy();
+  });
+  it('preserves selection across pagination and resets the search to page one', async () => {
+    mocks.listEvents.mockResolvedValue({events: candidates, pagination: {page: 1, pageSize: 50, total: 51, totalPages: 2}});
+    show(<BlogDraftList initial={empty} />); await selectEvents(1);
+    fireEvent.click(screen.getByRole('link', {name: '2'}));
+    await act(async () => vi.advanceTimersByTimeAsync(250));
+    expect(mocks.listEvents).toHaveBeenLastCalledWith('catalonia','',2,expect.any(AbortSignal));
+    expect(screen.getByText('1/5 eventos')).toBeTruthy();
+    fireEvent.change(screen.getByRole('searchbox'), {target: {value: 'Cursa'}});
+    await act(async () => vi.advanceTimersByTimeAsync(250));
+    expect(mocks.listEvents).toHaveBeenLastCalledWith('catalonia','Cursa',1,expect.any(AbortSignal));
+  });
+  it('aborts a previous community lookup and ignores its late response', async () => {
+    let resolve!: (value: unknown) => void;
+    mocks.listEvents.mockReturnValueOnce(new Promise(value => {resolve = value;})).mockResolvedValue({events: [], pagination: {page: 1, pageSize: 50, total: 0, totalPages: 0}});
+    show(<BlogDraftList initial={empty} />); await chooseRegion();
+    const signal = mocks.listEvents.mock.calls[0][3] as AbortSignal;
+    await chooseRegion('Aragón'); expect(signal.aborted).toBe(true);
+    await act(async () => resolve({events: candidates, pagination: {page: 1, pageSize: 50, total: 6, totalPages: 1}}));
+    expect(screen.queryByRole('checkbox')).toBeNull();
+    expect(screen.getByText(es.admin.blog.selection.empty)).toBeTruthy();
   });
   it('supports multiple accepted jobs', async () => {
     mocks.generateDraft.mockResolvedValueOnce(pending).mockResolvedValueOnce({ ...pending, id: 'second', instructions: 'Otra guía para elegir carrera' });
-    show(<BlogDraftList initial={empty} />); await send(); await send('Otra guía para elegir carrera');
+    show(<BlogDraftList initial={empty} />); await send(); await send();
     expect(screen.getByRole('link', { name: pending.instructions })).toBeTruthy();
     expect(screen.getByRole('link', { name: 'Otra guía para elegir carrera' })).toBeTruthy();
   });

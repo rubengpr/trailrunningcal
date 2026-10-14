@@ -1,3 +1,4 @@
+import type { SelectionContext, SelectionInput } from '@/types/blog-selection.types';
 import type { EditorialStatus, Evaluation, EvaluationStatus } from '@/types/blog-evaluation.types';
 
 export type DraftStatus = 'queued' | 'running' | 'completed' | 'failed';
@@ -17,6 +18,7 @@ export interface DraftSummary {
 export type DraftEvaluation = Evaluation;
 
 export interface DraftDetail extends Omit<DraftSummary, 'score'> {
+  generationContext?: SelectionContext | null;
   contentHtml: string | null;
   primaryKeyword: string | null;
   slug: string | null;
@@ -33,9 +35,7 @@ export interface DraftPage {
   pagination: { page: number; pageSize: number; total: number; totalPages: number };
 }
 
-export interface DraftInput {
-  instructions: string;
-}
+export type DraftInput = { instructions: string } | SelectionInput;
 
 export interface DraftSummaryRow {
   id: string;
@@ -48,6 +48,7 @@ export interface DraftSummaryRow {
 }
 
 export interface DraftDetailRow extends Omit<DraftSummaryRow, 'evaluation'> {
+  generation_context?: SelectionContext | null;
   content_html: string | null;
   primary_keyword: string | null;
   slug: string | null;

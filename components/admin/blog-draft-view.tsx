@@ -38,7 +38,7 @@ export function BlogDraftView({ initial }: { initial: DraftDetail }) {
         <h1 className="min-w-0 break-words text-3xl font-semibold tracking-tight">{title}</h1>
         {deleteAction}
       </header>
-      <BlogDraftInstructions instructions={draft.instructions} />
+      <BlogDraftInstructions instructions={draft.instructions} context={draft.generationContext} />
       {draft.status === 'failed' ? <ErrorMessage title={t('generationFailedTitle')}
         message={failureCodes.includes(draft.errorCode ?? '') ? t('failures.' + draft.errorCode) : t('generationFailed')}
         showRetry={false} variant="compact" /> :

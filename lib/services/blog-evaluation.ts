@@ -6,7 +6,7 @@ import type { Evaluation, ScoringInput } from '@/types/blog-evaluation.types';
 
 export function scoringInput(draft: DraftDetail): ScoringInput {
   return {
-    instructions:draft.instructions,title:draft.title ?? '',contentHtml:draft.contentHtml ?? '',
+    generationContext: draft.generationContext, instructions:draft.instructions,title:draft.title ?? '',contentHtml:draft.contentHtml ?? '',
     primaryKeyword:draft.primaryKeyword ?? '',slug:draft.slug ?? '',seoTitle:draft.seoTitle ?? '',
     metaDescription:draft.metaDescription ?? '',
   };

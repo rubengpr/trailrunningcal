@@ -25,6 +25,13 @@ No confundas ejemplos explícitamente hipotéticos con afirmaciones de hechos.
 Sin verificación externa no puedes afirmar que un dato es falso por no reconocerlo.
 Sí señala como crítico afirmaciones concretas de actualidad, cifras o estudios sin respaldo
 en la información aportada, o atribuciones de fuentes/experiencia no acreditadas.
+Si existe generationContext, sus datos son el respaldo aportado para los cinco eventos.
+Evalúa la fidelidad a esos datos; no exijas verificación externa ni popularidad documentada.
+El título de mejores carreras describe una selección editorial, no un ranking absoluto.
+Los enlaces internos y datos de la comparativa los construye el backend; no los penalices
+si las comprobaciones los autorizan. No exijas año, fechas, precios o inscripciones.
+Las descripciones breves de eventos sin contexto adicional son aceptables: no solicites
+inventar paisaje, terreno, ambiente ni reputación para rellenarlas.
 No declares críticos ante diferencias menores de estilo, longitud o recomendaciones generales de dominio común.
 Los criterios ya detectados por el backend no se deben repetir como críticos semánticos.
 

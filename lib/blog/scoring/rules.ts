@@ -1,3 +1,4 @@
+import { allowedLinks } from '@/lib/blog/links';
 import { Parser } from 'htmlparser2';
 import type { DeterministicResult, EvidenceSource, Finding, ScoringInput } from '@/types/blog-evaluation.types';
 
@@ -10,14 +11,16 @@ export function inspect(input: ScoringInput): DeterministicResult {
   const add = (code: string, field: EvidenceSource, explanation: string) => {
     result.criticalErrors.push({ code, field, explanation, evidence: [] });
   };
+  const links = allowedLinks(input.generationContext);
   let heading: { level: number; text: string } | null = null;
   const allowed = new Set(['p','h2','h3','strong','em','ul','ol','li','table','thead','tbody','tr','th','td','blockquote','br','hr']);
   const parser = new Parser({
     onopentag(name, attrs) {
-      if (name === 'a') add('links_not_allowed', 'article', '');
+      const safeLink = name === 'a' && links.includes(attrs.href) && Object.keys(attrs).every(key => key === 'href');
+      if (name === 'a' && !safeLink) add('links_not_allowed', 'article', '');
       else if (name === 'img') add('images_not_allowed', 'article', '');
-      else if (!allowed.has(name) && !/^h[1-6]$/.test(name)) add('unsafe_html', 'article', '');
-      if (Object.keys(attrs).length > 0) add('unsafe_html', 'article', '');
+      else if (name !== 'a' && !allowed.has(name) && !/^h[1-6]$/.test(name)) add('unsafe_html', 'article', '');
+      if (Object.keys(attrs).length > 0 && !safeLink) add('unsafe_html', 'article', '');
       if (/^h[1-6]$/.test(name)) heading = { level: Number(name.slice(1)), text: '' };
       result.metrics.text += ' ';
     },
