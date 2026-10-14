@@ -32,7 +32,7 @@ Cifras de la edición más reciente con datos publicados por la organización, c
 |---|---|---|---|---|
 | 8K (ultra) | 80 km | 6.820 m | 2026 | [Reglamento 2026](https://trailvalledetena.com/wp-content/uploads/2025/12/Reglamento_TVT_2026-1-1.pdf) · [Ficha web](https://trailvalledetena.com/8k/) |
 | 4K (maratón de montaña) | 42,5 km | 3.510 m (reglamento y guía) / 3.500 m (web) | 2026 | [Guía del corredor 2026](https://trailvalledetena.com/wp-content/uploads/2026/08/Guia-del-corredor-2026-1.pdf) · [Ficha web](https://trailvalledetena.com/4k/) |
-| 2K | 20 km | 1.230 m | 2026 | [Reglamento 2026](https://trailvalledetena.com/wp-content/uploads/2025/12/Reglamento_TVT_2026-1-1.pdf) |
+| 2K | 20 km | 1.230 m (reglamento) / 1.250 m (web) | 2026 | [Reglamento 2026](https://trailvalledetena.com/wp-content/uploads/2025/12/Reglamento_TVT_2026-1-1.pdf) · [Noticia 2026](https://trailvalledetena.com/la-11a-edicion-llegara-el-primer-fin-de-semana-de-septiembre/) |
 | 1K | 11 km | 620 m | 2026 | [Reglamento 2026](https://trailvalledetena.com/wp-content/uploads/2025/12/Reglamento_TVT_2026-1-1.pdf) |
 | 0,5K | 5,5 km | 273 m | 2026 | [Reglamento 2026](https://trailvalledetena.com/wp-content/uploads/2025/12/Reglamento_TVT_2026-1-1.pdf) |
 

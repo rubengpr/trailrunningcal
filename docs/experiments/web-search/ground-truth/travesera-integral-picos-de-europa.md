@@ -34,7 +34,7 @@ Cifras de la edición más reciente con datos publicados por la organización, c
 | Traveserina (Sotres – Arenas de Cabrales) | 46 km | 3.160 m | 2026 | [Ficha técnica](https://www.traveserapicos.com/ficha-tecnica-traveserina/) |
 
 - Las cifras de «más de 13.000 m» (Integral) y «más de 7.000 m» (Traveserina) que aparecen en textos de la web son desnivel acumulado (subida más bajada), no D+.
-- Traveseruca Cabraliega es la prueba infantil y no publica distancia ni desnivel.
+- Traveseruca Cabraliega es la prueba infantil, con recorridos por categorías de edad. La cuenta oficial del evento en Wikiloc publica sus tracks, por ejemplo la SUB 16 con 6,40 km y 352 m D+ ([tracks oficiales](https://es.wikiloc.com/wikiloc/user.do?id=1306517)); se aceptan cifras por categoría de esa magnitud.
 
 ## Palmarés de referencia
 

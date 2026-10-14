@@ -22,7 +22,7 @@ Pradollano es el núcleo de la estación de esquí y montaña de Sierra Nevada. 
 
 Los relevos introducen una experiencia por equipos: tres participantes reparten el esfuerzo entre tramos y se coordinan en los puntos de relevo. La ficha específica identifica Quéntar y El Dornajo como lugares de intercambio y el sector del Veleta como referencia del último tramo. Es una modalidad con organización propia; no basta con dividir libremente cualquier recorrido entre amigos. El trabajo de voluntarios complementa esa estructura, con funciones de orientación, apoyo en avituallamientos y atención en salida y meta. Junto con la conexión entre localidades, aporta una dimensión colectiva al proyecto de TerraIncognita Sport. [9, 3]
 
-El palmarés oficial permite mencionar atletas de élite con precisión: Gemma Arenas ganó la modalidad Maratón en 2024 y 2025; Miguel Heras ganó esa modalidad en 2026. Esas victorias pertenecen al maratón del evento Ultra Sierra Nevada. [3]
+El palmarés oficial permite mencionar atletas de élite con precisión: Miguel Heras ganó la Ultra en 2017 y 2018 y compartió la victoria de 2019 con Marián Priadka, con quien entró de la mano en meta, por lo que la organización lo presenta como tricampeón del evento; Gemma Arenas ganó la modalidad Maratón en 2024 y 2025; Miguel Heras ganó esa modalidad en 2026. Esas victorias pertenecen al maratón del evento Ultra Sierra Nevada. [3]
 
 ## Carreras, distancias y desniveles
 
@@ -32,11 +32,13 @@ Cifras de la edición más reciente con datos publicados por la organización, c
 |---|---|---|---|---|
 | Ultra | 100 km | 5.500 m («más de 5.500 m» en 2026) | 2027 / 2026 | [Ficha Ultra](https://ultrasierranevada.com/ultra/) · [Noticia 2026](https://ultrasierranevada.com/en/?p=8935) |
 | Trail | 60 km | 3.800 m | 2027 | [Ficha Trail](https://ultrasierranevada.com/trail/) |
-| Maratón | 40 km (2027) / 42 km (2026) | 2.400 m | 2027 | [Ficha Maratón](https://ultrasierranevada.com/maraton/) · [Noticia 2026](https://ultrasierranevada.com/en/?p=8935) |
-| Media Maratón | 25 km | 2.150 m | 2027 | [Ficha Media](https://ultrasierranevada.com/media-maraton/) |
+| Maratón | 40 km (ficha 2027 y crónica 2026) / 42 km (noticia 2026) | 2.400 m (ficha 2027) / 2.700 m (crónica 2026) | 2027 / 2026 | [Ficha Maratón](https://ultrasierranevada.com/maraton/) · [Noticia 2026](https://ultrasierranevada.com/en/?p=8935) · [Crónica 2026](https://ultrasierranevada.com/la-unicaja-ultra-sierra-nevada-arranca-su-edicion-mas-internacional-con-la-amenaza-del-tiempo/) |
+| Media Maratón | 25 km | 2.150 m (ficha 2027) / 2.100 m (crónica 2026) | 2027 / 2026 | [Ficha Media](https://ultrasierranevada.com/media-maraton/) · [Crónica 2026](https://ultrasierranevada.com/el-frio-y-la-nieve-marcan-la-edicion-mas-epica-de-ultra-sierra-nevada/) |
 
 - Las fichas oficiales ya muestran la edición 2027 (2–4 de abril); de 2026 solo constan las cifras citadas en la noticia enlazada. Ambas ediciones se aceptan.
-- La Ultra se disputa también en relevos de tres corredores sobre su mismo recorrido, sin cifras propias publicadas. La Extrema (2022–2023) no forma parte de la oferta actual.
+- Relevos (R3L3VOS): equipos de tres corredores que se reparten el recorrido con cambios en Quéntar y El Dornajo. La organización lo anunció con 74 km para 2025 ([noticia](https://ultrasierranevada.com/ultra-sierra-nevada-abre-inscripciones-y-mantiene-su-exitosa-formula-para-2025/)) y la estación de Sierra Nevada con 75 km y más de 2.500 m D+ para 2026 ([ficha](https://sierranevada.es/es/invierno/eventos/competiciones/ultra-sierra-nevada-2026/)); se aceptan ambas cifras.
+- En 2023 la organización anunció la Maratón con 42 km y 2.900 m D+ ([noticia](https://www.ultrasierranevada.com/ultra-sierra-nevada-elimina-los-tramos-de-asfalto-y-ya-suma-mas-de-1-600-inscritos-para-2023/)); atribuirle esas cifras a esa edición es correcto.
+- La Extrema (2022–2023) no forma parte de la oferta actual.
 
 ## Palmarés de referencia
 
@@ -69,7 +71,7 @@ Cobertura publicada: Ultra 2014–2026, Trail 2015–2026, Maratón 2016–2026 
 | 2020 | Evento suspendido | No celebrado | No celebrado | [Resultados / crónica](https://sierranevada.es/es/medianet/blog/posts/balance-verano-2020/) |
 | 2019 | Maratón | Efren Segundo | Esther Alves | [Resultados / crónica](https://ultrasierranevada.com/mas-info/) |
 | 2019 | Trail | Mario Olmedo | Eva Mesado | [Resultados / crónica](https://ultrasierranevada.com/mas-info/) |
-| 2019 | Ultra | Marian Priadka | Esther Fernandez | [Resultados / crónica](https://ultrasierranevada.com/mas-info/) |
+| 2019 | Ultra | Marian Priadka y Miguel Heras (victoria compartida) | Esther Fernandez | [Resultados / crónica](https://ultrasierranevada.com/mas-info/) · [Crónica oficial 2019](https://ultrasierranevada.com/victoria-compartida-de-miguel-heras-y-el-eslovaco-marian-priadka-en-ultra-sierra-nevada-2019/) |
 | 2018 | Maratón | Roberto Heras | Esther Alves | [Resultados / crónica](https://ultrasierranevada.com/mas-info/) |
 | 2018 | Trail | Víctor Pimentel | Dominique Van M. | [Resultados / crónica](https://ultrasierranevada.com/mas-info/) |
 | 2018 | Ultra | Miguel Heras | Magdalena Laczak | [Resultados / crónica](https://ultrasierranevada.com/mas-info/) |

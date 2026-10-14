@@ -23,7 +23,7 @@ for (const provider of ['openai', 'exa', 'tavily', 'linkup', 'context-dev']) {
       provider,
       planned_investigations: 18,
       dataset_id: 'f5f4781d-3c68-4263-843f-c7749bdb975e',
-      dataset_version: '1000198031499067756',
+      dataset_version: '1000198032278487396',
       researcher_model: 'gpt-6.1-sol',
       researcher_reasoning: 'medium',
       judge_model: 'gpt-6.1-sol',
