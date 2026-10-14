@@ -12,7 +12,7 @@ export const settings = {
   researcherReasoning: 'medium',
   judgeReasoning: 'medium',
   maxOutputTokens: 4000,
-  judgeMaxOutputTokens: 6000,
+  judgeMaxOutputTokens: 12000,
   timeoutMs: 600_000,
   maxRetries: 0,
   maxResults: 8,

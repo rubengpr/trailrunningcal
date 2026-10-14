@@ -55,7 +55,7 @@ interface Quote {
   explanation: string;
 }
 interface Criterion {
-  level: 'absent' | 'partial' | 'complete';
+  items: { excerpt: string; reference: string }[];
   explanation: string;
   errors: Quote[];
 }

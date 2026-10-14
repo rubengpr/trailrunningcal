@@ -57,13 +57,13 @@ correct = el dossier lo menciona y es compatible con el ground truth. missing = 
 excerpt: cita LITERAL del dossier (vacío si missing). reference: cita LITERAL del ground truth que lo confirma o contradice (vacío si no aplica). Las citas se comprueban por código: sin cita literal verificable, el campo cuenta como missing.
 Un dato ausente del ground truth NO es incorrecto. Un municipio o paraje del recorrido no mencionado en el ground truth no es incorrecto si no lo contradice. Admite variantes de nombre, tildes, idioma (castellano/catalán) y expresiones de época equivalentes («otoño» frente a «septiembre-octubre»).
 
-CRITERIOS DE CALIDAD. Para cada uno indica level: absent, partial o complete.
-- races: nombres de las carreras del evento, sus distancias y desniveles. complete = identifica las carreras principales con distancias y desniveles; partial = algunas, o sin distancias o desniveles.
-- route: puntos de interés y zonas por donde pasan las carreras más largas (ultra, maratón, media maratón). complete = varios lugares concretos y reconocibles; partial = mención genérica o un único lugar.
-- history: historia (año de creación, origen), lo que la hace especial y única, ambiente y datos curiosos remarcables (anécdotas, hitos, récords, tradiciones). complete = origen y singularidad concretos, con algún dato remarcable si el ground truth lo documenta; partial = solo uno de ellos o de forma genérica. No penalices la falta de curiosidades si el ground truth no las documenta.
-- elite: corredores de élite con varias victorias en ultra o maratón del evento. complete = nombra al menos uno con victorias correctas; partial = menciona élite sin concretar. Si el ground truth no documenta élite y el dossier no la menciona, usa absent.
-errors: afirmaciones del criterio que el ground truth contradice claramente (ganador inventado, victoria en otra modalidad, distancia errónea), cada una con excerpt literal del dossier y reference literal del ground truth. No incluyas datos simplemente ausentes del ground truth. No dupliques errores.
-No premies longitud, tono comercial ni número de fuentes. Justifica cada etiqueta en explanation.`;
+CRITERIOS DE CALIDAD. Para cada criterio, lista en items cada dato concreto del dossier que el ground truth respalda: excerpt = cita LITERAL y breve del dossier con ese dato; reference = cita LITERAL del ground truth que lo respalda. Un dato por item; no repitas el mismo dato. Los datos que el ground truth no recoge no se listan (ni suman ni restan). El código comprueba las citas y cuenta los datos.
+- races: cada carrera identificada por su nombre cuenta un dato; su distancia, otro; su desnivel, otro.
+- route: cada lugar concreto (cima, collado, valle, pueblo, refugio, paraje) por donde pasan las carreras largas (ultra, maratón, media maratón).
+- history: cada dato concreto de historia y singularidad: año de creación, origen, organizadores, hitos, récords, tradiciones, anécdotas, rasgos que la hacen única, ambiente concreto.
+- elite: cada atleta de élite con victorias en ultra o maratón del evento correctamente atribuidas (nombre + carrera/años).
+errors: afirmaciones del criterio que el ground truth contradice claramente (ganador inventado, victoria en otra modalidad o año, distancia errónea), cada una con excerpt literal del dossier y reference literal del ground truth. No incluyas datos simplemente ausentes del ground truth. No dupliques errores.
+No premies longitud, tono comercial ni número de fuentes. Resume en explanation qué datos encontraste.`;
 
 export const judge = project.prompts.create({
   name: 'Blind dossier judge v1',
@@ -73,7 +73,7 @@ export const judge = project.prompts.create({
     'One structured, blind evaluation per dossier; no search. Labels basic data and four quality criteria; code verifies quotes and computes the score.',
   params: {
     reasoning_effort: 'medium',
-    max_completion_tokens: 6000,
+    max_completion_tokens: 12000,
     response_format: {
       type: 'json_schema',
       json_schema: {
@@ -92,7 +92,7 @@ export const judge = project.prompts.create({
     },
   ],
   metadata: {
-    rubric_version: 'v2',
+    rubric_version: 'v3',
     blind: true,
     model_selection:
       'gpt-6.1-sol/medium; selected for benchmark, not empirically calibrated yet',
@@ -103,7 +103,7 @@ export const quality = project.scorers.create({
   name: 'Dossier quality v1',
   slug: 'dossier-quality-v1',
   description:
-    'Single blind judge call. Wrong basic data discards the dossier (no score); missing basic data −5 each; criteria 35/30/25/10. Judge receives dossier and ground truth only.',
+    'Single blind judge call. Wrong basic data discards the dossier (no score); missing basic data −5 each; criteria 35/30/25/10 scored by verified fact counts (targets 8/8/6/3). Judge receives dossier and ground truth only.',
   parameters: z
     .object({
       input: z
@@ -132,7 +132,7 @@ export const quality = project.scorers.create({
     const result = await invoke({
       projectName: 'Web Search Benchmark',
       slug: 'dossier-judge-v1',
-      version: '1000198031085928507',
+      version: '1000198031289352552',
       input: {
         input: JSON.stringify(input),
         output: JSON.stringify(output),
@@ -150,12 +150,12 @@ export const quality = project.scorers.create({
       score: evaluation.quality === null ? null : evaluation.quality / 100,
       metadata: {
         ...evaluation,
-        rubric_version: 'v2',
+        rubric_version: 'v3',
       },
     };
   },
   metadata: {
-    rubric_version: 'v2',
+    rubric_version: 'v3',
     llm_calls_per_dossier: 1,
     model: 'gpt-6.1-sol',
     reasoning_effort: 'medium',

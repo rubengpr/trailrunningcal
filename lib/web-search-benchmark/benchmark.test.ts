@@ -41,8 +41,21 @@ const basic = (status = 'correct', excerpt = 'Ocurre en un parque') => ({
   reference: status === 'incorrect' ? 'en la sierra' : '',
   explanation: 'Etiqueta',
 });
-const level = (value = 'complete', errors: unknown[] = []) => ({
-  level: value,
+const fact = (excerpt = 'Ocurre en un parque', reference = 'en la sierra') => ({
+  excerpt,
+  reference,
+});
+// n distinct verified facts: excerpts are prefixes of the dossier text.
+const prefixes = [
+  ...new Set(
+    Array.from({ length: 18 }, (_, i) =>
+      'Ocurre en un parque'.slice(0, i + 2).trim(),
+    ),
+  ),
+];
+const facts = (n: number) => prefixes.slice(0, n).map((p) => fact(p));
+const level = (n: number, errors: unknown[] = []) => ({
+  items: facts(n),
   explanation: 'Etiqueta',
   errors,
 });
@@ -55,10 +68,10 @@ const report = {
     zone: basic(),
   },
   criteria: {
-    races: level(),
-    route: level(),
-    history: level(),
-    elite: level(),
+    races: level(8),
+    route: level(8),
+    history: level(6),
+    elite: level(3),
   },
 };
 const groundTruth = 'El evento ocurre en la sierra. Ganó Ana dos veces.';
@@ -306,8 +319,11 @@ describe('rubric and schedule', () => {
         .quality,
     ).toBe(95);
     expect(() => score({ criteria: { ...report.criteria, races: 1 } })).toThrow();
+    expect(() =>
+      score({ criteria: { ...report.criteria, races: { level: 'complete' } } }),
+    ).toThrow();
   });
-  it('weights criteria and applies proven errors within their criterion', () => {
+  it('scores criteria by distinct verified facts up to each target', () => {
     const error = {
       excerpt: 'Ocurre en un parque',
       reference: 'Ganó Ana dos veces',
@@ -319,17 +335,27 @@ describe('rubric and schedule', () => {
         dossier,
         groundTruth,
       );
+    expect(score({ races: level(4), history: level(0) }).points).toEqual({
+      races: 17.5,
+      route: 30,
+      history: 0,
+      elite: 10,
+    });
+    // Above the target adds nothing; duplicates and unverifiable quotes do not count.
+    expect(score({ route: level(12) }).points.route).toBe(30);
     expect(
-      score({ history: level('partial'), races: level('absent') }).points,
-    ).toEqual({ races: 0, route: 30, history: 12.5, elite: 10 });
-    expect(score({ route: level('complete', [error]) }).points.route).toBe(
-      15,
-    );
-    expect(score({ elite: level('complete', [error]) }).points.elite).toBe(0);
+      score({ races: { ...level(0), items: [fact(), fact(), fact('Inventado')] } })
+        .facts.races,
+    ).toBe(1);
     expect(
-      score({
-        elite: level('complete', [{ ...error, reference: 'Inventado' }]),
-      }).points.elite,
+      score({ races: { ...level(0), items: [fact('Ocurre', 'Inventado')] } })
+        .facts.races,
+    ).toBe(0);
+    expect(score({ route: level(8, [error]) }).points.route).toBe(26.3);
+    expect(score({ elite: level(3, [error]) }).points.elite).toBe(0);
+    expect(
+      score({ elite: level(3, [{ ...error, reference: 'Inventado' }]) }).points
+        .elite,
     ).toBe(10);
   });
   it('does not treat unavailable costs as zero and redacts credentials recursively', () => {

@@ -13,25 +13,25 @@
     {
       "slug": "event-researcher-v1",
       "id": "a0bc3dab-dc2f-4567-b1a6-26c741997670",
-      "version": "1000198031107293396"
+      "version": "1000198031289614649"
     },
     {
       "slug": "benchmark-config-v1",
       "id": "b4cc998d-4c24-456a-98cc-3728f3b256e2",
-      "version": "1000198031107293396"
+      "version": "1000198031289614649"
     },
     {
       "slug": "dossier-quality-v1",
       "id": "ca9af96e-4b74-4121-a789-acf333844790",
-      "version": "1000198031107293396"
+      "version": "1000198031289614649"
     },
     {
       "slug": "dossier-judge-v1",
       "id": "cbae9c8e-fca3-419a-b526-2fbf58461aba",
-      "version": "1000198031107293396"
+      "version": "1000198031289614649"
     }
   ],
-  "judgeVersionPinnedInScorer": "1000198031085928507",
+  "judgeVersionPinnedInScorer": "1000198031289352552",
   "experiments": [
     {
       "id": "f071b800-7db0-47c5-8931-e0ad337b8b42",

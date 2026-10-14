@@ -9,8 +9,9 @@ export const basics = [
   'zone',
 ] as const;
 export const weights = { races: 35, route: 30, history: 25, elite: 10 };
+// Verified facts needed for full points in each criterion.
+export const targets = { races: 8, route: 8, history: 6, elite: 3 };
 export const missingPenalty = 5;
-const levels = { absent: 0, partial: 0.5, complete: 1 };
 
 const quote = {
   excerpt: z.string(),
@@ -20,9 +21,12 @@ const quote = {
 const basic = z
   .object({ status: z.enum(['correct', 'missing', 'incorrect']), ...quote })
   .strict();
+const fact = z
+  .object({ excerpt: z.string(), reference: z.string() })
+  .strict();
 const criterion = z
   .object({
-    level: z.enum(['absent', 'partial', 'complete']),
+    items: z.array(fact),
     explanation: z.string().min(1),
     errors: z.array(z.object(quote).strict()),
   })
@@ -57,9 +61,17 @@ const quoteJson = {
 const criterionJson = {
   type: 'object',
   additionalProperties: false,
-  required: ['level', 'explanation', 'errors'],
+  required: ['items', 'explanation', 'errors'],
   properties: {
-    level: { type: 'string', enum: Object.keys(levels) },
+    items: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['excerpt', 'reference'],
+        properties: { excerpt: { type: 'string' }, reference: { type: 'string' } },
+      },
+    },
     explanation: { type: 'string' },
     errors: {
       type: 'array',
@@ -132,16 +144,22 @@ export function evaluateReport(
     else if (item.status === 'correct' && within(body, item.excerpt)) continue;
     else missing.push(key);
   }
+  const facts = {} as Record<keyof typeof weights, number>;
   const points = Object.fromEntries(
     (Object.keys(weights) as (keyof typeof weights)[]).map((key) => {
-      const { level, errors } = report.criteria[key];
-      const verified = errors.filter(proven).length;
-      // A proven error drops one level; an invented elite claim voids the criterion.
+      const { items, errors } = report.criteria[key];
+      // Count distinct facts the ground truth supports; each proven error cancels one.
+      const found = new Set(
+        items.filter(proven).map((item) => normalize(item.excerpt)),
+      ).size;
+      const wrong = errors.filter(proven).length;
+      facts[key] = found;
+      // An invented elite claim voids the criterion.
       const value =
-        verified && key === 'elite'
+        wrong && key === 'elite'
           ? 0
-          : Math.max(0, levels[level] - (verified ? 0.5 : 0));
-      return [key, value * weights[key]];
+          : Math.max(0, Math.min(found - wrong, targets[key])) / targets[key];
+      return [key, Math.round(value * weights[key] * 10) / 10];
     }),
   ) as Record<keyof typeof weights, number>;
   const publishable = discarded.length === 0;
@@ -149,5 +167,5 @@ export function evaluateReport(
   const quality = publishable
     ? Math.max(0, raw - missing.length * missingPenalty)
     : null;
-  return { report, publishable, discarded, missing, points, quality };
+  return { report, publishable, discarded, missing, facts, points, quality };
 }
