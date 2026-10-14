@@ -1,3 +1,4 @@
+import type { ResearchPage, ResearchRun } from '@/types/blog-research.types';
 import type { EventSelectionPage } from '@/types/blog-selection.types';
 import type { DraftDetail, DraftInput, DraftPage } from '@/types/blog-draft-record.types';
 
@@ -37,4 +38,15 @@ export async function evaluateDraft(id: string, signal?: AbortSignal): Promise<D
 export async function listEvents(regionId: string, search: string, page: number, signal?: AbortSignal): Promise<EventSelectionPage> {
   const params = new URLSearchParams({regionId, search, page: String(page)});
   return readResponse<EventSelectionPage>(await fetch(`/api/blog-drafts/events?${params}`, {signal, cache: 'no-store'}));
+}
+
+export async function listResearch(id: string, page = 1, signal?: AbortSignal): Promise<ResearchPage> {
+  return readResponse<ResearchPage>(await fetch(`/api/blog-drafts/${encodeURIComponent(id)}/research?page=${page}`, {signal, cache:'no-store'}));
+}
+export async function researchDraft(id: string, eventIds: string[], signal?: AbortSignal): Promise<ResearchRun> {
+  const response = await fetch(`/api/blog-drafts/${encodeURIComponent(id)}/research`, {
+    method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({eventIds}), signal,
+  });
+  if (!response.ok) throw new DraftRequestError(response.status);
+  return readResponse<ResearchRun>(response);
 }

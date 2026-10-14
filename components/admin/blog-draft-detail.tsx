@@ -7,13 +7,17 @@ import { Heading1 } from 'lucide-react';
 import { sanitizeContent } from '@/lib/blog/sanitize';
 import { countCharacters } from '@/lib/blog/text';
 import { CharacterCountBadge } from '@/components/ui/character-count-badge';
+import { BlogDraftResearch } from '@/components/admin/blog-draft-research';
+import type { DraftResearchStatus, ResearchPage } from '@/types/blog-research.types';
 import { BlogDraftInstructions } from '@/components/admin/blog-draft-instructions';
 import { BlogEvaluationSummary } from '@/components/admin/blog-evaluation-summary';
 import { BlogDraftSection } from '@/components/admin/blog-draft-section';
 import { BlogArticleContent } from '@/components/admin/blog-article-content';
 import type { DraftDetail } from '@/types/blog-draft-record.types';
 
-export function BlogDraftDetail({ draft, onEvaluationAccepted, actions }: { draft: DraftDetail; onEvaluationAccepted:(draft:DraftDetail)=>void; actions?: ReactNode }) {
+const emptyResearch: ResearchPage = {runs:[],pagination:{page:1,pageSize:50,total:0,totalPages:0}};
+
+export function BlogDraftDetail({ draft, onEvaluationAccepted, actions, initialResearch, onResearchStatus }: { draft: DraftDetail; onEvaluationAccepted:(draft:DraftDetail)=>void; actions?: ReactNode; initialResearch?: ResearchPage; onResearchStatus?:(status:DraftResearchStatus)=>void }) {
   const t = useTranslations('admin.blog');
   const links = allowedLinks(draft.generationContext);
   const contentHtml = sanitizeContent(draft.contentHtml ?? '', links);
@@ -49,6 +53,8 @@ export function BlogDraftDetail({ draft, onEvaluationAccepted, actions }: { draf
               ))}
             </dl>
           </BlogDraftSection>
+          {draft.generationContext && onResearchStatus ? <BlogDraftResearch key={draft.id} id={draft.id} context={draft.generationContext}
+            initial={initialResearch ?? emptyResearch} status={draft.researchStatus ?? 'not_started'} onStatusChange={onResearchStatus} /> : null}
           <article lang="es" className="min-w-0 border-t border-gray-200 pt-6">
             <div className="mb-5 flex flex-wrap items-center gap-2">
               <h2 className="text-sm font-semibold">{t('articleHeading')}</h2>

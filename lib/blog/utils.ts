@@ -3,9 +3,10 @@ import type { DraftSummary } from '@/types/blog-draft-record.types';
 export const MIN_INSTRUCTION_LENGTH = 10;
 export const MAX_INSTRUCTION_LENGTH = 5_000;
 
-export function canDelete(draft: Pick<DraftSummary, 'status' | 'evaluationStatus'>): boolean {
+export function canDelete(draft: Pick<DraftSummary, 'status' | 'evaluationStatus' | 'researchStatus'>): boolean {
   return (draft.status === 'completed' || draft.status === 'failed') &&
-    ['not_evaluated', 'completed', 'failed'].includes(draft.evaluationStatus);
+    ['not_evaluated', 'completed', 'failed'].includes(draft.evaluationStatus) &&
+    !['queued', 'running'].includes(draft.researchStatus ?? 'not_started');
 }
 
 export function validateInstructions(value: string): 'tooShort' | 'tooLong' | null {

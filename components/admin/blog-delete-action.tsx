@@ -11,7 +11,7 @@ import { IconActionMenu } from '@/components/ui/icon-action-menu';
 import type { DraftSummary } from '@/types/blog-draft-record.types';
 
 export function BlogDeleteAction({ draft, onDeleted, onConflict, menu = false }: {
-  draft: Pick<DraftSummary, 'id' | 'title' | 'instructions' | 'status' | 'evaluationStatus'>;
+  draft: Pick<DraftSummary, 'id' | 'title' | 'instructions' | 'status' | 'evaluationStatus' | 'researchStatus'>;
   onDeleted: (id: string) => void; onConflict: () => void;
   menu?: boolean;
 }) {

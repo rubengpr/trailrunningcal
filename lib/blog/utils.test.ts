@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { validateInstructions } from '@/lib/blog/utils';
+import { canDelete, validateInstructions } from '@/lib/blog/utils';
 
 describe('instruction validation', () => {
   it.each([
@@ -11,3 +11,10 @@ describe('instruction validation', () => {
     expect(validateInstructions(input)).toBe(expected);
   });
 });
+
+ it.each(['queued','running'] as const)('blocks deletion during research %s',researchStatus => {
+   expect(canDelete({status:'completed',evaluationStatus:'completed',researchStatus})).toBe(false);
+ });
+ it.each(['not_started','completed','partial','failed'] as const)('allows deletion after research %s',researchStatus => {
+   expect(canDelete({status:'completed',evaluationStatus:'completed',researchStatus})).toBe(true);
+ });

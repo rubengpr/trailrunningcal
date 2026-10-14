@@ -1041,7 +1041,7 @@
         "deleting": "Deleting…",
         "success": "Draft deleted.",
         "missing": "The draft no longer exists.",
-        "processing": "Cannot delete while the article is being generated or evaluated.",
+        "processing": "Cannot delete while the article is being generated, evaluated or researched.",
         "failed": "Could not delete the draft. Please try again."
       },
       "evaluateArticle": "Evaluate article",
@@ -1210,7 +1210,32 @@
         }
       },
       "observedWords": "Observed length: {count} words.",
-      "observedCharacters": "Observed length: {count} characters."
+      "observedCharacters": "Observed length: {count} characters.",
+      "research": {
+        "title": "Research",
+        "selection": "Select the events to research (1–5).",
+        "start": "Research events",
+        "sending": "Submitting…",
+        "investigating": "Researching…",
+        "history": "Research history",
+        "progress": "{count}/{total} events researched",
+        "sources": "Sources used",
+        "observations": "Observations",
+        "empty": "No research yet.",
+        "selectionRequired": "Select at least one event.",
+        "conflict": "Research is already in progress.",
+        "requestFailed": "Research could not be started. Your selection has been preserved.",
+        "readFailed": "Research could not be refreshed. Showing the last available data.",
+        "resultFailed": "This event could not be researched. You can select it in a new run.",
+        "states": {
+          "queued": "Pending",
+          "running": "Researching",
+          "completed": "Completed",
+          "partial": "Partially completed",
+          "failed": "Error"
+        },
+        "consultedSources": "URLs returned by the tool ({count})"
+      }
     },
     "events": {
       "drafts": {

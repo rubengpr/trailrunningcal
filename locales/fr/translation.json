@@ -1041,7 +1041,7 @@
         "deleting": "Suppression…",
         "success": "Brouillon supprimé.",
         "missing": "Le brouillon n’existe plus.",
-        "processing": "Suppression impossible pendant la génération ou l’évaluation de l’article.",
+        "processing": "Suppression impossible pendant la génération, l’évaluation ou la recherche de l’article.",
         "failed": "Impossible de supprimer le brouillon. Réessayez."
       },
       "evaluateArticle": "Évaluer l’article",
@@ -1210,7 +1210,32 @@
         }
       },
       "observedWords": "Longueur observée : {count} mots.",
-      "observedCharacters": "Longueur observée : {count} caractères."
+      "observedCharacters": "Longueur observée : {count} caractères.",
+      "research": {
+        "title": "Recherche",
+        "selection": "Sélectionnez les événements à rechercher (1–5).",
+        "start": "Rechercher les événements",
+        "sending": "Envoi…",
+        "investigating": "Recherche en cours…",
+        "history": "Historique des recherches",
+        "progress": "{count}/{total} événements recherchés",
+        "sources": "Sources utilisées",
+        "observations": "Observations",
+        "empty": "Aucune recherche pour le moment.",
+        "selectionRequired": "Sélectionnez au moins un événement.",
+        "conflict": "Une recherche est déjà en cours.",
+        "requestFailed": "La recherche n’a pas pu démarrer. Votre sélection est conservée.",
+        "readFailed": "La recherche n’a pas pu être actualisée. Les dernières données disponibles sont affichées.",
+        "resultFailed": "Cet événement n’a pas pu être recherché. Vous pouvez le sélectionner lors d’une nouvelle exécution.",
+        "states": {
+          "queued": "En attente",
+          "running": "Recherche en cours",
+          "completed": "Terminée",
+          "partial": "Partiellement terminée",
+          "failed": "Erreur"
+        },
+        "consultedSources": "URL renvoyées par l’outil ({count})"
+      }
     },
     "events": {
       "drafts": {

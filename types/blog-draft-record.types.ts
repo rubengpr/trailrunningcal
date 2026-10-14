@@ -1,3 +1,4 @@
+import type { DraftResearchStatus } from '@/types/blog-research.types';
 import type { SelectionContext, SelectionInput } from '@/types/blog-selection.types';
 import type { EditorialStatus, Evaluation, EvaluationStatus } from '@/types/blog-evaluation.types';
 
@@ -13,6 +14,7 @@ export interface DraftSummary {
   evaluationStatus: EvaluationStatus;
   editorialStatus: EditorialStatus | null;
   criticalCount: number;
+  researchStatus?: DraftResearchStatus;
 }
 
 export type DraftEvaluation = Evaluation;
@@ -44,6 +46,7 @@ export interface DraftSummaryRow {
   status: DraftStatus;
   created_at: string;
   evaluation_status: EvaluationStatus;
+  research_status?: DraftResearchStatus;
   evaluation: { score: number; critical_errors: Evaluation['criticalErrors'] } | null;
 }
 

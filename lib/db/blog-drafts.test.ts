@@ -26,7 +26,7 @@ describe('draft queries', () => {
   it('deletes atomically only when both lifecycle states allow it', async () => {
     mocks.maybeSingle.mockResolvedValue({data:{id:'id'},error:null});
     expect(await deleteDraft('id')).toBe(true);
-    expect(mocks.in.mock.calls).toEqual([['status',['completed','failed']],['evaluation_status',['not_evaluated','completed','failed']]]);
+    expect(mocks.in.mock.calls).toEqual([['status',['completed','failed']],['evaluation_status',['not_evaluated','completed','failed']],['research_status',['not_started','completed','partial','failed']]]);
     expect(mocks.from).toHaveBeenCalledWith('blog_drafts');
   });
   it('reports a missing conditional deletion and propagates errors', async () => {
@@ -81,7 +81,7 @@ describe('draft queries', () => {
       evaluation_status: 'completed',evaluation_error_code: null, evaluation: { score: 76, criteria: [], critical_errors: [], recommendations: [], created_at: 'evaluated' },
     }, error: null });
     expect(await getDraft('id')).toEqual({
-      id: 'id', title: 'Title', instructions: 'Input', status: 'completed', createdAt: 'created',
+      researchStatus: 'not_started', id: 'id', title: 'Title', instructions: 'Input', status: 'completed', createdAt: 'created',
       updatedAt: 'updated', contentHtml: '<p>Article</p>', primaryKeyword: 'trail', slug: 'slug',
       seoTitle: 'SEO', metaDescription: 'Description', errorCode: null, generationContext: null,
       evaluationStatus: 'completed', evaluationErrorCode: null, editorialStatus: 'needs_improvement', criticalCount: 0,

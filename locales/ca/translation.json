@@ -1237,7 +1237,7 @@
         "deleting": "Eliminant…",
         "success": "Esborrany eliminat.",
         "missing": "L’esborrany ja no existeix.",
-        "processing": "No es pot eliminar mentre es genera o s’avalua l’article.",
+        "processing": "No es pot eliminar mentre es genera, avalua o investiga l’article.",
         "failed": "No s’ha pogut eliminar l’esborrany. Torna-ho a provar."
       },
       "evaluateArticle": "Avaluar article",
@@ -1406,7 +1406,32 @@
         }
       },
       "observedWords": "Longitud observada: {count} paraules.",
-      "observedCharacters": "Longitud observada: {count} caràcters."
+      "observedCharacters": "Longitud observada: {count} caràcters.",
+      "research": {
+        "title": "Investigació",
+        "selection": "Selecciona els esdeveniments que vols investigar (1–5).",
+        "start": "Investigar esdeveniments",
+        "sending": "Enviant…",
+        "investigating": "Investigant…",
+        "history": "Historial d’investigacions",
+        "progress": "{count}/{total} esdeveniments investigats",
+        "sources": "Fonts utilitzades",
+        "observations": "Observacions",
+        "empty": "Encara no hi ha investigacions.",
+        "selectionRequired": "Selecciona almenys un esdeveniment.",
+        "conflict": "Ja hi ha una investigació en curs.",
+        "requestFailed": "No s’ha pogut iniciar la investigació. Conservem la teva selecció.",
+        "readFailed": "No s’ha pogut actualitzar la investigació. Es mostren les últimes dades disponibles.",
+        "resultFailed": "No s’ha pogut investigar aquest esdeveniment. Pots seleccionar-lo en una nova execució.",
+        "states": {
+          "queued": "Pendent",
+          "running": "Investigant",
+          "completed": "Completada",
+          "partial": "Completada parcialment",
+          "failed": "Error"
+        },
+        "consultedSources": "URL retornades per l’eina ({count})"
+      }
     },
     "login": {
       "title": "Admin",

@@ -1269,7 +1269,7 @@
         "deleting": "Eliminando…",
         "success": "Borrador eliminado.",
         "missing": "El borrador ya no existe.",
-        "processing": "No se puede eliminar mientras se genera o evalúa el artículo.",
+        "processing": "No se puede eliminar mientras se genera, evalúa o investiga el artículo.",
         "failed": "No se ha podido eliminar el borrador. Inténtalo de nuevo."
       },
       "evaluateArticle": "Evaluar artículo",
@@ -1438,7 +1438,32 @@
         }
       },
       "observedWords": "Longitud observada: {count} palabras.",
-      "observedCharacters": "Longitud observada: {count} caracteres."
+      "observedCharacters": "Longitud observada: {count} caracteres.",
+      "research": {
+        "title": "Investigación",
+        "selection": "Selecciona los eventos que quieres investigar (1–5).",
+        "start": "Investigar eventos",
+        "sending": "Enviando…",
+        "investigating": "Investigando…",
+        "history": "Historial de investigaciones",
+        "progress": "{count}/{total} eventos investigados",
+        "sources": "Fuentes utilizadas",
+        "observations": "Observaciones",
+        "empty": "Todavía no hay investigaciones.",
+        "selectionRequired": "Selecciona al menos un evento.",
+        "conflict": "Ya hay una investigación en curso.",
+        "requestFailed": "No se ha podido iniciar la investigación. Conservamos tu selección.",
+        "readFailed": "No se ha podido actualizar la investigación. Se muestran los últimos datos disponibles.",
+        "resultFailed": "No se ha podido investigar este evento. Puedes seleccionarlo en una nueva ejecución.",
+        "states": {
+          "queued": "Pendiente",
+          "running": "Investigando",
+          "completed": "Completada",
+          "partial": "Completada parcialmente",
+          "failed": "Error"
+        },
+        "consultedSources": "URLs devueltas por la herramienta ({count})"
+      }
     },
     "login": {
       "title": "Admin",
