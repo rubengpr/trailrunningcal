@@ -10,6 +10,14 @@ export type ApiAuthorization =
 
 export const API_AUTHORIZATION_POLICY = {
   'GET /api/cron/event-updates': 'cron',
+  'GET /api/blog-drafts': 'admin',
+  'POST /api/blog-drafts': 'admin',
+  'GET /api/blog-drafts/[id]': 'admin',
+  'DELETE /api/blog-drafts/[id]': 'admin',
+  'POST /api/blog-drafts/[id]/evaluation': 'admin',
+  'GET /api/blog-drafts/[id]/research': 'admin',
+  'POST /api/blog-drafts/[id]/research': 'admin',
+  'GET /api/blog-drafts/events': 'admin',
   'POST /api/event-locations': 'public',
   'POST /api/internal/revalidate-events': 'revalidation',
   'POST /api/events/[eventId]/description-draft': 'admin',
