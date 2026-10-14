@@ -1,0 +1,63 @@
+{
+  "status": "implemented_awaiting_smoke",
+  "project": "Web Search Benchmark",
+  "projectId": "2d86ff69-b6cd-4cc6-92f3-46ff5686ee52",
+  "dataset": {
+    "name": "trail-events-v1",
+    "id": "f5f4781d-3c68-4263-843f-c7749bdb975e",
+    "version": "1000198028338790421",
+    "namedSnapshotAvailable": false,
+    "sha256": "fc1a74a5e85f803b7f2c7ff126c2efc718c77d1227626123c96a095b9e989910"
+  },
+  "functions": [
+    {
+      "slug": "event-researcher-v1",
+      "id": "a0bc3dab-dc2f-4567-b1a6-26c741997670",
+      "version": "1000198031107293396"
+    },
+    {
+      "slug": "benchmark-config-v1",
+      "id": "b4cc998d-4c24-456a-98cc-3728f3b256e2",
+      "version": "1000198031107293396"
+    },
+    {
+      "slug": "dossier-quality-v1",
+      "id": "ca9af96e-4b74-4121-a789-acf333844790",
+      "version": "1000198031107293396"
+    },
+    {
+      "slug": "dossier-judge-v1",
+      "id": "cbae9c8e-fca3-419a-b526-2fbf58461aba",
+      "version": "1000198031107293396"
+    }
+  ],
+  "judgeVersionPinnedInScorer": "1000198031085928507",
+  "experiments": [
+    {
+      "id": "f071b800-7db0-47c5-8931-e0ad337b8b42",
+      "name": "v1-tavily"
+    },
+    {
+      "id": "571db9d7-ee01-432c-928b-d5934c8039c8",
+      "name": "v1-linkup"
+    },
+    {
+      "id": "4f068f50-877d-44fb-924b-d39c3936f8f8",
+      "name": "v1-exa"
+    },
+    {
+      "id": "e0a0008c-8344-4690-a41e-74b83f6f2e56",
+      "name": "v1-context-dev"
+    },
+    {
+      "id": "7c32b734-73e4-429f-b7e3-6b708d821b8a",
+      "name": "v1-openai"
+    }
+  ],
+  "plannedInvestigations": 90,
+  "completedInvestigations": 0,
+  "trialsPerEvent": 3,
+  "providerProfilesConfirmed": true,
+  "researcherModel": "gpt-6.1-sol",
+  "judgeModel": "gpt-6.1-sol"
+}
