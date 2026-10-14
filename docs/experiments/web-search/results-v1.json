@@ -1,0 +1,2307 @@
+{
+ "experiment": "Web Search Benchmark v1",
+ "date": "2026-10-14",
+ "braintrustProject": "Web Search Benchmark",
+ "experiments": [
+  "v1-openai",
+  "v1-exa",
+  "v1-linkup"
+ ],
+ "model": "gpt-6.1-sol",
+ "rubric": "v3",
+ "note": "One entry per investigation (6 events x 3 trials x 3 providers). Quality is 0-100 and only for publishable dossiers. provenErrors only include errors whose dossier and ground-truth quotes were verified by code against the ground-truth version used by that judgement. researchUsd.complete is false when part of the cost is not exposed (OpenAI native search content).",
+ "results": [
+  {
+   "provider": "linkup",
+   "event": "trail-valle-de-tena",
+   "trial": 3,
+   "stage": "completed",
+   "dossier": {
+    "words": 544,
+    "sources": 7
+   },
+   "researchUsd": {
+    "known": 0.122,
+    "complete": true
+   },
+   "judgeUsd": {
+    "original": 0.041,
+    "rejudge": 0.038
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 90,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 18,
+     "route": 10,
+     "history": 9,
+     "elite": 0
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 90,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 18,
+     "route": 10,
+     "history": 9,
+     "elite": 0
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "linkup",
+   "event": "ultra-sierra-nevada",
+   "trial": 2,
+   "stage": "completed",
+   "dossier": {
+    "words": 540,
+    "sources": 13
+   },
+   "researchUsd": {
+    "known": 0.174,
+    "complete": true
+   },
+   "judgeUsd": {
+    "original": 0.048,
+    "rejudge": 0.04
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 90,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 14,
+     "route": 10,
+     "history": 12,
+     "elite": 2
+    },
+    "provenErrors": [
+     {
+      "criterion": "races",
+      "excerpt": "la Maratón, los 40–42 km y aproximadamente 2.700–2.900 m positivos",
+      "explanation": "El desnivel orientativo ofrecido en el texto principal no coincide con los 2.400 m de la referencia. Las observaciones sí recogen esa cifra correcta."
+     },
+     {
+      "criterion": "races",
+      "excerpt": "el comunicado de 2026 presenta 100, 60, 40 y 25 km, respectivamente.",
+      "explanation": "Atribuye 40 km a la Maratón de 2026, cuando la referencia asigna 42 km a 2026 y 40 km a 2027."
+     },
+     {
+      "criterion": "elite",
+      "excerpt": "Miguel Heras, ganador de la Ultra en 2017, 2018 y 2019.",
+      "explanation": "La victoria de Miguel Heras en la Ultra de 2019 es incorrecta: el ganador fue Marian Priadka. Sus victorias de 2017 y 2018 sí están respaldadas."
+     }
+    ]
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 96.7,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 15,
+     "route": 10,
+     "history": 12,
+     "elite": 2
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "openai",
+   "event": "trail-valle-de-tena",
+   "trial": 1,
+   "stage": "completed",
+   "dossier": {
+    "words": 539,
+    "sources": 8
+   },
+   "researchUsd": {
+    "known": 0.13,
+    "complete": false
+   },
+   "judgeUsd": {
+    "original": 0.036,
+    "rejudge": 0.036
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 86.3,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 19,
+     "route": 7,
+     "history": 9,
+     "elite": 0
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 86.3,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 19,
+     "route": 7,
+     "history": 6,
+     "elite": 0
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "linkup",
+   "event": "ultra-sierra-nevada",
+   "trial": 1,
+   "stage": "completed",
+   "dossier": {
+    "words": 542,
+    "sources": 7
+   },
+   "researchUsd": {
+    "known": 0.104,
+    "complete": true
+   },
+   "judgeUsd": {
+    "original": 0.034,
+    "rejudge": 0.039
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 93.3,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 12,
+     "route": 10,
+     "history": 9,
+     "elite": 1
+    },
+    "provenErrors": [
+     {
+      "criterion": "races",
+      "excerpt": "la presentación de 2026 publica 40 km y 2.700 m+",
+      "explanation": "Atribuye 40 km a la Maratón de 2026, mientras que la referencia atribuye 42 km a esa edición y 40 km a 2027."
+     }
+    ]
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 93.3,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 14,
+     "route": 11,
+     "history": 8,
+     "elite": 1
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "exa",
+   "event": "marato-dels-dements",
+   "trial": 2,
+   "stage": "completed",
+   "dossier": {
+    "words": 609,
+    "sources": 11
+   },
+   "researchUsd": {
+    "known": 0.214,
+    "complete": true
+   },
+   "judgeUsd": {
+    "original": 0.034,
+    "rejudge": 0.033
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 93.3,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 8,
+     "route": 8,
+     "history": 11,
+     "elite": 1
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 84.6,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 6,
+     "route": 8,
+     "history": 10,
+     "elite": 1
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "exa",
+   "event": "travesera-integral-picos-de-europa",
+   "trial": 2,
+   "stage": "completed",
+   "dossier": {
+    "words": 580,
+    "sources": 8
+   },
+   "researchUsd": {
+    "known": 0.308,
+    "complete": true
+   },
+   "judgeUsd": {
+    "original": 0.04,
+    "rejudge": 0.036
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 88,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 6,
+     "route": 14,
+     "history": 7,
+     "elite": 2
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 88,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 6,
+     "route": 10,
+     "history": 7,
+     "elite": 2
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "exa",
+   "event": "ultra-sierra-nevada",
+   "trial": 2,
+   "stage": "completed",
+   "dossier": {
+    "words": 622,
+    "sources": 11
+   },
+   "researchUsd": {
+    "known": 0.12,
+    "complete": true
+   },
+   "judgeUsd": {
+    "original": 0.035,
+    "rejudge": 0.04
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 96.7,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 13,
+     "route": 11,
+     "history": 10,
+     "elite": 2
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 96.7,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 14,
+     "route": 12,
+     "history": 10,
+     "elite": 2
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "exa",
+   "event": "salomon-ultra-pirineu",
+   "trial": 1,
+   "stage": "failed",
+   "failure": "Research failed; inspect recorded responses",
+   "dossier": null,
+   "researchUsd": {
+    "known": 0.307,
+    "complete": true
+   },
+   "judgeUsd": {
+    "original": 0,
+    "rejudge": null
+   },
+   "originalJudgeGroundTruthV2": null,
+   "rejudgeGroundTruthV21": null
+  },
+  {
+   "provider": "exa",
+   "event": "trail-valle-de-tena",
+   "trial": 1,
+   "stage": "completed",
+   "dossier": {
+    "words": 592,
+    "sources": 8
+   },
+   "researchUsd": {
+    "known": 0.105,
+    "complete": true
+   },
+   "judgeUsd": {
+    "original": 0.037,
+    "rejudge": 0.04
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 90,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 19,
+     "route": 9,
+     "history": 7,
+     "elite": 0
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 90,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 19,
+     "route": 9,
+     "history": 6,
+     "elite": 0
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "linkup",
+   "event": "salomon-ultra-pirineu",
+   "trial": 3,
+   "stage": "completed",
+   "dossier": {
+    "words": 618,
+    "sources": 9
+   },
+   "researchUsd": {
+    "known": 0.192,
+    "complete": true
+   },
+   "judgeUsd": {
+    "original": 0.048,
+    "rejudge": 0.038
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 100,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 14,
+     "route": 11,
+     "history": 12,
+     "elite": 5
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 100,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 14,
+     "route": 11,
+     "history": 8,
+     "elite": 5
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "exa",
+   "event": "salomon-ultra-pirineu",
+   "trial": 2,
+   "stage": "completed",
+   "dossier": {
+    "words": 578,
+    "sources": 14
+   },
+   "researchUsd": {
+    "known": 0.278,
+    "complete": true
+   },
+   "judgeUsd": {
+    "original": 0.041,
+    "rejudge": 0.042
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 100,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 13,
+     "route": 11,
+     "history": 9,
+     "elite": 4
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 100,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 15,
+     "route": 11,
+     "history": 6,
+     "elite": 4
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "linkup",
+   "event": "gran-trail-aneto-posets",
+   "trial": 2,
+   "stage": "completed",
+   "dossier": {
+    "words": 613,
+    "sources": 4
+   },
+   "researchUsd": {
+    "known": 0.102,
+    "complete": true
+   },
+   "judgeUsd": {
+    "original": 0.044,
+    "rejudge": 0.044
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 90,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 18,
+     "route": 21,
+     "history": 11,
+     "elite": 0
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 90,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 18,
+     "route": 21,
+     "history": 11,
+     "elite": 0
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "exa",
+   "event": "ultra-sierra-nevada",
+   "trial": 1,
+   "stage": "completed",
+   "dossier": {
+    "words": 582,
+    "sources": 12
+   },
+   "researchUsd": {
+    "known": 0.207,
+    "complete": true
+   },
+   "judgeUsd": {
+    "original": 0.043,
+    "rejudge": 0.036
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 96.7,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 13,
+     "route": 12,
+     "history": 11,
+     "elite": 2
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 96.7,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 14,
+     "route": 12,
+     "history": 8,
+     "elite": 2
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "openai",
+   "event": "travesera-integral-picos-de-europa",
+   "trial": 3,
+   "stage": "completed",
+   "dossier": {
+    "words": 532,
+    "sources": 9
+   },
+   "researchUsd": {
+    "known": 0.162,
+    "complete": false
+   },
+   "judgeUsd": {
+    "original": 0.043,
+    "rejudge": 0.039
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 81.3,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 7,
+     "route": 11,
+     "history": 14,
+     "elite": 1
+    },
+    "provenErrors": [
+     {
+      "criterion": "races",
+      "excerpt": "en 2026 sus cinco recorridos iban de 0,6 km y 4 m positivos a 6,4 km y 330 m positivos.",
+      "explanation": "Presenta distancias y desniveles publicados para la prueba infantil, mientras que la referencia afirma expresamente que no los publica."
+     },
+     {
+      "criterion": "elite",
+      "excerpt": "Manuel Merillas: ganó la Integral en 2015, 2016, 2019, 2021, 2023, 2024 y 2025.",
+      "explanation": "La victoria de 2016 corresponde a Antonio Blanco Fernández, no a Manuel Merillas."
+     }
+    ]
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 90,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 9,
+     "route": 10,
+     "history": 13,
+     "elite": 1
+    },
+    "provenErrors": [
+     {
+      "criterion": "elite",
+      "excerpt": "ganó la Integral en 2015, 2016, 2019, 2021, 2023, 2024 y 2025.",
+      "explanation": "La victoria de 2016 corresponde a Antonio Blanco Fernández, no a Manuel Merillas. Los otros años enumerados sí están respaldados."
+     }
+    ]
+   }
+  },
+  {
+   "provider": "exa",
+   "event": "salomon-ultra-pirineu",
+   "trial": 3,
+   "stage": "completed",
+   "dossier": {
+    "words": 564,
+    "sources": 11
+   },
+   "researchUsd": {
+    "known": 0.226,
+    "complete": true
+   },
+   "judgeUsd": {
+    "original": 0.037,
+    "rejudge": 0.035
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 100,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 12,
+     "route": 10,
+     "history": 9,
+     "elite": 3
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 100,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 12,
+     "route": 10,
+     "history": 6,
+     "elite": 3
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "openai",
+   "event": "gran-trail-aneto-posets",
+   "trial": 2,
+   "stage": "completed",
+   "dossier": {
+    "words": 581,
+    "sources": 11
+   },
+   "researchUsd": {
+    "known": 0.137,
+    "complete": false
+   },
+   "judgeUsd": {
+    "original": 0.044,
+    "rejudge": 0.048
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 93.3,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 18,
+     "route": 22,
+     "history": 11,
+     "elite": 1
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 93.3,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 18,
+     "route": 21,
+     "history": 13,
+     "elite": 1
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "linkup",
+   "event": "salomon-ultra-pirineu",
+   "trial": 1,
+   "stage": "completed",
+   "dossier": {
+    "words": 566,
+    "sources": 9
+   },
+   "researchUsd": {
+    "known": 0.179,
+    "complete": true
+   },
+   "judgeUsd": {
+    "original": 0.031,
+    "rejudge": 0.033
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 88.4,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 12,
+     "route": 11,
+     "history": 4,
+     "elite": 2
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 88.4,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 13,
+     "route": 11,
+     "history": 4,
+     "elite": 2
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "exa",
+   "event": "gran-trail-aneto-posets",
+   "trial": 1,
+   "stage": "completed",
+   "dossier": {
+    "words": 616,
+    "sources": 7
+   },
+   "researchUsd": {
+    "known": 0.143,
+    "complete": true
+   },
+   "judgeUsd": {
+    "original": 0.044,
+    "rejudge": 0.047
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 90,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 18,
+     "route": 22,
+     "history": 13,
+     "elite": 0
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 90,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 18,
+     "route": 22,
+     "history": 14,
+     "elite": 0
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "openai",
+   "event": "ultra-sierra-nevada",
+   "trial": 1,
+   "stage": "completed",
+   "dossier": {
+    "words": 546,
+    "sources": 10
+   },
+   "researchUsd": {
+    "known": 0.134,
+    "complete": false
+   },
+   "judgeUsd": {
+    "original": 0.035,
+    "rejudge": 0.037
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 100,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 13,
+     "route": 12,
+     "history": 7,
+     "elite": 3
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 100,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 13,
+     "route": 13,
+     "history": 6,
+     "elite": 3
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "openai",
+   "event": "ultra-sierra-nevada",
+   "trial": 3,
+   "stage": "completed",
+   "dossier": {
+    "words": 560,
+    "sources": 11
+   },
+   "researchUsd": {
+    "known": 0.133,
+    "complete": false
+   },
+   "judgeUsd": {
+    "original": 0.039,
+    "rejudge": 0.036
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 96.7,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 13,
+     "route": 13,
+     "history": 7,
+     "elite": 2
+    },
+    "provenErrors": [
+     {
+      "criterion": "races",
+      "excerpt": "Los relevos reúnen equipos de tres personas y actualmente se anuncian con 74 km, compartiendo el tramo de la Trail y añadiendo la subida alta de la Ultra",
+      "explanation": "El dossier presenta los relevos como un recorrido propio de 74 km construido sobre la Trail, mientras que la referencia los sitúa sobre el mismo recorrido de la Ultra, sin cifras independientes."
+     }
+    ]
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 96.7,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 14,
+     "route": 12,
+     "history": 7,
+     "elite": 2
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "exa",
+   "event": "travesera-integral-picos-de-europa",
+   "trial": 1,
+   "stage": "completed",
+   "dossier": {
+    "words": 629,
+    "sources": 10
+   },
+   "researchUsd": {
+    "known": 0.228,
+    "complete": true
+   },
+   "judgeUsd": {
+    "original": 0.035,
+    "rejudge": 0.035
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 84.6,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 6,
+     "route": 9,
+     "history": 10,
+     "elite": 1
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 84.6,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 6,
+     "route": 10,
+     "history": 7,
+     "elite": 1
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "exa",
+   "event": "gran-trail-aneto-posets",
+   "trial": 2,
+   "stage": "completed",
+   "dossier": {
+    "words": 626,
+    "sources": 7
+   },
+   "researchUsd": {
+    "known": 0.152,
+    "complete": true
+   },
+   "judgeUsd": {
+    "original": 0.048,
+    "rejudge": 0.046
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 93.3,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 18,
+     "route": 21,
+     "history": 11,
+     "elite": 1
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 93.3,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 18,
+     "route": 20,
+     "history": 10,
+     "elite": 1
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "openai",
+   "event": "gran-trail-aneto-posets",
+   "trial": 1,
+   "stage": "completed",
+   "dossier": {
+    "words": 581,
+    "sources": 11
+   },
+   "researchUsd": {
+    "known": 0.147,
+    "complete": false
+   },
+   "judgeUsd": {
+    "original": 0.055,
+    "rejudge": 0.045
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 93.3,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 18,
+     "route": 22,
+     "history": 11,
+     "elite": 1
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 93.3,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 18,
+     "route": 21,
+     "history": 13,
+     "elite": 1
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "linkup",
+   "event": "gran-trail-aneto-posets",
+   "trial": 3,
+   "stage": "completed",
+   "dossier": {
+    "words": 617,
+    "sources": 5
+   },
+   "researchUsd": {
+    "known": 0.098,
+    "complete": true
+   },
+   "judgeUsd": {
+    "original": 0.046,
+    "rejudge": 0.041
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 90,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 18,
+     "route": 23,
+     "history": 11,
+     "elite": 0
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 90,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 18,
+     "route": 24,
+     "history": 11,
+     "elite": 0
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "exa",
+   "event": "ultra-sierra-nevada",
+   "trial": 3,
+   "stage": "completed",
+   "dossier": {
+    "words": 556,
+    "sources": 13
+   },
+   "researchUsd": {
+    "known": 0.184,
+    "complete": true
+   },
+   "judgeUsd": {
+    "original": 0.041,
+    "rejudge": 0.037
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 93.3,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 13,
+     "route": 11,
+     "history": 8,
+     "elite": 1
+    },
+    "provenErrors": [
+     {
+      "criterion": "races",
+      "excerpt": "Relevos permite repartir entre tres integrantes unos 74–75 km desde Cenes de la Vega",
+      "explanation": "Presenta los relevos como un recorrido distinto de 74–75 km desde Cenes de la Vega, mientras la referencia los sitúa sobre el mismo recorrido de la Ultra, cuya distancia publicada es de 100 km."
+     }
+    ]
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 93.3,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 14,
+     "route": 11,
+     "history": 7,
+     "elite": 1
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "openai",
+   "event": "marato-dels-dements",
+   "trial": 3,
+   "stage": "completed",
+   "dossier": {
+    "words": 508,
+    "sources": 8
+   },
+   "researchUsd": {
+    "known": 0.151,
+    "complete": false
+   },
+   "judgeUsd": {
+    "original": 0.032,
+    "rejudge": 0.033
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 88,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 6,
+     "route": 8,
+     "history": 10,
+     "elite": 2
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 88,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 6,
+     "route": 8,
+     "history": 10,
+     "elite": 2
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "openai",
+   "event": "trail-valle-de-tena",
+   "trial": 3,
+   "stage": "completed",
+   "dossier": {
+    "words": 562,
+    "sources": 11
+   },
+   "researchUsd": {
+    "known": 0.14,
+    "complete": false
+   },
+   "judgeUsd": {
+    "original": 0.04,
+    "rejudge": 0.039
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 93.3,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 18,
+     "route": 11,
+     "history": 7,
+     "elite": 1
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 93.3,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 18,
+     "route": 11,
+     "history": 6,
+     "elite": 1
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "openai",
+   "event": "marato-dels-dements",
+   "trial": 2,
+   "stage": "completed",
+   "dossier": {
+    "words": 540,
+    "sources": 7
+   },
+   "researchUsd": {
+    "known": 0.141,
+    "complete": false
+   },
+   "judgeUsd": {
+    "original": 0.029,
+    "rejudge": 0.032
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 88,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 6,
+     "route": 8,
+     "history": 10,
+     "elite": 2
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 88,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 6,
+     "route": 8,
+     "history": 9,
+     "elite": 2
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "openai",
+   "event": "gran-trail-aneto-posets",
+   "trial": 3,
+   "stage": "failed",
+   "failure": "Research failed; inspect recorded responses",
+   "dossier": null,
+   "researchUsd": {
+    "known": 0.185,
+    "complete": false
+   },
+   "judgeUsd": {
+    "original": 0,
+    "rejudge": null
+   },
+   "originalJudgeGroundTruthV2": null,
+   "rejudgeGroundTruthV21": null
+  },
+  {
+   "provider": "linkup",
+   "event": "travesera-integral-picos-de-europa",
+   "trial": 2,
+   "stage": "completed",
+   "dossier": {
+    "words": 563,
+    "sources": 8
+   },
+   "researchUsd": {
+    "known": 0.141,
+    "complete": true
+   },
+   "judgeUsd": {
+    "original": 0.039,
+    "rejudge": 0.042
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 88,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 6,
+     "route": 10,
+     "history": 10,
+     "elite": 2
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 88,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 6,
+     "route": 13,
+     "history": 13,
+     "elite": 2
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "openai",
+   "event": "salomon-ultra-pirineu",
+   "trial": 3,
+   "stage": "failed",
+   "failure": "Research failed; inspect recorded responses",
+   "dossier": null,
+   "researchUsd": {
+    "known": 0.232,
+    "complete": false
+   },
+   "judgeUsd": {
+    "original": 0,
+    "rejudge": null
+   },
+   "originalJudgeGroundTruthV2": null,
+   "rejudgeGroundTruthV21": null
+  },
+  {
+   "provider": "openai",
+   "event": "ultra-sierra-nevada",
+   "trial": 2,
+   "stage": "completed",
+   "dossier": {
+    "words": 574,
+    "sources": 11
+   },
+   "researchUsd": {
+    "known": 0.168,
+    "complete": false
+   },
+   "judgeUsd": {
+    "original": 0.038,
+    "rejudge": 0.038
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 90,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 12,
+     "route": 12,
+     "history": 6,
+     "elite": 3
+    },
+    "provenErrors": [
+     {
+      "criterion": "elite",
+      "excerpt": "Miguel Heras ganó la Ultra en 2017 y 2018 y compartió la victoria de 2019 con Marián Priadka.",
+      "explanation": "La atribución de una victoria compartida a Miguel Heras en 2019 no coincide con el palmarés de referencia, que identifica únicamente a Marian Priadka como ganador masculino."
+     }
+    ]
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 96.7,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 14,
+     "route": 11,
+     "history": 8,
+     "elite": 2
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "openai",
+   "event": "travesera-integral-picos-de-europa",
+   "trial": 1,
+   "stage": "completed",
+   "dossier": {
+    "words": 573,
+    "sources": 8
+   },
+   "researchUsd": {
+    "known": 0.201,
+    "complete": false
+   },
+   "judgeUsd": {
+    "original": 0.042,
+    "rejudge": 0.041
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 88,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 7,
+     "route": 10,
+     "history": 11,
+     "elite": 2
+    },
+    "provenErrors": [
+     {
+      "criterion": "races",
+      "excerpt": "En 2026 sus recorridos por categorías fueron: sub-8, 0,6 km y 4 m positivos; sub-10, 1,91 km y 25 m; sub-12, 2,64 km y 73 m; sub-14, 3,88 km y 203 m; sub-16, 6,4 km y 330 m.",
+      "explanation": "El dossier atribuye a información oficial distancias y desniveles publicados de la prueba infantil, mientras que la referencia afirma expresamente que no los publica."
+     }
+    ]
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 96.7,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 9,
+     "route": 10,
+     "history": 10,
+     "elite": 2
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "exa",
+   "event": "trail-valle-de-tena",
+   "trial": 2,
+   "stage": "completed",
+   "dossier": {
+    "words": 574,
+    "sources": 9
+   },
+   "researchUsd": {
+    "known": 0.173,
+    "complete": true
+   },
+   "judgeUsd": {
+    "original": 0.041,
+    "rejudge": 0.043
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 93.3,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 26,
+     "route": 11,
+     "history": 6,
+     "elite": 1
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 93.3,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 25,
+     "route": 11,
+     "history": 9,
+     "elite": 1
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "linkup",
+   "event": "trail-valle-de-tena",
+   "trial": 1,
+   "stage": "completed",
+   "dossier": {
+    "words": 556,
+    "sources": 9
+   },
+   "researchUsd": {
+    "known": 0.132,
+    "complete": true
+   },
+   "judgeUsd": {
+    "original": 0.037,
+    "rejudge": 0.037
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 93.3,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 16,
+     "route": 8,
+     "history": 7,
+     "elite": 1
+    },
+    "provenErrors": [
+     {
+      "criterion": "races",
+      "excerpt": "la 2K, 20 km y 1.250 m positivos",
+      "explanation": "El dossier atribuye a 2026 un desnivel de 1.250 m para la 2K, frente a los 1.230 m de la referencia."
+     },
+     {
+      "criterion": "history",
+      "excerpt": "Las pruebas largas 8K y 4K fueron suspendidas por la meteorología en 2024, mientras se celebraron las cortas.",
+      "explanation": "Sitúa la cancelación en 2024, año para el que la referencia recoge ganadores de ambas pruebas. La cancelación indicada corresponde a 2023."
+     }
+    ]
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 89.1,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 17,
+     "route": 10,
+     "history": 6,
+     "elite": 1
+    },
+    "provenErrors": [
+     {
+      "criterion": "history",
+      "excerpt": "Las pruebas largas 8K y 4K fueron suspendidas por la meteorología en 2024, mientras se celebraron las cortas.",
+      "explanation": "La observación atribuye la suspensión a 2024, pero la referencia la sitúa en 2023 y recoge ganadores de ambas pruebas largas en 2024."
+     }
+    ]
+   }
+  },
+  {
+   "provider": "openai",
+   "event": "travesera-integral-picos-de-europa",
+   "trial": 2,
+   "stage": "completed",
+   "dossier": {
+    "words": 538,
+    "sources": 6
+   },
+   "researchUsd": {
+    "known": 0.181,
+    "complete": false
+   },
+   "judgeUsd": {
+    "original": 0.036,
+    "rejudge": 0.038
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 88.89999999999999,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 7,
+     "route": 9,
+     "history": 11,
+     "elite": 1
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 88.89999999999999,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 7,
+     "route": 10,
+     "history": 11,
+     "elite": 1
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "linkup",
+   "event": "marato-dels-dements",
+   "trial": 3,
+   "stage": "completed",
+   "dossier": {
+    "words": 554,
+    "sources": 13
+   },
+   "researchUsd": {
+    "known": 0.184,
+    "complete": true
+   },
+   "judgeUsd": {
+    "original": 0.033,
+    "rejudge": 0.035
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 92.3,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 7,
+     "route": 8,
+     "history": 11,
+     "elite": 2
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 92.3,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 7,
+     "route": 8,
+     "history": 11,
+     "elite": 2
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "linkup",
+   "event": "ultra-sierra-nevada",
+   "trial": 3,
+   "stage": "completed",
+   "dossier": {
+    "words": 544,
+    "sources": 7
+   },
+   "researchUsd": {
+    "known": 0.157,
+    "complete": true
+   },
+   "judgeUsd": {
+    "original": 0.032,
+    "rejudge": 0.035
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 93.3,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 12,
+     "route": 9,
+     "history": 6,
+     "elite": 1
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 93.3,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 14,
+     "route": 8,
+     "history": 6,
+     "elite": 1
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "openai",
+   "event": "marato-dels-dements",
+   "trial": 1,
+   "stage": "completed",
+   "dossier": {
+    "words": 564,
+    "sources": 6
+   },
+   "researchUsd": {
+    "known": 0.154,
+    "complete": false
+   },
+   "judgeUsd": {
+    "original": 0.033,
+    "rejudge": 0.032
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 88,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 6,
+     "route": 8,
+     "history": 8,
+     "elite": 2
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 88,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 6,
+     "route": 8,
+     "history": 8,
+     "elite": 2
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "exa",
+   "event": "marato-dels-dements",
+   "trial": 1,
+   "stage": "completed",
+   "dossier": {
+    "words": 587,
+    "sources": 10
+   },
+   "researchUsd": {
+    "known": 0.136,
+    "complete": true
+   },
+   "judgeUsd": {
+    "original": 0.036,
+    "rejudge": 0.037
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 84.6,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 6,
+     "route": 8,
+     "history": 8,
+     "elite": 1
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 93.3,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 8,
+     "route": 8,
+     "history": 9,
+     "elite": 1
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "exa",
+   "event": "trail-valle-de-tena",
+   "trial": 3,
+   "stage": "completed",
+   "dossier": {
+    "words": 618,
+    "sources": 8
+   },
+   "researchUsd": {
+    "known": 0.137,
+    "complete": true
+   },
+   "judgeUsd": {
+    "original": 0.04,
+    "rejudge": 0.041
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 93.3,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 25,
+     "route": 11,
+     "history": 6,
+     "elite": 1
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 93.3,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 26,
+     "route": 9,
+     "history": 9,
+     "elite": 1
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "exa",
+   "event": "gran-trail-aneto-posets",
+   "trial": 3,
+   "stage": "completed",
+   "dossier": {
+    "words": 584,
+    "sources": 7
+   },
+   "researchUsd": {
+    "known": 0.094,
+    "complete": true
+   },
+   "judgeUsd": {
+    "original": 0.039,
+    "rejudge": 0.039
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 90,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 17,
+     "route": 17,
+     "history": 9,
+     "elite": 0
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 90,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 17,
+     "route": 17,
+     "history": 9,
+     "elite": 0
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "linkup",
+   "event": "travesera-integral-picos-de-europa",
+   "trial": 3,
+   "stage": "completed",
+   "dossier": {
+    "words": 584,
+    "sources": 9
+   },
+   "researchUsd": {
+    "known": 0.172,
+    "complete": true
+   },
+   "judgeUsd": {
+    "original": 0.037,
+    "rejudge": 0.039
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 92.3,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 7,
+     "route": 10,
+     "history": 12,
+     "elite": 2
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 92.3,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 7,
+     "route": 10,
+     "history": 10,
+     "elite": 2
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "openai",
+   "event": "salomon-ultra-pirineu",
+   "trial": 1,
+   "stage": "completed",
+   "dossier": {
+    "words": 564,
+    "sources": 11
+   },
+   "researchUsd": {
+    "known": 0.179,
+    "complete": false
+   },
+   "judgeUsd": {
+    "original": 0.042,
+    "rejudge": 0.054
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 100,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 15,
+     "route": 9,
+     "history": 7,
+     "elite": 5
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 100,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 15,
+     "route": 9,
+     "history": 6,
+     "elite": 5
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "linkup",
+   "event": "trail-valle-de-tena",
+   "trial": 2,
+   "stage": "completed",
+   "dossier": {
+    "words": 562,
+    "sources": 5
+   },
+   "researchUsd": {
+    "known": 0.105,
+    "complete": true
+   },
+   "judgeUsd": {
+    "original": 0.037,
+    "rejudge": 0.036
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 90,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 17,
+     "route": 9,
+     "history": 12,
+     "elite": 0
+    },
+    "provenErrors": [
+     {
+      "criterion": "history",
+      "excerpt": "el medio especializado documenta la suspensión de las carreras largas en 2024",
+      "explanation": "La afirmación de suspensión de las carreras largas en 2024 contradice el palmarés de referencia, que recoge ganadores tanto de la 4K como de la 8K de esa edición."
+     }
+    ]
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 90,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 17,
+     "route": 9,
+     "history": 9,
+     "elite": 0
+    },
+    "provenErrors": [
+     {
+      "criterion": "history",
+      "excerpt": "el medio especializado documenta la suspensión de las carreras largas en 2024",
+      "explanation": "La referencia registra ganadores de ambas carreras largas en 2024; sitúa la cancelación de 8K y 4K en 2023, no en 2024."
+     }
+    ]
+   }
+  },
+  {
+   "provider": "exa",
+   "event": "marato-dels-dements",
+   "trial": 3,
+   "stage": "completed",
+   "dossier": {
+    "words": 593,
+    "sources": 9
+   },
+   "researchUsd": {
+    "known": 0.133,
+    "complete": true
+   },
+   "judgeUsd": {
+    "original": 0.029,
+    "rejudge": 0.031
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 96.7,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 8,
+     "route": 8,
+     "history": 10,
+     "elite": 2
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 88,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 6,
+     "route": 8,
+     "history": 8,
+     "elite": 2
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "linkup",
+   "event": "marato-dels-dements",
+   "trial": 1,
+   "stage": "completed",
+   "dossier": {
+    "words": 540,
+    "sources": 7
+   },
+   "researchUsd": {
+    "known": 0.132,
+    "complete": true
+   },
+   "judgeUsd": {
+    "original": 0.033,
+    "rejudge": 0.029
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 96.7,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 8,
+     "route": 8,
+     "history": 9,
+     "elite": 2
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 96.7,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 8,
+     "route": 8,
+     "history": 8,
+     "elite": 2
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "linkup",
+   "event": "travesera-integral-picos-de-europa",
+   "trial": 1,
+   "stage": "completed",
+   "dossier": {
+    "words": 566,
+    "sources": 7
+   },
+   "researchUsd": {
+    "known": 0.184,
+    "complete": false
+   },
+   "judgeUsd": {
+    "original": 0.038,
+    "rejudge": 0.038
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 91.3,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 6,
+     "route": 11,
+     "history": 12,
+     "elite": 3
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 91.3,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 6,
+     "route": 10,
+     "history": 12,
+     "elite": 3
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "openai",
+   "event": "salomon-ultra-pirineu",
+   "trial": 2,
+   "stage": "completed",
+   "dossier": {
+    "words": 606,
+    "sources": 11
+   },
+   "researchUsd": {
+    "known": 0.166,
+    "complete": false
+   },
+   "judgeUsd": {
+    "original": 0.04,
+    "rejudge": 0.04
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 100,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 20,
+     "route": 11,
+     "history": 6,
+     "elite": 4
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 100,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 16,
+     "route": 11,
+     "history": 8,
+     "elite": 4
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "openai",
+   "event": "trail-valle-de-tena",
+   "trial": 2,
+   "stage": "completed",
+   "dossier": {
+    "words": 582,
+    "sources": 8
+   },
+   "researchUsd": {
+    "known": 0.115,
+    "complete": false
+   },
+   "judgeUsd": {
+    "original": 0.043,
+    "rejudge": 0.041
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 91.7,
+    "publishable": true,
+    "missingBasics": [
+     "provinces"
+    ],
+    "facts": {
+     "races": 19,
+     "route": 12,
+     "history": 11,
+     "elite": 2
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 88.3,
+    "publishable": true,
+    "missingBasics": [
+     "provinces"
+    ],
+    "facts": {
+     "races": 18,
+     "route": 12,
+     "history": 10,
+     "elite": 1
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "linkup",
+   "event": "gran-trail-aneto-posets",
+   "trial": 1,
+   "stage": "completed",
+   "dossier": {
+    "words": 565,
+    "sources": 8
+   },
+   "researchUsd": {
+    "known": 0.133,
+    "complete": true
+   },
+   "judgeUsd": {
+    "original": 0.044,
+    "rejudge": 0.047
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 93.3,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 18,
+     "route": 21,
+     "history": 12,
+     "elite": 1
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 93.3,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 18,
+     "route": 21,
+     "history": 12,
+     "elite": 1
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "linkup",
+   "event": "marato-dels-dements",
+   "trial": 2,
+   "stage": "completed",
+   "dossier": {
+    "words": 551,
+    "sources": 9
+   },
+   "researchUsd": {
+    "known": 0.154,
+    "complete": true
+   },
+   "judgeUsd": {
+    "original": 0.029,
+    "rejudge": 0.029
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 93.3,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 8,
+     "route": 8,
+     "history": 8,
+     "elite": 1
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 93.3,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 8,
+     "route": 8,
+     "history": 8,
+     "elite": 1
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "linkup",
+   "event": "salomon-ultra-pirineu",
+   "trial": 2,
+   "stage": "completed",
+   "dossier": {
+    "words": 597,
+    "sources": 12
+   },
+   "researchUsd": {
+    "known": 0.239,
+    "complete": false
+   },
+   "judgeUsd": {
+    "original": 0.045,
+    "rejudge": 0.044
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 96.7,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 12,
+     "route": 11,
+     "history": 10,
+     "elite": 2
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 96.7,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 12,
+     "route": 11,
+     "history": 9,
+     "elite": 2
+    },
+    "provenErrors": []
+   }
+  },
+  {
+   "provider": "exa",
+   "event": "travesera-integral-picos-de-europa",
+   "trial": 3,
+   "stage": "completed",
+   "dossier": {
+    "words": 561,
+    "sources": 9
+   },
+   "researchUsd": {
+    "known": 0.206,
+    "complete": true
+   },
+   "judgeUsd": {
+    "original": 0.043,
+    "rejudge": 0.042
+   },
+   "originalJudgeGroundTruthV2": {
+    "quality": 88,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 6,
+     "route": 11,
+     "history": 9,
+     "elite": 2
+    },
+    "provenErrors": []
+   },
+   "rejudgeGroundTruthV21": {
+    "quality": 88,
+    "publishable": true,
+    "missingBasics": [],
+    "facts": {
+     "races": 6,
+     "route": 10,
+     "history": 8,
+     "elite": 2
+    },
+    "provenErrors": []
+   }
+  }
+ ]
+}
