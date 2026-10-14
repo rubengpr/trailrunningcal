@@ -531,7 +531,8 @@ async function main() {
         experiment.clearCache();
         const logged = await experiment.fetchedData();
         const ids = new Set(
-          logged.filter((r) => r.span_id === r.root_span_id).map((r) => r.id),
+          // Roots have no parents; their root_span_id is a generated trace ID, not our span ID.
+          logged.filter((r) => !r.span_parents?.length).map((r) => r.id),
         );
         if (expected.every((id) => ids.has(id))) break;
         if (attempt === 6)
