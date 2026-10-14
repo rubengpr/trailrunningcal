@@ -24,6 +24,18 @@ El ambiente de la Travesera tiene además un vocabulario propio. La organizació
 
 Manuel Merillas es un atleta de élite especialmente ligado a la Integral. La web oficial recoge su récord masculino de 9:52:53, conseguido en 2021. En 2025 ganó con 10:48:32, resultado confirmado por ITRA; la crónica de El Fielato identifica esa victoria como la séptima. La marca de 2025 corresponde a una victoria, no a un nuevo récord. [3, 5, 6]
 
+## Carreras, distancias y desniveles
+
+Cifras de la edición más reciente con datos publicados por la organización, consultadas el 14 de octubre de 2026. Distancia y desnivel positivo (D+), no acumulado. Cuando dos fuentes oficiales difieren se recogen ambas cifras y las dos se aceptan como correctas. Son datos de una edición: pueden variar entre años.
+
+| Carrera | Distancia | Desnivel positivo | Edición | Fuente |
+|---|---|---|---|---|
+| Travesera Integral (Covadonga – Arenas de Cabrales) | 74 km | 6.560 m | 2026 | [Ficha técnica](https://www.traveserapicos.com/ficha-tecnica-travesera/) |
+| Traveserina (Sotres – Arenas de Cabrales) | 46 km | 3.160 m | 2026 | [Ficha técnica](https://www.traveserapicos.com/ficha-tecnica-traveserina/) |
+
+- Las cifras de «más de 13.000 m» (Integral) y «más de 7.000 m» (Traveserina) que aparecen en textos de la web son desnivel acumulado (subida más bajada), no D+.
+- Traveseruca Cabraliega es la prueba infantil y no publica distancia ni desnivel.
+
 ## Palmarés de referencia
 
 Fecha de corte: **14 de octubre de 2026**. Ganadores absolutos masculinos y femeninos; las categorías de edad, campeonatos territoriales, relevos y títulos de circuito no se equiparan a estas victorias.

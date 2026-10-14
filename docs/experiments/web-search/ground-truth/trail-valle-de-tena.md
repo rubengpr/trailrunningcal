@@ -24,6 +24,22 @@ La organización relaciona los recorridos con la Reserva de la Biosfera Ordesa-V
 
 Entre los atletas de élite vinculados al evento están Luis Alberto Hernando y Oihana Azkorbebeitia, ganadores de la 4K en 2022, cuando establecieron récords de esa modalidad. Sus logros se citan como hechos históricos de aquella participación. [4, 7]
 
+## Carreras, distancias y desniveles
+
+Cifras de la edición más reciente con datos publicados por la organización, consultadas el 14 de octubre de 2026. Distancia y desnivel positivo (D+), no acumulado. Cuando dos fuentes oficiales difieren se recogen ambas cifras y las dos se aceptan como correctas. Son datos de una edición: pueden variar entre años.
+
+| Carrera | Distancia | Desnivel positivo | Edición | Fuente |
+|---|---|---|---|---|
+| 8K (ultra) | 80 km | 6.820 m | 2026 | [Reglamento 2026](https://trailvalledetena.com/wp-content/uploads/2025/12/Reglamento_TVT_2026-1-1.pdf) · [Ficha web](https://trailvalledetena.com/8k/) |
+| 4K (maratón de montaña) | 42,5 km | 3.510 m (reglamento y guía) / 3.500 m (web) | 2026 | [Guía del corredor 2026](https://trailvalledetena.com/wp-content/uploads/2026/08/Guia-del-corredor-2026-1.pdf) · [Ficha web](https://trailvalledetena.com/4k/) |
+| 2K | 20 km | 1.230 m | 2026 | [Reglamento 2026](https://trailvalledetena.com/wp-content/uploads/2025/12/Reglamento_TVT_2026-1-1.pdf) |
+| 1K | 11 km | 620 m | 2026 | [Reglamento 2026](https://trailvalledetena.com/wp-content/uploads/2025/12/Reglamento_TVT_2026-1-1.pdf) |
+| 0,5K | 5,5 km | 273 m | 2026 | [Reglamento 2026](https://trailvalledetena.com/wp-content/uploads/2025/12/Reglamento_TVT_2026-1-1.pdf) |
+
+- Los nombres 8K, 4K, 2K, 1K y 0,5K aluden al desnivel aproximado, no a kilómetros.
+- La 8K se disputa también en relevos de tres tramos: 24,1 km y 2.480 m; 30,6 km y 2.845 m; 25,3 km (reglamento) o 25,8 km (guía) y 1.495 m.
+- El Mini Trail es la prueba infantil: 2 km, o 4 km para alevines, con 50–116 m según la fuente.
+
 ## Palmarés de referencia
 
 Fecha de corte: **14 de octubre de 2026**. Ganadores absolutos masculinos y femeninos; las categorías de edad, campeonatos territoriales, relevos y títulos de circuito no se equiparan a estas victorias.

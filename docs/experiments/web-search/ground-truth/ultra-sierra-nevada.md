@@ -24,6 +24,20 @@ Los relevos introducen una experiencia por equipos: tres participantes reparten 
 
 El palmarés oficial permite mencionar atletas de élite con precisión: Gemma Arenas ganó la modalidad Maratón en 2024 y 2025; Miguel Heras ganó esa modalidad en 2026. Esas victorias pertenecen al maratón del evento Ultra Sierra Nevada. [3]
 
+## Carreras, distancias y desniveles
+
+Cifras de la edición más reciente con datos publicados por la organización, consultadas el 14 de octubre de 2026. Distancia y desnivel positivo (D+), no acumulado. Cuando dos fuentes oficiales difieren se recogen ambas cifras y las dos se aceptan como correctas. Son datos de una edición: pueden variar entre años.
+
+| Carrera | Distancia | Desnivel positivo | Edición | Fuente |
+|---|---|---|---|---|
+| Ultra | 100 km | 5.500 m («más de 5.500 m» en 2026) | 2027 / 2026 | [Ficha Ultra](https://ultrasierranevada.com/ultra/) · [Noticia 2026](https://ultrasierranevada.com/en/?p=8935) |
+| Trail | 60 km | 3.800 m | 2027 | [Ficha Trail](https://ultrasierranevada.com/trail/) |
+| Maratón | 40 km (2027) / 42 km (2026) | 2.400 m | 2027 | [Ficha Maratón](https://ultrasierranevada.com/maraton/) · [Noticia 2026](https://ultrasierranevada.com/en/?p=8935) |
+| Media Maratón | 25 km | 2.150 m | 2027 | [Ficha Media](https://ultrasierranevada.com/media-maraton/) |
+
+- Las fichas oficiales ya muestran la edición 2027 (2–4 de abril); de 2026 solo constan las cifras citadas en la noticia enlazada. Ambas ediciones se aceptan.
+- La Ultra se disputa también en relevos de tres corredores sobre su mismo recorrido, sin cifras propias publicadas. La Extrema (2022–2023) no forma parte de la oferta actual.
+
 ## Palmarés de referencia
 
 Fecha de corte: **14 de octubre de 2026**. Ganadores absolutos masculinos y femeninos; las categorías de edad, campeonatos territoriales, relevos y títulos de circuito no se equiparan a estas victorias.

@@ -22,6 +22,20 @@ El ambiente social tiene protagonismo propio: la crónica del patrocinador descr
 
 El palmarés incluye atletas de élite: Kilian Jornet ganó la prueba larga en 2012, 2015 y 2021; Núria Picas lo hizo en 2011, 2012, 2013, 2014 y 2022. Jonathan Albon ganó la ultra en 2025. Estas victorias corresponden a la modalidad larga del evento. [1]
 
+## Carreras, distancias y desniveles
+
+Cifras de la edición más reciente con datos publicados por la organización, consultadas el 14 de octubre de 2026. Distancia y desnivel positivo (D+), no acumulado. Cuando dos fuentes oficiales difieren se recogen ambas cifras y las dos se aceptan como correctas. Son datos de una edición: pueden variar entre años.
+
+| Carrera | Distancia | Desnivel positivo | Edición | Fuente |
+|---|---|---|---|---|
+| Salomon Ultra Pirineu 100K | 100 km | 6.600 m | 2026 | [Reglamento Ultra 2026](https://ultrapirineu.com/wp-content/uploads/2026/08/v2_SUP100k_2026_reglamentCAT.pdf) |
+| Salomon Marató Pirineu | 42 km (reglamento) / 43 km (web) | 2.800 m (reglamento) / 2.900 m (web) | 2026 | [Reglamento Marató 2026](https://ultrapirineu.com/wp-content/uploads/2026/08/v2_SMP42k_2026_reglamentCAT.pdf) · [Ficha web](https://ultrapirineu.com/curses/marato-43k/) |
+| Salomon Mitja Pirineu | 21 km (reglamento) / 21,5 km (web) | 1.200 m (reglamento) / 1.250 m (web) | 2026 | [Reglamento Mitja 2026](https://ultrapirineu.com/wp-content/uploads/2026/08/v2_SMP21k_2026_reglamentCAT.pdf) · [Ficha web](https://ultrapirineu.com/curses/mitja/) |
+| La Molina Nit Pirineu KV | 5 km | 860 m | 2026 | [Ficha web](https://ultrapirineu.com/curses/nit/) |
+
+- En 2026 la organización activó para la ultra un recorrido alternativo de 60 km y 3.900 m D+ por previsión de tormentas ([ficha](https://ultrapirineu.com/curses/ultra-60k)). El recorrido de referencia sigue siendo el de 100 km; mencionar el alternativo de 2026 como tal es correcto.
+- Pirineu XS es la prueba infantil (1–6 km según categoría) y no publica desnivel.
+
 ## Palmarés de referencia
 
 Fecha de corte: **14 de octubre de 2026**. Ganadores absolutos masculinos y femeninos; las categorías de edad, campeonatos territoriales, relevos y títulos de circuito no se equiparan a estas victorias.

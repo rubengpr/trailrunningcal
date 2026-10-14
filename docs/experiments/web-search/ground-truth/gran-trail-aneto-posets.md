@@ -24,6 +24,21 @@ Las modalidades largas se describen en el reglamento como pruebas en semiautosuf
 
 Entre los atletas de élite vinculados al evento está Luis Alberto Hernando, campeón del mundo de trail y vencedor del Maratón de las Tucas en 2015. Es una victoria del maratón del evento. [4]
 
+## Carreras, distancias y desniveles
+
+Cifras de la edición más reciente con datos publicados por la organización, consultadas el 14 de octubre de 2026. Distancia y desnivel positivo (D+), no acumulado. Cuando dos fuentes oficiales difieren se recogen ambas cifras y las dos se aceptan como correctas. Son datos de una edición: pueden variar entre años.
+
+| Carrera | Distancia | Desnivel positivo | Edición | Fuente |
+|---|---|---|---|---|
+| Gran Trail Aneto-Posets | 105 km (web) / 105,7 km (tabla) | 6.760 m | 2026 | [Ficha web](https://trail-aneto.com/gran-trail-aneto-posets/) · [Tabla de recorridos 2026](https://trail-aneto.com/wp-content/uploads/2026/01/Tabla-de-recorridos-GTTAP26.pdf) |
+| Vuelta al Aneto | 55 km | 3.630 m | 2026 | [Ficha web](https://trail-aneto.com/vuelta-al-aneto/) |
+| Maratón de las Tucas | 42 km | 2.500 m (web) / 2.480 m (tabla) | 2026 | [Ficha web](https://trail-aneto.com/maraton-de-las-tucas/) |
+| Vuelta a Cerler | 27,6 km | 1.340 m | 2026 | [Ficha web](https://trail-aneto.com/vuelta-a-cerler/) |
+| Vuelta al Molino de Cerler | 9,6 km | 435 m | 2026 | [Ficha web](https://trail-aneto.com/vuelta-al-molino-de-cerler/) |
+| KV Aneto-Posets | 5,4 km | 980 m | 2026 | [Ficha web](https://trail-aneto.com/kv-aneto-posets/) |
+
+- Las fichas de Vuelta a Cerler, Vuelta al Molino y KV no indican año; se atribuyen a 2026 por la navegación de la edición GTTAP26. El KV no figura en la tabla de recorridos.
+
 ## Palmarés de referencia
 
 Fecha de corte: **14 de octubre de 2026**. Ganadores absolutos masculinos y femeninos; las categorías de edad, campeonatos territoriales, relevos y títulos de circuito no se equiparan a estas victorias.

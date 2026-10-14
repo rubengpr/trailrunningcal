@@ -22,6 +22,18 @@ La final Skymasters añade otro plano al encuentro: reúne a especialistas del s
 
 Dements ha acogido la final Skymasters de las Merrell Skyrunner World Series, reuniendo a atletas de élite internacionales. Roberto Delorenzi y Anastasia Rubtsova ganaron en 2024. En 2025 vencieron Manuel Merillas y Rubtsova, que sumó dos triunfos consecutivos. El ganador masculino del circuito completo de 2025 fue Luca Del Pero, distinto del vencedor de la carrera. [3, 6]
 
+## Carreras, distancias y desniveles
+
+Cifras de la edición más reciente con datos publicados por la organización, consultadas el 14 de octubre de 2026. Distancia y desnivel positivo (D+), no acumulado. Cuando dos fuentes oficiales difieren se recogen ambas cifras y las dos se aceptan como correctas. Son datos de una edición: pueden variar entre años.
+
+| Carrera | Distancia | Desnivel positivo | Edición | Fuente |
+|---|---|---|---|---|
+| Marató dels Dements | 42,5 km (reglamento) / 42 km (web) | 3.808 m (reglamento) / 3.903 m (web) | 2026 | [Reglamento](https://maratodelsdements.com/reglamento/) · [Ficha web](https://maratodelsdements.com/marato-dels-dements/) |
+| Mitja d'Aín | 22,5 km | 2.007 m | 2026 | [Ficha web](https://maratodelsdements.com/mitja-ain/) |
+
+- En 2026 se corre un recorrido alternativo por el incendio de julio ([información](https://maratodelsdements.com/recorrido-dements-2026/)); las cifras de la ficha web probablemente corresponden a ese trazado.
+- En 2026 no se celebran la Mitja d'Eslida ni Dements per Etapes; mencionarlas como pruebas vigentes no es correcto.
+
 ## Palmarés de referencia
 
 Fecha de corte: **14 de octubre de 2026**. Ganadores absolutos masculinos y femeninos; las categorías de edad, campeonatos territoriales, relevos y títulos de circuito no se equiparan a estas victorias.
