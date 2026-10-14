@@ -18,7 +18,7 @@ describe('event investigator request',() => {
     const [body,options] = mocks.create.mock.calls[0];
     expect(JSON.parse(body.input)).toEqual(input);expect(body.model).toBe('gpt-6.1-sol');
     expect(body.reasoning).toEqual({effort:'medium'});expect(body.max_output_tokens).toBe(4000);
-    expect(body.tools).toEqual([{type:'web_search'}]);expect(body.tool_choice).toBe('required');
+    expect(body.tools).toEqual([{type:'web_search',search_context_size:'high'}]);expect(body.tool_choice).toBe('required');
     expect(body.include).toEqual(['web_search_call.action.sources']);expect(body.text.format.strict).toBe(true);
     expect(options).toEqual({timeout:600000,maxRetries:0});
   });

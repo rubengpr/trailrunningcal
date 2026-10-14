@@ -14,7 +14,8 @@ export async function investigateEvent(input: ResearchInput): Promise<ResearchOu
       model: researchModel, reasoning: {effort: 'medium'}, max_output_tokens: 4000,
       instructions: investigationInstructions,
       input: JSON.stringify({regionName: input.regionName, eventName: input.eventName}),
-      tools: [{type: 'web_search'}], tool_choice: 'required',
+      // High search context matches the configuration validated in the web search benchmark.
+      tools: [{type: 'web_search', search_context_size: 'high'}], tool_choice: 'required',
       include: ['web_search_call.action.sources'],
       text: {format: {type: 'json_schema', name: 'event_dossier', strict: true, schema: dossierSchema}},
     }, {timeout: 600_000, maxRetries: 0});
