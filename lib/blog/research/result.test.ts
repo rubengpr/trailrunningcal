@@ -13,3 +13,15 @@ it.each([
 it('accepts observed URL canonicalization',() => {
   expect(parseDossier(dossier,dossier.eventName,['https://example.com/event']).context).toContain('[1]');
 });
+it('drops sources not retrieved during research with their citations and renumbers the rest',() => {
+  const extra = {title:'Inventada',url:'https://example.com/guessed'};
+  const value = {...dossier, sources:[extra,...dossier.sources], context:'Dato dudoso [1]. Dato firme [2].', observations:['Nota [1][2]']};
+  const parsed = parseDossier(value,dossier.eventName,[dossier.sources[0].url]);
+  expect(parsed.sources).toEqual(dossier.sources);
+  expect(parsed.context).toBe('Dato dudoso. Dato firme [1].');
+  expect(parsed.observations[0]).toBe('Nota [1]');
+  expect(parsed.observations[1]).toContain('«Inventada»');
+});
+it('fails when no cited source was retrieved',() => {
+  expect(() => parseDossier(dossier,dossier.eventName,['https://other.example'])).toThrow('unverified_source');
+});

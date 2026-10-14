@@ -30,20 +30,31 @@ export function parseDossier(value: unknown, eventName: string, consulted: strin
   if (record.eventName !== eventName || typeof record.context !== 'string' || !record.context.trim() ||
     !Array.isArray(record.sources) || !Array.isArray(record.observations) || record.observations.some(item => typeof item !== 'string' || !item.trim())) return invalid();
   const urls = new Set(consulted.map(safeSourceUrl).filter(Boolean));
-  const sources = record.sources.map(source => {
+  const cited = record.sources.map(source => {
     if (!source || typeof source !== 'object' || typeof source.title !== 'string' || !source.title.trim() || typeof source.url !== 'string') return invalid();
     const url = safeSourceUrl(source.url);
-    if (!url || !urls.has(url)) throw new ResearchError('unverified_source');
-    return {title: source.title.trim(), url};
+    return {title: source.title.trim(), url: url && urls.has(url) ? url : null};
   });
+  const sources = cited.flatMap(source => source.url ? [{title: source.title, url: source.url}] : []);
   if (new Set(sources.map(source => source.url)).size !== sources.length) return invalid();
-  const context = record.context.trim();
-  const observations = (record.observations as string[]).map(item => item.trim());
+  // Nothing traceable is left: fail instead of returning an unsourced dossier.
+  if (cited.length && !sources.length) throw new ResearchError('unverified_source');
   // Plain text is rendered by React; citations are the only generated interactive markup.
-  const text = [context, ...observations].join('\n');
+  const raw = [record.context.trim(), ...(record.observations as string[]).map(item => item.trim())];
+  const text = raw.join('\n');
   if (/<\/?[a-z][^>]*>|https?:\/\//i.test(text)) return invalid();
   const references = [...text.matchAll(/\[(\d+)\]/g)].map(match => Number(match[1]));
-  if (references.some(index => index < 1 || index > sources.length) || sources.some((_, index) => !references.includes(index + 1))) return invalid();
+  if (references.some(index => index < 1 || index > cited.length) || cited.some((_, index) => !references.includes(index + 1))) return invalid();
+  // Drop sources that were not retrieved during research, with their citations, and renumber the rest.
+  const renumbered = new Map(cited.flatMap((source, index) => source.url ? [[index + 1, sources.findIndex(s => s.url === source.url) + 1]] : []));
+  const [context, ...kept] = raw.map(item => item.replace(/ ?\[(\d+)\]/g, (match, index) => {
+    const next = renumbered.get(Number(index));
+    return next ? match.replace(index, String(next)) : match.startsWith(' ') ? ' ' : '';
+  }).replace(/ +([.,;:])/g, '$1').replace(/ {2,}/g, ' ').trim());
+  const removed = cited.filter(source => !source.url).map(source => `«${source.title}»`);
+  const observations = [...kept.filter(Boolean),
+    ...(removed.length ? [`Se han retirado fuentes que no figuraban entre las páginas consultadas: ${removed.join(', ')}. Las afirmaciones que solo se apoyaban en ellas quedan sin referencia.`] : [])];
+  if (!context) return invalid();
   if (!sources.length && !observations.length) return invalid();
   return {eventName, context, sources, observations};
 }
