@@ -145,6 +145,7 @@ export function evaluateReport(
     else missing.push(key);
   }
   const facts = {} as Record<keyof typeof weights, number>;
+  const proofs = {} as Record<keyof typeof weights, number>;
   const points = Object.fromEntries(
     (Object.keys(weights) as (keyof typeof weights)[]).map((key) => {
       const { items, errors } = report.criteria[key];
@@ -154,6 +155,7 @@ export function evaluateReport(
       ).size;
       const wrong = errors.filter(proven).length;
       facts[key] = found;
+      proofs[key] = wrong;
       // An invented elite claim voids the criterion.
       const value =
         wrong && key === 'elite'
@@ -167,5 +169,14 @@ export function evaluateReport(
   const quality = publishable
     ? Math.max(0, raw - missing.length * missingPenalty)
     : null;
-  return { report, publishable, discarded, missing, facts, points, quality };
+  return {
+    report,
+    publishable,
+    discarded,
+    missing,
+    facts,
+    errors: proofs,
+    points,
+    quality,
+  };
 }

@@ -351,7 +351,10 @@ describe('rubric and schedule', () => {
       score({ races: { ...level(0), items: [fact('Ocurre', 'Inventado')] } })
         .facts.races,
     ).toBe(0);
-    expect(score({ route: level(8, [error]) }).points.route).toBe(26.3);
+    expect(score({ route: level(8, [error]) })).toMatchObject({
+      points: { route: 26.3 },
+      errors: { route: 1, races: 0 },
+    });
     expect(score({ elite: level(3, [error]) }).points.elite).toBe(0);
     expect(
       score({ elite: level(3, [{ ...error, reference: 'Inventado' }]) }).points

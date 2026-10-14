@@ -26,7 +26,11 @@ import { judge } from '@/lib/web-search-benchmark/judge';
 import { createClient } from '@/lib/integrations/openai/benchmark-client';
 import { createAdapter } from '@/lib/web-search-benchmark/adapters';
 import { attach, logEvent } from '@/lib/web-search-benchmark/trace';
-import { evaluateReport, weights } from '@/lib/web-search-benchmark/scoring';
+import {
+  evaluateReport,
+  targets,
+  weights,
+} from '@/lib/web-search-benchmark/scoring';
 import type {
   Checkpoint,
   DatasetRow,
@@ -494,6 +498,7 @@ async function main() {
       const publishableRate = evaluated.length
         ? scores.length / evaluated.length
         : null;
+      const criteria = Object.keys(targets) as (keyof typeof targets)[];
       return {
         provider,
         attempted: subset.length,
@@ -507,6 +512,24 @@ async function main() {
         failed: subset.filter((r) => r.stage === 'failed').length,
         interrupted: subset.filter((r) => r.stage === 'interrupted').length,
         qualityMean: mean,
+        // Proven errors (both quotes verified), the main accuracy signal.
+        provenErrors: evaluated.reduce(
+          (sum, e) => sum + criteria.reduce((a, key) => a + e.errors[key], 0),
+          0,
+        ),
+        provenErrorsByCriterion: Object.fromEntries(
+          criteria.map((key) => [
+            key,
+            evaluated.reduce((sum, e) => sum + e.errors[key], 0),
+          ]),
+        ),
+        // Dossiers that reach the sufficiency target in each criterion.
+        atTarget: Object.fromEntries(
+          criteria.map((key) => [
+            key,
+            evaluated.filter((e) => e.facts[key] >= targets[key]).length,
+          ]),
+        ),
         qualityStdDev:
           mean === null
             ? null
