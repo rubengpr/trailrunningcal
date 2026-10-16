@@ -132,14 +132,15 @@ export function revalidateEventPages(eventSlugs: string | string[], source: stri
 }
 
 export function revalidateEventTrackRoutes(eventId: string, source: string) {
-  revalidateTag(`event-track-routes:${eventId}`, 'max');
+  revalidateTag(`event-track-routes:${eventId}`, { expire: 0 });
   logRevalidation(source, 'event-track-routes', 0, 1);
 }
 
 /**
  * Revalidates the paths whose rendered output can change after an event
  * mutation. Event pages are always refreshed; listing pages are refreshed only
- * when their PublicEventDetail projection changed.
+ * when their PublicEventDetail projection changed. Track data is expired too,
+ * because its route selection and labels depend on event and race metadata.
  */
 export function revalidateEventMutation(
   previousDetail: TrailEventDetail | null,
@@ -150,6 +151,10 @@ export function revalidateEventMutation(
   const details = [previousDetail, updatedDetail].filter(
     (detail): detail is TrailEventDetail => detail !== null,
   );
+  const eventIds = new Set(details.map((detail) => detail.event.id));
+  for (const eventId of eventIds) {
+    revalidateEventTrackRoutes(eventId, source);
+  }
 
   for (const detail of details) {
     for (const locale of locales) {
@@ -203,5 +208,5 @@ export function revalidateEventMutation(
     revalidatePath(path);
   }
 
-  logRevalidation(source, 'event-mutation', paths.size, 0, listingChanged);
+  logRevalidation(source, 'event-mutation', paths.size, eventIds.size, listingChanged);
 }

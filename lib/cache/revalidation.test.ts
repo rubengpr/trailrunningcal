@@ -107,7 +107,39 @@ describe('revalidateEventPages', () => {
 describe('revalidateEventMutation', () => {
   beforeEach(() => {
     revalidatePath.mockReset();
+    revalidateTag.mockReset();
     consoleInfo.mockClear();
+  });
+
+  it.each(['name', 'date', 'distanceKm'] as const)(
+    'expires track data immediately after a race %s change', (field) => {
+      const changes = { name: 'Renamed race', date: '2028-05-01', distanceKm: 42 };
+      const updatedRace = { ...eventDetail.races[0], [field]: changes[field] };
+      revalidateEventMutation(eventDetail, {
+        ...eventDetail, races: [updatedRace],
+      }, 'test');
+      expect(revalidateTag).toHaveBeenCalledExactlyOnceWith(
+        'event-track-routes:event-1', { expire: 0 },
+      );
+      expect(consoleInfo).toHaveBeenLastCalledWith(expect.stringContaining('"affectedTagCount":1'));
+    },
+  );
+
+  it('expires cached tracks after deleting an event', () => {
+    revalidateEventMutation(eventDetail, null, 'test');
+    expect(revalidateTag).toHaveBeenCalledExactlyOnceWith(
+      'event-track-routes:event-1', { expire: 0 },
+    );
+  });
+
+  it('expires tracks for both event IDs when a mutation replaces an event', () => {
+    revalidateEventMutation(eventDetail, {
+      ...eventDetail, event: { ...eventDetail.event, id: 'event-2' },
+    }, 'test');
+    expect(revalidateTag.mock.calls).toEqual([
+      ['event-track-routes:event-1', { expire: 0 }],
+      ['event-track-routes:event-2', { expire: 0 }],
+    ]);
   });
 
   it('revalidates only localized event pages when a list-invisible field changes', () => {
