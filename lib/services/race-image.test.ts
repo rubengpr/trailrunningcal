@@ -20,7 +20,12 @@ function createClient(input?: {
   removeErrors?: unknown[];
   updateErrors?: unknown[];
   updateData?: Array<Record<string, unknown> | null>;
+  currentFilename?: string | null;
+  listError?: unknown;
 }) {
+  const list = vi.fn().mockResolvedValue({
+    data: [{ name: EXISTING_FILENAME }], error: input?.listError ?? null,
+  });
   const upload = vi.fn().mockResolvedValue({ error: input?.uploadError ?? null });
   const removeErrors = [...(input?.removeErrors ?? [])];
   const remove = vi.fn().mockImplementation(async () => ({
@@ -29,6 +34,7 @@ function createClient(input?: {
   const updateErrors = [...(input?.updateErrors ?? [])];
   const updateData = [...(input?.updateData ?? [])];
   const updates: Array<Record<string, unknown>> = [];
+  const filenameFilter = vi.fn();
   const update = vi.fn().mockImplementation((value: Record<string, unknown>) => {
     updates.push(value);
     const maybeSingle = vi.fn().mockResolvedValue({
@@ -36,7 +42,7 @@ function createClient(input?: {
       error: updateErrors.shift() ?? null,
     });
     const select = vi.fn().mockReturnValue({ maybeSingle });
-    const filenameFilter = vi.fn().mockReturnValue({ select });
+    filenameFilter.mockReturnValue({ select });
     const organizerFilter = vi.fn().mockReturnValue({
       eq: filenameFilter,
       is: filenameFilter,
@@ -45,15 +51,21 @@ function createClient(input?: {
       eq: vi.fn().mockReturnValue({ eq: organizerFilter }),
     };
   });
+  const read = {
+    eq: vi.fn().mockReturnThis(),
+    maybeSingle: vi.fn().mockResolvedValue({
+      data: { hero_image_filename: input?.currentFilename ?? null }, error: null,
+    }),
+  };
 
   const client = {
-    from: vi.fn().mockReturnValue({ update }),
+    from: vi.fn().mockReturnValue({ update, select: vi.fn().mockReturnValue(read) }),
     storage: {
-      from: vi.fn().mockReturnValue({ upload, remove }),
+      from: vi.fn().mockReturnValue({ upload, remove, list }),
     },
   } as unknown as SupabaseClient;
 
-  return { client, upload, remove, update, updates };
+  return { client, upload, remove, update, updates, filenameFilter, read };
 }
 
 beforeEach(() => {
@@ -61,6 +73,48 @@ beforeEach(() => {
 });
 
 describe('getRaceImage', () => {
+  it('recovers a missing reference only while it is still null', async () => {
+    const { client, filenameFilter } = createClient();
+    await expect(getRaceImage(client, {
+      organizerId: ORGANIZER_ID, raceId: RACE_ID, filename: null,
+    })).resolves.toMatchObject({ hasImage: true, filename: EXISTING_FILENAME });
+    expect(filenameFilter).toHaveBeenCalledWith('hero_image_filename', null);
+  });
+
+  it('returns the winning upload when recovery loses the conditional write', async () => {
+    const { client, updates, read } = createClient({
+      updateData: [null], currentFilename: 'main-200.webp',
+    });
+    await expect(getRaceImage(client, {
+      organizerId: ORGANIZER_ID, raceId: RACE_ID, filename: null,
+    })).resolves.toMatchObject({ hasImage: true, filename: 'main-200.webp' });
+    expect(updates).toEqual([{ hero_image_filename: EXISTING_FILENAME }]);
+    expect(read.eq).toHaveBeenCalledWith('id', RACE_ID);
+    expect(read.eq).toHaveBeenCalledWith('organizer_id', ORGANIZER_ID);
+  });
+
+  it('does not return the stale candidate when the race has been deleted', async () => {
+    const { client } = createClient({ updateData: [null], currentFilename: null });
+    await expect(getRaceImage(client, {
+      organizerId: ORGANIZER_ID, raceId: RACE_ID, filename: null,
+    })).resolves.toEqual({ hasImage: false });
+  });
+
+  it('surfaces recovery failures instead of returning an unpersisted filename', async () => {
+    const { client } = createClient({ updateErrors: [{ message: 'unavailable' }] });
+    await expect(getRaceImage(client, {
+      organizerId: ORGANIZER_ID, raceId: RACE_ID, filename: null,
+    })).rejects.toThrow('Failed to update race');
+  });
+
+  it('surfaces storage failures instead of reporting no image', async () => {
+    const { client, update } = createClient({ listError: { message: 'unavailable' } });
+    await expect(getRaceImage(client, {
+      organizerId: ORGANIZER_ID, raceId: RACE_ID, filename: null,
+    })).rejects.toThrow('Failed to read race image');
+    expect(update).not.toHaveBeenCalled();
+  });
+
   it('uses the authorized context without re-reading the race', async () => {
     const { client } = createClient();
 

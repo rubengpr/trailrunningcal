@@ -10,6 +10,7 @@ import {
   RACE_IMAGE_EXTENSIONS,
 } from '@/lib/races/image-constants';
 import { ValidationError } from '@/lib/errors';
+import { getImageFilename, updateImageFilename } from '@/lib/db/race-images';
 
 type RaceImageResult =
   | { hasImage: false }
@@ -49,20 +50,21 @@ export async function getRaceImage(
 
   if (!filename) {
     const folderPath = `${organizerId}/${raceId}`;
-    const { data: files } = await supabase.storage
+    const { data: files, error: listError } = await supabase.storage
       .from(RACE_IMAGE_BUCKET)
       .list(folderPath);
+    if (listError) {
+      console.error('Race image listing error:', listError);
+      throw new Error('Failed to read race image');
+    }
     const picked = files?.length ? pickFilenameFromList(files) : null;
     if (picked) {
-      const { error: updateError } = await supabase
-        .from('races')
-        .update({ hero_image_filename: picked })
-        .eq('id', raceId)
-        .eq('organizer_id', organizerId);
-      if (updateError) {
-        console.error('Race image filename recovery error:', updateError);
-      }
-      filename = picked;
+      const recovered = await updateImageFilename(supabase, {
+        organizerId, raceId, expectedFilename: null, filename: picked,
+      });
+      filename = recovered
+        ? picked
+        : await getImageFilename(supabase, organizerId, raceId);
     }
   }
 
@@ -120,33 +122,21 @@ export async function uploadRaceImage(
     throw new Error('Failed to upload image');
   }
 
-  const filenameUpdate = supabase
-    .from('races')
-    .update({ hero_image_filename: filename })
-    .eq('id', raceId)
-    .eq('organizer_id', organizerId);
-  const { data: updatedRace, error: updateError } = await (
-    existingFilename
-      ? filenameUpdate.eq('hero_image_filename', existingFilename)
-      : filenameUpdate.is('hero_image_filename', null)
-  )
-    .select('id')
-    .maybeSingle();
-
-  if (updateError || !updatedRace) {
-    if (updateError) {
-      console.error('DB update error:', updateError);
+  try {
+    const updated = await updateImageFilename(supabase, {
+      organizerId, raceId, expectedFilename: existingFilename, filename,
+    });
+    if (!updated) {
+      throw new ValidationError('Race image changed concurrently', 409);
     }
+  } catch (error) {
     const { error: rollbackError } = await supabase.storage
       .from(RACE_IMAGE_BUCKET)
       .remove([storagePath]);
     if (rollbackError) {
       console.error('Race image upload rollback error:', rollbackError);
     }
-    if (!updateError) {
-      throw new ValidationError('Race image changed concurrently', 409);
-    }
-    throw new Error('Failed to update race');
+    throw error;
   }
 
   if (existingFilename) {
@@ -168,24 +158,15 @@ export async function deleteRaceImage(
   raceId: string,
   existingFilename: string | null,
 ): Promise<void> {
-  const filenameUpdate = supabase
-    .from('races')
-    .update({ hero_image_filename: null })
-    .eq('id', raceId)
-    .eq('organizer_id', organizerId);
-  const { data: updatedRace, error: updateError } = await (
-    existingFilename
-      ? filenameUpdate.eq('hero_image_filename', existingFilename)
-      : filenameUpdate.is('hero_image_filename', null)
-  )
-    .select('id')
-    .maybeSingle();
-
-  if (updateError) {
-    console.error('Race image delete database error:', updateError);
+  let updated;
+  try {
+    updated = await updateImageFilename(supabase, {
+      organizerId, raceId, expectedFilename: existingFilename, filename: null,
+    });
+  } catch {
     throw new Error('Failed to delete image');
   }
-  if (!updatedRace) {
+  if (!updated) {
     throw new ValidationError('Race image changed concurrently', 409);
   }
 
@@ -199,17 +180,13 @@ export async function deleteRaceImage(
   if (!removeError) return;
 
   console.error('Race image delete storage error:', removeError);
-  const restoreUpdate = supabase
-    .from('races')
-    .update({ hero_image_filename: existingFilename })
-    .eq('id', raceId)
-    .eq('organizer_id', organizerId)
-    .is('hero_image_filename', null);
-  const { data: restoredRace, error: restoreError } = await restoreUpdate
-    .select('id')
-    .maybeSingle();
-  if (restoreError || !restoredRace) {
-    console.error('Race image delete rollback error:', restoreError);
+  try {
+    const restored = await updateImageFilename(supabase, {
+      organizerId, raceId, expectedFilename: null, filename: existingFilename,
+    });
+    if (!restored) console.error('Race image delete rollback conflict');
+  } catch (error) {
+    console.error('Race image delete rollback error:', error);
   }
   throw new Error('Failed to delete image');
 }
