@@ -1,3 +1,5 @@
+import type { DraftPermission } from '@/types/agent-api.types';
+
 export type ApiAuthorization =
   | 'public'
   | 'cron'
@@ -6,9 +8,11 @@ export type ApiAuthorization =
   | 'authenticated'
   | 'admin'
   | 'owner'
-  | 'owner-or-admin';
+  | 'owner-or-admin'
+  | { kind: 'draft'; permission: DraftPermission };
 
 export const API_AUTHORIZATION_POLICY = {
+  'GET /api/brands/report': 'public',
   'GET /api/cron/event-updates': 'cron',
   'POST /api/event-locations': 'public',
   'POST /api/internal/revalidate-events': 'revalidation',
@@ -29,13 +33,13 @@ export const API_AUTHORIZATION_POLICY = {
   'POST /api/events/import/batch-items/[itemId]': 'admin',
   'GET /api/events/import/batches/[batchId]': 'admin',
   'POST /api/events/import/batches': 'admin',
-  'GET /api/events/import/drafts': 'admin',
-  'POST /api/events/import/drafts': 'admin',
-  'GET /api/events/import/drafts/[draftId]': 'admin',
-  'PATCH /api/events/import/drafts/[draftId]': 'admin',
-  'DELETE /api/events/import/drafts/[draftId]': 'admin',
-  'POST /api/events/import/drafts/[draftId]/accept': 'admin',
-  'GET /api/events/import/drafts/[draftId]/publication': 'admin',
+  'GET /api/events/import/drafts': { kind: 'draft', permission: 'read' },
+  'POST /api/events/import/drafts': { kind: 'draft', permission: 'create' },
+  'GET /api/events/import/drafts/[draftId]': { kind: 'draft', permission: 'read' },
+  'PATCH /api/events/import/drafts/[draftId]': { kind: 'draft', permission: 'update' },
+  'DELETE /api/events/import/drafts/[draftId]': { kind: 'draft', permission: 'reject' },
+  'POST /api/events/import/drafts/[draftId]/accept': { kind: 'draft', permission: 'publish' },
+  'GET /api/events/import/drafts/[draftId]/publication': { kind: 'draft', permission: 'read' },
   'POST /api/events/import': 'admin',
   'GET /api/events/research/batch-items/[itemId]': 'admin',
   'GET /api/events/research/batches': 'admin',
@@ -64,6 +68,7 @@ export const API_AUTHORIZATION_POLICY = {
 } as const satisfies Record<string, ApiAuthorization>;
 
 export const PUBLIC_API_REASONS = {
+  'GET /api/brands/report': 'Downloads a public demonstration campaign report generated from sample data.',
   'POST /api/event-locations': 'Returns coordinates for public calendar locations.',
   'GET /api/events': 'Returns paginated public calendar event data.',
   'GET /api/events/[eventId]/tracks': 'Returns published route geometry for a public calendar event.',

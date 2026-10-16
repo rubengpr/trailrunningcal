@@ -175,10 +175,55 @@ function calledFunctionNodes(handler: RouteHandler): ts.CallExpression[] {
   return calls;
 }
 
-function calledFunctions(handler: RouteHandler): string[] {
-  return calledFunctionNodes(handler).map((call) =>
-    call.expression.getText(handler.sourceFile),
-  );
+function expectedGuard(access: ApiAuthorization): string | null {
+  if (typeof access === 'object') return 'requireDraftAccess';
+  switch (access) {
+    case 'public': return null;
+    case 'cron': return 'requireCronSecret';
+    case 'import-track': return 'requireImportTrackSecret';
+    case 'revalidation': return 'requireRevalidationSecret';
+    case 'admin': return 'requireAdmin';
+    default: return 'requireAuth';
+  }
+}
+
+function guardViolations(handler: RouteHandler): string[] {
+  const { access, key, sourceFile } = handler;
+  if (access === undefined) return [`${key} must have an authorization policy`];
+  const calls = calledFunctionNodes(handler);
+  const guard = expectedGuard(access);
+  if (guard === null) {
+    const privateGuards = new Set([
+      'requireAuth', 'requireAdmin', 'requireDraftAccess',
+      'requireCronSecret', 'requireImportTrackSecret', 'requireRevalidationSecret',
+    ]);
+    return calls.some((call) => privateGuards.has(call.expression.getText(sourceFile)))
+      ? [`${key} unexpectedly has a private guard`] : [];
+  }
+
+  const guardCall = calls.find((call) => call.expression.getText(sourceFile) === guard);
+  if (!guardCall) return [`${key} must call ${guard}`];
+  const violations: string[] = [];
+  if (calls[0] !== guardCall) {
+    violations.push(`${key} must call ${guard} before other functions`);
+  }
+  if (['requireAuth', 'requireAdmin', 'requireDraftAccess'].includes(guard)
+    && !ts.isAwaitExpression(guardCall.parent)) {
+    violations.push(`${key} must await ${guard}`);
+  }
+  if (typeof access === 'object') {
+    const permission = guardCall.arguments[1];
+    if (!permission || !ts.isStringLiteral(permission) || permission.text !== access.permission) {
+      violations.push(`${key} must require draft permission ${access.permission}`);
+    }
+    const request = handler.functionNode.parameters[0]?.name;
+    const argument = guardCall.arguments[0];
+    if (!request || !argument || !ts.isIdentifier(request)
+      || !ts.isIdentifier(argument) || request.text !== argument.text) {
+      violations.push(`${key} must pass its request to ${guard}`);
+    }
+  }
+  return violations;
 }
 
 function protectedFunctionNames(sourceFile: ts.SourceFile): Set<string> {
@@ -303,92 +348,38 @@ describe('API authorization policy', () => {
     expect(Object.keys(PUBLIC_API_REASONS).sort()).toEqual(publicHandlers);
   });
 
-  it('requires the guard associated with each private classification', () => {
-    const violations = handlers.flatMap((handler) => {
-      const calls = calledFunctions(handler);
-
-      if (handler.access === 'public') {
-        const hasGuard = calls.some((call) =>
-          ['requireAuth', 'requireAdmin'].includes(call),
-        );
-        return hasGuard ? [`${handler.key} unexpectedly has a private guard`] : [];
-      }
-
-      if (handler.access === 'cron') {
-        return calls.includes('requireCronSecret')
-          ? []
-          : [`${handler.key} must call requireCronSecret`];
-      }
-
-      if (handler.access === 'import-track') {
-        return calls.includes('requireImportTrackSecret')
-          ? []
-          : [`${handler.key} must call requireImportTrackSecret`];
-      }
-
-      if (handler.access === 'revalidation') {
-        return calls.includes('requireRevalidationSecret')
-          ? []
-          : [`${handler.key} must call requireRevalidationSecret`];
-      }
-
-      const expectedGuard =
-        handler.access === 'admin' ? 'requireAdmin' : 'requireAuth';
-      return calls.includes(expectedGuard)
-        ? []
-        : [`${handler.key} must call ${expectedGuard}`];
-    });
-
-    expect(violations).toEqual([]);
+  it('enforces guards, draft permissions, and authentication ordering', () => {
+    expect(handlers.flatMap(guardViolations)).toEqual([]);
   });
 
-  it('runs authentication before other function calls', () => {
-    const violations = handlers.flatMap((handler) => {
-      if (handler.access === 'public') return [];
+  it.each([
+    { body: 'await loadDraft();', violation: 'must call requireDraftAccess' },
+    { body: "await requireDraftAccess(request, 'read');", violation: 'must require draft permission update' },
+    { body: "requireDraftAccess(request, 'update');", violation: 'must await requireDraftAccess' },
+    { body: "await loadDraft(); await requireDraftAccess(request, 'update');", violation: 'must call requireDraftAccess before other functions' },
+    { body: "await requireDraftAccess(otherRequest, 'update');", violation: 'must pass its request to requireDraftAccess' },
+  ])('rejects invalid draft authorization: $violation', ({ body, violation }) => {
+    const [discovered] = discoverSourceHandlers(sourceFile(`
+      export async function PATCH(request: Request) { ${body} }
+    `));
+    const handler: RouteHandler = {
+      ...discovered, key: 'PATCH /api/example',
+      access: { kind: 'draft', permission: 'update' },
+    };
+    expect(guardViolations(handler)).toContain(`PATCH /api/example ${violation}`);
+  });
 
-      if (handler.access === 'cron') {
-        const firstFunction = calledFunctions(handler)[0];
-
-        return firstFunction === 'requireCronSecret'
-          ? []
-          : [
-              `${handler.key} must call requireCronSecret before other functions`,
-            ];
+  it('accepts the configured draft guard and permission before protected work', () => {
+    const [discovered] = discoverSourceHandlers(sourceFile(`
+      export async function PATCH(request: Request) {
+        await requireDraftAccess(request, 'update');
+        await loadDraft();
       }
-
-
-      if (handler.access === 'import-track') {
-        const firstFunction = calledFunctions(handler)[0];
-
-        return firstFunction === 'requireImportTrackSecret'
-          ? []
-          : [
-              `${handler.key} must call requireImportTrackSecret before other functions`,
-            ];
-      }
-
-      if (handler.access === 'revalidation') {
-        const firstFunction = calledFunctions(handler)[0];
-
-        return firstFunction === 'requireRevalidationSecret'
-          ? []
-          : [
-              `${handler.key} must call requireRevalidationSecret before other functions`,
-            ];
-      }
-
-      const expectedGuard =
-        handler.access === 'admin' ? 'requireAdmin' : 'requireAuth';
-      const firstFunction = calledFunctions(handler)[0];
-
-      return firstFunction === expectedGuard
-        ? []
-        : [
-            `${handler.key} must call ${expectedGuard} before other functions`,
-          ];
-    });
-
-    expect(violations).toEqual([]);
+    `));
+    expect(guardViolations({
+      ...discovered, key: 'PATCH /api/example',
+      access: { kind: 'draft', permission: 'update' },
+    })).toEqual([]);
   });
 
   it('checks ownership before protected operations', () => {
