@@ -62,6 +62,28 @@ function expectValidationError(
   expect(thrown).toMatchObject({ message, status: 400 });
 }
 
+describe('race date validation', () => {
+  it.each([undefined, 'update-races', 'insert-races'] as const)(
+    'validates dates for mode %s', (mode) => {
+      const parse = (date: unknown) => {
+        const input = body([]);
+        (input.races as Array<Record<string, unknown>>)[0].date = date;
+        return mode
+          ? parseEventPatchInput({ ...input, mode })
+          : parseEventInput(input);
+      };
+
+      for (const date of ['not-a-date', '2027-02-30', '2027-02-29', '2027-13-01', '0000-01-01']) {
+        expectValidationError(() => parse(date), 'Invalid race date');
+      }
+      for (const date of ['2028-02-29', '2027-12-31', null]) {
+        expect(parse(date).races[0].date).toBe(date);
+      }
+      expect(parse('').races[0].date).toBeNull();
+    },
+  );
+});
+
 describe('event race tier validation', () => {
   it('accepts no tiers and free or paid single tiers', () => {
     expect(parseTiers([])).toEqual([]);

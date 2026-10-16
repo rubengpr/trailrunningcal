@@ -6,6 +6,7 @@ import {
 } from '@/lib/events/tier-validation';
 import { isValidResultsUrl, normalizeRaceName } from '@/lib/races/utils';
 import { isValidProvince } from '@/lib/geography/provinces';
+import { isValidIsoDate } from '@/lib/utils/date';
 import type { EventRaceTierWriteInput } from '@/types/event.types';
 import type {
   TrailEventAgentEvent,
@@ -189,6 +190,9 @@ function parseRace(value: unknown, allowId = false): ParsedEventRaceInput {
   } = value as Record<string, unknown>;
 
   const parsedDate = parseNullableString(date);
+  if (parsedDate !== null && !isValidIsoDate(parsedDate)) {
+    throw new ValidationError('Invalid race date', 400);
+  }
 
   if (
     typeof city !== 'string' ||

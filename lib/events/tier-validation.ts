@@ -1,4 +1,7 @@
 import { MAX_RACE_TIERS } from '@/lib/events/constants';
+import { isValidIsoDate } from '@/lib/utils/date';
+
+export { isValidIsoDate as isValidRaceTierDate } from '@/lib/utils/date';
 
 export interface RaceTierScheduleInput {
   priceEur: number;
@@ -11,21 +14,6 @@ export type RaceTierScheduleValidationError =
   | 'tierDeadlineRequired'
   | 'tierDeadline'
   | 'tierDeadlineOrder';
-
-const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
-
-export function isValidRaceTierDate(value: string): boolean {
-  if (!ISO_DATE_PATTERN.test(value)) return false;
-
-  const [year, month, day] = value.split('-').map(Number);
-  const date = new Date(Date.UTC(year, month - 1, day));
-
-  return (
-    date.getUTCFullYear() === year &&
-    date.getUTCMonth() === month - 1 &&
-    date.getUTCDate() === day
-  );
-}
 
 export function validateRaceTierSchedule(
   tiers: readonly RaceTierScheduleInput[],
@@ -41,7 +29,7 @@ export function validateRaceTierSchedule(
       return 'tierPrice';
     }
 
-    if (tier.endsAt !== null && !isValidRaceTierDate(tier.endsAt)) {
+    if (tier.endsAt !== null && !isValidIsoDate(tier.endsAt)) {
       return 'tierDeadline';
     }
   }
