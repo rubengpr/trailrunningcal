@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { getEventImportDraft, rejectEventImportDraft, updateEventImportDraft } from './event-import-drafts';
 
 const integrationDescribe = process.env.RUN_SUPABASE_INTEGRATION_TESTS === 'true'
   ? describe : describe.skip;
@@ -21,6 +22,32 @@ integrationDescribe('draft date sorting integration', () => {
     if (!draftIds.length) return;
     const { error } = await admin.from('event_import_drafts').delete().in('id', draftIds.splice(0));
     if (error) throw error;
+  });
+
+  it('soft-rejects only the selected pending draft and preserves its data for verification', async () => {
+    const original = {
+      event: { name: `Rejection fixture ${randomUUID()}`, description: null, websiteUrl: null },
+      races: [{
+        name: null, date: '2026-05-01', city: 'Vic', province: 'Barcelona',
+        distanceKm: 20, elevationGainM: 1000, tiers: [],
+      }],
+    };
+    const { data, error } = await admin.from('event_import_drafts').insert([
+      { data: original, status: 'draft' },
+      { data: original, status: 'draft' },
+    ]).select('id, status');
+    if (error || !data) throw error ?? new Error('Failed to create rejection fixtures');
+    draftIds.push(...data.map((row) => row.id));
+    const [loser, survivor] = data;
+
+    expect(await rejectEventImportDraft(loser.id)).toBe(true);
+    expect(await getEventImportDraft(loser.id)).toMatchObject({
+      status: 'rejected', data: original,
+    });
+    expect(await getEventImportDraft(survivor.id)).toMatchObject({ status: 'draft', data: original });
+    expect(await rejectEventImportDraft(loser.id)).toBe(false);
+    expect(await rejectEventImportDraft(randomUUID())).toBe(false);
+    expect(await updateEventImportDraft(loser.id, original)).toBeNull();
   });
 
   it('ignores malformed and impossible stored dates while preserving valid ordering', async () => {

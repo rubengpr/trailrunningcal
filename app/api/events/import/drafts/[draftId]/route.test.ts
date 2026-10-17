@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { GET, PATCH, DELETE } from './route';
+import { ValidationError } from '@/lib/errors';
 
 const mocks = vi.hoisted(() => ({
   requireAdmin: vi.fn(), getDraft: vi.fn(), updateDraft: vi.fn(), rejectDraft: vi.fn(),
@@ -49,6 +50,32 @@ describe('draft endpoint Bearer authentication', () => {
     const response = await DELETE(request('DELETE'), context());
     expect(response.status).toBe(403);
     await expect(response.json()).resolves.toEqual({ error: 'Forbidden' });
+    expect(mocks.rejectDraft).not.toHaveBeenCalled();
+  });
+
+  it('rejects a draft with the reject permission and no browser session', async () => {
+    vi.stubEnv('AGENT_API_PERMISSIONS', 'read,update,reject');
+    const response = await DELETE(request('DELETE'), context());
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({ success: true, data: null });
+    expect(mocks.rejectDraft).toHaveBeenCalledExactlyOnceWith(id);
+    expect(mocks.requireAdmin).not.toHaveBeenCalled();
+  });
+
+  it('returns 404 when the draft is no longer pending', async () => {
+    vi.stubEnv('AGENT_API_PERMISSIONS', 'reject');
+    mocks.rejectDraft.mockRejectedValue(new ValidationError('Draft not found', 404));
+    const response = await DELETE(request('DELETE'), context());
+    expect(response.status).toBe(404);
+    await expect(response.json()).resolves.toEqual({ error: 'Draft not found' });
+  });
+
+  it('validates the draft ID before rejecting', async () => {
+    vi.stubEnv('AGENT_API_PERMISSIONS', 'reject');
+    const response = await DELETE(request('DELETE'), {
+      params: Promise.resolve({ draftId: 'invalid' }),
+    });
+    expect(response.status).toBe(400);
     expect(mocks.rejectDraft).not.toHaveBeenCalled();
   });
 });
