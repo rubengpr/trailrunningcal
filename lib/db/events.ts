@@ -487,7 +487,7 @@ export async function getEventByIdForOrganizer(
       province,
       map_url,
       results_url,
-      race_tiers ( price_eur )
+      race_tiers ( id, ends_at, price_eur )
     `,
     )
     .eq('event_id', event.id);
