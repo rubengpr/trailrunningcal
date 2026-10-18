@@ -134,6 +134,17 @@ describe('PATCH /api/organizer/events/[eventId]', () => {
     expect(mocks.updateOrganizerEventWithRaces).not.toHaveBeenCalled();
   });
 
+  it('returns a safe 500 when ownership verification fails operationally', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    mocks.getOrganizerEventContext.mockRejectedValue(new Error('database detail'));
+
+    const response = await PATCH(request(updateBody), context);
+
+    expect(response.status).toBe(500);
+    await expect(response.json()).resolves.toEqual({ error: 'Internal server error' });
+    expect(mocks.updateOrganizerEventWithRaces).not.toHaveBeenCalled();
+  });
+
   it('rejects event edition insertion for organizer updates', async () => {
     const response = await PATCH(
       request({ ...updateBody, mode: 'insert-races' }),

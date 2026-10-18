@@ -22,7 +22,7 @@ const raceId = '22222222-2222-4222-8222-222222222222';
 
 beforeEach(() => {
   vi.resetAllMocks();
-  const eventQuery = { eq: vi.fn(), single: mocks.eventResult };
+  const eventQuery = { eq: vi.fn(), maybeSingle: mocks.eventResult };
   eventQuery.eq.mockReturnValue(eventQuery);
   mocks.eventSelect.mockReturnValue(eventQuery);
   mocks.raceSelect.mockReturnValue({ eq: mocks.raceResult });
@@ -38,6 +38,40 @@ beforeEach(() => {
 });
 
 describe('getEventByIdForOrganizer', () => {
+  it('returns null for an event outside the organizer scope', async () => {
+    mocks.eventResult.mockResolvedValue({ data: null, error: null });
+
+    await expect(getEventByIdForOrganizer(eventId, 'organizer-1')).resolves.toBeNull();
+    expect(mocks.raceSelect).not.toHaveBeenCalled();
+  });
+
+  it('throws when the event query fails', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    mocks.eventResult.mockResolvedValue({ data: null, error: { message: 'offline' } });
+
+    await expect(getEventByIdForOrganizer(eventId, 'organizer-1')).rejects.toThrow(
+      'Failed to fetch organizer event',
+    );
+  });
+
+  it('throws when the race query fails', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    mocks.raceResult.mockResolvedValue({ data: null, error: { message: 'offline' } });
+
+    await expect(getEventByIdForOrganizer(eventId, 'organizer-1')).rejects.toThrow(
+      'Failed to fetch organizer event races',
+    );
+  });
+
+  it('returns an existing event with no races', async () => {
+    mocks.raceResult.mockResolvedValue({ data: [], error: null });
+
+    await expect(getEventByIdForOrganizer(eventId, 'organizer-1')).resolves.toMatchObject({
+      event: { id: eventId },
+      races: [],
+    });
+  });
+
   it.each([
     [{ id: 'tier-1', price_eur: 35, ends_at: '2027-01-31' }],
     [

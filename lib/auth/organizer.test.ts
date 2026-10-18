@@ -45,10 +45,10 @@ function raceRow(organizerId: string) {
 }
 
 function queryResult(data: unknown, error: unknown = null) {
-  const single = vi.fn().mockResolvedValue({ data, error });
-  const eq = vi.fn().mockReturnValue({ single });
+  const maybeSingle = vi.fn().mockResolvedValue({ data, error });
+  const eq = vi.fn().mockReturnValue({ maybeSingle });
   const select = vi.fn().mockReturnValue({ eq });
-  return { select, eq, single };
+  return { select, eq, maybeSingle };
 }
 
 beforeEach(() => {

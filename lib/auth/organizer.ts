@@ -20,11 +20,13 @@ async function getOrganizerIdForUser(
     .from('organizers')
     .select('id')
     .eq('owner_id', userId)
-    .single();
+    .maybeSingle();
 
-  if (organizerError || !organizer) {
-    return null;
+  if (organizerError) {
+    console.error('Failed to fetch organizer access:', organizerError);
+    throw new Error('Failed to verify organizer access');
   }
+  if (!organizer) return null;
 
   return organizer.id;
 }
@@ -43,11 +45,13 @@ export async function getOrganizerRaceContext(
     .from('races')
     .select('organizer_id, hero_image_filename')
     .eq('id', raceId)
-    .single();
+    .maybeSingle();
 
-  if (raceError || !raceRow) {
-    return null;
+  if (raceError) {
+    console.error('Failed to fetch organizer race access:', raceError);
+    throw new Error('Failed to verify race access');
   }
+  if (!raceRow) return null;
 
   if (raceRow.organizer_id !== organizerId) {
     return null;
@@ -94,11 +98,13 @@ export async function getRaceAccessContext(
     .from('races')
     .select('organizer_id, hero_image_filename')
     .eq('id', raceId)
-    .single();
+    .maybeSingle();
 
-  if (error || !data) {
-    return null;
+  if (error) {
+    console.error('Failed to fetch race access:', error);
+    throw new Error('Failed to verify race access');
   }
+  if (!data) return null;
 
   if (!data.organizer_id) {
     return null;

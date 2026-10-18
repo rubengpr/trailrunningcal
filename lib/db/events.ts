@@ -463,14 +463,13 @@ export async function getEventByIdForOrganizer(
     )
     .eq('id', eventId)
     .eq('organizer_id', organizerId)
-    .single();
+    .maybeSingle();
 
-  if (eventError || !eventData) {
-    if (eventError) {
-      console.error('Failed to fetch organizer event by id:', eventError);
-    }
-    return null;
+  if (eventError) {
+    console.error('Failed to fetch organizer event by id:', eventError);
+    throw new Error('Failed to fetch organizer event');
   }
+  if (!eventData) return null;
 
   const event = toTrailEvent(eventData as EventRow);
 
@@ -492,17 +491,17 @@ export async function getEventByIdForOrganizer(
     )
     .eq('event_id', event.id);
 
-  if (raceError || !raceData) {
+  if (raceError) {
     console.error(
       'Failed to fetch organizer event races by event id:',
       raceError,
     );
-    return null;
+    throw new Error('Failed to fetch organizer event races');
   }
 
   return buildEventDetail(
     event,
-    (raceData as EventRaceRow[]).map(toTrailEventRace),
+    ((raceData ?? []) as EventRaceRow[]).map(toTrailEventRace),
   );
 }
 
@@ -526,12 +525,12 @@ export async function getEventsByIds(
     )
     .in('id', eventIds);
 
-  if (eventError || !eventData) {
+  if (eventError) {
     console.error('Failed to fetch favorite events:', eventError);
-    return [];
+    throw new Error('Failed to fetch favorite events');
   }
 
-  const events = (eventData as EventRow[]).map(toTrailEvent);
+  const events = ((eventData ?? []) as EventRow[]).map(toTrailEvent);
   const fetchedEventIds = events.map((event) => event.id);
 
   if (fetchedEventIds.length === 0) {
@@ -554,14 +553,14 @@ export async function getEventsByIds(
     )
     .in('event_id', fetchedEventIds);
 
-  if (raceError || !raceData) {
+  if (raceError) {
     console.error('Failed to fetch favorite event races:', raceError);
-    return [];
+    throw new Error('Failed to fetch favorite event races');
   }
 
   const racesByEventId = new Map<string, TrailEventRace[]>();
 
-  for (const race of raceData as EventRaceWithEventIdRow[]) {
+  for (const race of (raceData ?? []) as EventRaceWithEventIdRow[]) {
     const eventRaces = racesByEventId.get(race.event_id) ?? [];
     eventRaces.push(toTrailEventRace(race));
     racesByEventId.set(race.event_id, eventRaces);
