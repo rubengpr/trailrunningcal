@@ -41,6 +41,7 @@ import {
     startEventImportBatch,
     getEventImportBatchStatus,
     getEventImportItemResult,
+    getEventImportItemArtifacts,
     updateEventImportItemResult,
     startEventResearchBatch,
     getEventResearchBatchHistory,
@@ -1250,8 +1251,6 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
             raceCount: item.raceCount,
             error: item.error,
             updatedAt: item.updatedAt,
-            markdown: item.markdown,
-            rawModelOutput: item.rawModelOutput,
         })) ?? [];
     }, [batchSnapshot]);
 
@@ -1469,6 +1468,14 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                         rows={batchRows}
                         translationsNamespace="admin.events.import.bulk"
                         viewingRowId={viewingBatchItemId}
+                        onLoadArtifacts={async (itemId) => {
+                            try {
+                                return await getEventImportItemArtifacts(itemId);
+                            } catch (error) {
+                                toast.error(error instanceof Error ? error.message : t('bulk.resultError'));
+                                return null;
+                            }
+                        }}
                         onViewResult={(itemId) => {
                             void handleViewBatchResult(itemId);
                         }}

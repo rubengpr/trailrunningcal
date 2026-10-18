@@ -8,6 +8,7 @@ import type {
   EventImportBatchStatus,
   EventImportRow,
   EventImportResult,
+  EventImportArtifacts,
 } from '@/types/events-import-api.types';
 
 function toBatch(row: EventImportRow): EventImportBatch {
@@ -22,7 +23,7 @@ function toBatch(row: EventImportRow): EventImportBatch {
 }
 
 function toItem(
-  row: EventImportItemRow,
+  row: Omit<EventImportItemRow, 'result'>,
   acceptedEventSlug: string | null = null,
 ): EventImportBatchItem {
   return {
@@ -37,8 +38,6 @@ function toItem(
     reviewedAt: row.reviewed_at,
     raceCount: row.race_count,
     error: row.error,
-    markdown: row.result?.markdown ?? null,
-    rawModelOutput: row.result?.rawModelOutput ?? null,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -110,7 +109,7 @@ export async function getPendingBatchItems(
   const { data, error } = await supabase
     .from('event_import_batch_items')
     .select(
-      'id, batch_id, url, status, review_status, accepted_event_id, saved_draft_id, reviewed_at, result, race_count, error, created_at, updated_at',
+      'id, batch_id, url, status, review_status, accepted_event_id, saved_draft_id, reviewed_at, race_count, error, created_at, updated_at',
     )
     .eq('batch_id', batchId)
     .eq('status', 'pending')
@@ -121,7 +120,7 @@ export async function getPendingBatchItems(
     throw new Error('Failed to fetch event import batch items');
   }
 
-  return ((data ?? []) as EventImportItemRow[]).map((row) => toItem(row));
+  return ((data ?? []) as Omit<EventImportItemRow, 'result'>[]).map((row) => toItem(row));
 }
 
 export async function getBatchSnapshotData(
@@ -153,7 +152,7 @@ export async function getBatchItems(
   const { data, error } = await supabase
     .from('event_import_batch_items')
     .select(
-      'id, batch_id, url, status, review_status, accepted_event_id, saved_draft_id, reviewed_at, result, race_count, error, created_at, updated_at',
+      'id, batch_id, url, status, review_status, accepted_event_id, saved_draft_id, reviewed_at, race_count, error, created_at, updated_at',
     )
     .eq('batch_id', batchId)
     .order('created_at', { ascending: true });
@@ -163,7 +162,7 @@ export async function getBatchItems(
     throw new Error('Failed to fetch event import batch items');
   }
 
-  const rows = (data ?? []) as EventImportItemRow[];
+  const rows = (data ?? []) as Omit<EventImportItemRow, 'result'>[];
   const acceptedEventIds = rows.flatMap((row) =>
     row.accepted_event_id ? [row.accepted_event_id] : [],
   );
@@ -301,6 +300,22 @@ export async function getItemResult(
   }
 
   return (data?.result as EventImportResult | null) ?? null;
+}
+
+export async function getItemArtifacts(itemId: string): Promise<EventImportArtifacts | null> {
+  const { data, error } = await createAdminClient()
+    .from('event_import_batch_items')
+    .select('markdown:result->>markdown, raw_model_output:result->>rawModelOutput')
+    .eq('id', itemId)
+    .in('status', ['completed', 'failed'])
+    .maybeSingle();
+
+  if (error) {
+    console.error('Event import item artifacts fetch error:', error);
+    throw new Error('Failed to fetch event import item artifacts');
+  }
+
+  return data ? { markdown: data.markdown, rawModelOutput: data.raw_model_output } : null;
 }
 
 export async function getItemResultState(itemId: string): Promise<{

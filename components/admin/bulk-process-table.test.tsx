@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import es from '@/locales/es/translation.json';
@@ -75,6 +75,42 @@ afterEach(() => {
 });
 
 describe('BulkProcessTable', () => {
+  it('loads artifacts only when the menu opens and caches them for downloads', async () => {
+    const onLoadArtifacts = vi.fn().mockResolvedValue({ markdown: '# Loaded crawl', rawModelOutput: null });
+    render(
+      <NextIntlClientProvider locale="es" messages={es}>
+        <BulkProcessTable rows={[{ ...rows[2], markdown: undefined, rawModelOutput: undefined }]} onLoadArtifacts={onLoadArtifacts} />
+      </NextIntlClientProvider>,
+    );
+    expect(onLoadArtifacts).not.toHaveBeenCalled();
+    const menu = screen.getByRole('button', { name: 'Acciones' });
+    fireEvent.click(menu);
+
+    await waitFor(() => expect((screen.getByText('Markdown') as HTMLButtonElement).disabled).toBe(false));
+    expect(onLoadArtifacts).toHaveBeenCalledWith('item-failed');
+    expect((screen.getByText('JSON') as HTMLButtonElement).disabled).toBe(true);
+    fireEvent.click(screen.getByText('Markdown'));
+    expect(mocks.triggerDownload).toHaveBeenCalledWith('# Loaded crawl', 'crawl-failed.example.com.md', 'text/markdown');
+    fireEvent.click(menu);
+    expect(onLoadArtifacts).toHaveBeenCalledTimes(1);
+  });
+
+  it('allows another attempt when loading artifacts fails', async () => {
+    const onLoadArtifacts = vi.fn().mockResolvedValueOnce(null).mockResolvedValueOnce({ markdown: '# Retry', rawModelOutput: null });
+    render(
+      <NextIntlClientProvider locale="es" messages={es}>
+        <BulkProcessTable rows={[rows[1]]} onLoadArtifacts={onLoadArtifacts} />
+      </NextIntlClientProvider>,
+    );
+    const menu = screen.getByRole('button', { name: 'Acciones' });
+    fireEvent.click(menu);
+    await waitFor(() => expect(menu.querySelector('.animate-spin')).toBeNull());
+    fireEvent.click(menu);
+    fireEvent.click(menu);
+    await waitFor(() => expect((screen.getByText('Markdown') as HTMLButtonElement).disabled).toBe(false));
+    expect(onLoadArtifacts).toHaveBeenCalledTimes(2);
+  });
+
   it('uses the shared table presentation and highlights accepted rows', () => {
     renderTable();
 

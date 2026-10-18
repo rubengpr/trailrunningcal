@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import { ArrowUpRight, Eye, FilePenLine, LoaderCircle, RotateCcw } from 'lucide-react';
-import { IconActionMenu } from '@/components/ui/icon-action-menu';
+import BulkProcessDownloads from '@/components/admin/bulk-process-downloads';
 import { TableActionButton } from '@/components/ui/table-action-button';
 import {
   Table,
@@ -15,8 +15,8 @@ import {
 import type {
     EventImportItemReviewStatus,
     EventImportItemStatus,
+    EventImportArtifacts,
 } from '@/types/events-import-api.types';
-import { triggerDownload } from '@/lib/utils/download';
 import { cleanUrl } from '@/lib/utils/url';
 
 export type BulkProcessState = EventImportItemStatus;
@@ -32,8 +32,8 @@ export interface BulkProcessTableRow {
   raceCount: number | null;
   error: string | null;
   updatedAt: string;
-  markdown: string | null;
-  rawModelOutput: string | null;
+  markdown?: string | null;
+  rawModelOutput?: string | null;
   draftId?: string | null;
   negativeMessage?: string | null;
 }
@@ -62,6 +62,7 @@ interface BulkProcessTableProps {
   retryingRowId?: string | null;
   onViewResult?: (rowId: string) => void;
   onRetry?: (rowId: string) => void;
+  onLoadArtifacts?: (rowId: string) => Promise<EventImportArtifacts | null>;
 }
 
 function StateBadge({
@@ -99,6 +100,7 @@ export function BulkProcessTable({
   retryingRowId = null,
   onViewResult,
   onRetry,
+  onLoadArtifacts,
 }: BulkProcessTableProps) {
   const t = useTranslations(translationsNamespace);
   const locale = useLocale();
@@ -226,35 +228,17 @@ export function BulkProcessTable({
                     </Link>
                   ) : null}
                   {row.draftId === undefined || row.markdown || row.rawModelOutput ? (
-                    <IconActionMenu
-                      triggerAriaLabel={t('columns.actions')}
-                      size="sm"
-                      items={[
-                      {
-                        id: 'downloadMarkdown',
-                        label: t('actions.downloadMarkdown'),
-                        disabled: !row.markdown,
-                        onSelect: () => {
-                          if (row.markdown) {
-                            triggerDownload(row.markdown, `crawl-${hostname}.md`, 'text/markdown');
-                          }
-                        },
-                      },
-                      {
-                        id: 'downloadJson',
-                        label: t('actions.downloadJson'),
-                        disabled: !row.rawModelOutput,
-                        onSelect: () => {
-                          if (row.rawModelOutput) {
-                            triggerDownload(
-                              row.rawModelOutput,
-                              `model-raw-${hostname}.json`,
-                              'application/json;charset=utf-8',
-                            );
-                          }
-                        },
-                      },
-                      ]}
+                    <BulkProcessDownloads
+                      key={`${row.id}:${row.updatedAt}`}
+                      artifacts={{ markdown: row.markdown ?? null, rawModelOutput: row.rawModelOutput ?? null }}
+                      loadArtifacts={onLoadArtifacts ? () => onLoadArtifacts(row.id) : undefined}
+                      hostname={hostname}
+                      disabled={row.status !== 'completed' && row.status !== 'failed'}
+                      labels={{
+                        actions: t('columns.actions'),
+                        markdown: t('actions.downloadMarkdown'),
+                        json: t('actions.downloadJson'),
+                      }}
                     />
                   ) : null}
                 </div>

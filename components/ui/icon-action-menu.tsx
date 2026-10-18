@@ -21,6 +21,7 @@ interface IconActionMenuProps {
     items: IconActionMenuItem[];
     triggerIcon?: React.ReactNode;
     size?: 'default' | 'sm';
+    onOpen?: () => void;
 }
 
 const triggerClass = {
@@ -35,6 +36,7 @@ export function IconActionMenu({
     items,
     triggerIcon,
     size = 'default',
+    onOpen,
 }: IconActionMenuProps) {
     const { open, containerRef, triggerRef, dropdownRef, dropdownStyle, toggleOpen, closeMenu } =
         useMultiSelectMenu({
@@ -88,7 +90,10 @@ export function IconActionMenu({
                 aria-expanded={open}
                 aria-haspopup="menu"
                 disabled={disabled}
-                onClick={toggleOpen}
+                onClick={() => {
+                    if (!open) onOpen?.();
+                    toggleOpen();
+                }}
             >
                 {triggerIcon ?? (
                     <>

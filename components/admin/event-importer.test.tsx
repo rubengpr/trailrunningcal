@@ -188,8 +188,6 @@ beforeEach(() => {
         reviewedAt: null,
         raceCount: 1,
         error: null,
-        markdown: originalResult.markdown,
-        rawModelOutput: originalResult.rawModelOutput,
         createdAt: '2026-07-22T10:00:00.000Z',
         updatedAt: '2026-07-22T10:01:00.000Z',
       },

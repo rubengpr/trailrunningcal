@@ -38,6 +38,8 @@ export interface EventImportResult {
   steps: EventImportStep[];
 }
 
+export type EventImportArtifacts = Pick<EventImportResult, 'markdown' | 'rawModelOutput'>;
+
 export type EventImportRequest =
   | {
       workflow: 'crawlSite' | 'scrapePage';
@@ -86,8 +88,6 @@ export interface EventImportBatchItem {
   reviewedAt: string | null;
   raceCount: number | null;
   error: string | null;
-  markdown: string | null;
-  rawModelOutput: string | null;
   createdAt: string;
   updatedAt: string;
 }
