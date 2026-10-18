@@ -1275,6 +1275,10 @@
         "detail": { "title": "Detalle de la ejecución", "event": "Evento", "url": "URL", "status": "Estado", "outcome": "Resultado", "message": "Detalle", "unknownEvent": "Evento no disponible", "retry": "Reintentar" }
       },
       "drafts": {
+        "status": {
+          "accepted": "Aceptado",
+          "rejected": "Eliminado"
+        },
         "title": "Eventos en borrador",
         "completeInformation": "Información completa",
         "empty": "No hay borradores importados.",

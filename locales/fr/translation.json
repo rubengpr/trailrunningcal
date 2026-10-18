@@ -1007,6 +1007,10 @@
   "admin": {
     "events": {
       "drafts": {
+        "status": {
+          "accepted": "Accepté",
+          "rejected": "Supprimé"
+        },
         "completeInformation": "Informations complètes"
       },
       "updates": {

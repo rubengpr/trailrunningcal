@@ -48,6 +48,7 @@ import type {
   EventImportDraftPage,
   EventImportDraftPageRequest,
   EventImportDraftSortColumn,
+  EventImportDraftStatus,
 } from '@/types/event-import-draft.types';
 
 interface AdminEventImportDraftsContentProps {
@@ -119,7 +120,7 @@ export function AdminEventImportDraftsContent({
     day: '2-digit',
   }).format(new Date());
   const [drafts, setDrafts] = useState(initialPage.drafts);
-  const [total, setTotal] = useState(initialPage.total);
+  const total = Math.max(0, initialPage.total - drafts.filter((draft) => draft.status !== 'draft').length);
   const [draftToPreview, setDraftToPreview] = useState<EventImportDraft | null>(null);
   const [draftToEdit, setDraftToEdit] = useState<EventImportDraft | null>(null);
   const [draftToDelete, setDraftToDelete] = useState<EventImportDraft | null>(null);
@@ -155,21 +156,22 @@ export function AdminEventImportDraftsContent({
     });
   };
 
-  const removeDraft = useCallback((draftId: string): void => {
-    setDrafts((current) => current.filter((draft) => draft.id !== draftId));
-    setTotal((current) => Math.max(0, current - 1));
+  const completeDraft = useCallback((draftId: string, status: Exclude<EventImportDraftStatus, 'draft'>): void => {
+    setDrafts((current) => current.map((draft) =>
+      draft.id === draftId && draft.status === 'draft' ? { ...draft, status } : draft,
+    ));
     setDraftToPreview((current) => current?.id === draftId ? null : current);
     setDraftToEdit((current) => current?.id === draftId ? null : current);
     setDraftToDelete((current) => current?.id === draftId ? null : current);
   }, []);
 
   const handleAccept = async (draft: EventImportDraft): Promise<void> => {
-    if (acceptingDraftId) return;
+    if (acceptingDraftId || draft.status !== 'draft') return;
     setAcceptingDraftId(draft.id);
     try {
       const result = await acceptEventImportDraft(draft.id);
       if (result.status === 'accepted') {
-        removeDraft(draft.id);
+        completeDraft(draft.id, 'accepted');
         toast.success(t('acceptSuccess'));
       } else {
         setFailedPublications((current) => {
@@ -191,7 +193,7 @@ export function AdminEventImportDraftsContent({
     setIsDeleting(true);
     try {
       await rejectEventImportDraft(draftToDelete.id);
-      removeDraft(draftToDelete.id);
+      completeDraft(draftToDelete.id, 'rejected');
       toast.success(t('rejectSuccess'));
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t('rejectError'));
@@ -243,7 +245,7 @@ export function AdminEventImportDraftsContent({
 
       for (const { draftId, snapshot } of results) {
         if (snapshot.job.status === 'completed') {
-          removeDraft(draftId);
+          completeDraft(draftId, 'accepted');
           setPublicationJobs((current) => {
             const next = { ...current };
             delete next[draftId];
@@ -281,7 +283,7 @@ export function AdminEventImportDraftsContent({
       cancelled = true;
       window.clearInterval(intervalId);
     };
-  }, [publicationJobs, removeDraft, t]);
+  }, [publicationJobs, completeDraft, t]);
 
   return (
     <div className="flex flex-col gap-8">
@@ -320,14 +322,20 @@ export function AdminEventImportDraftsContent({
             </TableHeader>
             <TableBody>
               {drafts.map((draft) => {
-                const isPublishing = publicationJobs[draft.id] !== undefined;
+                const isProcessed = draft.status !== 'draft';
+                const isPublishing = !isProcessed && publicationJobs[draft.id] !== undefined;
                 const hasFailedPublication = failedPublications[draft.id] === true;
                 return (
-                  <TableRow key={draft.id} className="align-middle transition-colors duration-150 hover:bg-gray-100">
-                  <TableCell className="max-w-[200px]">
-                    <span className="block truncate text-sm font-medium text-gray-900">
-                      {draft.data.event.name}
-                    </span>
+                  <TableRow key={draft.id} className={`align-middle transition-colors duration-150 ${isProcessed ? 'opacity-50' : 'hover:bg-gray-100'}`}>
+                  <TableCell>
+                    <div className="flex w-[280px] items-center gap-2">
+                      <span className="min-w-0 flex-1 truncate text-sm font-medium text-gray-900" title={draft.data.event.name}>
+                        {draft.data.event.name}
+                      </span>
+                      <span className={`w-20 shrink-0 text-right text-xs font-medium ${isProcessed ? '' : 'invisible'}`}>
+                        {t(draft.status === 'rejected' ? 'status.rejected' : 'status.accepted')}
+                      </span>
+                    </div>
                   </TableCell>
                   <EventWebsiteTableCell
                     url={draft.sourceUrl}
@@ -358,13 +366,14 @@ export function AdminEventImportDraftsContent({
                       ) : null}
                       <TableActionButton
                         onClick={() => setDraftToPreview(draft)}
+                        disabled={isProcessed}
                         title={t('view')}
                       >
                         <Eye className="size-4" strokeWidth={1.5} />
                       </TableActionButton>
                       <TableActionButton
                         onClick={() => void handleAccept(draft)}
-                        disabled={acceptingDraftId !== null || isPublishing}
+                        disabled={isProcessed || acceptingDraftId !== null || isPublishing}
                         title={t('accept')}
                         tone="success"
                       >
@@ -374,12 +383,14 @@ export function AdminEventImportDraftsContent({
                       </TableActionButton>
                       <TableActionButton
                         onClick={() => setDraftToEdit(draft)}
+                        disabled={isProcessed}
                         title={t('edit')}
                       >
                         <TextCursor className="size-4" strokeWidth={1.5} />
                       </TableActionButton>
                       <TableActionButton
                         onClick={() => setDraftToDelete(draft)}
+                        disabled={isProcessed}
                         title={t('delete.button')}
                         tone="destructive"
                       >
