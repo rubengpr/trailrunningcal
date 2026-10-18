@@ -160,7 +160,7 @@ export async function retryEventResearchItem(itemId: string): Promise<{
         error: 'scheduling_error',
       });
     }
-    await updateEventResearchBatchStatus(pending.batchId, 'completed');
+    await recomputeBatchStatus(pending.batchId);
     throw error;
   }
 
@@ -279,13 +279,18 @@ async function processItemStep(input: {
   }
 }
 
-async function recomputeBatchStatusStep(batchId: string): Promise<void> {
-  'use step';
+async function recomputeBatchStatus(batchId: string): Promise<void> {
   const items = await getEventResearchItems(batchId);
   const complete = items.every(
     (item) => item.status === 'completed' || item.status === 'failed',
   );
   await updateEventResearchBatchStatus(batchId, complete ? 'completed' : 'running');
+}
+
+async function recomputeBatchStatusStep(batchId: string): Promise<void> {
+  'use step';
+
+  await recomputeBatchStatus(batchId);
 }
 
 export async function eventResearchBatchWorkflow(

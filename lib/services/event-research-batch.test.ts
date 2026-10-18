@@ -254,6 +254,35 @@ describe('eventResearchBatchWorkflow', () => {
       workflowRunId: 'retry-run-1',
     });
   });
+
+  it.each(['pending', 'running', 'completed', 'failed'] as const)(
+    'recomputes batch status after a retry launch fails with another %s item',
+    async (status) => {
+      const error = new Error('Unable to enqueue workflow');
+      mocks.getItem.mockResolvedValue({ ...item(1), status: 'failed' });
+      mocks.retryItem.mockResolvedValue({
+        batchId: batch.id,
+        itemId: 'item-1',
+        eventName: 'Event 1',
+      });
+      mocks.startWorkflow.mockRejectedValueOnce(error);
+      mocks.getItems.mockResolvedValue([
+        { ...item(1), status: 'failed' },
+        { ...item(2), status },
+      ]);
+
+      await expect(retryEventResearchItem('item-1')).rejects.toBe(error);
+
+      expect(mocks.failItem).toHaveBeenCalledWith({
+        itemId: 'item-1',
+        error: 'scheduling_error',
+      });
+      expect(mocks.updateBatchStatus).toHaveBeenLastCalledWith(
+        batch.id,
+        status === 'pending' || status === 'running' ? 'running' : 'completed',
+      );
+    },
+  );
 });
 
 describe('listEventResearchBatchHistory', () => {
