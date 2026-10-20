@@ -1,3 +1,4 @@
+import type { CalendarButtonVariant } from '@/types/event-calendar.types';
 import type { PageType } from '@/lib/analytics/card-impression-batcher';
 import type { RegionId } from '@/lib/geography/destinations';
 import type {
@@ -14,6 +15,9 @@ export const ANALYTICS_EVENTS = {
   DESKTOP_LAYOUT_CHANGED: 'desktop_layout_changed',
   ERROR_BOUNDARY_CAUGHT_ERROR: 'error_boundary_caught_error',
   ERROR_FALLBACK_RETRY_CLICKED: 'error_fallback_retry_clicked',
+  EVENT_CALENDAR_BUTTON_VIEWED: 'event_calendar_button_viewed',
+  EVENT_CALENDAR_MENU_OPENED: 'event_calendar_menu_opened',
+  EVENT_CALENDAR_OPTION_CLICKED: 'event_calendar_option_clicked',
   EVENT_FAVORITE_CLICKED: 'event_favorite_clicked',
   EVENT_FEATURE_FEEDBACK_OPTION_TOGGLED: 'event_feature_feedback_option_toggled',
   EVENT_FEATURE_FEEDBACK_SUBMITTED: 'event_feature_feedback_submitted',
@@ -84,6 +88,26 @@ export interface AnalyticsEventProperties {
   [ANALYTICS_EVENTS.ERROR_FALLBACK_RETRY_CLICKED]: {
     error_message?: string;
   };
+  [ANALYTICS_EVENTS.EVENT_CALENDAR_BUTTON_VIEWED]: {
+    event_id: string;
+    event_slug: string;
+    locale: Locale;
+    calendar_variant: CalendarButtonVariant;
+    '$feature/event-calendar-button-label': CalendarButtonVariant;
+  };
+  [ANALYTICS_EVENTS.EVENT_CALENDAR_MENU_OPENED]: {
+    calendar_variant: CalendarButtonVariant | 'unassigned';
+    event_id: string;
+    event_slug: string;
+    locale: Locale;
+  };
+  [ANALYTICS_EVENTS.EVENT_CALENDAR_OPTION_CLICKED]: {
+    calendar_variant: CalendarButtonVariant | 'unassigned';
+    event_id: string;
+    event_slug: string;
+    locale: Locale;
+    option: 'google' | 'ics';
+  };
   [ANALYTICS_EVENTS.EVENT_FAVORITE_CLICKED]: {
     event_id: string;
     event_slug: string;
@@ -111,6 +135,7 @@ export interface AnalyticsEventProperties {
     event_name: string;
   };
   [ANALYTICS_EVENTS.EVENT_PAGE_VIEWED]: {
+    calendar_available: boolean;
     event_id: string;
     event_slug: string;
     locale: Locale;

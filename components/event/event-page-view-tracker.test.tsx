@@ -24,6 +24,7 @@ describe('EventPageViewTracker', () => {
   it('tracks the view once with the event location', () => {
     render(
       <EventPageViewTracker
+        calendarAvailable
         eventId="event-1"
         eventSlug="marato-valencia"
         province="Valencia"
@@ -33,6 +34,7 @@ describe('EventPageViewTracker', () => {
 
     expect(track).toHaveBeenCalledTimes(1);
     expect(track).toHaveBeenCalledWith(ANALYTICS_EVENTS.EVENT_PAGE_VIEWED, {
+      calendar_available: true,
       event_id: 'event-1',
       event_slug: 'marato-valencia',
       locale: 'es',
@@ -89,6 +91,7 @@ describe('EventPageViewTracker', () => {
     );
 
     expect(track).toHaveBeenCalledWith(ANALYTICS_EVENTS.EVENT_PAGE_VIEWED, {
+      calendar_available: false,
       event_id: 'event-2',
       event_slug: 'cami-de-cavalls',
       locale: 'es',

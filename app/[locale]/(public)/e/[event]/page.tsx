@@ -11,6 +11,7 @@ import { Breadcrumb } from '@/components/layout/breadcrumb';
 import { SponsorBannerSlot } from '@/components/sponsors/sponsor-banner-slot';
 import { EventDiscoverySection } from '@/components/event/event-discovery-section';
 import { EventDistanceList } from '@/components/event/event-distance-list';
+import { getCalendarDates } from '@/lib/events/calendar';
 import { EventDetailHeader } from '@/components/event/event-detail-header';
 import { EventFeatureFeedback } from '@/components/event/event-feature-feedback';
 import { EventPageViewTracker } from '@/components/event/event-page-view-tracker';
@@ -151,6 +152,7 @@ export default async function EventPage({
     getTranslations({ locale, namespace: 'provincia' }),
   ]);
 
+  const calendarDates = getCalendarDates(eventData.dateRange);
   const formattedDate = formatEventDateRange(
     eventData.dateRange,
     localeTyped,
@@ -215,6 +217,7 @@ export default async function EventPage({
       <JsonLd data={breadcrumbJsonLd} />
       <div className="min-h-screen w-full text-gray-900 flex flex-col bg-white">
         <EventPageViewTracker
+          calendarAvailable={calendarDates !== null}
           eventId={eventData.event.id}
           eventSlug={event}
           locale={localeTyped}
@@ -243,6 +246,7 @@ export default async function EventPage({
           />
 
           <EventDetailHeader
+            calendarDates={calendarDates}
             eventId={eventData.event.id}
             eventSlug={event}
             eventName={eventData.event.name}

@@ -143,6 +143,13 @@
     "verifiedOrganizer": "Organizador verificado"
   },
   "event": {
+    "calendar": {
+      "label": "Añadir a mi calendario",
+      "google": "Google Calendar",
+      "ics": "Apple Calendar / Outlook (.ics)",
+      "description": "Evento de trail running en Trailrunningcal. Consulta los detalles y las novedades en la ficha del evento.",
+      "notice": "Los cambios de fecha no se actualizarán automáticamente."
+    },
     "banner": {
       "otsoAlt": "Promoción de OTSO para eventos de trail running"
     },
