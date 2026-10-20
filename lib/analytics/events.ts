@@ -1,3 +1,4 @@
+import type { ProductInteraction, RecommendationContext } from '@/types/product-recommendation.types';
 import type { CalendarButtonVariant } from '@/types/event-calendar.types';
 import type { PageType } from '@/lib/analytics/card-impression-batcher';
 import type { RegionId } from '@/lib/geography/destinations';
@@ -10,6 +11,10 @@ import type { Locale } from '@/i18n';
 type SponsorTrackedCreativeVariant = SponsorCreativeVariant | 'preview';
 
 export const ANALYTICS_EVENTS = {
+  RACE_PRODUCTS_EXPOSED: 'race_products_exposed',
+  RACE_PRODUCT_IMPRESSION: 'race_product_impression',
+  RACE_PRODUCT_DETAILS_OPENED: 'race_product_details_opened',
+  RACE_PRODUCT_CLICKED: 'race_product_clicked',
   BREADCRUMB_LINK_CLICKED: 'breadcrumb_link_clicked',
   CALENDAR_VIEW_MAP_CLICKED: 'calendar_view_map_clicked',
   DESKTOP_LAYOUT_CHANGED: 'desktop_layout_changed',
@@ -68,6 +73,10 @@ type MapExperimentProperties = {
 };
 
 export interface AnalyticsEventProperties {
+  [ANALYTICS_EVENTS.RACE_PRODUCTS_EXPOSED]: RecommendationContext;
+  [ANALYTICS_EVENTS.RACE_PRODUCT_IMPRESSION]: ProductInteraction & { impression_trigger: 'visibility' | 'interaction' };
+  [ANALYTICS_EVENTS.RACE_PRODUCT_DETAILS_OPENED]: ProductInteraction;
+  [ANALYTICS_EVENTS.RACE_PRODUCT_CLICKED]: ProductInteraction;
   [ANALYTICS_EVENTS.BREADCRUMB_LINK_CLICKED]: {
     link_name: string;
     href: string;

@@ -172,9 +172,15 @@
       }
     },
     "productRecommendation": {
+      "sectionTitle": "Material recomanat",
+      "sectionDescription": "Una selecció de productes segons la distància i el desnivell.",
       "title": "Et recomanem",
       "brand": "Trail Brand",
-      "brands": { "trailBrand": "Trail Brand", "lesBatons": "Les Bâtons", "summitFuel": "Summit Fuel" },
+      "brands": {
+        "trailBrand": "Trail Brand",
+        "lesBatons": "Les Bâtons",
+        "summitFuel": "Summit Fuel"
+      },
       "toggle": "Mostra els detalls de {product}",
       "viewMore": "Veure'n més",
       "products": {
@@ -212,6 +218,74 @@
           "name": "LB Sprint Fold",
           "reason": "Suport compacte per a pendents molt inclinades.",
           "details": "Bastons plegables ultralleugers per guanyar eficiència en pujades curtes i tècniques, sense carregar més material."
+        }
+      },
+      "viewProduct": "Veure el producte",
+      "catalog": {
+        "naak-boost-gel": {
+          "name": "BOOST Gel 30 · Neutre",
+          "reason": "Energia per accelerar el ritme.",
+          "details": "Gel neutre sense cafeïna, amb 30 g d’hidrats per a trails i maratons."
+        },
+        "naak-ultra-drink": {
+          "name": "ULTRA Drink Mix 250 · Síndria",
+          "reason": "Nutrició per als teus ultres.",
+          "details": "Beguda de síndria amb 250 kcal, hidrats, proteïnes i sodi per ració per a esforços llargs."
+        },
+        "baouw-gel": {
+          "name": "Gel de gerds i magrana",
+          "reason": "Un impuls amb sabor de fruita.",
+          "details": "Gel ecològic de gerds i magrana, amb 30 g d’hidrats per a trails i maratons."
+        },
+        "baouw-puree": {
+          "name": "Puré salat de moniato",
+          "reason": "Dona un toc salat a l’ultra.",
+          "details": "Puré ecològic de moniato, pastanaga i pebre Timut: 114 kcal per alternar sabors en ultres."
+        },
+        "leki-ultratrail": {
+          "name": "Ultratrail FX.One",
+          "reason": "Suport lleuger a les pujades.",
+          "details": "Bastons de carboni plegables per a curses amb desnivell. Comprova que la cursa en permeti l’ús."
+        },
+        "kailas-fuga-ex-3": {
+          "name": "FUGA EX 3",
+          "reason": "Adherència per als trails curts.",
+          "details": "Sola Vibram Megagrip i amortiment ECCEVAI per recórrer senders variats."
+        },
+        "kailas-fuga-du-2": {
+          "name": "FUGA DU 2",
+          "reason": "Estabilitat per a la teva mitja trail.",
+          "details": "Sola Vibram Megagrip i ajust AWS 3.0 per a pendents i terrenys mixtos."
+        },
+        "kailas-fuga-ex-pro": {
+          "name": "FUGA EX PRO",
+          "reason": "Resposta per a la marató de muntanya.",
+          "details": "Placa de carboni en X, escuma reactiva i sola Vibram Megagrip per competir en terreny mixt."
+        },
+        "kailas-fuga-ex-330": {
+          "name": "FUGA EX 330",
+          "reason": "Amortiment per als quilòmetres d’ultra.",
+          "details": "Amortiment per a llargues distàncies i sola Vibram Megagrip amb tacs de 4 i 6 mm."
+        },
+        "asics-fuji-lite-7": {
+          "name": "FUJI LITE 7",
+          "reason": "Lleugeresa per als trails curts.",
+          "details": "Amortiment FF BLAST PLUS i teixit tècnic lleuger per moure’t amb agilitat pels senders."
+        },
+        "asics-trabuco-14": {
+          "name": "TRABUCO 14",
+          "reason": "Subjecció i adherència per a la mitja trail.",
+          "details": "Sola ASICSGRIP, escuma FF BLAST MAX i ajust de trail per a terrenys irregulars."
+        },
+        "asics-metafuji-trail-2": {
+          "name": "METAFUJI TRAIL 2",
+          "reason": "Resposta per a la marató de muntanya.",
+          "details": "Placa de carboni, escuma FF LEAP i FF BLAST PLUS per competir en trail."
+        },
+        "asics-trabuco-max-5": {
+          "name": "TRABUCO MAX 5",
+          "reason": "Confort per als quilòmetres d’ultra.",
+          "details": "Amortiment màxim FF BLAST PLUS i sola ASICSGRIP per sumar quilòmetres pels senders."
         }
       }
     },

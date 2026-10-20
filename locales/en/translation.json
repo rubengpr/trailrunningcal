@@ -172,10 +172,16 @@
       }
     },
     "productRecommendation": {
+      "sectionTitle": "Recommended gear",
+      "sectionDescription": "A selection of products based on distance and elevation gain.",
       "title": "Recommended for you",
       "brand": "Trail Brand",
-      "brands": { "trailBrand": "Trail Brand", "lesBatons": "Les Bâtons", "summitFuel": "Summit Fuel" },
-      "toggle": "Show details for {product}",
+      "brands": {
+        "trailBrand": "Trail Brand",
+        "lesBatons": "Les Bâtons",
+        "summitFuel": "Summit Fuel"
+      },
+      "toggle": "Show details of {product}",
       "viewMore": "View more",
       "products": {
         "distance": {
@@ -212,6 +218,74 @@
           "name": "LB Sprint Fold",
           "reason": "Compact support for very steep slopes.",
           "details": "Ultra-light folding poles to improve efficiency on short, technical climbs without adding unnecessary kit."
+        }
+      },
+      "viewProduct": "View product",
+      "catalog": {
+        "naak-boost-gel": {
+          "name": "BOOST Gel 30 · Neutral",
+          "reason": "Energy to pick up the pace.",
+          "details": "Caffeine-free neutral gel with 30 g of carbohydrate for trails and mountain marathons."
+        },
+        "naak-ultra-drink": {
+          "name": "ULTRA Drink Mix 250 · Watermelon",
+          "reason": "Nutrition for your ultras.",
+          "details": "Watermelon drink with 250 kcal, carbohydrate, protein and sodium per serving for long efforts."
+        },
+        "baouw-gel": {
+          "name": "Raspberry & pomegranate gel",
+          "reason": "A fruity boost for the trail.",
+          "details": "Organic raspberry and pomegranate gel with 30 g of carbohydrate for trails and marathons."
+        },
+        "baouw-puree": {
+          "name": "Savoury sweet potato puree",
+          "reason": "Go savoury on your ultra.",
+          "details": "Organic sweet potato, carrot and Timut pepper puree: 114 kcal for a change of flavour on ultras."
+        },
+        "leki-ultratrail": {
+          "name": "Ultratrail FX.One",
+          "reason": "Lightweight support on the climbs.",
+          "details": "Folding carbon poles for races with steep climbs. Check that your race allows poles."
+        },
+        "kailas-fuga-ex-3": {
+          "name": "FUGA EX 3",
+          "reason": "Grip for your shorter trails.",
+          "details": "Vibram Megagrip outsole and ECCEVAI cushioning for varied trails."
+        },
+        "kailas-fuga-du-2": {
+          "name": "FUGA DU 2",
+          "reason": "Stability for your half marathon.",
+          "details": "Vibram Megagrip outsole and AWS 3.0 lacing for steep slopes and mixed terrain."
+        },
+        "kailas-fuga-ex-pro": {
+          "name": "FUGA EX PRO",
+          "reason": "Response for your mountain marathon.",
+          "details": "X-shaped carbon plate, responsive foam and Vibram Megagrip outsole for racing on mixed terrain."
+        },
+        "kailas-fuga-ex-330": {
+          "name": "FUGA EX 330",
+          "reason": "Cushioning for your ultra miles.",
+          "details": "Long-distance cushioning and a Vibram Megagrip outsole with 4 and 6 mm lugs."
+        },
+        "asics-fuji-lite-7": {
+          "name": "FUJI LITE 7",
+          "reason": "A lighter feel for shorter trails.",
+          "details": "FF BLAST PLUS cushioning and a lightweight engineered woven upper for agile trail running."
+        },
+        "asics-trabuco-14": {
+          "name": "TRABUCO 14",
+          "reason": "Lockdown and grip for your half trail.",
+          "details": "ASICSGRIP outsole, FF BLAST MAX foam and trail-specific fit for uneven terrain."
+        },
+        "asics-metafuji-trail-2": {
+          "name": "METAFUJI TRAIL 2",
+          "reason": "Response for your mountain marathon.",
+          "details": "Carbon plate, FF LEAP foam and FF BLAST PLUS cushioning for trail racing."
+        },
+        "asics-trabuco-max-5": {
+          "name": "TRABUCO MAX 5",
+          "reason": "Comfort for your ultra miles.",
+          "details": "Maximum FF BLAST PLUS cushioning and an ASICSGRIP outsole for long days on the trail."
         }
       }
     },
