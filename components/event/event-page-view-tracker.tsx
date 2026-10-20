@@ -8,6 +8,7 @@ import type { RegionId } from '@/lib/geography/destinations';
 import type { Locale } from '@/i18n';
 
 interface EventPageViewTrackerProps {
+  calendarAvailable?: boolean;
   eventId: string;
   eventSlug: string;
   locale?: Locale;
@@ -19,6 +20,7 @@ const READY_POLL_INTERVAL_MS = 200;
 const READY_POLL_MAX_ATTEMPTS = 25;
 
 export function EventPageViewTracker({
+  calendarAvailable = false,
   eventId,
   eventSlug,
   locale = 'es',
@@ -45,6 +47,7 @@ export function EventPageViewTracker({
 
       trackedSlugRef.current = eventSlug;
       track(ANALYTICS_EVENTS.EVENT_PAGE_VIEWED, {
+        calendar_available: calendarAvailable,
         event_id: eventId,
         event_slug: eventSlug,
         locale,
@@ -58,7 +61,7 @@ export function EventPageViewTracker({
     return () => {
       if (timeoutId !== undefined) window.clearTimeout(timeoutId);
     };
-  }, [eventId, eventSlug, locale, province, region]);
+  }, [calendarAvailable, eventId, eventSlug, locale, province, region]);
 
   return null;
 }

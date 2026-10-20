@@ -4,9 +4,13 @@ import { EventShareWhatsappButton } from '@/components/event/event-share-whatsap
 import { ConfirmedDateBadge } from '@/components/race/confirmed-date-badge';
 import { TrackedLink } from '@/components/ui/tracked-link';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
+import { EventCalendarMenu } from '@/components/event/event-calendar-menu';
+import { BASE_URL } from '@/lib/config';
+import type { CalendarEntry } from '@/types/event-calendar.types';
 import type { Locale } from '@/i18n';
 
 interface EventDetailHeaderProps {
+  calendarDates: Pick<CalendarEntry, 'startDate' | 'endDate'> | null;
   eventId: string;
   eventSlug: string;
   eventName: string;
@@ -23,6 +27,7 @@ interface EventDetailHeaderProps {
 }
 
 export function EventDetailHeader({
+  calendarDates,
   eventId,
   eventSlug,
   eventName,
@@ -65,21 +70,14 @@ export function EventDetailHeader({
               eventName={ANALYTICS_EVENTS.EVENT_OFFICIAL_WEBSITE_CLICKED}
               eventProperties={{ event_id: eventId, event_slug: eventSlug }}
               external
-              className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-md bg-gray-900 px-4 py-2 text-center font-medium whitespace-nowrap text-white transition-colors hover:bg-gray-600 focus:outline-none"
+              asButton
+              className="h-10 w-full gap-2 whitespace-nowrap"
             >
               <Globe className="h-4 w-4" />
               {officialWebsiteLabel}
             </TrackedLink>
           ) : null}
-          <div className="flex flex-row gap-2">
-            <EventShareWhatsappButton
-              message={shareMessage}
-              label={shareLabel}
-              iconOnly
-              className="flex-1"
-              eventId={eventId}
-              eventSlug={eventSlug}
-            />
+          <div className="flex flex-row flex-wrap gap-2">
             <EventFavoriteButton
               eventId={eventId}
               eventSlug={eventSlug}
@@ -88,6 +86,21 @@ export function EventDetailHeader({
               iconOnly
               className="flex-1"
             />
+            <EventShareWhatsappButton
+              message={shareMessage}
+              label={shareLabel}
+              iconOnly
+              className="flex-1"
+              eventId={eventId}
+              eventSlug={eventSlug}
+            />
+            {calendarDates ? (
+              <EventCalendarMenu
+                entry={{ id: eventId, name: eventName, ...calendarDates, location: locationLabel, url: `${BASE_URL}/${locale}/e/${eventSlug}` }}
+                eventSlug={eventSlug}
+                locale={locale}
+              />
+            ) : null}
           </div>
         </div>
       </div>

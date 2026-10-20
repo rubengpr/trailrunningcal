@@ -1,4 +1,4 @@
-import { AnchorHTMLAttributes, ButtonHTMLAttributes } from 'react';
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes, Ref } from 'react';
 
 interface ButtonBaseProps {
   variant?: 'primary' | 'secondary';
@@ -10,6 +10,7 @@ interface ButtonBaseProps {
 
 interface ButtonAsButton extends ButtonBaseProps, Omit<ButtonHTMLAttributes<HTMLButtonElement>, keyof ButtonBaseProps> {
   href?: undefined;
+  ref?: Ref<HTMLButtonElement>;
   isLoading?: boolean;
   loadingText?: string;
 }
