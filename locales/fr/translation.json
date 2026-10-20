@@ -172,9 +172,15 @@
       }
     },
     "productRecommendation": {
-      "title": "Nos recommandations",
+      "sectionTitle": "Équipement recommandé",
+      "sectionDescription": "Une sélection de produits selon la distance et le dénivelé.",
+      "title": "Notre sélection pour vous",
       "brand": "Trail Brand",
-      "brands": { "trailBrand": "Trail Brand", "lesBatons": "Les Bâtons", "summitFuel": "Summit Fuel" },
+      "brands": {
+        "trailBrand": "Trail Brand",
+        "lesBatons": "Les Bâtons",
+        "summitFuel": "Summit Fuel"
+      },
       "toggle": "Afficher les détails de {product}",
       "viewMore": "Voir plus",
       "products": {
@@ -212,6 +218,74 @@
           "name": "LB Sprint Fold",
           "reason": "Un appui compact pour les pentes très raides.",
           "details": "Des bâtons pliables ultralégers pour gagner en efficacité dans les montées courtes et techniques sans s'encombrer."
+        }
+      },
+      "viewProduct": "Voir le produit",
+      "catalog": {
+        "naak-boost-gel": {
+          "name": "BOOST Gel 30 · Neutre",
+          "reason": "L’énergie pour accélérer.",
+          "details": "Gel neutre sans caféine, avec 30 g de glucides pour les trails et marathons de montagne."
+        },
+        "naak-ultra-drink": {
+          "name": "ULTRA Drink Mix 250 · Pastèque",
+          "reason": "La nutrition pour vos ultras.",
+          "details": "Boisson à la pastèque avec 250 kcal, glucides, protéines et sodium par portion pour les efforts longs."
+        },
+        "baouw-gel": {
+          "name": "Gel framboise et grenade",
+          "reason": "Un coup de pouce fruité.",
+          "details": "Gel bio framboise et grenade, avec 30 g de glucides pour les trails et marathons."
+        },
+        "baouw-puree": {
+          "name": "Purée salée de patate douce",
+          "reason": "Passez au salé sur l’ultra.",
+          "details": "Purée bio de patate douce, carotte et poivre Timut : 114 kcal pour varier les saveurs en ultra."
+        },
+        "leki-ultratrail": {
+          "name": "Ultratrail FX.One",
+          "reason": "Un appui léger en montée.",
+          "details": "Bâtons pliables en carbone pour les courses à fort dénivelé. Vérifiez que votre épreuve les autorise."
+        },
+        "kailas-fuga-ex-3": {
+          "name": "FUGA EX 3",
+          "reason": "De l’accroche pour les trails courts.",
+          "details": "Semelle Vibram Megagrip et amorti ECCEVAI pour les sentiers variés."
+        },
+        "kailas-fuga-du-2": {
+          "name": "FUGA DU 2",
+          "reason": "De la stabilité pour votre semi-trail.",
+          "details": "Semelle Vibram Megagrip et laçage AWS 3.0 pour les pentes et terrains mixtes."
+        },
+        "kailas-fuga-ex-pro": {
+          "name": "FUGA EX PRO",
+          "reason": "Du répondant pour votre marathon.",
+          "details": "Plaque carbone en X, mousse réactive et semelle Vibram Megagrip pour courir sur terrain mixte."
+        },
+        "kailas-fuga-ex-330": {
+          "name": "FUGA EX 330",
+          "reason": "De l’amorti pour les kilomètres d’ultra.",
+          "details": "Amorti longue distance et semelle Vibram Megagrip avec crampons de 4 et 6 mm."
+        },
+        "asics-fuji-lite-7": {
+          "name": "FUJI LITE 7",
+          "reason": "De la légèreté pour les trails courts.",
+          "details": "Amorti FF BLAST PLUS et tige tissée technique légère pour courir avec agilité sur les sentiers."
+        },
+        "asics-trabuco-14": {
+          "name": "TRABUCO 14",
+          "reason": "Maintien et accroche pour votre semi-trail.",
+          "details": "Semelle ASICSGRIP, mousse FF BLAST MAX et chaussant trail pour les terrains irréguliers."
+        },
+        "asics-metafuji-trail-2": {
+          "name": "METAFUJI TRAIL 2",
+          "reason": "Du répondant pour votre marathon.",
+          "details": "Plaque carbone, mousse FF LEAP et amorti FF BLAST PLUS pour la compétition en trail."
+        },
+        "asics-trabuco-max-5": {
+          "name": "TRABUCO MAX 5",
+          "reason": "Du confort pour les kilomètres d’ultra.",
+          "details": "Amorti maximal FF BLAST PLUS et semelle ASICSGRIP pour les longues sorties sur les sentiers."
         }
       }
     },

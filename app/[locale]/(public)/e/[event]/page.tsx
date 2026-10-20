@@ -11,6 +11,7 @@ import { Breadcrumb } from '@/components/layout/breadcrumb';
 import { SponsorBannerSlot } from '@/components/sponsors/sponsor-banner-slot';
 import { EventDiscoverySection } from '@/components/event/event-discovery-section';
 import { EventDistanceList } from '@/components/event/event-distance-list';
+import { EventProductRecommendations } from '@/components/event/event-product-recommendations';
 import { getCalendarDates } from '@/lib/events/calendar';
 import { EventDetailHeader } from '@/components/event/event-detail-header';
 import { EventFeatureFeedback } from '@/components/event/event-feature-feedback';
@@ -309,6 +310,14 @@ export default async function EventPage({
               ratioTooltip={tEvent('elevationRatioTooltip')}
             />
           </section>
+
+          <EventProductRecommendations
+            eventId={eventData.event.id}
+            eventName={eventData.event.name}
+            eventSlug={event}
+            races={eventData.races}
+            locale={localeTyped}
+          />
 
           <EventTrackMapSection
             eventId={eventData.event.id}

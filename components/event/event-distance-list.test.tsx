@@ -65,6 +65,7 @@ describe('EventDistanceList', () => {
     ).toBeTruthy();
     expect(screen.getByText('42')).toBeTruthy();
     expect(screen.getAllByText('2800 m').length).toBeGreaterThan(0);
+    expect(screen.queryByTestId('recommendations-exposure')).toBeNull();
   });
 
   it('uses the event name and distance when the race has no name', async () => {

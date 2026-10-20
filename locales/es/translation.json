@@ -172,9 +172,15 @@
       }
     },
     "productRecommendation": {
+      "sectionTitle": "Material recomendado",
+      "sectionDescription": "Una selección de productos según la distancia y el desnivel.",
       "title": "Te recomendamos",
       "brand": "Trail Brand",
-      "brands": { "trailBrand": "Trail Brand", "lesBatons": "Les Bâtons", "summitFuel": "Summit Fuel" },
+      "brands": {
+        "trailBrand": "Trail Brand",
+        "lesBatons": "Les Bâtons",
+        "summitFuel": "Summit Fuel"
+      },
       "toggle": "Mostrar detalles de {product}",
       "viewMore": "Ver más",
       "products": {
@@ -212,6 +218,74 @@
           "name": "LB Sprint Fold",
           "reason": "Apoyo compacto para pendientes muy empinadas.",
           "details": "Bastones plegables ultraligeros para ganar eficiencia en subidas cortas y técnicas, sin cargar de más el material."
+        }
+      },
+      "viewProduct": "Ver producto",
+      "catalog": {
+        "naak-boost-gel": {
+          "name": "BOOST Gel 30 · Neutro",
+          "reason": "Energía para subir el ritmo.",
+          "details": "Gel neutro sin cafeína, con 30 g de hidratos para trails y maratones."
+        },
+        "naak-ultra-drink": {
+          "name": "ULTRA Drink Mix 250 · Sandía",
+          "reason": "Nutrición para tus ultras.",
+          "details": "Bebida de sandía con 250 kcal, hidratos, proteínas y sodio por ración para esfuerzos largos."
+        },
+        "baouw-gel": {
+          "name": "Gel frambuesa y granada",
+          "reason": "Un impulso con sabor a fruta.",
+          "details": "Gel ecológico de frambuesa y granada, con 30 g de hidratos para trails y maratones."
+        },
+        "baouw-puree": {
+          "name": "Puré salado de boniato",
+          "reason": "Dale un toque salado al ultra.",
+          "details": "Puré ecológico de boniato, zanahoria y pimienta Timut: 114 kcal para alternar sabores en ultras."
+        },
+        "leki-ultratrail": {
+          "name": "Ultratrail FX.One",
+          "reason": "Apoyo ligero en las subidas.",
+          "details": "Bastones de carbono plegables para carreras con desnivel. Comprueba que tu carrera permita usarlos."
+        },
+        "kailas-fuga-ex-3": {
+          "name": "FUGA EX 3",
+          "reason": "Agarre para tus trails cortos.",
+          "details": "Suela Vibram Megagrip y amortiguación ECCEVAI para recorrer senderos variados."
+        },
+        "kailas-fuga-du-2": {
+          "name": "FUGA DU 2",
+          "reason": "Estabilidad para tu media trail.",
+          "details": "Suela Vibram Megagrip y ajuste AWS 3.0 para pendientes y terrenos mixtos."
+        },
+        "kailas-fuga-ex-pro": {
+          "name": "FUGA EX PRO",
+          "reason": "Respuesta para tu maratón de montaña.",
+          "details": "Placa de carbono en X, espuma reactiva y suela Vibram Megagrip para competir en terreno mixto."
+        },
+        "kailas-fuga-ex-330": {
+          "name": "FUGA EX 330",
+          "reason": "Amortiguación para kilómetros de ultra.",
+          "details": "Amortiguación para largas distancias y suela Vibram Megagrip con tacos de 4 y 6 mm."
+        },
+        "asics-fuji-lite-7": {
+          "name": "FUJI LITE 7",
+          "reason": "Ligereza para tus trails cortos.",
+          "details": "Amortiguación FF BLAST PLUS y tejido técnico ligero para moverte con soltura por senderos."
+        },
+        "asics-trabuco-14": {
+          "name": "TRABUCO 14",
+          "reason": "Sujeción y agarre para tu media trail.",
+          "details": "Suela ASICSGRIP, espuma FF BLAST MAX y ajuste de trail para terrenos irregulares."
+        },
+        "asics-metafuji-trail-2": {
+          "name": "METAFUJI TRAIL 2",
+          "reason": "Respuesta para tu maratón de montaña.",
+          "details": "Placa de carbono, espuma FF LEAP y FF BLAST PLUS para competir en trail."
+        },
+        "asics-trabuco-max-5": {
+          "name": "TRABUCO MAX 5",
+          "reason": "Confort para los kilómetros de ultra.",
+          "details": "Amortiguación máxima FF BLAST PLUS y suela ASICSGRIP para sumar kilómetros por senderos."
         }
       }
     },

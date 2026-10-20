@@ -1,0 +1,33 @@
+{
+  "retrievedAt": "2026-10-20",
+  "sources": [
+    {
+      "brand": "Näak",
+      "page": "https://eu.naak.com",
+      "source": "Official header inline SVG, including the wordmark",
+      "localImage": "/assets/sponsors/brands/naak.svg"
+    },
+    {
+      "brand": "baouw",
+      "image": "https://www.baouw-organic-nutrition.com/web/image/website/1/logo/Boutique%20BAOUW?unique=a8d8202",
+      "localImage": "/assets/sponsors/brands/baouw.svg"
+    },
+    {
+      "brand": "leki",
+      "image": "https://res.cloudinary.com/leki-lenhart-gmbh/image/upload/s--CbelRcJV--/media/60/46/c9/1643711812/logo.svg?_a=BAAHWXH8",
+      "localImage": "/assets/sponsors/brands/leki.svg"
+    },
+    {
+      "brand": "Kailas FUGA",
+      "page": "https://www.kailasfuga.com",
+      "image": "https://www.kailasfuga.com/cdn/shop/files/lQLPKIWIfCUOuvfMhs0CVrDTjBPaxQbnfgoaC1L1VhEA_598_134_a9cd2d54-3f06-4a92-aae5-752e562de2d2.png?v=1784875060&width=598",
+      "localImage": "/assets/sponsors/brands/kailas-fuga.webp"
+    },
+    {
+      "brand": "ASICS",
+      "page": "https://corp.asics.com/en/",
+      "image": "https://corp.asics.com/system/assets/logo-asics.svg",
+      "localImage": "/assets/sponsors/brands/asics.svg"
+    }
+  ]
+}

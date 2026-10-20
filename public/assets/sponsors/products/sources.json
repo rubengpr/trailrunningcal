@@ -1,0 +1,145 @@
+{
+  "retrievedAt": "2026-10-20",
+  "sources": [
+    {
+      "id": "naak-boost-gel",
+      "page": "https://eu.naak.com/products/boost-gel-30-neutral",
+      "image": "https://eu.naak.com/cdn/shop/files/0039_Boost-Gel-Neutral-1600x1600px.jpg?v=1786378848&width=1200",
+      "localImage": "/assets/sponsors/products/naak-boost-gel.webp",
+      "priceEur": 3.5,
+      "priceCurrency": "EUR",
+      "priceCheckedAt": "2026-10-20",
+      "priceBasis": "single unit"
+    },
+    {
+      "id": "naak-ultra-drink",
+      "page": "https://eu.naak.com/products/ultra-drink-mix-250-watermelon-single-serve",
+      "image": "https://eu.naak.com/cdn/shop/files/naak-drink-mixes-ultra-drink-mix-250-watermelon-single-serve-1253784181.jpg?v=1789997425&width=1200",
+      "localImage": "/assets/sponsors/products/naak-ultra-drink.webp",
+      "priceEur": 4,
+      "priceCurrency": "EUR",
+      "priceCheckedAt": "2026-10-20",
+      "priceBasis": "single unit"
+    },
+    {
+      "id": "baouw-gel",
+      "page": "https://www.baouw-organic-nutrition.com/shop/gel-energetique-framboise-grenade-1634",
+      "image": "https://www.baouw-organic-nutrition.com/web/image/product.template/1634/image_1024?unique=11640fa",
+      "localImage": "/assets/sponsors/products/baouw-gel.webp",
+      "priceEur": 3.25,
+      "priceCurrency": "EUR",
+      "priceCheckedAt": "2026-10-20",
+      "priceBasis": "single unit"
+    },
+    {
+      "id": "baouw-puree",
+      "page": "https://www.baouw-organic-nutrition.com/shop/purees-energetiques-4/compote-energetique-bio-salee-patatedouce-carotte-poivretimut-915",
+      "image": "https://www.baouw-organic-nutrition.com/web/image/product.product/1496/image_1920?unique=7cff20b",
+      "localImage": "/assets/sponsors/products/baouw-puree.webp",
+      "priceEur": 3.25,
+      "priceCurrency": "EUR",
+      "priceCheckedAt": "2026-10-20",
+      "priceBasis": "single unit"
+    },
+    {
+      "id": "leki-ultratrail",
+      "page": "https://www.leki.com/int/en/Ultratrail-FX.One/65625851110",
+      "image": "https://res.cloudinary.com/leki-lenhart-gmbh/image/upload/s--OrWttGro--/media/1a/a1/e5/1772620658/65625851_C.png?_a=BAAHWXH8",
+      "localImage": "/assets/sponsors/products/leki-ultratrail-folded.webp",
+      "priceEur": 180,
+      "priceCurrency": "EUR",
+      "priceCheckedAt": "2026-10-20",
+      "priceBasis": "pair"
+    },
+    {
+      "id": "kailas-fuga-ex-3",
+      "page": "https://www.kailasfuga.com/products/2025-new-kailas-fuga-ex-3-trail-running-shoes-mens?variant=53545285026157",
+      "image": "https://cdn.shopify.com/s/files/1/0909/4440/5869/files/Gjigw-KS2613132-45.webp?v=1783905235",
+      "localImage": "/assets/sponsors/products/kailas-fuga-ex-3.webp",
+      "priceEur": 144.0,
+      "priceCurrency": "EUR",
+      "priceCheckedAt": "2026-10-20",
+      "priceBasis": "pair; pictured colour and selected variant",
+      "variant": "Regular / Sea Stone Green / EUR 40",
+      "originalPriceEur": 160.0
+    },
+    {
+      "id": "kailas-fuga-du-2",
+      "page": "https://www.kailasfuga.com/products/kailas-fuga-du-2-trail-running-shoes-mens?variant=51900190687597",
+      "image": "https://cdn.shopify.com/s/files/1/0909/4440/5869/files/gjgw_5_._2b589089-71c3-496c-a5fc-6b3e50cf63b4.webp?v=1790070459",
+      "localImage": "/assets/sponsors/products/kailas-fuga-du-2.webp",
+      "priceEur": 190.0,
+      "priceCurrency": "EUR",
+      "priceCheckedAt": "2026-10-20",
+      "priceBasis": "pair; pictured colour and selected variant",
+      "variant": "Mysterious Purple/Original / EUR 40"
+    },
+    {
+      "id": "kailas-fuga-ex-pro",
+      "page": "https://www.kailasfuga.com/products/kailas-fuga-ex-pro-mountain-running-shoes-unisex?variant=53823331205485",
+      "image": "https://cdn.shopify.com/s/files/1/0909/4440/5869/files/Gjigw-KS2633184-45_c64f2234-6e8c-4b07-a577-e4966ca494ac.webp?v=1788918221",
+      "localImage": "/assets/sponsors/products/kailas-fuga-ex-pro.webp",
+      "priceEur": 250.0,
+      "priceCurrency": "EUR",
+      "priceCheckedAt": "2026-10-20",
+      "priceBasis": "pair; pictured colour and selected variant",
+      "variant": "Neon Pink & Blue / EUR 36"
+    },
+    {
+      "id": "kailas-fuga-ex-330",
+      "page": "https://www.kailasfuga.com/products/2025-new-kailas-fuga-ex-330-trail-running-shoes-mens?variant=52048352543085",
+      "image": "https://cdn.shopify.com/s/files/1/0909/4440/5869/files/800-2.png?v=1776395336",
+      "localImage": "/assets/sponsors/products/kailas-fuga-ex-330.webp",
+      "priceEur": 180.0,
+      "priceCurrency": "EUR",
+      "priceCheckedAt": "2026-10-20",
+      "priceBasis": "pair; pictured colour and selected variant",
+      "variant": "Icy Blue / EUR 40"
+    },
+    {
+      "id": "asics-fuji-lite-7",
+      "page": "https://www.asics.com/es/es-es/fuji-lite-7/p/1013A232-400.html",
+      "image": "https://images.asics.com/is/image/asics/1013A232_400_SL_LT_GLB?%24sfcc-product%24=",
+      "localImage": "/assets/sponsors/products/asics-fuji-lite-7.webp",
+      "priceEur": 140,
+      "priceCurrency": "EUR",
+      "priceCheckedAt": "2026-10-20",
+      "priceBasis": "pair; pictured colour; public Spanish storefront price",
+      "variant": "Ocean Haze/Foggy Teal"
+    },
+    {
+      "id": "asics-trabuco-14",
+      "page": "https://www.asics.com/es/es-es/trabuco--14/p/1011C166-750.html",
+      "image": "https://images.asics.com/is/image/asics/1011C166_750_SL_LT_GLB?%24sfcc-product%24=",
+      "localImage": "/assets/sponsors/products/asics-trabuco-14.webp",
+      "priceEur": 160,
+      "priceCurrency": "EUR",
+      "priceCheckedAt": "2026-10-20",
+      "priceBasis": "pair; pictured colour; public Spanish storefront price",
+      "variant": "Illuminate Yellow/Umeboshi"
+    },
+    {
+      "id": "asics-metafuji-trail-2",
+      "page": "https://www.asics.com/es/es-es/metafuji-trail-2/p/1013A178-750.html",
+      "image": "https://images.asics.com/is/image/asics/1013A178_750_SL_LT_GLB?%24sfcc-product%24=",
+      "localImage": "/assets/sponsors/products/asics-metafuji-trail-2.webp",
+      "priceEur": 250,
+      "priceCurrency": "EUR",
+      "priceCheckedAt": "2026-10-20",
+      "priceBasis": "pair; pictured colour; public Spanish storefront price",
+      "variant": "Illuminate Yellow/Dark Aubergine"
+    },
+    {
+      "id": "asics-trabuco-max-5",
+      "page": "https://www.asics.com/es/es-es/trabuco--max-5/p/1011C164-600.html",
+      "image": "https://images.asics.com/is/image/asics/1011C164_600_SL_LT_GLB?%24sfcc-product%24=",
+      "localImage": "/assets/sponsors/products/asics-trabuco-max-5.webp",
+      "priceEur": 126,
+      "priceCurrency": "EUR",
+      "priceCheckedAt": "2026-10-20",
+      "priceBasis": "pair; pictured colour; public Spanish storefront price",
+      "variant": "Umeboshi/Black",
+      "originalPriceEur": 180
+    }
+  ]
+}
