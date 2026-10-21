@@ -1,6 +1,7 @@
 import Ajv from 'ajv';
 import { marked } from 'marked';
-import { Parser } from 'htmlparser2';
+import { visibleText } from '@/lib/blog/writing/text';
+import { inspectQuality } from '@/lib/blog/writing/quality';
 import {
   GenerationError,
   parseArticle,
@@ -16,42 +17,7 @@ import type {
   WritingResult,
 } from '@/types/blog-writing.types';
 
-function visibleText(html: string): string {
-  let text = '';
-  const blocks = new Set([
-    'p',
-    'h2',
-    'h3',
-    'ul',
-    'ol',
-    'li',
-    'table',
-    'thead',
-    'tbody',
-    'tr',
-    'th',
-    'td',
-    'blockquote',
-    'br',
-    'hr',
-  ]);
-  const parser = new Parser(
-    {
-      onopentag: (name) => {
-        if (blocks.has(name)) text += ' ';
-      },
-      ontext: (value) => {
-        text += value;
-      },
-      onclosetag: (name) => {
-        if (blocks.has(name)) text += ' ';
-      },
-    },
-    { decodeEntities: true },
-  );
-  parser.end(html);
-  return normalizeText(text);
-}
+
 function key(value: string) {
   return normalizeText(value).toLocaleLowerCase('es');
 }
@@ -63,7 +29,7 @@ export function compose(
   value: unknown,
   request: WritingRequest,
   input: WritingInput,
-): Pick<WritingResult, 'article' | 'contentHtml' | 'references'> {
+): Pick<WritingResult, 'article' | 'contentHtml' | 'references' | 'quality'> {
   const validate = new Ajv().compile<WritingResponse>(writingSchema(input));
   if (!validate(value)) throw new GenerationError('invalid_content');
   const { references: claims, ...fields } = value;
@@ -76,6 +42,7 @@ export function compose(
     throw new GenerationError('invalid_content');
   // Validate the model's original Markdown before inserting any trusted links.
   renderContent(article.contentMarkdown);
+  const quality = inspectQuality(article, request.events);
   const tokens = marked.lexer(article.contentMarkdown, { gfm: true });
   const events = request.events;
   const order: string[] = [];
@@ -152,6 +119,7 @@ export function compose(
   article.contentMarkdown = markdown.trim();
   return {
     article,
+    quality,
     contentHtml: renderContent(
       article.contentMarkdown,
       [...request.events.map(event => eventPath(event.slug)),calendarPath(request)],

@@ -83,6 +83,7 @@ async function main() {
       save('response.json', response),
     );
     await save('result.json', result);
+    await save('quality.json', result.quality);
     await save('references.json', result.references);
     await text(
       'article.md',

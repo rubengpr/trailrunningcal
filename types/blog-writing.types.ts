@@ -21,6 +21,21 @@ export interface WritingInput {
 export interface WritingResponse extends Article {
   references: Array<{eventName: string; excerpt: string; sourceIndexes: number[]}>;
 }
+export type QualityField = 'title' | 'contentMarkdown' | 'primaryKeyword' | 'slug' | 'seoTitle' | 'metaDescription' | 'introduction';
+export type QualityObservation =
+  | {code:'length_out_of_range';field:Exclude<QualityField,'introduction'>;unit:'characters'|'words';actual:number;min:number;max:number}
+  | {code:'keyword_missing';field:'title'|'introduction'|'slug'|'seoTitle'|'metaDescription'}
+  | {code:'repeated_paragraph';field:'contentMarkdown';eventId:string;relatedEventIds:string[];excerpt:string};
+export interface WritingQuality {
+  metrics: {
+    wordCount:number;
+    keywordWordCount:number;
+    slugWordCount:number;
+    characters:Record<'title'|'slug'|'seoTitle'|'metaDescription',number>;
+  };
+  observations:QualityObservation[];
+}
 export interface WritingResult extends GeneratedArticle {
+  quality:WritingQuality;
   references: Array<{eventId: string; excerpt: string; sources: ResearchSource[]}>;
 }

@@ -45,9 +45,36 @@ node --env-file=.env.local --import tsx scripts/blog-writing/run.ts --research-i
 
 También se acepta `--input request.json` con el nuevo contrato para preparación offline sin credenciales; `--input` y `--research-id` son excluyentes. Los snapshots del contrato anterior se conservan como archivos históricos: para un intento nuevo, prepararlo otra vez desde la investigación con `--research-id`.
 
-Cada intento crea una carpeta nueva bajo `scripts/.cache/blog-writing/`, excluida de Git. `--output` permite escoger una carpeta nueva. Se guardan request, input, instrucciones, esquema, hashes, estado, respuesta original, artículo Markdown/HTML, referencias y consumo disponible. No se sobreescriben intentos ni se reenvían automáticamente llamadas interrumpidas.
+Cada intento crea una carpeta nueva bajo `scripts/.cache/blog-writing/`, excluida de Git. `--output` permite escoger una carpeta nueva. Se guardan request, input, instrucciones, esquema, hashes, estado, respuesta original, artículo Markdown/HTML, referencias, informe `quality.json` y consumo disponible. No se sobreescriben intentos ni se reenvían automáticamente llamadas interrumpidas.
 
 El script no crea artículos en Supabase ni publica. La conexión del redactor con el botón de generación, el guardado de artículos y el evaluador siguen fuera de esta fase. Los artículos y el flujo anterior conservan su `generationContext` propio.
+
+## Reglas editoriales y validación
+
+El prompt exige información específica respaldada por dossier, intención de descubrimiento y comparación,
+coherencia entre keyword y metadatos, y una presentación flexible sin repetir la misma plantilla.
+Los títulos de evento conservan sus nombres y el backend sigue controlando los enlaces.
+
+El backend valida el Markdown original antes de añadir enlaces. Rechaza encabezados vacíos, eventos sin
+contenido visible, falta de un párrafo introductorio antes del primer H2 o falta de un cierre bajo un H2
+propio después del último evento. Se mantienen la validación de cinco eventos distintos y las referencias.
+El criterio editorial puede formar parte de la introducción; no se impone un encabezado concreto.
+
+`WritingResult.quality` contiene métricas y observaciones tipadas, sin score. Se guarda también como
+`quality.json`, separado del esquema que responde el modelo. Las métricas cuentan el cuerpo visible
+(incluidos sus encabezados) sin metadatos ni enlaces de navegación añadidos por el backend. Las longitudes
+de caracteres cuentan puntos de código Unicode; las palabras se cuentan por secuencias de letras o cifras.
+
+Las observaciones no bloquean ni generan una nueva llamada:
+
+- Longitudes fuera de objetivos: título 40–90 caracteres, cuerpo 700–1.100 palabras, keyword 2–6 palabras,
+  slug 3–8 palabras y menos de 75 caracteres, título SEO 45–60 caracteres y metadescripción 140–160.
+- Keyword literal ausente en título, introducción, título SEO, slug o metadescripción; se ignoran tildes,
+  mayúsculas y separadores y se comparan palabras completas. Una variante válida puede producir aviso.
+- Párrafos normalizados idénticos de 20 o más palabras compartidos entre eventos, con los IDs afectados.
+
+Estas comprobaciones no verifican veracidad, originalidad semántica ni posicionamiento SEO.
+Si falla la estructura, se conserva la respuesta original y el estado de fallo, sin llamadas de reparación.
 
 ## Verificación sin consumo
 

@@ -47,6 +47,20 @@ describe('researched article inference', () => {
     });
     expect(result.references).toHaveLength(5);
   });
+  it('returns quality observations without another inference', async () => {
+    const result = await write(writingRequest);
+    expect(result.quality.observations).toContainEqual(expect.objectContaining({code:'length_out_of_range',field:'contentMarkdown'}));
+    expect(mocks.create).toHaveBeenCalledOnce();
+  });
+  it('preserves structurally invalid output without a repair call', async () => {
+    const value = {...writingResponse,contentMarkdown:writingResponse.contentMarkdown.split('## Elige tu próximo evento')[0]};
+    const response = {id:'response',status:'completed',output:[],output_text:JSON.stringify(value)};
+    mocks.create.mockResolvedValue(response);
+    const record = vi.fn().mockResolvedValue(undefined);
+    await expect(write(writingRequest,record)).rejects.toMatchObject({code:'invalid_content'});
+    expect(record).toHaveBeenCalledWith(response);
+    expect(mocks.create).toHaveBeenCalledOnce();
+  });
   it('rejects missing dossiers before constructing the client', async () => {
     await expect(
       write({ ...writingRequest, events: [] }),
