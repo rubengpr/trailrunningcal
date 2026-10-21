@@ -36,7 +36,7 @@ export async function failStep(runId: string, code: string): Promise<void> {
 export async function runResearch(run: ResearchRun, workflowId: string): Promise<void> {
   const results = await Promise.allSettled(run.results.map(async result => {
     await beginStep(run.id,result.id,workflowId);
-    const response = await investigateStep({regionName:run.input.regionName,eventName:result.eventName});
+    const response = await investigateStep({regionName:run.regionName,eventName:result.eventName});
     await saveStep(run.id,result.id,response.output,response.error,response.metadata);
   }));
   // Wait for all independent branches before releasing any remaining failed work.

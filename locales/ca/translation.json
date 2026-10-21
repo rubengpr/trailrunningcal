@@ -1415,6 +1415,11 @@
       "observedWords": "Longitud observada: {count} paraules.",
       "observedCharacters": "Longitud observada: {count} caràcters.",
       "research": {
+        "openWorkspace": "Investigar esdeveniments",
+        "backToBlog": "Tornar als esborranys",
+        "backToResearch": "Tornar a les investigacions",
+        "independentDescription": "Selecciona una comunitat i cinc esdeveniments per investigar. Els dossiers es desaran sense generar cap article.",
+        "accepted": "Investigació acceptada. Pots consultar-ne el progrés a l’historial.",
         "title": "Investigació",
         "selection": "Selecciona els esdeveniments que vols investigar (1–5).",
         "start": "Investigar esdeveniments",

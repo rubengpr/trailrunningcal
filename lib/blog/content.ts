@@ -25,12 +25,14 @@ export function parseArticle(value: unknown): Article {
   return article;
 }
 
-export function renderContent(markdown: string): string {
+export function renderContent(markdown: string, links: readonly string[] = []): string {
+  if (links.some(link => !link.startsWith('/') || link.startsWith('//') || /[\s\\]/.test(link))) throw new GenerationError('invalid_content');
   const tokens = marked.lexer(markdown, { gfm: true });
   let hasSection = false;
   marked.walkTokens(tokens, token => {
-    if (['html', 'link', 'image', 'def', 'code', 'codespan'].includes(token.type) ||
+    if (['html', 'image', 'def', 'code', 'codespan'].includes(token.type) ||
       (token.type === 'list_item' && token.task)) throw new GenerationError('invalid_content');
+    if (token.type === 'link' && (!links.includes(token.href) || token.title)) throw new GenerationError('invalid_content');
     if (token.type === 'heading') {
       if (token.depth !== 2 && token.depth !== 3) throw new GenerationError('invalid_content');
       if (token.depth === 3 && !hasSection) throw new GenerationError('invalid_content');
@@ -38,5 +40,5 @@ export function renderContent(markdown: string): string {
     }
   });
   if (!hasSection) throw new GenerationError('invalid_content');
-  return sanitizeContent(marked.parser(tokens));
+  return sanitizeContent(marked.parser(tokens), links);
 }

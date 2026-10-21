@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 import { createClient } from '@supabase/supabase-js';
 vi.mock('@/lib/supabase/server', () => ({createAdminClient: () => createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {auth: {persistSession: false}})}));
-import { listEvents, selectedEvents } from './blog-events';
+import { listEvents, selectedEvents, researchEvents, eventSlugs } from './blog-events';
 import { provinces } from '@/lib/blog/regions';
 const integration = process.env.RUN_SUPABASE_INTEGRATION_TESTS === 'true' ? describe : describe.skip;
 integration('local regional event queries', () => {
@@ -22,4 +22,16 @@ integration('local regional event queries', () => {
     expect(await selectedEvents('aragon',events.map(event => event.id))).toEqual([]);
     expect((await listEvents('catalonia',events[0].name,1)).events.some(event => event.id === events[0].id)).toBe(true);
   });
+  it('loads only research identities and writer slugs without catalog context',async() => {
+    const page = await listEvents('catalonia','',1);
+    const ids = page.events.slice(0,5).map(event => event.id);
+    const events = await researchEvents('catalonia',ids);
+    expect(events).toHaveLength(5);
+    expect(events.every(event => Object.keys(event).sort().join(',') === 'id,name')).toBe(true);
+    expect(await researchEvents('aragon',ids)).toEqual([]);
+    const slugs = await eventSlugs(ids);
+    expect(slugs).toHaveLength(5);
+    expect(slugs.every(event => Object.keys(event).sort().join(',') === 'id,slug')).toBe(true);
+  });
+
 });

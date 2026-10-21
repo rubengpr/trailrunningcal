@@ -28,4 +28,12 @@ describe('article validation and rendering', () => {
     const html = sanitizeContent('<p onclick="evil()">Texto <a href="/es">enlace</a></p><script>evil()</script><img src="x">');
     expect(html).toBe('<p>Texto enlace</p>');
   });
+  it('allows only the exact trusted internal links and rejects unsafe allowlists', () => {
+    const markdown = '## Sección\n\n[Ver ficha](/es/e/evento)';
+    expect(renderContent(markdown, ['/es/e/evento'])).toContain('href="/es/e/evento"');
+    expect(() => renderContent(markdown, ['/es/e/otro'])).toThrow(GenerationError);
+    for (const link of ['https://example.com', '//example.com', '/\\example.com']) {
+      expect(() => renderContent('## Sección\n\nTexto', [link])).toThrow(GenerationError);
+    }
+  });
 });

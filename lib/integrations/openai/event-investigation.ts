@@ -33,7 +33,7 @@ export async function investigateEvent(input: ResearchInput): Promise<ResearchOu
     let value: unknown;
     try { value = JSON.parse(response.output_text); } catch { throw new ResearchError('invalid_result'); }
     return {
-      dossier: parseDossier(value, input.eventName, consultedSources), consultedSources,
+      dossier: parseDossier(value, consultedSources), consultedSources,
       responseId: response.id, model: response.model, usage: response.usage,
       searchCalls: searches.length, durationMs: Date.now() - started,
     };

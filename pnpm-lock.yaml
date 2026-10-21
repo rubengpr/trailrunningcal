@@ -56,6 +56,9 @@ importers:
       '@xmldom/xmldom':
         specifier: 0.9.10
         version: 0.9.10
+      ajv:
+        specifier: 8.20.0
+        version: 8.20.0
       braintrust:
         specifier: 3.28.0
         version: 3.28.0(@aws-sdk/credential-provider-web-identity@3.972.13)(zod@4.3.6)
@@ -147,9 +150,6 @@ importers:
       '@vitejs/plugin-react':
         specifier: ^5.1.2
         version: 5.1.4(vite@7.3.1(@types/node@20.19.33)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.9.0))
-      ajv:
-        specifier: ^8.20.0
-        version: 8.20.0
       eslint:
         specifier: ^9
         version: 9.39.2(jiti@2.6.1)

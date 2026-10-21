@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { LoaderCircle, Sparkles, X } from 'lucide-react';
+import { LoaderCircle, Search, Sparkles, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { ErrorMessage, FormErrorMessage } from '@/components/ui/error-message';
 import { Button } from '@/components/ui/button';
@@ -12,10 +12,10 @@ import { useBlog } from '@/hooks/use-blog';
 import { useBlogEvents } from '@/hooks/use-blog-events';
 import { regionIds } from '@/lib/blog/regions';
 
-export function BlogDraftForm() {
+export function BlogDraftForm({ research = false }: { research?: boolean }) {
   const t = useTranslations('admin.blog');
   const geography = useTranslations('geography.regions');
-  const {regionId, setRegion, selected, setSelected, submit, isSubmitting, requestFailed, acceptedId, clearRequestError} = useBlog();
+  const {regionId, setRegion, selected, setSelected, submit, submitResearch, researchAccepted, isSubmitting, requestFailed, acceptedId, clearRequestError} = useBlog();
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [invalid, setInvalid] = useState(false);
@@ -25,7 +25,7 @@ export function BlogDraftForm() {
     if (isSubmitting) return;
     if (!regionId || selected.length !== 5) { setInvalid(true); return; }
     setInvalid(false);
-    void submit({regionId, eventIds: selected.map(event => event.id)});
+    void (research ? submitResearch : submit)({regionId, eventIds: selected.map(event => event.id)});
   }
   return <form onSubmit={handleSubmit} noValidate className="space-y-4">
     <div className="flex flex-wrap items-end gap-4">
@@ -34,9 +34,9 @@ export function BlogDraftForm() {
           disabled={isSubmitting} options={regionIds.map(id => ({value: id, label: geography(id)}))}
           onValueChange={value => { setRegion(value); setSearch(''); setPage(1); setInvalid(false); }} />
       </div>
-      <Button type="submit" disabled={isSubmitting} className="h-10 w-36 shrink-0 gap-2 whitespace-nowrap px-3">
-        {isSubmitting ? <LoaderCircle className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
-        {isSubmitting ? t('sending') : t('submitArticle')}
+      <Button type="submit" disabled={isSubmitting} className={`h-10 shrink-0 gap-2 whitespace-nowrap px-3 ${research ? 'w-48' : 'w-36'}`}>
+        {isSubmitting ? <LoaderCircle className="size-4 shrink-0 animate-spin" /> : research ? <Search className="size-4 shrink-0" /> : <Sparkles className="size-4" />}
+        {isSubmitting ? t('sending') : research ? t('research.start') : t('submitArticle')}
       </Button>
     </div>
     <div className="flex flex-wrap items-center gap-2">
@@ -75,7 +75,7 @@ export function BlogDraftForm() {
       </> : null}
     </div> : null}
     {invalid ? <FormErrorMessage message={t('selection.required')} /> : null}
-    {requestFailed ? <ErrorMessage message={t('selection.requestFailed')} showRetry={false} variant="compact" /> : null}
-    {(isSubmitting || acceptedId) ? <p role="status" className="text-xs text-gray-500">{isSubmitting ? t('sendingNotice') : t('acceptedNotice')}</p> : null}
+    {requestFailed ? <ErrorMessage message={t(research ? 'research.requestFailed' : 'selection.requestFailed')} showRetry={false} variant="compact" /> : null}
+    {(isSubmitting || (research ? researchAccepted : acceptedId)) ? <p role="status" className="text-xs text-gray-500">{isSubmitting ? t(research ? 'research.sending' : 'sendingNotice') : t(research ? 'research.accepted' : 'acceptedNotice')}</p> : null}
   </form>;
 }

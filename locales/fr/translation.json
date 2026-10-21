@@ -1219,6 +1219,11 @@
       "observedWords": "Longueur observée : {count} mots.",
       "observedCharacters": "Longueur observée : {count} caractères.",
       "research": {
+        "openWorkspace": "Rechercher des événements",
+        "backToBlog": "Retour aux brouillons",
+        "backToResearch": "Retour aux recherches",
+        "independentDescription": "Sélectionnez une région et cinq événements à rechercher. Les dossiers seront enregistrés sans générer d’article.",
+        "accepted": "Recherche acceptée. Suivez sa progression dans l’historique.",
         "title": "Recherche",
         "selection": "Sélectionnez les événements à rechercher (1–5).",
         "start": "Rechercher les événements",

@@ -14,7 +14,7 @@ it('launches independent investigations in parallel and saves each result',async
   await vi.waitFor(() => expect(mocks.investigate).toHaveBeenCalledTimes(2));
   expect(mocks.finish).not.toHaveBeenCalled();resolvers.forEach(resolve => resolve(output));await promise;
   expect(mocks.finish).toHaveBeenCalledTimes(2);expect(mocks.fail).not.toHaveBeenCalled();
-  expect(mocks.investigate.mock.calls.map(([input]) => input)).toEqual(run.results.map(result => ({regionName:run.input.regionName,eventName:result.eventName})));
+  expect(mocks.investigate.mock.calls.map(([input]) => input)).toEqual(run.results.map(result => ({regionName:run.regionName,eventName:result.eventName})));
 });
 it.each(['refused','incomplete','invalid_result','api_error','timeout'])('isolates event failure %s',async(code) => {
   mocks.investigate.mockRejectedValueOnce(new ResearchError(code));await researchWorkflow({runId:run.id});

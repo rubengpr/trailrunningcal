@@ -1447,6 +1447,11 @@
       "observedWords": "Longitud observada: {count} palabras.",
       "observedCharacters": "Longitud observada: {count} caracteres.",
       "research": {
+        "openWorkspace": "Investigar eventos",
+        "backToBlog": "Volver a borradores",
+        "backToResearch": "Volver a investigaciones",
+        "independentDescription": "Selecciona una comunidad y cinco eventos para investigar. Los dossiers se guardarán sin generar un artículo.",
+        "accepted": "Investigación aceptada. Puedes consultar su progreso en el historial.",
         "title": "Investigación",
         "selection": "Selecciona los eventos que quieres investigar (1–5).",
         "start": "Investigar eventos",

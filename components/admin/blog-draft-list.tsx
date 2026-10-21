@@ -61,6 +61,7 @@ export function BlogDraftList({ initial }: { initial: DraftPage }) {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold tracking-tight">{t('drafts')}</h1>
+      <Link href={`/${locale}/admin/blog/research`} className="inline-flex cursor-pointer text-sm font-medium underline underline-offset-4">{t('research.openWorkspace')}</Link>
       <BlogDraftForm />
       {readFailed ? <ErrorMessage message={t('readFailed')} showRetry={false} variant="compact" /> : null}
       {sorted.some(d => (d.status === 'queued' || d.status === 'running') && now - Date.parse(d.createdAt) >= 30_000)

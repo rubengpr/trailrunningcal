@@ -256,7 +256,7 @@ describe('draft deletion UI', () => {
   function open() {
     const menu = screen.queryByRole('button', { name: es.admin.blog.delete.actions });
     if (menu) fireEvent.click(menu);
-    fireEvent.click(screen.getByRole('button',{name:es.admin.blog.delete.button}));
+    fireEvent.click(screen.getByRole(menu ? 'menuitem' : 'button',{name:es.admin.blog.delete.button}));
   }
   async function confirm() { await act(async()=>fireEvent.click(screen.getByText(es.admin.blog.delete.confirm,{selector:'button'}))); }
   it('opens confirmation without row navigation and permits cancellation',()=>{
@@ -286,7 +286,7 @@ describe('draft deletion UI', () => {
     const draft={...completed,status,evaluationStatus} as DraftDetail;
     show(<BlogDraftView initial={draft} />);
     fireEvent.click(screen.getByRole('button',{name:es.admin.blog.delete.actions}));
-    expect((screen.getByRole('button',{name:es.admin.blog.delete.button}) as HTMLButtonElement).disabled).toBe(true);
+    expect((screen.getByRole('menuitem',{name:es.admin.blog.delete.button}) as HTMLButtonElement).disabled).toBe(true);
   });
   it('refreshes a conflicting evaluation and disables confirmation',async()=>{
     mocks.deleteDraft.mockRejectedValue(new mocks.DraftRequestError(409));mocks.getDraft.mockResolvedValue({...completed,evaluationStatus:'running'});

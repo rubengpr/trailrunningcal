@@ -1,10 +1,11 @@
+import type { BlogRegionId } from '@/types/blog-selection.types';
+
 export type ResearchStatus = 'queued' | 'running' | 'completed' | 'partial' | 'failed';
 export type ResearchResultStatus = Exclude<ResearchStatus, 'partial'>;
 export type DraftResearchStatus = ResearchStatus | 'not_started';
 
 export interface ResearchSource { title: string; url: string }
 export interface Dossier {
-  eventName: string;
   context: string;
   sources: ResearchSource[];
   observations: string[];
@@ -23,7 +24,6 @@ export interface ResearchResult {
   id: string;
   eventId: string;
   eventName: string;
-  position: number;
   status: ResearchResultStatus;
   dossier: Dossier | null;
   consultedSources: string[];
@@ -33,8 +33,9 @@ export interface ResearchResult {
 }
 export interface ResearchRun {
   id: string;
-  draftId: string;
-  input: { regionName: string; events: {id: string; name: string}[] };
+  draftId: string | null;
+  regionId: BlogRegionId;
+  regionName: string;
   provider: string;
   model: string;
   status: ResearchStatus;

@@ -40,3 +40,17 @@ export async function selectedEvents(regionId: BlogRegionId, ids: string[]): Pro
   if (error) throw error;
   return (data as unknown as Row[] ?? []).map(map);
 }
+
+// Minimal research selection: no description, modalities or distances are copied.
+export async function researchEvents(regionId: BlogRegionId, ids: string[]): Promise<Array<{id:string;name:string}>> {
+  const {data,error} = await createAdminClient().from('events')
+    .select('id,name,races!inner(province)').in('id',ids).in('races.province',provinces(regionId));
+  if (error) throw error;
+  return (data ?? []).map(({id,name}) => ({id,name}));
+}
+
+export async function eventSlugs(ids: string[]): Promise<Array<{id:string;slug:string}>> {
+  const {data,error} = await createAdminClient().from('events').select('id,slug').in('id',ids);
+  if (error) throw error;
+  return data ?? [];
+}

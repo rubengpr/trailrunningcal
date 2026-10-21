@@ -1219,6 +1219,11 @@
       "observedWords": "Observed length: {count} words.",
       "observedCharacters": "Observed length: {count} characters.",
       "research": {
+        "openWorkspace": "Research events",
+        "backToBlog": "Back to drafts",
+        "backToResearch": "Back to research",
+        "independentDescription": "Select a region and five events to research. Dossiers will be saved without generating an article.",
+        "accepted": "Research accepted. Follow its progress in the history.",
         "title": "Research",
         "selection": "Select the events to research (1–5).",
         "start": "Research events",

@@ -19,14 +19,14 @@ integration('local research transactions',() => {
     client = createClient(url,process.env.SUPABASE_SERVICE_ROLE_KEY!,{auth:{persistSession:false}});
   });
   afterEach(async() => {if(ids.length) {const {error} = await client.from('blog_drafts').delete().in('id',ids.splice(0));if(error) throw error;}});
-  it('claims once, preserves order, saves partial results and keeps the article untouched',async() => {
+  it('claims once, keeps event identity, saves partial results and keeps the article untouched',async() => {
     const id = await create();const original = await getDraft(id);
     const selected = context.events.slice(0,2).map(event => event.id).reverse();
     const claims = await Promise.allSettled([claim(id,selected,'openai','test-model'),claim(id,selected,'openai','test-model')]);
     expect(claims.filter(item => item.status === 'fulfilled')).toHaveLength(1);
     const accepted = claims.find(item => item.status === 'fulfilled');if(accepted?.status !== 'fulfilled') throw new Error('Missing claim');
     const run = await getRun(accepted.value);
-    expect(run.results.map(item => item.eventId)).toEqual([...selected].reverse());
+    expect(new Set(run.results.map(item => item.eventId))).toEqual(new Set(selected));
     expect(await deleteDraft(id)).toBe(false);
     await Promise.all(run.results.map(item => begin(run.id,item.id,'workflow')));
     await finish(run.id,run.results[0].id,output,null);

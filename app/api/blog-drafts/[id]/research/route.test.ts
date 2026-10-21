@@ -21,7 +21,7 @@ it('rejects invalid JSON and draft UUID',async() => {
   expect((await GET(new Request('http://localhost'),{params:Promise.resolve({id:'bad'})})).status).toBe(400);
 });
 it('accepts valid selection and hides internal execution identifiers',async() => {
-  mocks.request.mockResolvedValue(run);const result = await post({eventIds:run.input.events.map(event => event.id)});
+  mocks.request.mockResolvedValue(run);const result = await post({eventIds:run.results.map(result => result.eventId)});
   expect(result.status).toBe(202);expect(await result.json()).toEqual({success:true,data:run});
 });
 it.each([404,409,422])('keeps domain error status %s',async(status) => {

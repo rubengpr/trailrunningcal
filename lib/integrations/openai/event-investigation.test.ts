@@ -3,7 +3,7 @@ import { dossier } from '@/tests/fixtures/blog-research';
 const mocks = vi.hoisted(() => ({create:vi.fn()}));
 vi.mock('@/lib/integrations/openai/client',() => ({createOpenAIClient:() => ({responses:{create:mocks.create}})}));
 import { investigateEvent } from './event-investigation';
-const input = {regionName:'Cataluña',eventName:dossier.eventName};
+const input = {regionName:'Cataluña',eventName:'Evento 0'};
 function response(value:unknown = dossier) {
   return {id:'response',model:'gpt-6.1-sol',status:'completed',output:[
     {type:'web_search_call',status:'completed',action:{type:'search',sources:[{type:'url',url:dossier.sources[0].url}]}},
@@ -31,6 +31,17 @@ describe('event investigator request',() => {
     [response({...dossier,sources:[{title:'Fake',url:'https://fake.example'}]}),'unverified_source'],
   ])('rejects invalid provider response %#',async(value,code) => {
     mocks.create.mockResolvedValue(value);await expect(investigateEvent(input)).rejects.toMatchObject({code});expect(mocks.create).toHaveBeenCalledTimes(1);
+  });
+  it('accepts Web Search Markdown citations without another provider call',async() => {
+    mocks.create.mockResolvedValue(response({...dossier,
+      context:'Texto [1] ([Organizador](https://example.com/event?utm_source=openai)).',
+      observations:['Nota ([Organizador](https://example.com/event?utm_source=openai)).'],
+    }));
+    const result = await investigateEvent(input);
+    expect(result.dossier.context).toBe('Texto [1].');
+    expect(result.dossier.observations).toEqual(['Nota [1].']);
+    expect(result.dossier.sources).toEqual(dossier.sources);
+    expect(mocks.create).toHaveBeenCalledTimes(1);
   });
   it('accepts honest insufficient research',async() => {
     const partial = {...dossier,context:'No se ha identificado con confianza el evento.',sources:[],observations:['Las búsquedas no permiten distinguir el evento.']};

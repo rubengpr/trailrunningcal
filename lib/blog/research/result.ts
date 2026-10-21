@@ -6,9 +6,9 @@ export class ResearchError extends Error {
 
 export const dossierSchema = {
   type: 'object', additionalProperties: false,
-  required: ['eventName', 'context', 'sources', 'observations'],
+  required: ['context', 'sources', 'observations'],
   properties: {
-    eventName: {type: 'string'}, context: {type: 'string'},
+    context: {type: 'string'},
     sources: {type: 'array', items: {type: 'object', additionalProperties: false,
       required: ['title', 'url'], properties: {title: {type: 'string'}, url: {type: 'string'}}}},
     observations: {type: 'array', items: {type: 'string'}},
@@ -23,11 +23,35 @@ export function safeSourceUrl(value: string): string | null {
   } catch { return null; }
 }
 
-export function parseDossier(value: unknown, eventName: string, consulted: string[]): Dossier {
+// Web Search can append Markdown source links even when numbered citations were
+// requested. Resolve only links backed by retrieved, declared sources; leave
+// unknown links untouched so the existing URL prohibition still rejects them.
+function normalizeCitations(text: string, cited: Array<{url:string|null}>): string {
+  const canonical = (value: string): string | null => {
+    const safe = safeSourceUrl(value);
+    if (!safe) return null;
+    const url = new URL(safe);
+    for (const key of [...url.searchParams.keys()]) {
+      if (/^utm_(source|medium|campaign|term|content|id)$/i.test(key)) url.searchParams.delete(key);
+    }
+    return url.href;
+  };
+  const indices = new Map(cited.flatMap((source,index) => source.url ? [[canonical(source.url),index+1] as const] : []));
+  return text.replace(/(?<!!)\[([^\]\r\n]+)\]\((https?:\/\/[^\s<>]+?)\)/g, (match, _title:string, url:string) => {
+    const index = indices.get(canonical(url));
+    return index ? `[${index}]` : match;
+  }).replace(/\(((?:\[\d+\])+)\)/g,'$1')
+    .replace(/(?:\[\d+\][ \t]*){2,}/g, group => {
+      const references = [...new Set(group.match(/\[\d+\]/g))];
+      return references.join('') + (/[ \t]$/.test(group) ? ' ' : '');
+    });
+}
+
+export function parseDossier(value: unknown, consulted: string[]): Dossier {
   const invalid = () => { throw new ResearchError('invalid_result'); };
   if (!value || typeof value !== 'object' || Array.isArray(value)) return invalid();
   const record = value as Record<string, unknown>;
-  if (record.eventName !== eventName || typeof record.context !== 'string' || !record.context.trim() ||
+  if ('eventName' in record || typeof record.context !== 'string' || !record.context.trim() ||
     !Array.isArray(record.sources) || !Array.isArray(record.observations) || record.observations.some(item => typeof item !== 'string' || !item.trim())) return invalid();
   const urls = new Set(consulted.map(safeSourceUrl).filter(Boolean));
   const cited = record.sources.map(source => {
@@ -40,7 +64,7 @@ export function parseDossier(value: unknown, eventName: string, consulted: strin
   // Nothing traceable is left: fail instead of returning an unsourced dossier.
   if (cited.length && !sources.length) throw new ResearchError('unverified_source');
   // Plain text is rendered by React; citations are the only generated interactive markup.
-  const raw = [record.context.trim(), ...(record.observations as string[]).map(item => item.trim())];
+  const raw = [record.context, ...(record.observations as string[])].map(item => normalizeCitations(item.trim(), cited));
   const text = raw.join('\n');
   if (/<\/?[a-z][^>]*>|https?:\/\//i.test(text)) return invalid();
   const references = [...text.matchAll(/\[(\d+)\]/g)].map(match => Number(match[1]));
@@ -56,5 +80,5 @@ export function parseDossier(value: unknown, eventName: string, consulted: strin
     ...(removed.length ? [`Se han retirado fuentes que no figuraban entre las páginas consultadas: ${removed.join(', ')}. Las afirmaciones que solo se apoyaban en ellas quedan sin referencia.`] : [])];
   if (!context) return invalid();
   if (!sources.length && !observations.length) return invalid();
-  return {eventName, context, sources, observations};
+  return {context, sources, observations};
 }
