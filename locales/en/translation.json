@@ -330,7 +330,7 @@
     "contact": "Contact",
     "blog": "Blog",
     "myRaces": "My races",
-    "myEvents": "My events",
+    "myEvents": "My favorites",
     "openMenu": "Open menu",
     "proposeRace": "Want to add a race?",
     "profile": "My profile",
@@ -354,14 +354,14 @@
     "valencia": "Valencia"
   },
   "favorites": {
-    "pageTitle": "My saved events",
-    "empty": "You have no saved events",
-    "emptyMessage": "Select the heart on any event to save it here.",
+    "pageTitle": "My favorites",
+    "empty": "You have no favorites yet",
+    "emptyMessage": "Select the heart on any event to add it to your favorites.",
     "backToCalendar": "View full calendar",
     "dateTbd": "Date to be confirmed",
     "distanceCount": "{count, plural, one {# distance} other {# distances}}",
-    "loadError": "Your saved events could not be loaded.",
-    "loading": "Loading saved events...",
+    "loadError": "Your favorites could not be loaded.",
+    "loading": "Loading favorites...",
     "multipleLocations": "Multiple locations"
   },
   "landing": {

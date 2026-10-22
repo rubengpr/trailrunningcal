@@ -9,9 +9,9 @@ const CONTACT_PATHS: Record<Locale, string> = {
 
 const FAVORITES_PATHS: Record<Locale, string> = {
   es: 'mis-favoritos',
-  ca: 'mis-eventos',
-  en: 'my-events',
-  fr: 'mes-evenements',
+  ca: 'els-meus-favorits',
+  en: 'my-favorites',
+  fr: 'mes-favoris',
 };
 
 export const LEGAL_DOCUMENT_IDS = [

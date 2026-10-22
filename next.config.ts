@@ -118,12 +118,15 @@ const nextConfig: NextConfig = {
       ...raceTypeRedirects,
       ...destinationRedirects,
       { source: '/es/mis-eventos', destination: '/es/mis-favoritos', permanent: true },
+      { source: '/ca/mis-eventos', destination: '/ca/els-meus-favorits', permanent: true },
+      { source: '/en/my-events', destination: '/en/my-favorites', permanent: true },
+      { source: '/fr/mes-evenements', destination: '/fr/mes-favoris', permanent: true },
       { source: '/en/contacto', destination: '/en/contact', permanent: true },
       { source: '/en/contacte', destination: '/en/contact', permanent: true },
-      { source: '/en/mis-eventos', destination: '/en/my-events', permanent: true },
+      { source: '/en/mis-eventos', destination: '/en/my-favorites', permanent: true },
       { source: '/fr/contacto', destination: '/fr/contact', permanent: true },
       { source: '/fr/contacte', destination: '/fr/contact', permanent: true },
-      { source: '/fr/mis-eventos', destination: '/fr/mes-evenements', permanent: true },
+      { source: '/fr/mis-eventos', destination: '/fr/mes-favoris', permanent: true },
     ];
   },
 

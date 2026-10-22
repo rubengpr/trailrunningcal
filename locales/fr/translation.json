@@ -330,7 +330,7 @@
     "contact": "Contact",
     "blog": "Blog",
     "myRaces": "Mes courses",
-    "myEvents": "Mes événements",
+    "myEvents": "Mes favoris",
     "openMenu": "Ouvrir le menu",
     "proposeRace": "Tu veux ajouter une course ?",
     "profile": "Mon profil",
@@ -354,14 +354,14 @@
     "valencia": "Valence"
   },
   "favorites": {
-    "pageTitle": "Mes événements sauvegardés",
-    "empty": "Tu n’as aucun événement sauvegardé",
-    "emptyMessage": "Sélectionne le cœur sur un événement pour le sauvegarder ici.",
+    "pageTitle": "Mes favoris",
+    "empty": "Tu n’as pas encore de favoris",
+    "emptyMessage": "Sélectionne le cœur sur un événement pour l’ajouter à tes favoris.",
     "backToCalendar": "Voir le calendrier complet",
     "dateTbd": "Date à confirmer",
     "distanceCount": "{count, plural, one {# distance} other {# distances}}",
-    "loadError": "Tes événements sauvegardés n’ont pas pu être chargés.",
-    "loading": "Chargement des événements sauvegardés…",
+    "loadError": "Tes favoris n’ont pas pu être chargés.",
+    "loading": "Chargement des favoris…",
     "multipleLocations": "Plusieurs lieux"
   },
   "landing": {

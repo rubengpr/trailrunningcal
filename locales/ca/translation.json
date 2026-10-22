@@ -327,7 +327,7 @@
     "contact": "Contacte",
     "blog": "Blog",
     "myRaces": "Les meves curses",
-    "myEvents": "Els meus esdeveniments",
+    "myEvents": "Els meus favorits",
     "openMenu": "Obrir menú",
     "proposeRace": "Vols afegir una cursa?",
     "profile": "El meu perfil",
@@ -358,14 +358,14 @@
     "sponsors": "Sponsors"
   },
   "favorites": {
-    "pageTitle": "Els meus esdeveniments desats",
-    "empty": "No tens esdeveniments desats",
-    "emptyMessage": "Prem el cor a qualsevol esdeveniment per desar-lo aquí.",
+    "pageTitle": "Els meus favorits",
+    "empty": "Encara no tens favorits",
+    "emptyMessage": "Prem el cor a qualsevol esdeveniment per afegir-lo als teus favorits.",
     "backToCalendar": "Veure calendari complet",
     "dateTbd": "Data per confirmar",
     "distanceCount": "{count, plural, one {# distància} other {# distàncies}}",
-    "loadError": "No s'han pogut carregar els teus esdeveniments desats.",
-    "loading": "Carregant esdeveniments desats...",
+    "loadError": "No s'han pogut carregar els teus favorits.",
+    "loading": "Carregant favorits...",
     "multipleLocations": "Diverses ubicacions"
   },
   "landing": {
