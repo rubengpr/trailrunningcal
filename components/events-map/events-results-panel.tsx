@@ -1,5 +1,6 @@
 'use client';
 
+import { Fragment } from 'react';
 import { useTranslations } from 'next-intl';
 import { RefreshCw, Search } from 'lucide-react';
 import { EventCard } from '@/components/event/event-card';
@@ -54,7 +55,6 @@ export function EventsResultsPanel({
 
   return (
     <div className={className}>
-      <SponsorBannerSlot page="homepage" locale={locale} className="mb-4 bg-white py-2" />
       <div className="grid min-h-[200px] min-w-0 grid-cols-1 gap-4">
         {isRefreshing ? (
           <p className="py-3 text-center text-sm text-gray-500">{tResults('loading')}</p>
@@ -75,21 +75,26 @@ export function EventsResultsPanel({
           />
         ) : (
           events.map((eventDetail, index) => (
-            <div key={eventDetail.event.id} className="min-w-0">
-              <ErrorBoundary fallback={<RaceCardError />}>
-                <EventCard
-                  eventDetail={eventDetail}
-                  locale={locale}
-                  isFeatured={showsFeaturedCards && isFeaturedEvent(eventDetail.event.slug)}
-                  analyticsContext={{
-                    source: 'calendar_explorer',
-                    pageType,
-                    listPosition: index + 1,
-                    ...(isDesktopMap && layoutToggleVariant ? { layoutToggleVariant } : {}),
-                  }}
-                />
-              </ErrorBoundary>
-            </div>
+            <Fragment key={eventDetail.event.id}>
+              <div className="min-w-0">
+                <ErrorBoundary fallback={<RaceCardError />}>
+                  <EventCard
+                    eventDetail={eventDetail}
+                    locale={locale}
+                    isFeatured={showsFeaturedCards && isFeaturedEvent(eventDetail.event.slug)}
+                    analyticsContext={{
+                      source: 'calendar_explorer',
+                      pageType,
+                      listPosition: index + 1,
+                      ...(isDesktopMap && layoutToggleVariant ? { layoutToggleVariant } : {}),
+                    }}
+                  />
+                </ErrorBoundary>
+              </div>
+              {index === 4 ? (
+                <SponsorBannerSlot page="homepage" locale={locale} />
+              ) : null}
+            </Fragment>
           ))
         )}
       </div>

@@ -456,6 +456,20 @@
       }
     },
     "sponsors": {
+      "shokz": {
+        "brand": "Shokz",
+        "product": "OpenRun Pro 2",
+        "headlineStart": "Tu música.",
+        "headlineEnd": "Tu ritmo.",
+        "cta": "Descúbrelos",
+        "productAlt": "Auriculares Shokz OpenRun Pro 2 en Lunar White",
+        "homepage": {
+          "alt": "Auriculares Shokz OpenRun Pro 2 en Lunar White"
+        },
+        "event_page": {
+          "alt": "Auriculares Shokz OpenRun Pro 2 en Lunar White"
+        }
+      },
       "salssa": {
         "homepage": {
           "alt": "Promoción de Salssa para corredores de trail running"

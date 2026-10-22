@@ -112,6 +112,31 @@ describe('SponsorBannerSlot', () => {
     );
   });
 
+  it.each(['homepage', 'event_page'] as const)('tracks the animated Shokz creative on %s', (page) => {
+    vi.mocked(useFeatureFlagVariant).mockReturnValue('shokz');
+    renderBanner(page);
+
+    act(() => {
+      intersectionCallback(
+        [{ isIntersecting: true } as IntersectionObserverEntry],
+        {} as IntersectionObserver,
+      );
+    });
+
+    const banner = screen.getByRole('link', { name: /Tu música/ });
+    expect(banner.getAttribute('href')).toContain('utm_content=shokz');
+    expect(banner.getAttribute('href')).toContain(`${page}_image_banner`);
+    expect(screen.queryByText('TRC10')).toBeNull();
+    fireEvent.click(banner);
+
+    const properties = expect.objectContaining({
+      brand: 'shokz', creative_variant: 'shokz', page, locale: 'es',
+      banner_type: 'image_banner',
+    });
+    expect(track).toHaveBeenCalledWith(ANALYTICS_EVENTS.SPONSOR_BANNER_IMPRESSION, properties);
+    expect(track).toHaveBeenCalledWith(ANALYTICS_EVENTS.SPONSOR_BANNER_CLICKED, properties);
+  });
+
   it('uses the same PostHog variant on event pages', () => {
     vi.mocked(useFeatureFlagVariant).mockReturnValue('naak');
     renderBanner('event_page');

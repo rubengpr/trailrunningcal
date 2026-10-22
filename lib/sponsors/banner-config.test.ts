@@ -14,6 +14,7 @@ describe('getSponsorBannerConfig', () => {
     ['inverse', 'inverse', 'inverse-banner.png'],
     ['naak', 'naak', 'naak-banner.png'],
     ['nutribay', 'nutribay', 'nutribay-banner.png'],
+    ['shokz', 'shokz', 'shokz-openrun-pro-2-white.png'],
   ] as const)('maps %s to the %s creative', (variant, brand, filename) => {
     const config = getSponsorBannerConfig({
       page: 'homepage',

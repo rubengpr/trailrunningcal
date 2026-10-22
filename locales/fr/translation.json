@@ -450,6 +450,20 @@
       }
     },
     "sponsors": {
+      "shokz": {
+        "brand": "Shokz",
+        "product": "OpenRun Pro 2",
+        "headlineStart": "Votre musique.",
+        "headlineEnd": "Votre rythme.",
+        "cta": "Découvrez-les",
+        "productAlt": "Casque Shokz OpenRun Pro 2 en Lunar White",
+        "homepage": {
+          "alt": "Casque Shokz OpenRun Pro 2 en Lunar White"
+        },
+        "event_page": {
+          "alt": "Casque Shokz OpenRun Pro 2 en Lunar White"
+        }
+      },
       "salssa": {
         "homepage": {
           "alt": "Promotion Salssa pour les trailers"
