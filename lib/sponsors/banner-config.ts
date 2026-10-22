@@ -5,7 +5,8 @@ export type SponsorBrand =
   | 'inverse'
   | 'naak'
   | 'nutribay'
-  | 'trail-brand';
+  | 'trail-brand'
+  | 'shokz';
 
 export type SponsorCreativeVariant =
   | 'control'
@@ -14,7 +15,8 @@ export type SponsorCreativeVariant =
   | 'baouw-tienda'
   | 'inverse'
   | 'naak'
-  | 'nutribay';
+  | 'nutribay'
+  | 'shokz';
 
 export interface SponsorImage {
   src: string;
@@ -46,6 +48,12 @@ const image = (src: string, height = 300): SponsorImage => ({
 });
 
 const SPONSOR_CREATIVES: Record<SponsorCreativeVariant, SponsorCreative> = {
+  shokz: {
+    brand: 'shokz',
+    destinationUrl: 'https://shokz.com/pages/openrunpro2',
+    image: image('/assets/sponsors/shokz-openrun-pro-2-white.png', 585),
+    altKey: 'sponsors.shokz',
+  },
   control: {
     brand: 'asics',
     destinationUrl: 'https://www.asics.com/es/es-es/trail-running-campaign/',

@@ -7,6 +7,7 @@ import {
   PromoBanner,
   PromoTextStrip,
 } from '@/components/home/promo-banner';
+import { ShokzBanner } from '@/components/sponsors/shokz-banner';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { track } from '@/lib/analytics/track';
 import {
@@ -109,6 +110,11 @@ export function SponsorBannerSlot({
   }, [config, locale]);
 
   if (previewConfig) {
+    if (previewConfig.brandKey === 'shokz') {
+      const creative = getSponsorBannerConfig({ page, posthogVariant: 'shokz' });
+      if (!creative) return null;
+      return <ShokzBanner page={page} className={className} href={creative.destinationUrl} />;
+    }
     return (
       <PromoBanner
         alt={tBanner('preview.alt', { brand: previewConfig.brand })}
@@ -129,15 +135,24 @@ export function SponsorBannerSlot({
 
   return (
     <div ref={bannerRef}>
-      <PromoBanner
-        alt={alt}
-        className={className}
-        desktopImage={config.desktopImage}
-        mobileImage={config.mobileImage}
-        href={config.destinationUrl}
-        onClick={handleClick}
-        isVisible
-      />
+      {config.creativeVariant === 'shokz' ? (
+        <ShokzBanner
+          page={page}
+          className={className}
+          href={config.destinationUrl}
+          onClick={handleClick}
+        />
+      ) : (
+        <PromoBanner
+          alt={alt}
+          className={className}
+          desktopImage={config.desktopImage}
+          mobileImage={config.mobileImage}
+          href={config.destinationUrl}
+          onClick={handleClick}
+          isVisible
+        />
+      )}
     </div>
   );
 }
