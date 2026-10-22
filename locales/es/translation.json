@@ -358,14 +358,14 @@
     "sponsors": "Sponsors"
   },
   "favorites": {
-    "pageTitle": "Mis eventos guardados",
-    "empty": "No tienes eventos guardados",
-    "emptyMessage": "Pulsa el corazón en cualquier evento para guardarlo aquí.",
+    "pageTitle": "Mis favoritos",
+    "empty": "Todavía no tienes favoritos",
+    "emptyMessage": "Pulsa el corazón en cualquier evento para añadirlo a tus favoritos.",
     "backToCalendar": "Ver calendario completo",
     "dateTbd": "Fecha por confirmar",
     "distanceCount": "{count, plural, one {# distancia} other {# distancias}}",
-    "loadError": "No se han podido cargar tus eventos guardados.",
-    "loading": "Cargando eventos guardados...",
+    "loadError": "No se han podido cargar tus favoritos.",
+    "loading": "Cargando favoritos...",
     "multipleLocations": "Varias ubicaciones"
   },
   "landing": {

@@ -8,7 +8,7 @@ const CONTACT_PATHS: Record<Locale, string> = {
 };
 
 const FAVORITES_PATHS: Record<Locale, string> = {
-  es: 'mis-eventos',
+  es: 'mis-favoritos',
   ca: 'mis-eventos',
   en: 'my-events',
   fr: 'mes-evenements',

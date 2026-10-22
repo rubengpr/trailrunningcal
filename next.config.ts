@@ -117,6 +117,7 @@ const nextConfig: NextConfig = {
     return [
       ...raceTypeRedirects,
       ...destinationRedirects,
+      { source: '/es/mis-eventos', destination: '/es/mis-favoritos', permanent: true },
       { source: '/en/contacto', destination: '/en/contact', permanent: true },
       { source: '/en/contacte', destination: '/en/contact', permanent: true },
       { source: '/en/mis-eventos', destination: '/en/my-events', permanent: true },
