@@ -11,6 +11,7 @@ export interface IconActionMenuItem {
     label: string;
     onSelect: () => void;
     disabled?: boolean;
+    icon?: React.ReactNode;
 }
 
 interface IconActionMenuProps {
@@ -109,7 +110,7 @@ export function IconActionMenu({
                         role="menuitem"
                         tabIndex={-1}
                         disabled={item.disabled}
-                        className={`flex w-full cursor-pointer text-left text-gray-900 transition-colors duration-100 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-white ${size === 'sm' ? 'px-2.5 py-1.5 text-xs' : 'px-3 py-2 text-sm'}`}
+                        className={`flex w-full items-center gap-2 cursor-pointer text-left text-gray-900 transition-colors duration-100 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-white ${size === 'sm' ? 'px-2.5 py-1.5 text-xs' : 'px-3 py-2 text-sm'}`}
                         onClick={() => {
                             if (item.disabled) return;
                             item.onSelect();
@@ -117,7 +118,7 @@ export function IconActionMenu({
                             triggerRef.current?.focus();
                         }}
                     >
-                        {item.label}
+                        {item.icon}{item.label}
                     </button>
                 ))}
                 {footer ? <p className="max-w-64 border-t border-gray-100 px-3 py-2 text-xs text-gray-500">{footer}</p> : null}

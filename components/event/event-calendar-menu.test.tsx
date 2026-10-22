@@ -66,7 +66,9 @@ describe('event calendar menu', () => {
     expect(screen.queryByRole('menu')).toBeNull();
     fireEvent.click(trigger);
     expect(screen.getAllByRole('menuitem')).toHaveLength(2);
-    expect(screen.getByText(es.event.calendar.notice)).toBeDefined();
+    expect(screen.queryByText(es.event.calendar.notice)).toBeNull();
+    expect(screen.getByRole('menuitem', { name: es.event.calendar.google }).querySelector('img')?.getAttribute('src')).toBe('/icons/google-calendar.png');
+    expect(screen.getByRole('menuitem', { name: es.event.calendar.ics }).querySelector('img')?.getAttribute('src')).toBe('/icons/apple-calendar.png');
     expect(track).toHaveBeenCalledWith('event_calendar_menu_opened', { event_id: 'event-1', event_slug: 'trail', locale: 'es', calendar_variant: 'unassigned' });
     fireEvent.click(screen.getByRole('menuitem', { name: 'Google Calendar' }));
     expect(open).toHaveBeenCalledWith(expect.stringContaining('https://calendar.google.com/calendar/r/eventedit?'), '_blank', 'noopener,noreferrer');
@@ -115,7 +117,11 @@ describe('event calendar menu', () => {
   it.each([{ locale: 'es' as const, messages: es }, { locale: 'ca' as const, messages: ca }, { locale: 'en' as const, messages: en }, { locale: 'fr' as const, messages: fr }])('renders translated copy for $locale', ({ locale, messages }) => {
     render(<NextIntlClientProvider locale={locale} messages={messages}><EventCalendarMenu entry={entry} eventSlug="trail" locale={locale} /></NextIntlClientProvider>);
     fireEvent.click(screen.getByRole('button', { name: messages.event.calendar.label }));
-    expect(screen.getByText(messages.event.calendar.notice)).toBeDefined();
+    expect(screen.queryByText(messages.event.calendar.notice)).toBeNull();
+    const open = vi.spyOn(window, 'open').mockReturnValue(null);
+    fireEvent.click(screen.getByRole('menuitem', { name: messages.event.calendar.google }));
+    const url = new URL(String(open.mock.calls[0][0]));
+    expect(url.searchParams.get('details')).toBe(`${messages.event.calendar.description}\n\n${messages.event.calendar.notice}\n${entry.url}`);
   });
 });
 

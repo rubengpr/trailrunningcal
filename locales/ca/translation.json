@@ -146,7 +146,7 @@
     "calendar": {
       "label": "Afegeix al meu calendari",
       "google": "Google Calendar",
-      "ics": "Apple Calendar / Outlook (.ics)",
+      "ics": "Apple Calendar o Outlook",
       "description": "Esdeveniment de trail running a Trailrunningcal. Consulta els detalls i les novetats a la fitxa de l’esdeveniment.",
       "notice": "Els canvis de data no s’actualitzaran automàticament."
     },

@@ -146,7 +146,7 @@
     "calendar": {
       "label": "Add to my calendar",
       "google": "Google Calendar",
-      "ics": "Apple Calendar / Outlook (.ics)",
+      "ics": "Apple Calendar or Outlook",
       "description": "Trail running event on Trailrunningcal. Check the event page for details and updates.",
       "notice": "Date changes will not update automatically."
     },

@@ -23,7 +23,7 @@ export function EventCalendarMenu({ entry, eventSlug, locale }: EventCalendarMen
   const flagVariant = useFeatureFlagVariant('event-calendar-button-label');
   const variant: CalendarButtonVariant | 'unassigned' = flagVariant === 'control' || flagVariant === 'icon_text' || flagVariant === 'google_icon' ? flagVariant : 'unassigned';
   const showLabel = variant === 'icon_text';
-  const calendarEntry = { ...entry, description: t('description') };
+  const calendarEntry = { ...entry, description: `${t('description')}\n\n${t('notice')}` };
   const properties = { event_id: entry.id, event_slug: eventSlug, locale, calendar_variant: variant };
 
   const exposureRef = useRef<string | null>(null);
@@ -93,10 +93,15 @@ export function EventCalendarMenu({ entry, eventSlug, locale }: EventCalendarMen
         ? 'h-10 w-full gap-2 whitespace-nowrap text-sm'
         : 'flex h-[42px] w-full cursor-pointer items-center justify-center gap-2 rounded-md border border-gray-200 bg-white p-2 text-gray-600 transition-colors hover:bg-gray-100 focus-visible:outline-2 focus-visible:outline-offset-2 sm:h-auto'}
       onOpen={captureOpen}
-      footer={t('notice')}
       items={[
-        { id: 'google', label: t('google'), onSelect: () => selectOption('google') },
-        { id: 'ics', label: t('ics'), onSelect: () => selectOption('ics') },
+        {
+          id: 'google', label: t('google'), onSelect: () => selectOption('google'),
+          icon: <Image src="/icons/google-calendar.png" width={20} height={20} alt="" unoptimized className="h-5 w-5 shrink-0" />,
+        },
+        {
+          id: 'ics', label: t('ics'), onSelect: () => selectOption('ics'),
+          icon: <Image src="/icons/apple-calendar.png" width={20} height={20} alt="" unoptimized className="h-5 w-5 shrink-0" />,
+        },
       ]}
     />
   );
