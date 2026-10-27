@@ -1,4 +1,5 @@
 import { articleGenerationInstructions } from '@/lib/blog/prompts/article-generation';
+import { describeRange } from '@/lib/blog/length-targets';
 
 export const selectionGenerationInstructions = `${articleGenerationInstructions}
 
@@ -20,6 +21,6 @@ No afirmes haber comparado popularidad, demanda, organización, opiniones o expe
 Presenta la selección como editorial, sin clasificación absoluta ni garantía de que son las mejores.
 La conclusión debe ayudar a elegir una modalidad sin inventar su dificultad técnica ni recomendar
 un perfil de corredor solamente por notoriedad. Puedes orientar por distancia y desnivel conocidos.
-El conjunto debe aproximarse a 700–1.100 palabras, priorizando utilidad sobre longitud.
+El conjunto debe aproximarse a ${describeRange('content','words')}, priorizando utilidad sobre longitud.
 Usa keyword y metadatos naturales sobre carreras de trail running en la comunidad, sin año.
 `;

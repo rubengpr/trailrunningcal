@@ -1,3 +1,5 @@
+import { describeRange, lengthRange } from '@/lib/blog/length-targets';
+
 export const articleGenerationInstructions = `Escribe una guía completa en español para Trailrunningcal.
 
 # Contexto y objetivo
@@ -26,11 +28,11 @@ El título visible y el título SEO deben ser descriptivos, fieles y sin promesa
 La metadescripción debe resumir el beneficio concreto del artículo.
 
 # Rangos orientativos
-Título visible: 40–90 caracteres.
-Contenido: 700–1.100 palabras, sin contar metadatos.
-Keyword principal: 2–6 palabras.
-Slug: 3–8 palabras, preferiblemente menos de 75 caracteres, minúsculas sin tildes y con guiones.
-Título SEO: 45–60 caracteres. Metadescripción: 140–160 caracteres.
+Título visible: ${describeRange('title','characters')}.
+Contenido: ${describeRange('content','words')}, sin contar metadatos.
+Keyword principal: ${describeRange('primaryKeyword','words')}.
+Slug: ${describeRange('slug','words')}, preferiblemente como máximo ${lengthRange('slug','characters').max} caracteres, minúsculas sin tildes y con guiones.
+Título SEO: ${describeRange('seoTitle','characters')}. Metadescripción: ${describeRange('metaDescription','characters')}.
 Estos rangos son objetivos editoriales, no requisitos de Google. Prioriza claridad y utilidad;
 no añadas relleno ni fuerces expresiones para alcanzarlos.
 
