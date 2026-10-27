@@ -4,22 +4,15 @@ import { useCallback, useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
 import {
-  Check,
-  CircleCheck,
   ChevronDown,
   ChevronUp,
   ChevronsUpDown,
-  CircleAlert,
-  Eye,
-  LoaderCircle,
-  TextCursor,
-  Trash2,
 } from 'lucide-react';
 import Link from 'next/link';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { SectionHeader } from '@/components/ui/section-header';
 import { ListEmptyState } from '@/components/ui/list-empty-state';
-import { TableActionButton } from '@/components/ui/table-action-button';
+import { EventImportDraftRow } from '@/components/admin/event-import-draft-row';
 import { EventImportPreview } from '@/components/admin/event-import-preview';
 import { EventImportPreviewModal } from '@/components/admin/event-import-preview-modal';
 import {
@@ -27,11 +20,9 @@ import {
   TableBody,
   TableCell,
   TableHeader,
-  TableRow,
 } from '@/components/ui/table';
 import { EventRacesEditModal } from '@/components/admin/event-races-edit-modal';
 import { AdminListSearch } from '@/components/admin/admin-list-search';
-import { EventWebsiteTableCell } from '@/components/event/event-website-table-cell';
 import {
   acceptEventImportDraft,
   getEventImportDraftPublicationStatus,
@@ -40,7 +31,6 @@ import {
 } from '@/lib/api/events';
 import type { EventRaceWriteInput } from '@/lib/api/events';
 import type { TrailEventAgentEvent } from '@/types/trail-event-agent.types';
-import { formatEventDateRangeNumeric } from '@/lib/events/utils';
 import { AdminPagination } from '@/components/admin/admin-pagination';
 import { buildEventImportDraftsHref } from '@/lib/event-import/draft-pagination';
 import type {
@@ -54,20 +44,6 @@ import type {
 interface AdminEventImportDraftsContentProps {
   initialPage: EventImportDraftPage;
   query: EventImportDraftPageRequest;
-}
-
-function getDraftDateRange(draft: EventImportDraft): {
-  startDate: string | null;
-  endDate: string | null;
-} {
-  const dates = draft.data.races
-    .flatMap((race) => race.date ? [race.date] : [])
-    .sort();
-
-  return {
-    startDate: dates[0] ?? null,
-    endDate: dates.at(-1) ?? null,
-  };
 }
 
 function hasCompleteInformation(draft: EventImportDraft, today: string): boolean {
@@ -321,86 +297,20 @@ export function AdminEventImportDraftsContent({
               <TableCell header align="right">{eventsT('columns.actions')}</TableCell>
             </TableHeader>
             <TableBody>
-              {drafts.map((draft) => {
-                const isProcessed = draft.status !== 'draft';
-                const isPublishing = !isProcessed && publicationJobs[draft.id] !== undefined;
-                const hasFailedPublication = failedPublications[draft.id] === true;
-                return (
-                  <TableRow key={draft.id} className={`align-middle transition-colors duration-150 ${isProcessed ? 'opacity-50' : 'hover:bg-gray-100'}`}>
-                  <TableCell>
-                    <div className="flex w-[280px] items-center gap-2">
-                      <span className="min-w-0 flex-1 truncate text-sm font-medium text-gray-900" title={draft.data.event.name}>
-                        {draft.data.event.name}
-                      </span>
-                      <span className={`w-20 shrink-0 text-right text-xs font-medium ${isProcessed ? '' : 'invisible'}`}>
-                        {t(draft.status === 'rejected' ? 'status.rejected' : 'status.accepted')}
-                      </span>
-                    </div>
-                  </TableCell>
-                  <EventWebsiteTableCell
-                    url={draft.sourceUrl}
-                    missingLabel={eventsT('missingUrl')}
-                    missingClassName="text-sm text-red-600"
-                  />
-                  <TableCell align="right" className="text-sm tabular-nums text-gray-700">
-                    {draft.data.races.length}
-                  </TableCell>
-                  <TableCell className="text-sm text-gray-700">
-                    {formatEventDateRangeNumeric(getDraftDateRange(draft), eventsT('noDates'))}
-                  </TableCell>
-                  <TableCell align="right">
-                    <div className="flex items-center justify-end gap-1">
-                      {hasCompleteInformation(draft, today) ? (
-                        <span
-                          className="mr-2 inline-flex shrink-0 items-center justify-center text-emerald-600"
-                          title={t('completeInformation')}
-                        >
-                          <CircleCheck className="size-4 [&>circle]:fill-emerald-50" strokeWidth={2} />
-                          <span className="sr-only">{t('completeInformation')}</span>
-                        </span>
-                      ) : null}
-                      {hasFailedPublication ? (
-                        <span className="mt-2" title={t('acceptError')}>
-                          <CircleAlert className="size-4 text-red-600" strokeWidth={1.5} />
-                        </span>
-                      ) : null}
-                      <TableActionButton
-                        onClick={() => setDraftToPreview(draft)}
-                        disabled={isProcessed}
-                        title={t('view')}
-                      >
-                        <Eye className="size-4" strokeWidth={1.5} />
-                      </TableActionButton>
-                      <TableActionButton
-                        onClick={() => void handleAccept(draft)}
-                        disabled={isProcessed || acceptingDraftId !== null || isPublishing}
-                        title={t('accept')}
-                        tone="success"
-                      >
-                        {isPublishing
-                          ? <LoaderCircle className="size-4 animate-spin" strokeWidth={1.5} />
-                          : <Check className="size-4" strokeWidth={1.5} />}
-                      </TableActionButton>
-                      <TableActionButton
-                        onClick={() => setDraftToEdit(draft)}
-                        disabled={isProcessed}
-                        title={t('edit')}
-                      >
-                        <TextCursor className="size-4" strokeWidth={1.5} />
-                      </TableActionButton>
-                      <TableActionButton
-                        onClick={() => setDraftToDelete(draft)}
-                        disabled={isProcessed}
-                        title={t('delete.button')}
-                        tone="destructive"
-                      >
-                        <Trash2 className="size-4" strokeWidth={1.5} />
-                      </TableActionButton>
-                    </div>
-                  </TableCell>
-                  </TableRow>
-                );
-              })}
+              {drafts.map((draft) => (
+                <EventImportDraftRow
+                  key={draft.id}
+                  draft={draft}
+                  isComplete={hasCompleteInformation(draft, today)}
+                  isPublishing={draft.status === 'draft' && publicationJobs[draft.id] !== undefined}
+                  hasFailedPublication={failedPublications[draft.id] === true}
+                  acceptDisabled={acceptingDraftId !== null}
+                  onPreview={() => setDraftToPreview(draft)}
+                  onAccept={() => void handleAccept(draft)}
+                  onEdit={() => setDraftToEdit(draft)}
+                  onDelete={() => setDraftToDelete(draft)}
+                />
+              ))}
             </TableBody>
         </Table>
       )}
