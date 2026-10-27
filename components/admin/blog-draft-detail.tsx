@@ -14,6 +14,7 @@ import type { DraftResearchStatus, ResearchPage } from '@/types/blog-research.ty
 import { BlogDraftInstructions } from '@/components/admin/blog-draft-instructions';
 import { BlogEvaluationSummary } from '@/components/admin/blog-evaluation-summary';
 import { BlogDraftSection } from '@/components/admin/blog-draft-section';
+import { BlogCostSummary } from '@/components/admin/blog-cost-summary';
 import { BlogArticleContent } from '@/components/admin/blog-article-content';
 import type { DraftDetail } from '@/types/blog-draft-record.types';
 
@@ -67,6 +68,7 @@ export function BlogDraftDetail({ draft, onEvaluationAccepted, actions, initialR
           {draft.generationContext && onResearchStatus ? <BlogDraftResearch key={draft.id} id={draft.id} context={draft.generationContext}
             initial={initialResearch ?? emptyResearch} status={draft.researchStatus ?? 'not_started'} onStatusChange={onResearchStatus} /> : null}
           {draft.research ? <BlogDraftSection title={t('research.title')}><div className="mt-4"><BlogResearchReport run={draft.research} /></div></BlogDraftSection> : null}
+          {draft.costs !== undefined ? <BlogCostSummary costs={draft.costs} /> : null}
           <article lang="es" className="min-w-0 border-t border-gray-200 pt-6">
             <div className="mb-5 flex flex-wrap items-center gap-2">
               <h2 className="text-sm font-semibold">{t('articleHeading')}</h2>

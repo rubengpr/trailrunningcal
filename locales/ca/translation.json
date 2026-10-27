@@ -1450,7 +1450,54 @@
         "writing": "Redactant…"
       },
       "missingSectionsTitle": "Recerca incompleta",
-      "missingSections": "Les seccions d’aquests esdeveniments estan buides perquè la recerca ha fallat: {events}."
+      "missingSections": "Les seccions d’aquests esdeveniments estan buides perquè la recerca ha fallat: {events}.",
+      "costs": {
+        "title": "Costos",
+        "heading": "Costos · {total}",
+        "total": "Cost estimat total",
+        "partial": "{cost} (parcial)",
+        "unavailable": "Cost no disponible",
+        "noCalls": "Sense crides",
+        "readFailed": "No s'han pogut carregar els costos.",
+        "unknownEvent": "Esdeveniment desconegut",
+        "writingCall": "Redacció",
+        "attempt": "Intent {number}",
+        "stages": {
+          "research": "Investigació",
+          "writing": "Redacció",
+          "evaluation": "Avaluació"
+        },
+        "statuses": {
+          "succeeded": "Completada",
+          "incomplete": "Incompleta",
+          "failed": "Fallida"
+        },
+        "shortColumns": {
+          "call": "Crida",
+          "model": "Model",
+          "status": "Estat",
+          "input": "Entrada",
+          "cachedInput": "Cau llegida",
+          "cacheWrite": "Cau escrita",
+          "output": "Sortida",
+          "reasoning": "Raonam.",
+          "searches": "Cerques",
+          "cost": "Cost"
+        },
+        "columns": {
+          "call": "Crida",
+          "model": "Model",
+          "status": "Estat",
+          "input": "Entrada",
+          "cachedInput": "Lectura de memòria cau",
+          "cacheWrite": "Escriptura de memòria cau",
+          "output": "Sortida",
+          "reasoning": "Raonament (incl. a la sortida)",
+          "searches": "Cerques",
+          "cost": "Cost estimat"
+        },
+        "note": "Estimació en USD a partir del consum informat per OpenAI i les tarifes vigents en registrar cada crida. Els reintents interns de l'SDK no exposen el seu consum i no s'hi inclouen."
+      }
     },
     "login": {
       "title": "Admin",

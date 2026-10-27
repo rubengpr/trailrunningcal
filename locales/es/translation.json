@@ -1482,7 +1482,54 @@
         "writing": "Redactando…"
       },
       "missingSectionsTitle": "Investigación incompleta",
-      "missingSections": "Las secciones de estos eventos están vacías porque su investigación ha fallado: {events}."
+      "missingSections": "Las secciones de estos eventos están vacías porque su investigación ha fallado: {events}.",
+      "costs": {
+        "title": "Costes",
+        "heading": "Costes · {total}",
+        "total": "Coste estimado total",
+        "partial": "{cost} (parcial)",
+        "unavailable": "Coste no disponible",
+        "noCalls": "Sin llamadas",
+        "readFailed": "No se han podido cargar los costes.",
+        "unknownEvent": "Evento desconocido",
+        "writingCall": "Redacción",
+        "attempt": "Intento {number}",
+        "stages": {
+          "research": "Investigación",
+          "writing": "Redacción",
+          "evaluation": "Evaluación"
+        },
+        "statuses": {
+          "succeeded": "Completada",
+          "incomplete": "Incompleta",
+          "failed": "Fallida"
+        },
+        "shortColumns": {
+          "call": "Llamada",
+          "model": "Modelo",
+          "status": "Estado",
+          "input": "Entrada",
+          "cachedInput": "Lec. caché",
+          "cacheWrite": "Esc. caché",
+          "output": "Salida",
+          "reasoning": "Razonam.",
+          "searches": "Búsquedas",
+          "cost": "Coste"
+        },
+        "columns": {
+          "call": "Llamada",
+          "model": "Modelo",
+          "status": "Estado",
+          "input": "Entrada",
+          "cachedInput": "Lectura de caché",
+          "cacheWrite": "Escritura de caché",
+          "output": "Salida",
+          "reasoning": "Razonamiento (incl. en salida)",
+          "searches": "Búsquedas",
+          "cost": "Coste estimado"
+        },
+        "note": "Estimación en USD a partir del consumo informado por OpenAI y las tarifas vigentes al registrar cada llamada. Los reintentos internos del SDK no exponen su consumo y no se incluyen."
+      }
     },
     "login": {
       "title": "Admin",

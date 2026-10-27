@@ -1254,7 +1254,54 @@
         "writing": "Rédaction…"
       },
       "missingSectionsTitle": "Recherche incomplète",
-      "missingSections": "Les sections de ces événements sont vides car leur recherche a échoué : {events}."
+      "missingSections": "Les sections de ces événements sont vides car leur recherche a échoué : {events}.",
+      "costs": {
+        "title": "Coûts",
+        "heading": "Coûts · {total}",
+        "total": "Coût total estimé",
+        "partial": "{cost} (partiel)",
+        "unavailable": "Coût indisponible",
+        "noCalls": "Aucun appel",
+        "readFailed": "Impossible de charger les coûts.",
+        "unknownEvent": "Événement inconnu",
+        "writingCall": "Rédaction",
+        "attempt": "Tentative {number}",
+        "stages": {
+          "research": "Recherche",
+          "writing": "Rédaction",
+          "evaluation": "Évaluation"
+        },
+        "statuses": {
+          "succeeded": "Terminé",
+          "incomplete": "Incomplet",
+          "failed": "Échoué"
+        },
+        "shortColumns": {
+          "call": "Appel",
+          "model": "Modèle",
+          "status": "Statut",
+          "input": "Entrée",
+          "cachedInput": "Cache lu",
+          "cacheWrite": "Cache écrit",
+          "output": "Sortie",
+          "reasoning": "Raisonn.",
+          "searches": "Recherche",
+          "cost": "Coût"
+        },
+        "columns": {
+          "call": "Appel",
+          "model": "Modèle",
+          "status": "Statut",
+          "input": "Entrée",
+          "cachedInput": "Lecture du cache",
+          "cacheWrite": "Écriture du cache",
+          "output": "Sortie",
+          "reasoning": "Raisonnement (inclus dans la sortie)",
+          "searches": "Recherches",
+          "cost": "Coût estimé"
+        },
+        "note": "Estimation en USD fondée sur la consommation déclarée par OpenAI et les tarifs en vigueur lors de l'enregistrement de chaque appel. Les nouvelles tentatives internes du SDK n'exposent pas leur consommation et ne sont pas incluses."
+      }
     },
     "events": {
       "drafts": {

@@ -1254,7 +1254,54 @@
         "writing": "Writing…"
       },
       "missingSectionsTitle": "Incomplete research",
-      "missingSections": "These event sections are empty because their research failed: {events}."
+      "missingSections": "These event sections are empty because their research failed: {events}.",
+      "costs": {
+        "title": "Costs",
+        "heading": "Costs · {total}",
+        "total": "Estimated total cost",
+        "partial": "{cost} (partial)",
+        "unavailable": "Cost unavailable",
+        "noCalls": "No calls",
+        "readFailed": "Costs could not be loaded.",
+        "unknownEvent": "Unknown event",
+        "writingCall": "Writing",
+        "attempt": "Attempt {number}",
+        "stages": {
+          "research": "Research",
+          "writing": "Writing",
+          "evaluation": "Evaluation"
+        },
+        "statuses": {
+          "succeeded": "Completed",
+          "incomplete": "Incomplete",
+          "failed": "Failed"
+        },
+        "shortColumns": {
+          "call": "Call",
+          "model": "Model",
+          "status": "Status",
+          "input": "Input",
+          "cachedInput": "Cache read",
+          "cacheWrite": "Cache write",
+          "output": "Output",
+          "reasoning": "Reasoning",
+          "searches": "Searches",
+          "cost": "Cost"
+        },
+        "columns": {
+          "call": "Call",
+          "model": "Model",
+          "status": "Status",
+          "input": "Input",
+          "cachedInput": "Cache read",
+          "cacheWrite": "Cache write",
+          "output": "Output",
+          "reasoning": "Reasoning (incl. in output)",
+          "searches": "Searches",
+          "cost": "Estimated cost"
+        },
+        "note": "USD estimate based on the usage reported by OpenAI and the rates in force when each call was recorded. Internal SDK retries do not expose their usage and are not included."
+      }
     },
     "events": {
       "drafts": {
