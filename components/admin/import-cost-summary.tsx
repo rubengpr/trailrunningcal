@@ -1,9 +1,11 @@
 'use client';
 
 import { ChevronRight } from 'lucide-react';
+import type { ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import type { OpenRouterScrapeUsage } from '@/types/openrouter-scrape-usage.types';
 import type { ScrapeUsage } from '@/types/races-scrape-api.types';
+import { formatCost } from '@/lib/utils/format-cost';
 
 const NUMBER_FORMATTER = new Intl.NumberFormat('es-ES');
 
@@ -11,26 +13,6 @@ interface ImportCostSummaryProps {
     openRouterUsage: OpenRouterScrapeUsage | null;
     scrapeUsage: ScrapeUsage | null;
     translationsNamespace: 'admin.events.import';
-}
-
-function formatCost(value: number | null): string {
-    if (value === null || !Number.isFinite(value)) {
-        return '—';
-    }
-    if (value === 0) {
-        return '$0';
-    }
-    if (value < 0.01) {
-        return '<$0.01';
-    }
-
-    const precision = 2;
-    const formatted = value
-        .toFixed(precision)
-        .replace(/(\.\d*?[1-9])0+$/, '$1')
-        .replace(/\.0+$/, '');
-
-    return `$${formatted}`;
 }
 
 function formatNumber(value: number | null): string {
@@ -52,10 +34,10 @@ function sumCosts(...values: Array<number | null>): number | null {
     return found ? total : null;
 }
 
-function DetailRow({ label, value }: { label: string; value: string }): React.ReactElement {
+export function DetailRow({ label, value, icon }: { label: string; value: string; icon?: ReactNode }): React.ReactElement {
     return (
         <div className="flex items-center justify-between gap-4 text-xs">
-            <span className="text-gray-500">{label}</span>
+            <span className="inline-flex items-center gap-2 text-gray-500">{icon}{label}</span>
             <span className="font-medium text-gray-800 tabular-nums">{value}</span>
         </div>
     );
