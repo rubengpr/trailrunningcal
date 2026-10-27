@@ -1252,6 +1252,13 @@
   },
   "admin": {
     "blog": {
+      "generationStages": {
+        "queued": "Pendiente",
+        "researching": "Investigando…",
+        "writing": "Redactando…"
+      },
+      "missingSectionsTitle": "Investigación incompleta",
+      "missingSections": "Las secciones de estos eventos están vacías porque su investigación ha fallado: {events}.",
       "selection": {
         "heading": "Selección",
         "region": "Comunidad autónoma",
@@ -1408,6 +1415,8 @@
       "pending": "Pendiente",
       "readOnly": "Borrador de ejemplo · Solo lectura",
       "metadata": "Metadatos",
+      "metadataValid": "Comprobaciones básicas de metadatos correctas",
+      "metadataIssues": "{errors} campos con errores y {warnings} con advertencias de longitud",
       "articleHeading": "Artículo",
       "articleCharacterCount": "{count} caracteres de texto del artículo",
       "articleDetails": "Datos del artículo",
@@ -1476,13 +1485,6 @@
         },
         "consultedSources": "URLs devueltas por la herramienta ({count})"
       },
-      "generationStages": {
-        "queued": "Pendiente",
-        "researching": "Investigando…",
-        "writing": "Redactando…"
-      },
-      "missingSectionsTitle": "Investigación incompleta",
-      "missingSections": "Las secciones de estos eventos están vacías porque su investigación ha fallado: {events}.",
       "costs": {
         "title": "Costes",
         "heading": "Costes · {total}",
@@ -1529,6 +1531,13 @@
           "cost": "Coste estimado"
         },
         "note": "Estimación en USD a partir del consumo informado por OpenAI y las tarifas vigentes al registrar cada llamada. Los reintentos internos del SDK no exponen su consumo y no se incluyen."
+      },
+      "length": {
+        "within": "{count} {unit}. Dentro del rango {min}–{max}",
+        "near": "{count} {unit}. Levemente fuera del rango {min}–{max}, dentro del margen del 10 %",
+        "outside": "{count} {unit}. Rango correcto: {min}–{max}",
+        "characters": "{count, plural, one {carácter} other {caracteres}}",
+        "words": "{count, plural, one {palabra} other {palabras}}"
       }
     },
     "login": {

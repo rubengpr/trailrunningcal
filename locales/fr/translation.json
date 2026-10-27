@@ -1024,6 +1024,13 @@
   },
   "admin": {
     "blog": {
+      "generationStages": {
+        "queued": "En attente",
+        "researching": "Recherche…",
+        "writing": "Rédaction…"
+      },
+      "missingSectionsTitle": "Recherche incomplète",
+      "missingSections": "Les sections de ces événements sont vides car leur recherche a échoué : {events}.",
       "selection": {
         "heading": "Sélection",
         "region": "Communauté autonome",
@@ -1180,6 +1187,8 @@
       "pending": "À compléter",
       "readOnly": "Brouillon d’exemple · Lecture seule",
       "metadata": "Métadonnées",
+      "metadataValid": "Vérifications de base des métadonnées réussies",
+      "metadataIssues": "{errors} champs avec erreurs et {warnings} avec avertissements de longueur",
       "articleHeading": "Article",
       "articleCharacterCount": "{count} caractères de texte de l’article",
       "articleDetails": "Données de l’article",
@@ -1248,13 +1257,6 @@
         },
         "consultedSources": "URL renvoyées par l’outil ({count})"
       },
-      "generationStages": {
-        "queued": "En attente",
-        "researching": "Recherche…",
-        "writing": "Rédaction…"
-      },
-      "missingSectionsTitle": "Recherche incomplète",
-      "missingSections": "Les sections de ces événements sont vides car leur recherche a échoué : {events}.",
       "costs": {
         "title": "Coûts",
         "heading": "Coûts · {total}",
@@ -1301,6 +1303,13 @@
           "cost": "Coût estimé"
         },
         "note": "Estimation en USD fondée sur la consommation déclarée par OpenAI et les tarifs en vigueur lors de l'enregistrement de chaque appel. Les nouvelles tentatives internes du SDK n'exposent pas leur consommation et ne sont pas incluses."
+      },
+      "length": {
+        "within": "{count} {unit}. Dans la plage {min}–{max}",
+        "near": "{count} {unit}. Légèrement hors de {min}–{max}, dans la marge de 10 %",
+        "outside": "{count} {unit}. Plage correcte : {min}–{max}",
+        "characters": "{count, plural, one {caractère} other {caractères}}",
+        "words": "{count, plural, one {mot} other {mots}}"
       }
     },
     "events": {

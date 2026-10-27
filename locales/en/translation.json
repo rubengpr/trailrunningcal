@@ -1024,6 +1024,13 @@
   },
   "admin": {
     "blog": {
+      "generationStages": {
+        "queued": "Pending",
+        "researching": "Researching…",
+        "writing": "Writing…"
+      },
+      "missingSectionsTitle": "Incomplete research",
+      "missingSections": "These event sections are empty because their research failed: {events}.",
       "selection": {
         "heading": "Selection",
         "region": "Autonomous community",
@@ -1180,6 +1187,8 @@
       "pending": "Pending",
       "readOnly": "Sample draft · Read only",
       "metadata": "Metadata",
+      "metadataValid": "Basic metadata checks passed",
+      "metadataIssues": "{errors} fields with errors and {warnings} with length warnings",
       "articleHeading": "Article",
       "articleCharacterCount": "{count} characters of article text",
       "articleDetails": "Article details",
@@ -1248,13 +1257,6 @@
         },
         "consultedSources": "URLs returned by the tool ({count})"
       },
-      "generationStages": {
-        "queued": "Pending",
-        "researching": "Researching…",
-        "writing": "Writing…"
-      },
-      "missingSectionsTitle": "Incomplete research",
-      "missingSections": "These event sections are empty because their research failed: {events}.",
       "costs": {
         "title": "Costs",
         "heading": "Costs · {total}",
@@ -1301,6 +1303,13 @@
           "cost": "Estimated cost"
         },
         "note": "USD estimate based on the usage reported by OpenAI and the rates in force when each call was recorded. Internal SDK retries do not expose their usage and are not included."
+      },
+      "length": {
+        "within": "{count} {unit}. Within the {min}–{max} range",
+        "near": "{count} {unit}. Slightly outside {min}–{max}, within the 10% tolerance",
+        "outside": "{count} {unit}. Correct range: {min}–{max}",
+        "characters": "{count, plural, one {character} other {characters}}",
+        "words": "{count, plural, one {word} other {words}}"
       }
     },
     "events": {

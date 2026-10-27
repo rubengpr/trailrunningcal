@@ -1220,6 +1220,13 @@
   },
   "admin": {
     "blog": {
+      "generationStages": {
+        "queued": "Pendent",
+        "researching": "Investigant…",
+        "writing": "Redactant…"
+      },
+      "missingSectionsTitle": "Recerca incompleta",
+      "missingSections": "Les seccions d’aquests esdeveniments estan buides perquè la recerca ha fallat: {events}.",
       "selection": {
         "heading": "Selecció",
         "region": "Comunitat autònoma",
@@ -1376,6 +1383,8 @@
       "pending": "Pendent",
       "readOnly": "Esborrany d’exemple · Només lectura",
       "metadata": "Metadades",
+      "metadataValid": "Comprovacions bàsiques de metadades correctes",
+      "metadataIssues": "{errors} camps amb errors i {warnings} amb advertiments de longitud",
       "articleHeading": "Article",
       "articleCharacterCount": "{count} caràcters de text de l’article",
       "articleDetails": "Dades de l’article",
@@ -1444,13 +1453,6 @@
         },
         "consultedSources": "URL retornades per l’eina ({count})"
       },
-      "generationStages": {
-        "queued": "Pendent",
-        "researching": "Investigant…",
-        "writing": "Redactant…"
-      },
-      "missingSectionsTitle": "Recerca incompleta",
-      "missingSections": "Les seccions d’aquests esdeveniments estan buides perquè la recerca ha fallat: {events}.",
       "costs": {
         "title": "Costos",
         "heading": "Costos · {total}",
@@ -1497,6 +1499,13 @@
           "cost": "Cost estimat"
         },
         "note": "Estimació en USD a partir del consum informat per OpenAI i les tarifes vigents en registrar cada crida. Els reintents interns de l'SDK no exposen el seu consum i no s'hi inclouen."
+      },
+      "length": {
+        "within": "{count} {unit}. Dins del rang {min}–{max}",
+        "near": "{count} {unit}. Lleugerament fora del rang {min}–{max}, dins del marge del 10 %",
+        "outside": "{count} {unit}. Rang correcte: {min}–{max}",
+        "characters": "{count, plural, one {caràcter} other {caràcters}}",
+        "words": "{count, plural, one {paraula} other {paraules}}"
       }
     },
     "login": {

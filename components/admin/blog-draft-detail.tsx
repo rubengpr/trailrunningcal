@@ -1,11 +1,13 @@
 'use client';
 import { BlogResearchReport } from '@/components/admin/blog-research-report';
 import { ErrorMessage } from '@/components/ui/error-message';
+import { Tooltip } from '@/components/ui/tooltip';
 import { allowedLinks } from '@/lib/blog/links';
 
 import { useTranslations } from 'next-intl';
 import type { ReactNode } from 'react';
-import { Heading1 } from 'lucide-react';
+import { CircleCheck, CircleAlert, TriangleAlert, Heading1 } from 'lucide-react';
+import { measureLength } from '@/lib/blog/length-targets';
 import { sanitizeContent } from '@/lib/blog/sanitize';
 import { countCharacters } from '@/lib/blog/text';
 import { CharacterCountBadge } from '@/components/ui/character-count-badge';
@@ -14,8 +16,9 @@ import type { DraftResearchStatus, ResearchPage } from '@/types/blog-research.ty
 import { BlogDraftInstructions } from '@/components/admin/blog-draft-instructions';
 import { BlogEvaluationSummary } from '@/components/admin/blog-evaluation-summary';
 import { BlogDraftSection } from '@/components/admin/blog-draft-section';
-import { BlogCostSummary } from '@/components/admin/blog-cost-summary';
 import { BlogArticleContent } from '@/components/admin/blog-article-content';
+import { BlogCostSummary } from '@/components/admin/blog-cost-summary';
+import { BlogLengthIndicator } from '@/components/admin/blog-length-indicator';
 import type { DraftDetail } from '@/types/blog-draft-record.types';
 
 const emptyResearch: ResearchPage = {runs:[],pagination:{page:1,pageSize:50,total:0,totalPages:0}};
@@ -28,7 +31,19 @@ export function BlogDraftDetail({ draft, onEvaluationAccepted, actions, initialR
   const characterCount = countCharacters(contentHtml);
   const title = draft.title ?? '';
   const lastSpace = title.lastIndexOf(' ');
-  const metadata = [['keyword', draft.primaryKeyword], ['slug', draft.slug], ['seoTitle', draft.seoTitle], ['description', draft.metaDescription]] as const;
+  const metadata = [['keyword', 'primaryKeyword', draft.primaryKeyword], ['slug', 'slug', draft.slug], ['seoTitle', 'seoTitle', draft.seoTitle], ['description', 'metaDescription', draft.metaDescription]] as const;
+  const metadataFields = new Set<string>(metadata.map(([, field]) => field));
+  const errors = new Set(metadata.filter(([, field, value]) => !value?.trim() || (field === 'slug' && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value))).map(([, field]) => field));
+  for (const finding of draft.evaluation?.criticalErrors ?? []) {
+    if (metadataFields.has(finding.field)) errors.add(finding.field as typeof metadata[number][1]);
+  }
+  for (const [, field, value] of metadata) {
+    if (measureLength(field, value ?? '').some(measure => measure.status === 'outside')) errors.add(field);
+  }
+  const warnings = metadata.filter(([, field, value]) => !errors.has(field) && measureLength(field, value ?? '').some(measure => measure.status === 'near')).length;
+  const metadataStatus = errors.size || warnings
+    ? t('metadataIssues', { errors: errors.size, warnings })
+    : t('metadataValid');
   return (
     <div className="space-y-6">
       <header className="flex flex-wrap items-start justify-between gap-4">
@@ -55,11 +70,14 @@ export function BlogDraftDetail({ draft, onEvaluationAccepted, actions, initialR
             </div>
           </BlogDraftSection> : <BlogDraftInstructions instructions={draft.instructions} context={draft.generationContext} />}
           {missing.length ? <ErrorMessage title={t('missingSectionsTitle')} message={t('missingSections',{events:missing.join(', ')})} showRetry={false} variant="compact" /> : null}
-          <BlogDraftSection title={t('metadata')}>
+          <BlogDraftSection title={<>{t('metadata')}<Tooltip text={metadataStatus} size="sm" className="ml-1"><span aria-label={metadataStatus} className={`inline-flex items-center gap-1 text-xs font-normal ${errors.size ? 'text-red-700' : warnings ? 'text-amber-700' : 'text-green-600'}`}>
+            {errors.size ? <CircleAlert aria-hidden="true" className="size-3.5" /> : warnings ? <TriangleAlert aria-hidden="true" className="size-3.5" /> : <CircleCheck aria-hidden="true" className="size-3.5" />}
+            {errors.size || warnings ? errors.size + warnings : null}
+          </span></Tooltip></>}>
             <dl className="mt-4 grid gap-4 sm:grid-cols-2">
-              {metadata.map(([key, value]) => (
+              {metadata.map(([key, field, value]) => (
                 <div key={key} className={key === 'description' ? 'sm:col-span-2' : ''}>
-                  <dt className="text-xs text-gray-500">{t(key)}</dt>
+                  <dt className="flex items-center gap-1.5 text-xs text-gray-500">{t(key)}{value ? <BlogLengthIndicator field={field} value={value} /> : null}</dt>
                   <dd className="mt-1 break-words text-sm leading-relaxed">{value}</dd>
                 </div>
               ))}
