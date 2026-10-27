@@ -3,8 +3,7 @@
 import type { RefObject } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Trash2 } from 'lucide-react';
-import { FilterSelect } from '@/components/filters/filter-select';
-import { FilterPill } from '@/components/filters/filter-pill';
+import { FilterControl } from '@/components/filters/filter-control';
 import { DISTANCE_GROUPS, MONTH_INDICES } from '@/lib/constants';
 import {
   GEOGRAPHY,
@@ -94,18 +93,6 @@ export function FilterBar({
     selectedDistance.length > 0 ||
     selectedRaceType.length > 0;
 
-  const toggleSelectedValues = (
-    selectedValues: string[],
-    value: string,
-    onChange: (values: string[]) => void,
-  ): void => {
-    onChange(
-      selectedValues.includes(value)
-        ? selectedValues.filter((item) => item !== value)
-        : [...selectedValues, value],
-    );
-  };
-
   return (
     <div ref={scrollContainerRef} className={`flex items-center ${variant === 'pill' ? 'gap-2 flex-nowrap overflow-x-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none]' : 'gap-3 flex-wrap'}`}>
       {hasActiveFilters && (
@@ -116,94 +103,51 @@ export function FilterBar({
           <Trash2 className="h-3.5 w-3.5" strokeWidth={2} />
         </button>
       )}
-      {variant === 'pill' ? (
-        <FilterPill
-          label={tFilters('monthLabel')}
-          selectedValues={selectedMonth}
-          options={monthOptions}
+      <FilterControl
+        variant={variant}
+        label={tFilters('monthLabel')}
+        selectedValues={selectedMonth}
+        options={monthOptions}
+        onChange={onMonthSelect}
+        searchable
+        color={color}
+        size={size}
+      />
+
+      {showProvinceFilter && (
+        <FilterControl
+          variant={variant}
+          label={tFilters('provinceLabel')}
+          selectedValues={selectedProvince}
+          options={provinceOptions}
+          onChange={onProvinceSelect}
           searchable
-          onToggleOption={(value) => toggleSelectedValues(selectedMonth, value, onMonthSelect)}
-          onClear={() => onMonthSelect([])}
           color={color}
           size={size}
         />
-      ) : (
-        <FilterSelect
-          value={selectedMonth}
-          onValueChange={onMonthSelect}
-          placeholder={tFilters('monthLabel')}
-          options={monthOptions}
-          searchable
-          color={color}
-        />
-      )}
-
-      {showProvinceFilter && (
-        variant === 'pill' ? (
-          <FilterPill
-            label={tFilters('provinceLabel')}
-            selectedValues={selectedProvince}
-            options={provinceOptions}
-            searchable
-            onToggleOption={(value) => toggleSelectedValues(selectedProvince, value, onProvinceSelect)}
-            onClear={() => onProvinceSelect([])}
-            color={color}
-            size={size}
-          />
-        ) : (
-          <FilterSelect
-            value={selectedProvince}
-            onValueChange={onProvinceSelect}
-            placeholder={tFilters('provinceLabel')}
-            options={provinceOptions}
-            searchable
-            color={color}
-          />
-        )
       )}
 
       {showDistanceFilter && (
-        variant === 'pill' ? (
-          <FilterPill
-            label={tFilters('distanceLabel')}
-            selectedValues={selectedDistance}
-            options={distanceOptions}
-            onToggleOption={(value) => toggleSelectedValues(selectedDistance, value, onDistanceSelect)}
-            onClear={() => onDistanceSelect([])}
-            color={color}
-            size={size}
-          />
-        ) : (
-          <FilterSelect
-            value={selectedDistance}
-            onValueChange={onDistanceSelect}
-            placeholder={tFilters('distanceLabel')}
-            options={distanceOptions}
-            color={color}
-          />
-        )
-      )}
-
-      {variant === 'pill' ? (
-        <FilterPill
-          label={tFilters('raceTypeLabel')}
-          selectedValues={selectedRaceType}
-          options={raceTypeOptions}
-          onToggleOption={(value) => toggleSelectedValues(selectedRaceType, value, onRaceTypeSelect)}
-          onClear={() => onRaceTypeSelect([])}
+        <FilterControl
+          variant={variant}
+          label={tFilters('distanceLabel')}
+          selectedValues={selectedDistance}
+          options={distanceOptions}
+          onChange={onDistanceSelect}
           color={color}
           size={size}
         />
-      ) : (
-        <FilterSelect
-          value={selectedRaceType}
-          onValueChange={onRaceTypeSelect}
-          placeholder={tFilters('raceTypeLabel')}
-          options={raceTypeOptions}
-          color={color}
-        />
       )}
 
+      <FilterControl
+        variant={variant}
+        label={tFilters('raceTypeLabel')}
+        selectedValues={selectedRaceType}
+        options={raceTypeOptions}
+        onChange={onRaceTypeSelect}
+        color={color}
+        size={size}
+      />
     </div>
   );
 }
