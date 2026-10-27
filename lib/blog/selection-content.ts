@@ -1,7 +1,7 @@
 import { marked } from 'marked';
 import { GenerationError, parseArticle } from '@/lib/blog/content';
 import { sanitizeContent } from '@/lib/blog/sanitize';
-import { allowedLinks, calendarPath, eventPath } from '@/lib/blog/links';
+import { allowedLinks, calendarPath, eventPath, selectionSlug } from '@/lib/blog/links';
 import type { SelectionContext } from '@/types/blog-selection.types';
 
 export function selectionSchema(context: SelectionContext) {
@@ -44,7 +44,7 @@ export function composeSelection(value: unknown, context: SelectionContext) {
   const intro = text(body.introduction), selection = text(body.selection), conclusion = text(body.conclusion);
   const title = `Las 5 mejores carreras de trail running en ${context.regionName}`;
   const article = parseArticle({title, contentMarkdown: [intro, selection, ...descriptions.map(item => item.markdown), conclusion].join('\n\n'),
-    primaryKeyword: text(body.primaryKeyword), slug: text(body.slug), seoTitle: text(body.seoTitle), metaDescription: text(body.metaDescription)});
+    primaryKeyword: text(body.primaryKeyword), slug: selectionSlug(context.regionId), seoTitle: text(body.seoTitle), metaDescription: text(body.metaDescription)});
   const races = (event: SelectionContext['events'][number]) => event.races.map(race =>
     `${race.name ? escape(race.name) + ': ' : ''}${escape(race.distanceKm)} km${race.elevationGainM === null ? '' : ` · +${escape(race.elevationGainM)} m`}`).join('<br>');
   const location = (event: SelectionContext['events'][number]) => [...new Set(event.races.map(race => `${race.city}, ${race.province}`))].map(escape).join('<br>');

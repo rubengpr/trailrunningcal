@@ -7,7 +7,7 @@ import {
   parseArticle,
   renderContent,
 } from '@/lib/blog/content';
-import { calendarPath, eventPath, writingLinks } from '@/lib/blog/links';
+import { calendarPath, eventPath, selectionSlug, writingLinks } from '@/lib/blog/links';
 import { normalizeText, WritingError } from '@/lib/blog/writing/context';
 import { writingSchema } from '@/lib/blog/writing/schema';
 import type {
@@ -33,7 +33,7 @@ export function compose(
   const validate = new Ajv().compile<WritingResponse>(writingSchema(input));
   if (!validate(value)) throw new GenerationError('invalid_content');
   const { references: claims, ...fields } = value;
-  const article = parseArticle(fields);
+  const article = parseArticle({ ...fields, slug: selectionSlug(request.regionId) });
   if (
     article.title !==
       `Las 5 mejores carreras de trail running en ${input.regionName}` ||

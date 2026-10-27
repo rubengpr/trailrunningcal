@@ -56,6 +56,7 @@ describe('writer output', () => {
     compose(value, prepared.request, prepared.input);
   it('preserves the full authored structure, builds six safe links and resolves private references', () => {
     const result = run(writingResponse);
+    expect(result.article.slug).toBe('mejores-carreras-trail-running-cataluna');
     expect(result.contentHtml).toContain('<h2>Una selección editorial</h2>');
     expect(result.contentHtml).toContain('<h3>Antes de elegir</h3>');
     expect(result.contentHtml).toContain('<ul>');
