@@ -3,10 +3,14 @@ import { articleEvaluationInstructions } from '@/lib/blog/prompts/article-evalua
 import { evaluationSchema } from '@/lib/blog/scoring/schema';
 import { EvaluationError } from '@/lib/blog/scoring/result';
 import type { DeterministicResult, ScoringInput } from '@/types/blog-evaluation.types';
+import type { ResponseObserver } from '@/types/blog-cost.types';
 
-export async function evaluateArticle(input: ScoringInput, checks: DeterministicResult): Promise<unknown> {
+export const evaluationModel = 'gpt-6.1-sol';
+
+export async function evaluateArticle(input: ScoringInput, checks: DeterministicResult, observe?: ResponseObserver): Promise<unknown> {
   try {
     const metadata = {
+      research:input.research ? {regionName:input.research.regionName,events:input.research.results.map(result => ({eventName:result.eventName,dossier:result.dossier,limitations:result.errorCode}))} : null,
       generationContext: input.generationContext, instructions:input.instructions,title:input.title,primaryKeyword:input.primaryKeyword,
       slug:input.slug,seoTitle:input.seoTitle,metaDescription:input.metaDescription,
     };
@@ -15,11 +19,12 @@ export async function evaluateArticle(input: ScoringInput, checks: Deterministic
       lengths:checks.metrics.lengths,keywordPresent:checks.metrics.keywordPresent,
     };
     const response = await createOpenAIClient().responses.create({
-      model:'gpt-6.1-sol',reasoning:{effort:'medium'},max_output_tokens:4000,
+      model:evaluationModel,reasoning:{effort:'medium'},max_output_tokens:4000,
       instructions:articleEvaluationInstructions,
       input:JSON.stringify({ ...metadata, article:checks.metrics.text, checks:{...checks,metrics} }),
       text:{format:{type:'json_schema',name:'blog_evaluation',strict:true,schema:evaluationSchema}},
     }, {timeout:120_000,maxRetries:2});
+    await observe?.(response);
     if (response.output.some(item => item.type === 'message' && item.content.some(part => part.type === 'refusal'))) throw new EvaluationError('refused');
     if (response.status !== 'completed') throw new EvaluationError('incomplete');
     try { return JSON.parse(response.output_text) as unknown; } catch { throw new EvaluationError('invalid_evaluation'); }

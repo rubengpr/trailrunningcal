@@ -5,6 +5,9 @@ vi.mock('workflow',()=>({FatalError:class extends Error{},getWorkflowMetadata:()
 vi.mock('@/lib/db/blog-drafts',()=>({getDraft:mocks.getDraft}));
 vi.mock('@/lib/db/blog-evaluations',()=>({begin:mocks.begin,fail:mocks.fail,save:mocks.save}));
 vi.mock('@/lib/services/blog-evaluation',()=>({evaluate:mocks.evaluate,scoringInput:mocks.scoringInput}));
+const costs=vi.hoisted(()=>({trackCost:vi.fn(),call:{requestedModel:'gpt-6.1-sol',usage:null}}));
+vi.mock('@/lib/workflows/blog-costs',()=>({trackCost:costs.trackCost}));
+vi.mock('@/lib/services/blog-costs',()=>({tracker:()=>({observe:vi.fn(),call:()=>costs.call})}));
 import { evaluateStep, evaluationWorkflow, saveEvaluationStep } from './blog-evaluation';
 beforeEach(()=>{
   vi.resetAllMocks();
@@ -46,5 +49,13 @@ describe('evaluation workflow',()=>{
     await expect(evaluationWorkflow({id:'id',attemptId:'attempt'})).rejects.toThrow('save_failed');
     expect(mocks.fail).toHaveBeenCalledWith('id','save_failed','run','attempt');
     expect(mocks.evaluate).toHaveBeenCalledTimes(1);
+  });
+  it('keeps a separate cost record for every evaluation attempt',async()=>{
+    mocks.evaluate.mockRejectedValueOnce(new EvaluationError('timeout'));
+    await expect(evaluationWorkflow({id:'id',attemptId:'first'})).rejects.toThrow('timeout');
+    await evaluationWorkflow({id:'id',attemptId:'second'});
+    expect(costs.trackCost.mock.calls.map(([entry])=>[entry.key,entry.evaluationAttemptId,entry.errorCode])).toEqual([
+      ['evaluation:id:first','first','timeout'],['evaluation:id:second','second',null],
+    ]);
   });
 });

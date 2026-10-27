@@ -7,7 +7,7 @@ import { BlogProvider } from '@/components/admin/blog-provider';
 import { BlogDraftList } from '@/components/admin/blog-draft-list';
 import { BlogDraftView } from '@/components/admin/blog-draft-view';
 import es from '@/locales/es/translation.json';
-import type { DraftDetail, DraftPage } from '@/types/blog-draft-record.types';
+import type { DraftDetail, DraftPage, DraftListItem } from '@/types/blog-draft-record.types';
 
 const mocks = vi.hoisted(() => ({ generateDraft: vi.fn(), listEvents: vi.fn(), listDrafts: vi.fn(), getDraft: vi.fn(), evaluateDraft: vi.fn(), deleteDraft: vi.fn(), replace: vi.fn(), push: vi.fn(), refresh: vi.fn(),
   DraftRequestError: class extends Error { constructor(public readonly status:number) {super('Request failed');} },
@@ -21,7 +21,8 @@ const pending: DraftDetail = {
   errorCode: null, evaluation: null, evaluationStatus: 'not_evaluated', evaluationErrorCode: null, editorialStatus: null, criticalCount: 0,
 };
 const empty: DraftPage = { drafts: [], pagination: { page: 1, pageSize: 50, total: 0, totalPages: 0 } };
-const page: DraftPage = { drafts: [{ ...pending, score: null }], pagination: { page: 1, pageSize: 50, total: 1, totalPages: 1 } };
+const pendingItem:DraftListItem = {id:pending.id,status:'running',stage:'researching',progress:{finished:0,total:5},takingLong:false};
+const page: DraftPage = { drafts: [pendingItem], pagination: { page: 1, pageSize: 50, total: 1, totalPages: 1 } };
 function show(children: ReactNode) {
   return render(<NextIntlClientProvider locale="es" messages={es}><BlogProvider>{children}</BlogProvider></NextIntlClientProvider>);
 }
@@ -48,8 +49,8 @@ beforeEach(() => {
 });
 
 describe('connected evaluation UI', () => {
-  const completed:DraftDetail = {...pending,status:'completed',title:'Artículo completo para evaluar',contentHtml:'<h2>Sección</h2><p>Contenido.</p>'};
-  const evaluated:DraftDetail = {...completed,evaluationStatus:'completed',editorialStatus:'requires_corrections',criticalCount:1,evaluation:{
+  const completed:DraftDetail & {status:'completed'} = {...pending,status:'completed',title:'Artículo completo para evaluar',contentHtml:'<h2>Sección</h2><p>Contenido.</p>'};
+  const evaluated:DraftDetail & {status:'completed'} = {...completed,evaluationStatus:'completed',editorialStatus:'requires_corrections',criticalCount:1,evaluation:{
     score:85,createdAt:pending.createdAt,criteria:[],recommendations:[],
     criticalErrors:[{code:'missing_essential_topic',field:'article',explanation:'Falta la logística.',evidence:[{source:'instructions',quote:pending.instructions}]}],
   }};
@@ -110,7 +111,7 @@ afterEach(() => { cleanup(); vi.useRealTimers(); });
 
 describe('connected generation UI', () => {
   it('opens the draft when clicking the date or row background and keeps the title link', () => {
-    show(<BlogDraftList initial={page} />);
+    show(<BlogDraftList initial={{...page,drafts:[{...pending,status:'completed',score:null}]}} />);
     const link = screen.getByRole('link', { name: pending.instructions });
     expect(link.getAttribute('href')).toBe('/es/admin/blog/'+pending.id);
     fireEvent.click(screen.getByText('12 oct 2026'));
@@ -125,8 +126,8 @@ describe('connected generation UI', () => {
     expect(screen.getByText(es.admin.blog.selection.required)).toBeTruthy();
   });
   it('clears selection only after acceptance and preserves the community without navigation', async () => {
-    let resolve!: (value: DraftDetail) => void;
-    mocks.generateDraft.mockReturnValue(new Promise<DraftDetail>(r => {resolve = r;}));
+    let resolve!: (value: DraftListItem) => void;
+    mocks.generateDraft.mockReturnValue(new Promise<DraftListItem>(r => {resolve = r;}));
     show(<BlogDraftList initial={empty} />); await send();
     expect(screen.getByText('5/5 eventos')).toBeTruthy();
     expect((screen.getByRole('combobox') as HTMLButtonElement).disabled).toBe(true);
@@ -134,10 +135,11 @@ describe('connected generation UI', () => {
     await act(async () => fireEvent.click(screen.getByRole('button', {name: es.admin.blog.sending})));
     expect(mocks.generateDraft).toHaveBeenCalledTimes(1);
     expect(screen.queryByRole('link', {name: pending.instructions})).toBeNull();
-    await act(async () => resolve(pending));
+    await act(async () => resolve(pendingItem));
     expect(screen.getByText('0/5 eventos')).toBeTruthy();
     expect(screen.getByRole('combobox').textContent).toContain('Cataluña');
-    expect(screen.getByRole('link', {name: pending.instructions})).toBeTruthy();
+    expect(screen.queryByRole('link', {name: pending.instructions})).toBeNull();
+    expect(screen.getByText(/Investigando/)).toBeTruthy();
     expect(mocks.replace).not.toHaveBeenCalled();
   });
   it('preserves selection after rejection', async () => {
@@ -199,13 +201,13 @@ describe('connected generation UI', () => {
     expect(screen.getByText(es.admin.blog.selection.empty)).toBeTruthy();
   });
   it('supports multiple accepted jobs', async () => {
-    mocks.generateDraft.mockResolvedValueOnce(pending).mockResolvedValueOnce({ ...pending, id: 'second', instructions: 'Otra guía para elegir carrera' });
+    mocks.generateDraft.mockResolvedValueOnce(pendingItem).mockResolvedValueOnce({ ...pendingItem, id: 'second' });
     show(<BlogDraftList initial={empty} />); await send(); await send();
-    expect(screen.getByRole('link', { name: pending.instructions })).toBeTruthy();
-    expect(screen.getByRole('link', { name: 'Otra guía para elegir carrera' })).toBeTruthy();
+    expect(screen.getAllByText(/Investigando/)).toHaveLength(2);
+    expect(screen.queryByRole('link',{name:pending.instructions})).toBeNull();
   });
   it('returns to the first page after accepting on another page', async () => {
-    mocks.generateDraft.mockResolvedValue(pending);
+    mocks.generateDraft.mockResolvedValue(pendingItem);
     show(<BlogDraftList initial={{ ...empty, pagination: { page: 2, pageSize: 50, total: 50, totalPages: 1 } }} />);
     await send(); expect(mocks.replace).toHaveBeenCalledWith('/es/admin/blog');
   });
@@ -251,7 +253,7 @@ describe('connected generation UI', () => {
 });
 
 describe('draft deletion UI', () => {
-  const completed:DraftDetail={...pending,status:'completed',title:'Borrador para eliminar',contentHtml:'<p>Artículo disponible.</p>'};
+  const completed:DraftDetail & {status:'completed'}={...pending,status:'completed',title:'Borrador para eliminar',contentHtml:'<p>Artículo disponible.</p>'};
   const completedPage:DraftPage={drafts:[{...completed,score:null}],pagination:{page:1,pageSize:50,total:1,totalPages:1}};
   function open() {
     const menu = screen.queryByRole('button', { name: es.admin.blog.delete.actions });
@@ -306,24 +308,46 @@ describe('draft deletion UI', () => {
     expect(mocks.replace).toHaveBeenCalledWith('/es/admin/blog');
   });
   it('does not restore a deleted row from an older polling response',async()=>{
-    const queued={...pending,id:'other',instructions:'Otro artículo pendiente'};
+    const queued={...pendingItem,id:'other'};
     let oldRead!:(value:DraftPage)=>void;
     mocks.listDrafts.mockReturnValueOnce(new Promise<DraftPage>(r=>{oldRead=r;})).mockReturnValue(new Promise(()=>{}));
     mocks.deleteDraft.mockResolvedValue(undefined);
-    const both:DraftPage={drafts:[{...completed,score:null},{...queued,score:null}],pagination:{page:1,pageSize:50,total:2,totalPages:1}};
+    const both:DraftPage={drafts:[{...completed,score:null},queued],pagination:{page:1,pageSize:50,total:2,totalPages:1}};
     show(<BlogDraftList initial={both} />);
     await act(async()=>vi.advanceTimersByTimeAsync(3000));
     open();await confirm();
     await act(async()=>oldRead(both));
     expect(screen.queryByRole('link',{name:completed.title!})).toBeNull();
-    expect(screen.getByRole('link',{name:queued.instructions})).toBeTruthy();
+    expect(screen.getByText(/Investigando/)).toBeTruthy();
   });
   it('preserves a newly accepted article while deletion is in flight',async()=>{
-    let resolve!:()=>void;mocks.deleteDraft.mockReturnValue(new Promise<void>(r=>{resolve=r;}));mocks.generateDraft.mockResolvedValue({...pending,id:'new'});mocks.listDrafts.mockReturnValue(new Promise(()=>{}));
+    let resolve!:()=>void;mocks.deleteDraft.mockReturnValue(new Promise<void>(r=>{resolve=r;}));mocks.generateDraft.mockResolvedValue({...pendingItem,id:'new'});mocks.listDrafts.mockReturnValue(new Promise(()=>{}));
     show(<BlogDraftList initial={completedPage} />);open();await confirm();
     await send();
     await act(async()=>resolve());
-    expect(screen.getByRole('link',{name:pending.instructions})).toBeTruthy();
+    expect(screen.getByText(/Investigando/)).toBeTruthy();
     expect(screen.queryByRole('link',{name:completed.title!})).toBeNull();
   });
+});
+
+describe('generation disclosure and activation',()=>{
+ it('has no link, actions, focus stop or pointer cursor while researching, and activates after polling',async()=>{
+  const complete={...pending,status:'completed' as const,title:'Artículo terminado',score:null};
+  mocks.listDrafts.mockResolvedValue({...page,drafts:[complete]});
+  show(<BlogDraftList initial={page} />);
+  const row=screen.getByText(/Investigando/).closest('tr')!;
+  expect(row.querySelector('a,button,[tabindex]')).toBeNull();expect(row.className).not.toContain('cursor-pointer');
+  fireEvent.click(row);expect(mocks.push).not.toHaveBeenCalled();
+  expect(screen.queryByText(pending.instructions)).toBeNull();expect(screen.queryByText('12 oct 2026')).toBeNull();
+  await act(async()=>vi.advanceTimersByTimeAsync(3000));
+  const link=screen.getByRole('link',{name:'Artículo terminado'});fireEvent.click(link.closest('tr')!);
+  expect(mocks.push).toHaveBeenCalledWith('/es/admin/blog/'+pending.id);
+ });
+ it('renders only a safe error and generic deletion confirmation for failed jobs',()=>{
+  show(<BlogDraftList initial={{...page,drafts:[{id:pending.id,status:'failed',errorCode:'writing_failed'}]}} />);
+  expect(screen.getByText(es.admin.blog.generationFailed)).toBeTruthy();
+  expect(screen.queryByRole('link',{name:pending.instructions})).toBeNull();
+  fireEvent.click(screen.getByRole('button',{name:es.admin.blog.delete.button}));
+  expect(screen.getByRole('dialog').textContent).not.toContain(pending.instructions);
+ });
 });

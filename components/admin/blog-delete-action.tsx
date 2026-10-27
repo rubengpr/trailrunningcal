@@ -10,10 +10,10 @@ import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { IconActionMenu } from '@/components/ui/icon-action-menu';
 import type { DraftSummary } from '@/types/blog-draft-record.types';
 
-export function BlogDeleteAction({ draft, onDeleted, onConflict, menu = false }: {
+export function BlogDeleteAction({ draft, onDeleted, onConflict, menu = false, generic = false }: {
   draft: Pick<DraftSummary, 'id' | 'title' | 'instructions' | 'status' | 'evaluationStatus' | 'researchStatus'>;
   onDeleted: (id: string) => void; onConflict: () => void;
-  menu?: boolean;
+  menu?: boolean; generic?:boolean;
 }) {
   const t = useTranslations('admin.blog.delete');
   const trigger = useRef<HTMLButtonElement | null>(null);
@@ -55,7 +55,7 @@ export function BlogDeleteAction({ draft, onDeleted, onConflict, menu = false }:
         else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
       }}>
       <ConfirmationModal isOpen onClose={deletion.close} onConfirm={() => { if (allowed) void deletion.submit(); }}
-        title={t('title')} message={t('message')} highlight={draft.title || draft.instructions.replace(/\s+/g, ' ').slice(0, 80)}
+        title={t('title')} message={t('message')} highlight={generic ? undefined : draft.title || draft.instructions.replace(/\s+/g, ' ').slice(0, 80)}
         confirmButtonText={t('confirm')} cancelButtonText={t('cancel')} loadingText={t('deleting')}
         isSubmitting={deletion.sending} confirmDisabled={!allowed} errorMessage={deletion.error ? t(deletion.error) : undefined}
         variant="destructive" maxWidth="md" />

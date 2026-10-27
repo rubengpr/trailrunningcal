@@ -1247,7 +1247,14 @@
           "failed": "Erreur"
         },
         "consultedSources": "URL renvoyées par l’outil ({count})"
-      }
+      },
+      "generationStages": {
+        "queued": "En attente",
+        "researching": "Recherche…",
+        "writing": "Rédaction…"
+      },
+      "missingSectionsTitle": "Recherche incomplète",
+      "missingSections": "Les sections de ces événements sont vides car leur recherche a échoué : {events}."
     },
     "events": {
       "drafts": {

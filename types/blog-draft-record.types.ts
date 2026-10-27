@@ -1,4 +1,4 @@
-import type { DraftResearchStatus } from '@/types/blog-research.types';
+import type { ResearchRun, DraftResearchStatus } from '@/types/blog-research.types';
 import type { SelectionContext, SelectionInput } from '@/types/blog-selection.types';
 import type { EditorialStatus, Evaluation, EvaluationStatus } from '@/types/blog-evaluation.types';
 
@@ -17,10 +17,19 @@ export interface DraftSummary {
   researchStatus?: DraftResearchStatus;
 }
 
+export type DraftListItem =
+  | (DraftSummary & {status: 'completed'})
+  | ({[S in 'queued'|'running']:{id:string; status:S; stage:'queued'|'researching'|'writing'; progress:{finished:number;total:number}|null; takingLong:boolean}}['queued'|'running'])
+  | {id:string; status:'failed'; errorCode:string|null};
+
 export type DraftEvaluation = Evaluation;
 
 export interface DraftDetail extends Omit<DraftSummary, 'score'> {
   generationContext?: SelectionContext | null;
+  generationResearchId?: string | null;
+  research?: ResearchRun | null;
+  articleLinks?: string[];
+  articleReferences?: import('@/types/blog-writing.types').WritingResult['references'];
   contentHtml: string | null;
   primaryKeyword: string | null;
   slug: string | null;
@@ -30,10 +39,11 @@ export interface DraftDetail extends Omit<DraftSummary, 'score'> {
   errorCode: string | null;
   evaluation: DraftEvaluation | null;
   evaluationErrorCode: string | null;
+  costs?: import('@/types/blog-cost.types').CostSummary | null;
 }
 
 export interface DraftPage {
-  drafts: DraftSummary[];
+  drafts: DraftListItem[];
   pagination: { page: number; pageSize: number; total: number; totalPages: number };
 }
 
@@ -46,12 +56,17 @@ export interface DraftSummaryRow {
   status: DraftStatus;
   created_at: string;
   evaluation_status: EvaluationStatus;
+  error_code?: string | null;
+  generation_research?: {status:ResearchRun['status'];results:Array<{status:string}>}|null;
   research_status?: DraftResearchStatus;
   evaluation: { score: number; critical_errors: Evaluation['criticalErrors'] } | null;
 }
 
 export interface DraftDetailRow extends Omit<DraftSummaryRow, 'evaluation'> {
   generation_context?: SelectionContext | null;
+  generation_research_run_id?: string | null;
+  article_links?: string[];
+  article_references?: import('@/types/blog-writing.types').WritingResult['references'];
   content_html: string | null;
   primary_keyword: string | null;
   slug: string | null;

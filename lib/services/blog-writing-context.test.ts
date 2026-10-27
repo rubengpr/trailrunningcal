@@ -28,3 +28,8 @@ it('rejects incomplete or missing dossiers',async() => {
 it.each([[],[{id:context.events[0].id,slug:''}]].map(slugs => [slugs]))('rejects missing events or slugs %#',async slugs => {
   mocks.eventSlugs.mockResolvedValue(slugs);await expect(fromResearch(run.id)).rejects.toMatchObject({code:'invalid_context'});
 });
+it('admits explicit failed dossiers in a terminal partial investigation',async()=>{
+  const value=await mocks.getRun();value.status='partial';value.results[0]={...value.results[0],status:'failed',dossier:null};
+  mocks.getRun.mockResolvedValue(value);
+  expect((await fromResearch(run.id)).events[0].dossier).toBeNull();
+});

@@ -3,10 +3,11 @@ import { createOpenAIClient } from '@/lib/integrations/openai/client';
 import { investigationInstructions } from '@/lib/blog/prompts/event-investigation';
 import { dossierSchema, parseDossier, ResearchError, safeSourceUrl } from '@/lib/blog/research/result';
 import type { ResearchInput, ResearchOutput, ResearchMetadata } from '@/types/blog-research.types';
+import type { ResponseObserver } from '@/types/blog-cost.types';
 
 export const researchModel = 'gpt-6.1-sol';
 
-export async function investigateEvent(input: ResearchInput): Promise<ResearchOutput> {
+export async function investigateEvent(input: ResearchInput, observe?: ResponseObserver): Promise<ResearchOutput> {
   const started = Date.now();
   let metadata: ResearchMetadata | undefined;
   try {
@@ -19,6 +20,7 @@ export async function investigateEvent(input: ResearchInput): Promise<ResearchOu
       include: ['web_search_call.action.sources'],
       text: {format: {type: 'json_schema', name: 'event_dossier', strict: true, schema: dossierSchema}},
     }, {timeout: 600_000, maxRetries: 0});
+    await observe?.(response);
     metadata = {consultedSources:[],responseId:response.id,model:response.model,usage:response.usage,searchCalls:0,durationMs:Date.now()-started};
     if (response.output.some(item => item.type === 'message' && item.content.some(part => part.type === 'refusal'))) throw new ResearchError('refused');
     if (response.status !== 'completed') throw new ResearchError('incomplete');

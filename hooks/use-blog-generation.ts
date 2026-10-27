@@ -4,7 +4,7 @@ import type { ResearchRun } from '@/types/blog-research.types';
 import { useEffect, useRef, useState } from 'react';
 import { generateDraft } from '@/lib/api/blog-drafts';
 import type { SelectedEvent, SelectionInput } from '@/types/blog-selection.types';
-import type { DraftDetail, DraftInput } from '@/types/blog-draft-record.types';
+import type { DraftListItem, DraftInput } from '@/types/blog-draft-record.types';
 
 export function useBlogGeneration() {
   const [regionId, setRegionId] = useState('');
@@ -12,7 +12,7 @@ export function useBlogGeneration() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [requestFailed, setRequestFailed] = useState(false);
   const [researchAccepted, setResearchAccepted] = useState<ResearchRun | null>(null);
-  const [accepted, setAccepted] = useState<DraftDetail | null>(null);
+  const [accepted, setAccepted] = useState<DraftListItem | null>(null);
   function setRegion(value: string) { setRegionId(value); setSelected([]); setRequestFailed(false); }
   const submitting = useRef(false);
   const controller = useRef<AbortController | null>(null);

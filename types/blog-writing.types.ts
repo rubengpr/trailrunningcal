@@ -9,14 +9,14 @@ export interface WritingRequest {
     eventId: string;
     eventName: string;
     slug: string;
-    dossier: Dossier;
+    dossier: Dossier | null;
     consultedSources: string[];
   }>;
 }
 // Names appear once; identifiers, slugs and provenance remain in the backend.
 export interface WritingInput {
   regionName: string;
-  events: Array<{eventName: string; dossier: Dossier}>;
+  events: Array<{eventName: string; dossier: Dossier | null}>;
 }
 export interface WritingResponse extends Article {
   references: Array<{eventName: string; excerpt: string; sourceIndexes: number[]}>;

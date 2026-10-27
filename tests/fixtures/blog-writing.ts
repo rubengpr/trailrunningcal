@@ -1,11 +1,12 @@
 import { context } from '@/tests/fixtures/blog-selection';
+import type { Dossier } from '@/types/blog-research.types';
 import type {
   WritingRequest,
   WritingResponse,
 } from '@/types/blog-writing.types';
 
 // Fictional data for offline tests only, never evidence for a real article.
-export const writingRequest: WritingRequest = {
+export const writingRequest: WritingRequest & {events:Array<WritingRequest['events'][number] & {dossier:Dossier}>} = {
   regionId: context.regionId,
   events: context.events.map((event, index) => ({
     eventId: event.id,

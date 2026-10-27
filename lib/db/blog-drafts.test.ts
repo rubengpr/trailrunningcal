@@ -45,6 +45,7 @@ describe('draft queries', () => {
       article: { title: 'Title', contentMarkdown: 'Markdown', primaryKeyword: 'keyword', slug: 'slug', seoTitle: 'SEO', metaDescription: 'Description' },
       contentHtml: '<p>Text</p>', model: 'gpt-6.1-sol', responseId: 'response', durationMs: 1000, usage: null,
     };
+    mocks.maybeSingle.mockResolvedValue({data:{evaluation_attempt_id:'attempt'},error:null});
     await completeDraft('id', result);
     expect(mocks.update).toHaveBeenCalledTimes(1);
     expect(mocks.update).toHaveBeenCalledWith(expect.objectContaining({
@@ -64,7 +65,8 @@ describe('draft queries', () => {
     ]);
     expect(mocks.range).toHaveBeenCalledWith(50, 99);
     expect(result.pagination).toEqual({ page: 2, pageSize: 50, total: 52, totalPages: 2 });
-    expect(result.drafts.map(d => d.score)).toEqual([92, null]);
+    expect(result.drafts.map(d => d.status === 'completed' ? d.score : undefined)).toEqual([92, undefined]);
+    expect(result.drafts[1]).not.toHaveProperty('title');
     expect(mocks.select.mock.calls[0][0]).not.toContain('content_html');
   });
   it('returns empty pages', async () => {
@@ -83,7 +85,7 @@ describe('draft queries', () => {
     expect(await getDraft('id')).toEqual({
       researchStatus: 'not_started', id: 'id', title: 'Title', instructions: 'Input', status: 'completed', createdAt: 'created',
       updatedAt: 'updated', contentHtml: '<p>Article</p>', primaryKeyword: 'trail', slug: 'slug',
-      seoTitle: 'SEO', metaDescription: 'Description', errorCode: null, generationContext: null,
+      seoTitle: 'SEO', metaDescription: 'Description', errorCode: null, generationContext: null,generationResearchId:null,research:null,articleLinks:[],articleReferences:[],
       evaluationStatus: 'completed', evaluationErrorCode: null, editorialStatus: 'needs_improvement', criticalCount: 0,
       evaluation: { score: 76, criteria: [], criticalErrors: [], recommendations: [], createdAt: 'evaluated' },
     });

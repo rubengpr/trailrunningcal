@@ -23,12 +23,18 @@ integrationDescribe('local seeded blog drafts (read only)', () => {
   });
   it('reads the seeded summaries and scores', async () => {
     const result = await listDrafts(1);
-    expect(result.drafts.find(d => d.instructions === 'Crea una guía práctica para corredores que quieren elegir su primera carrera de trail en España. Explica cómo valorar distancia, desnivel y terreno.')?.score).toBeNull();
-    expect(result.drafts.find(d => d.title === 'Cómo organizar tu temporada de carreras de montaña')?.score).toBeNull();
+    const completed=result.drafts.filter(draft=>draft.status === 'completed');
+    const seeded=completed.filter(draft=>draft.id === '88af92ed-7683-4b51-afb5-feb390ab72f6' || draft.id === '4319ca59-b60f-4c8e-906b-ba0e268d1450');
+    expect(seeded).toHaveLength(2);
+    for(const summary of seeded) {
+      const detail=await getDraft(summary.id);
+      expect(summary.score).toBe(detail?.evaluation?.score ?? null);
+      expect(summary.evaluationStatus).toBe(detail?.evaluationStatus);
+    }
   });
   it('reads seeded HTML but hides legacy evaluations until rescored', async () => {
     const page = await listDrafts(1);
-    const summary = page.drafts.find(d => d.instructions === 'Crea una guía práctica para corredores que quieren elegir su primera carrera de trail en España. Explica cómo valorar distancia, desnivel y terreno.')!;
+    const summary = page.drafts.find(d => d.status === 'completed' && d.instructions === 'Crea una guía práctica para corredores que quieren elegir su primera carrera de trail en España. Explica cómo valorar distancia, desnivel y terreno.')!;
     const draft = await getDraft(summary.id);
     expect(draft?.contentHtml).toContain('<h2>');
     expect(draft?.evaluationStatus).toBe('not_evaluated');

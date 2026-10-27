@@ -5,8 +5,11 @@ const mocks = vi.hoisted(() => ({begin:vi.fn(),finish:vi.fn(),fail:vi.fn(),getRu
 vi.mock('workflow',() => ({FatalError:class extends Error {},getWorkflowMetadata:() => ({workflowRunId:'workflow'})}));
 vi.mock('@/lib/db/blog-research',() => mocks);
 vi.mock('@/lib/services/blog-research',() => ({investigate:mocks.investigate}));
+const costs = vi.hoisted(() => ({trackCost:vi.fn(),call:vi.fn()}));
+vi.mock('@/lib/workflows/blog-costs',() => ({trackCost:costs.trackCost}));
+vi.mock('@/lib/services/blog-costs',() => ({tracker:() => ({observe:vi.fn(),call:costs.call})}));
 import { investigateStep, researchWorkflow, saveStep } from './blog-research';
-beforeEach(() => {vi.resetAllMocks();mocks.getRun.mockResolvedValue(run);mocks.investigate.mockResolvedValue(output);});
+beforeEach(() => {vi.resetAllMocks();mocks.getRun.mockResolvedValue(run);mocks.investigate.mockResolvedValue(output);costs.call.mockReturnValue({requestedModel:'gpt-6.1-sol',usage:null});});
 it('launches independent investigations in parallel and saves each result',async() => {
   const resolvers: ((value:typeof output)=>void)[] = [];
   mocks.investigate.mockImplementation(() => new Promise(resolve => resolvers.push(resolve)));
@@ -31,4 +34,11 @@ it('save retries never invoke research again',async() => {
 it('waits for other branches before marking an unrecoverable save failure',async() => {
   mocks.finish.mockRejectedValueOnce(new Error('DB'));
   await expect(researchWorkflow({runId:run.id})).rejects.toThrow();expect(mocks.finish).toHaveBeenCalledTimes(2);expect(mocks.fail).toHaveBeenCalled();
+});
+it('records one cost per investigated event, including failures, before saving',async() => {
+  mocks.investigate.mockRejectedValueOnce(new ResearchError('incomplete'));await researchWorkflow({runId:run.id});
+  expect(costs.trackCost).toHaveBeenCalledTimes(2);
+  expect(costs.trackCost).toHaveBeenCalledWith(expect.objectContaining({key:`research:${run.results[0].id}`,stage:'research',researchResultId:run.results[0].id,errorCode:'incomplete'}));
+  expect(costs.trackCost).toHaveBeenCalledWith(expect.objectContaining({key:`research:${run.results[1].id}`,errorCode:null}));
+  expect(Math.max(...costs.trackCost.mock.invocationCallOrder)).toBeLessThan(Math.max(...mocks.finish.mock.invocationCallOrder));
 });

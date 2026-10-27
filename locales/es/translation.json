@@ -1475,7 +1475,14 @@
           "failed": "Error"
         },
         "consultedSources": "URLs devueltas por la herramienta ({count})"
-      }
+      },
+      "generationStages": {
+        "queued": "Pendiente",
+        "researching": "Investigando…",
+        "writing": "Redactando…"
+      },
+      "missingSectionsTitle": "Investigación incompleta",
+      "missingSections": "Las secciones de estos eventos están vacías porque su investigación ha fallado: {events}."
     },
     "login": {
       "title": "Admin",

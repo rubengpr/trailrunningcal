@@ -37,12 +37,12 @@ describe('non-blocking editorial ranges', () => {
     expect(report.metrics.characters[field]).toBe(length);
     expect(report.observations.some(item => item.code === 'length_out_of_range' && item.field === field && item.unit === 'characters')).toBe(length < min || length > max);
   });
-  it.each([699,700,1100,1101])('counts visible body words at %s excluding Markdown and metadata', count => {
+  it.each([1499,1500,2000,2001])('counts visible body words at %s excluding Markdown and metadata', count => {
     const base = inspect().metrics.wordCount;
     const extra = Array.from({length:count-base},()=>'**palabra**').join(' ');
     const report = inspect({...writingResponse,contentMarkdown:writingResponse.contentMarkdown+'\n\n'+extra});
     expect(report.metrics.wordCount).toBe(count);
-    expect(report.observations.some(item => item.code === 'length_out_of_range' && item.field === 'contentMarkdown')).toBe(count < 700 || count > 1100);
+    expect(report.observations.some(item => item.code === 'length_out_of_range' && item.field === 'contentMarkdown')).toBe(count < 1500 || count > 2000);
   });
   it.each([1,2,6,7])('keyword boundary %s words', count => {
     const report = inspect({...writingResponse,primaryKeyword:Array.from({length:count},()=>'trail').join(' ')});
@@ -59,7 +59,7 @@ describe('non-blocking editorial ranges', () => {
   });
   it('returns observations without rejecting and excludes the six inserted navigation links', () => {
     const result = compose(writingResponse,prepared.request,prepared.input);
-    expect(result.quality).toEqual(inspect());
+    expect(result.quality).toEqual(inspect({ ...writingResponse, slug: result.article.slug }));
     expect(result.quality.observations.some(item => item.code === 'length_out_of_range')).toBe(true);
     expect(result.article.contentMarkdown).toContain('[Ver Evento 0');
   });

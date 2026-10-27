@@ -1,4 +1,5 @@
 import { allowedLinks } from '@/lib/blog/links';
+import { lengthRange } from '@/lib/blog/length-targets';
 import { Parser } from 'htmlparser2';
 import type { DeterministicResult, EvidenceSource, Finding, ScoringInput } from '@/types/blog-evaluation.types';
 
@@ -11,7 +12,7 @@ export function inspect(input: ScoringInput): DeterministicResult {
   const add = (code: string, field: EvidenceSource, explanation: string) => {
     result.criticalErrors.push({ code, field, explanation, evidence: [] });
   };
-  const links = allowedLinks(input.generationContext);
+  const links = input.articleLinks?.length ? input.articleLinks : allowedLinks(input.generationContext);
   let heading: { level: number; text: string } | null = null;
   const allowed = new Set(['p','h2','h3','strong','em','ul','ol','li','table','thead','tbody','tr','th','td','blockquote','br','hr']);
   const parser = new Parser({
@@ -50,18 +51,20 @@ export function inspect(input: ScoringInput): DeterministicResult {
   if (/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(input.slug)) result.points.metadata += 2; else add('invalid_slug', 'slug', '');
   if (Array.from(input.title.trim()).length < 20) add('short_title', 'title', '');
   if (!input.primaryKeyword.trim()) add('empty_keyword', 'primaryKeyword', '');
-  const ranges = { title: [40,90], seoTitle: [45,60], metaDescription: [140,160], slug: [1,74] } as const;
   for (const field of ['title','seoTitle','metaDescription','slug'] as const) {
     const count = Array.from(input[field].trim()).length;
     result.metrics.lengths[field] = count;
-    const [min,max] = ranges[field];
+    const { min, max } = lengthRange(field, 'characters');
     if (count < min || count > max) result.observations.push({ code:'length_outside_target', field, explanation:String(count), evidence:[] });
   }
-  if (result.metrics.words < 700 || result.metrics.words > 1100) result.observations.push({ code:'length_outside_target', field:'article', explanation:String(result.metrics.words), evidence:[] });
+  const content = lengthRange('content', 'words');
+  if (result.metrics.words < content.min || result.metrics.words > content.max) result.observations.push({ code:'length_outside_target', field:'article', explanation:String(result.metrics.words), evidence:[] });
   const words = input.primaryKeyword.trim().split(/\s+/).filter(Boolean).length;
-  if (words < 2 || words > 6) result.observations.push({code:'keyword_length',field:'primaryKeyword',explanation:String(words),evidence:[]});
+  const keyword = lengthRange('primaryKeyword', 'words');
+  if (words < keyword.min || words > keyword.max) result.observations.push({code:'keyword_length',field:'primaryKeyword',explanation:String(words),evidence:[]});
   const slugWords = input.slug.split('-').filter(Boolean).length;
-  if (slugWords < 3 || slugWords > 8) result.observations.push({code:'slug_length',field:'slug',explanation:String(slugWords),evidence:[]});
+  const slug = lengthRange('slug', 'words');
+  if (slugWords < slug.min || slugWords > slug.max) result.observations.push({code:'slug_length',field:'slug',explanation:String(slugWords),evidence:[]});
   result.metrics.keywordPresent = !!input.primaryKeyword.trim() &&
     (input.title+' '+result.metrics.text).toLocaleLowerCase('es').includes(input.primaryKeyword.trim().toLocaleLowerCase('es'));
   if (!result.metrics.keywordPresent) result.observations.push({code:'keyword_not_literal',field:'primaryKeyword',explanation:'',evidence:[]});

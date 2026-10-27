@@ -28,6 +28,8 @@ export interface Evaluation {
 }
 export interface ScoringInput {
   generationContext?: SelectionContext | null;
+  articleLinks?: string[];
+  research?: import('@/types/blog-research.types').ResearchRun | null;
   instructions: string;
   title: string;
   contentHtml: string;

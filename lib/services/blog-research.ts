@@ -8,9 +8,10 @@ import { investigateEvent, researchModel } from '@/lib/integrations/openai/event
 import { researchWorkflow } from '@/lib/workflows/blog-research';
 import { ValidationError } from '@/lib/errors';
 import type { ResearchInput, ResearchOutput, ResearchPage, ResearchRun } from '@/types/blog-research.types';
+import type { ResponseObserver } from '@/types/blog-cost.types';
 
 // Normalized provider boundary: other search implementations can return the same report.
-export function investigate(input: ResearchInput): Promise<ResearchOutput> { return investigateEvent(input); }
+export function investigate(input: ResearchInput, observe?: ResponseObserver): Promise<ResearchOutput> { return investigateEvent(input, observe); }
 
 export async function list(id: string, page: number): Promise<ResearchPage> {
   if (!await getDraft(id)) throw new ValidationError('Blog draft not found',404);

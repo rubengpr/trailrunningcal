@@ -13,8 +13,8 @@ describe('writer context', () => {
     expect(input.regionName).toBe('Cataluña');
     expect(input.events[0]).toEqual({eventName:value.events[0].eventName,dossier:value.events[0].dossier});
     expect(JSON.stringify(input)).not.toMatch(/eventId|consultedSources|regionId|catalog|slug|race-/);
-    expect(Object.keys(input.events[0].dossier)).toEqual(['context','sources','observations']);
-    input.events[0].dossier.context = 'Mutated';
+    expect(Object.keys(input.events[0].dossier!)).toEqual(['context','sources','observations']);
+    input.events[0].dossier!.context = 'Mutated';
     expect(value.events[0].dossier.context).not.toBe('Mutated');
   });
   it.each([
@@ -46,7 +46,7 @@ describe('writer context', () => {
       observations: ['Información insuficiente.'],
     };
     value.events[0].consultedSources = [];
-    expect(prepare(value).input.events[0].dossier.sources).toEqual([]);
+    expect(prepare(value).input.events[0].dossier!.sources).toEqual([]);
   });
 });
 
@@ -149,5 +149,31 @@ describe('writer output', () => {
       '**pueblo ficticio 0**',
     );
     expect(run(value).references).toHaveLength(5);
+  });
+});
+
+describe('missing research sections',()=>{
+  it('permits H2 only for a failed event, with no link or audit references',()=>{
+    const request:import('@/types/blog-writing.types').WritingRequest=structuredClone(writingRequest);
+    request.events[0].dossier=null;
+    const value=structuredClone(writingResponse);
+    const name=request.events[0].eventName;
+    const next=request.events[1].eventName;
+    const start=value.contentMarkdown.indexOf('## '+name);
+    const end=value.contentMarkdown.indexOf('## '+next,start+1);
+    value.contentMarkdown=value.contentMarkdown.slice(0,start)+`## ${name}\n\n`+value.contentMarkdown.slice(end);
+    value.references=value.references.filter(reference=>reference.eventName!==name);
+    const prepared=prepare(request);
+    const result=compose(value,prepared.request,prepared.input);
+    expect(result.contentHtml).toContain(`<h2>${name}</h2>`);
+    expect(result.contentHtml).not.toContain('/es/e/'+request.events[0].slug);
+    expect(result.contentHtml.match(/<a /g)).toHaveLength(5);
+    const invented=structuredClone(value);invented.contentMarkdown=invented.contentMarkdown.replace(`## ${name}\n`,`## ${name}\n\nContenido inventado.\n`);
+    expect(()=>compose(invented,prepared.request,prepared.input)).toThrow('invalid_content');
+  });
+  it('rejects five missing dossiers before inference',()=>{
+    const request:import('@/types/blog-writing.types').WritingRequest=structuredClone(writingRequest);
+    request.events.forEach(event=>{event.dossier=null;});
+    expect(()=>prepare(request)).toThrow('invalid_context');
   });
 });

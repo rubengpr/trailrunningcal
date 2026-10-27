@@ -5,18 +5,22 @@ import { createOpenAIClient } from '@/lib/integrations/openai/client';
 import { articleGenerationInstructions } from '@/lib/blog/prompts/article-generation';
 import { articleSchema } from '@/lib/blog/article-schema';
 import { GenerationError } from '@/lib/blog/content';
+import type { ResponseObserver } from '@/types/blog-cost.types';
 
-export async function generateArticle(instructions: string, context?: SelectionContext | null) {
+export const generationModel = 'gpt-6.1-sol';
+
+export async function generateArticle(instructions: string, context?: SelectionContext | null, observe?: ResponseObserver) {
   const client = createOpenAIClient();
   try {
     const response = await client.responses.create({
-      model: 'gpt-6.1-sol',
+      model: generationModel,
       reasoning: { effort: 'medium' },
       max_output_tokens: 8000,
       instructions: context ? selectionGenerationInstructions : articleGenerationInstructions,
       input: context ? JSON.stringify({instructions, context}) : instructions,
       text: { format: { type: 'json_schema', name: 'blog_article', strict: true, schema: context ? selectionSchema(context) : articleSchema } },
     }, { timeout: 120_000, maxRetries: 2 });
+    await observe?.(response);
     if (response.output.some(item => item.type === 'message' && item.content.some(part => part.type === 'refusal'))) {
       throw new GenerationError('refused');
     }

@@ -3,12 +3,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AuthError, ForbiddenError } from '@/lib/errors';
 
 const mocks = vi.hoisted(() => ({
-  requireAdmin: vi.fn(), selectedEvents: vi.fn(), listDrafts: vi.fn(), getDraft: vi.fn(), createDraft: vi.fn(), markFailed: vi.fn(), setRunId: vi.fn(), start: vi.fn(),
+  requireAdmin: vi.fn(), selectedEvents: vi.fn(), researchEvents:vi.fn(), createGeneration:vi.fn(), listDrafts: vi.fn(), getDraft: vi.fn(), createDraft: vi.fn(), markFailed: vi.fn(), setRunId: vi.fn(), start: vi.fn(), getCosts: vi.fn(),
 }));
-vi.mock('@/lib/db/blog-events', () => ({selectedEvents: mocks.selectedEvents}));
+vi.mock('@/lib/db/blog-costs', () => ({ getCosts: mocks.getCosts }));
+vi.mock('@/lib/db/blog-events', () => ({selectedEvents: mocks.selectedEvents, researchEvents:mocks.researchEvents}));
 vi.mock('@/lib/auth', () => ({ requireAdmin: mocks.requireAdmin }));
 vi.mock('@/lib/db/blog-drafts', () => ({
-  listDrafts: mocks.listDrafts, getDraft: mocks.getDraft, createDraft: mocks.createDraft, markFailed: mocks.markFailed, setRunId: mocks.setRunId,
+  listDrafts: mocks.listDrafts, getDraft: mocks.getDraft, createDraft: mocks.createDraft,createGeneration:mocks.createGeneration, markFailed: mocks.markFailed, setRunId: mocks.setRunId,
 }));
 
 vi.mock('workflow/api', () => ({ start: mocks.start }));
@@ -28,7 +29,8 @@ const detailRequest = (draftId = id) => detail(
 beforeEach(() => {
   vi.resetAllMocks();
   mocks.requireAdmin.mockResolvedValue(undefined);
-  mocks.createDraft.mockResolvedValue({ id, status: 'queued' });
+  mocks.createGeneration.mockResolvedValue({id,status:'queued'});
+  mocks.createDraft.mockResolvedValue({ id, status: 'queued',stage:'queued',progress:null,takingLong:false });
   mocks.start.mockResolvedValue({ runId: 'run-id' });
 });
 
@@ -80,14 +82,42 @@ describe('GET list', () => {
 });
 
 describe('GET detail', () => {
+  it.each(['queued','running','failed'])('blocks %s without revealing partial content',async status=>{
+    mocks.getDraft.mockResolvedValue({id,status,title:'Hidden',contentHtml:'Private'});
+    const response=await detailRequest();expect(response.status).toBe(409);
+    expect(await response.json()).toEqual({error:'Article not completed'});
+  });
   it('returns a detail with no evaluation', async () => {
-    const data = { id, evaluation: null };
+    const data = { id, status:'completed', evaluation: null };
+    const costs = {costUsd:null,partial:true,groups:[]};
     mocks.getDraft.mockResolvedValue(data);
+    mocks.getCosts.mockResolvedValue(costs);
     const response = await detailRequest();
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ success: true, data });
+    expect(await response.json()).toEqual({ success: true, data: {...data, costs} });
     expect(response.headers.get('Cache-Control')).toBe('private, no-store');
     expect(mocks.getDraft).toHaveBeenCalledWith(id);
+  });
+  it('exposes only the typed cost summary', async () => {
+    const line = {id:'line',stage:'writing',eventName:null,attempt:null,model:'gpt-6.1-sol',status:'succeeded',
+      tokens:{input:1,cachedInput:0,cacheWrite30m:0,cacheWrite12h:0,output:1,reasoning:0},searches:0,costUsd:0.000012};
+    mocks.getDraft.mockResolvedValue({ id, status:'completed', evaluation:null });
+    mocks.getCosts.mockResolvedValue({costUsd:0.000012,partial:false,groups:[{stage:'writing',costUsd:0.000012,partial:false,lines:[line]}]});
+    const body = await (await detailRequest()).json();
+    expect(Object.keys(body.data.costs.groups[0].lines[0]).sort()).toEqual(Object.keys(line).sort());
+    expect(JSON.stringify(body)).not.toMatch(/usage|response_id|rates/);
+  });
+  it('keeps the article readable when costs cannot be read', async () => {
+    const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      mocks.getDraft.mockResolvedValue({ id, status:'completed', evaluation:null });
+      mocks.getCosts.mockRejectedValue(new Error('private details'));
+      const response = await detailRequest();
+      expect(response.status).toBe(200);
+      const text = await response.text();
+      expect(JSON.parse(text).data.costs).toBeNull();
+      expect(text).not.toContain('private details');
+    } finally { log.mockRestore(); }
   });
   it('returns 404 for a missing record', async () => {
     mocks.getDraft.mockResolvedValue(null);
@@ -145,7 +175,7 @@ describe('POST generation', () => {
     const response = await POST(request({ instructions }));
     expect(response.status).toBe(status);
     if (status === 202) {
-      expect(await response.json()).toEqual({ success: true, data: { id, status: 'queued' } });
+      expect(await response.json()).toEqual({ success: true, data: { id, status: 'queued',stage:'queued',progress:null,takingLong:false } });
       expect(mocks.createDraft).toHaveBeenCalledWith(instructions.trim());
     } else expect(mocks.createDraft).not.toHaveBeenCalled();
     expect(mocks.listDrafts).not.toHaveBeenCalled();
@@ -158,27 +188,28 @@ describe('regional POST generation', () => {
   const selection = {regionId: 'catalonia', eventIds: selectionContext.events.map(event => event.id)};
   it.each([null, [], {regionId: 1, eventIds: []}, {regionId: 'catalonia'}, {eventIds: []}, {...selection, instructions: 'mixed'}, {...selection, eventIds: ['bad-uuid']}])('rejects malformed selection %#', async body => {
     expect((await POST(request(body))).status).toBe(400);
-    expect(mocks.selectedEvents).not.toHaveBeenCalled(); expect(mocks.start).not.toHaveBeenCalled();
+    expect(mocks.researchEvents).not.toHaveBeenCalled(); expect(mocks.start).not.toHaveBeenCalled();
   });
   it.each(['andorra','ceuta','melilla','invalid'])('rejects region %s without queries or workflows', async regionId => {
     expect((await POST(request({...selection, regionId}))).status).toBe(422);
-    expect(mocks.selectedEvents).not.toHaveBeenCalled(); expect(mocks.createDraft).not.toHaveBeenCalled(); expect(mocks.start).not.toHaveBeenCalled();
+    expect(mocks.researchEvents).not.toHaveBeenCalled(); expect(mocks.createDraft).not.toHaveBeenCalled(); expect(mocks.start).not.toHaveBeenCalled();
   });
   it('rejects incomplete and duplicated selections before lookup', async () => {
     for (const eventIds of [selection.eventIds.slice(1), selection.eventIds.map(() => selection.eventIds[0])]) {
       expect((await POST(request({...selection, eventIds}))).status).toBe(422);
     }
-    expect(mocks.selectedEvents).not.toHaveBeenCalled(); expect(mocks.start).not.toHaveBeenCalled();
+    expect(mocks.researchEvents).not.toHaveBeenCalled(); expect(mocks.start).not.toHaveBeenCalled();
   });
   it('rejects events removed or moved out of the region', async () => {
-    mocks.selectedEvents.mockResolvedValue(selectionContext.events.slice(1));
+    mocks.researchEvents.mockResolvedValue(selectionContext.events.slice(1));
     expect((await POST(request(selection))).status).toBe(422);
     expect(mocks.createDraft).not.toHaveBeenCalled(); expect(mocks.start).not.toHaveBeenCalled();
   });
-  it('persists the ordered server snapshot before starting one workflow', async () => {
-    mocks.selectedEvents.mockResolvedValue([...selectionContext.events].reverse());
+  it('persists minimal identities atomically before starting one workflow', async () => {
+    mocks.researchEvents.mockResolvedValue([...selectionContext.events].reverse());
     expect((await POST(request(selection))).status).toBe(202);
-    expect(mocks.createDraft).toHaveBeenCalledWith(expect.stringContaining('Cataluña'), selectionContext);
+    expect(mocks.createGeneration).toHaveBeenCalledWith('catalonia',expect.any(Array),expect.any(String),expect.any(String));
+    expect(mocks.createDraft).not.toHaveBeenCalled();
     expect(mocks.start).toHaveBeenCalledTimes(1);
   });
 });

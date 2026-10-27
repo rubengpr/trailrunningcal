@@ -1,6 +1,7 @@
 import { marked } from 'marked';
 import type { Token } from 'marked';
 import { GenerationError } from '@/lib/blog/content';
+import { lengthRange, type LengthField } from '@/lib/blog/length-targets';
 import { normalizeText } from '@/lib/blog/writing/context';
 import { visibleText } from '@/lib/blog/writing/text';
 import type { Article } from '@/types/blog-article.types';
@@ -44,7 +45,8 @@ export function inspectQuality(article: Article, events: WritingRequest['events'
   if (eventSections.length !== events.length || new Set(eventSections.map(section => section.eventId)).size !== events.length) fail();
   for (const section of eventSections) {
     // A subsection heading alone does not constitute an event description.
-    if (!words(textOf(section.tokens,true)).length) fail();
+    const event = events.find(event => event.eventId === section.eventId)!;
+    if (event.dossier ? !words(textOf(section.tokens,true)).length : section.tokens.some(token => token.type !== 'space')) fail();
   }
   const lastEvent = sections.findLastIndex(section => section.eventId !== null);
   if (!sections.slice(lastEvent+1).some(section => words(textOf(section.tokens,true)).length)) fail();
@@ -60,13 +62,14 @@ export function inspectQuality(article: Article, events: WritingRequest['events'
   const range = (field:Exclude<QualityObservation['field'],'introduction'>, unit:'characters'|'words', actual:number, min:number, max:number) => {
     if (actual < min || actual > max) observations.push({code:'length_out_of_range',field,unit,actual,min,max});
   };
-  range('title','characters',metrics.characters.title,40,90);
-  range('contentMarkdown','words',metrics.wordCount,700,1100);
-  range('primaryKeyword','words',metrics.keywordWordCount,2,6);
-  range('slug','words',metrics.slugWordCount,3,8);
-  range('slug','characters',metrics.characters.slug,1,74);
-  range('seoTitle','characters',metrics.characters.seoTitle,45,60);
-  range('metaDescription','characters',metrics.characters.metaDescription,140,160);
+  const target = (field:LengthField, unit:'characters'|'words') => { const {min,max} = lengthRange(field,unit); return [min,max] as const; };
+  range('title','characters',metrics.characters.title,...target('title','characters'));
+  range('contentMarkdown','words',metrics.wordCount,...target('content','words'));
+  range('primaryKeyword','words',metrics.keywordWordCount,...target('primaryKeyword','words'));
+  range('slug','words',metrics.slugWordCount,...target('slug','words'));
+  range('slug','characters',metrics.characters.slug,...target('slug','characters'));
+  range('seoTitle','characters',metrics.characters.seoTitle,...target('seoTitle','characters'));
+  range('metaDescription','characters',metrics.characters.metaDescription,...target('metaDescription','characters'));
   const keyword = comparable(article.primaryKeyword);
   const targets = {title:article.title,introduction:textOf(introduction),seoTitle:article.seoTitle,slug:article.slug,metaDescription:article.metaDescription};
   for (const [field,text] of Object.entries(targets)) {

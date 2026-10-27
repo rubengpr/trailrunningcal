@@ -1443,7 +1443,14 @@
           "failed": "Error"
         },
         "consultedSources": "URL retornades per l’eina ({count})"
-      }
+      },
+      "generationStages": {
+        "queued": "Pendent",
+        "researching": "Investigant…",
+        "writing": "Redactant…"
+      },
+      "missingSectionsTitle": "Recerca incompleta",
+      "missingSections": "Les seccions d’aquests esdeveniments estan buides perquè la recerca ha fallat: {events}."
     },
     "login": {
       "title": "Admin",

@@ -3,10 +3,11 @@ import type { SelectionContext } from '@/types/blog-selection.types';
 import { generateArticle } from '@/lib/integrations/openai/article-generation';
 import { parseArticle, renderContent } from '@/lib/blog/content';
 import type { GeneratedArticle } from '@/types/blog-article.types';
+import type { ResponseObserver } from '@/types/blog-cost.types';
 
-export async function generate(instructions: string, context?: SelectionContext | null): Promise<GeneratedArticle> {
+export async function generate(instructions: string, context?: SelectionContext | null, observe?: ResponseObserver): Promise<GeneratedArticle> {
   const started = Date.now();
-  const result = context ? await generateArticle(instructions, context) : await generateArticle(instructions);
+  const result = await generateArticle(instructions, context, observe);
   const composed = context ? composeSelection(result.value, context) : null;
   const article = composed?.article ?? parseArticle(result.value);
   return {

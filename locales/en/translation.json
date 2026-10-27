@@ -1247,7 +1247,14 @@
           "failed": "Error"
         },
         "consultedSources": "URLs returned by the tool ({count})"
-      }
+      },
+      "generationStages": {
+        "queued": "Pending",
+        "researching": "Researching…",
+        "writing": "Writing…"
+      },
+      "missingSectionsTitle": "Incomplete research",
+      "missingSections": "These event sections are empty because their research failed: {events}."
     },
     "events": {
       "drafts": {

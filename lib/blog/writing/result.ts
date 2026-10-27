@@ -7,7 +7,7 @@ import {
   parseArticle,
   renderContent,
 } from '@/lib/blog/content';
-import { calendarPath, eventPath } from '@/lib/blog/links';
+import { calendarPath, eventPath, writingLinks } from '@/lib/blog/links';
 import { normalizeText, WritingError } from '@/lib/blog/writing/context';
 import { writingSchema } from '@/lib/blog/writing/schema';
 import type {
@@ -50,7 +50,7 @@ export function compose(
   let current: string | null = null;
   let markdown = '';
   const closeSection = () => {
-    if (current) {
+    if (current && events.find(event => event.eventId === current)!.dossier) {
       const event = events.find((event) => event.eventId === current)!;
       markdown += `\n\n[Ver ${escapeLabel(event.eventName)} en Trailrunningcal](${eventPath(event.slug)})\n\n`;
     }
@@ -65,7 +65,7 @@ export function compose(
         current = event.eventId;
         order.push(event.eventId);
       }
-    } else if (current) {
+    } else if (current && events.find(event => event.eventId === current)!.dossier) {
       sections.set(current, (sections.get(current) ?? '') + token.raw);
     }
     markdown += token.raw;
@@ -74,7 +74,7 @@ export function compose(
   if (
     order.length !== 5 ||
     new Set(order).size !== 5 ||
-    events.some((event) => !sections.get(event.eventId)?.trim())
+    events.some((event) => event.dossier ? !sections.get(event.eventId)?.trim() : !!sections.get(event.eventId)?.trim())
   )
     throw new GenerationError('invalid_content');
 
@@ -90,6 +90,7 @@ export function compose(
     );
     const identity = `${event.eventId}:${excerpt}`;
     if (
+      !dossier ||
       !excerpt ||
       excerpt.length > 2000 ||
       !body.includes(excerpt) ||
@@ -110,7 +111,7 @@ export function compose(
       (item) => item.eventName === event.eventName,
     )!.dossier;
     if (
-      dossier.sources.length &&
+      dossier?.sources.length &&
       !references.some((reference) => reference.eventId === event.eventId)
     )
       throw new WritingError('invalid_references');
@@ -122,7 +123,7 @@ export function compose(
     quality,
     contentHtml: renderContent(
       article.contentMarkdown,
-      [...request.events.map(event => eventPath(event.slug)),calendarPath(request)],
+      writingLinks(request),
     ),
     references,
   };

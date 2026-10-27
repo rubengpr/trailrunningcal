@@ -1,6 +1,6 @@
 import type { ResearchPage, ResearchRun } from '@/types/blog-research.types';
 import type { EventSelectionPage } from '@/types/blog-selection.types';
-import type { DraftDetail, DraftInput, DraftPage } from '@/types/blog-draft-record.types';
+import type { DraftDetail, DraftListItem, DraftInput, DraftPage } from '@/types/blog-draft-record.types';
 
 export class DraftRequestError extends Error {
   constructor(public readonly status: number) { super('Request failed'); }
@@ -25,8 +25,8 @@ export async function getDraft(id: string, signal?: AbortSignal): Promise<DraftD
   return readResponse<DraftDetail>(await fetch(`/api/blog-drafts/${encodeURIComponent(id)}`, { cache: 'no-store', signal }));
 }
 
-export async function generateDraft(input: DraftInput, signal?: AbortSignal): Promise<DraftDetail> {
-  return readResponse<DraftDetail>(await fetch('/api/blog-drafts', {
+export async function generateDraft(input: DraftInput, signal?: AbortSignal): Promise<DraftListItem> {
+  return readResponse<DraftListItem>(await fetch('/api/blog-drafts', {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(input), signal,
   }));
 }

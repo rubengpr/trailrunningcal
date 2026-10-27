@@ -28,6 +28,7 @@ export async function GET(
         status: 404, headers: { 'Cache-Control': 'private, no-store' },
       });
     }
+    if (draft.status !== 'completed') return NextResponse.json({error:'Article not completed'},{status:409,headers:{'Cache-Control':'private, no-store'}});
     return NextResponse.json({ success: true, data: draft }, {
       headers: { 'Cache-Control': 'private, no-store' },
     });

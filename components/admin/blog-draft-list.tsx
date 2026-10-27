@@ -28,15 +28,15 @@ export function BlogDraftList({ initial }: { initial: DraftPage }) {
   const { accepted } = useBlog();
   const handled = useRef(accepted?.id);
   const load = useCallback((signal: AbortSignal) => listDrafts(initial.pagination.page, signal), [initial.pagination.page]);
-  const { data, update, refresh, readFailed, now } = usePolledResource(initial, load,
-    value => value.drafts.some(d => d.status === 'queued' || d.status === 'running' || d.evaluationStatus === 'queued' || d.evaluationStatus === 'running'));
+  const { data, update, refresh, readFailed } = usePolledResource(initial, load,
+    value => value.drafts.some(d => d.status === 'queued' || d.status === 'running' || (d.status === 'completed' && (d.evaluationStatus === 'queued' || d.evaluationStatus === 'running'))));
   useEffect(() => {
     if (!accepted || handled.current === accepted.id) return;
     handled.current = accepted.id;
     if (initial.pagination.page !== 1) { router.replace(`/${locale}/admin/blog`); return; }
     if (!data.drafts.some(d => d.id === accepted.id)) {
       const total = data.pagination.total + 1;
-      update({ drafts: [{ ...accepted, score: accepted.evaluation?.score ?? null }, ...data.drafts].slice(0, 50),
+      update({ drafts: [accepted, ...data.drafts].slice(0, 50),
         pagination: { ...data.pagination, total, totalPages: Math.ceil(total / 50) } });
     }
   }, [accepted, data, initial.pagination.page, locale, router, update]);
@@ -64,8 +64,6 @@ export function BlogDraftList({ initial }: { initial: DraftPage }) {
       <Link href={`/${locale}/admin/blog/research`} className="inline-flex cursor-pointer text-sm font-medium underline underline-offset-4">{t('research.openWorkspace')}</Link>
       <BlogDraftForm />
       {readFailed ? <ErrorMessage message={t('readFailed')} showRetry={false} variant="compact" /> : null}
-      {sorted.some(d => (d.status === 'queued' || d.status === 'running') && now - Date.parse(d.createdAt) >= 30_000)
-        ? <p role="status" className="text-sm text-amber-800">{t('takingLong')}</p> : null}
       {sorted.length === 0 ? (
         <div className="rounded-xl border border-dashed border-gray-300 p-12 text-center text-gray-500">{t('empty')}</div>
       ) : (
@@ -77,7 +75,23 @@ export function BlogDraftList({ initial }: { initial: DraftPage }) {
             <TableCell header align="right">{t('delete.actions')}</TableCell>
           </TableHeader>
           <TableBody>
-            {sorted.map(draft => (
+            {sorted.map(draft => draft.status === 'queued' || draft.status === 'running' ? (
+              <TableRow key={draft.id}>
+                <TableCell colSpan={4}>
+                  <span role="status" className="inline-flex items-center gap-2 py-2 text-sm text-gray-500">
+                    <LoaderCircle className="size-4 animate-spin" />
+                    {t('generationStages.'+draft.stage)}
+                    {draft.progress ? ` ${draft.progress.finished}/${draft.progress.total}` : null}
+                  </span>
+                </TableCell>
+              </TableRow>
+            ) : draft.status === 'failed' ? (
+              <TableRow key={draft.id}>
+                <TableCell colSpan={3}><ErrorMessage message={t('generationFailed')} showRetry={false} variant="compact" /></TableCell>
+                <TableCell align="right"><BlogDeleteAction generic draft={{id:draft.id,status:'failed',title:null,instructions:'',evaluationStatus:'not_evaluated'}}
+                  onDeleted={remove} onConflict={() => {void refresh();}} /></TableCell>
+              </TableRow>
+            ) : (
               <TableRow key={draft.id} clickable className="align-middle" onClick={event => {
                 if (event.defaultPrevented || (event.target instanceof Element && event.target.closest('a,button,[role="dialog"]'))) return;
                 router.push(`/${locale}/admin/blog/${draft.id}`);
@@ -91,13 +105,7 @@ export function BlogDraftList({ initial }: { initial: DraftPage }) {
                   <time dateTime={draft.createdAt}>{dateFormatter.format(new Date(draft.createdAt))}</time>
                 </TableCell>
                 <TableCell align="right">
-                  {draft.status === 'queued' || draft.status === 'running' ? (
-                    <span className="inline-flex items-center gap-2 whitespace-nowrap text-sm text-gray-500">
-                      <LoaderCircle className="size-4 animate-spin" />{t('generationPending')}
-                    </span>
-                  ) : draft.status === 'failed' ? (
-                    <span className="text-sm font-medium text-red-700">{t('failedStatus')}</span>
-                  ) : draft.evaluationStatus === 'queued' || draft.evaluationStatus === 'running' ? (
+                  {draft.evaluationStatus === 'queued' || draft.evaluationStatus === 'running' ? (
                     <span className="inline-flex items-center gap-2 whitespace-nowrap text-sm text-gray-500"><LoaderCircle className="size-4 animate-spin" />{t('evaluationStates.running')}</span>
                   ) : draft.score === null ? (
                     <span className={draft.evaluationStatus === 'failed' ? 'text-sm text-red-700' : 'text-sm text-gray-500'}>{t('evaluationStates.'+draft.evaluationStatus)}</span>
