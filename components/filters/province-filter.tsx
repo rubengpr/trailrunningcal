@@ -1,6 +1,7 @@
 'use client';
 
 import { useLocale, useTranslations } from 'next-intl';
+import { FilterChip } from '@/components/filters/filter-chip';
 import {
   GEOGRAPHY,
   getLocalizedProvinceGroups,
@@ -48,15 +49,12 @@ export function ProvinceFilter({
               const province = GEOGRAPHY.provinces[provinceId].dbName;
 
               return (
-                <button
+                <FilterChip
                   key={provinceId}
+                  label={tProvince(provinceId)}
+                  selected={selectedProvince.includes(province)}
                   onClick={() => handleProvinceClick(province)}
-                  className={`px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-md text-xs sm:text-sm font-medium transition-all duration-200 border border-gray-300 hover:border-gray-400 cursor-pointer focus:outline-none ${selectedProvince.includes(province)
-                    ? 'bg-black text-white border-black shadow-md'
-                    : 'bg-white text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}
-                >
-                  {tProvince(provinceId)}
-                </button>
+                />
               );
             })}
           </div>
