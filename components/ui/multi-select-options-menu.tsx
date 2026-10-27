@@ -20,6 +20,7 @@ interface MultiSelectOptionsMenuProps {
   selectedValues: string[];
   searchable?: boolean;
   onToggleOption: (value: string) => void;
+  onValuesChange?: (values: string[]) => void;
   dropdownRef?: RefObject<HTMLDivElement | null>;
   style?: CSSProperties;
 }
@@ -29,6 +30,7 @@ export function MultiSelectOptionsMenu({
   selectedValues,
   searchable = false,
   onToggleOption,
+  onValuesChange,
   dropdownRef,
   style,
 }: MultiSelectOptionsMenuProps) {
@@ -39,7 +41,8 @@ export function MultiSelectOptionsMenu({
     text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
   const normalizedQuery = normalize(query.trim());
   const filteredOptions = searchable ? options.filter((option) =>
-    normalize(option.label).includes(normalizedQuery),
+    normalize(option.label).includes(normalizedQuery) ||
+    Boolean(option.group && normalize(option.group).includes(normalizedQuery)),
   ) : options;
 
   return (
@@ -78,19 +81,40 @@ export function MultiSelectOptionsMenu({
           const selected = selectedValues.includes(option.value);
           const previousGroup = index > 0 ? filteredOptions[index - 1].group : undefined;
           const showGroup = option.group && option.group !== previousGroup;
+          const groupValues = showGroup
+            ? options.filter((item) => item.group === option.group).map((item) => item.value)
+            : [];
+          const groupSelected = groupValues.length > 0 && groupValues.every((value) => selectedValues.includes(value));
+          const groupIndeterminate = !groupSelected && groupValues.some((value) => selectedValues.includes(value));
 
           return (
             <div key={option.value}>
               {showGroup ? (
-                <p className="px-3 pt-3 pb-1 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  {option.group}
-                </p>
+                onValuesChange ? (
+                  <div className={index > 0 ? 'mt-3 mb-1' : 'mb-1'}>
+                    <MultiSelectOption
+                      variant="group"
+                      label={option.group ?? ''}
+                      selected={groupSelected}
+                      indeterminate={groupIndeterminate}
+                      onClick={() => onValuesChange(groupSelected
+                        ? selectedValues.filter((value) => !groupValues.includes(value))
+                        : [...new Set([...selectedValues, ...groupValues])])}
+                    />
+                  </div>
+                ) : (
+                  <p className="px-3 pt-3 pb-1 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    {option.group}
+                  </p>
+                )
               ) : null}
-              <MultiSelectOption
-                label={option.label}
-                selected={selected}
-                onClick={() => onToggleOption(option.value)}
-              />
+              <div className={option.group && onValuesChange ? 'ml-4' : undefined}>
+                <MultiSelectOption
+                  label={option.label}
+                  selected={selected}
+                  onClick={() => onToggleOption(option.value)}
+                />
+              </div>
             </div>
           );
         })}

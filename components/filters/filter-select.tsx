@@ -57,6 +57,7 @@ export function FilterSelect({ value, onValueChange, placeholder, options, color
       selectedValues={value}
       searchable={searchable}
       onToggleOption={handleToggle}
+      onValuesChange={onValueChange}
       dropdownRef={dropdownRef}
       style={{ position: 'absolute', top: dropdownStyle.top, left: dropdownStyle.left, minWidth: dropdownStyle.minWidth, maxHeight: dropdownStyle.maxHeight, zIndex: 9999 }}
     />

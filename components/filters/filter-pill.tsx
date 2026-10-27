@@ -14,6 +14,7 @@ interface FilterPillProps {
   options: MultiSelectOptionItem[];
   onToggleOption: (value: string) => void;
   onClear: () => void;
+  onValuesChange?: (values: string[]) => void;
   color: 'white' | 'black';
   size: 'sm' | 'md';
   searchable?: boolean;
@@ -25,6 +26,7 @@ export function FilterPill({
   options,
   onToggleOption,
   onClear,
+  onValuesChange,
   color,
   size,
   searchable = false,
@@ -63,6 +65,7 @@ export function FilterPill({
       selectedValues={selectedValues}
       searchable={searchable}
       onToggleOption={onToggleOption}
+      onValuesChange={onValuesChange}
       dropdownRef={dropdownRef}
       style={{
         position: 'absolute',

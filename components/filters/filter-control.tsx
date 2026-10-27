@@ -37,6 +37,7 @@ export function FilterControl({
             ? selectedValues.filter((item) => item !== value)
             : [...selectedValues, value],
         )}
+        onValuesChange={onChange}
         onClear={() => onChange([])}
         color={color}
         size={size}

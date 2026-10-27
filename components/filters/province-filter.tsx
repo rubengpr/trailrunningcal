@@ -1,6 +1,7 @@
 'use client';
 
 import { useLocale, useTranslations } from 'next-intl';
+import { MultiSelectOption } from '@/components/ui/multi-select-option';
 import { FilterChip } from '@/components/filters/filter-chip';
 import {
   GEOGRAPHY,
@@ -37,29 +38,45 @@ export function ProvinceFilter({
 
   return (
     <div className="flex flex-col gap-4">
-      {groups.map(({ regionId: groupRegionId, provinceIds }) => (
-        <section key={groupRegionId}>
-          {!regionId && (
-            <h3 className="mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-              {tGeography(groupRegionId)}
-            </h3>
-          )}
-          <div className="flex flex-wrap gap-1.5 sm:gap-2">
-            {provinceIds.map((provinceId) => {
-              const province = GEOGRAPHY.provinces[provinceId].dbName;
+      {groups.map(({ regionId: groupRegionId, provinceIds }) => {
+        const provinces: string[] = provinceIds.map((id) => GEOGRAPHY.provinces[id].dbName);
+        const selected = provinces.every((province) => selectedProvince.includes(province));
+        const indeterminate = !selected && provinces.some((province) => selectedProvince.includes(province));
 
-              return (
-                <FilterChip
-                  key={provinceId}
-                  label={tProvince(provinceId)}
-                  selected={selectedProvince.includes(province)}
-                  onClick={() => handleProvinceClick(province)}
+        return (
+          <section key={groupRegionId}>
+            {!regionId && (
+              <div className="mb-2">
+                <MultiSelectOption
+                  variant="group"
+                  label={tGeography(groupRegionId)}
+                  selected={selected}
+                  indeterminate={indeterminate}
+                  onClick={() => {
+                    onProvinceSelect(selected
+                      ? selectedProvince.filter((province) => !provinces.includes(province))
+                      : [...new Set([...selectedProvince, ...provinces])]);
+                  }}
                 />
-              );
-            })}
-          </div>
-        </section>
-      ))}
+              </div>
+            )}
+            <div className={`flex flex-wrap gap-1.5 sm:gap-2 ${regionId ? '' : 'ml-4 pl-3'}`}>
+              {provinceIds.map((provinceId) => {
+                const province = GEOGRAPHY.provinces[provinceId].dbName;
+
+                return (
+                  <FilterChip
+                    key={provinceId}
+                    label={tProvince(provinceId)}
+                    selected={selectedProvince.includes(province)}
+                    onClick={() => handleProvinceClick(province)}
+                  />
+                );
+              })}
+            </div>
+          </section>
+        );
+      })}
     </div>
   );
 }
