@@ -12,6 +12,7 @@ import {
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import type { Locale } from '@/i18n';
+import { DistributionChart } from '@/components/sponsors/distribution-chart';
 import { downloadSponsorReport } from '@/lib/api/sponsor-report';
 
 const CHART_WIDTH = 1_000;
@@ -296,8 +297,6 @@ export function SponsorDashboard({
   const [isDownloading, setIsDownloading] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [audienceView, setAudienceView] = useState<AudienceView>('region');
-  const [activeAudienceIndex, setActiveAudienceIndex] = useState<number | null>(null);
-  const [activeDeviceIndex, setActiveDeviceIndex] = useState<number | null>(null);
   const [breakdownView, setBreakdownView] = useState<BreakdownView>('audience');
   const days = useMemo(
     () => getDaysForPeriod(data[campaign].dailyImpressions, period),
@@ -310,8 +309,6 @@ export function SponsorDashboard({
   const chart = getChart(days);
   const monthTicks = period === 'all' ? getMonthTicks(days, locale) : [];
   const activeDay = activeIndex === null ? null : days[activeIndex];
-  const activeAudienceDay = activeAudienceIndex === null ? null : days[activeAudienceIndex];
-  const activeDeviceDay = activeDeviceIndex === null ? null : days[activeDeviceIndex];
   const audienceDistribution = useMemo(
     () => days.map((_, index) => getAudienceDistribution(audienceView, index)),
     [audienceView, days],
@@ -372,20 +369,6 @@ export function SponsorDashboard({
     if (bounds.width === 0) return;
     const ratio = Math.min(Math.max((event.clientX - bounds.left) / bounds.width, 0), 1);
     setActiveIndex(Math.round(ratio * (days.length - 1)));
-  };
-
-  const handleAudiencePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
-    const bounds = event.currentTarget.getBoundingClientRect();
-    if (bounds.width === 0) return;
-    const ratio = Math.min(Math.max((event.clientX - bounds.left) / bounds.width, 0), 1);
-    setActiveAudienceIndex(Math.round(ratio * (days.length - 1)));
-  };
-
-  const handleDevicePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
-    const bounds = event.currentTarget.getBoundingClientRect();
-    if (bounds.width === 0) return;
-    const ratio = Math.min(Math.max((event.clientX - bounds.left) / bounds.width, 0), 1);
-    setActiveDeviceIndex(Math.round(ratio * (days.length - 1)));
   };
 
   const handleDownload = async () => {
@@ -589,7 +572,6 @@ export function SponsorDashboard({
                 value={audienceView}
                 onChange={(event) => {
                   setAudienceView(event.target.value as AudienceView);
-                  setActiveAudienceIndex(null);
                 }}
               >
                 <option value="country">{t('audience.country')}</option>
@@ -599,70 +581,18 @@ export function SponsorDashboard({
             </label>
           </div>
 
-          <div
-            aria-label={t(`audience.summary.${audienceView}`)}
-            className="relative mt-4 h-44 border-b border-l border-stone-200 px-2 pb-5 pt-2"
-            role="img"
-            onPointerLeave={() => setActiveAudienceIndex(null)}
-            onPointerMove={handleAudiencePointerMove}
-          >
-            <div className="absolute inset-x-2 top-2 h-[calc(100%-1.75rem)]">
-              <div className="pointer-events-none absolute inset-0 grid grid-rows-4">
-                {[0, 1, 2, 3].map((row) => (
-                  <span key={row} className="border-t border-dashed border-stone-200/80" />
-                ))}
-              </div>
-              <div className="relative flex h-full items-stretch gap-px">
-                {audienceDistribution.map((distribution, index) => (
-                  <div
-                    key={days[index]?.date}
-                    className="flex min-w-0 flex-1 flex-col-reverse overflow-hidden rounded-[2px]"
-                  >
-                    {distribution.map(({ color, key, percentage }) => (
-                      <span
-                        key={key}
-                        style={{ backgroundColor: color, height: `${percentage}%` }}
-                      />
-                    ))}
-                  </div>
-                ))}
-              </div>
-            </div>
-            <span className="absolute bottom-0 left-2 text-[10px] tabular-nums text-stone-500">
-              {formatDate(days[0]?.date ?? '', locale)}
-            </span>
-            <span className="absolute bottom-0 right-0 text-[10px] tabular-nums text-stone-500">
-              {formatDate(days.at(-1)?.date ?? '', locale)}
-            </span>
-            <span className="absolute left-2 top-2 text-[10px] font-medium text-stone-500">100%</span>
-            {activeAudienceDay && activeAudienceIndex !== null ? (
-              <div
-                className={`pointer-events-none absolute top-3 z-10 w-48 rounded-lg border border-stone-200 bg-white p-3 text-xs shadow-md ${
-                  activeAudienceIndex > days.length * 0.7 ? '-translate-x-full' : ''
-                }`}
-                style={{ left: `${((activeAudienceIndex + 0.5) / days.length) * 100}%` }}
-              >
-                <p className="text-stone-500">{formatDate(activeAudienceDay.date, locale)}</p>
-                <dl className="mt-2 space-y-1 border-t border-stone-100 pt-2">
-                  {audienceDistribution[activeAudienceIndex].map(({ key, percentage }) => (
-                    <div key={key} className="flex justify-between gap-3">
-                      <dt>{t(`audience.segments.${audienceView}.${key}`)}</dt>
-                      <dd>{percentage.toFixed(1)}%</dd>
-                    </div>
-                  ))}
-                </dl>
-              </div>
-            ) : null}
-          </div>
-
-          <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1.5 text-[11px] font-medium text-stone-500">
-            {audienceSegments[audienceView].map(({ color, key }) => (
-              <span key={key} className="flex items-center gap-1.5">
-                <i aria-hidden="true" className="size-2 rounded-full" style={{ backgroundColor: color }} />
-                {t(`audience.segments.${audienceView}.${key}`)}
-              </span>
-            ))}
-          </div>
+          <DistributionChart
+            key={audienceView}
+            days={days}
+            distributions={audienceDistribution}
+            segments={audienceSegments[audienceView].map((segment) => ({
+              ...segment,
+              label: t(`audience.segments.${audienceView}.${segment.key}`),
+            }))}
+            summary={t(`audience.summary.${audienceView}`)}
+            locale={locale}
+            tooltipWidth="wide"
+          />
         </section>
 
         <section className="mt-3 rounded-2xl border border-stone-200 bg-stone-50 p-4 shadow-sm md:p-5">
@@ -671,70 +601,16 @@ export function SponsorDashboard({
             <p className="mt-1 text-xs text-stone-500">{t('device.source')}</p>
           </div>
 
-          <div
-            aria-label={t('device.summary')}
-            className="relative mt-4 h-44 border-b border-l border-stone-200 px-2 pb-5 pt-2"
-            role="img"
-            onPointerLeave={() => setActiveDeviceIndex(null)}
-            onPointerMove={handleDevicePointerMove}
-          >
-            <div className="absolute inset-x-2 top-2 h-[calc(100%-1.75rem)]">
-              <div className="pointer-events-none absolute inset-0 grid grid-rows-4">
-                {[0, 1, 2, 3].map((row) => (
-                  <span key={row} className="border-t border-dashed border-stone-200/80" />
-                ))}
-              </div>
-              <div className="relative flex h-full items-stretch gap-px">
-                {deviceDistribution.map((distribution, index) => (
-                  <div
-                    key={days[index]?.date}
-                    className="flex min-w-0 flex-1 flex-col-reverse overflow-hidden rounded-[2px]"
-                  >
-                    {distribution.map(({ color, key, percentage }) => (
-                      <span
-                        key={key}
-                        style={{ backgroundColor: color, height: percentage + '%' }}
-                      />
-                    ))}
-                  </div>
-                ))}
-              </div>
-            </div>
-            <span className="absolute bottom-0 left-2 text-[10px] tabular-nums text-stone-500">
-              {formatDate(days[0]?.date ?? '', locale)}
-            </span>
-            <span className="absolute bottom-0 right-0 text-[10px] tabular-nums text-stone-500">
-              {formatDate(days.at(-1)?.date ?? '', locale)}
-            </span>
-            <span className="absolute left-2 top-2 text-[10px] font-medium text-stone-500">100%</span>
-            {activeDeviceDay && activeDeviceIndex !== null ? (
-              <div
-                className={"pointer-events-none absolute top-3 z-10 w-44 rounded-lg border border-stone-200 bg-white p-3 text-xs shadow-md " + (
-                  activeDeviceIndex > days.length * 0.7 ? '-translate-x-full' : ''
-                )}
-                style={{ left: ((activeDeviceIndex + 0.5) / days.length) * 100 + '%' }}
-              >
-                <p className="text-stone-500">{formatDate(activeDeviceDay.date, locale)}</p>
-                <dl className="mt-2 space-y-1 border-t border-stone-100 pt-2">
-                  {deviceDistribution[activeDeviceIndex].map(({ key, percentage }) => (
-                    <div key={key} className="flex justify-between gap-3">
-                      <dt>{t(`device.segments.${key}`)}</dt>
-                      <dd>{percentage.toFixed(1)}%</dd>
-                    </div>
-                  ))}
-                </dl>
-              </div>
-            ) : null}
-          </div>
-
-          <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1.5 text-[11px] font-medium text-stone-500">
-            {deviceSegments.map(({ color, key }) => (
-              <span key={key} className="flex items-center gap-1.5">
-                <i aria-hidden="true" className="size-2 rounded-full" style={{ backgroundColor: color }} />
-                {t(`device.segments.${key}`)}
-              </span>
-            ))}
-          </div>
+          <DistributionChart
+            days={days}
+            distributions={deviceDistribution}
+            segments={deviceSegments.map((segment) => ({
+              ...segment,
+              label: t(`device.segments.${segment.key}`),
+            }))}
+            summary={t('device.summary')}
+            locale={locale}
+          />
         </section>
 
         <section className="mt-3 rounded-2xl border border-stone-200 bg-stone-50 p-4 shadow-sm md:p-5">
