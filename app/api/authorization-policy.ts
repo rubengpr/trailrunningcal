@@ -10,6 +10,9 @@ export type ApiAuthorization =
 
 export const API_AUTHORIZATION_POLICY = {
   'GET /api/cron/event-updates': 'cron',
+  'GET /api/blog-research': 'admin',
+  'POST /api/blog-research': 'admin',
+  'GET /api/blog-research/[id]': 'admin',
   'GET /api/blog-drafts': 'admin',
   'POST /api/blog-drafts': 'admin',
   'GET /api/blog-drafts/[id]': 'admin',
