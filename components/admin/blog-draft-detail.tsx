@@ -1,4 +1,6 @@
 'use client';
+import type { ArticleDocument } from '@/types/blog-article-block.types';
+import { BlogArticleEditor } from '@/components/admin/blog-article-editor';
 import { BlogResearchReport } from '@/components/admin/blog-research-report';
 import { ErrorMessage } from '@/components/ui/error-message';
 import { Tooltip } from '@/components/ui/tooltip';
@@ -20,11 +22,15 @@ import { BlogArticleContent } from '@/components/admin/blog-article-content';
 import { BlogCostSummary } from '@/components/admin/blog-cost-summary';
 import { BlogLengthIndicator } from '@/components/admin/blog-length-indicator';
 import type { DraftDetail } from '@/types/blog-draft-record.types';
+import type { Publication } from '@/types/blog-publication.types';
+import { BlogPublicationImage } from '@/components/admin/blog-publication-image';
+import { BlogPublicationEditor } from '@/components/admin/blog-publication-editor';
 
 const emptyResearch: ResearchPage = {runs:[],pagination:{page:1,pageSize:50,total:0,totalPages:0}};
 
-export function BlogDraftDetail({ draft, onEvaluationAccepted, actions, initialResearch, onResearchStatus }: { draft: DraftDetail; onEvaluationAccepted:(draft:DraftDetail)=>void; actions?: ReactNode; initialResearch?: ResearchPage; onResearchStatus?:(status:DraftResearchStatus)=>void }) {
+export function BlogDraftDetail({ draft, onEvaluationAccepted, actions, initialResearch, onResearchStatus, editing, onCloseEdit, onPublicationSaved, onArticleSaved }: { draft: DraftDetail; onEvaluationAccepted:(draft:DraftDetail)=>void; actions?: ReactNode; initialResearch?: ResearchPage; onResearchStatus?:(status:DraftResearchStatus)=>void; editing?: boolean; onCloseEdit?: () => void; onPublicationSaved?: (value: Publication) => void; onArticleSaved?: (value: ArticleDocument) => void }) {
   const t = useTranslations('admin.blog');
+  const publication = draft.publication ?? { author: null, date: null, imagePath: null, imageAlt: null, version: 0 };
   const links = draft.articleLinks?.length ? draft.articleLinks : allowedLinks(draft.generationContext);
   const missing = draft.research?.results.filter(result => !result.dossier).map(result => result.eventName) ?? [];
   const contentHtml = sanitizeContent(draft.contentHtml ?? '', links);
@@ -87,15 +93,17 @@ export function BlogDraftDetail({ draft, onEvaluationAccepted, actions, initialR
             initial={initialResearch ?? emptyResearch} status={draft.researchStatus ?? 'not_started'} onStatusChange={onResearchStatus} /> : null}
           {draft.research ? <BlogDraftSection title={t('research.title')}><div className="mt-4"><BlogResearchReport run={draft.research} /></div></BlogDraftSection> : null}
           {draft.costs !== undefined ? <BlogCostSummary costs={draft.costs} /> : null}
+          {onPublicationSaved ? <BlogPublicationImage id={draft.id} publication={publication} onSaved={onPublicationSaved} /> : null}
           <article lang="es" className="min-w-0 border-t border-gray-200 pt-6">
             <div className="mb-5 flex flex-wrap items-center gap-2">
               <h2 className="text-sm font-semibold">{t('articleHeading')}</h2>
               <CharacterCountBadge count={characterCount} label={t('articleCharacterCount', { count: characterCount })} />
             </div>
-            <BlogArticleContent html={contentHtml} links={links} />
+            {draft.articleDocument && onArticleSaved ? <BlogArticleEditor id={draft.id} document={draft.articleDocument} links={links} onSaved={onArticleSaved} /> : <BlogArticleContent html={contentHtml} links={links} />}
           </article>
         </div>
       </div>
+      {editing && onPublicationSaved && onCloseEdit ? <BlogPublicationEditor id={draft.id} publication={publication} onSaved={onPublicationSaved} onClose={onCloseEdit} /> : null}
     </div>
   );
 }

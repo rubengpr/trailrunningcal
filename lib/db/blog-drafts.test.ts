@@ -83,6 +83,8 @@ describe('draft queries', () => {
       evaluation_status: 'completed',evaluation_error_code: null, evaluation: { score: 76, criteria: [], critical_errors: [], recommendations: [], created_at: 'evaluated' },
     }, error: null });
     expect(await getDraft('id')).toEqual({
+      articleDocument: { blocks: [{ id: 'text-0', type: 'text', html: '<p>Article</p>' }], version: 0 },
+      publication: { author: null, date: null, imagePath: null, imageAlt: null, version: 0 },
       researchStatus: 'not_started', id: 'id', title: 'Title', instructions: 'Input', status: 'completed', createdAt: 'created',
       updatedAt: 'updated', contentHtml: '<p>Article</p>', primaryKeyword: 'trail', slug: 'slug',
       seoTitle: 'SEO', metaDescription: 'Description', errorCode: null, generationContext: null,generationResearchId:null,research:null,articleLinks:[],articleReferences:[],

@@ -25,6 +25,8 @@ export type DraftListItem =
 export type DraftEvaluation = Evaluation;
 
 export interface DraftDetail extends Omit<DraftSummary, 'score'> {
+  publication?: import('@/types/blog-publication.types').Publication;
+  articleDocument?: import('@/types/blog-article-block.types').ArticleDocument;
   generationContext?: SelectionContext | null;
   generationResearchId?: string | null;
   research?: ResearchRun | null;
@@ -63,6 +65,13 @@ export interface DraftSummaryRow {
 }
 
 export interface DraftDetailRow extends Omit<DraftSummaryRow, 'evaluation'> {
+  article_blocks?: import('@/types/blog-article-block.types').ArticleBlock[] | null;
+  article_version?: number;
+  publication_author?: string | null;
+  publication_date?: string | null;
+  publication_image_path?: string | null;
+  publication_image_alt?: string | null;
+  publication_version?: number;
   generation_context?: SelectionContext | null;
   generation_research_run_id?: string | null;
   article_links?: string[];

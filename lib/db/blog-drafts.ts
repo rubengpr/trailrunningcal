@@ -1,3 +1,5 @@
+import { textBlocks } from '@/lib/blog/article-blocks';
+import { allowedLinks } from '@/lib/blog/links';
 import { getRun } from '@/lib/db/blog-research';
 import { listItem } from '@/lib/blog/draft-list-item';
 import type { BlogRegionId, SelectionContext } from '@/types/blog-selection.types';
@@ -37,7 +39,7 @@ export async function listDrafts(page: number): Promise<DraftPage> {
 export async function getDraft(id: string): Promise<DraftDetail | null> {
   const { data, error } = await createAdminClient()
     .from('blog_drafts')
-    .select('id,title,instructions,status,created_at,updated_at,generation_context,generation_research_run_id,article_links,article_references,content_html,primary_keyword,slug,seo_title,meta_description,error_code,evaluation_status,evaluation_error_code,research_status,evaluation:blog_draft_evaluations(score,criteria,critical_errors,recommendations,created_at)')
+    .select('id,title,instructions,status,created_at,updated_at,article_blocks,article_version,publication_author,publication_date,publication_image_path,publication_image_alt,publication_version,generation_context,generation_research_run_id,article_links,article_references,content_html,primary_keyword,slug,seo_title,meta_description,error_code,evaluation_status,evaluation_error_code,research_status,evaluation:blog_draft_evaluations(score,criteria,critical_errors,recommendations,created_at)')
     .eq('id', id)
     .maybeSingle();
   if (error) throw error;
@@ -45,6 +47,8 @@ export async function getDraft(id: string): Promise<DraftDetail | null> {
   const row = data as unknown as DraftDetailRow;
   return {
     id: row.id, title: row.title, instructions: row.instructions, status: row.status, generationContext: row.generation_context ?? null,
+    ...(row.status === 'completed' ? { articleDocument: { blocks: row.article_blocks ?? textBlocks(row.content_html ?? '', row.article_links?.length ? row.article_links : allowedLinks(row.generation_context)), version: row.article_version ?? 0 } } : {}),
+    publication: { author: row.publication_author ?? null, date: row.publication_date ?? null, imagePath: row.publication_image_path ?? null, imageAlt: row.publication_image_alt ?? null, version: row.publication_version ?? 0 },
     generationResearchId:row.generation_research_run_id ?? null,
     research:row.generation_research_run_id ? await getRun(row.generation_research_run_id) : null,
     articleLinks:row.article_links ?? [],articleReferences:row.article_references ?? [],

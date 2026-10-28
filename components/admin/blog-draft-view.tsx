@@ -1,6 +1,8 @@
 'use client';
 import type { DraftResearchStatus, ResearchPage } from '@/types/blog-research.types';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
+import type { ArticleDocument } from '@/types/blog-article-block.types';
+import type { Publication } from '@/types/blog-publication.types';
 import { useRouter } from 'next/navigation';
 import { LoaderCircle } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
@@ -18,13 +20,16 @@ export function BlogDraftView({ initial, initialResearch }: { initial: DraftDeta
   const navigation = useTranslations('sidebar');
   const locale = useLocale();
   const router = useRouter();
+  const [editing, setEditing] = useState(false);
   const load = useCallback((signal: AbortSignal) => getDraft(initial.id, signal), [initial.id]);
   const { data: draft, update, refresh, readFailed, now } = usePolledResource(initial, load,
     value => value.status === 'queued' || value.status === 'running' || value.evaluationStatus === 'queued' || value.evaluationStatus === 'running' || value.researchStatus === 'queued' || value.researchStatus === 'running');
   const onResearchStatus = useCallback((status: DraftResearchStatus) => { update(current => current.researchStatus === status ? current : {...current,researchStatus:status}); },[update]);
   const failureCodes = ['timeout', 'api_error', 'refused', 'incomplete', 'invalid_content', 'start_failed', 'save_failed', 'workflow_error'];
   const title = draft.title || draft.instructions.replace(/\s+/g, ' ').slice(0, 80);
-  const deleteAction = <BlogDeleteAction menu draft={draft} onConflict={() => {
+  const onArticleSaved = (articleDocument: ArticleDocument) => update(current => ({ ...current, articleDocument }));
+  const onPublicationSaved = (publication: Publication) => update(current => ({ ...current, publication }));
+  const deleteAction = <BlogDeleteAction menu draft={draft} onEdit={draft.status === 'completed' ? () => setEditing(true) : undefined} onConflict={() => {
     update(current => current); void refresh();
   }} onDeleted={() => {
     update(current => current);
@@ -35,7 +40,8 @@ export function BlogDraftView({ initial, initialResearch }: { initial: DraftDeta
       <Breadcrumb items={[{ name: navigation('blog'), href: `/${locale}/admin/blog` }, { name: title }]} />
     </div>
     {readFailed ? <ErrorMessage message={t('readFailed')} showRetry={false} variant="compact" /> : null}
-    {draft.status === 'completed' ? <BlogDraftDetail draft={draft} onEvaluationAccepted={update} actions={deleteAction} initialResearch={initialResearch} onResearchStatus={onResearchStatus} /> : <>
+    {draft.status === 'completed' ? <BlogDraftDetail draft={draft} onEvaluationAccepted={update} actions={deleteAction} initialResearch={initialResearch} onResearchStatus={onResearchStatus}
+      editing={editing} onCloseEdit={() => setEditing(false)} onPublicationSaved={onPublicationSaved} onArticleSaved={onArticleSaved} /> : <>
       <header className="flex items-start justify-between gap-4">
         <h1 className="min-w-0 break-words text-3xl font-semibold tracking-tight">{title}</h1>
         {deleteAction}

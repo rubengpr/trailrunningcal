@@ -22,11 +22,19 @@ function renderNode(node: ContentNode, key: string): ReactNode {
   return createElement(node.name, { key }, children);
 }
 
-export function BlogArticleContent({ html, links = [] }: { html: string; links?: readonly string[] }) {
+export function BlogTextBlock({ html, links = [] }: { html: string; links?: readonly string[] }) {
   const document = parseDocument(sanitizeContent(html, links));
+  return <>{document.children.map((node, index) => renderNode(node, String(index)))}</>;
+}
+
+export function BlogArticleTypography({ children }: { children: ReactNode }) {
   return (
     <div className="blog-article text-sm [&>p:first-child]:mt-0 [&_p]:my-4 [&_p]:leading-6 [&_p]:text-gray-700 [&_h2]:mb-3 [&_h2]:mt-8 [&_h2]:text-lg [&_h2]:font-semibold [&_h3]:mb-2 [&_h3]:mt-6 [&_h3]:font-semibold [&_ul]:my-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:my-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-2 [&_table]:block [&_table]:overflow-x-auto [&_th]:border [&_th]:p-3 [&_td]:border [&_td]:p-3 [&_blockquote]:border-l-2 [&_blockquote]:pl-4">
-      {document.children.map((node, index) => renderNode(node, String(index)))}
+      {children}
     </div>
   );
+}
+
+export function BlogArticleContent({ html, links = [] }: { html: string; links?: readonly string[] }) {
+  return <BlogArticleTypography><BlogTextBlock html={html} links={links} /></BlogArticleTypography>;
 }

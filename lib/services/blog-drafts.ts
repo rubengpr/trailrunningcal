@@ -1,3 +1,4 @@
+import { cleanImages } from '@/lib/services/blog-publication';
 import { track } from '@/lib/db/blog-research';
 import { researchEvents } from '@/lib/db/blog-events';
 import { isRegion } from '@/lib/blog/regions';
@@ -35,7 +36,7 @@ export async function remove(id: string): Promise<void> {
   const draft = await getDraft(id);
   if (!draft) throw new ValidationError('Blog draft not found', 404);
   if (!canDelete(draft)) throw new ValidationError('Blog draft is processing', 409);
-  if (await deleteDraft(id)) return;
+  if (await deleteDraft(id)) { await cleanImages(id); return; }
   if (!await getDraft(id)) throw new ValidationError('Blog draft not found', 404);
   throw new ValidationError('Blog draft is processing', 409);
 }

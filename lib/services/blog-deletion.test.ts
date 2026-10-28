@@ -5,6 +5,7 @@ vi.mock('@/lib/workflows/blog-article',()=>({articleWorkflow:vi.fn()}));
 vi.mock('@/lib/workflows/blog-evaluation',()=>({evaluationWorkflow:vi.fn()}));
 vi.mock('@/lib/db/blog-drafts',()=>({...mocks,createDraft:vi.fn(),listDrafts:vi.fn(),markFailed:vi.fn(),setRunId:vi.fn()}));
 vi.mock('@/lib/db/blog-evaluations',()=>({claim:vi.fn(),fail:vi.fn()}));
+vi.mock('@/lib/services/blog-publication',()=>({cleanImages:vi.fn()}));
 import { remove } from './blog-drafts';
 beforeEach(()=>{vi.resetAllMocks();mocks.getDraft.mockResolvedValue({status:'completed',evaluationStatus:'not_evaluated'});mocks.deleteDraft.mockResolvedValue(true);});
 describe('blog deletion rules',()=>{

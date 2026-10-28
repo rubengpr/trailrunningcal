@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useRef } from 'react';
-import { Ellipsis, Trash2 } from 'lucide-react';
+import { Ellipsis, Pencil, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
 import { canDelete } from '@/lib/blog/utils';
@@ -10,12 +10,14 @@ import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { IconActionMenu } from '@/components/ui/icon-action-menu';
 import type { DraftSummary } from '@/types/blog-draft-record.types';
 
-export function BlogDeleteAction({ draft, onDeleted, onConflict, menu = false, generic = false }: {
+export function BlogDeleteAction({ draft, onDeleted, onConflict, menu = false, generic = false, onEdit }: {
   draft: Pick<DraftSummary, 'id' | 'title' | 'instructions' | 'status' | 'evaluationStatus' | 'researchStatus'>;
   onDeleted: (id: string) => void; onConflict: () => void;
   menu?: boolean; generic?:boolean;
+  onEdit?: () => void;
 }) {
   const t = useTranslations('admin.blog.delete');
+  const publication = useTranslations('admin.blog.publication');
   const trigger = useRef<HTMLButtonElement | null>(null);
   const dialog = useRef<HTMLDivElement>(null);
   const menuContainer = useRef<HTMLDivElement>(null);
@@ -34,7 +36,7 @@ export function BlogDeleteAction({ draft, onDeleted, onConflict, menu = false, g
   return <>
     {menu ? <div ref={menuContainer}>
       <IconActionMenu triggerAriaLabel={t('actions')} triggerIcon={<Ellipsis className="size-5" aria-hidden="true" />}
-        disabled={deletion.sending} items={[{
+        disabled={deletion.sending} items={[...(onEdit ? [{ id: 'edit', label: publication('edit'), icon: <Pencil className="size-4" aria-hidden="true" />, onSelect: onEdit }] : []), {
           id: 'delete', label: t('button'), tone: 'destructive',
           icon: <Trash2 className="size-4 shrink-0" aria-hidden="true" />,
           disabled: !allowed, title: allowed ? undefined : t('processing'),
