@@ -1,9 +1,6 @@
 'use client';
 
 import {
-  ChevronDown,
-  ChevronUp,
-  ChevronsUpDown,
   Eye,
   RefreshCw,
   TextCursor,
@@ -13,6 +10,7 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { EventWebsiteTableCell } from '@/components/event/event-website-table-cell';
 import { TableActionButton } from '@/components/ui/table-action-button';
+import { SortableTableHeader } from '@/components/ui/sortable-table-header';
 import {
   Table,
   TableBody,
@@ -53,17 +51,6 @@ export function AdminEventsTable({
 }: AdminEventsTableProps): React.ReactElement {
   const t = useTranslations('adminEvents');
 
-  const renderSortIcon = (column: AdminEventSortColumn) => {
-    if (column !== query.sortColumn) {
-      return <ChevronsUpDown className="size-3.5 text-gray-300" strokeWidth={1.5} />;
-    }
-    return query.sortDirection === 'asc' ? (
-      <ChevronUp className="size-3.5" strokeWidth={2} />
-    ) : (
-      <ChevronDown className="size-3.5" strokeWidth={2} />
-    );
-  };
-
   const getSortHref = (column: AdminEventSortColumn): string => {
     const sortDirection = query.sortColumn === column && query.sortDirection === 'asc'
       ? 'desc'
@@ -80,26 +67,23 @@ export function AdminEventsTable({
   return (
     <Table>
       <TableHeader>
-        <TableCell header>
-          <Link href={getSortHref('name')} className="inline-flex items-center gap-1 transition-colors hover:text-gray-800">
-            {t('columns.name')}
-            {renderSortIcon('name')}
-          </Link>
-        </TableCell>
+        <SortableTableHeader
+          label={t('columns.name')}
+          href={getSortHref('name')}
+          direction={query.sortColumn === 'name' ? query.sortDirection : null}
+        />
         <TableCell header>{t('columns.website')}</TableCell>
         <TableCell header align="right">{t('columns.races')}</TableCell>
-        <TableCell header>
-          <Link href={getSortHref('province')} className="inline-flex items-center gap-1 transition-colors hover:text-gray-800">
-            {t('columns.province')}
-            {renderSortIcon('province')}
-          </Link>
-        </TableCell>
-        <TableCell header>
-          <Link href={getSortHref('dates')} className="inline-flex items-center gap-1 transition-colors hover:text-gray-800">
-            {t('columns.dates')}
-            {renderSortIcon('dates')}
-          </Link>
-        </TableCell>
+        <SortableTableHeader
+          label={t('columns.province')}
+          href={getSortHref('province')}
+          direction={query.sortColumn === 'province' ? query.sortDirection : null}
+        />
+        <SortableTableHeader
+          label={t('columns.dates')}
+          href={getSortHref('dates')}
+          direction={query.sortColumn === 'dates' ? query.sortDirection : null}
+        />
         <TableCell header align="right">{t('columns.actions')}</TableCell>
       </TableHeader>
       <TableBody>
