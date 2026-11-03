@@ -47,15 +47,6 @@ export async function Footer() {
   return (
     <>
       <footer className="relative isolate overflow-hidden border-t border-[#d8d2c3] bg-[#f6f1e4] xl:aspect-[1672/941]">
-      <Image
-        src="/assets/footer/pyrenees-meadow-cows.png"
-        alt=""
-        fill
-        sizes="100vw"
-        className="-z-20 object-cover object-center"
-        priority={false}
-      />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[#f6f1e4]/95 via-[#f6f1e4]/85 to-[#f6f1e4]/45 xl:hidden" />
       <div className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 xl:px-8 xl:py-12">
         <div className="grid grid-cols-2 gap-x-8 gap-y-10 xl:grid-cols-[minmax(12rem,1.25fr)_minmax(7rem,0.75fr)_minmax(7rem,0.75fr)_minmax(9rem,1fr)_minmax(15rem,1.35fr)] xl:gap-x-6 xl:gap-y-7">
           <div className="order-1 col-span-2 flex max-w-sm flex-col gap-3 md:col-span-1">
