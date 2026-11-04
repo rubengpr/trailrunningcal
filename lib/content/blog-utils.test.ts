@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { Dirent } from 'fs';
 
 const mockExistsSync = vi.fn();
@@ -16,7 +16,7 @@ vi.mock('fs', () => ({
   readFileSync: (...args: unknown[]) => mockReadFileSync(...args),
 }));
 
-import { getAllBlogPosts, getPostBySlug, getPostsForLocale } from './blog-utils';
+import { getAllBlogPosts, getPostBySlug, getPostTranslations, getPostsForLocale } from './blog-utils';
 
 const ES_POST_CONTENT = `---
 title: "Test Post ES"
@@ -97,6 +97,42 @@ beforeEach(() => {
 });
 
 describe('getAllBlogPosts', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  function markArticleAsDraft() {
+    mockReadFileSync.mockImplementation((filePath: unknown) => {
+      const p = String(filePath);
+      if (p.includes('test-article')) {
+        const content = p.endsWith('es.mdx') ? ES_POST_CONTENT : CA_POST_CONTENT;
+        return content.replace('---\n', '---\ndraft: true\n');
+      }
+      return OLDER_ES_POST_CONTENT;
+    });
+  }
+
+  it('excludes drafts from production listings, direct lookups, and translations', () => {
+    vi.stubEnv('NODE_ENV', 'production');
+    markArticleAsDraft();
+
+    expect(getAllBlogPosts().map((post) => post.slug)).toEqual(['older-post']);
+    expect(getPostsForLocale('es').map((post) => post.slug)).toEqual(['older-post']);
+    expect(getPostsForLocale('ca')).toEqual([]);
+    expect(getPostBySlug('test-post', 'es')).toBeNull();
+    expect(getPostBySlug('test-post-ca', 'ca')).toBeNull();
+    expect(getPostTranslations('test-article')).toEqual([]);
+  });
+
+  it('keeps drafts available for local development previews', () => {
+    vi.stubEnv('NODE_ENV', 'development');
+    markArticleAsDraft();
+
+    expect(getPostBySlug('test-post', 'es')).not.toBeNull();
+    expect(getPostBySlug('test-post-ca', 'ca')).not.toBeNull();
+    expect(getPostTranslations('test-article')).toHaveLength(2);
+  });
+
   it('should return posts sorted newest first', () => {
     const posts = getAllBlogPosts();
     expect(posts.length).toBeGreaterThan(0);

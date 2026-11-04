@@ -52,6 +52,11 @@ export function getAllBlogPosts(): BlogPost[] {
         const fileContents = fs.readFileSync(mdxFilePath, 'utf8');
         const { data, content } = matter(fileContents);
 
+        // Draft articles are available for local previews only.
+        if (data.draft === true && process.env.NODE_ENV !== 'development') {
+          continue;
+        }
+
         if (!data.title || !data.slug || !data.translationKey || !data.image) {
           console.warn(
             `Post ${articleFolder}/${locale}.mdx is missing required frontmatter fields (title, slug, translationKey, or image)`,
