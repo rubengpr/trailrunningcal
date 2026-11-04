@@ -50,4 +50,4 @@ For business context, metrics, positioning, and audience — invoke the `/produc
 
 - **Draft API access:** use HTTP with `Authorization: Bearer $AGENT_API_TOKEN` for authorized draft work. Select local or production explicitly; never print the token. Endpoint permissions and curl examples: [docs/agent-api.md](docs/agent-api.md).
 
-- Run `pnpm tsc --noEmit` before pushing — Vercel type-checks on every build and failures break the deployment.
+- **Quality checks:** the shared Codex Stop hook runs linting and TypeScript checks; see [.codex/README.md](.codex/README.md) for activation. If the hook is not active, run `pnpm lint` and `pnpm tsc --noEmit` before finishing code changes and before pushing. Fix failures introduced by your changes and report remaining errors, warnings, or checks that could not run. Vercel type-checks on every build and failures break the deployment.
