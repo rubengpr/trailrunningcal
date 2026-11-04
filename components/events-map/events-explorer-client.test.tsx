@@ -14,7 +14,7 @@ import type { PublicEventPage } from '@/types/public-events.types';
 
 const mocks = vi.hoisted(() => ({
   getPublicEventPage: vi.fn(),
-  featureFlagVariant: vi.fn((_key: string): string => 'control'),
+  featureFlagVariant: vi.fn<(key: string) => string>(() => 'control'),
 }));
 
 vi.mock('next-intl', () => ({

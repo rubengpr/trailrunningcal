@@ -2,10 +2,6 @@ import {
   isOpenRouterScrapeModelId,
   isOpenRouterVisionModelId,
 } from '@/lib/integrations/openrouter/scrape-models';
-import type {
-  OpenRouterScrapeModelId,
-  OpenRouterVisionModelId,
-} from '@/lib/integrations/openrouter/scrape-models';
 import { ValidationError } from '@/lib/errors';
 import type { EventExtractionInput } from '@/lib/services/event-extraction';
 

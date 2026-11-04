@@ -14,7 +14,6 @@ import {
   toRaceTierWriteInputs,
   validateRaceTierDrafts,
 } from '@/components/event/race-tier-fields';
-import type { RaceTierDraft } from '@/components/event/race-tier-fields';
 import type { EventRaceWriteInput } from '@/lib/api/events';
 import type { TrailEventAgentEvent } from '@/types/trail-event-agent.types';
 import { isValidProvince } from '@/lib/geography/provinces';
@@ -60,14 +59,6 @@ function emptyRaceDraft(): ModalRaceDraft {
     resultsUrl: undefined,
     tierDrafts: [],
   };
-}
-
-function RacePositionBadge({ number }: { number: number }): React.ReactElement {
-  return (
-    <span className="inline-flex h-6 min-w-6 shrink-0 items-center justify-center rounded-full bg-gray-100 px-2 text-xs font-semibold tabular-nums text-gray-600">
-      {number}
-    </span>
-  );
 }
 
 export function EventRacesEditModal({

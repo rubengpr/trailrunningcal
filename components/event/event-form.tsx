@@ -9,7 +9,6 @@ import { FormInput } from '@/components/ui/form-input';
 import { FormTextarea } from '@/components/ui/form-textarea';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { FormErrorMessage } from '@/components/ui/error-message';
-import { SelectMenu } from '@/components/ui/select-menu';
 import { RaceDraftEditor } from '@/components/event/race-draft-editor';
 import type { RaceDraft } from '@/components/event/race-draft-editor';
 import {

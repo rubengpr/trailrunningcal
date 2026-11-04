@@ -128,7 +128,7 @@ export async function createSponsorReport({
   drawText(page, 'Performance by placement and format', MARGIN, 270, 13, bold);
   drawText(page, 'Impressions, clicks and CTR', 440, 272, 8, regular, MUTED);
 
-  let y = drawTable(page, 292, ['Placement', 'Format', 'Impressions', 'Clicks', 'CTR'], [
+  const y = drawTable(page, 292, ['Placement', 'Format', 'Impressions', 'Clicks', 'CTR'], [
     ['Event pages', campaign === 'banner' ? 'Image' : 'Sticky', formatNumber(eventImpressions), formatNumber(eventClicks), ctr(eventClicks, eventImpressions)],
     ['Homepage', campaign === 'banner' ? 'Image' : 'Sticky', formatNumber(homeImpressions), formatNumber(homeClicks), ctr(homeClicks, homeImpressions)],
     ['Total', '', formatNumber(totals.impressions), formatNumber(totals.clicks), `${totals.ctr.toFixed(2)}%`],
