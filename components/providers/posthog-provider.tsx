@@ -10,6 +10,9 @@ export function PostHogProvider() {
     if (!token || posthog.__loaded) return;
 
     const init = () => {
+      // Another provider may have initialized the shared SDK while this was queued.
+      if (posthog.__loaded) return;
+
       posthog.init(token, {
         api_host: '/ingest',
         ui_host: 'https://eu.posthog.com',
@@ -29,11 +32,13 @@ export function PostHogProvider() {
       });
     };
 
-    if ('requestIdleCallback' in window) {
-      requestIdleCallback(init);
-    } else {
-      setTimeout(init, 1000);
+    if (typeof window.requestIdleCallback === 'function') {
+      const callbackId = window.requestIdleCallback(init);
+      return () => window.cancelIdleCallback(callbackId);
     }
+
+    const timeoutId = window.setTimeout(init, 1000);
+    return () => window.clearTimeout(timeoutId);
   }, []);
 
   return null;

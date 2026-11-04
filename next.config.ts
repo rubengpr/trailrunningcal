@@ -58,7 +58,7 @@ const nextConfig: NextConfig = {
             value: [
               "default-src 'self'",
               // Next.js hydration + JSON-LD inline scripts require unsafe-inline.
-              // PostHog is proxied via /ingest/* rewrites so no external origin needed.
+              // PostHog is proxied via /ingest/* so no external origin is needed.
               // Cloudflare Web Analytics beacon is injected automatically by Cloudflare.
               "script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com",
               // Tailwind and component inline styles require unsafe-inline.
@@ -126,30 +126,14 @@ const nextConfig: NextConfig = {
     ];
   },
 
-  // PostHog rewrites (EU region) — static assets first, then catch-all
+  // PostHog ingestion (EU region). Public SDK assets are handled in proxy.ts.
   async rewrites() {
     return [
-      {
-        source: '/ingest/static/:path*',
-        destination: 'https://eu-assets.i.posthog.com/static/:path*',
-      },
-      {
-        source: '/ingest/array/:path*',
-        destination: 'https://eu-assets.i.posthog.com/array/:path*',
-      },
       {
         source: '/ingest/:path*',
         destination: 'https://eu.i.posthog.com/:path*',
       },
       // Locale-prefixed paths (next-intl with localePrefix: 'always')
-      {
-        source: '/:locale(es|ca|en|fr)/ingest/static/:path*',
-        destination: 'https://eu-assets.i.posthog.com/static/:path*',
-      },
-      {
-        source: '/:locale(es|ca|en|fr)/ingest/array/:path*',
-        destination: 'https://eu-assets.i.posthog.com/array/:path*',
-      },
       {
         source: '/:locale(es|ca|en|fr)/ingest/:path*',
         destination: 'https://eu.i.posthog.com/:path*',
