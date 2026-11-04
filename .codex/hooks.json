@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$(git rev-parse --show-toplevel)/.codex/hooks/check-quality.mjs\"",
+            "timeout": 420,
+            "statusMessage": "Checking ESLint and TypeScript"
+          }
+        ]
+      }
+    ]
+  }
+}
