@@ -16,6 +16,9 @@ const eslintConfig = defineConfig([
     'next-env.d.ts',
     'node_modules/**',
     'app/.well-known/workflow/**',
+    // Generated runners and local script caches:
+    '.bt/**',
+    'scripts/.cache/**',
   ]),
 ]);
 
