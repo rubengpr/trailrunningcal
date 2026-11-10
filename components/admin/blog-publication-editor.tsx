@@ -16,6 +16,7 @@ export function BlogPublicationEditor({ id, publication, onSaved, onClose }: {
 }) {
   const t = useTranslations('admin.blog.publication');
   const [author, setAuthor] = useState(publication.author ?? 'Ruben Godoy');
+  const [imageAlt, setImageAlt] = useState(publication.imageAlt ?? '');
   const [date, setDate] = useState(publication.date ?? today());
   const [version] = useState(publication.version);
   const form = useRef<HTMLFormElement>(null);
@@ -41,13 +42,14 @@ export function BlogPublicationEditor({ id, publication, onSaved, onClose }: {
     <form ref={form} role="dialog" aria-label={t('editTitle')} aria-modal="true" noValidate className="space-y-4"
       onSubmit={async event => {
         event.preventDefault();
-        const input = { author, date, version };
+        const input = { author, date, imageAlt, version };
         try { validateDetails(input, !!publication.imagePath); }
         catch (error) { mutation.setError(error instanceof Error ? error.message : 'save_failed'); return; }
         if (await mutation.submit(() => saveDetails(id, input))) { toast.success(t('saved')); onClose(); }
       }}>
       <FormInput id="publication-author" label={t('author')} value={author} onChange={event => setAuthor(event.target.value)} disabled={mutation.sending} maxLength={120} />
       <FormInput id="publication-date" type="date" label={t('date')} helperText={t('dateHelp')} value={date} onChange={event => setDate(event.target.value)} disabled={mutation.sending} />
+      <FormInput id="publication-image-alt" label={t('imageAlt')} value={imageAlt} onChange={event => setImageAlt(event.target.value)} disabled={mutation.sending} maxLength={300} />
       {mutation.error ? <ErrorMessage message={t(mutation.error)} variant="compact" showRetry={false} /> : null}
       <div className="flex justify-end gap-2">
         <Button type="button" variant="secondary" onClick={close} disabled={mutation.sending}>{t('cancel')}</Button>

@@ -45,12 +45,12 @@ describe('publication editor', () => {
     await screen.findByText('Los datos han cambiado. Recarga la página antes de guardar de nuevo.');
     expect(close).not.toHaveBeenCalled(); expect((screen.getByLabelText('Autor') as HTMLInputElement).value).toBe('Ruben Godoy');
   });
-  it('edits author and date without requiring or submitting alt text', async () => {
+  it('saves the cover alt text with author and date in the edit modal', async () => {
     show(<BlogPublicationEditor id="id" publication={{ ...publication, imagePath: 'id/photo.png' }} onSaved={vi.fn()} onClose={vi.fn()} />);
     mocks.details.mockResolvedValue(publication);
-    expect(screen.queryByLabelText('Texto alternativo de la imagen')).toBeNull();
+    fireEvent.change(screen.getByLabelText('Texto alternativo de la imagen'), { target: { value: 'Sendero de montaña' } });
     fireEvent.submit(screen.getByRole('dialog'));
-    await waitFor(() => expect(mocks.details).toHaveBeenCalledWith('id', { author: 'Ruben Godoy', date: today(), version: 0 }));
+    await waitFor(() => expect(mocks.details).toHaveBeenCalledWith('id', { author: 'Ruben Godoy', date: today(), imageAlt: 'Sendero de montaña', version: 0 }));
   });
 });
 describe('publication image', () => {
@@ -117,6 +117,7 @@ describe('publication image', () => {
     fireEvent.change(screen.getByLabelText('Seleccionar imagen'), { target: { files: [new File(['a'], 'a.png'), new File(['b'], 'b.png')] } });
     expect(screen.getByText('Selecciona una sola imagen.')).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'Editar' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Alt text:' })).toBeNull();
     expect(screen.getByLabelText('La imagen todavía no tiene texto alternativo.')).toBeTruthy();
     expect(screen.queryByText('La imagen todavía no tiene texto alternativo.')).toBeNull();
   });
