@@ -1024,6 +1024,21 @@
   },
   "admin": {
     "blog": {
+      "export": {
+        "errorTitle": "Could not export the article",
+        "close": "Close",
+        "button": "Export MDX",
+        "working": "Preparing export…",
+        "article_incomplete": "The article is not complete yet.",
+        "missing_metadata": "Complete the title, slug, SEO title and meta description.",
+        "missing_publication": "Save a valid author and publication date.",
+        "missing_cover": "Add a cover image.",
+        "empty_article": "The article has no content.",
+        "missing_alt": "Add alt text to the cover and every article image.",
+        "invalid_images": "Could not prepare the images.",
+        "invalid_document": "The document cannot be exported safely.",
+        "export_failed": "Could not export the article. Please try again."
+      },
       "articleImages": {
         "info": "Image information",
         "insert": "Add image",

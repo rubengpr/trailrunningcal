@@ -1,4 +1,6 @@
 'use client';
+import { BlogExportError } from '@/components/admin/blog-export-error';
+import { useBlogExport } from '@/hooks/use-blog-export';
 import type { DraftResearchStatus, ResearchPage } from '@/types/blog-research.types';
 import { useCallback, useState } from 'react';
 import type { ArticleDocument } from '@/types/blog-article-block.types';
@@ -18,6 +20,8 @@ import type { DraftDetail } from '@/types/blog-draft-record.types';
 export function BlogDraftView({ initial, initialResearch }: { initial: DraftDetail; initialResearch?: ResearchPage }) {
   const t = useTranslations('admin.blog');
   const navigation = useTranslations('sidebar');
+  const exportingText = useTranslations('admin.blog.export');
+  const exporting = useBlogExport(initial.id);
   const locale = useLocale();
   const router = useRouter();
   const [editing, setEditing] = useState(false);
@@ -29,7 +33,7 @@ export function BlogDraftView({ initial, initialResearch }: { initial: DraftDeta
   const title = draft.title || draft.instructions.replace(/\s+/g, ' ').slice(0, 80);
   const onArticleSaved = (articleDocument: ArticleDocument) => update(current => ({ ...current, articleDocument }));
   const onPublicationSaved = (publication: Publication) => update(current => ({ ...current, publication }));
-  const deleteAction = <BlogDeleteAction menu draft={draft} onEdit={draft.status === 'completed' ? () => setEditing(true) : undefined} onConflict={() => {
+  const deleteAction = <BlogDeleteAction menu draft={draft} exporting={exporting.sending} onExport={draft.status === 'completed' ? () => { void exporting.submit(); } : undefined} onEdit={draft.status === 'completed' ? () => setEditing(true) : undefined} onConflict={() => {
     update(current => current); void refresh();
   }} onDeleted={() => {
     update(current => current);
@@ -39,6 +43,8 @@ export function BlogDraftView({ initial, initialResearch }: { initial: DraftDeta
     <div className="pb-4">
       <Breadcrumb items={[{ name: navigation('blog'), href: `/${locale}/admin/blog` }, { name: title }]} />
     </div>
+    {exporting.sending ? <p role="status" className="flex items-center gap-2 text-sm text-gray-500"><LoaderCircle className="size-4 animate-spin" />{exportingText('working')}</p> : null}
+    {exporting.error ? <BlogExportError error={exporting.error} onClose={exporting.clearError} /> : null}
     {readFailed ? <ErrorMessage message={t('readFailed')} showRetry={false} variant="compact" /> : null}
     {draft.status === 'completed' ? <BlogDraftDetail draft={draft} onEvaluationAccepted={update} actions={deleteAction} initialResearch={initialResearch} onResearchStatus={onResearchStatus}
       editing={editing} onCloseEdit={() => setEditing(false)} onPublicationSaved={onPublicationSaved} onArticleSaved={onArticleSaved} /> : <>

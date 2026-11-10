@@ -1220,6 +1220,21 @@
   },
   "admin": {
     "blog": {
+      "export": {
+        "errorTitle": "No s’ha pogut exportar l’article",
+        "close": "Tancar",
+        "button": "Exportar MDX",
+        "working": "Preparant exportació…",
+        "article_incomplete": "L’article encara no està complet.",
+        "missing_metadata": "Completa el títol, slug, títol SEO i metadescripció.",
+        "missing_publication": "Desa un autor i una data de publicació vàlids.",
+        "missing_cover": "Afegeix una imatge de portada.",
+        "empty_article": "L’article no té contingut.",
+        "missing_alt": "Afegeix alt text a la portada i a totes les imatges de l’article.",
+        "invalid_images": "No s’han pogut preparar les imatges.",
+        "invalid_document": "El document no es pot exportar de manera segura.",
+        "export_failed": "No s’ha pogut exportar l’article. Torna-ho a provar."
+      },
       "articleImages": {
         "info": "Informació de la imatge",
         "insert": "Afegir imatge",

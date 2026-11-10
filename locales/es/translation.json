@@ -1252,6 +1252,21 @@
   },
   "admin": {
     "blog": {
+      "export": {
+        "errorTitle": "No se ha podido exportar el artículo",
+        "close": "Cerrar",
+        "button": "Exportar MDX",
+        "working": "Preparando exportación…",
+        "article_incomplete": "El artículo todavía no está completo.",
+        "missing_metadata": "Completa el título, slug, título SEO y metadescripción.",
+        "missing_publication": "Guarda un autor y una fecha de publicación válidos.",
+        "missing_cover": "Añade una imagen de portada.",
+        "empty_article": "El artículo no tiene contenido.",
+        "missing_alt": "Añade alt text a la portada y a todas las imágenes del artículo.",
+        "invalid_images": "No se han podido preparar las imágenes.",
+        "invalid_document": "El documento no se puede exportar de forma segura.",
+        "export_failed": "No se ha podido exportar el artículo. Vuelve a intentarlo."
+      },
       "articleImages": {
         "info": "Información de la imagen",
         "insert": "Añadir imagen",
