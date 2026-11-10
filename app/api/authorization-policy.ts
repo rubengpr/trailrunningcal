@@ -18,6 +18,7 @@ export const API_AUTHORIZATION_POLICY = {
   'GET /api/blog-drafts/[id]': 'admin',
   'DELETE /api/blog-drafts/[id]': 'admin',
   'POST /api/blog-drafts/[id]/evaluation': 'admin',
+  'POST /api/blog-drafts/[id]/export': 'admin',
   'POST /api/blog-drafts/[id]/images': 'admin',
   'GET /api/blog-drafts/[id]/images/[imageId]': 'admin',
   'POST /api/blog-drafts/[id]/images/[imageId]': 'admin',
