@@ -1,3 +1,4 @@
+import { BlogImage } from '@/components/blog/blog-image';
 import type { MDXComponents } from 'mdx/types';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -71,6 +72,7 @@ const components: MDXComponents = {
       </figure>
     );
   },
+  BlogImage,
   DateAuthorString,
   BlogHeaderImage,
   BlogDivider,

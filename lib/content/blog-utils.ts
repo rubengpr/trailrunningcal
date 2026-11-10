@@ -5,6 +5,8 @@ import type { Locale } from '@/i18n';
 
 export interface BlogPostFrontmatter {
   title: string;
+  seoTitle?: string;
+  author?: string;
   footerTitle?: string;
   excerpt: string;
   date: string;
@@ -67,6 +69,8 @@ export function getAllBlogPosts(): BlogPost[] {
 
         const post: BlogPost = {
           title: data.title,
+          seoTitle: data.seoTitle || undefined,
+          author: data.author || undefined,
           footerTitle: data.footerTitle || undefined,
           excerpt: data.excerpt || '',
           date: data.date || '',

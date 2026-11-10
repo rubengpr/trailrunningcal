@@ -105,10 +105,8 @@ export function buildBlogJsonLd(post: BlogPost): Record<string, unknown> {
       url: imageUrl,
       caption: post.imageAlt,
     },
-    author: {
-      '@type': 'Organization',
-      name: SITE_NAME,
-      url: BASE_URL,
+    author: post.author ? { '@type': 'Person', name: post.author } : {
+      '@type': 'Organization', name: SITE_NAME, url: BASE_URL,
     },
     publisher: {
       '@type': 'Organization',

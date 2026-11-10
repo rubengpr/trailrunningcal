@@ -20,6 +20,8 @@ import { getAllBlogPosts, getPostBySlug, getPostsForLocale } from './blog-utils'
 
 const ES_POST_CONTENT = `---
 title: "Test Post ES"
+seoTitle: "SEO title ES"
+author: "Author ES"
 footerTitle: "Short test title"
 excerpt: "An excerpt"
 date: "2025-06-15"
@@ -110,6 +112,8 @@ describe('getAllBlogPosts', () => {
   it('should read an optional footer title without replacing the full title', () => {
     const post = getPostBySlug('test-post', 'es');
     expect(post?.title).toBe('Test Post ES');
+    expect(post?.seoTitle).toBe('SEO title ES');
+    expect(post?.author).toBe('Author ES');
     expect(post?.footerTitle).toBe('Short test title');
   });
 

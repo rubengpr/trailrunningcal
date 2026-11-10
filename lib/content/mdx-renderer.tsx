@@ -1,9 +1,11 @@
 import fs from 'fs';
+import remarkGfm from 'remark-gfm';
 import matter from 'gray-matter';
 import { evaluate } from '@mdx-js/mdx';
 import { components } from '@/mdx-components';
 import type { MDXComponents } from 'mdx/types';
 import * as runtime from 'react/jsx-runtime';
+import * as devRuntime from 'react/jsx-dev-runtime';
 import React from 'react';
 import type { Locale } from '@/i18n';
 
@@ -32,6 +34,8 @@ export async function renderMDXFile(filePath: string, locale: Locale = 'es') {
 
   const { default: MDXContent } = await evaluate(content, {
     ...runtime,
+    ...devRuntime,
+    remarkPlugins: [remarkGfm],
     development: process.env.NODE_ENV === 'development',
     useMDXComponents: () => componentsWithFrontmatter as MDXComponents,
   });

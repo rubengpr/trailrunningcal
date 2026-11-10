@@ -47,7 +47,7 @@ export async function generateMetadata({
   const canonicalUrl = `${BASE_URL}/${locale}/blog/${slug}`;
 
   return generateMetadataFromOptions({
-    title: post.title,
+    title: post.seoTitle || post.title,
     description: post.excerpt,
     canonicalUrl,
     locale: post.locale,
