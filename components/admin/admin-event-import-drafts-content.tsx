@@ -6,19 +6,16 @@ import toast from 'react-hot-toast';
 import {
   Check,
   CircleCheck,
-  ChevronDown,
-  ChevronUp,
-  ChevronsUpDown,
   CircleAlert,
   Eye,
   LoaderCircle,
   TextCursor,
   Trash2,
 } from 'lucide-react';
-import Link from 'next/link';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { SectionHeader } from '@/components/ui/section-header';
 import { ListEmptyState } from '@/components/ui/list-empty-state';
+import { SortableTableHeader } from '@/components/ui/sortable-table-header';
 import { TableActionButton } from '@/components/ui/table-action-button';
 import { EventImportPreview } from '@/components/admin/event-import-preview';
 import { EventImportPreviewModal } from '@/components/admin/event-import-preview-modal';
@@ -87,22 +84,6 @@ function hasCompleteInformation(draft: EventImportDraft, today: string): boolean
         && Number.isInteger(race.elevationGainM)
         && race.elevationGainM > 0;
     });
-}
-
-function DraftSortIcon({
-  column,
-  query,
-}: {
-  column: EventImportDraftSortColumn;
-  query: EventImportDraftPageRequest;
-}): React.ReactElement {
-  if (column !== query.sortColumn) {
-    return <ChevronsUpDown className="size-3.5 text-gray-300" strokeWidth={1.5} />;
-  }
-
-  return query.sortDirection === 'asc'
-    ? <ChevronUp className="size-3.5" strokeWidth={2} />
-    : <ChevronDown className="size-3.5" strokeWidth={2} />;
 }
 
 export function AdminEventImportDraftsContent({
@@ -297,25 +278,23 @@ export function AdminEventImportDraftsContent({
       ) : (
         <Table>
             <TableHeader>
-              <TableCell header>
-                <Link href={getSortHref('name')} className="inline-flex items-center gap-1 transition-colors hover:text-gray-800">
-                  {eventsT('columns.name')}
-                  <DraftSortIcon column="name" query={query} />
-                </Link>
-              </TableCell>
+              <SortableTableHeader
+                label={eventsT('columns.name')}
+                href={getSortHref('name')}
+                direction={query.sortColumn === 'name' ? query.sortDirection : null}
+              />
               <TableCell header>{eventsT('columns.website')}</TableCell>
-              <TableCell header align="right">
-                <Link href={getSortHref('races')} className="inline-flex items-center gap-1 transition-colors hover:text-gray-800">
-                  {eventsT('columns.races')}
-                  <DraftSortIcon column="races" query={query} />
-                </Link>
-              </TableCell>
-              <TableCell header>
-                <Link href={getSortHref('dates')} className="inline-flex items-center gap-1 transition-colors hover:text-gray-800">
-                  {eventsT('columns.dates')}
-                  <DraftSortIcon column="dates" query={query} />
-                </Link>
-              </TableCell>
+              <SortableTableHeader
+                label={eventsT('columns.races')}
+                href={getSortHref('races')}
+                direction={query.sortColumn === 'races' ? query.sortDirection : null}
+                align="right"
+              />
+              <SortableTableHeader
+                label={eventsT('columns.dates')}
+                href={getSortHref('dates')}
+                direction={query.sortColumn === 'dates' ? query.sortDirection : null}
+              />
               <TableCell header align="right">{eventsT('columns.actions')}</TableCell>
             </TableHeader>
             <TableBody>
