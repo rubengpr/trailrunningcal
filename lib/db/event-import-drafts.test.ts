@@ -15,6 +15,7 @@ import { getEventImportDraftsPage } from './event-import-drafts';
 const input = {
   page: 2,
   search: 'ultra',
+  province: 'Girona',
   draftId: null,
   sortColumn: 'name' as const,
   sortDirection: 'desc' as const,
@@ -63,6 +64,7 @@ describe('getEventImportDraftsPage', () => {
       p_limit: EVENT_IMPORT_DRAFTS_PAGE_SIZE,
       p_offset: EVENT_IMPORT_DRAFTS_PAGE_SIZE,
       p_search: 'ultra',
+      p_province: 'Girona',
       p_draft_id: null,
       p_sort_column: 'name',
       p_sort_direction: 'desc',

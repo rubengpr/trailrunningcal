@@ -78,6 +78,7 @@ export async function getEventImportDraftsPage(
       p_limit: EVENT_IMPORT_DRAFTS_PAGE_SIZE,
       p_offset: (input.page - 1) * EVENT_IMPORT_DRAFTS_PAGE_SIZE,
       p_search: input.search || null,
+      ...(input.province ? { p_province: input.province } : {}),
       p_draft_id: input.draftId,
       p_sort_column: input.sortColumn,
       p_sort_direction: input.sortDirection,

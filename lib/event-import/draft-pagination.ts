@@ -3,6 +3,7 @@ import type {
   EventImportDraftSortColumn,
   EventImportDraftSortDirection,
 } from '@/types/event-import-draft.types';
+import { isValidProvince } from '@/lib/geography/provinces';
 
 export const EVENT_IMPORT_DRAFTS_PAGE_SIZE = 50;
 const SEARCH_MAX_LENGTH = 200;
@@ -28,12 +29,14 @@ export function parseEventImportDraftPageRequest(
 ): EventImportDraftPageRequest {
   const rawPage = Number(firstValue(searchParams.page) ?? 1);
   const rawDraftId = firstValue(searchParams.draftId);
+  const province = firstValue(searchParams.province);
 
   return {
     page: Number.isSafeInteger(rawPage) && rawPage >= 1 ? rawPage : 1,
     search: (firstValue(searchParams.q) ?? '')
       .trim()
       .slice(0, SEARCH_MAX_LENGTH),
+    province: isValidProvince(province) ? province : undefined,
     draftId: rawDraftId && UUID_PATTERN.test(rawDraftId) ? rawDraftId : null,
     sortColumn: parseSortColumn(firstValue(searchParams.sort)),
     sortDirection: parseSortDirection(firstValue(searchParams.direction)),
@@ -47,6 +50,7 @@ export function buildEventImportDraftsHref(
   const searchParams = new URLSearchParams();
   if (input.page > 1) searchParams.set('page', input.page.toString());
   if (input.search) searchParams.set('q', input.search);
+  if (input.province) searchParams.set('province', input.province);
   if (input.draftId) searchParams.set('draftId', input.draftId);
   if (input.sortColumn !== 'dates') searchParams.set('sort', input.sortColumn);
   if (input.sortDirection !== 'asc') searchParams.set('direction', input.sortDirection);

@@ -30,6 +30,7 @@ export interface EventImportDraft {
 export interface EventImportDraftPageRequest {
   page: number;
   search: string;
+  province?: string;
   draftId: string | null;
   sortColumn: EventImportDraftSortColumn;
   sortDirection: EventImportDraftSortDirection;

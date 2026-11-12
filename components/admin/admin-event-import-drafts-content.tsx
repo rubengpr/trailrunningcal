@@ -17,7 +17,7 @@ import {
   TableHeader,
 } from '@/components/ui/table';
 import { EventRacesEditModal } from '@/components/admin/event-races-edit-modal';
-import { AdminListSearch } from '@/components/admin/admin-list-search';
+import { AdminEventsFilters } from '@/components/admin/admin-events-filters';
 import {
   acceptEventImportDraft,
   getEventImportDraftPublicationStatus,
@@ -243,14 +243,23 @@ export function AdminEventImportDraftsContent({
   return (
     <div className="flex flex-col gap-8">
       <SectionHeader title={t('title')} subtitle={draftCount} />
-      <AdminListSearch
+      <AdminEventsFilters
         action={`/${locale}/admin/eventos/borradores`}
         inputId="admin-event-draft-search"
         initialQuery={query.search}
-        label={t('search.placeholder')}
+        initialProvince={query.province}
+        hiddenFields={{
+          draftId: query.draftId ?? undefined,
+          sort: query.sortColumn !== 'dates' ? query.sortColumn : undefined,
+          direction: query.sortDirection !== 'asc' ? query.sortDirection : undefined,
+        }}
       />
       {drafts.length === 0 ? (
-        <ListEmptyState message={query.search ? t('search.empty') : t('empty')} />
+        <ListEmptyState message={query.search
+          ? t('search.empty')
+          : query.province
+            ? eventsT('filters.emptyProvince', { province: query.province })
+            : t('empty')} />
       ) : (
         <Table>
             <TableHeader>
