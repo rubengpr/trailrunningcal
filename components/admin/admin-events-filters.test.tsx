@@ -12,7 +12,7 @@ const mocks = vi.hoisted(() => ({ replace: vi.fn() }));
 vi.mock('next/navigation', () => ({ useRouter: () => ({ replace: mocks.replace }) }));
 afterEach(() => { cleanup(); vi.resetAllMocks(); });
 
-function setup(regions: RegionId[] = [], provinces: string[] = []) {
+function setup(regions: RegionId[] = [], provinces: string[] = [], options: { query?: string; draftId?: string } = {}) {
   function Harness() {
     const [selected, setSelected] = useState({ regions, provinces });
     mocks.replace.mockImplementation((href: string) => {
@@ -20,9 +20,9 @@ function setup(regions: RegionId[] = [], provinces: string[] = []) {
       setSelected(parseLocationFilters(params.getAll('region'), params.getAll('province')));
     });
     return <NextIntlClientProvider locale="es" messages={es}>
-      <AdminEventsFilters action="/es/admin/eventos/borradores" inputId="search" initialQuery="trail"
+      <AdminEventsFilters action="/es/admin/eventos/borradores" inputId="search" initialQuery={options.query ?? 'trail'}
         initialRegions={selected.regions} initialProvinces={selected.provinces}
-        hiddenFields={{ sort: 'name', direction: 'desc' }} />
+        hiddenFields={{ sort: 'name', direction: 'desc', draftId: options.draftId }} />
     </NextIntlClientProvider>;
   }
   render(<Harness />);
@@ -84,6 +84,36 @@ describe('admin location filters applied on close', () => {
     fireEvent.click(screen.getByRole('checkbox', { name: 'Cataluña' }));
     fireEvent.click(screen.getByLabelText('Comunidad Autónoma'));
     expect(mocks.replace).not.toHaveBeenCalled();
+  });
+
+  it('clears all filters in one navigation and discards an open menu draft', () => {
+    setup(['galicia'], ['Lugo'], { draftId: 'target-draft' });
+    fireEvent.click(screen.getByLabelText('Comunidad Autónoma'));
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Cataluña' }));
+    expect(mocks.replace).not.toHaveBeenCalled();
+    const clear = screen.getByRole('button', { name: 'Limpiar filtros' });
+    fireEvent.mouseDown(clear);
+    fireEvent.click(clear);
+    expect(mocks.replace).toHaveBeenCalledTimes(1);
+    expect(params().getAll('region')).toEqual([]);
+    expect(params().getAll('province')).toEqual([]);
+    expect(params().has('q')).toBe(false);
+    expect(params().has('draftId')).toBe(false);
+    expect(params().get('sort')).toBe('name');
+    expect(params().get('direction')).toBe('desc');
+    expect((screen.getByRole('searchbox') as HTMLInputElement).value).toBe('');
+    expect(screen.queryByRole('checkbox', { name: 'Cataluña' })).toBeNull();
+  });
+
+  it('hides the clear button when filters are already clear', () => {
+    setup([], [], { query: '' });
+    expect(screen.queryByRole('button', { name: 'Limpiar filtros' })).toBeNull();
+    expect(mocks.replace).not.toHaveBeenCalled();
+  });
+
+  it('shows the clear button for a province filter without a search query', () => {
+    setup([], ['Lugo'], { query: '' });
+    expect(screen.getByRole('button', { name: 'Limpiar filtros' })).toBeTruthy();
   });
 
 });

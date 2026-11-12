@@ -1,9 +1,10 @@
 'use client';
 
-import { Search } from 'lucide-react';
-import { useOptimistic, useRef, useTransition } from 'react';
+import { Search, Trash2 } from 'lucide-react';
+import { useOptimistic, useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
+import { IconButton } from '@/components/ui/icon-button';
 import { FilterSelect } from '@/components/filters/filter-select';
 import { PROVINCES } from '@/lib/geography/provinces';
 import { REGION_IDS } from '@/lib/geography/destinations';
@@ -28,6 +29,9 @@ export function AdminEventsFilters({
   hiddenFields,
 }: AdminEventsFiltersProps): React.ReactElement {
   const t = useTranslations('adminEvents');
+  const filtersT = useTranslations('filters');
+  const [resetKey, setResetKey] = useState(0);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const geographyT = useTranslations('geography.regions');
   const locale = useLocale();
   const router = useRouter();
@@ -39,13 +43,19 @@ export function AdminEventsFilters({
   const regions = REGION_IDS.map((value) => ({ value, label: geographyT(value) }))
     .sort((a, b) => a.label.localeCompare(b.label, locale));
   const formRef = useRef<HTMLFormElement>(null);
+  const hasActiveFilters = selected.regions.length > 0 || selected.provinces.length > 0
+    || Boolean(initialQuery || hiddenFields?.draftId);
 
-  const applySelection = (next: typeof selected): void => {
+  const applySelection = (next: typeof selected, clear = false): void => {
     const params = new URLSearchParams();
     if (formRef.current) {
       new FormData(formRef.current).forEach((value, name) => {
         if (typeof value === 'string' && name !== 'region' && name !== 'province') params.append(name, value);
       });
+    }
+    if (clear) {
+      params.delete('q');
+      params.delete('draftId');
     }
     next.regions.forEach((value) => params.append('region', value));
     next.provinces.forEach((value) => params.append('province', value));
@@ -56,11 +66,21 @@ export function AdminEventsFilters({
     });
   };
 
+  const clearFilters = (): void => {
+    const hasFilters = selected.regions.length > 0 || selected.provinces.length > 0
+      || Boolean(initialQuery || searchInputRef.current?.value || hiddenFields?.draftId);
+    // Discard open menus' pending selections without applying them first.
+    setResetKey((key) => key + 1);
+    if (searchInputRef.current) searchInputRef.current.value = '';
+    if (hasFilters) applySelection({ regions: [], provinces: [] }, true);
+  };
+
   return (
     <form ref={formRef} action={action} method="get" aria-busy={isPending} className="flex w-full flex-wrap items-end gap-2">
       {selected.regions.map((value) => <input key={value} type="hidden" name="region" value={value} />)}
       {selected.provinces.map((value) => <input key={value} type="hidden" name="province" value={value} />)}
       <FilterSelect
+        key={`region-${resetKey}`}
         id={`${inputId}-region`}
         label={t('filters.region')}
         value={selected.regions}
@@ -72,6 +92,7 @@ export function AdminEventsFilters({
         onValueChange={(values) => applySelection(parseLocationFilters(values, selected.provinces))}
       />
       <FilterSelect
+        key={`province-${resetKey}`}
         id={`${inputId}-province`}
         label={t('filters.province')}
         value={selected.provinces}
@@ -82,6 +103,15 @@ export function AdminEventsFilters({
         applyOnClose
         onValueChange={(values) => applySelection(parseLocationFilters(selected.regions, values))}
       />
+      {hasActiveFilters ? <IconButton
+        title={filtersT('clearFilters')}
+        aria-label={filtersT('clearFilters')}
+        onMouseDown={(event) => event.stopPropagation()}
+        onClick={clearFilters}
+        disabled={isPending}
+      >
+        <Trash2 className="size-4" strokeWidth={1.5} aria-hidden />
+      </IconButton> : null}
       <div className="relative ml-auto flex w-full max-w-64">
         <label htmlFor={inputId} className="sr-only">
           {t('search.placeholder')}
@@ -92,6 +122,7 @@ export function AdminEventsFilters({
         />
         <input
           id={inputId}
+          ref={searchInputRef}
           key={initialQuery}
           type="search"
           name="q"
