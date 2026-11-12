@@ -13,6 +13,7 @@ import {
 export type FilterSelectOption = MultiSelectOptionItem;
 
 interface FilterSelectProps {
+  className?: string;
   id?: string;
   label?: string;
   clearLabel?: string;
@@ -25,7 +26,7 @@ interface FilterSelectProps {
   searchable?: boolean;
 }
 
-export function FilterSelect({ value, onValueChange, placeholder, options, color = 'white', searchable = false, id, label, clearLabel, applyOnClose = false }: FilterSelectProps) {
+export function FilterSelect({ value, onValueChange, placeholder, options, color = 'white', searchable = false, id, label, clearLabel, applyOnClose = false, className = '' }: FilterSelectProps) {
   const [draftValue, setDraftValue] = useState(value);
   const { open, containerRef, triggerRef, dropdownRef, dropdownStyle, toggleOpen } = useMultiSelectMenu({
     usePortalPosition: true,
@@ -66,6 +67,7 @@ export function FilterSelect({ value, onValueChange, placeholder, options, color
         ? 'border-gray-400 bg-white shadow-sm'
         : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm',
     color === 'black' ? '' : selectLabel ? 'text-gray-900' : 'text-gray-400',
+    className,
   ].join(' ');
 
   const dropdown = open && (

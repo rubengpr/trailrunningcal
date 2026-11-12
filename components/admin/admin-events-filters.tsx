@@ -80,6 +80,7 @@ export function AdminEventsFilters({
       {selected.regions.map((value) => <input key={value} type="hidden" name="region" value={value} />)}
       {selected.provinces.map((value) => <input key={value} type="hidden" name="province" value={value} />)}
       <FilterSelect
+        className="w-64"
         key={`region-${resetKey}`}
         id={`${inputId}-region`}
         label={t('filters.region')}
@@ -92,6 +93,7 @@ export function AdminEventsFilters({
         onValueChange={(values) => applySelection(parseLocationFilters(values, selected.provinces))}
       />
       <FilterSelect
+        className="w-64"
         key={`province-${resetKey}`}
         id={`${inputId}-province`}
         label={t('filters.province')}
