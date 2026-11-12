@@ -18,6 +18,19 @@ describe('admin event pagination URL state', () => {
     expect(params.get('page')).toBe('2');
   });
 
+  it('only enables pending mode for pending=1 and preserves it in navigation', () => {
+    for (const pending of [undefined, '', 'true', '0', 'pending']) {
+      expect(parseAdminEventPageRequest({ pending }).pendingOnly).toBe(false);
+    }
+    const query = parseAdminEventPageRequest({ pending: '1', province: ['Lugo'], q: 'trail', sort: 'name' });
+    expect(query.pendingOnly).toBe(true);
+    const params = new URL(buildAdminEventsHref('es', { ...query, page: 2 }), 'http://localhost').searchParams;
+    expect(params.get('pending')).toBe('1');
+    expect(params.get('province')).toBe('Lugo');
+    expect(params.get('page')).toBe('2');
+    expect(params.get('sort')).toBe('name');
+  });
+
   it('parses valid page, search, and sorting values', () => {
     expect(parseAdminEventPageRequest({
       page: '3',
@@ -28,6 +41,7 @@ describe('admin event pagination URL state', () => {
       direction: 'desc',
     })).toEqual({
       page: 3,
+      pendingOnly: false,
       search: 'ultra',
       regions: ['catalonia'],
       provinces: ['Girona'],
@@ -47,6 +61,7 @@ describe('admin event pagination URL state', () => {
 
     expect(result).toEqual({
       page: 1,
+      pendingOnly: false,
       search: 'x'.repeat(ADMIN_EVENTS_SEARCH_MAX_LENGTH),
       regions: [],
       provinces: [],

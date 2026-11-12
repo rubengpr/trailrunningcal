@@ -1,5 +1,9 @@
 {
   "adminEvents": {
+    "views": {
+      "pending": "With a pending new edition",
+      "emptyPending": "No events with a pending new edition match the filters."
+    },
     "filters": {
       "region": "Autonomous Community",
       "allRegions": "All autonomous communities",

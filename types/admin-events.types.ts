@@ -6,6 +6,7 @@ export type AdminEventSortDirection = 'asc' | 'desc';
 
 export interface AdminEventPageRequest {
   page: number;
+  pendingOnly?: boolean;
   search: string;
   regions?: RegionId[];
   provinces?: string[];

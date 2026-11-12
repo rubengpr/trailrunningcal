@@ -277,6 +277,7 @@ export async function getUpcomingEventsPage({
 }
 
 export async function getAdminEventsPage({
+  pendingOnly = false,
   regions,
   page,
   search,
@@ -295,6 +296,7 @@ export async function getAdminEventsPage({
       p_offset: offset,
       p_search: search || null,
       p_province: null,
+      ...(pendingOnly ? { p_pending_only: true } : {}),
       ...(scope ? { p_provinces: scope } : {}),
       p_sort_column: sortColumn,
       p_sort_direction: sortDirection,

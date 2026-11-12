@@ -148,4 +148,67 @@ integrationDescribe('get_admin_events_page integration', () => {
     }
     expect(anonymousPage.error).not.toBeNull();
   }, 30_000);
+  it('paginates only pending editions and updates totals after validation', async () => {
+    const search = `pending-edition-${randomUUID()}`;
+    const { data: events, error } = await admin.from('events').insert(
+      Array.from({ length: 55 }, (_, index) => ({
+        name: `${search}-${index.toString().padStart(2, '0')}`,
+        slug: `${search}-${index}`,
+      })),
+    ).select('id, name');
+    if (error || !events) throw error ?? new Error('Could not create pending edition fixtures');
+    eventIds.push(...events.map((event) => event.id));
+    const races = events.map((event, index) => ({
+      event_id: event.id, name: 'Trail', date: '2031-05-01', city: 'Test',
+      province: index < 26 ? 'Barcelona' : 'Girona', distance_km: 20, elevation_gain_m: 500,
+    }));
+    const { error: raceError } = await admin.from('races').insert(races);
+    if (raceError) throw raceError;
+    const data = {
+      event: { name: 'Pending edition', websiteUrl: null, description: null },
+      races: [{ name: 'Trail', date: '2031-05-01', city: 'Test', province: 'Barcelona', distanceKm: 20, elevationGainM: 500, tiers: [] }],
+    };
+    const { error: draftError } = await admin.from('event_drafts').insert([
+      ...events.slice(0, 52).map((event) => ({ event_id: event.id, status: 'pending', data })),
+      { event_id: events[52].id, status: 'accepted', data },
+      { event_id: events[53].id, status: 'rejected', data },
+      { event_id: events[0].id, status: 'accepted', data },
+    ]);
+    if (draftError) throw draftError;
+    const query = { ...rpcParameters(search, 0), p_pending_only: true };
+    const first = await admin.rpc('get_admin_events_page', query);
+    const second = await admin.rpc('get_admin_events_page', { ...query, p_offset: 50 });
+    if (first.error || second.error) throw first.error ?? second.error;
+    expect(first.data[0].total_count).toBe(52);
+    expect(first.data[0].event_ids).toHaveLength(50);
+    expect(second.data[0].event_ids).toHaveLength(2);
+    expect(new Set([...first.data[0].event_ids, ...second.data[0].event_ids]).size).toBe(52);
+
+    const scoped = await admin.rpc('get_admin_events_page', { ...query, p_provinces: ['Barcelona'] });
+    if (scoped.error) throw scoped.error;
+    expect(scoped.data[0].total_count).toBe(26);
+    const specific = await admin.rpc('get_admin_events_page', { ...query, p_search: events[0].name });
+    if (specific.error) throw specific.error;
+    expect(specific.data[0].event_ids).toEqual([events[0].id]);
+
+    for (const [index, status] of [[50, 'accepted'], [51, 'rejected']] as const) {
+      const result = await admin.from('event_drafts').update({ status }).eq('event_id', events[index].id).eq('status', 'pending');
+      if (result.error) throw result.error;
+    }
+    const last = await admin.rpc('get_admin_events_page', { ...query, p_offset: 50 });
+    if (last.error) throw last.error;
+    expect(last.data[0]).toMatchObject({ total_count: 50, event_ids: [] });
+    const all = await admin.rpc('get_admin_events_page', rpcParameters(search, 0));
+    if (all.error) throw all.error;
+    expect(all.data[0].total_count).toBe(55);
+
+    const { error: rejectionError } = await admin.from('event_drafts').update({ status: 'rejected' }).in('event_id', eventIds).eq('status', 'pending');
+    if (rejectionError) throw rejectionError;
+    const empty = await admin.rpc('get_admin_events_page', query);
+    if (empty.error) throw empty.error;
+    expect(empty.data[0]).toMatchObject({ total_count: 0, event_ids: [] });
+    const unauthorized = await anonymous.rpc('get_admin_events_page', query);
+    expect(unauthorized.error?.code).toBe('42501');
+  }, 30_000);
+
 });

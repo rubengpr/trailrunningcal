@@ -198,6 +198,7 @@ export function AdminEventsContent({ page, query }: AdminEventsContentProps) {
       });
       setReviewEventId(null);
       toast.success(t('updateSuggestion.rejectSuccess'));
+      router.refresh();
     } catch (error) {
       toast.error(
         error instanceof Error
@@ -316,6 +317,7 @@ export function AdminEventsContent({ page, query }: AdminEventsContentProps) {
         action={`/${locale}/admin/eventos/activos`}
         inputId="admin-event-search"
         initialQuery={query.search}
+        initialPendingOnly={query.pendingOnly ?? false}
         initialRegions={query.regions}
         initialProvinces={query.provinces}
         hiddenFields={{
@@ -325,7 +327,9 @@ export function AdminEventsContent({ page, query }: AdminEventsContentProps) {
       />
 
       {events.length === 0 ? (
-        <ListEmptyState message={query.search
+        <ListEmptyState message={query.pendingOnly
+          ? t('views.emptyPending')
+          : query.search
           ? t('search.empty')
           : query.provinces?.length
             ? t('filters.emptyProvince', { province: query.provinces?.join(', ') })

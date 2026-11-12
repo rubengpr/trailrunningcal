@@ -36,6 +36,7 @@ export function parseAdminEventPageRequest(
 ): AdminEventPageRequest {
   return {
     page: parsePage(firstValue(searchParams.page)),
+    pendingOnly: firstValue(searchParams.pending) === '1',
     search: (firstValue(searchParams.q) ?? '')
       .trim()
       .slice(0, ADMIN_EVENTS_SEARCH_MAX_LENGTH),
@@ -54,6 +55,7 @@ export function buildAdminEventsHref(
   if (input.page > 1) {
     searchParams.set('page', input.page.toString());
   }
+  if (input.pendingOnly) searchParams.set('pending', '1');
   if (input.search) {
     searchParams.set('q', input.search);
   }

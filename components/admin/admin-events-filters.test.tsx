@@ -12,15 +12,16 @@ const mocks = vi.hoisted(() => ({ replace: vi.fn() }));
 vi.mock('next/navigation', () => ({ useRouter: () => ({ replace: mocks.replace }) }));
 afterEach(() => { cleanup(); vi.resetAllMocks(); });
 
-function setup(regions: RegionId[] = [], provinces: string[] = [], options: { query?: string; draftId?: string } = {}) {
+function setup(regions: RegionId[] = [], provinces: string[] = [], options: { query?: string; draftId?: string; pendingOnly?: boolean } = {}) {
   function Harness() {
-    const [selected, setSelected] = useState({ regions, provinces });
+    const [selected, setSelected] = useState({ regions, provinces, pendingOnly: options.pendingOnly });
     mocks.replace.mockImplementation((href: string) => {
       const params = new URL(href, 'http://localhost').searchParams;
-      setSelected(parseLocationFilters(params.getAll('region'), params.getAll('province')));
+      setSelected({ ...parseLocationFilters(params.getAll('region'), params.getAll('province')), pendingOnly: options.pendingOnly === undefined ? undefined : params.get('pending') === '1' });
     });
     return <NextIntlClientProvider locale="es" messages={es}>
       <AdminEventsFilters action="/es/admin/eventos/borradores" inputId="search" initialQuery={options.query ?? 'trail'}
+        initialPendingOnly={selected.pendingOnly}
         initialRegions={selected.regions} initialProvinces={selected.provinces}
         hiddenFields={{ sort: 'name', direction: 'desc', draftId: options.draftId }} />
     </NextIntlClientProvider>;
@@ -114,6 +115,39 @@ describe('admin location filters applied on close', () => {
   it('shows the clear button for a province filter without a search query', () => {
     setup([], ['Lugo'], { query: '' });
     expect(screen.getByRole('button', { name: 'Limpiar filtros' })).toBeTruthy();
+  });
+
+  it('toggles pending editions immediately and preserves geography, search and ordering', () => {
+    setup(['galicia'], ['Lugo'], { pendingOnly: false });
+    fireEvent.click(screen.getByRole('button', { name: 'Con nueva edición pendiente' }));
+    expect(params().get('pending')).toBe('1');
+    expect(params().getAll('region')).toEqual(['galicia']);
+    expect(params().getAll('province')).toEqual(['Lugo']);
+    expect(params().get('q')).toBe('trail');
+    expect(params().get('direction')).toBe('desc');
+    expect(params().has('page')).toBe(false);
+    expect(screen.getByRole('button', { name: 'Con nueva edición pendiente' }).getAttribute('aria-pressed')).toBe('true');
+    fireEvent.click(screen.getByRole('button', { name: 'Con nueva edición pendiente' }));
+    expect(params().has('pending')).toBe(false);
+    expect(screen.getByRole('button', { name: 'Con nueva edición pendiente' }).getAttribute('aria-pressed')).toBe('false');
+  });
+
+  it('retains pending mode when applying provinces and clears it with the trash button', () => {
+    setup(['galicia'], [], { pendingOnly: true, query: '' });
+    fireEvent.click(screen.getByLabelText('Provincia'));
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Lugo' }));
+    fireEvent.click(screen.getByLabelText('Provincia'));
+    expect(params().get('pending')).toBe('1');
+    expect(params().get('province')).toBe('Lugo');
+    fireEvent.click(screen.getByRole('button', { name: 'Limpiar filtros' }));
+    expect(params().has('pending')).toBe(false);
+    expect(params().has('province')).toBe(false);
+    expect(params().get('sort')).toBe('name');
+  });
+
+  it('shows no pending toggle in the new-event drafts list', () => {
+    setup();
+    expect(screen.queryByRole('button', { name: 'Con nueva edición pendiente' })).toBeNull();
   });
 
 });

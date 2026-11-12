@@ -1702,6 +1702,10 @@
     }
   },
   "adminEvents": {
+    "views": {
+      "pending": "Con nueva edición pendiente",
+      "emptyPending": "No hay eventos con nueva edición pendiente que coincidan con los filtros."
+    },
     "title": "Eventos",
     "eventCount": "{count} eventos",
     "eventCountOne": "1 evento",

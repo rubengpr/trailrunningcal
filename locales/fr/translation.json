@@ -1,5 +1,9 @@
 {
   "adminEvents": {
+    "views": {
+      "pending": "Avec une nouvelle édition en attente",
+      "emptyPending": "Aucun événement avec une nouvelle édition en attente ne correspond aux filtres."
+    },
     "filters": {
       "region": "Communauté autonome",
       "allRegions": "Toutes les communautés autonomes",

@@ -1,6 +1,6 @@
 'use client';
 
-import { Search, Trash2 } from 'lucide-react';
+import { CalendarClock, Search, Trash2 } from 'lucide-react';
 import { useOptimistic, useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
@@ -15,6 +15,7 @@ interface AdminEventsFiltersProps {
   action: string;
   inputId: string;
   initialQuery: string;
+  initialPendingOnly?: boolean;
   initialProvinces?: string[];
   initialRegions?: RegionId[];
   hiddenFields?: Record<string, string | undefined>;
@@ -24,6 +25,7 @@ export function AdminEventsFilters({
   action,
   inputId,
   initialQuery,
+  initialPendingOnly,
   initialProvinces,
   initialRegions,
   hiddenFields,
@@ -37,38 +39,40 @@ export function AdminEventsFilters({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [selected, setSelected] = useOptimistic({
-    regions: initialRegions ?? [], provinces: initialProvinces ?? [],
+    regions: initialRegions ?? [], provinces: initialProvinces ?? [], pendingOnly: initialPendingOnly ?? false,
   });
   const provinces = getFilterProvinces(selected.regions) ?? PROVINCES;
   const regions = REGION_IDS.map((value) => ({ value, label: geographyT(value) }))
     .sort((a, b) => a.label.localeCompare(b.label, locale));
   const formRef = useRef<HTMLFormElement>(null);
   const hasActiveFilters = selected.regions.length > 0 || selected.provinces.length > 0
-    || Boolean(initialQuery || hiddenFields?.draftId);
+    || selected.pendingOnly || Boolean(initialQuery || hiddenFields?.draftId);
 
-  const applySelection = (next: typeof selected, clear = false): void => {
+  const applySelection = (next: Pick<typeof selected, 'regions' | 'provinces'> & { pendingOnly?: boolean }, clear = false): void => {
+    const pendingOnly = clear ? false : next.pendingOnly ?? selected.pendingOnly;
     const params = new URLSearchParams();
     if (formRef.current) {
       new FormData(formRef.current).forEach((value, name) => {
-        if (typeof value === 'string' && name !== 'region' && name !== 'province') params.append(name, value);
+        if (typeof value === 'string' && name !== 'region' && name !== 'province' && name !== 'pending') params.append(name, value);
       });
     }
     if (clear) {
       params.delete('q');
       params.delete('draftId');
     }
+    if (pendingOnly) params.set('pending', '1');
     next.regions.forEach((value) => params.append('region', value));
     next.provinces.forEach((value) => params.append('province', value));
     const query = params.toString();
     startTransition(() => {
-      setSelected(next);
+      setSelected({ ...next, pendingOnly });
       router.replace(query ? `${action}?${query}` : action, { scroll: false });
     });
   };
 
   const clearFilters = (): void => {
     const hasFilters = selected.regions.length > 0 || selected.provinces.length > 0
-      || Boolean(initialQuery || searchInputRef.current?.value || hiddenFields?.draftId);
+      || selected.pendingOnly || Boolean(initialQuery || searchInputRef.current?.value || hiddenFields?.draftId);
     // Discard open menus' pending selections without applying them first.
     setResetKey((key) => key + 1);
     if (searchInputRef.current) searchInputRef.current.value = '';
@@ -77,6 +81,7 @@ export function AdminEventsFilters({
 
   return (
     <form ref={formRef} action={action} method="get" aria-busy={isPending} className="flex w-full flex-wrap items-end gap-2">
+      {selected.pendingOnly ? <input type="hidden" name="pending" value="1" /> : null}
       {selected.regions.map((value) => <input key={value} type="hidden" name="region" value={value} />)}
       {selected.provinces.map((value) => <input key={value} type="hidden" name="province" value={value} />)}
       <FilterSelect
@@ -105,6 +110,19 @@ export function AdminEventsFilters({
         applyOnClose
         onValueChange={(values) => applySelection(parseLocationFilters(selected.regions, values))}
       />
+      {initialPendingOnly !== undefined ? (
+        <IconButton
+          title={t('views.pending')}
+          aria-label={t('views.pending')}
+          aria-pressed={selected.pendingOnly}
+          data-active={selected.pendingOnly}
+          className="data-[active=true]:border-amber-400 data-[active=true]:bg-amber-50 data-[active=true]:text-amber-700 data-[active=true]:hover:bg-amber-100"
+          disabled={isPending}
+          onClick={() => applySelection({ ...selected, pendingOnly: !selected.pendingOnly })}
+        >
+          <CalendarClock className="size-4" strokeWidth={1.5} aria-hidden />
+        </IconButton>
+      ) : null}
       {hasActiveFilters ? <IconButton
         title={filtersT('clearFilters')}
         aria-label={filtersT('clearFilters')}

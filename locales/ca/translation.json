@@ -1670,6 +1670,10 @@
     }
   },
   "adminEvents": {
+    "views": {
+      "pending": "Amb nova edició pendent",
+      "emptyPending": "No hi ha esdeveniments amb una nova edició pendent que coincideixin amb els filtres."
+    },
     "title": "Esdeveniments",
     "eventCount": "{count} esdeveniments",
     "eventCountOne": "1 esdeveniment",

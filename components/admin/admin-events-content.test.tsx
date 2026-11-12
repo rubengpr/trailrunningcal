@@ -262,7 +262,7 @@ describe('AdminEventsContent event drafts', () => {
     });
   });
 
-  it('removes a rejected draft from the row state', async () => {
+  it('removes a rejected draft from the row state and refreshes server data', async () => {
     mocks.rejectEventDraft.mockResolvedValue({
       ...pendingDraft(),
       status: 'rejected',
@@ -274,6 +274,7 @@ describe('AdminEventsContent event drafts', () => {
 
     await waitFor(() => {
       expect(mocks.rejectEventDraft).toHaveBeenCalledWith(DRAFT_ID);
+      expect(mocks.routerRefresh).toHaveBeenCalledTimes(1);
       expect(screen.queryByTestId('event-import-preview')).toBeNull();
       expect(screen.queryByTitle('updateSuggestion.pendingDraft')).toBeNull();
       expect(generationButton().disabled).toBe(false);
@@ -379,4 +380,20 @@ describe('AdminEventsContent editing', () => {
       }),
     );
   });
+  it.each(['accept', 'reject'] as const)('keeps a pending draft visible when %s fails', async (action) => {
+    const request = action === 'accept' ? mocks.acceptEventDraft : mocks.rejectEventDraft;
+    request.mockRejectedValue(new Error('Request failed'));
+    render(<AdminEventsContent page={{ events: [eventDetail(pendingDraft())], total: 1, page: 1, pageSize: 50, totalPages: 1 }} query={{ ...query, pendingOnly: true }} />);
+    fireEvent.click(pendingReviewButton());
+    fireEvent.click(screen.getByText(`${action}-draft`));
+    await waitFor(() => expect(mocks.toastError).toHaveBeenCalled());
+    expect(mocks.routerRefresh).not.toHaveBeenCalled();
+    expect(pendingReviewButton()).toBeTruthy();
+  });
+
+  it('uses a specific empty message in the pending view', () => {
+    render(<AdminEventsContent page={{ events: [], total: 0, page: 1, pageSize: 50, totalPages: 0 }} query={{ ...query, pendingOnly: true }} />);
+    expect(screen.getByText('views.emptyPending')).toBeTruthy();
+  });
+
 });

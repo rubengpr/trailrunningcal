@@ -68,6 +68,7 @@ describe('getAdminEventsPage', () => {
 
     const result = await getAdminEventsPage({
       page: 2,
+      pendingOnly: true,
       search: 'trail',
       regions: ['catalonia'],
       provinces: ['Girona'],
@@ -78,6 +79,7 @@ describe('getAdminEventsPage', () => {
     expect(mocks.rpc).toHaveBeenCalledWith('get_admin_events_page', {
       p_limit: 50,
       p_offset: 50,
+      p_pending_only: true,
       p_search: 'trail',
       p_province: null,
       p_provinces: ['Girona'],
