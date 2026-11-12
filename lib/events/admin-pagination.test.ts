@@ -6,6 +6,18 @@ import {
 } from '@/lib/events/admin-pagination';
 
 describe('admin event pagination URL state', () => {
+  it('preserves repeated community and province parameters when paginating', () => {
+    const parsed = parseAdminEventPageRequest({
+      region: ['galicia', 'catalonia'], province: ['Lugo', 'Barcelona'], q: 'trail',
+    });
+    expect(parsed).toMatchObject({ regions: ['galicia', 'catalonia'], provinces: ['Lugo', 'Barcelona'] });
+    const href = buildAdminEventsHref('es', { ...parsed, page: 2 });
+    const params = new URL(href, 'http://localhost').searchParams;
+    expect(params.getAll('region')).toEqual(['galicia', 'catalonia']);
+    expect(params.getAll('province')).toEqual(['Lugo', 'Barcelona']);
+    expect(params.get('page')).toBe('2');
+  });
+
   it('parses valid page, search, and sorting values', () => {
     expect(parseAdminEventPageRequest({
       page: '3',
@@ -17,8 +29,8 @@ describe('admin event pagination URL state', () => {
     })).toEqual({
       page: 3,
       search: 'ultra',
-      region: 'catalonia',
-      province: 'Girona',
+      regions: ['catalonia'],
+      provinces: ['Girona'],
       sortColumn: 'name',
       sortDirection: 'desc',
     });
@@ -36,7 +48,8 @@ describe('admin event pagination URL state', () => {
     expect(result).toEqual({
       page: 1,
       search: 'x'.repeat(ADMIN_EVENTS_SEARCH_MAX_LENGTH),
-      province: undefined,
+      regions: [],
+      provinces: [],
       sortColumn: 'dates',
       sortDirection: 'asc',
     });
@@ -56,8 +69,8 @@ describe('admin event pagination URL state', () => {
     expect(buildAdminEventsHref('es', {
       page: 4,
       search: 'trail & mountain',
-      region: 'catalonia',
-      province: 'Girona',
+      regions: ['catalonia'],
+      provinces: ['Girona'],
       sortColumn: 'name',
       sortDirection: 'desc',
     })).toBe(
@@ -67,7 +80,7 @@ describe('admin event pagination URL state', () => {
     expect(buildAdminEventsHref('ca', {
       page: 1,
       search: '',
-      province: undefined,
+      provinces: [],
       sortColumn: 'dates',
       sortDirection: 'asc',
     })).toBe('/ca/admin/eventos/activos');
@@ -75,7 +88,7 @@ describe('admin event pagination URL state', () => {
     expect(buildAdminEventsHref('es', {
       page: 1,
       search: '',
-      province: undefined,
+      provinces: [],
       sortColumn: 'province',
       sortDirection: 'asc',
     })).toBe('/es/admin/eventos/activos?sort=province');

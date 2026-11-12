@@ -14,8 +14,8 @@ export async function GET(request: Request): Promise<NextResponse> {
     const input = parseEventImportDraftPageRequest({
       page: url.searchParams.get('page') ?? undefined,
       q: url.searchParams.get('q') ?? undefined,
-      province: url.searchParams.get('province') ?? undefined,
-      region: url.searchParams.get('region') ?? undefined,
+      province: url.searchParams.getAll('province'),
+      region: url.searchParams.getAll('region'),
       draftId: url.searchParams.get('draftId') ?? undefined,
       sort: url.searchParams.get('sort') ?? undefined,
       direction: url.searchParams.get('direction') ?? undefined,

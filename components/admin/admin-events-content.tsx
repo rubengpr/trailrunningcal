@@ -316,8 +316,8 @@ export function AdminEventsContent({ page, query }: AdminEventsContentProps) {
         action={`/${locale}/admin/eventos/activos`}
         inputId="admin-event-search"
         initialQuery={query.search}
-        initialRegion={query.region}
-        initialProvince={query.province}
+        initialRegions={query.regions}
+        initialProvinces={query.provinces}
         hiddenFields={{
           sort: query.sortColumn !== 'dates' ? query.sortColumn : undefined,
           direction: query.sortDirection !== 'asc' ? query.sortDirection : undefined,
@@ -327,8 +327,8 @@ export function AdminEventsContent({ page, query }: AdminEventsContentProps) {
       {events.length === 0 ? (
         <ListEmptyState message={query.search
           ? t('search.empty')
-          : query.province
-            ? t('filters.emptyProvince', { province: query.province })
+          : query.provinces?.length
+            ? t('filters.emptyProvince', { province: query.provinces?.join(', ') })
             : t('empty')} />
       ) : (
         <AdminEventsTable

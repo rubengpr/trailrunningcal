@@ -16,6 +16,7 @@ export interface MultiSelectOptionItem {
 }
 
 interface MultiSelectOptionsMenuProps {
+  clearLabel?: string;
   options: MultiSelectOptionItem[];
   selectedValues: string[];
   searchable?: boolean;
@@ -26,6 +27,7 @@ interface MultiSelectOptionsMenuProps {
 }
 
 export function MultiSelectOptionsMenu({
+  clearLabel,
   options,
   selectedValues,
   searchable = false,
@@ -72,6 +74,9 @@ export function MultiSelectOptionsMenu({
           />
         </div>
       )}
+      {clearLabel && onValuesChange && selectedValues.length > 0 ? (
+        <button type="button" className="cursor-pointer border-b border-gray-100 px-3 py-2 text-left text-sm text-gray-600 hover:bg-gray-50" onClick={() => onValuesChange([])}>{clearLabel}</button>
+      ) : null}
       <div className="min-h-0 overflow-y-auto p-1">
         {filteredOptions.length === 0 && (
           <p className="px-3 py-2 text-sm text-gray-500">{t('noMatchingOptions')}</p>

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface UseMultiSelectMenuOptions {
+  onClose?: () => void;
   usePortalPosition?: boolean;
   minWidth?: number;
   offset?: number;
@@ -29,6 +30,7 @@ export function useMultiSelectMenu({
   offset = 4,
   preferredMenuHeight,
   placement = 'auto',
+  onClose,
 }: UseMultiSelectMenuOptions = {}) {
   const [open, setOpen] = useState(false);
   const [dropdownStyle, setDropdownStyle] = useState<DropdownStyle>(DEFAULT_DROPDOWN_STYLE);
@@ -38,7 +40,8 @@ export function useMultiSelectMenu({
 
   const closeMenu = useCallback((): void => {
     setOpen(false);
-  }, []);
+    onClose?.();
+  }, [onClose]);
 
   const openMenu = useCallback((): void => {
     if (usePortalPosition && triggerRef.current) {

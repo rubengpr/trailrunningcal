@@ -39,7 +39,7 @@ export function parseAdminEventPageRequest(
     search: (firstValue(searchParams.q) ?? '')
       .trim()
       .slice(0, ADMIN_EVENTS_SEARCH_MAX_LENGTH),
-    ...parseLocationFilters(firstValue(searchParams.region), firstValue(searchParams.province)),
+    ...parseLocationFilters(searchParams.region, searchParams.province),
     sortColumn: parseSortColumn(firstValue(searchParams.sort)),
     sortDirection: parseSortDirection(firstValue(searchParams.direction)),
   };
@@ -57,10 +57,8 @@ export function buildAdminEventsHref(
   if (input.search) {
     searchParams.set('q', input.search);
   }
-  if (input.region) searchParams.set('region', input.region);
-  if (input.province) {
-    searchParams.set('province', input.province);
-  }
+  input.regions?.forEach((region) => searchParams.append('region', region));
+  input.provinces?.forEach((province) => searchParams.append('province', province));
   if (input.sortColumn !== 'dates') {
     searchParams.set('sort', input.sortColumn);
   }

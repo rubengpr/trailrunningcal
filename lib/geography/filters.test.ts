@@ -1,15 +1,21 @@
 import { describe, expect, it } from 'vitest';
-import { getRegionProvinces, parseLocationFilters } from './filters';
+import { getFilterProvinces, parseLocationFilters } from './filters';
 
-describe('location filters', () => {
-  it('normalizes invalid regions and incompatible provinces', () => {
-    expect(parseLocationFilters('galicia', 'Lugo')).toEqual({ region: 'galicia', province: 'Lugo' });
-    expect(parseLocationFilters('galicia', 'Barcelona')).toEqual({ region: 'galicia', province: undefined });
-    expect(parseLocationFilters('invalid', 'Barcelona')).toEqual({ region: undefined, province: 'Barcelona' });
-    expect(parseLocationFilters('__proto__', 'invalid')).toEqual({ region: undefined, province: undefined });
+describe('multiple location filters', () => {
+  it('accepts old URLs and deduplicates repeated parameters', () => {
+    expect(parseLocationFilters('galicia', 'Lugo')).toEqual({ regions: ['galicia'], provinces: ['Lugo'] });
+    expect(parseLocationFilters(['galicia', 'galicia', '__proto__'], ['Lugo', 'Lugo', 'Barcelona']))
+      .toEqual({ regions: ['galicia'], provinces: ['Lugo'] });
   });
-  it('uses the shared territory catalogue', () => {
-    expect(getRegionProvinces('galicia')).toEqual(['A Coruña', 'Lugo', 'Ourense', 'Pontevedra']);
-    expect(getRegionProvinces('andorra')).toEqual(['Andorra']);
+  it('keeps only provinces belonging to any selected community', () => {
+    expect(parseLocationFilters(['galicia', 'catalonia'], ['Lugo', 'Barcelona', 'Madrid']))
+      .toEqual({ regions: ['galicia', 'catalonia'], provinces: ['Lugo', 'Barcelona'] });
+    expect(parseLocationFilters([], ['Madrid'])).toEqual({ regions: [], provinces: ['Madrid'] });
+  });
+  it('resolves selected provinces or the community union for database filtering', () => {
+    expect(getFilterProvinces(['galicia', 'andorra']))
+      .toEqual(['A Coruña', 'Lugo', 'Ourense', 'Pontevedra', 'Andorra']);
+    expect(getFilterProvinces(['galicia'], ['Lugo', 'Ourense'])).toEqual(['Lugo', 'Ourense']);
+    expect(getFilterProvinces()).toBeUndefined();
   });
 });

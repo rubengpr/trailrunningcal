@@ -1,60 +1,89 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { useState } from 'react';
 import { NextIntlClientProvider } from 'next-intl';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import es from '@/locales/es/translation.json';
+import { parseLocationFilters } from '@/lib/geography/filters';
 import { AdminEventsFilters } from './admin-events-filters';
 import type { RegionId } from '@/lib/geography/destinations';
 
-vi.mock('@/components/ui/select-menu', () => ({
-  SelectMenu: ({ id, label, value, options, placeholder, onValueChange }: {
-    id: string; label: string; value: string;
-    options: Array<{ value: string; label: string }>;
-    placeholder: string; onValueChange: (value: string) => void;
-  }) => <label>{label}<select id={id} value={value} onChange={(event) => onValueChange(event.target.value)}>
-    <option value="">{placeholder}</option>
-    {options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-  </select></label>,
-}));
+const mocks = vi.hoisted(() => ({ replace: vi.fn() }));
+vi.mock('next/navigation', () => ({ useRouter: () => ({ replace: mocks.replace }) }));
+afterEach(() => { cleanup(); vi.resetAllMocks(); });
 
-afterEach(() => { cleanup(); vi.restoreAllMocks(); });
-
-function setup(region?: RegionId, province?: string) {
-  const submitted: FormData[] = [];
-  vi.spyOn(HTMLFormElement.prototype, 'requestSubmit').mockImplementation(function (this: HTMLFormElement) {
-    submitted.push(new FormData(this));
-  });
-  render(<NextIntlClientProvider locale="es" messages={es}>
-    <AdminEventsFilters action="/es/admin/eventos/borradores" inputId="search" initialQuery="trail"
-      initialRegion={region} initialProvince={province} hiddenFields={{ sort: 'name', direction: 'desc' }} />
-  </NextIntlClientProvider>);
-  return {
-    region: screen.getByLabelText('Comunidad Autónoma'),
-    province: screen.getByLabelText('Provincia'), submitted,
-  };
+function setup(regions: RegionId[] = [], provinces: string[] = []) {
+  function Harness() {
+    const [selected, setSelected] = useState({ regions, provinces });
+    mocks.replace.mockImplementation((href: string) => {
+      const params = new URL(href, 'http://localhost').searchParams;
+      setSelected(parseLocationFilters(params.getAll('region'), params.getAll('province')));
+    });
+    return <NextIntlClientProvider locale="es" messages={es}>
+      <AdminEventsFilters action="/es/admin/eventos/borradores" inputId="search" initialQuery="trail"
+        initialRegions={selected.regions} initialProvinces={selected.provinces}
+        hiddenFields={{ sort: 'name', direction: 'desc' }} />
+    </NextIntlClientProvider>;
+  }
+  render(<Harness />);
 }
 
-describe('dependent admin location filters', () => {
-  it('only lists the selected region provinces', () => {
-    const { province } = setup('galicia');
-    expect(within(province).getAllByRole('option').map((option) => option.textContent))
-      .toEqual(['Todas las provincias', 'A Coruña', 'Lugo', 'Ourense', 'Pontevedra']);
+function params() { return new URL(mocks.replace.mock.lastCall![0], 'http://localhost').searchParams; }
+
+describe('admin location filters applied on close', () => {
+  it('applies multiple communities once when closing the menu', () => {
+    setup();
+    fireEvent.click(screen.getByLabelText('Comunidad Autónoma'));
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Galicia' }));
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Cataluña' }));
+    expect(mocks.replace).not.toHaveBeenCalled();
+    expect(screen.getByRole('checkbox', { name: 'Galicia' }).getAttribute('aria-checked')).toBe('true');
+    fireEvent.click(screen.getByLabelText('Comunidad Autónoma'));
+    expect(mocks.replace).toHaveBeenCalledTimes(1);
+    expect(params().getAll('region')).toEqual(['galicia', 'catalonia']);
+    expect(params().get('q')).toBe('trail');
+    expect(params().get('sort')).toBe('name');
+    expect(params().get('page')).toBeNull();
+    expect(screen.queryByRole('checkbox', { name: 'Galicia' })).toBeNull();
   });
 
-  it('clears an incompatible province before submitting and preserves other filters', () => {
-    const { region, province, submitted } = setup('galicia', 'Lugo');
-    fireEvent.change(region, { target: { value: 'catalonia' } });
-    expect((province as HTMLSelectElement).value).toBe('');
-    expect(Object.fromEntries(submitted[0])).toEqual({ region: 'catalonia', province: '', q: 'trail', sort: 'name', direction: 'desc' });
-    expect(within(province).queryByText('Lugo')).toBeNull();
-    expect(within(province).getByText('Barcelona')).toBeTruthy();
+  it('applies multiple provinces once when clicking outside', () => {
+    setup(['galicia', 'catalonia']);
+    fireEvent.click(screen.getByLabelText('Provincia'));
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Lugo' }));
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Barcelona' }));
+    expect(mocks.replace).not.toHaveBeenCalled();
+    expect(screen.queryByRole('checkbox', { name: 'Madrid' })).toBeNull();
+    fireEvent.mouseDown(document.body);
+    expect(mocks.replace).toHaveBeenCalledTimes(1);
+    expect(params().getAll('province')).toEqual(['Lugo', 'Barcelona']);
+    expect(screen.queryByRole('checkbox', { name: 'Madrid' })).toBeNull();
+    expect(within(screen.getByLabelText('Provincia')).getByText('Lugo +1')).toBeTruthy();
   });
 
-  it('retains the province when removing the region and restores all options', () => {
-    const { region, province, submitted } = setup('galicia', 'Lugo');
-    fireEvent.change(region, { target: { value: '' } });
-    expect(submitted[0].get('province')).toBe('Lugo');
-    expect(submitted[0].get('region')).toBe('');
-    expect(within(province).getAllByRole('option').length).toBeGreaterThan(50);
+  it('clears incompatible provinces and retains provinces when clearing all communities', () => {
+    setup(['galicia', 'catalonia'], ['Lugo', 'Barcelona']);
+    fireEvent.click(screen.getByLabelText('Comunidad Autónoma'));
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Cataluña' }));
+    fireEvent.click(screen.getByLabelText('Comunidad Autónoma'));
+    expect(params().getAll('province')).toEqual(['Lugo']);
+    fireEvent.click(screen.getByLabelText('Comunidad Autónoma'));
+    fireEvent.click(screen.getByRole('button', { name: 'Todas las comunidades autónomas' }));
+    expect(mocks.replace).toHaveBeenCalledTimes(1);
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(mocks.replace).toHaveBeenCalledTimes(2);
+    expect(params().getAll('region')).toEqual([]);
+    fireEvent.click(screen.getByLabelText('Comunidad Autónoma'));
+    expect(params().getAll('province')).toEqual(['Lugo']);
+    fireEvent.click(screen.getByLabelText('Comunidad Autónoma'));
   });
+  it('does not navigate when closing an unchanged selection', () => {
+    setup(['galicia']);
+    fireEvent.click(screen.getByLabelText('Comunidad Autónoma'));
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Cataluña' }));
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Cataluña' }));
+    fireEvent.click(screen.getByLabelText('Comunidad Autónoma'));
+    expect(mocks.replace).not.toHaveBeenCalled();
+  });
+
 });

@@ -5,6 +5,18 @@ import {
 } from './draft-pagination';
 
 describe('event import draft pagination', () => {
+  it('preserves repeated community and province parameters when paginating', () => {
+    const parsed = parseEventImportDraftPageRequest({
+      region: ['galicia', 'catalonia'], province: ['Lugo', 'Barcelona'], q: 'trail',
+    });
+    expect(parsed).toMatchObject({ regions: ['galicia', 'catalonia'], provinces: ['Lugo', 'Barcelona'] });
+    const href = buildEventImportDraftsHref('es', { ...parsed, page: 2 });
+    const params = new URL(href, 'http://localhost').searchParams;
+    expect(params.getAll('region')).toEqual(['galicia', 'catalonia']);
+    expect(params.getAll('province')).toEqual(['Lugo', 'Barcelona']);
+    expect(params.get('page')).toBe('2');
+  });
+
   it('normalizes page, search, and draft filters', () => {
     expect(parseEventImportDraftPageRequest({
       page: '3',
@@ -13,7 +25,8 @@ describe('event import draft pagination', () => {
     })).toEqual({
       page: 3,
       search: 'ultra',
-      province: undefined,
+      regions: [],
+      provinces: [],
       draftId: '5cd34b8e-8803-4b2d-bbae-8c7ba2a0a9ba',
       sortColumn: 'dates',
       sortDirection: 'asc',
@@ -27,7 +40,8 @@ describe('event import draft pagination', () => {
     })).toEqual({
       page: 1,
       search: '',
-      province: undefined,
+      regions: [],
+      provinces: [],
       draftId: null,
       sortColumn: 'dates',
       sortDirection: 'asc',
@@ -38,23 +52,18 @@ describe('event import draft pagination', () => {
     expect(buildEventImportDraftsHref('es', {
       page: 2,
       search: 'ultra',
-      region: 'galicia',
-      province: 'A Coruña',
+      regions: ['galicia'],
+      provinces: ['A Coruña'],
       draftId: null,
       sortColumn: 'races',
       sortDirection: 'desc',
     })).toBe('/es/admin/eventos/borradores?page=2&q=ultra&region=galicia&province=A+Coru%C3%B1a&sort=races&direction=desc');
   });
 
-  it('accepts known provinces and ignores invalid values', () => {
-    expect(parseEventImportDraftPageRequest({ province: 'Lugo' }).province)
-      .toBe('Lugo');
-    expect(parseEventImportDraftPageRequest({ province: ['Ourense', 'Lugo'] }).province)
-      .toBe('Ourense');
-    expect(parseEventImportDraftPageRequest({ province: 'Galicia' }).province)
-      .toBeUndefined();
-    expect(parseEventImportDraftPageRequest({ province: '' }).province)
-      .toBeUndefined();
+  it('accepts repeated provinces and ignores invalid values', () => {
+    expect(parseEventImportDraftPageRequest({ province: ['Ourense', 'Lugo', 'Lugo'] }).provinces)
+      .toEqual(['Ourense', 'Lugo']);
+    expect(parseEventImportDraftPageRequest({ province: 'Galicia' }).provinces).toEqual([]);
   });
 
   it('parses supported sorting values and ignores unsupported ones', () => {

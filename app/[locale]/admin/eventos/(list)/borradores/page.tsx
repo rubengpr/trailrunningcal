@@ -28,7 +28,6 @@ export default async function AdminEventosBorradoresPage({
 
   return (
     <AdminEventImportDraftsContent
-      key={buildEventImportDraftsHref(locale, input)}
       initialPage={page}
       query={input}
     />

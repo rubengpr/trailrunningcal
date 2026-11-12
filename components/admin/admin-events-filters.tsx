@@ -1,20 +1,21 @@
 'use client';
 
 import { Search } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useOptimistic, useRef, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import { SelectMenu } from '@/components/ui/select-menu';
+import { FilterSelect } from '@/components/filters/filter-select';
 import { PROVINCES } from '@/lib/geography/provinces';
 import { REGION_IDS } from '@/lib/geography/destinations';
 import type { RegionId } from '@/lib/geography/destinations';
-import { getRegionProvinces, parseLocationFilters } from '@/lib/geography/filters';
+import { getFilterProvinces, parseLocationFilters } from '@/lib/geography/filters';
 
 interface AdminEventsFiltersProps {
   action: string;
   inputId: string;
   initialQuery: string;
-  initialProvince?: string;
-  initialRegion?: RegionId;
+  initialProvinces?: string[];
+  initialRegions?: RegionId[];
   hiddenFields?: Record<string, string | undefined>;
 }
 
@@ -22,71 +23,65 @@ export function AdminEventsFilters({
   action,
   inputId,
   initialQuery,
-  initialProvince,
-  initialRegion,
+  initialProvinces,
+  initialRegions,
   hiddenFields,
 }: AdminEventsFiltersProps): React.ReactElement {
   const t = useTranslations('adminEvents');
   const geographyT = useTranslations('geography.regions');
   const locale = useLocale();
-  const [region, setRegion] = useState<RegionId | ''>(initialRegion ?? '');
-  const [province, setProvince] = useState(initialProvince ?? '');
-  const regionInputRef = useRef<HTMLInputElement>(null);
-  const provinces = region ? getRegionProvinces(region) : PROVINCES;
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [selected, setSelected] = useOptimistic({
+    regions: initialRegions ?? [], provinces: initialProvinces ?? [],
+  });
+  const provinces = getFilterProvinces(selected.regions) ?? PROVINCES;
   const regions = REGION_IDS.map((value) => ({ value, label: geographyT(value) }))
     .sort((a, b) => a.label.localeCompare(b.label, locale));
   const formRef = useRef<HTMLFormElement>(null);
-  const provinceInputRef = useRef<HTMLInputElement>(null);
 
-  const handleRegionChange = (value: string): void => {
-    const next = parseLocationFilters(value, province);
-    setRegion(next.region ?? '');
-    setProvince(next.province ?? '');
-    if (regionInputRef.current) regionInputRef.current.value = next.region ?? '';
-    if (provinceInputRef.current) provinceInputRef.current.value = next.province ?? '';
-    formRef.current?.requestSubmit();
-  };
-
-  const handleProvinceChange = (nextProvince: string): void => {
-    setProvince(nextProvince);
-    if (provinceInputRef.current) {
-      provinceInputRef.current.value = nextProvince;
+  const applySelection = (next: typeof selected): void => {
+    const params = new URLSearchParams();
+    if (formRef.current) {
+      new FormData(formRef.current).forEach((value, name) => {
+        if (typeof value === 'string' && name !== 'region' && name !== 'province') params.append(name, value);
+      });
     }
-    formRef.current?.requestSubmit();
+    next.regions.forEach((value) => params.append('region', value));
+    next.provinces.forEach((value) => params.append('province', value));
+    const query = params.toString();
+    startTransition(() => {
+      setSelected(next);
+      router.replace(query ? `${action}?${query}` : action, { scroll: false });
+    });
   };
 
   return (
-    <form ref={formRef} action={action} method="get" className="flex w-full flex-wrap items-end gap-2">
-      <input ref={regionInputRef} type="hidden" name="region" defaultValue={region} />
-      <div className="min-w-48">
-        <SelectMenu
-          id={`${inputId}-region`}
-          label={t('filters.region')}
-          value={region}
-          options={regions}
-          placeholder={t('filters.allRegions')}
-          variant="modal"
-          onValueChange={handleRegionChange}
-        />
-      </div>
-      <input
-        ref={provinceInputRef}
-        id="admin-event-province"
-        type="hidden"
-        name="province"
-        defaultValue={province}
+    <form ref={formRef} action={action} method="get" aria-busy={isPending} className="flex w-full flex-wrap items-end gap-2">
+      {selected.regions.map((value) => <input key={value} type="hidden" name="region" value={value} />)}
+      {selected.provinces.map((value) => <input key={value} type="hidden" name="province" value={value} />)}
+      <FilterSelect
+        id={`${inputId}-region`}
+        label={t('filters.region')}
+        value={selected.regions}
+        options={regions}
+        placeholder={t('filters.allRegions')}
+        clearLabel={t('filters.allRegions')}
+        searchable
+        applyOnClose
+        onValueChange={(values) => applySelection(parseLocationFilters(values, selected.provinces))}
       />
-      <div className="min-w-48">
-        <SelectMenu
-          id="admin-event-province-selector"
-          label={t('filters.province')}
-          value={province}
-          options={provinces.map((value) => ({ value, label: value }))}
-          placeholder={t('filters.allProvinces')}
-          variant="modal"
-          onValueChange={handleProvinceChange}
-        />
-      </div>
+      <FilterSelect
+        id={`${inputId}-province`}
+        label={t('filters.province')}
+        value={selected.provinces}
+        options={provinces.map((value) => ({ value, label: value }))}
+        placeholder={t('filters.allProvinces')}
+        clearLabel={t('filters.allProvinces')}
+        searchable
+        applyOnClose
+        onValueChange={(values) => applySelection(parseLocationFilters(selected.regions, values))}
+      />
       <div className="relative ml-auto flex w-full max-w-64">
         <label htmlFor={inputId} className="sr-only">
           {t('search.placeholder')}

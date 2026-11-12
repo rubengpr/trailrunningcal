@@ -7,8 +7,8 @@ export type AdminEventSortDirection = 'asc' | 'desc';
 export interface AdminEventPageRequest {
   page: number;
   search: string;
-  region?: RegionId;
-  province?: string;
+  regions?: RegionId[];
+  provinces?: string[];
   sortColumn: AdminEventSortColumn;
   sortDirection: AdminEventSortDirection;
 }

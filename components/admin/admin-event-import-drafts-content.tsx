@@ -94,6 +94,23 @@ export function AdminEventImportDraftsContent({
   );
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSavingEdit, setIsSavingEdit] = useState(false);
+  // Keep the filter menus mounted during navigation, while resetting page-local review state.
+  const [previousPage, setPreviousPage] = useState(initialPage);
+  if (previousPage !== initialPage) {
+    setPreviousPage(initialPage);
+    setDrafts(initialPage.drafts);
+    setDraftToPreview(null);
+    setDraftToEdit(null);
+    setDraftToDelete(null);
+    setAcceptingDraftId(null);
+    setPublicationJobs(Object.fromEntries(initialPage.drafts.flatMap((draft) =>
+      draft.publication?.status === 'pending' || draft.publication?.status === 'running'
+        ? [[draft.id, draft.publication.jobId]] : [],
+    )));
+    setFailedPublications(Object.fromEntries(initialPage.drafts.flatMap((draft) =>
+      draft.publication?.status === 'failed' ? [[draft.id, true]] : [],
+    )));
+  }
   const draftCount = total === 1
     ? t('draftCountOne')
     : t('draftCount', { count: total });
@@ -247,8 +264,8 @@ export function AdminEventImportDraftsContent({
         action={`/${locale}/admin/eventos/borradores`}
         inputId="admin-event-draft-search"
         initialQuery={query.search}
-        initialRegion={query.region}
-        initialProvince={query.province}
+        initialRegions={query.regions}
+        initialProvinces={query.provinces}
         hiddenFields={{
           draftId: query.draftId ?? undefined,
           sort: query.sortColumn !== 'dates' ? query.sortColumn : undefined,
@@ -258,8 +275,8 @@ export function AdminEventImportDraftsContent({
       {drafts.length === 0 ? (
         <ListEmptyState message={query.search
           ? t('search.empty')
-          : query.province
-            ? eventsT('filters.emptyProvince', { province: query.province })
+          : query.provinces?.length
+            ? eventsT('filters.emptyProvince', { province: query.provinces?.join(', ') })
             : t('empty')} />
       ) : (
         <Table>

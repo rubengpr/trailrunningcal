@@ -7,6 +7,8 @@ import es from '@/locales/es/translation.json';
 import type { EventImportDraft, EventImportDraftPage } from '@/types/event-import-draft.types';
 import { AdminEventImportDraftsContent } from '@/components/admin/admin-event-import-drafts-content';
 
+vi.mock('next/navigation', () => ({ useRouter: () => ({ replace: vi.fn() }) }));
+
 const mocks = vi.hoisted(() => ({ accept: vi.fn(), reject: vi.fn(), publication: vi.fn() }));
 vi.mock('@/lib/api/events', () => ({
   acceptEventImportDraft: mocks.accept,
@@ -51,6 +53,24 @@ beforeEach(() => vi.resetAllMocks());
 afterEach(() => { cleanup(); vi.useRealTimers(); });
 
 describe('AdminEventImportDraftsContent', () => {
+  it('updates page results without remounting an open filter menu', () => {
+    const view = (id: string) => <NextIntlClientProvider locale="es" messages={es}>
+      <AdminEventImportDraftsContent
+        initialPage={{ drafts: [draft(id)], total: 1, page: 1, pageSize: 50, totalPages: 1 }}
+        query={{ page: 1, search: '', draftId: null, sortColumn: 'name', sortDirection: 'asc' }}
+      />
+    </NextIntlClientProvider>;
+    const { rerender } = render(view('1'));
+    const regionButton = screen.getByLabelText('Comunidad Autónoma');
+    fireEvent.click(regionButton);
+    expect(screen.getByRole('checkbox', { name: 'Galicia' })).toBeTruthy();
+    rerender(view('2'));
+    expect(screen.queryByText('Evento 1')).toBeNull();
+    expect(screen.getByText('Evento 2')).toBeTruthy();
+    expect(screen.getByLabelText('Comunidad Autónoma')).toBe(regionButton);
+    expect(screen.getByRole('checkbox', { name: 'Galicia' })).toBeTruthy();
+  });
+
   it('retains accepted rows, their order and pagination when all visible drafts are processed', async () => {
     mocks.accept.mockResolvedValue({ status: 'accepted' });
     renderTable();

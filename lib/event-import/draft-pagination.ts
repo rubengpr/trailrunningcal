@@ -35,7 +35,7 @@ export function parseEventImportDraftPageRequest(
     search: (firstValue(searchParams.q) ?? '')
       .trim()
       .slice(0, SEARCH_MAX_LENGTH),
-    ...parseLocationFilters(firstValue(searchParams.region), firstValue(searchParams.province)),
+    ...parseLocationFilters(searchParams.region, searchParams.province),
     draftId: rawDraftId && UUID_PATTERN.test(rawDraftId) ? rawDraftId : null,
     sortColumn: parseSortColumn(firstValue(searchParams.sort)),
     sortDirection: parseSortDirection(firstValue(searchParams.direction)),
@@ -49,8 +49,8 @@ export function buildEventImportDraftsHref(
   const searchParams = new URLSearchParams();
   if (input.page > 1) searchParams.set('page', input.page.toString());
   if (input.search) searchParams.set('q', input.search);
-  if (input.region) searchParams.set('region', input.region);
-  if (input.province) searchParams.set('province', input.province);
+  input.regions?.forEach((region) => searchParams.append('region', region));
+  input.provinces?.forEach((province) => searchParams.append('province', province));
   if (input.draftId) searchParams.set('draftId', input.draftId);
   if (input.sortColumn !== 'dates') searchParams.set('sort', input.sortColumn);
   if (input.sortDirection !== 'asc') searchParams.set('direction', input.sortDirection);

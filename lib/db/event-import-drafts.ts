@@ -1,4 +1,4 @@
-import { getRegionProvinces } from '@/lib/geography/filters';
+import { getFilterProvinces } from '@/lib/geography/filters';
 import { createAdminClient } from '@/lib/supabase/server';
 import { ValidationError } from '@/lib/errors';
 import type {
@@ -73,14 +73,14 @@ export async function getEventImportDraftsPage(
   input: EventImportDraftPageRequest,
 ): Promise<EventImportDraftPage> {
   const supabase = createAdminClient();
+  const scope = getFilterProvinces(input.regions, input.provinces);
   const { data: indexData, error: indexError } = await supabase.rpc(
     'get_event_import_drafts_page',
     {
       p_limit: EVENT_IMPORT_DRAFTS_PAGE_SIZE,
       p_offset: (input.page - 1) * EVENT_IMPORT_DRAFTS_PAGE_SIZE,
       p_search: input.search || null,
-      ...(input.region ? { p_provinces: getRegionProvinces(input.region) } : {}),
-      ...(input.province ? { p_province: input.province } : {}),
+      ...(scope ? { p_provinces: scope } : {}),
       p_draft_id: input.draftId,
       p_sort_column: input.sortColumn,
       p_sort_direction: input.sortDirection,

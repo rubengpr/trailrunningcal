@@ -1,4 +1,4 @@
-import { getRegionProvinces } from '@/lib/geography/filters';
+import { getFilterProvinces } from '@/lib/geography/filters';
 import { cache } from 'react';
 import {
   createAdminClient,
@@ -277,15 +277,16 @@ export async function getUpcomingEventsPage({
 }
 
 export async function getAdminEventsPage({
-  region,
+  regions,
   page,
   search,
-  province,
+  provinces,
   sortColumn,
   sortDirection,
 }: AdminEventPageRequest): Promise<AdminEventPage> {
   const supabase = createAdminClient();
   const offset = (page - 1) * ADMIN_EVENTS_PAGE_SIZE;
+  const scope = getFilterProvinces(regions, provinces);
 
   const { data: indexData, error: indexError } = await supabase.rpc(
     'get_admin_events_page',
@@ -293,8 +294,8 @@ export async function getAdminEventsPage({
       p_limit: ADMIN_EVENTS_PAGE_SIZE,
       p_offset: offset,
       p_search: search || null,
-      p_province: province ?? null,
-      ...(region ? { p_provinces: getRegionProvinces(region) } : {}),
+      p_province: null,
+      ...(scope ? { p_provinces: scope } : {}),
       p_sort_column: sortColumn,
       p_sort_direction: sortDirection,
     },
