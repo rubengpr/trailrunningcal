@@ -1,3 +1,4 @@
+import type { RegionId } from '@/lib/geography/destinations';
 import type { AdminTrailEventDetail } from '@/types/event.types';
 
 export type AdminEventSortColumn = 'dates' | 'name' | 'province';
@@ -6,6 +7,7 @@ export type AdminEventSortDirection = 'asc' | 'desc';
 export interface AdminEventPageRequest {
   page: number;
   search: string;
+  region?: RegionId;
   province?: string;
   sortColumn: AdminEventSortColumn;
   sortDirection: AdminEventSortDirection;

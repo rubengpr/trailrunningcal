@@ -1,4 +1,13 @@
 {
+  "adminEvents": {
+    "filters": {
+      "region": "Communauté autonome",
+      "allRegions": "Toutes les communautés autonomes",
+      "province": "Province",
+      "allProvinces": "Toutes les provinces",
+      "emptyProvince": "Aucun événement dans {province}."
+    }
+  },
   "title": "Calendrier des courses de trail en Espagne",
   "subtitle": "Découvre les courses de trail et de montagne en Espagne. Trouve ta prochaine course par mois, province, distance et type.",
   "map": {

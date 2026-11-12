@@ -247,6 +247,7 @@ export function AdminEventImportDraftsContent({
         action={`/${locale}/admin/eventos/borradores`}
         inputId="admin-event-draft-search"
         initialQuery={query.search}
+        initialRegion={query.region}
         initialProvince={query.province}
         hiddenFields={{
           draftId: query.draftId ?? undefined,

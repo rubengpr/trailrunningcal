@@ -1713,6 +1713,8 @@
     },
     "filters": {
       "province": "Provincia",
+      "region": "Comunidad Autónoma",
+      "allRegions": "Todas las comunidades autónomas",
       "allProvinces": "Todas las provincias",
       "emptyProvince": "No hay eventos en {province}."
     },

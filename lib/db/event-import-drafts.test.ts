@@ -15,6 +15,7 @@ import { getEventImportDraftsPage } from './event-import-drafts';
 const input = {
   page: 2,
   search: 'ultra',
+  region: 'catalonia' as const,
   province: 'Girona',
   draftId: null,
   sortColumn: 'name' as const,
@@ -65,6 +66,7 @@ describe('getEventImportDraftsPage', () => {
       p_offset: EVENT_IMPORT_DRAFTS_PAGE_SIZE,
       p_search: 'ultra',
       p_province: 'Girona',
+      p_provinces: ['Barcelona', 'Girona', 'Lleida', 'Tarragona'],
       p_draft_id: null,
       p_sort_column: 'name',
       p_sort_direction: 'desc',

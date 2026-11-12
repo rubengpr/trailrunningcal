@@ -1,4 +1,13 @@
 {
+  "adminEvents": {
+    "filters": {
+      "region": "Autonomous Community",
+      "allRegions": "All autonomous communities",
+      "province": "Province",
+      "allProvinces": "All provinces",
+      "emptyProvince": "No events in {province}."
+    }
+  },
   "title": "Trail running race calendar in Spain",
   "subtitle": "Discover trail and mountain races across Spain. Find your next race by month, province, distance and race type.",
   "map": {

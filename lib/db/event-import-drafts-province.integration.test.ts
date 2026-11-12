@@ -92,6 +92,20 @@ integrationDescribe('get_event_import_drafts_page province filtering', () => {
     if (unfilteredError) throw unfilteredError;
     expect(unfiltered[0].total_count).toBe(53);
 
+    for (const [scope, province, total] of [
+      [['Barcelona', 'Girona'], null, 52],
+      [['Barcelona', 'Girona'], 'Girona', 2],
+      [['Lugo', 'Ourense'], null, 0],
+      [[], null, 0],
+    ] as const) {
+      const result = await admin.rpc('get_event_import_drafts_page', {
+        ...query, p_province: province, p_provinces: [...scope],
+      });
+      if (result.error) throw result.error;
+      expect(result.data[0].total_count).toBe(total);
+      expect(new Set(result.data[0].draft_ids).size).toBe(result.data[0].draft_ids.length);
+    }
+
     const otherId = inserted.find((draft) => draft.data.event.name === `${search}-other`)?.id;
     expect(otherId).toBeDefined();
     const { data: mismatch, error: mismatchError } = await admin.rpc('get_event_import_drafts_page', {

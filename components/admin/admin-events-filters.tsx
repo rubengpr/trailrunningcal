@@ -2,15 +2,19 @@
 
 import { Search } from 'lucide-react';
 import { useRef, useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { SelectMenu } from '@/components/ui/select-menu';
 import { PROVINCES } from '@/lib/geography/provinces';
+import { REGION_IDS } from '@/lib/geography/destinations';
+import type { RegionId } from '@/lib/geography/destinations';
+import { getRegionProvinces, parseLocationFilters } from '@/lib/geography/filters';
 
 interface AdminEventsFiltersProps {
   action: string;
   inputId: string;
   initialQuery: string;
   initialProvince?: string;
+  initialRegion?: RegionId;
   hiddenFields?: Record<string, string | undefined>;
 }
 
@@ -19,12 +23,29 @@ export function AdminEventsFilters({
   inputId,
   initialQuery,
   initialProvince,
+  initialRegion,
   hiddenFields,
 }: AdminEventsFiltersProps): React.ReactElement {
   const t = useTranslations('adminEvents');
+  const geographyT = useTranslations('geography.regions');
+  const locale = useLocale();
+  const [region, setRegion] = useState<RegionId | ''>(initialRegion ?? '');
   const [province, setProvince] = useState(initialProvince ?? '');
+  const regionInputRef = useRef<HTMLInputElement>(null);
+  const provinces = region ? getRegionProvinces(region) : PROVINCES;
+  const regions = REGION_IDS.map((value) => ({ value, label: geographyT(value) }))
+    .sort((a, b) => a.label.localeCompare(b.label, locale));
   const formRef = useRef<HTMLFormElement>(null);
   const provinceInputRef = useRef<HTMLInputElement>(null);
+
+  const handleRegionChange = (value: string): void => {
+    const next = parseLocationFilters(value, province);
+    setRegion(next.region ?? '');
+    setProvince(next.province ?? '');
+    if (regionInputRef.current) regionInputRef.current.value = next.region ?? '';
+    if (provinceInputRef.current) provinceInputRef.current.value = next.province ?? '';
+    formRef.current?.requestSubmit();
+  };
 
   const handleProvinceChange = (nextProvince: string): void => {
     setProvince(nextProvince);
@@ -35,7 +56,19 @@ export function AdminEventsFilters({
   };
 
   return (
-    <form ref={formRef} action={action} method="get" className="flex w-full flex-wrap justify-between gap-2">
+    <form ref={formRef} action={action} method="get" className="flex w-full flex-wrap items-end gap-2">
+      <input ref={regionInputRef} type="hidden" name="region" defaultValue={region} />
+      <div className="min-w-48">
+        <SelectMenu
+          id={`${inputId}-region`}
+          label={t('filters.region')}
+          value={region}
+          options={regions}
+          placeholder={t('filters.allRegions')}
+          variant="modal"
+          onValueChange={handleRegionChange}
+        />
+      </div>
       <input
         ref={provinceInputRef}
         id="admin-event-province"
@@ -46,14 +79,15 @@ export function AdminEventsFilters({
       <div className="min-w-48">
         <SelectMenu
           id="admin-event-province-selector"
+          label={t('filters.province')}
           value={province}
-          options={PROVINCES.map((value) => ({ value, label: value }))}
+          options={provinces.map((value) => ({ value, label: value }))}
           placeholder={t('filters.allProvinces')}
           variant="modal"
           onValueChange={handleProvinceChange}
         />
       </div>
-      <div className="relative flex w-full max-w-64">
+      <div className="relative ml-auto flex w-full max-w-64">
         <label htmlFor={inputId} className="sr-only">
           {t('search.placeholder')}
         </label>

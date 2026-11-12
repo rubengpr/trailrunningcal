@@ -1681,6 +1681,8 @@
     },
     "filters": {
       "province": "Província",
+      "region": "Comunitat Autònoma",
+      "allRegions": "Totes les comunitats autònomes",
       "allProvinces": "Totes les províncies",
       "emptyProvince": "No hi ha esdeveniments a {province}."
     },

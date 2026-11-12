@@ -1,3 +1,4 @@
+import type { RegionId } from '@/lib/geography/destinations';
 import type { EventImportDraftTranslationJobStatus } from '@/types/event-import-draft-translation.types';
 import type { TrailEventAgentEvent, TrailEventAgentRace } from '@/types/trail-event-agent.types';
 
@@ -30,6 +31,7 @@ export interface EventImportDraft {
 export interface EventImportDraftPageRequest {
   page: number;
   search: string;
+  region?: RegionId;
   province?: string;
   draftId: string | null;
   sortColumn: EventImportDraftSortColumn;

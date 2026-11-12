@@ -1,3 +1,4 @@
+import { getRegionProvinces } from '@/lib/geography/filters';
 import { cache } from 'react';
 import {
   createAdminClient,
@@ -276,6 +277,7 @@ export async function getUpcomingEventsPage({
 }
 
 export async function getAdminEventsPage({
+  region,
   page,
   search,
   province,
@@ -292,6 +294,7 @@ export async function getAdminEventsPage({
       p_offset: offset,
       p_search: search || null,
       p_province: province ?? null,
+      ...(region ? { p_provinces: getRegionProvinces(region) } : {}),
       p_sort_column: sortColumn,
       p_sort_direction: sortDirection,
     },

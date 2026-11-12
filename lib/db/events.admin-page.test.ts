@@ -69,6 +69,7 @@ describe('getAdminEventsPage', () => {
     const result = await getAdminEventsPage({
       page: 2,
       search: 'trail',
+      region: 'catalonia',
       province: 'Girona',
       sortColumn: 'name',
       sortDirection: 'desc',
@@ -79,6 +80,7 @@ describe('getAdminEventsPage', () => {
       p_offset: 50,
       p_search: 'trail',
       p_province: 'Girona',
+      p_provinces: ['Barcelona', 'Girona', 'Lleida', 'Tarragona'],
       p_sort_column: 'name',
       p_sort_direction: 'desc',
     });

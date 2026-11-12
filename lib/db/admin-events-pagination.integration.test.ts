@@ -133,6 +133,19 @@ integrationDescribe('get_admin_events_page integration', () => {
     expect(barcelonaPage.data?.[0]).toEqual(expect.objectContaining({ total_count: 54 }));
     expect(gironaPage.data?.[0]).toEqual(expect.objectContaining({ total_count: 1 }));
     expect(gironaPage.data?.[0].event_ids).toContain(events[1].id);
+    for (const [scope, province, total] of [
+      [['Barcelona', 'Girona'], null, 54],
+      [['Barcelona', 'Girona'], 'Girona', 1],
+      [['Lugo', 'Ourense'], null, 0],
+      [[], null, 0],
+    ] as const) {
+      const result = await admin.rpc('get_admin_events_page', {
+        ...rpcParameters(search, 0, province), p_provinces: [...scope],
+      });
+      if (result.error) throw result.error;
+      expect(result.data[0].total_count).toBe(total);
+      expect(new Set(result.data[0].event_ids).size).toBe(result.data[0].event_ids.length);
+    }
     expect(anonymousPage.error).not.toBeNull();
-  });
+  }, 30_000);
 });

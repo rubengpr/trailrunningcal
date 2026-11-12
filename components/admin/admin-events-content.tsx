@@ -316,6 +316,7 @@ export function AdminEventsContent({ page, query }: AdminEventsContentProps) {
         action={`/${locale}/admin/eventos/activos`}
         inputId="admin-event-search"
         initialQuery={query.search}
+        initialRegion={query.region}
         initialProvince={query.province}
         hiddenFields={{
           sort: query.sortColumn !== 'dates' ? query.sortColumn : undefined,

@@ -10,12 +10,14 @@ describe('admin event pagination URL state', () => {
     expect(parseAdminEventPageRequest({
       page: '3',
       q: '  ultra  ',
+      region: 'catalonia',
       province: 'Girona',
       sort: 'name',
       direction: 'desc',
     })).toEqual({
       page: 3,
       search: 'ultra',
+      region: 'catalonia',
       province: 'Girona',
       sortColumn: 'name',
       sortDirection: 'desc',
@@ -54,11 +56,12 @@ describe('admin event pagination URL state', () => {
     expect(buildAdminEventsHref('es', {
       page: 4,
       search: 'trail & mountain',
+      region: 'catalonia',
       province: 'Girona',
       sortColumn: 'name',
       sortDirection: 'desc',
     })).toBe(
-      '/es/admin/eventos/activos?page=4&q=trail+%26+mountain&province=Girona&sort=name&direction=desc',
+      '/es/admin/eventos/activos?page=4&q=trail+%26+mountain&region=catalonia&province=Girona&sort=name&direction=desc',
     );
 
     expect(buildAdminEventsHref('ca', {

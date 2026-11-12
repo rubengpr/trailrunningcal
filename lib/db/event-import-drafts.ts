@@ -1,3 +1,4 @@
+import { getRegionProvinces } from '@/lib/geography/filters';
 import { createAdminClient } from '@/lib/supabase/server';
 import { ValidationError } from '@/lib/errors';
 import type {
@@ -78,6 +79,7 @@ export async function getEventImportDraftsPage(
       p_limit: EVENT_IMPORT_DRAFTS_PAGE_SIZE,
       p_offset: (input.page - 1) * EVENT_IMPORT_DRAFTS_PAGE_SIZE,
       p_search: input.search || null,
+      ...(input.region ? { p_provinces: getRegionProvinces(input.region) } : {}),
       ...(input.province ? { p_province: input.province } : {}),
       p_draft_id: input.draftId,
       p_sort_column: input.sortColumn,

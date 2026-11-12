@@ -38,11 +38,12 @@ describe('event import draft pagination', () => {
     expect(buildEventImportDraftsHref('es', {
       page: 2,
       search: 'ultra',
+      region: 'galicia',
       province: 'A Coruña',
       draftId: null,
       sortColumn: 'races',
       sortDirection: 'desc',
-    })).toBe('/es/admin/eventos/borradores?page=2&q=ultra&province=A+Coru%C3%B1a&sort=races&direction=desc');
+    })).toBe('/es/admin/eventos/borradores?page=2&q=ultra&region=galicia&province=A+Coru%C3%B1a&sort=races&direction=desc');
   });
 
   it('accepts known provinces and ignores invalid values', () => {

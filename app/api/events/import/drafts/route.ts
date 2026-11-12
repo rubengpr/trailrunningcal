@@ -15,6 +15,7 @@ export async function GET(request: Request): Promise<NextResponse> {
       page: url.searchParams.get('page') ?? undefined,
       q: url.searchParams.get('q') ?? undefined,
       province: url.searchParams.get('province') ?? undefined,
+      region: url.searchParams.get('region') ?? undefined,
       draftId: url.searchParams.get('draftId') ?? undefined,
       sort: url.searchParams.get('sort') ?? undefined,
       direction: url.searchParams.get('direction') ?? undefined,
