@@ -20,7 +20,7 @@ export async function record(entry: CostEntry, status: CallStatus, cost: CostEst
 async function listCosts(draftId: string, resultIds: string[]): Promise<CostRow[]> {
   const filter = resultIds.length ? `draft_id.eq.${draftId},research_result_id.in.(${resultIds.join(',')})` : `draft_id.eq.${draftId}`;
   const {data, error} = await createAdminClient().from('blog_inference_costs')
-    .select('id,stage,research_result_id,status,requested_model,model,tokens,search_calls,cost_usd,created_at')
+    .select('id,call_key,stage,research_result_id,status,requested_model,model,tokens,search_calls,cost_usd,created_at')
     .or(filter).order('created_at').order('id');
   if (error) throw error;
   return (data ?? []) as CostRow[];

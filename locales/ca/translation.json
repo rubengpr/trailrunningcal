@@ -1546,6 +1546,7 @@
         "noCalls": "Sense crides",
         "readFailed": "No s'han pogut carregar els costos.",
         "unknownEvent": "Esdeveniment desconegut",
+        "editingCall": "Edició d’estil",
         "writingCall": "Redacció",
         "attempt": "Intent {number}",
         "stages": {

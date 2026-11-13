@@ -39,6 +39,11 @@ describe('blog cost summary', () => {
     expect(screen.getByText('Incompleta')).toBeTruthy();
     expect(screen.getByText('Sin llamadas')).toBeTruthy();
   });
+  it('labels the editorial pass separately in the writing table', () => {
+    show({...costs,groups:costs.groups.map(group => group.stage === 'writing' ? {...group,lines:[...group.lines,{...group.lines[0],id:'editor',editing:true}]} : group)});
+    expect(screen.getByRole('rowheader',{name:'Edición de estilo'})).toBeTruthy();
+    expect(screen.getByRole('rowheader',{name:'Redacción'})).toBeTruthy();
+  });
   it('keeps wide tables reachable from the keyboard', () => {
     const { container } = show(costs);
     expect(container.querySelector('summary')).toBeTruthy();

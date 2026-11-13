@@ -60,6 +60,7 @@ export interface CostEntry {
 }
 
 export interface CostLine {
+  editing?: boolean;
   id: string;
   stage: CostStage;
   eventName: string | null;
@@ -86,6 +87,7 @@ export interface CostSummary {
 
 // Persisted shape read back for the draft summary.
 export interface CostRow {
+  call_key?: string;
   id: string;
   stage: CostStage;
   research_result_id: string | null;

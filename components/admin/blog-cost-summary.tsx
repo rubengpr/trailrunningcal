@@ -16,7 +16,7 @@ export function BlogCostSummary({ costs }: { costs: CostSummary | null }) {
     costUsd === null ? t('unavailable') : partial ? t('partial', { cost: formatCost(costUsd, precision) }) : formatCost(costUsd, precision);
   const count = (value: number | undefined) => value === undefined ? '—' : numbers.format(value);
   const label = (line: CostLine) => line.stage === 'research' ? line.eventName ?? t('unknownEvent')
-    : line.stage === 'writing' ? t('writingCall') : t('attempt', { number: line.attempt ?? 1 });
+    : line.stage === 'writing' ? t(line.editing ? 'editingCall' : 'writingCall') : t('attempt', { number: line.attempt ?? 1 });
   if (!costs) return <BlogDraftSection title={t('title')}>
     <div className="mt-3"><ErrorMessage message={t('readFailed')} showRetry={false} variant="compact" /></div>
   </BlogDraftSection>;

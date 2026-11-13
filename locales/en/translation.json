@@ -1350,6 +1350,7 @@
         "noCalls": "No calls",
         "readFailed": "Costs could not be loaded.",
         "unknownEvent": "Unknown event",
+        "editingCall": "Style editing",
         "writingCall": "Writing",
         "attempt": "Attempt {number}",
         "stages": {

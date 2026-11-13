@@ -1350,6 +1350,7 @@
         "noCalls": "Aucun appel",
         "readFailed": "Impossible de charger les coûts.",
         "unknownEvent": "Événement inconnu",
+        "editingCall": "Révision du style",
         "writingCall": "Rédaction",
         "attempt": "Tentative {number}",
         "stages": {

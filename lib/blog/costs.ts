@@ -21,6 +21,7 @@ function unknown(id: string, stage: CostStage, eventName: string | null, attempt
 export function summarize(draft: Pick<DraftDetail, 'id' | 'status' | 'research' | 'evaluationStatus' | 'evaluationErrorCode'>, rows: CostRow[]): CostSummary {
   const events = new Map(draft.research?.results.map(result => [result.id, result]) ?? []);
   const line = (row: CostRow, attempt: number | null): CostLine => ({
+    ...(row.call_key?.startsWith('editing:') ? { editing: true } : {}),
     id: row.id, stage: row.stage, eventName: row.research_result_id ? events.get(row.research_result_id)?.eventName ?? null : null,
     attempt, model: row.model ?? row.requested_model, status: row.status, tokens: row.tokens,
     searches: row.search_calls, costUsd: row.cost_usd === null ? null : Number(row.cost_usd),

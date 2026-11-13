@@ -22,6 +22,14 @@ describe('cost summary', () => {
     expect(summary.groups[0].lines.map(line => [line.eventName,line.searches])).toEqual([[run.results[0].eventName,7],[run.results[1].eventName,0]].sort((a,b) => String(a[0]).localeCompare(String(b[0]),'es')));
     expect(summary.groups[2].lines.map(line => [line.attempt,line.status])).toEqual([[1,'failed'],[2,'succeeded']]);
   });
+  it('distinguishes style editing and includes both writing calls in the subtotal', () => {
+    const summary = summarize({...draft,research:null,evaluationStatus:'not_evaluated'}, [
+      row({id:'w',call_key:'writing:draft'}), row({id:'edit',call_key:'editing:draft',cost_usd:0.05}),
+    ]);
+    expect(summary.costUsd).toBe(0.15);
+    expect(summary.groups[1].lines).toMatchObject([{id:'w'},{id:'edit',editing:true}]);
+    expect(summary.groups[1].costUsd).toBe(0.15);
+  });
   it('marks unknown consumption as partial instead of zero', () => {
     const summary = summarize(draft, [row({id:'w'}),row({id:'r0',stage:'research',research_result_id:'result-0',cost_usd:null,tokens:null})]);
     expect(summary.partial).toBe(true);

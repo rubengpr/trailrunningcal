@@ -1578,6 +1578,7 @@
         "noCalls": "Sin llamadas",
         "readFailed": "No se han podido cargar los costes.",
         "unknownEvent": "Evento desconocido",
+        "editingCall": "Edición de estilo",
         "writingCall": "Redacción",
         "attempt": "Intento {number}",
         "stages": {
