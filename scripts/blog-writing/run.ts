@@ -2,6 +2,7 @@ import { mkdir, readFile, writeFile, stat } from 'node:fs/promises';
 import { resolve, join, dirname } from 'node:path';
 import { parseArgs } from 'node:util';
 import { randomUUID, createHash } from 'node:crypto';
+import { getRecentIntroductions } from '@/lib/content/blog-introductions';
 import { prepare } from '@/lib/blog/writing/context';
 import { writingSchema } from '@/lib/blog/writing/schema';
 import { articleWritingInstructions } from '@/lib/blog/prompts/article-writing';
@@ -28,7 +29,8 @@ async function main() {
     if ((await stat(source)).size > 1_000_000) throw new Error('Input snapshot is too large');
     value = JSON.parse(await readFile(source,'utf8'));
   }
-  const { request, input } = prepare(value);
+  const { request, input: preparedInput } = prepare(value);
+  const input = { ...preparedInput, recentIntroductions: getRecentIntroductions() };
   if (values.execute && !process.env.OPENAI_API_KEY?.trim())
     throw new Error('OPENAI_API_KEY is required for execution');
   const directory = resolve(

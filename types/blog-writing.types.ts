@@ -14,7 +14,12 @@ export interface WritingRequest {
   }>;
 }
 // Names appear once; identifiers, slugs and provenance remain in the backend.
+export interface RecentIntroduction {
+  title: string;
+  introduction: string;
+}
 export interface WritingInput {
+  recentIntroductions?: RecentIntroduction[];
   regionName: string;
   events: Array<{eventName: string; dossier: Dossier | null}>;
 }

@@ -1,3 +1,4 @@
+import { getRecentIntroductions } from '@/lib/content/blog-introductions';
 import { prepare } from '@/lib/blog/writing/context';
 import { compose } from '@/lib/blog/writing/result';
 import { writeArticle } from '@/lib/integrations/openai/article-writing';
@@ -11,7 +12,8 @@ export async function write(
   value: unknown,
   record?: WritingObserver,
 ): Promise<WritingResult> {
-  const { request, input } = prepare(value);
+  const { request, input: preparedInput } = prepare(value);
+  const input = { ...preparedInput, recentIntroductions: getRecentIntroductions() };
   const started = Date.now();
   const result = await writeArticle(input, record);
   return {

@@ -3,6 +3,9 @@ import { prepare } from '@/lib/blog/writing/context';
 import { articleWritingInstructions } from '@/lib/blog/prompts/article-writing';
 import { writingRequest, writingResponse } from '@/tests/fixtures/blog-writing';
 
+const recentIntroductions = [{ title: 'Otro artículo', introduction: 'Un arranque anterior para evitar repetirlo.' }];
+vi.mock('@/lib/content/blog-introductions', () => ({ getRecentIntroductions: () => recentIntroductions }));
+
 const mocks = vi.hoisted(() => ({ create: vi.fn(), client: vi.fn() }));
 vi.mock('@/lib/integrations/openai/client', () => ({
   createOpenAIClient: mocks.client,
@@ -31,8 +34,11 @@ describe('researched article inference', () => {
     expect(mocks.create).toHaveBeenCalledOnce();
     const [body, options] = mocks.create.mock.calls[0];
     expect(body.instructions).toBe(articleWritingInstructions);
-    expect(body.instructions).not.toContain('Cataluña');
-    expect(JSON.parse(body.input)).toEqual(prepare(writingRequest).input);
+    for (const event of writingRequest.events) {
+      expect(body.instructions).not.toContain(event.eventName);
+      expect(body.instructions).not.toContain(event.dossier!.context);
+    }
+    expect(JSON.parse(body.input)).toEqual({ ...prepare(writingRequest).input, recentIntroductions });
     expect(body.model).toBe('gpt-6.1-sol');
     expect(body.reasoning).toEqual({ effort: 'medium' });
     expect(body.tools).toBeUndefined();

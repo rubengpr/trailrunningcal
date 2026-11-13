@@ -37,7 +37,7 @@ describe('writer preparation command', () => {
       );
       expect(payload.events).toHaveLength(5);
       expect(await readFile(join(output, 'instructions.md'), 'utf8')).toContain(
-        '# Identidad',
+        '# Encargo',
       );
       expect(
         JSON.parse(await readFile(join(output, 'schema.json'), 'utf8'))
