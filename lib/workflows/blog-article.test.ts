@@ -5,16 +5,17 @@ import { runEvaluation } from '@/lib/workflows/blog-evaluation';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { GenerationError } from '@/lib/blog/content';
 
-const mocks = vi.hoisted(() => ({ getDraft: vi.fn(), markRunning: vi.fn(), completeDraft: vi.fn(), markFailed: vi.fn(), generate: vi.fn(), research:vi.fn(), prepareResearch:vi.fn(), fromResearch:vi.fn(), write:vi.fn() }));
+const mocks = vi.hoisted(() => ({ getDraft: vi.fn(), markRunning: vi.fn(), completeDraft: vi.fn(), markFailed: vi.fn(), generate: vi.fn(), research:vi.fn(), prepareResearch:vi.fn(), fromResearch:vi.fn(), write:vi.fn(), edit:vi.fn() }));
 vi.mock('@/lib/workflows/blog-research',()=>({prepareStep:mocks.prepareResearch,runResearch:mocks.research}));
 vi.mock('@/lib/services/blog-writing-context',()=>({fromResearch:mocks.fromResearch}));
+vi.mock('@/lib/services/blog-editing',()=>({edit:mocks.edit}));
 vi.mock('@/lib/services/blog-writing',()=>({write:mocks.write}));
 vi.mock('@/lib/db/blog-drafts', () => mocks);
 vi.mock('@/lib/services/blog-article', () => ({ generate: mocks.generate }));
 const costs = vi.hoisted(() => ({ trackCost: vi.fn(), call: {requestedModel:'gpt-6.1-sol',model:'gpt-6.1-sol',serviceTier:'default',responseId:'response',responseStatus:'completed',usage:{},searchCalls:0} }));
 vi.mock('@/lib/workflows/blog-costs', () => ({ trackCost: costs.trackCost }));
 vi.mock('@/lib/services/blog-costs', () => ({ tracker: () => ({ observe: vi.fn(), call: () => costs.call }) }));
-import { articleWorkflow, generateStep, saveStep, writeStep } from './blog-article';
+import { articleWorkflow, generateStep, saveStep, writeStep, editStep } from './blog-article';
 
 beforeEach(() => {
   vi.resetAllMocks();
@@ -104,5 +105,44 @@ describe('writing costs', () => {
     await expect(articleWorkflow({id:'id'})).rejects.toThrow('writing_failed');
     expect(costs.trackCost).toHaveBeenCalledWith(expect.objectContaining({stage:'writing',errorCode:'invalid_content'}));
     expect(mocks.markFailed).toHaveBeenCalledWith('id','writing_failed');
+  });
+});
+
+
+describe('regional editing step', () => {
+  const original = {article:{title:'Original'},contentHtml:'<p>Original</p>',references:[],quality:{}};
+  const revised = {...original,contentHtml:'<p>Revised</p>'};
+  beforeEach(() => {
+    mocks.getDraft.mockResolvedValue({instructions:'Test',generationResearchId:'research'});
+    mocks.prepareResearch.mockResolvedValue({status:'completed',results:[{status:'completed'}]});
+    mocks.fromResearch.mockResolvedValue({regionId:'catalonia',events:[{slug:'event',dossier:{}}]});
+    mocks.write.mockResolvedValue(original);
+    mocks.edit.mockResolvedValue(revised);
+  });
+  it('saves and evaluates the edited version, recording both calls separately', async () => {
+    await articleWorkflow({id:'id'});
+    expect(mocks.edit).toHaveBeenCalledWith({source:expect.objectContaining(original),context:expect.objectContaining({regionId:'catalonia'})},expect.any(Function));
+    expect(mocks.completeDraft).toHaveBeenCalledWith('id',expect.objectContaining(revised));
+    expect(costs.trackCost).toHaveBeenCalledTimes(2);
+    expect(costs.trackCost).toHaveBeenNthCalledWith(2,expect.objectContaining({key:'editing:id',stage:'writing',errorCode:null}));
+    expect(mocks.edit.mock.invocationCallOrder[0]).toBeLessThan(mocks.completeDraft.mock.invocationCallOrder[0]);
+    expect(mocks.completeDraft.mock.invocationCallOrder[0]).toBeLessThan(vi.mocked(runEvaluation).mock.invocationCallOrder[0]);
+  });
+  it('does not save or evaluate an invalid edit and records its consumption', async () => {
+    mocks.edit.mockRejectedValue(new GenerationError('invalid_content'));
+    await expect(articleWorkflow({id:'id'})).rejects.toThrow('writing_failed');
+    expect(mocks.completeDraft).not.toHaveBeenCalled(); expect(runEvaluation).not.toHaveBeenCalled();
+    expect(costs.trackCost).toHaveBeenLastCalledWith(expect.objectContaining({key:'editing:id',errorCode:'invalid_content'}));
+    expect(mocks.edit).toHaveBeenCalledOnce(); expect(editStep.maxRetries).toBe(0);
+  });
+  it('retrying a save cannot repeat editing, writing or research', async () => {
+    const written = await writeStep('research');
+    if (!written.result) throw new Error('Missing writer result');
+    const edited = await editStep('research',written.result);
+    if (!edited.result) throw new Error('Missing editor result');
+    mocks.completeDraft.mockRejectedValueOnce(new Error('temporary'));
+    await expect(saveStep('id',edited.result)).rejects.toThrow('temporary');
+    await saveStep('id',edited.result);
+    expect(mocks.edit).toHaveBeenCalledOnce();expect(mocks.write).toHaveBeenCalledOnce();expect(mocks.research).not.toHaveBeenCalled();
   });
 });

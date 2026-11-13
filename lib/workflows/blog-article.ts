@@ -1,5 +1,7 @@
 import { prepareStep as prepareResearchStep, runResearch } from '@/lib/workflows/blog-research';
 import { fromResearch } from '@/lib/services/blog-writing-context';
+import { edit } from '@/lib/services/blog-editing';
+import type { WritingResult } from '@/types/blog-writing.types';
 import { write } from '@/lib/services/blog-writing';
 import { writingLinks } from '@/lib/blog/links';
 import type { SelectionContext } from '@/types/blog-selection.types';
@@ -32,7 +34,7 @@ export async function generateStep(instructions: string, context?: SelectionCont
 }
 generateStep.maxRetries = 0;
 
-type WrittenArticle = GeneratedArticle & {links:string[];references:import('@/types/blog-writing.types').WritingResult['references']};
+type WrittenArticle = WritingResult & {links:string[];references:import('@/types/blog-writing.types').WritingResult['references']};
 export async function writeStep(researchId:string):Promise<{result:WrittenArticle|null;error:string|null;call:InferenceCall|null}> {
   'use step';
   const request = await fromResearch(researchId);
@@ -46,6 +48,21 @@ export async function writeStep(researchId:string):Promise<{result:WrittenArticl
   }
 }
 writeStep.maxRetries = 0;
+
+export async function editStep(researchId: string, source: WritingResult): Promise<{result: WrittenArticle | null; error: string | null; call: InferenceCall | null}> {
+  'use step';
+  const context = await fromResearch(researchId);
+  const tracked = tracker('editing');
+  try {
+    const result = await edit({ source, context }, tracked.observe);
+    return { result: { ...result, links: writingLinks(context) }, error: null, call: tracked.call() };
+  } catch (error) {
+    const code = error instanceof GenerationError ? error.code : 'editing_failed';
+    return { result: null, error: code, call: tracked.call(error) };
+  }
+}
+editStep.maxRetries = 0;
+
 
 export async function saveStep(id: string, result: GeneratedArticle & {links?:string[];references?:import('@/types/blog-writing.types').WritingResult['references']}): Promise<string> {
   'use step';
@@ -82,8 +99,16 @@ export async function articleWorkflow(input: { id: string }): Promise<void> {
       failure = source.researchId ? 'writing_failed' : generated.error ?? 'writing_failed';
       throw new FatalError(failure);
     }
+    let finalArticle = generated.result;
+    if (source.researchId) {
+      failure = 'writing_failed';
+      const edited = await editStep(source.researchId, generated.result as WrittenArticle);
+      if (edited.call) await trackCost({key:`editing:${input.id}`,stage:'writing',draftId:input.id,researchResultId:null,evaluationAttemptId:null,errorCode:edited.error,call:edited.call});
+      if (!edited.result) throw new FatalError(failure);
+      finalArticle = edited.result;
+    }
     failure = 'save_failed';
-    attemptId = await saveStep(input.id, generated.result);
+    attemptId = await saveStep(input.id, finalArticle);
   } catch {
     await failStep(input.id, failure);
     throw new FatalError(failure);

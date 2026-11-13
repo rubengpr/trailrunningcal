@@ -2,16 +2,18 @@ import { record } from '@/lib/db/blog-costs';
 import { estimate } from '@/lib/integrations/openai/pricing';
 import { captureCall } from '@/lib/integrations/openai/usage';
 import { researchModel } from '@/lib/integrations/openai/event-investigation';
+import { editingOptions } from '@/lib/integrations/openai/article-editing';
 import { writingOptions } from '@/lib/integrations/openai/article-writing';
 import { evaluationModel } from '@/lib/integrations/openai/article-evaluation';
 import { generationModel } from '@/lib/integrations/openai/article-generation';
 import type { CallStatus, CostEntry, InferenceCall, ResponseObserver } from '@/types/blog-cost.types';
 
-type CallKind = 'research' | 'writing' | 'generation' | 'evaluation';
+type CallKind = 'research' | 'writing' | 'editing' | 'generation' | 'evaluation';
 function requestedModel(kind: CallKind): string {
   switch (kind) {
     case 'research': return researchModel;
     case 'writing': return writingOptions.model;
+    case 'editing': return editingOptions.model;
     case 'generation': return generationModel;
     case 'evaluation': return evaluationModel;
   }
