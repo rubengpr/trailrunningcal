@@ -69,7 +69,6 @@ export function MultiSelectOptionsMenu({
             placeholder={t('searchOptions')}
             reserveMessageSpace={false}
             autoComplete="off"
-            autoFocus
             className="h-8! pl-7! pr-2! py-1! text-xs! focus-visible:ring-1 focus-visible:ring-gray-300"
           />
         </div>
