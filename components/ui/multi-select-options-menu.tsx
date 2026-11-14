@@ -60,6 +60,7 @@ export function MultiSelectOptionsMenu({
             aria-hidden="true"
             className="pointer-events-none absolute left-3.5 top-1/2 z-10 -translate-y-1/2 text-gray-400"
           />
+          {/* Keep the input text at 16px to prevent iOS Safari zooming on focus. */}
           <FormInput
             id={searchId}
             aria-label={t('searchOptions')}
@@ -69,8 +70,7 @@ export function MultiSelectOptionsMenu({
             placeholder={t('searchOptions')}
             reserveMessageSpace={false}
             autoComplete="off"
-            autoFocus
-            className="h-8! pl-7! pr-2! py-1! text-xs! focus-visible:ring-1 focus-visible:ring-gray-300"
+            className="h-8! pl-7! pr-2! py-1! text-base! focus-visible:ring-1 focus-visible:ring-gray-300"
           />
         </div>
       )}
