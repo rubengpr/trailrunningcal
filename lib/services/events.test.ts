@@ -8,6 +8,7 @@ const mocks = vi.hoisted(() => ({
   getEventByIdForOrganizer: vi.fn(),
   deleteEventForAdmin: vi.fn(),
   revalidateEventMutation: vi.fn(),
+  revalidatePublicListingPages: vi.fn(),
 }));
 
 vi.mock('@/lib/supabase/server', () => ({
@@ -21,6 +22,7 @@ vi.mock('@/lib/db/events', () => ({
 }));
 vi.mock('@/lib/cache/revalidation', () => ({
   revalidateEventMutation: mocks.revalidateEventMutation,
+  revalidatePublicListingPages: mocks.revalidatePublicListingPages,
 }));
 
 import {
@@ -92,6 +94,29 @@ describe('event services race tiers', () => {
       },
       p_races: [expectedRacePayload],
     });
+  });
+
+  it('invalidates public listings only after the event is persisted', async () => {
+    mocks.rpc.mockImplementation(async () => {
+      expect(mocks.revalidatePublicListingPages).not.toHaveBeenCalled();
+      return { data: EVENT_ID, error: null };
+    });
+
+    await createEventWithRaces(input);
+
+    expect(mocks.revalidatePublicListingPages).toHaveBeenCalledExactlyOnceWith(
+      'admin-event-create',
+    );
+  });
+
+  it('does not invalidate listings when creating the event fails', async () => {
+    mocks.rpc.mockResolvedValue({ data: null, error: { message: 'Database unavailable' } });
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+    await expect(createEventWithRaces(input)).rejects.toThrow('Failed to create event');
+
+    expect(mocks.revalidatePublicListingPages).not.toHaveBeenCalled();
+    vi.restoreAllMocks();
   });
 
   it('persists results when creating an event or a new edition', async () => {

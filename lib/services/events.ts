@@ -3,6 +3,7 @@ import { getEventByIdForAdmin, getEventByIdForOrganizer } from '@/lib/db/events'
 import { deleteEventForAdmin } from '@/lib/db/events';
 import {
   revalidateEventMutation,
+  revalidatePublicListingPages,
 } from '@/lib/cache/revalidation';
 import type { TrailEventDetail } from '@/types/event.types';
 import { isValidProvince } from '@/lib/geography/provinces';
@@ -27,7 +28,9 @@ export async function createEventWithRaces(
   input: EventWriteInput,
 ): Promise<{ id: string }> {
   validateRaces(input.races);
-  return { id: await insertEvent(input) };
+  const id = await insertEvent(input);
+  revalidatePublicListingPages('admin-event-create');
+  return { id };
 }
 
 export async function updateEventWithRaces(
