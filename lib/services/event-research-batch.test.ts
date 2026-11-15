@@ -231,6 +231,46 @@ describe('eventResearchBatchWorkflow', () => {
     );
   });
 
+  it.each(['pending', 'running'] as const)(
+    'keeps the batch running when retry scheduling fails alongside a %s item',
+    async (status) => {
+      mocks.getItem.mockResolvedValue({ ...item(1), status: 'failed' });
+      mocks.retryItem.mockResolvedValue({
+        batchId: batch.id, itemId: 'item-1', eventName: 'Event 1',
+      });
+      const schedulingError = new Error('Scheduler unavailable');
+      mocks.startWorkflow.mockRejectedValueOnce(schedulingError);
+      mocks.getItems.mockResolvedValue([
+        { ...item(1), status: 'failed' },
+        { ...item(2), status },
+      ]);
+
+      await expect(retryEventResearchItem('item-1')).rejects.toBe(schedulingError);
+
+      expect(mocks.failItem).toHaveBeenCalledWith({
+        itemId: 'item-1', error: 'scheduling_error',
+      });
+      expect(mocks.updateBatchStatus).toHaveBeenLastCalledWith(batch.id, 'running');
+      expect(mocks.updateBatchStatus).not.toHaveBeenCalledWith(batch.id, 'completed');
+    },
+  );
+
+  it('completes the batch after scheduling fails only when every item is terminal', async () => {
+    mocks.getItem.mockResolvedValue({ ...item(1), status: 'failed' });
+    mocks.retryItem.mockResolvedValue({
+      batchId: batch.id, itemId: 'item-1', eventName: 'Event 1',
+    });
+    mocks.startWorkflow.mockRejectedValueOnce(new Error('Scheduler unavailable'));
+    mocks.getItems.mockResolvedValue([
+      { ...item(1), status: 'failed' },
+      { ...item(2), status: 'completed' },
+    ]);
+
+    await expect(retryEventResearchItem('item-1')).rejects.toThrow('Scheduler unavailable');
+
+    expect(mocks.updateBatchStatus).toHaveBeenLastCalledWith(batch.id, 'completed');
+  });
+
   it('persists the workflow run id when retrying a failed item', async () => {
     mocks.getItem.mockResolvedValue({
       ...item(1),

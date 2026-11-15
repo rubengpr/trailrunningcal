@@ -160,7 +160,7 @@ export async function retryEventResearchItem(itemId: string): Promise<{
         error: 'scheduling_error',
       });
     }
-    await updateEventResearchBatchStatus(pending.batchId, 'completed');
+    await recomputeBatchStatusStep(pending.batchId);
     throw error;
   }
 
