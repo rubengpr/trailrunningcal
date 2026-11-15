@@ -163,14 +163,11 @@ export async function eventImportDraftPublicationWorkflow(
     const items = await getPendingItemsStep(input.jobId);
     if (items.length !== 3) throw new Error('Draft publication translations are incomplete');
 
-    const translations: Array<{ locale: EventTranslationLocale; description: string }> = [];
-    for (const item of items) {
-      translations.push(await processItemStep({
-        itemId: item.id,
-        locale: item.locale,
-        source: job.sourceDescription,
-      }));
-    }
+    const translations = await Promise.all(items.map((item) => processItemStep({
+      itemId: item.id,
+      locale: item.locale,
+      source: job.sourceDescription,
+    })));
 
     const published = await publishStep({ jobId: input.jobId, translations });
     try {

@@ -130,6 +130,36 @@ describe('startEventImportDraftPublication', () => {
 });
 
 describe('eventImportDraftPublicationWorkflow', () => {
+  it('starts all translations concurrently and waits for the slowest before publishing', async () => {
+    const pending = new Map<string, (value: { description: string; attempts: number }) => void>();
+    mocks.generateTranslation.mockImplementation(({ locale }: { locale: string }) => new Promise((resolve) => {
+      pending.set(locale, resolve);
+    }));
+
+    const publication = eventImportDraftPublicationWorkflow({ jobId: 'job-1' });
+
+    await vi.waitFor(() => expect([...pending.keys()]).toEqual(['ca', 'en', 'fr']));
+    expect(mocks.publish).not.toHaveBeenCalled();
+
+    pending.get('fr')!({ description: 'Translation fr', attempts: 1 });
+    pending.get('en')!({ description: 'Translation en', attempts: 1 });
+    await vi.waitFor(() => expect(mocks.completeItem).toHaveBeenCalledTimes(2));
+    expect(mocks.publish).not.toHaveBeenCalled();
+
+    pending.get('ca')!({ description: 'Translation ca', attempts: 1 });
+    await publication;
+
+    expect(mocks.publish).toHaveBeenCalledOnce();
+    expect(mocks.publish).toHaveBeenCalledWith({
+      jobId: 'job-1',
+      translations: [
+        { locale: 'ca', description: 'Translation ca' },
+        { locale: 'en', description: 'Translation en' },
+        { locale: 'fr', description: 'Translation fr' },
+      ],
+    });
+  });
+
   it('publishes only after all translations validate', async () => {
     await eventImportDraftPublicationWorkflow({ jobId: 'job-1' });
 
