@@ -27,7 +27,7 @@ const SIZE_CLASSES = {
 
 function formatDistance(distanceKm: number, locale: Locale): string {
   return new Intl.NumberFormat(localeTags[locale], {
-    maximumFractionDigits: 1,
+    maximumFractionDigits: 0,
   }).format(distanceKm);
 }
 

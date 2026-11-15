@@ -27,21 +27,19 @@ describe('DistanceBadge', () => {
     },
   );
 
-  it.each(['es', 'ca'] as const)(
-    'formats decimal distances for the %s locale',
+  it.each(['es', 'ca', 'en', 'fr'] as const)(
+    'rounds distances to whole kilometers for the %s locale',
     (locale: Locale) => {
-      render(<DistanceBadge distanceKm={21.5} locale={locale} />);
+      const { rerender } = render(<DistanceBadge distanceKm={21.5} locale={locale} />);
 
-      expect(screen.getByText('21,5')).toBeDefined();
+      expect(screen.getByText('22')).toBeDefined();
       expect(screen.getByText('km')).toBeDefined();
+
+      rerender(<DistanceBadge distanceKm={21.4} locale={locale} />);
+
+      expect(screen.getByText('21')).toBeDefined();
     },
   );
-
-  it('uses a decimal point for British English', () => {
-    render(<DistanceBadge distanceKm={21.5} locale="en" />);
-
-    expect(screen.getByText('21.5')).toBeDefined();
-  });
 
   it('supports small and medium sizes', () => {
     const { rerender } = render(
