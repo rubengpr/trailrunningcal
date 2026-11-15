@@ -5,6 +5,7 @@ import type { EventImportResult } from '@/types/events-import-api.types';
 const mocks = vi.hoisted(() => ({
   requireAdmin: vi.fn(),
   getItemResult: vi.fn(),
+  getItemArtifacts: vi.fn(),
   acceptItem: vi.fn(),
   updateItemResult: vi.fn(),
 }));
@@ -12,13 +13,14 @@ const mocks = vi.hoisted(() => ({
 vi.mock('@/lib/auth', () => ({ requireAdmin: mocks.requireAdmin }));
 vi.mock('@/lib/db/event-import-batches', () => ({
   getItemResult: mocks.getItemResult,
+  getItemArtifacts: mocks.getItemArtifacts,
 }));
 vi.mock('@/lib/services/event-import-batch', () => ({
   acceptItem: mocks.acceptItem,
   updateItemResult: mocks.updateItemResult,
 }));
 
-import { PATCH, POST } from './route';
+import { GET, PATCH, POST } from './route';
 
 const ITEM_ID = '8e40792f-1a1a-4d30-8d15-ec70a12a04d5';
 const input = {
@@ -207,5 +209,49 @@ describe('POST /api/events/import/batch-items/[itemId]', () => {
 
     expect(response.status).toBe(status);
     await expect(response.json()).resolves.toEqual({ error: message });
+  });
+});
+
+describe('GET /api/events/import/batch-items/[itemId]', () => {
+  function getRequest(view = '') {
+    return new Request(`http://localhost/api/events/import/batch-items/${ITEM_ID}${view}`);
+  }
+
+  it('loads a full result for review by default', async () => {
+    mocks.getItemResult.mockResolvedValue(result);
+    const response = await GET(getRequest(), context());
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({ success: true, data: result });
+    expect(mocks.getItemArtifacts).not.toHaveBeenCalled();
+  });
+
+  it('loads only artifacts when requested, including stored failed-crawl content', async () => {
+    const artifacts = { markdown: '# Failed crawl', rawModelOutput: null };
+    mocks.getItemArtifacts.mockResolvedValue(artifacts);
+    const response = await GET(getRequest('?view=artifacts'), context());
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({ success: true, data: artifacts });
+    expect(mocks.getItemArtifacts).toHaveBeenCalledWith(ITEM_ID);
+    expect(mocks.getItemResult).not.toHaveBeenCalled();
+  });
+
+  it.each([new AuthError(), new ForbiddenError()])('protects artifact downloads', async (error) => {
+    mocks.requireAdmin.mockRejectedValue(error);
+    const response = await GET(getRequest('?view=artifacts'), context());
+    expect(response.status).toBe(error instanceof AuthError ? 401 : 403);
+    expect(mocks.getItemArtifacts).not.toHaveBeenCalled();
+  });
+
+  it('rejects an unsupported view before reading results', async () => {
+    const response = await GET(getRequest('?view=unknown'), context());
+    expect(response.status).toBe(400);
+    expect(mocks.getItemResult).not.toHaveBeenCalled();
+    expect(mocks.getItemArtifacts).not.toHaveBeenCalled();
+  });
+
+  it('returns 404 for a missing item', async () => {
+    mocks.getItemArtifacts.mockResolvedValue(null);
+    const response = await GET(getRequest('?view=artifacts'), context());
+    expect(response.status).toBe(404);
   });
 });

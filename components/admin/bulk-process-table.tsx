@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import { ArrowUpRight, Eye, FilePenLine, LoaderCircle, RotateCcw } from 'lucide-react';
-import { IconActionMenu } from '@/components/ui/icon-action-menu';
+import ImportItemDownloadMenu from '@/components/admin/import-item-download-menu';
 import { TableActionButton } from '@/components/ui/table-action-button';
 import {
   Table,
@@ -16,7 +16,6 @@ import type {
     EventImportItemReviewStatus,
     EventImportItemStatus,
 } from '@/types/events-import-api.types';
-import { triggerDownload } from '@/lib/utils/download';
 import { cleanUrl } from '@/lib/utils/url';
 
 export type BulkProcessState = EventImportItemStatus;
@@ -32,8 +31,8 @@ export interface BulkProcessTableRow {
   raceCount: number | null;
   error: string | null;
   updatedAt: string;
-  markdown: string | null;
-  rawModelOutput: string | null;
+  markdown?: string | null;
+  rawModelOutput?: string | null;
   draftId?: string | null;
   negativeMessage?: string | null;
 }
@@ -123,16 +122,6 @@ export function BulkProcessTable({
       </TableHeader>
       <TableBody>
         {rows.map((row) => {
-          const hostname = (() => {
-            try {
-              return row.url
-                ? new URL(row.url).hostname.replace(/^www\./, '')
-                : 'research';
-            } catch {
-              return 'file';
-            }
-          })();
-
           const rowColor = row.reviewStatus === 'accepted'
             ? 'bg-green-50 hover:bg-green-100'
             : 'hover:bg-gray-100';
@@ -225,36 +214,15 @@ export function BulkProcessTable({
                       <FilePenLine className="size-4" strokeWidth={1.5} />
                     </Link>
                   ) : null}
-                  {row.draftId === undefined || row.markdown || row.rawModelOutput ? (
-                    <IconActionMenu
-                      triggerAriaLabel={t('columns.actions')}
-                      size="sm"
-                      items={[
-                      {
-                        id: 'downloadMarkdown',
-                        label: t('actions.downloadMarkdown'),
-                        disabled: !row.markdown,
-                        onSelect: () => {
-                          if (row.markdown) {
-                            triggerDownload(row.markdown, `crawl-${hostname}.md`, 'text/markdown');
-                          }
-                        },
-                      },
-                      {
-                        id: 'downloadJson',
-                        label: t('actions.downloadJson'),
-                        disabled: !row.rawModelOutput,
-                        onSelect: () => {
-                          if (row.rawModelOutput) {
-                            triggerDownload(
-                              row.rawModelOutput,
-                              `model-raw-${hostname}.json`,
-                              'application/json;charset=utf-8',
-                            );
-                          }
-                        },
-                      },
-                      ]}
+                  {row.draftId === undefined ? (
+                    <ImportItemDownloadMenu
+                      key={`${row.id}-${row.updatedAt}`}
+                      itemId={row.id}
+                      url={row.url}
+                      available={row.status === 'completed' || row.status === 'failed'}
+                      initialArtifacts={row.markdown !== undefined || row.rawModelOutput !== undefined
+                        ? { markdown: row.markdown ?? null, rawModelOutput: row.rawModelOutput ?? null }
+                        : undefined}
                     />
                   ) : null}
                 </div>

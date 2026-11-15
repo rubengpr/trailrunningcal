@@ -13,6 +13,7 @@ import type {
 } from '@/types/event-description.types';
 import type {
   EventImportBatchSnapshot,
+  EventImportItemArtifacts,
   EventImportResult,
   EventImportRequest,
 } from '@/types/events-import-api.types';
@@ -294,6 +295,19 @@ export async function getEventImportBatchStatus(
 
   if (!response.ok) {
     throw new Error(responseData.error || 'Failed to fetch event import batch');
+  }
+
+  return responseData.data;
+}
+
+export async function getEventImportItemArtifacts(
+  itemId: string,
+): Promise<EventImportItemArtifacts> {
+  const response = await fetch(`/api/events/import/batch-items/${itemId}?view=artifacts`);
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(responseData.error || 'Failed to fetch event import item artifacts');
   }
 
   return responseData.data;

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
-import { getItemResult } from '@/lib/db/event-import-batches';
+import { getItemArtifacts, getItemResult } from '@/lib/db/event-import-batches';
 import {
   acceptItem,
   updateItemResult,
@@ -10,7 +10,7 @@ import { parseJsonBody, parseUuidParam } from '@/app/api/request-validation';
 import { handleRouteError } from '@/lib/utils/handle-error';
 
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ itemId: string }> },
 ) {
   try {
@@ -19,7 +19,13 @@ export async function GET(
     const { itemId } = await params;
     const parsedItemId = parseUuidParam(itemId, 'Invalid item ID');
 
-    const data = await getItemResult(parsedItemId);
+    const view = new URL(request.url).searchParams.get('view');
+    if (view !== null && view !== 'artifacts') {
+      return NextResponse.json({ error: 'Invalid view' }, { status: 400 });
+    }
+    const data = view === 'artifacts'
+      ? await getItemArtifacts(parsedItemId)
+      : await getItemResult(parsedItemId);
 
     if (!data) {
       return NextResponse.json({ error: 'Item not found' }, { status: 404 });

@@ -1250,8 +1250,6 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
             raceCount: item.raceCount,
             error: item.error,
             updatedAt: item.updatedAt,
-            markdown: item.markdown,
-            rawModelOutput: item.rawModelOutput,
         })) ?? [];
     }, [batchSnapshot]);
 
@@ -1273,8 +1271,6 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                     ? item.result?.errorMessage ?? null
                     : null,
             updatedAt: item.updatedAt,
-            markdown: null,
-            rawModelOutput: null,
             draftId: item.draftId,
         })) ?? [];
     }, [researchSnapshot, t]);
