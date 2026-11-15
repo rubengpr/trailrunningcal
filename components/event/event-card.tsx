@@ -166,7 +166,7 @@ export function EventCard({
       )}
       <Link
         href={`/${locale}/e/${eventDetail.event.slug}`}
-        prefetch={false}
+        prefetch="auto"
         onClick={handleClick}
         className="relative block px-3 py-3 sm:px-5 sm:py-5"
       >
