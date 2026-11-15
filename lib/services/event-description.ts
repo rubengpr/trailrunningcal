@@ -72,12 +72,12 @@ export async function generateEventDescriptionDraft(
   const eventDetail = await getEventByIdForAdmin(eventId);
 
   if (!eventDetail) {
-    throw new Error('Event not found');
+    throw new ValidationError('Event not found', 404);
   }
 
   const websiteUrl = eventDetail.event.websiteUrl?.trim();
   if (!websiteUrl) {
-    throw new Error('Event website URL is required');
+    throw new ValidationError('Event website URL is required', 422);
   }
 
   const scrape = await crawlSite(websiteUrl);

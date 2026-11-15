@@ -1,5 +1,18 @@
-import { describe, expect, it } from 'vitest';
-import { sanitizeEventDescription } from '@/lib/services/event-description';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { generateEventDescriptionDraft, sanitizeEventDescription } from '@/lib/services/event-description';
+
+const mocks = vi.hoisted(() => ({
+  getEvent: vi.fn(),
+  crawlSite: vi.fn(),
+}));
+
+vi.mock('@/lib/db/events', () => ({
+  getEventByIdForAdmin: mocks.getEvent,
+  updateEventDescriptionForAdmin: vi.fn(),
+}));
+vi.mock('@/lib/services/crawl', () => ({ crawlSite: mocks.crawlSite }));
+
+beforeEach(() => vi.resetAllMocks());
 
 describe('sanitizeEventDescription', () => {
   it('allows clearing an event description', () => {
@@ -31,5 +44,25 @@ describe('sanitizeEventDescription', () => {
       value: description.trim(),
       error: null,
     });
+  });
+});
+
+describe('generateEventDescriptionDraft', () => {
+  it('returns a 404 domain error before contacting providers for a missing event', async () => {
+    mocks.getEvent.mockResolvedValue(null);
+
+    await expect(generateEventDescriptionDraft('missing-event')).rejects.toMatchObject({
+      message: 'Event not found', status: 404,
+    });
+    expect(mocks.crawlSite).not.toHaveBeenCalled();
+  });
+
+  it.each([null, '', '   '])('returns a 422 domain error for an event without a usable website (%s)', async (websiteUrl) => {
+    mocks.getEvent.mockResolvedValue({ event: { id: 'event-1', websiteUrl }, races: [] });
+
+    await expect(generateEventDescriptionDraft('event-1')).rejects.toMatchObject({
+      message: 'Event website URL is required', status: 422,
+    });
+    expect(mocks.crawlSite).not.toHaveBeenCalled();
   });
 });

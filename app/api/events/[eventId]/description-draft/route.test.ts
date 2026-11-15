@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { ValidationError } from '@/lib/errors';
 import type { NextRequest } from 'next/server';
 
 const mocks = vi.hoisted(() => ({
@@ -47,6 +48,29 @@ describe('POST /api/events/[eventId]/description-draft', () => {
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toEqual({ error: 'Invalid request body' });
     expect(mocks.generateEventDescriptionDraft).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    [404, 'Event not found'],
+    [422, 'Event website URL is required'],
+  ])('returns %s for a domain error', async (status, message) => {
+    mocks.generateEventDescriptionDraft.mockRejectedValue(new ValidationError(message, status));
+
+    const response = await POST(requestWithBody({}), context);
+
+    expect(response.status).toBe(status);
+    await expect(response.json()).resolves.toEqual({ error: message });
+  });
+
+  it('keeps unexpected failures as safe internal errors', async () => {
+    const logError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    mocks.generateEventDescriptionDraft.mockRejectedValue(new Error('Private provider error'));
+
+    const response = await POST(requestWithBody({}), context);
+
+    expect(response.status).toBe(500);
+    await expect(response.json()).resolves.toEqual({ error: 'Internal server error' });
+    logError.mockRestore();
   });
 
   it('uses the default model when the model is omitted', async () => {
