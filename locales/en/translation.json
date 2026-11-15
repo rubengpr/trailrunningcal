@@ -1399,7 +1399,8 @@
     },
     "events": {
       "drafts": {
-        "completeInformation": "Complete information"
+        "completeInformation": "Complete information",
+        "added": "Added"
       },
       "updates": {
         "title": "Event updates",

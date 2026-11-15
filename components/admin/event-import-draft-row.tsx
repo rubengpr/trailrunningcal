@@ -1,7 +1,7 @@
 'use client';
 
 import { Check, CircleAlert, CircleCheck, Eye, LoaderCircle, TextCursor, Trash2 } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useFormatter, useTranslations } from 'next-intl';
 import { EventWebsiteTableCell } from '@/components/event/event-website-table-cell';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { TableActionButton } from '@/components/ui/table-action-button';
@@ -47,6 +47,7 @@ export default function EventImportDraftRow({
 }: EventImportDraftRowProps) {
   const t = useTranslations('admin.events.drafts');
   const eventsT = useTranslations('adminEvents');
+  const format = useFormatter();
 
   return (
     <TableRow className="align-middle transition-colors duration-150 hover:bg-gray-100">
@@ -65,6 +66,16 @@ export default function EventImportDraftRow({
       </TableCell>
       <TableCell className="text-sm text-gray-700">
         {formatEventDateRangeNumeric(getDraftDateRange(draft), eventsT('noDates'))}
+      </TableCell>
+      <TableCell className="whitespace-nowrap text-sm tabular-nums text-gray-700">
+        <time dateTime={draft.createdAt}>
+          {format.dateTime(new Date(draft.createdAt), {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            timeZone: 'Europe/Madrid',
+          })}
+        </time>
       </TableCell>
       <TableCell align="right">
         <div className="flex items-center justify-end gap-1">
