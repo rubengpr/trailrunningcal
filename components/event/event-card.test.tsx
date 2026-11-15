@@ -71,6 +71,24 @@ const eventDetail: PublicEventDetail = {
 afterEach(cleanup);
 
 describe('EventCard', () => {
+  it.each([false, true])('deduplicates badges by rounded distance, preserving order (featured: %s)', (isFeatured) => {
+    const distances = [170, 86, 30, 170, 86, 30, 26.1, 25.9, 16.1, 15.8];
+    const races = distances.map((distanceKm, index) => ({
+      ...eventDetail.races[0]!,
+      id: `race-${index}`,
+      distanceKm,
+    }));
+
+    const { container } = render(
+      <EventCard eventDetail={{ ...eventDetail, races }} locale="es" isFeatured={isFeatured} />,
+    );
+
+    expect(Array.from(container.querySelectorAll('[data-distance-group]'),
+      (badge) => badge.firstElementChild?.textContent))
+      .toEqual(['170', '86', '30', '26', '16']);
+    expect(races.map((race) => race.distanceKm)).toEqual(distances);
+  });
+
   it('renders each race distance as an independently colored badge', () => {
     const eventWithMultipleDistances: PublicEventDetail = {
       ...eventDetail,

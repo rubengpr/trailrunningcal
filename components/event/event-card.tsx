@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import { localeTags, type Locale } from '@/i18n';
 import type { PublicEventDetail } from '@/types/event.types';
 import { formatEventLocationLabel } from '@/lib/events/utils';
+import { getUniqueDistances } from '@/lib/races/utils';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import type { PageType } from '@/lib/analytics/card-impression-batcher';
 import { track } from '@/lib/analytics/track';
@@ -225,7 +226,7 @@ export function EventCard({
                   isFeatured ? 'mt-4' : 'mt-1.5'
                 }`}
               >
-                {eventDetail.races.map((race) => (
+                {getUniqueDistances(eventDetail.races).map((race) => (
                   <DistanceBadge
                     key={race.id}
                     distanceKm={race.distanceKm}

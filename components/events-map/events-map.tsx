@@ -16,6 +16,7 @@ import type { EventMapMarker, MapPageLabels } from '@/types/map.types';
 import { ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react';
 import { OSM_STANDARD_STYLE } from '@/lib/maps/style';
 import { DistanceBadge } from '@/components/race/distance-badge';
+import { getUniqueDistances } from '@/lib/races/utils';
 /** Spain's westernmost island (El Hierro) through its easternmost (Menorca). */
 const SPAIN_BOUNDS: [[number, number], [number, number]] = [
   [-18.5, 27.4],
@@ -181,7 +182,7 @@ function MarkerPopupBody({
       </div>
       {event.distances.length > 0 ? (
         <div className="flex w-full min-w-0 flex-nowrap gap-1.5 overflow-hidden">
-          {event.distances.map((distance) => (
+          {getUniqueDistances(event.distances).map((distance) => (
             <DistanceBadge
               key={distance.id}
               distanceKm={distance.distanceKm}

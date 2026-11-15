@@ -1,5 +1,15 @@
 import type { DistanceGroup } from '@/lib/constants';
 
+export function getUniqueDistances<T extends { distanceKm: number }>(distances: readonly T[]): T[] {
+  const seen = new Set<number>();
+  return distances.filter((distance) => {
+    const rounded = Math.round(distance.distanceKm);
+    if (seen.has(rounded)) return false;
+    seen.add(rounded);
+    return true;
+  });
+}
+
 export function getDistanceGroup(distanceKm: number): DistanceGroup {
   if (distanceKm < 10) return '0-10';
   if (distanceKm < 20) return '10-20';
