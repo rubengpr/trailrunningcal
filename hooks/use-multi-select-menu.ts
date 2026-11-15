@@ -9,6 +9,7 @@ interface UseMultiSelectMenuOptions {
   offset?: number;
   preferredMenuHeight?: number;
   placement?: 'auto' | 'bottom';
+  consumeOutsideTouch?: boolean;
 }
 
 interface DropdownStyle {
@@ -30,6 +31,7 @@ export function useMultiSelectMenu({
   offset = 4,
   preferredMenuHeight,
   placement = 'auto',
+  consumeOutsideTouch = false,
   onClose,
 }: UseMultiSelectMenuOptions = {}) {
   const [open, setOpen] = useState(false);
@@ -95,11 +97,27 @@ export function useMultiSelectMenu({
   useEffect(() => {
     if (!open) return;
 
-    const handleOutsideClick = (event: MouseEvent): void => {
+    const isOutsideMenu = (event: MouseEvent): boolean => {
       const target = event.target as Node;
       const insideContainer = containerRef.current?.contains(target);
       const insideDropdown = dropdownRef.current?.contains(target);
-      if (!insideContainer && !insideDropdown) closeMenu();
+      return !insideContainer && !insideDropdown;
+    };
+
+    const shouldConsumeTouch = (): boolean =>
+      consumeOutsideTouch && Boolean(window.matchMedia?.('(pointer: coarse)').matches);
+
+    const handleOutsideMouseDown = (event: MouseEvent): void => {
+      // Keep the menu open until the touch click can be consumed in capture phase.
+      if (shouldConsumeTouch()) return;
+      if (isOutsideMenu(event)) closeMenu();
+    };
+
+    const handleOutsideTouchClick = (event: MouseEvent): void => {
+      if (!shouldConsumeTouch() || !isOutsideMenu(event)) return;
+      event.preventDefault();
+      event.stopPropagation();
+      closeMenu();
     };
 
     const handleEscape = (event: KeyboardEvent): void => {
@@ -109,14 +127,16 @@ export function useMultiSelectMenu({
       }
     };
 
-    document.addEventListener('mousedown', handleOutsideClick);
+    document.addEventListener('mousedown', handleOutsideMouseDown);
+    document.addEventListener('click', handleOutsideTouchClick, true);
     document.addEventListener('keydown', handleEscape, true);
 
     return () => {
-      document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener('mousedown', handleOutsideMouseDown);
+      document.removeEventListener('click', handleOutsideTouchClick, true);
       document.removeEventListener('keydown', handleEscape, true);
     };
-  }, [open, closeMenu]);
+  }, [open, closeMenu, consumeOutsideTouch]);
 
   return {
     open,

@@ -34,6 +34,7 @@ export function FilterSelect({ value, onValueChange, placeholder, options, color
     offset: 4,
     preferredMenuHeight: MULTI_SELECT_MENU_MAX_HEIGHT,
     placement: 'bottom',
+    consumeOutsideTouch: true,
     onClose: () => {
       if (applyOnClose && (draftValue.length !== value.length || draftValue.some((item) => !value.includes(item)))) {
         onValueChange(draftValue);

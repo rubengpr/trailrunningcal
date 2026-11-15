@@ -44,6 +44,7 @@ export function FilterPill({
     offset: 4,
     preferredMenuHeight: MULTI_SELECT_MENU_MAX_HEIGHT,
     placement: 'bottom',
+    consumeOutsideTouch: true,
   });
   const isSelected = selectedValues.length > 0;
 
