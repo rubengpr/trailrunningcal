@@ -1,9 +1,10 @@
 'use client';
 
-import { CalendarClock, Search, Trash2 } from 'lucide-react';
+import { CalendarClock, Trash2 } from 'lucide-react';
 import { useOptimistic, useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
+import { AdminSearchInput } from '@/components/admin/admin-search-input';
 import { IconButton } from '@/components/ui/icon-button';
 import { FilterSelect } from '@/components/filters/filter-select';
 import { PROVINCES } from '@/lib/geography/provinces';
@@ -132,25 +133,12 @@ export function AdminEventsFilters({
       >
         <Trash2 className="size-4" strokeWidth={1.5} aria-hidden />
       </IconButton> : null}
-      <div className="relative ml-auto flex w-full max-w-64">
-        <label htmlFor={inputId} className="sr-only">
-          {t('search.placeholder')}
-        </label>
-        <Search
-          className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-gray-400"
-          strokeWidth={1.5}
-        />
-        <input
-          id={inputId}
-          ref={searchInputRef}
-          key={initialQuery}
-          type="search"
-          name="q"
-          defaultValue={initialQuery}
-          maxLength={200}
-          className="h-10 min-w-0 flex-1 rounded-xl border border-gray-300 bg-white py-2 pl-3 pr-9 text-sm font-normal text-gray-900 outline-none transition-colors focus:border-gray-500 [&::-webkit-search-cancel-button]:appearance-none"
-        />
-      </div>
+      <AdminSearchInput
+        id={inputId}
+        initialQuery={initialQuery}
+        label={t('search.placeholder')}
+        inputRef={searchInputRef}
+      />
       {hiddenFields
         ? Object.entries(hiddenFields).map(([name, value]) =>
           value === undefined ? null : <input key={name} type="hidden" name={name} value={value} />,
