@@ -174,7 +174,7 @@ export function EventCard({
             className={`flex min-w-12.5 flex-col items-center justify-center rounded-sm px-3 py-2 text-gray-800 ${
               isFeatured
                 ? 'bg-white shadow-[inset_0_1px_2px_rgba(255,255,255,0.7),inset_0_-2.5px_3px_rgba(100,116,139,0.25)] ring-1 ring-slate-200/80'
-                : 'bg-amber-50'
+                : 'bg-[#F7FCEB]'
             }`}
           >
             <span className="text-[9px] font-medium uppercase tracking-wide sm:text-[10px]">
