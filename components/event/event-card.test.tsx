@@ -6,6 +6,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { PublicEventDetail } from '@/types/event.types';
 
 vi.mock('next/link', () => ({
+  useLinkStatus: () => ({ pending: false }),
   default: ({
     href,
     prefetch,
@@ -14,7 +15,7 @@ vi.mock('next/link', () => ({
     ...props
   }: AnchorHTMLAttributes<HTMLAnchorElement> & {
     href: string;
-    prefetch?: boolean | 'auto';
+    prefetch?: boolean;
     children: ReactNode;
   }) => (
     <a
@@ -117,12 +118,12 @@ describe('EventCard', () => {
     expect(screen.getAllByText('km')).toHaveLength(3);
   });
 
-  it('automatically prefetches the loading boundary and links to the localized event page', () => {
+  it('keeps prefetch disabled and links to the localized event page', () => {
     render(<EventCard eventDetail={eventDetail} locale="es" />);
 
     const link = screen.getByRole('link', { name: /Trail de prova/ });
     expect(link.getAttribute('href')).toBe('/es/e/trail-de-prova');
-    expect(link.getAttribute('data-prefetch')).toBe('auto');
+    expect(link.getAttribute('data-prefetch')).toBe('false');
     expect(link.getAttribute('data-has-on-click')).toBe('false');
   });
 

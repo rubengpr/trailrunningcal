@@ -13,6 +13,7 @@ import type { PageType } from '@/lib/analytics/card-impression-batcher';
 import { track } from '@/lib/analytics/track';
 import { useCardImpression } from '@/hooks/use-card-impression';
 import { DistanceBadge } from '@/components/race/distance-badge';
+import { EventNavigationLoading } from '@/components/event/event-navigation-loading';
 
 interface EventCardProps {
   eventDetail: PublicEventDetail;
@@ -166,10 +167,11 @@ export function EventCard({
       )}
       <Link
         href={`/${locale}/e/${eventDetail.event.slug}`}
-        prefetch="auto"
+        prefetch={false}
         onClick={handleClick}
         className="relative block px-3 py-3 sm:px-5 sm:py-5"
       >
+        <EventNavigationLoading />
         <div className="flex min-w-0 items-start gap-4">
           <div
             className={`flex min-w-12.5 flex-col items-center justify-center rounded-sm px-3 py-2 text-gray-800 ${
