@@ -10,12 +10,12 @@ interface DistanceBadgeProps {
 }
 
 const COLOR_CLASSES: Record<DistanceGroup, string> = {
-  '0-10': 'bg-amber-100 text-amber-800',
-  '10-20': 'bg-emerald-100 text-emerald-800',
-  '20-30': 'bg-sky-100 text-sky-800',
-  '30-40': 'bg-violet-100 text-violet-800',
-  '40-50': 'bg-rose-100 text-rose-800',
-  '50+': 'bg-neutral-700 text-white',
+  '0-10': 'bg-[#EFF8F3] text-[#37624D]',
+  '10-20': 'bg-[#D8EEE3] text-[#2B5945]',
+  '20-30': 'bg-[#B8DCCD] text-[#244B3D]',
+  '30-40': 'bg-[#87B9A4] text-[#16382B]',
+  '40-50': 'bg-[#477B64] text-white',
+  '50+': 'bg-[#224D3C] text-white',
 };
 
 const METALLIC_CLASSES = 'bg-[#fefdfb] text-slate-800';

@@ -9,12 +9,12 @@ afterEach(cleanup);
 
 describe('DistanceBadge', () => {
   it.each([
-    [5, '0-10', 'bg-amber-100'],
-    [15, '10-20', 'bg-emerald-100'],
-    [21, '20-30', 'bg-sky-100'],
-    [35, '30-40', 'bg-violet-100'],
-    [42, '40-50', 'bg-rose-100'],
-    [50, '50+', 'bg-neutral-700'],
+    [5, '0-10', 'bg-[#EFF8F3]'],
+    [15, '10-20', 'bg-[#D8EEE3]'],
+    [21, '20-30', 'bg-[#B8DCCD]'],
+    [35, '30-40', 'bg-[#87B9A4]'],
+    [42, '40-50', 'bg-[#477B64]'],
+    [50, '50+', 'bg-[#224D3C]'],
   ] as const)(
     'uses the expected palette for %s km',
     (distanceKm, group, colorClass) => {
