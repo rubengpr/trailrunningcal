@@ -282,7 +282,7 @@ export default async function EventPage({
 
           {eventData.event.description && (
             <div className="w-full my-6 sm:my-8">
-              <p className="text-base whitespace-pre-line">
+              <p className="px-2 text-base whitespace-pre-line sm:px-0">
                 {eventData.event.description}
               </p>
             </div>
