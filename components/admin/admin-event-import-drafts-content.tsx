@@ -298,7 +298,11 @@ export function AdminEventImportDraftsContent({
                 href={getSortHref('dates')}
                 direction={query.sortColumn === 'dates' ? query.sortDirection : null}
               />
-              <TableCell header>{t('added')}</TableCell>
+              <SortableTableHeader
+                label={t('added')}
+                href={getSortHref('added')}
+                direction={query.sortColumn === 'added' ? query.sortDirection : null}
+              />
               <TableCell header align="right">{eventsT('columns.actions')}</TableCell>
             </TableHeader>
             <TableBody>

@@ -80,4 +80,38 @@ integrationDescribe('draft date sorting integration', () => {
       expect(page?.[0].draft_ids).toEqual(ordered.map((name) => byName.get(`${search} ${name}`)));
     }
   });
+
+  it('sorts by creation timestamp before pagination, with stable ties', async () => {
+    const search = `draft-added-${randomUUID()}`;
+    const fixtures = [
+      { name: 'Z oldest', created_at: '2026-01-01T00:00:00Z' },
+      { name: 'B middle', created_at: '2026-02-01T10:00:00Z' },
+      { name: 'A middle', created_at: '2026-02-01T10:00:00Z' },
+      { name: 'C newest', created_at: '2026-02-01T11:00:00Z' },
+    ];
+    const { data, error } = await admin.from('event_import_drafts').insert(fixtures.map((fixture) => ({
+      created_at: fixture.created_at,
+      data: { event: { name: `${search} ${fixture.name}` }, races: [{ date: '2027-03-01' }] },
+    }))).select('id, data');
+    if (error || !data) throw error ?? new Error('Failed to create draft fixtures');
+    draftIds.push(...data.map((row) => row.id));
+    const byName = new Map(data.map((row) => [row.data.event.name, row.id]));
+
+    for (const direction of ['asc', 'desc']) {
+      const expected = direction === 'asc'
+        ? ['Z oldest', 'A middle', 'B middle', 'C newest']
+        : ['C newest', 'A middle', 'B middle', 'Z oldest'];
+      const ids: string[] = [];
+      for (const offset of [0, 2]) {
+        const { data: page, error: pageError } = await admin.rpc('get_event_import_drafts_page', {
+          p_limit: 2, p_offset: offset, p_search: search,
+          p_sort_column: 'added', p_sort_direction: direction,
+        });
+        expect(pageError).toBeNull();
+        expect(page?.[0].total_count).toBe(4);
+        ids.push(...page![0].draft_ids);
+      }
+      expect(ids).toEqual(expected.map((name) => byName.get(`${search} ${name}`)));
+    }
+  });
 });

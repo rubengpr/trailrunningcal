@@ -17,7 +17,7 @@ function firstValue(value: string | string[] | undefined): string | undefined {
 }
 
 function parseSortColumn(value: string | undefined): EventImportDraftSortColumn {
-  return value === 'name' || value === 'races' ? value : 'dates';
+  return value === 'name' || value === 'races' || value === 'added' ? value : 'dates';
 }
 
 function parseSortDirection(value: string | undefined): EventImportDraftSortDirection {

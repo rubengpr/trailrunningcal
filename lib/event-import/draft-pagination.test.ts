@@ -67,6 +67,13 @@ describe('event import draft pagination', () => {
   });
 
   it('parses supported sorting values and ignores unsupported ones', () => {
+    for (const direction of ['asc', 'desc']) {
+      const request = parseEventImportDraftPageRequest({ sort: 'added', direction, page: '2' });
+      expect(request).toMatchObject({ sortColumn: 'added', sortDirection: direction });
+      expect(parseEventImportDraftPageRequest(Object.fromEntries(
+        new URL(buildEventImportDraftsHref('es', request), 'http://localhost').searchParams,
+      ))).toEqual(request);
+    }
     expect(parseEventImportDraftPageRequest({ sort: 'name', direction: 'desc' }))
       .toMatchObject({ sortColumn: 'name', sortDirection: 'desc' });
     expect(parseEventImportDraftPageRequest({ sort: 'website', direction: 'sideways' }))

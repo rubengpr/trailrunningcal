@@ -53,6 +53,26 @@ beforeEach(() => vi.resetAllMocks());
 afterEach(() => { cleanup(); vi.useRealTimers(); });
 
 describe('AdminEventImportDraftsContent', () => {
+  it.each([null, 'asc', 'desc'] as const)('links the added header to the next direction from %s and resets pagination', (direction) => {
+    render(
+      <NextIntlClientProvider locale="es" messages={es}>
+        <AdminEventImportDraftsContent
+          initialPage={{ drafts: [draft('1')], total: 101, page: 3, pageSize: 50, totalPages: 3 }}
+          query={{ page: 3, search: 'trail', regions: ['galicia'], provinces: ['Lugo'], draftId: null,
+            sortColumn: direction ? 'added' : 'dates', sortDirection: direction ?? 'asc' }}
+        />
+      </NextIntlClientProvider>,
+    );
+    const link = screen.getByRole('link', { name: es.admin.events.drafts.added });
+    const params = new URL(link.getAttribute('href')!, 'http://localhost').searchParams;
+    expect(params.get('sort')).toBe('added');
+    expect(params.get('direction')).toBe(direction === 'asc' ? 'desc' : null);
+    expect(params.has('page')).toBe(false);
+    expect(params.get('q')).toBe('trail');
+    expect(params.get('region')).toBe('galicia');
+    expect(params.get('province')).toBe('Lugo');
+  });
+
   it('updates page results without remounting an open filter menu', () => {
     const view = (id: string) => <NextIntlClientProvider locale="es" messages={es}>
       <AdminEventImportDraftsContent

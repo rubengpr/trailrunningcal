@@ -3,7 +3,7 @@ import type { EventImportDraftTranslationJobStatus } from '@/types/event-import-
 import type { TrailEventAgentEvent, TrailEventAgentRace } from '@/types/trail-event-agent.types';
 
 export type EventImportDraftStatus = 'draft' | 'accepted' | 'rejected';
-export type EventImportDraftSortColumn = 'dates' | 'name' | 'races';
+export type EventImportDraftSortColumn = 'dates' | 'name' | 'races' | 'added';
 export type EventImportDraftSortDirection = 'asc' | 'desc';
 
 export interface EventImportDraftData {
