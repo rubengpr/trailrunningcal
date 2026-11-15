@@ -8,13 +8,14 @@ import Image from 'next/image';
 import posthog from 'posthog-js';
 import { createClient } from '@/lib/supabase/client';
 import { useEventFavorites } from '@/hooks/use-event-favorites';
+import { FavoritesNavLink } from '@/components/layout/favorites-nav-link';
 import { ExploreMenu } from '@/components/layout/explore-menu';
 import { useMobileFilters } from '@/components/providers/mobile-filters-provider';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { track } from '@/lib/analytics/track';
 import { isBlogLocale, isPublicOnlyLocale, type Locale } from '@/i18n';
 import { getContactPath, getFavoritesPath } from '@/lib/i18n/paths';
-import { Menu, Heart, CircleUser, SlidersHorizontal } from 'lucide-react';
+import { Menu, CircleUser, SlidersHorizontal } from 'lucide-react';
 
 interface NavbarProps {
   sticky?: boolean;
@@ -149,23 +150,13 @@ export function Navbar({ sticky = true }: NavbarProps) {
         {/* RIGHT: desktop nav / mobile icons */}
         <nav className="text-sm flex items-center gap-6">
           <div className="hidden sm:flex px-2 py-1 flex-row items-center gap-4">
-            <Link
+            <FavoritesNavLink
               href={favoritesPath}
-              prefetch={false}
-              className="relative p-1 hover:text-gray-900 transition-colors"
-              onClick={() =>
-                setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, {
-                  link_text: 'my_events',
-                  link_href: favoritesPath,
-                  locale,
-                }), 0)
-              }
-            >
-              <Heart className="size-5 text-gray-700" strokeWidth={1.5} />
-              {favorites.size > 0 && (
-                <span className="absolute top-0 right-0 block size-2 rounded-full bg-red-500" />
-              )}
-            </Link>
+              locale={locale}
+              hasFavorites={favorites.size > 0}
+              className="p-1 hover:text-gray-900 transition-colors"
+              iconClassName="text-gray-700"
+            />
             <ExploreMenu locale={locale} />
             {isBlogLocale(locale) && (
               <Link href={`/${locale}/blog`} prefetch={false} className="hover:text-gray-900 transition-colors" onClick={() => setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, { link_text: 'blog', link_href: `/${locale}/blog`, locale }), 0)}>{t('blog')}</Link>
@@ -180,24 +171,13 @@ export function Navbar({ sticky = true }: NavbarProps) {
 
           {/* Mobile: heart icon (homepage only) */}
           {isHomepage && (
-            <Link
+            <FavoritesNavLink
               href={favoritesPath}
-              prefetch={false}
-              className="relative flex sm:hidden p-1 text-gray-400"
+              locale={locale}
+              hasFavorites={favorites.size > 0}
+              className="flex sm:hidden p-1 text-gray-400"
               title={t('myEvents')}
-              onClick={() =>
-                setTimeout(() => track(ANALYTICS_EVENTS.NAVBAR_LINK_CLICKED, {
-                  link_text: 'my_events',
-                  link_href: favoritesPath,
-                  locale,
-                }), 0)
-              }
-            >
-              <Heart className="size-5" strokeWidth={1.5} />
-              {favorites.size > 0 && (
-                <span className="absolute top-0 right-0 block size-2 rounded-full bg-red-500" />
-              )}
-            </Link>
+            />
           )}
 
           {/* Mobile: filter icon */}
