@@ -2,6 +2,10 @@
 
 Source of truth: `data/gpx/races-gpx-queue.csv`. One row = one race = one GPX.
 
+Active queue since 2026-11-16: `data/gpx/races-gpx-queue-2026-11.csv` (556 races from the
+events accepted from the 2026-11-15 draft run; upcoming races first, then past ones newest
+first). Same columns and rules. Work it before resuming the older queue.
+
 This file is the whole pipeline: research a candidate, and if it's good and fetchable,
 download it and apply it to production in the same pass. Re-read this file at the start of
 each turn.
