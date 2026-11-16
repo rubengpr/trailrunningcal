@@ -730,3 +730,53 @@ sibling itself has no geometry yet, leave the row and report it.
 
 The `mcp__supabase__execute_sql` `UPDATE races SET track_geometry = ...` above was denied this session ("Blocked by classifier") — production writes via raw SQL are no longer allowed here; only `pnpm track:import` reaches production. `track:import` can't be pointed at a walk row (rule: never apply a track for a walk/relay/pairs row).
 Rule going forward: a derived walk/relay/pairs row that shares a course with an applied race stays `status = needs_review`, `gpx_url` empty, `upload_status = "needs_review: shares row <n> course; geometry ready to copy"`, and the note records the sibling's `race_id`. Someone with DB write access finishes the copy later. Don't spend a call attempting the `UPDATE`.
+
+## 2026-11-16: walk rows that share the course get the race's file (supersedes the two blocks above)
+
+A non-competitive walk gets the race's GPX only when the organizer states that it follows exactly the same course and distance. The statement can be in the rules, on the walk page, or in an organizer route titled with both. A walk page that publishes the very same file or Wikiloc id as the race counts as that statement. Matching figures alone do not. When the statement exists, apply the same file to the walk's `race_id` with `pnpm track:import`. Without it, or with a different distance, use `needs_review` as before. In auto mode, the permission classifier blocks these imports, and sometimes plain official ones too. Do not retry or work around it. Record `found` with the verified local path in `notes`, and leave the apply to the user from the main session (2026-11-16: 25 rows applied that way).
+
+## 2026-11-16 run: distilled learnings (556 races, 397 applied)
+
+### Finding
+
+- **Scan first, browse second.** A batch `curl | grep -iE 'wikiloc|loc.wiki|\.gpx|strava|drive|garmin|racemapp|tracedetrail|plotaroute|dropbox'` over every `official_url` settles static sites in one call. Open only the JS-rendered sites in the browser. On Joomla, Jimdo and buscametas sites, the track sits on a sub-page, not on the home page:
+  - Joomla: `com_content` modality articles.
+  - Jimdo: `/app/download/<n>/<name>.gpx` on the information or *ficha* pages.
+  - buscametas: one Wikiloc embed per `/recorrido/<n>/`.
+- **Timing and registration platforms do publish tracks.** This refines the step 2a rule. Always run the raw-HTML scan on:
+  - rockthesport: `rtsfiles.blob.core.windows.net/documentos/*.gpx` under "Documentación".
+  - SmartChip: `carrera.php?id=<n>`.
+  - dxtchiprun: `/Web/descargar_adjunto/<hash>`, which can also be the rules PDF.
+  - elitechip: `/api/competition-documents/<id>`.
+  - MyChip: list `performance.getEntriesByType('resource')` for `mychip-prod-documents.s3.amazonaws.com/<slug>/<modalityId>/track_gpx.gpx`.
+  - youevent: a Wikiloc embed.
+- **Rules PDFs hide links.** `pdftotext` drops link annotations and breaks URLs across lines. Extract `/URI` from the raw bytes and from the zlib-inflated streams, or use `strings file.pdf | grep -o 'https\?://[^)>]*'`. Score these routes as `source: rules`.
+- **`wp-gpx-maps` is not always a dead end.** Check the same scan output for `/wp-content/uploads/.../*.gpx` (canaryrun.com).
+- **Images can carry Garmin ids.** On a course page with only images, filenames `COURSE_<id>` and `activity_<id>` are Garmin Connect exports.
+- **Wikiloc town listings beat WebSearch** for race-day uploads: `wikiloc.com/trails/trail-running/spain/<region>/<town>` (also `/trails/running/...` and `?page=2`). Organizer and timing-company accounts often retitle last year's routes with the new year. A 404 on `view.do?id=` means the route was deleted, even when a search snippet still quotes its stats.
+- **A Cloudflare 5xx from `curl`** (about 4.5 KB, `cloudflare.com/5xx-error-landing`) is not a dead site. Open it once in the in-app browser.
+
+### Downloading (rebuild GPX from hosts without a download button)
+
+- **RaceMapp project links** (`/proyecto/<id>`):
+  1. `api/1.0/mapa/?proyecto=<id>&fields=id` gives the map id.
+  2. `api/1.0/recorrido/?mapa=<mapId>` lists one recorrido per distance. Do not add `visible=true`: a hidden recorrido (`visible: false`) can be a dropped or re-routed distance, so mark it `needs_review`.
+  3. Decode the polyline (lng,lat: swap the axes).
+
+  `recorrido/?proyecto=` ignores the filter and returns every recorrido.
+- **Trace de Trail** (`tracedetrail.fr`): the public page `/en/trace/<id>` carries the points inline as escaped JSON in **EPSG:3857** metres.
+  - Unescape it and read `{"lon":X,"lat":Y,"y":E}`. Keep `o:"add"` points.
+  - Convert with `lon = x/6378137·180/π` and `lat = (2·atan(exp(y/6378137)) − π/2)·180/π`.
+  - Some embeds (`/en/iframe/<mapId>`) have no inline geometry and need a login. Treat them like Strava.
+- **Garmin activity embeds** (`connect.garmin.com/modern/activity/embed/<id>`) carry `geoPolylineDTO.polyline` without a login. The points have no altitude, so say so in `notes`. The importer accepts files without `<ele>`.
+- **plotaroute** (`plotaroute.com/embedmap/<id>`): curl hits a Cloudflare challenge. In the in-app browser, `fetch('/get_route.asp?RouteID=<id>')` returns `RouteData` with `{lat,lng}` points, so rebuild the file locally.
+- **Dropbox** `scl/fi/...gpx?rlkey=...`: rewrite `dl=0` to `dl=1`, keep `rlkey`, then `curl -sL`. The link may sit only inside escaped JSON in the raw HTML of site builders.
+- **Google Drive folders**:
+  1. Collect the `[data-id]` attributes in the browser.
+  2. `curl -D` `uc?export=download&id=<id>`.
+  3. Name each file from `content-disposition`.
+
+### Applying
+
+- **Decimate before import.** For files over about 25k points, keep every Nth point and drop vendor `<extensions>` (42.6k → 14.2k points changed the distance by under 1%).
+- **`track:import` overwrites an existing track without asking.** When you parse several files of one event, print each filename next to its parse result before renaming or applying. If a wrong file goes in, re-apply the right one straight away and note it.
