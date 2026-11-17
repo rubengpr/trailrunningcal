@@ -7,11 +7,11 @@ import {
   Eye,
   MousePointerClick,
   Percent,
-  X,
 } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import type { Locale } from '@/i18n';
+import { ImagePreviewModal } from '@/components/ui/image-preview-modal';
 import { SponsorPerformanceChart } from '@/components/sponsors/sponsor-performance-chart';
 import type { ReportingPeriod, SponsorDashboardData, SponsorDashboardDay } from '@/types/sponsor-dashboard.types';
 import { DistributionChart } from '@/components/sponsors/distribution-chart';
@@ -520,34 +520,13 @@ export function SponsorDashboard({
         </section>
       </div>
       {isPreviewOpen && campaign === 'banner' ? (
-        <div
-          aria-modal="true"
-          className="fixed inset-0 z-50 grid place-items-center bg-stone-950/70 p-5 backdrop-blur-sm"
-          role="dialog"
-          onClick={() => setIsPreviewOpen(false)}
-        >
-          <div
-            className="relative max-h-[88vh] w-full max-w-6xl overflow-hidden rounded-xl border border-white/20 bg-white shadow-2xl"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <button
-              aria-label={t('campaign.banner.closePreview')}
-              className="absolute right-3 top-3 z-10 grid size-8 place-items-center rounded-full bg-stone-950/80 text-white shadow-sm transition-colors hover:bg-stone-950"
-              type="button"
-              onClick={() => setIsPreviewOpen(false)}
-            >
-              <X aria-hidden="true" className="size-4" />
-            </button>
-            <Image
-              alt={t('campaign.banner.previewAlt')}
-              className="h-auto max-h-[88vh] w-full object-contain"
-              height={1672}
-              priority
-              src="/assets/sponsors/trail-brand-banner-preview.png"
-              width={2940}
-            />
-          </div>
-        </div>
+        <ImagePreviewModal
+          src="/assets/sponsors/trail-brand-banner-preview.png"
+          alt={t('campaign.banner.previewAlt')}
+          title={t('campaign.banner.openPreview')}
+          closeLabel={t('campaign.banner.closePreview')}
+          onClose={() => setIsPreviewOpen(false)}
+        />
       ) : null}
     </main>
   );
