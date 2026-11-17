@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Search, Sparkles } from 'lucide-react';
 import { IconButton } from '@/components/ui/icon-button';
-import { cleanUrl } from '@/lib/utils/url';
+import { EventWebsiteTableCell } from '@/components/event/event-website-table-cell';
 import type { EventDescriptionCandidate } from '@/types/event-description.types';
 
 export type EventDescriptionRowStatus =
@@ -108,20 +108,11 @@ export function EventDescriptionRow({
           {event.name}
         </Link>
       </td>
-      <td className="max-w-[180px] px-4 py-3">
-        {event.websiteUrl ? (
-          <a
-            href={event.websiteUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block truncate text-gray-500 hover:text-gray-800 hover:underline"
-          >
-            {cleanUrl(event.websiteUrl)}
-          </a>
-        ) : (
-          <span className="text-red-600">{labels.missingUrl}</span>
-        )}
-      </td>
+      <EventWebsiteTableCell
+        url={event.websiteUrl}
+        missingLabel={labels.missingUrl}
+        missingClassName="text-red-600"
+      />
       <td className="px-4 py-3 text-right tabular-nums text-gray-700">
         {event.raceCount}
       </td>
