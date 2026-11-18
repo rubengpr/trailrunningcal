@@ -421,6 +421,7 @@
     "valencia": "Valencia"
   },
   "sidebar": {
+    "weather": "Tiempo",
     "calendar": "Calendario",
     "events": "Eventos",
     "profile": "Perfil",
@@ -1330,6 +1331,18 @@
     "breadcrumb": "Backyard Ultra"
   },
   "admin": {
+    "weather": {
+      "title": "Consulta del tiempo",
+      "question": "Tu pregunta",
+      "placeholder": "¿Qué tiempo hace ahora en Berga?",
+      "submit": "Enviar",
+      "sending": "Consultando…",
+      "answer": "Respuesta",
+      "empty": "La respuesta aparecerá aquí.",
+      "required": "Escribe una pregunta antes de enviarla.",
+      "requestFailed": "No se ha podido completar la consulta. Vuelve a intentarlo.",
+      "source": "Datos meteorológicos de Open-Meteo"
+    },
     "login": {
       "title": "Admin",
       "description": "Accede al panel de administración.",

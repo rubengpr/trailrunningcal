@@ -421,6 +421,7 @@
     "valencia": "València"
   },
   "sidebar": {
+    "weather": "Temps",
     "calendar": "Calendari",
     "events": "Esdeveniments",
     "profile": "Perfil",
@@ -1298,6 +1299,18 @@
     "breadcrumb": "Backyard Ultra"
   },
   "admin": {
+    "weather": {
+      "title": "Consulta del temps",
+      "question": "La teva pregunta",
+      "placeholder": "Quin temps fa ara a Berga?",
+      "submit": "Envia",
+      "sending": "Consultant…",
+      "answer": "Resposta",
+      "empty": "La resposta apareixerà aquí.",
+      "required": "Escriu una pregunta abans d’enviar-la.",
+      "requestFailed": "No s’ha pogut completar la consulta. Torna-ho a provar.",
+      "source": "Dades meteorològiques d’Open-Meteo"
+    },
     "login": {
       "title": "Admin",
       "description": "Accedeix al panell d'administració.",

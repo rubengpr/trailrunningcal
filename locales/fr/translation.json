@@ -1112,7 +1112,22 @@
     "breadcrumb": "Backyard Ultra",
     "contentSectionsTitle": "Questions fréquentes"
   },
+  "sidebar": {
+    "weather": "Météo"
+  },
   "admin": {
+    "weather": {
+      "title": "Consulter la météo",
+      "question": "Votre question",
+      "placeholder": "Quel temps fait-il à Berga en ce moment ?",
+      "submit": "Envoyer",
+      "sending": "Consultation…",
+      "answer": "Réponse",
+      "empty": "La réponse apparaîtra ici.",
+      "required": "Écrivez une question avant de l’envoyer.",
+      "requestFailed": "La demande n’a pas pu aboutir. Veuillez réessayer.",
+      "source": "Données météorologiques par Open-Meteo"
+    },
     "events": {
       "drafts": {
         "status": {

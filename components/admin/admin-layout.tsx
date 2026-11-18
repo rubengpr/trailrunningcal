@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { Calendar, Trophy } from 'lucide-react';
+import { Calendar, Trophy, CloudSun } from 'lucide-react';
 import { DashboardLayout } from '@/components/ui/dashboard-layout';
 import type { NavItem } from '@/components/ui/sidebar';
 
@@ -15,6 +15,12 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const t = useTranslations('sidebar');
 
   const navItems: NavItem[] = [
+    {
+      href: `/${locale}/admin/weather`,
+      label: t('weather'),
+      icon: <CloudSun className="size-4" strokeWidth={1.5} />,
+      match: 'prefix',
+    },
     {
       href: `/${locale}`,
       label: t('calendar'),

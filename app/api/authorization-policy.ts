@@ -12,6 +12,7 @@ export type ApiAuthorization =
   | { kind: 'draft'; permission: DraftPermission };
 
 export const API_AUTHORIZATION_POLICY = {
+  'POST /api/weather-assistant': 'admin',
   'GET /api/brands/report': 'public',
   'GET /api/cron/event-updates': 'cron',
   'POST /api/event-locations': 'public',

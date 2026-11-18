@@ -1112,7 +1112,22 @@
     "breadcrumb": "Backyard Ultra",
     "contentSectionsTitle": "Frequently asked questions"
   },
+  "sidebar": {
+    "weather": "Weather"
+  },
   "admin": {
+    "weather": {
+      "title": "Weather query",
+      "question": "Your question",
+      "placeholder": "What is the weather like in Berga right now?",
+      "submit": "Send",
+      "sending": "Checking…",
+      "answer": "Answer",
+      "empty": "The answer will appear here.",
+      "required": "Write a question before sending it.",
+      "requestFailed": "The request could not be completed. Please try again.",
+      "source": "Weather data by Open-Meteo"
+    },
     "events": {
       "drafts": {
         "status": {

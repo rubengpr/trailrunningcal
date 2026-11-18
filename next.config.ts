@@ -22,6 +22,8 @@ const DESTINATION_REDIRECT_SLUGS = [
 ] as const;
 
 const nextConfig: NextConfig = {
+  // Keep a single SDK module instance so startup telemetry patches also cover route calls.
+  serverExternalPackages: ['openai'],
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
 
   images: {

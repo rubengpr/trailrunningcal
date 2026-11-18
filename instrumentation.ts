@@ -76,6 +76,7 @@ export async function startTelemetry(): Promise<{ flush(): Promise<void> } | und
           attributes: [
             /^gen_ai\.(?:input|output)\.messages$/u,
             /^gen_ai\.system_instructions$/u,
+            /^gen_ai\.tool\.call\.(?:arguments|result)$/u,
           ],
           mask: (_attribute, value) => String(maskSensitiveData(value)),
         },
