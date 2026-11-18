@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from 'react';
 import {
-  ChevronDown,
   Download,
   Eye,
   MousePointerClick,
@@ -14,6 +13,7 @@ import type { Locale } from '@/i18n';
 import { ImagePreviewModal } from '@/components/ui/image-preview-modal';
 import { SponsorPerformanceChart } from '@/components/sponsors/sponsor-performance-chart';
 import type { ReportingPeriod, SponsorDashboardData, SponsorDashboardDay } from '@/types/sponsor-dashboard.types';
+import { DashboardSelect } from '@/components/sponsors/dashboard-select';
 import { DistributionChart } from '@/components/sponsors/distribution-chart';
 import { downloadSponsorReport } from '@/lib/api/sponsor-report';
 
@@ -350,36 +350,28 @@ export function SponsorDashboard({
             </div>
           </div>
           <div className="flex shrink-0 flex-wrap gap-2">
-            <label className="relative">
-              <span className="sr-only">{t('campaign.label')}</span>
-              <select
-                className="cursor-pointer appearance-none rounded-lg border border-stone-200 bg-white py-1.5 pl-2.5 pr-8 text-xs font-medium text-stone-700 shadow-sm outline-none transition-colors hover:border-stone-300 focus:border-stone-400"
-                value={campaign}
-                onChange={(event) => {
-                  setCampaign(event.target.value as Campaign);
-                  setIsPreviewOpen(false);
-                }}
-              >
-                <option value="banner">{t('campaign.banner.label')}</option>
-                <option value="sticky">{t('campaign.sticky.label')}</option>
-              </select>
-              <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-2.5 top-1/2 size-3.5 -translate-y-1/2 text-stone-500" />
-            </label>
-            <label className="relative">
-              <span className="sr-only">{t('period.label')}</span>
-              <select
-                className="cursor-pointer appearance-none rounded-lg border border-stone-200 bg-white py-1.5 pl-2.5 pr-8 text-xs font-medium text-stone-700 shadow-sm outline-none transition-colors hover:border-stone-300 focus:border-stone-400"
-                value={period}
-                onChange={(event) => {
-                  setPeriod(event.target.value as ReportingPeriod);
-                }}
-              >
-                <option value="last30Days">{t('period.last30Days')}</option>
-                <option value="lastMonth">{t('period.lastMonth')}</option>
-                <option value="all">{t('period.all')}</option>
-              </select>
-              <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-2.5 top-1/2 size-3.5 -translate-y-1/2 text-stone-500" />
-            </label>
+            <DashboardSelect
+              label={t('campaign.label')}
+              value={campaign}
+              onChange={(value) => {
+                setCampaign(value);
+                setIsPreviewOpen(false);
+              }}
+              options={[
+                { value: 'banner', label: t('campaign.banner.label') },
+                { value: 'sticky', label: t('campaign.sticky.label') },
+              ]}
+            />
+            <DashboardSelect
+              label={t('period.label')}
+              value={period}
+              onChange={setPeriod}
+              options={[
+                { value: 'last30Days', label: t('period.last30Days') },
+                { value: 'lastMonth', label: t('period.lastMonth') },
+                { value: 'all', label: t('period.all') },
+              ]}
+            />
             <button
               className="inline-flex items-center gap-1.5 rounded-lg border border-stone-200 bg-white px-2.5 py-1.5 text-xs font-medium text-stone-700 shadow-sm transition-colors hover:border-stone-300 disabled:cursor-wait disabled:opacity-70"
               disabled={isDownloading}
@@ -421,20 +413,15 @@ export function SponsorDashboard({
               <h2 className="text-base font-semibold tracking-tight">{t('audience.title')}</h2>
               <p className="mt-1 text-xs text-stone-500">{t(`audience.source.${audienceView}`)}</p>
             </div>
-            <label className="relative">
-              <span className="sr-only">{t('audience.groupBy')}</span>
-              <select
-                className="cursor-pointer appearance-none rounded-lg border border-stone-200 bg-white py-1.5 pl-2.5 pr-8 text-xs font-medium text-stone-700 shadow-sm outline-none transition-colors hover:border-stone-300 focus:border-stone-400"
-                value={audienceView}
-                onChange={(event) => {
-                  setAudienceView(event.target.value as AudienceView);
-                }}
-              >
-                <option value="country">{t('audience.country')}</option>
-                <option value="region">{t('audience.region')}</option>
-              </select>
-              <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-2.5 top-1/2 size-3.5 -translate-y-1/2 text-stone-500" />
-            </label>
+            <DashboardSelect
+              label={t('audience.groupBy')}
+              value={audienceView}
+              onChange={setAudienceView}
+              options={[
+                { value: 'country', label: t('audience.country') },
+                { value: 'region', label: t('audience.region') },
+              ]}
+            />
           </div>
 
           <DistributionChart
@@ -475,18 +462,15 @@ export function SponsorDashboard({
               <h2 className="text-base font-semibold tracking-tight">{t('breakdown.title')}</h2>
               <p className="mt-1 text-xs text-stone-500">{t('breakdown.summary')}</p>
             </div>
-            <label className="relative">
-              <span className="sr-only">{t('breakdown.view')}</span>
-              <select
-                className="cursor-pointer appearance-none rounded-lg border border-stone-200 bg-white py-1.5 pl-2.5 pr-8 text-xs font-medium text-stone-700 shadow-sm outline-none transition-colors hover:border-stone-300 focus:border-stone-400"
-                value={breakdownView}
-                onChange={(event) => setBreakdownView(event.target.value as BreakdownView)}
-              >
-                <option value="audience">{t('breakdown.audience')}</option>
-                <option value="device">{t('breakdown.device')}</option>
-              </select>
-              <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-2.5 top-1/2 size-3.5 -translate-y-1/2 text-stone-500" />
-            </label>
+            <DashboardSelect
+              label={t('breakdown.view')}
+              value={breakdownView}
+              onChange={setBreakdownView}
+              options={[
+                { value: 'audience', label: t('breakdown.audience') },
+                { value: 'device', label: t('breakdown.device') },
+              ]}
+            />
           </div>
 
           <div className="mt-4 grid items-center gap-5 sm:grid-cols-[10rem_1fr]">
