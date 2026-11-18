@@ -5,8 +5,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Plus } from 'lucide-react';
-import { FormInput } from '@/components/ui/form-input';
-import { FormTextarea } from '@/components/ui/form-textarea';
+import { EventDraftFields } from '@/components/event/event-draft-fields';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { FormErrorMessage } from '@/components/ui/error-message';
 import { RaceDraftEditor } from '@/components/event/race-draft-editor';
@@ -232,29 +231,18 @@ export function EventForm({
         <h3 className="text-xl font-semibold leading-none tracking-tight">
           {isEditMode ? t('editTitle') : t('title')}
         </h3>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-8">
-          <FormInput
-            id="event-name"
-            label={t('eventName')}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <FormInput
-            id="event-website-url"
-            label={t('websiteUrl')}
-            value={websiteUrl}
-            onChange={(e) => setWebsiteUrl(e.target.value)}
-            placeholder={t('websiteUrlPlaceholder')}
-          />
-        </div>
-        <FormTextarea
-          id="event-description"
-          label={t('description')}
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          maxLength={2000}
-          showCharacterCount
-          rows={5}
+        <EventDraftFields
+          idPrefix="event"
+          name={name}
+          websiteUrl={websiteUrl}
+          description={description}
+          labels={{ name: t('eventName'), websiteUrl: t('websiteUrl'), description: t('description') }}
+          onNameChange={setName}
+          onWebsiteUrlChange={setWebsiteUrl}
+          onDescriptionChange={setDescription}
+          layout="columns"
+          websitePlaceholder={t('websiteUrlPlaceholder')}
+          descriptionOptions={{ maxLength: 2000, showCharacterCount: true, rows: 5 }}
         />
       </div>
 

@@ -7,8 +7,7 @@ import { RaceEditModalRow, type ModalRaceDraft } from '@/components/admin/race-e
 import { ReviewActionButton } from '@/components/admin/review-action-button';
 import { BaseModal } from '@/components/ui/base-modal';
 import { FormErrorMessage } from '@/components/ui/error-message';
-import { FormInput } from '@/components/ui/form-input';
-import { FormTextarea } from '@/components/ui/form-textarea';
+import { EventDraftFields } from '@/components/event/event-draft-fields';
 import {
   toRaceTierDrafts,
   toRaceTierWriteInputs,
@@ -229,41 +228,18 @@ function EventRacesEditModalContent({
     >
       <div className="flex max-h-[70vh] flex-col gap-6 overflow-y-auto px-1 pb-1">
         <section className="flex flex-col gap-3">
-          <FormInput
-            id="modal-event-name"
-            label={t('editFieldName')}
-            value={eventDraft.name}
+          <EventDraftFields
+            idPrefix="modal-event"
+            name={eventDraft.name}
+            websiteUrl={eventDraft.websiteUrl ?? ''}
+            description={eventDraft.description ?? ''}
+            labels={{ name: t('editFieldName'), websiteUrl: t('editFieldWebsiteUrl'), description: t('editFieldDescription') }}
             disabled={isSaving}
-            onChange={(e) =>
-              setEventDraft({ ...eventDraft, name: e.target.value })
-            }
-          />
-          <FormInput
-            id="modal-event-website-url"
-            label={t('editFieldWebsiteUrl')}
-            type="url"
-            value={eventDraft.websiteUrl ?? ''}
-            disabled={isSaving}
-            onChange={(e) =>
-              setEventDraft({
-                ...eventDraft,
-                websiteUrl: e.target.value.trim() || null,
-              })
-            }
-          />
-          <FormTextarea
-            id="modal-event-description"
-            label={t('editFieldDescription')}
-            rows={12}
-            className="min-h-64 resize-y"
-            value={eventDraft.description ?? ''}
-            disabled={isSaving}
-            onChange={(e) =>
-              setEventDraft({
-                ...eventDraft,
-                description: e.target.value || null,
-              })
-            }
+            websiteType="url"
+            onNameChange={(name) => setEventDraft({ ...eventDraft, name })}
+            onWebsiteUrlChange={(websiteUrl) => setEventDraft({ ...eventDraft, websiteUrl: websiteUrl.trim() || null })}
+            onDescriptionChange={(description) => setEventDraft({ ...eventDraft, description: description || null })}
+            descriptionOptions={{ rows: 12, className: 'min-h-64 resize-y' }}
           />
         </section>
 
