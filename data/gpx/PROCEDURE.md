@@ -780,3 +780,420 @@ A non-competitive walk gets the race's GPX only when the organizer states that i
 
 - **Decimate before import.** For files over about 25k points, keep every Nth point and drop vendor `<extensions>` (42.6k → 14.2k points changed the distance by under 1%).
 - **`track:import` overwrites an existing track without asking.** When you parse several files of one event, print each filename next to its parse result before renaming or applying. If a wrong file goes in, re-apply the right one straight away and note it.
+
+## Findings from the 2026-11-18 Nov–Dec pass (6 parallel batches)
+
+## 2026-11-18: an organizer "app" that builds the GPX client-side from inline JSON
+
+Ecomaratón La Donaira's page (`ladonaira.com/ecomaraton`) only iframes `ecomaratonapp.netlify.app`, whose "Exportar track" button generates the GPX in the browser — there is no file URL. The HTML (directly `curl`-able) carries `const DATA = {"t25":{dist,up,coords:[[lat,lon],...],prof:[[km,ele],...]},...}`; `coords` and `prof` are index-aligned. `json.JSONDecoder().raw_decode` from `DATA = ` onward, zip coords with `prof[i][1]`, emit `<trkpt><ele>`. 23.33 km vs 25 km DB, applied.
+Rule going forward: when an official map page offers "export track" but no link, look for an inline `DATA`/`coords` array in the raw HTML before giving up — it is `source: official`, and `gpx_url` is the app page URL.
+
+## 2026-11-18: "Marcha nórdica" catalogue rows on ultra events = same course as the race
+
+El Privilegio 100 Millas lists a "MARCHA NÓRDICA" button on each distance page (100 millas / 50 millas / 6 leguas); the DB has a `Marcha` row at exactly each race's distance/D+. Pujada als Plans does the same (Marcha nórdica 9 km = Marcha 9 km). These are derived rows → `needs_review` naming the sibling race that already has geometry.
+Rule going forward: a `Marcha`/`Marcha nórdica` row with identical figures to a sibling that already has `track_geometry` is resolved from the production query alone — no search.
+
+## 2026-11-18: organizer page states a distance that contradicts the DB
+
+Iberika El Molar's 2026 recorrido page says Larga 18.1K +600 (Wikiloc 18.12 km) but the DB row is 22.6 km / 517 m — -19.8%, inside the rule only by a hair. Recorded as `found`/`medium` with a note that the DB distance looks stale. Same page says the Fast Trail and Marcha share one course (7.1 km) while the DB Marcha says 9 km.
+Rule going forward: when the organizer's current-year page gives a distance that differs from the DB, note "DB distance likely stale" so the catalogue gets fixed, and score against the row only for the apply gate.
+
+## 2026-11-18: Wikiloc locality directory pages list race recordings the search engine misses
+
+`es.wikiloc.com/rutas/carrera-por-montana/espana/<region>/<locality>` (trail-running list for the start town) surfaced "Trail La Róbliga 2025", "Circuito Anibal Experience 15K 2025" and "TRAIL SANTA TEGRA 2025", none of which the WebSearch `allowed_domains` queries returned. Filter its anchors by the race name.
+Rule going forward: after one WebSearch miss, open the start town's trail-running directory page once and filter anchors by race name before declaring `not_found`.
+
+## 2026-11-18: in-app browser javascript_tool hangs on some heavy Wix/WordPress pages
+
+clubfluviallugo.com made every `javascript_tool` call time out (45 s) even without awaits. `curl` + a Python HTML scan (or WebFetch) worked. Avoid `grep -oE` with long `[^...]*(a|b|c)[^...]*` alternations on 400 KB HTML — it ran >2 min; use Python `re` instead.
+
+## 2026-11-18: "One moment, please..." bot-verification loop on organizer sites
+
+3diastrailibiza.com, vilaverdskyrace.naturaldfn.com and (once) lopastisset.cat answer with a "One moment, please... Please wait while your request is being verified" page that reloads every 5 s. lopastisset.cat passed after one reload in the in-app browser; the other two loop forever (browser and curl alike).
+Rule going forward: give such a site one ~10 s wait in the in-app browser; if the title is still "One moment, please...", treat it as a dead official link and go to rules PDF / press / Wikiloc. Don't try to bypass it.
+
+## 2026-11-18: registration-platform rules PDFs carry the exact per-distance figures
+
+chronotrackcanarias and croniussport serve the reglamento at `/inscripcion/<slug>/ficheros/?filetype=reglamento&lang=es` (curl-able PDF; `pdftotext | grep -iE "km|desnivel"`). Isla Baja's PDF gave 22.55 km / 1293 m+ and 12.19 km / 839 m+ — enough to confirm a user recording at near-exact figures; Aznalcóllar's showed the 2026 course is a new single 15 km format (so older 21K/13K recordings don't apply).
+Rule going forward: when the official_url is one of these platforms, pull the rules PDF this way before the Wikiloc search.
+
+## 2026-11-18: organizer embeds an older id but links the current-year route in text
+
+lopastisset.cat course pages embed an old `spatialArtifacts.do?id=` map but also link `ca.wikiloc.com/...-2026-<id>` ("Enllaç a Wikiloc"); category pages (Juvenil/Cadet/Junior) state which adult course they share and link that same route. The 2026 routes matched the DB figures exactly.
+Rule going forward: in the raw-HTML scan prefer the `...-<year>-<id>` route link over the iframe id; category pages that link a sibling's route are derived rows.
+
+## 2026-11-18: an organizer retitles an old Wikiloc upload as the current-year course
+
+Sierra de Chiva's organizer account (carrerasierradechiva, user 188447) renamed its 2019 upload "X Carrera ... 2019 Trail 35 km" (id 43673838, "Track oficial actualizado 18/11/2019") to "XV Carrera por Montaña Sierra de Chiva 2026 TRAIL 35 km". Upload date is >4 years old, but the organizer is explicitly labelling it as this year's course.
+Rule going forward: when the *organizer's own account* retitles an old route with the current edition, treat it as organizer-vouched — the 4-year age cap is waived (same as `source: official`). Record the original upload year in `notes`.
+
+## 2026-11-18: one official "Ver track" link shared by two distance pages, behind the login wall
+
+desafiosarrio.com links the same Wikiloc route (285799622, "Carrera Desafío Sarrio") from both its 22K and 10K pages, and the 2026 routes redirect to `start.do?NEXTHOP=` (login wall), so the distance can't be read. The organizer's 2025 uploads used "DESAFÍO" for the long race and "CARRERA" for the short one.
+Rule going forward: assign the shared link to the row its title matches by the organizer's naming convention (here the short race), give the other row the organizer's prior-edition file if it fits ±20%, both `medium`, and flag in `notes` that the download must confirm the distance before applying.
+
+## 2026-11-18: a new distance this year is a clean not_found, distinct from "discontinued"
+
+FalcoTrail 2026 replaced its 71K/47K with 53K/31K; Bell Race 2026 added a new unmarked "21k per GPS". No recording or organizer file can exist yet for a distance run for the first time.
+Rule going forward: when the registration page's previous-editions list shows the row's distance never ran before, `not_found` with `skipped: the <N> km distance is new in <year>, no track exists` — don't force the old longer/shorter course onto it.
+
+## 2026-11-18: rockthesport "Documentación" can carry a GPX on rtsfiles.blob.core.windows.net
+
+The Trail San Silvestre Tembleca rockthesport event page lists a `.gpx` under "Documentación"
+(`rtsfiles.blob.core.windows.net/documentos/<uuid>.gpx`), here a Wikiloc export from the
+council's own account. WebFetch on the event page surfaced it; `curl` fetched it directly.
+Rule going forward: rockthesport is not always a dead end — one WebFetch of the event page asking
+for "GPX / Documentación" links is worth it; `rtsfiles.blob.core.windows.net/documentos/*.gpx`
+is a fetchable host (`source: official`).
+
+## 2026-11-18: rules PDF on a timing page holds loc.wiki links (dorsalchip Drive iframe)
+
+dorsalchip's CxM Alhaurín el Grande page shows nothing but a Drive `/preview` iframe. That file
+is the rules PDF; `pdftotext` showed `Modalidad Trail: 22km ... https://loc.wiki/t/<N>` per
+distance. elitechip's `api/competition-documents/<n>` PDFs (rules, briefing) are worth the same
+check.
+Rule going forward: when a timing-company page embeds or lists a rules/briefing PDF, `curl` it
+and run `pdftotext | grep -iE 'wikiloc|loc\.wiki|gpx|track'`, plus a scan of `/URI (...)`
+link annotations (zlib-decompress the streams), because "Descarrega el track aquí" anchor text
+only shows the link in the annotations.
+
+## 2026-11-18: IDE Menorca (ide.cime.es) viewer links carry the whole track in the URL hash
+
+The Cursa Camí Reial briefing PDF's "Descarrega el track aquí" links go to
+`ide.cime.es/visor/#<base64>`. The base64 decodes to `ext|base|...|trackResult|{"trackName":...,
+"features":[{"type":"polyline","geom":[[lon,lat,ele],...]}]}` followed by extra non-JSON data
+(use `json.JSONDecoder().raw_decode`). Rebuilding `<trkpt lat lon><ele>` gave 24.52 km / 11.46 km
+for the 25/12 km rows, and both applied. Script: `scratchpad/gpx/tools-b4/cime.py`.
+Rule going forward: treat an `ide.cime.es/visor/#...` link as a fetchable official track
+(lon,lat order). Since the URL is too long to store, record the containing document URL
+with a `#track-<dist>` fragment so the two rows' `gpx_url` stay distinct.
+
+## 2026-11-18: "One moment, please..." hosting interstitial
+
+lacizurgares.es and teruelindomito.es both serve a self-reloading "One moment, please..."
+page (a hosting bot-check). In the in-app browser it never resolved after 10+ s, and curl gets the same.
+Rule going forward: one attempt, then go straight to the Wikiloc search. Don't wait in a loop.
+
+## 2026-11-18: Wikiloc locality listing pages beat WebSearch for finding race recordings
+
+`wikiloc.com/trails/trail-running/spain/<region>/<town>` lists ~25 trail-running routes near the start town with title, author and distance/D+ in one page; one `javascript_tool` pass over its anchors (walk up to the card for `Distance … mi`) surfaced every edition's recording (Castellnovo, Gerena, Algar, Dos Aguas, Casas del Señor, Calles, Júzcar) where WebSearch returned hiking routes. Add `?page=2` for busy towns.
+Rule going forward: after one WebSearch, open the start town's trail-running listing before declaring not_found.
+
+## 2026-11-18: an official track that is one lap of an N-lap race
+
+Yuri Trail (11 km) is 2 laps of a 5.73 km circuit; the official /circuito page embeds a Garmin *activity* (`connect.garmin.com/modern/activity/embed/<id>`) of one lap. The activity embed carries the geometry in `geoPolylineDTO.polyline` (lat/lon list), like the course embed's `geoPoints`. A single lap fails ±20% against the race distance, and duplicating it would fabricate geometry.
+Rule going forward: N-lap rule still applies (`not_found`, `skipped: N-lap course; official file is a single lap`), but record the lap source in `evidence` in case a lap-geometry policy is adopted. Garmin activity embeds are fetchable by `curl` (polyline in `geoPolylineDTO`).
+
+## 2026-11-18: the DB row says "Marcha" but the organizer lists it as a race distance
+
+Sansilbestrail (organizer lists only 20k + 8k, both with Wikiloc embeds) and CxM Corrillón (organizer: "Trail corto 7 km") have their short row named `Marcha` in the DB. These are the short race courses, not walks; the walk rules don't apply.
+Rule going forward: when the organizer's program has no walk and the "Marcha" row's distance matches a listed race distance, treat it as that race row and assign its own track.
+
+## 2026-11-18: an organizer retitles one Wikiloc route every edition
+
+SansilTrail Calles route 152270642 has slug `sansiltrail-calles-17-12-2023` but its title is now "SansilTrail Calles 20/12/2026" and its description "21/12/2025"; the author also uploads "voluntarios" tracks. A title naming the *upcoming* edition with a recording date years earlier is the organizer maintaining the course file, not a mismatch.
+Rule going forward: score such a route `high` when distance fits; don't penalise the old recording date.
+
+## 2026-11-18: Wikiloc bounding-box search in the in-app browser beats WebSearch
+
+WebSearch with Wikiloc domains returned almost nothing useful for small local races, but the
+in-app browser can load `wikiloc.com/wikiloc/map.do?sw=<lat>,<lon>&ne=<lat>,<lon>&q=<term>&page=1`
+(a ~15 km box around the town) without login. Its result cards carry title + distance + D+, so one
+`javascript_tool` pass (walk up from each `*-trails/` anchor to the card containing "Distance")
+lists every race-named recording with stats. Query with a short term (`silvestre`, `sotabosc`,
+`trail <town>`, `maraton`), not the full race name. Without `sw/ne` the search uses a default
+box in northern Spain and misses everything elsewhere. `page=2` drops the box (breaks) — refine the
+query instead. Organizer authors surface quickly (angel garrido for Albuñuelas, AEMontseny for
+La Sotabosc); open their `user.do?id=` profile for all distances.
+Rule going forward: for small local races, use the bbox map search first; WebSearch only for the
+organizer site.
+
+## 2026-11-18: a "2 laps of the sprint" trail — match a 2-lap recording by altitude band
+
+San Silvestre Trail Barx: the 21 km Trail is two laps of the 11 km Sprint loop. Of two ~21 km race
+recordings, the 2022 one shares the sprint loop's min/max altitude (338-684 m), the 2023 one does
+not (min 258 m), so the 2022 file was chosen.
+Rule going forward: when the organizer says the long race is N laps of the short one, pick the
+long recording whose altitude band matches the short loop's.
+
+## 2026-11-19: Chrome silently blocks repeated Wikiloc downloads from the same tab
+
+After ~8 downloads in one tab, Wikiloc kept showing "¡Descarga completa!" but no file reached
+`~/Downloads` — not a Wikiloc quota (a second account behaved the same) but Chrome's
+per-tab automatic-download limiter. Navigating the tab to another origin
+(`https://www.trailrunningcal.com`) before each `download.do?id=` resets it; a fresh tab also works.
+Rule going forward: in every download cycle, navigate to another site first, then to the
+download page. Always confirm the file landed in `~/Downloads`, never trust the success screen.
+
+## 2026-11-19: stable click targets on the Wikiloc download page
+
+The File tab and Download button move with the title length (1–3 lines), the radio block
+(absent on planned routes), the "Include locations" checkbox and the hand-drawn banner, so fixed
+coordinates miss ~1 in 5. What made ~70 downloads deterministic: (1) a `javascript_tool` call that sets
+`white-space:nowrap; max-width:420px; overflow:hidden` on the long leaf text nodes above y=300
+(the title), so the File tab is always at the same spot; (2) after the ~16 s File-tab wait, a
+second call that finds the visible `Descarga` submit button and moves it to `position:fixed`
+at a known spot, then a real `left_click` there. A JS `.click()`/`submit()` on the button does
+NOT work — Turnstile treats it as a failure (button fades, no file). The same JS call can test
+`/hand-drawn|a mano/i` on `document.body.innerText` to flag hand-drawn tracks before downloading.
+Batch 4 routes per `browser_batch`, and map files to race ids by mtime order
+(`scratchpad/gpx/mv.sh`), checking that the count matches.
+
+## 2026-11-19: Wikiloc routes that disappear
+
+Two organizer routes (Desafío Sarrio 285799622 / 285799267) found the day before returned
+"Wikiloc.com Page not found" at download time. Rule going forward: `not_found`,
+`skipped: Wikiloc route <id> returns page not found`; don't hunt for a mirror.
+
+## 2026-11-19: sibling-geometry copy via SQL works again (with the user's go-ahead)
+
+The atomic `UPDATE races t SET track_geometry = s.track_geometry FROM (target, source) pairs
+JOIN races s … WHERE t.track_geometry IS NULL AND s.track_geometry IS NOT NULL AND
+t.event_id = s.event_id RETURNING t.id` ran fine through the Supabase MCP this session (21 derived
+walk/pairs/category rows), after the user approved copying. The `event_id` guard stops a typo
+from pairing rows across events.
+Rule going forward: batch all "geometry ready to copy" rows into one such statement once the user
+OKs it; mark them `applied: geometry copied from sibling <id> (shared course)`.
+
+## Findings from the 2026-11-19 pass over 2027 races (8 parallel batches)
+
+## 2026-11-19: smartchip.es race pages list the organizer's Wikiloc links and the rules PDF
+
+`smartchip.es/carrera.php?id=<n>` (Cañones del Duero) is plain HTML with `es.wikiloc.com/rutas-...-<id>` badge links and `loc.wiki/t/<id>` per distance, plus `../files/<name>.pdf` rules. One curl + regex resolves the whole event; the rules PDF gives each distance's exact km/D+ (found the walk is its own 10.5 km course with no track).
+Rule going forward: when official_url is smartchip.es, curl it and scan for wikiloc/loc.wiki before the bbox search.
+
+## 2026-11-19: event renamed between editions — search the old name in the bbox
+
+"V Malagón Trail Bisabor Energy 2027" was "Trail Quesos Don Apolonio" through 2026; every recording uses the old name (q=malagon returned almost nothing, q=apolonio returned all editions). Sportmaniacs/registration pages don't mention the old name.
+Rule going forward: when q=<town> and q=trail give few race hits for an established edition (IV, V...), try `q=trail` in the bbox and read titles for a recurring alternative event name, then re-query with it.
+
+## 2026-11-19: distance relabelled +2 km year to year (Transcandamia 23K→25K, 15K→17K)
+
+Rules PDFs for 2027 say ~25 km / ~17 km; 2026 recordings of the "23k"/"15k" measure 22.4 / 15.6 km with matching D+. Scored `medium` (within ±20%), noted that the course may have lengthened.
+
+## 2026-11-19: a homepage with an 11 MB inline-base64 payload hangs Python regex
+
+trailzoquetes.com's home HTML is ~11 MB (inline data: images); a broad `re.findall` over it ran >2 min. Use the in-app browser anchor/iframe scan instead, or cap the HTML (strip `data:` URIs first).
+
+## 2026-11-19 (batch 2): Word (.docx) rules on rockthesport hold the Wikiloc links
+
+Trail Umbría La Plana's rockthesport "Documentación" carries only a `.docx` reglamento
+(`rtsfiles.blob.core.windows.net/documentos/<uuid>.docx`). `unzip -p x.docx word/_rels/document.xml.rels`
+lists the hyperlink targets: one Wikiloc route per modality (Trail, SpeedTrail, Marcha), all organizer-vouched.
+Rule going forward: treat a .docx reglamento like a PDF one — scan `word/_rels/document.xml.rels` for
+wikiloc/loc.wiki/gpx targets.
+
+## 2026-11-19 (batch 2): dxtchiprun event pages DO list per-distance tracks
+
+carreras.dxtchiprun.es/carrera/<slug> (Trail Puerta del Rey) has a "DESCARGAS" block with "TRACK <modalidad>"
+links to current-year Wikiloc routes (wrapped in `?h=...&wa=sd&utm_campaign=badge`). Not a dead-end platform —
+one raw-HTML scan of the event page is worth it.
+
+## 2026-11-19 (batch 2): venue moved for the 2027 edition — older recordings flagged, not applied
+
+La Llanera Trail moves its start from central Sabadell to Sentmenat in 2027 (2026 edition cancelled) and the
+short course shrinks 14 -> 12.1 km. Recordings of 2023–2025 fit ±20% but start elsewhere. Marked `needs_review`
+(Dubra rule) with the best candidate in `gpx_url`. Also: the organizer's course pages say the route crosses private
+farms usable only on race day — no organizer track.
+
+## 2026-11-19 (batch 2): walk rows with their own official file were applied
+
+Víboras Trail publishes a separate official GPX for each senderismo (16K, 9K); Puerta del Rey, Umbría, SantKuTrail and
+Álora link a distinct senderismo/marcha Wikiloc route. The doc has two conflicting lines (RaceMapp entry: "walk row ->
+don't apply"; Special cases: walks with their own file are assigned). Decision taken: a walk with its **own, distinct**
+organizer file is treated like any race row (applied / pending download); only walks that share a sibling's course are
+`needs_review` with SIBLING=. Worth settling explicitly in Part 1.
+
+## 2026-11-19 (batch 2): organizer-site GPX without elevation
+
+viborastrail.es `/wp-content/uploads/2024/11/*-xi-viboras-trail.gpx` files have no `<ele>` (parsed gain 0); track:import
+accepted them. Distance gate is unaffected — no reason to prefer the linked Wikiloc copy.
+
+# Batch 4 learnings (2027 pass)
+
+## 2026-11-19: an official track served as a Garmin .fit file
+Trail Ecoparque de Trasmiera's Speed Trail page links "Enlace al track" to a `.fit` file on
+deporticket.blob.core.windows.net (no GPX). No fitparse/gpsbabel locally; a ~50-line stdlib FIT
+reader (record message 20, fields 0/1 lat/lon in semicircles ×180/2^31, field 2/78 altitude /5−500)
+rebuilt a 2,573-point GPX (13.11 km vs 13 km) that applied cleanly. Script:
+`scratchpad/gpx27/tools-b4/fit2gpx.py`.
+Rule going forward: a `.fit` track link is fetchable — convert it, don't skip it.
+
+## 2026-11-19: deporticket-hosted event sites put a per-distance track on each course page
+ecoparquetrail.com (deporticket "awebs") lists course pages `/tet-<slug>`; each may carry its own
+`deporticket.blob.core.windows.net/awebs/<event>/<file>.gpx|.fit` link. The home page shows none.
+Rule going forward: open every `/tet-*` page on deporticket sites.
+
+## 2026-11-19: Wikiloc bbox search with a 2-word query surfaces the race-named routes the 1-word query buries
+For Les Creus and Amurrio, `q=creus` / `q=amurrio` returned only hiking routes (or nothing), while
+`q=les creus trail` / `q=amurrio trail` / `q=assota 2026` listed every edition's race recording.
+Rule going forward: if the short-term bbox query returns only hiking routes, retry once with
+"<name> trail" or "<name> <year>".
+
+## 2026-11-19: SPA race site keeps GPX paths in its JS route config
+
+trailformentera.com is a Vite SPA (empty `<div id="root">`). The HTML has nothing, but the
+`modulepreload` chunk `/assets/routeStations-*.js` holds `gpxUrl:'/tracks/<name>.gpx'` for every
+distance. `curl` the preloaded chunks and grep `\.gpx`. All four applied.
+Rule going forward: when the home page is an empty SPA shell, fetch its `/assets/*.js` chunks and
+grep for `gpxUrl`/`.gpx` before going to Wikiloc.
+
+## 2026-11-19: organizer tracks directory follows a numbered pattern; unlinked siblings are guessable
+
+reventonelpaso.com links `/wp-content/uploads/tracks/2025/{2,3,4}-ReventON_<Name>_2025.gpx` only on the
+Starter/Sprint/Classic pages; the Maratón and Ultra pages link nothing. `5-ReventON_Maraton_2025.gpx`
+and `6-ReventON_UltraTrail_2025.gpx` returned 200 with matching distances (41.95 / 70.61 km). Applied as
+official (organizer's own server, same series).
+Rule going forward: when an organizer's track files are numbered per distance and some pages lack the
+link, probe the missing numbers with a few name variants (HEAD/`-w %{http_code}`), stop after ~6 tries.
+
+## 2026-11-19: UTMB World event sites serve GPX on pdf.utmb.world
+
+`<event>.utmb.world/races/<slug>` (slugs listed in the home HTML as `"/races/..."`) contains
+`https://pdf.utmb.world/raw/upload/.../TRACKS/<name>.gpx` in the raw HTML — curl-able, no JS needed.
+The relay page links the same file as the individual race (shared course -> derived row).
+
+## 2026-11-19: "Tracks y Wikiloc" sub-page not in the nav dump
+
+trailmontejurra.com/recorrido is a tab menu whose "Tracks y Wikiloc" link (`/tracks/`) only appears in the
+rendered DOM (find tool), not in the curl'd anchors. That page lists one Wikiloc link per distance.
+Rule going forward: on a recorrido page with no links, use the browser `find` for "track" to catch
+JS-rendered tab links.
+
+## 2026-11-19: relay published only as per-leg files
+
+Unicaja Ultra Sierra Nevada R3L3VOS (74 km) has no individual sibling; the organizer publishes three leg
+GPX files that are continuous and sum to 74.22 km. Left needs_review with a merged file
+(32.7k points — also in the timeout risk zone). Policy question: is stitching official legs acceptable?
+
+## 2026-11-19: rules PDF on faalive (FAA) states the track is withheld
+
+web.faalive.com inscription pages are a Blazor SPA (WebFetch sees only an error); in the in-app browser the
+REGLAMENTO link is a `faa-media.s3.eu-south-2.amazonaws.com/*.pdf`. Trail Cártama's says the track is
+not published (private farms). One look settles every distance.
+
+## 2026-11-19: wp-gpx-maps sometimes DOES expose the GPX path (contradiction)
+
+cdtragalpinos.com (Transpineda) uses wp-gpx-maps, but the raw HTML of each distance page carries
+the absolute file URL (`/wp-content/uploads/gpx/<name>.gpx`) next to the plugin assets; all three
+were `curl`-able and applied.
+Rule going forward: on a wp-gpx-maps page, still run the raw-HTML `.gpx` scan before declaring it a
+dead end; give up only when the only matches are the plugin's own css/js assets.
+
+## 2026-11-19: "fetch failed" on track:import — strip extensions and retry
+
+Two applies (a 3.3 MB Garmin Connect export with HR/cadence extensions, 8.9k pts; a 3.7k-pt
+gpx.studio file) returned `fetch failed` with no HTTP status. Rewriting the file as bare
+`<trkpt lat lon><ele>` (`tools-b6/clean.py`) made both apply on the first retry. For 18k–57k-point
+official files (Travessa Mallorca) thinning to >=10 m spacing (`tools-b6/thin.py`, 57k -> 8.6k pts,
+-5% distance) applied cleanly, avoiding the ~25k timeout zone.
+Rule going forward: on `fetch failed`, clean/thin the file and retry once before marking it blocked.
+
+## 2026-11-19: guess sibling track filenames on an organizer's /tracks/ directory
+
+travessamallorca.com exposed `/tracks/tmst-120.gpx` and `/tracks/mtm-45.gpx` on the pages loaded;
+the other two followed the page slug (`/carreras/mtmst-70-km` -> `/tracks/mtmst-70.gpx`) and
+returned 200. Cheaper than opening every page.
+
+## 2026-11-19: first-edition races with copies of the planned course on Wikiloc
+
+I Gran Trail Sierra del Aramo (2027, not yet run) has ~8 identical "Gran Trail Sierra del Aramo"
+routes (same 27.58 km / 2322 m) uploaded the same day by different users — copies of a planned
+course circulated by the organizer, not recordings. Recorded `medium`, pointing at the
+lowest-id copy, with a note to check for the hand-drawn banner at download.
+
+## 2026-11-19: COROS `shareExport` link IS a direct GPX (contrast with COROS share-track)
+
+ultravimar.org's "DESCARREGAR GPX" points at `apieu.coros.com/coros/data/track/shareExport?region=3&id=<N>`. Unlike the `share-track` SPA in Part 2, `curl` on this URL returns a plain GPX (creator "COROS"). Applied (Ultra Vimar 102.75 km).
+Rule going forward: a COROS `shareExport` URL is a fetchable host (`source: official`).
+
+## 2026-11-19: Google Drive *folder* of official GPX — list file ids from the folder HTML
+
+skyracepicdelorri.com's "Descarrega el track aquí!" links a Drive folder, not a file. `curl` on `drive.google.com/drive/folders/<id>` returns HTML that names each file (`2026-50k-oficial_SPO.gpx`), and the file id (33 chars) appears just before each name. `uc?export=download&id=<fileid>` then returns the GPX directly. The procedure only covered `/file/d/` links.
+Rule going forward: on a Drive folder link, regex the folder HTML for `*.gpx` names and the id just before each one, then download each by `uc?export=download`.
+
+## 2026-11-19: Next.js "Descargar Track" button with no href — read the loaded resources
+
+trailgallinero.es renders a Leaflet map and a "Descargar Track" `<button>` with no href, and the raw-HTML scan finds no `.gpx`. `performance.getEntriesByType('resource')` in `javascript_tool` showed the map had already fetched `/media/gpx/<slug>-2026.gpx`, which `curl` fetches directly.
+Rule going forward: when a page draws a map but no track URL shows up in the HTML, list `performance.getEntriesByType('resource')` and filter for `gpx|json|geo`.
+
+## 2026-11-19: an organizer zip with several courses — `gpx_url` with `#<course>` fragment
+
+ultratrailbosquesdelsur.es serves one `UTBS-2027.zip` with all four 2027 courses (plus aid-station waypoint-only GPX files, 0 track points — ignore them). Recorded each row's `gpx_url` as `<zip>#ultra` / `#maraton` / `#media` so no two rows share a URL (same idea as the ide.cime.es rule).
+
+## 2026-11-19: organizer page figures can be one edition behind its own Wikiloc route
+
+Veinte Leguas: info-técnica says X Leguas 65 km / 3067 m (matches the DB), but the organizer's own Wikiloc account (Muzafires, the organizer email domain) titles a route "X Leguas Alpujarra 2027" at 49.8 km, and 2026 recordings agree (~50.9 km). The 65 km / 3067 m figures match the old "XII Leguas 2024" course exactly. Left `needs_review` with the 2027 organizer route, noting the DB distance looks stale.
+Rule going forward: when the organizer's account has a route titled for the target year that fails ±20% against figures from the organizer's own (older) info page, don't apply. Flag the DB distance as stale and name the route to apply once the DB is fixed.
+
+## 2026-11-19: Wikiloc bbox map search loads slowly — wait ~7 s before scraping
+
+In the in-app browser, the first `javascript_tool` call on `map.do?...` often returned `[]` (only 8 anchors) after a 4 s wait. Waiting 7–9 s worked every time. A town listing URL with a guessed region slug (`/trails/trail-running/spain/madrid/los-molinos`) silently redirected to the Spain-wide list, so check `location.href` before trusting the results.
+
+## 2026-11-19: UTMB World event sites serve every distance's GPX in the static HTML
+
+`<event>.utmb.world/races/<code>` (e.g. valdaran.utmb.world/races/tdl, /pda, /vda, /cdh, /exp, /sky, /10k) is curl-able (~600 KB HTML) and contains a direct `https://pdf.utmb.world/raw/upload/.../<CODE>_..._<hash>.gpx` link — `grep -oE 'https?://[^"]*\.gpx'`. Files are official and curl-able without login; all 7 Val d'Aran distances applied in one pass.
+Rule going forward: for any `*.utmb.world` event, curl each `/races/<code>` page and take the `pdf.utmb.world/raw/upload/...gpx` link (`source: official`). A youth/"Promesas" category with identical figures and no race page of its own is a derived row.
+
+## 2026-11-19: a stage race's single-day "Open" distance has its own file
+
+rianotrail.run publishes per-stage GPX for the 3x/2x stage races (aggregates -> needs_review) but the one-day Riaño Open has its own `/open` page with `RTR_OPEN_.gpx` (42.87 km), applied. Rule going forward: in stage-race events, check the single-day distance's own page — it is a normal race row, not an aggregate.
+
+## 2026-11-19: track:import "fetch failed" is transient
+
+Molières 42K failed 4 times in a row with "fetch failed" (no geometry written, file only 1656 pts) while siblings applied, then succeeded on the 5th try. Rule going forward: re-check `track_geometry IS NULL` and retry a few times before recording a `fetch failed` as a skip; it is not a size timeout (that shows as 504).
+
+## 2026-11-19: hand-drawn banner text in Spanish, and a reliable detector
+
+On es.wikiloc.com the banner reads "Ruta diseñada a mano sobre el mapa. Puede no ser adecuada
+para…". The JS step that pins the Download button can return
+`(document.body.innerText.match(/.{0,40}(hand-drawn|a mano).{0,40}/i)||[''])[0]` — print the
+match, not a boolean, so a stray "a mano" in a description isn't mistaken for the banner. In this
+pass 10 of ~140 candidates were hand-drawn, mostly organizer "planned"/"borrador" routes.
+Rule going forward: treat organizer-planned routes as suspect; check the banner before applying.
+
+## 2026-11-19: download-loop reliability numbers
+
+~145 downloads in one session with the navigate-away + pinned-button flow: ~8% failed silently
+(no file), almost always the first route of a `browser_batch`; re-queueing it at the end fixed
+every case. After ~140 downloads the Cloudflare "Verify you are human" checkbox appeared on the
+File tab (not clicked); stop there and leave the row `skipped: Cloudflare…`.
+Rule going forward: add an extra ~6 s wait on the first route of each batch, map files by mtime
+and re-queue misses, and budget ~130 downloads per account/session.
+
+## 2026-11-19: RideWithGPS route embeds are fetchable via the JSON endpoint
+
+xtrailseriesrun.com course pages embed `ridewithgps.com/embeds?type=route&id=<N>`. The `.gpx` export
+(`/routes/<N>.gpx?sub_format=track`) returns an HTML login page, but `GET https://ridewithgps.com/routes/<N>.json`
+(no login) returns `distance`, `elevation_gain` and `track_points[]` with `{x: lon, y: lat, e: ele}`.
+Rebuild `<trkpt lat=y lon=x><ele>e`. All four Xtrail Mataró rows applied this way (source: official,
+gpx_url = `https://ridewithgps.com/routes/<N>`). Script: `scratchpad/tools-b3/rwgps.py`.
+
+## 2026-11-19: tracedetrail.fr "parcours officiels" carry the geometry inline
+
+A tracedetrail.fr event page (`/en/event/<slug>`) lists "Les parcours officiels" and each
+`/en/trace/<N>` page states "Track created by <organizer>". The GPX download needs login, but the
+plain `curl` HTML contains `initBlocProfilTrace({... dataTrace:{... dateCompet, distance, geometry:"[{\"lon\":x,\"lat\":y,\"y\":ele}...]"`
+in **Web Mercator** (EPSG:3857): lon = x/6378137·180/π, lat = (2·atan(e^(y/6378137)) − π/2)·180/π.
+Quiroga Trail Challenge 2027 (5 courses) applied from there. Find the event by WebSearch
+"<race> tracedetrail". Script: `scratchpad/tools-b3/tdt.py`.
+
+## 2026-11-19: Komoot tour with share_token is fetchable
+
+The rockthesport page for I LagarTrail embedded `komoot.com/tour/<id>/embed?share_token=<t>` (a private
+planned tour "Recorrido LagarTrail 2027"). `GET https://www.komoot.com/api/v007/tours/<id>?share_token=<t>&_embedded=coordinates`
+returns `distance`, `elevation_up` and `_embedded.coordinates.items[]` `{lat,lng,alt}`. Low-res (~300 pts) but
+fine. A first edition with an organizer-published course is not a reject (consistent with the fartlecksport rule).
+
+## 2026-11-19: Transgrancanaria serves per-distance GPX via its gpx-viewer plugin
+
+transgrancanaria.net/carreras/<race>/ pages each reference `/wp-content/uploads/<CODE>-<year>-<date>.gpx`
+(+ .kmz) in raw HTML (escaped `https:\/\/...` in a JSON blob too). Unlike `wp-gpx-maps`, this
+`gpx-viewer` plugin exposes the file path — scan raw HTML for `\.gpx`. KV El Gigante (vertical) applied
+from the official file, since the "verticals → not_found on sight" rule is about not searching.
+
+## 2026-11-19: Wikiloc Cloudflare check clears after a pause
+
+The "Verify you are human" wall that appeared after ~140 downloads was gone a few hours later; the
+remaining 20 downloads (incl. the previously blocked Villaluenga route) went through with the same
+flow. Batches of 4–5 routes per browser call worked; ~2 of 21 silently missed and were re-queued.
