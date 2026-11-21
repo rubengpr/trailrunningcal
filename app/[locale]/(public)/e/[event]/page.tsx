@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import { Route } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import { EventSectionHeading } from '@/components/event/event-section-heading';
 import { locales, type Locale } from '@/i18n';
 import { BASE_URL } from '@/lib/config';
 import { getEventBySlug, getRecommendedEvents } from '@/lib/db/events';
@@ -295,12 +296,7 @@ export default async function EventPage({
           />
 
           <section className="mt-8 sm:mt-10">
-            <div className="mb-4 flex items-center gap-2">
-              <Route className="h-5 w-5 text-gray-500" />
-              <h2 className="text-xl sm:text-2xl font-semibold text-gray-950">
-                {tEvent('racesTitle')}
-              </h2>
-            </div>
+            <EventSectionHeading icon={Route} title={tEvent('racesTitle')} className="mb-4" />
             <EventDistanceList
               eventId={eventData.event.id}
               eventName={eventData.event.name}

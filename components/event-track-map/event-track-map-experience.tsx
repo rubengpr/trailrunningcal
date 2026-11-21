@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { Map } from 'lucide-react';
+import { EventSectionHeading } from '@/components/event/event-section-heading';
 import {
   DeferredEventTrackMap,
   EVENT_TRACK_MAP_CLASS_NAME,
@@ -104,10 +105,7 @@ export function EventTrackMapExperience({
 
   return (
     <section className="mt-10 sm:mt-12">
-      <div className="mb-4 flex items-center gap-2">
-        <Map className="h-5 w-5 text-gray-500" />
-        <h2 className="text-xl font-semibold text-gray-950 sm:text-2xl">{title}</h2>
-      </div>
+      <EventSectionHeading icon={Map} title={title} className="mb-4" />
       <div className="overflow-hidden rounded-xl border border-stone-200 bg-white shadow-[0_14px_40px_-28px_rgba(28,25,23,0.5)]">
         {content}
       </div>
