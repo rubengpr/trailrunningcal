@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { ImportListField } from '@/components/admin/import-list-field';
 import { ErrorMessage } from '@/components/ui/error-message';
 import type { EventResearchBatchHistoryEntry } from '@/types/event-research.types';
 
@@ -32,29 +33,21 @@ export function ResearchWorkflowPanel({
   onRetryHistory,
 }: ResearchWorkflowPanelProps): React.ReactElement {
   const t = useTranslations('admin.events.import');
+  const namesHint = parsedNamesCount > 0
+    ? (parsedNamesCount === 1 ? t('research.namesHintOne') : t('research.namesHint', { count: parsedNamesCount }))
+    : undefined;
 
   return (
     <div className="grid w-full gap-5">
-      <div className="grid gap-2">
-        <label htmlFor="researchEventNames" className="text-sm font-medium leading-none text-gray-900">
-          {t('research.namesLabel')}
-        </label>
-        <textarea
-          id="researchEventNames"
-          value={namesInput}
-          onChange={(event) => onNamesInputChange(event.target.value)}
-          placeholder={t('research.namesPlaceholder')}
-          disabled={isStarting || isRunning}
-          className="min-h-32 w-full resize-y rounded-xl border border-gray-200 bg-white p-3 text-sm text-gray-800 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-200/80 disabled:cursor-not-allowed disabled:opacity-60"
-        />
-        {parsedNamesCount > 0 ? (
-          <p className="text-xs text-gray-500">
-            {parsedNamesCount === 1
-              ? t('research.namesHintOne')
-              : t('research.namesHint', { count: parsedNamesCount })}
-          </p>
-        ) : null}
-      </div>
+      <ImportListField
+        id="researchEventNames"
+        label={t('research.namesLabel')}
+        value={namesInput}
+        onValueChange={onNamesInputChange}
+        placeholder={t('research.namesPlaceholder')}
+        disabled={isStarting || isRunning}
+        hint={namesHint}
+      />
       <div className="rounded-xl border border-gray-200 bg-gray-50 p-3 text-xs text-gray-600">
         <span className="font-medium text-gray-900">{t('research.configuration')}</span>
         {' · '}gpt-5.6-terra{' · '}{t('research.nativeSearch')}{' · '}{t('research.concurrency')}
