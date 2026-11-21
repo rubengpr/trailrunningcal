@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
+import { FormFieldLabel } from '@/components/ui/form-field-label';
 
 interface FormInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
   id: string;
@@ -31,23 +32,8 @@ export function FormInput({
 
   return (
     <div className="grid gap-2 w-full">
-      {labelRightContent ? (
-        <div className="flex items-center justify-between">
-          <label
-            htmlFor={id}
-            className="text-sm font-medium leading-none"
-          >
-            {label}
-          </label>
-          {labelRightContent}
-        </div>
-      ) : label ? (
-        <label
-          htmlFor={id}
-          className="text-sm font-medium leading-none"
-        >
-          {label}
-        </label>
+      {label || labelRightContent ? (
+        <FormFieldLabel inputId={id} label={label} rightContent={labelRightContent} />
       ) : null}
       <div className="relative">
         <input

@@ -14,10 +14,8 @@ import {
 import type { ReactNode, RefObject } from 'react';
 import { createPortal } from 'react-dom';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import {
-  ErrorMessage,
-  TerrainLoadError,
-} from '@/components/ui/error-message';
+import { TerrainLoadError, TerrainStatusPill } from '@/components/event-track-map/terrain-status-pill';
+import { ErrorMessage } from '@/components/ui/error-message';
 import {
   useEventTrackMap,
   type TerrainStatus,
@@ -199,22 +197,11 @@ function TerrainStatusNotice({
   const isSlow = status === 'slow';
 
   return (
-    <div
-      className="absolute left-1/2 top-3 z-20 flex max-w-[calc(100%-6rem)] -translate-x-1/2 items-center gap-2 rounded-full border border-white/70 bg-white/90 px-3 py-2 text-xs font-medium text-stone-800 shadow-sm"
-      data-testid="event-track-map-terrain-status"
-    >
-      <LoaderCircle className="h-4 w-4 shrink-0 animate-spin" />
-      <span>{isSlow ? slowLabel : loadingLabel}</span>
-      {isSlow ? (
-        <button
-          type="button"
-          className="shrink-0 rounded-full bg-stone-900 px-2.5 py-1 text-white transition-colors hover:bg-stone-700"
-          onClick={onCancel}
-        >
-          {cancelLabel}
-        </button>
-      ) : null}
-    </div>
+    <TerrainStatusPill
+      icon={<LoaderCircle className="h-4 w-4 shrink-0 animate-spin" />}
+      message={isSlow ? slowLabel : loadingLabel}
+      action={isSlow ? { label: cancelLabel, onClick: onCancel } : undefined}
+    />
   );
 }
 

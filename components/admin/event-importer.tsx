@@ -13,6 +13,7 @@ import { ImportJsonEditor } from '@/components/admin/import-json-editor';
 import { ImportFileUploadPanel } from '@/components/admin/import-file-upload-panel';
 import { ImportWorkflowFields } from '@/components/admin/import-workflow-fields';
 import { ImportWorkflowControls } from '@/components/admin/import-workflow-controls';
+import { ImportListField } from '@/components/admin/import-list-field';
 import { ResearchWorkflowPanel } from '@/components/admin/research-workflow-panel';
 import {
     type ImportPipelineRowConfig,
@@ -1279,6 +1280,11 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
         ? batchSnapshot?.items.find((item) => item.id === reviewingBatchItemId) ?? null
         : null;
 
+    const batchUrlsCount = parsedBatchUrls.length;
+    const batchUrlsHint = workflow === 'bulk' && batchUrlsCount > 0
+        ? (batchUrlsCount === 1 ? t('bulk.urlsHintOne') : t('bulk.urlsHint', { count: batchUrlsCount }))
+        : undefined;
+
     return (
         <div className="flex flex-col gap-8">
             <SectionHeader
@@ -1309,25 +1315,17 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                     />
 
                     {workflow === 'bulk' && (
-                        <div className="grid gap-2 w-full max-w-xl">
-                            <label htmlFor="batchUrls" className="text-sm font-medium leading-none text-gray-900">
-                                {t('bulk.urlsLabel')}
-                            </label>
-                            <textarea
-                                id="batchUrls"
-                                value={batchUrlsInput}
-                                onChange={(event) => setBatchUrlsInput(event.target.value)}
-                                placeholder={t('bulk.urlsPlaceholder')}
-                                disabled={isStartingBatch || isBatchRunning}
-                                className="min-h-32 w-full resize-y rounded-xl border border-gray-200 bg-white p-3 text-sm text-gray-800 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-200/80 disabled:cursor-not-allowed disabled:opacity-60"
-                                spellCheck={false}
-                            />
-                            {parsedBatchUrls.length > 0 && (
-                                <p className="text-xs text-gray-500">
-                                    {parsedBatchUrls.length === 1 ? t('bulk.urlsHintOne') : t('bulk.urlsHint', { count: parsedBatchUrls.length })}
-                                </p>
-                            )}
-                        </div>
+                        <ImportListField
+                            id="batchUrls"
+                            label={t('bulk.urlsLabel')}
+                            value={batchUrlsInput}
+                            onValueChange={setBatchUrlsInput}
+                            placeholder={t('bulk.urlsPlaceholder')}
+                            disabled={isStartingBatch || isBatchRunning}
+                            spellCheck={false}
+                            className="w-full max-w-xl"
+                            hint={batchUrlsHint}
+                        />
                     )}
 
                     {workflow === 'research' && (

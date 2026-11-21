@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { FilterChip } from '@/components/filters/filter-chip';
+import { FilterChipGroup } from '@/components/filters/filter-chip-group';
 import { MONTH_INDICES } from '@/lib/constants';
 
 interface MonthFilterProps {
@@ -35,16 +35,11 @@ export function MonthFilter({
   };
 
   return (
-    <div className="flex flex-wrap gap-1.5 sm:gap-2 justify-center">
-      {months.map((month) => (
-        <FilterChip
-          key={month.key}
-          label={month.label}
-          selected={selectedMonths.includes(month.key)}
-          onClick={() => handleMonthClick(month.key)}
-          size="md"
-        />
-      ))}
-    </div>
+    <FilterChipGroup
+      options={months}
+      selectedKeys={selectedMonths}
+      onToggle={handleMonthClick}
+      size="md"
+    />
   );
 }

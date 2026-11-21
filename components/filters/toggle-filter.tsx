@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { FilterChip } from '@/components/filters/filter-chip';
+import { FilterChipGroup } from '@/components/filters/filter-chip-group';
 
 export interface ToggleFilterOption {
   key: string;
@@ -34,16 +34,12 @@ export function ToggleFilter({
   };
 
   return (
-    <div className={`flex flex-wrap gap-1.5 sm:gap-2 justify-center ${className}`.trim()}>
-      {options.map((option) => (
-        <FilterChip
-          key={option.key}
-          label={option.label}
-          selected={selected === option.key}
-          onClick={() => handleClick(option.key)}
-          size="md"
-        />
-      ))}
-    </div>
+    <FilterChipGroup
+      options={options}
+      selectedKeys={[selected]}
+      onToggle={handleClick}
+      size="md"
+      className={className}
+    />
   );
 }

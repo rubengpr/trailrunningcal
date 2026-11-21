@@ -1,9 +1,7 @@
 import Link from 'next/link';
 import { CircleX, Home } from 'lucide-react';
 import { getLocale, getTranslations } from 'next-intl/server';
-import { Navbar } from '@/components/layout/navbar';
-import { Footer } from '@/components/layout/footer';
-import { MobileFiltersProvider } from '@/components/providers/mobile-filters-provider';
+import { PublicPageShell } from '@/components/layout/public-page-shell';
 import { EmptyState } from '@/components/ui/empty-state';
 
 export default async function NotFound() {
@@ -12,9 +10,7 @@ export default async function NotFound() {
   const homeUrl = `/${locale}`;
 
   return (
-    <MobileFiltersProvider>
-    <div className="min-h-screen w-full min-w-0 text-gray-900 flex flex-col bg-white [overflow-x:clip]">
-      <Navbar />
+    <PublicPageShell>
       <main className="flex-1 flex items-center justify-center px-4 py-16 sm:py-24">
         <EmptyState
           icon={<CircleX className="mx-auto size-40 text-gray-400" strokeWidth={1.5} />}
@@ -31,8 +27,6 @@ export default async function NotFound() {
           }
         />
       </main>
-      <Footer />
-    </div>
-    </MobileFiltersProvider>
+    </PublicPageShell>
   );
 }

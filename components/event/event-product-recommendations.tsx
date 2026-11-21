@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { Backpack } from 'lucide-react';
+import { EventSectionHeading } from '@/components/event/event-section-heading';
 import { RaceProductRecommendations } from '@/components/event/race-product-recommendation';
 import { useProductRecommendationVariants } from '@/hooks/use-product-recommendation-variants';
 import type { Locale } from '@/i18n';
@@ -40,10 +41,7 @@ export function EventProductRecommendations({ eventId, eventName, eventSlug, rac
   return (
     <section className="mt-16 sm:mt-20">
       <div className="mb-4">
-        <div className="flex items-center gap-2">
-          <Backpack className="h-5 w-5 text-gray-500" />
-          <h2 className="text-xl font-semibold text-gray-950 sm:text-2xl">{t('sectionTitle')}</h2>
-        </div>
+        <EventSectionHeading icon={Backpack} title={t('sectionTitle')} />
         <p className="mt-1 text-xs leading-5 text-gray-500">{t('sectionDescription')}</p>
       </div>
       <div className="space-y-4">{groups}</div>

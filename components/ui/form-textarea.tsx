@@ -1,5 +1,7 @@
 'use client';
 
+import { FormFieldLabel } from '@/components/ui/form-field-label';
+
 interface FormTextareaProps extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'id'> {
   id: string;
   label: string | React.ReactNode;
@@ -21,42 +23,22 @@ export function FormTextarea({
   ...props
 }: FormTextareaProps) {
   const characterCount = typeof value === 'string' ? value.length : 0;
-  const isNearLimit = maxLength && characterCount > maxLength * 0.9;
-  const isOverLimit = maxLength && characterCount > maxLength;
+  const countColor = maxLength && characterCount > maxLength
+    ? 'text-red-500'
+    : maxLength && characterCount > maxLength * 0.9
+      ? 'text-orange-500'
+      : 'text-gray-500';
+  const count = showCharacterCount && maxLength ? (
+    <span className={`text-xs ${countColor}`}>{characterCount}/{maxLength}</span>
+  ) : null;
 
   return (
     <div className="grid gap-2 w-full">
-      {labelRightContent || (showCharacterCount && maxLength) ? (
-        <div className="flex items-center justify-between">
-          <label
-            htmlFor={id}
-            className="text-sm font-medium leading-none"
-          >
-            {label}
-          </label>
-          {labelRightContent || (
-            showCharacterCount && maxLength && (
-              <span
-                className={`text-xs ${isOverLimit
-                  ? 'text-red-500'
-                  : isNearLimit
-                    ? 'text-orange-500'
-                    : 'text-gray-500'
-                  }`}
-              >
-                {characterCount}/{maxLength}
-              </span>
-            )
-          )}
-        </div>
-      ) : (
-        <label
-          htmlFor={id}
-          className="text-sm font-medium leading-none"
-        >
-          {label}
-        </label>
-      )}
+      <FormFieldLabel
+        inputId={id}
+        label={label}
+        rightContent={labelRightContent || count}
+      />
       <textarea
         id={id}
         maxLength={maxLength}

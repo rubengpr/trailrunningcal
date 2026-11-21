@@ -1,7 +1,5 @@
-import { Navbar } from '@/components/layout/navbar';
-import { Footer } from '@/components/layout/footer';
-import { MobileFiltersProvider } from '@/components/providers/mobile-filters-provider';
 import { notFound } from 'next/navigation';
+import { PublicPageShell } from '@/components/layout/public-page-shell';
 import { isBlogLocale, type Locale } from '@/i18n';
 
 export default async function BlogLayout({
@@ -19,12 +17,8 @@ export default async function BlogLayout({
   }
 
   return (
-    <MobileFiltersProvider>
-      <div className="min-h-screen w-full min-w-0 text-gray-900 flex flex-col bg-white [overflow-x:clip]">
-        <Navbar />
-        <main className="grow min-w-0">{children}</main>
-        <Footer />
-      </div>
-    </MobileFiltersProvider>
+    <PublicPageShell>
+      <main className="grow min-w-0">{children}</main>
+    </PublicPageShell>
   );
 }

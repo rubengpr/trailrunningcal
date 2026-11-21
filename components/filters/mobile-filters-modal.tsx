@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { FilterChip } from '@/components/filters/filter-chip';
+import { FilterChipGroup } from '@/components/filters/filter-chip-group';
 import { MonthFilter } from '@/components/filters/month-filter';
 import { ProvinceFilter } from '@/components/filters/province-filter';
 import { DISTANCE_GROUPS } from '@/lib/constants';
@@ -143,32 +143,22 @@ export function MobileFiltersModal({
             <p className="mb-3 text-sm font-semibold text-gray-700 tracking-wide">
               {tFilters('distanceLabel')}
             </p>
-            <div className="flex flex-wrap gap-1.5 sm:gap-2 justify-center">
-              {DISTANCE_GROUPS.map((group) => (
-                <FilterChip
-                  key={group}
-                  label={tDistanceGroups(group)}
-                  selected={draftDistance.includes(group)}
-                  onClick={() => toggleDraftDistance(group)}
-                />
-              ))}
-            </div>
+            <FilterChipGroup
+              options={DISTANCE_GROUPS.map((group) => ({ key: group, label: tDistanceGroups(group) }))}
+              selectedKeys={draftDistance}
+              onToggle={toggleDraftDistance}
+            />
           </div>
         ) : null}
         <div>
           <p className="mb-3 text-sm font-semibold text-gray-700 tracking-wide">
             {tFilters('raceTypeLabel')}
           </p>
-          <div className="flex flex-wrap gap-1.5 sm:gap-2 justify-center">
-            {RACE_TYPES.map((type) => (
-              <FilterChip
-                key={type}
-                label={tCategory(RACE_TYPE_CATEGORY_KEYS[type])}
-                selected={draftRaceType.includes(type)}
-                onClick={() => toggleDraftRaceType(type)}
-              />
-            ))}
-          </div>
+          <FilterChipGroup
+            options={RACE_TYPES.map((type) => ({ key: type, label: tCategory(RACE_TYPE_CATEGORY_KEYS[type]) }))}
+            selectedKeys={draftRaceType}
+            onToggle={toggleDraftRaceType}
+          />
         </div>
       </div>
 
