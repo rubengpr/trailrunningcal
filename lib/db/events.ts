@@ -534,7 +534,7 @@ export async function getEventsByIds(
 
   if (eventError || !eventData) {
     console.error('Failed to fetch favorite events:', eventError);
-    return [];
+    throw new Error('Failed to fetch favorite events');
   }
 
   const events = (eventData as EventRow[]).map(toTrailEvent);
@@ -562,7 +562,7 @@ export async function getEventsByIds(
 
   if (raceError || !raceData) {
     console.error('Failed to fetch favorite event races:', raceError);
-    return [];
+    throw new Error('Failed to fetch favorite event races');
   }
 
   const racesByEventId = new Map<string, TrailEventRace[]>();
