@@ -3,6 +3,8 @@ export type DistanceGroup = (typeof DISTANCE_GROUPS)[number];
 
 export const MONTH_INDICES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] as const;
 
+export const FAVORITE_EVENT_BATCH_SIZE = 100;
+
 export const TEST_VERIFIED_RACES_NAME = [
     'Trail Cap de Creus 40K',
     'Trail Cap de Creus 30K',
