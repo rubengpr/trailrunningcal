@@ -1,3 +1,4 @@
+import { FAVORITE_EVENT_BATCH_SIZE } from '@/lib/constants';
 import type {
   OpenRouterScrapeModelId,
   OpenRouterVisionModelId,
@@ -109,18 +110,27 @@ export type TrailEventAgentRunOptions =
 export async function getFavoriteEvents(
   eventIds: string[],
 ): Promise<PublicEventDetail[]> {
-  const response = await fetch('/api/events/favorites', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ eventIds }),
-  });
-  const responseData = await response.json();
+  const uniqueIds = [...new Set(eventIds)];
+  const events: PublicEventDetail[] = [];
 
-  if (!response.ok) {
-    throw new Error(responseData.error || 'Failed to fetch favorite events');
+  for (let offset = 0; offset < uniqueIds.length; offset += FAVORITE_EVENT_BATCH_SIZE) {
+    const response = await fetch('/api/events/favorites', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        eventIds: uniqueIds.slice(offset, offset + FAVORITE_EVENT_BATCH_SIZE),
+      }),
+    });
+    const responseData = await response.json();
+
+    if (!response.ok) {
+      throw new Error(responseData.error || 'Failed to fetch favorite events');
+    }
+
+    events.push(...responseData.data);
   }
 
-  return responseData.data;
+  return events;
 }
 
 export async function acceptScrapedEvent(

@@ -31,7 +31,7 @@ beforeEach(() => {
   process.env.NEXT_PUBLIC_SUPABASE_URL =
     'https://wghqldoshvwulyqqbqln.supabase.co';
   mocks.findRaceTrackTargets.mockResolvedValue([
-    { id: 'race-1', name: 'Short' },
+    { id: 'race-1', eventId: 'event-1', eventSlug: 'pedraforca-xtrail' },
   ]);
   mocks.findRaceTrackTargetById.mockResolvedValue({
     id: 'race-1',
@@ -124,8 +124,8 @@ describe('importRaceTrack', () => {
     [[], 404],
     [
       [
-        { id: 'race-1', name: 'Short' },
-        { id: 'race-2', name: 'Short' },
+        { id: 'race-1', eventId: 'event-1', eventSlug: 'pedraforca-xtrail' },
+        { id: 'race-2', eventId: 'event-1', eventSlug: 'pedraforca-xtrail' },
       ],
       409,
     ],
@@ -151,6 +151,11 @@ describe('importRaceTrack', () => {
     });
 
     expect(result.mode).toBe('apply');
+    expect(mocks.findRaceTrackTargets).toHaveBeenCalledExactlyOnceWith(
+      'pedraforca-xtrail',
+      'Short',
+    );
+    expect(mocks.findRaceTrackTargetById).not.toHaveBeenCalled();
     expect(mocks.updateRaceTrackGeometry).toHaveBeenCalledOnce();
     expect(mocks.updateRaceTrackGeometry).toHaveBeenCalledWith(
       'race-1',

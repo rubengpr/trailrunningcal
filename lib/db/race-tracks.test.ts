@@ -8,6 +8,7 @@ const mocks = vi.hoisted(() => ({
   in: vi.fn(),
   not: vi.fn(),
   maybeSingle: vi.fn(),
+  limit: vi.fn(),
 }));
 
 vi.mock('@/lib/supabase/server', () => ({
@@ -16,6 +17,7 @@ vi.mock('@/lib/supabase/server', () => ({
 
 import {
   findRaceTrackTargetById,
+  findRaceTrackTargets,
   getTrackedRaceIdsForEvent,
 } from '@/lib/db/race-tracks';
 
@@ -28,6 +30,8 @@ beforeEach(() => {
   mocks.eq.mockReturnValue({
     not: mocks.not,
     maybeSingle: mocks.maybeSingle,
+    eq: mocks.eq,
+    limit: mocks.limit,
   });
 });
 
@@ -114,5 +118,30 @@ describe('findRaceTrackTargetById', () => {
 
     await expect(findRaceTrackTargetById('missing')).resolves.toBeNull();
     expect(mocks.from).toHaveBeenCalledOnce();
+  });
+});
+
+describe('findRaceTrackTargets', () => {
+  it('returns up to two matching race IDs with the event metadata', async () => {
+    mocks.maybeSingle.mockResolvedValue({
+      data: { id: 'event-1', slug: 'pedraforca-xtrail' },
+      error: null,
+    });
+    mocks.limit.mockResolvedValue({
+      data: [{ id: 'race-1' }, { id: 'race-2' }],
+      error: null,
+    });
+
+    await expect(findRaceTrackTargets('pedraforca-xtrail', 'Short')).resolves.toEqual([
+      { id: 'race-1', eventId: 'event-1', eventSlug: 'pedraforca-xtrail' },
+      { id: 'race-2', eventId: 'event-1', eventSlug: 'pedraforca-xtrail' },
+    ]);
+    expect(mocks.from.mock.calls).toEqual([['events'], ['races']]);
+    expect(mocks.eq.mock.calls).toEqual([
+      ['slug', 'pedraforca-xtrail'],
+      ['event_id', 'event-1'],
+      ['name', 'Short'],
+    ]);
+    expect(mocks.limit).toHaveBeenCalledExactlyOnceWith(2);
   });
 });

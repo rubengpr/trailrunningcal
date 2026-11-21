@@ -1,9 +1,9 @@
+import { FAVORITE_EVENT_BATCH_SIZE } from '@/lib/constants';
 import {
   assertRequestBody,
   ValidationError,
 } from '@/app/api/request-validation';
 
-const MAX_FAVORITE_EVENT_IDS = 100;
 const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -22,7 +22,7 @@ export function parseFavoriteEventIds(body: unknown): string[] {
     throw new ValidationError('Invalid event ids', 400);
   }
 
-  if (body.eventIds.length > MAX_FAVORITE_EVENT_IDS) {
+  if (body.eventIds.length > FAVORITE_EVENT_BATCH_SIZE) {
     throw new ValidationError('Too many event ids', 400);
   }
 
