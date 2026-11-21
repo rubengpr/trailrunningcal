@@ -10,12 +10,7 @@ import type { Locale } from '@/i18n';
 import type { TrailEventRaceWithTrack } from '@/types/event.types';
 import type { TrackGeometry, TrackRoute } from '@/types/race-track.types';
 
-export interface RaceTrackTarget {
-  id: string;
-  name: string;
-}
-
-export interface RaceTrackTargetById {
+interface RaceTrackTarget {
   id: string;
   eventId: string;
   eventSlug: string;
@@ -184,7 +179,7 @@ export async function getTrackedRaceIdsByEventIds(
 
 export async function findRaceTrackTargetById(
   raceId: string,
-): Promise<RaceTrackTargetById | null> {
+): Promise<RaceTrackTarget | null> {
   const supabase = createAdminClient();
   const { data: race, error: raceError } = await supabase
     .from('races')
@@ -220,7 +215,7 @@ export async function findRaceTrackTargets(
   const supabase = createAdminClient();
   const { data: event, error: eventError } = await supabase
     .from('events')
-    .select('id')
+    .select('id, slug')
     .eq('slug', eventSlug)
     .maybeSingle();
 
@@ -233,7 +228,7 @@ export async function findRaceTrackTargets(
 
   const { data, error } = await supabase
     .from('races')
-    .select('id, name')
+    .select('id')
     .eq('event_id', event.id)
     .eq('name', raceName)
     .limit(2);
@@ -243,9 +238,11 @@ export async function findRaceTrackTargets(
     throw new Error('Failed to resolve race');
   }
 
-  return (data ?? []).flatMap((race) =>
-    typeof race.name === 'string' ? [{ id: race.id, name: race.name }] : [],
-  );
+  return (data ?? []).map((race) => ({
+    id: race.id,
+    eventId: event.id,
+    eventSlug: event.slug,
+  }));
 }
 
 export async function updateRaceTrackGeometry(

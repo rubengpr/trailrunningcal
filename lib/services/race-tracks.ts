@@ -90,11 +90,7 @@ async function resolveRaceTrackTargetByName(
     throw new ValidationError('Multiple races match', 409);
   }
 
-  const target = await findRaceTrackTargetById(matches[0]!.id);
-  if (!target) {
-    throw new ValidationError('Race not found', 404);
-  }
-
+  const [target] = matches;
   return {
     raceId: target.id,
     eventId: target.eventId,
