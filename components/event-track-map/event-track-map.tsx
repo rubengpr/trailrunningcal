@@ -14,6 +14,7 @@ import {
 import type { ReactNode, RefObject } from 'react';
 import { createPortal } from 'react-dom';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import { TerrainSettingSlider } from '@/components/event-track-map/terrain-setting-slider';
 import { TerrainLoadError, TerrainStatusPill } from '@/components/event-track-map/terrain-status-pill';
 import { ErrorMessage } from '@/components/ui/error-message';
 import {
@@ -252,63 +253,36 @@ function TerrainSettingsPanel({
       data-testid="event-track-map-terrain-settings"
     >
       <p className="text-sm font-semibold">{title}</p>
-      <label className="mt-3 block">
-        <span className="flex items-center justify-between text-xs font-medium">
-          <span>{angleLabel}</span>
-          <output htmlFor="event-track-map-pitch">{pitch}°</output>
-        </span>
-        <input
-          id="event-track-map-pitch"
-          className="event-track-map-range mt-2 w-full"
-          data-testid="event-track-map-pitch"
-          type="range"
-          min="30"
-          max="70"
-          step="5"
-          value={pitch}
-          onChange={(event) => onPitchChange(Number(event.target.value))}
-        />
-      </label>
-      <label className="mt-3 block">
-        <span className="flex items-center justify-between text-xs font-medium">
-          <span>{reliefLabel}</span>
-          <output htmlFor="event-track-map-exaggeration">
-            {exaggeration.toFixed(2).replace(/0+$/, '').replace(/\.$/, '')}×
-          </output>
-        </span>
-        <input
-          id="event-track-map-exaggeration"
-          className="event-track-map-range mt-2 w-full"
-          data-testid="event-track-map-exaggeration"
-          type="range"
-          min="0.5"
-          max="2"
-          step="0.05"
-          value={exaggeration}
-          onChange={(event) => onExaggerationChange(Number(event.target.value))}
-        />
-      </label>
-      <label className="mt-3 block">
-        <span className="flex items-center justify-between text-xs font-medium">
-          <span>{hillshadeLabel}</span>
-          <output htmlFor="event-track-map-hillshade">
-            {Math.round(hillshadeIntensity * 100)}%
-          </output>
-        </span>
-        <input
-          id="event-track-map-hillshade"
-          className="event-track-map-range mt-2 w-full"
-          data-testid="event-track-map-hillshade"
-          type="range"
-          min="0"
-          max="1"
-          step="0.01"
-          value={hillshadeIntensity}
-          onChange={(event) =>
-            onHillshadeIntensityChange(Number(event.target.value))
-          }
-        />
-      </label>
+      <TerrainSettingSlider
+        id="event-track-map-pitch"
+        label={angleLabel}
+        displayValue={`${pitch}°`}
+        min={30}
+        max={70}
+        step={5}
+        value={pitch}
+        onChange={onPitchChange}
+      />
+      <TerrainSettingSlider
+        id="event-track-map-exaggeration"
+        label={reliefLabel}
+        displayValue={`${exaggeration.toFixed(2).replace(/0+$/, '').replace(/\.$/, '')}×`}
+        min={0.5}
+        max={2}
+        step={0.05}
+        value={exaggeration}
+        onChange={onExaggerationChange}
+      />
+      <TerrainSettingSlider
+        id="event-track-map-hillshade"
+        label={hillshadeLabel}
+        displayValue={`${Math.round(hillshadeIntensity * 100)}%`}
+        min={0}
+        max={1}
+        step={0.01}
+        value={hillshadeIntensity}
+        onChange={onHillshadeIntensityChange}
+      />
       <div className="mt-4 flex items-center justify-between gap-3 text-xs font-semibold">
         <button
           type="button"
