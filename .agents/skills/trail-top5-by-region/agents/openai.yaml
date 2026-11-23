@@ -1,0 +1,4 @@
+interface:
+  display_name: "Top 5 trail por comunidad"
+  short_description: "Investiga y escribe un top 5 de trail por comunidad"
+  default_prompt: "Usa $trail-top5-by-region para generar un artículo SEO a partir de la comunidad autónoma y los cinco eventos seleccionados que te indique, investigando desde cero y guardando el artículo, sus metadatos y fuentes."
