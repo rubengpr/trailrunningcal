@@ -562,13 +562,19 @@
     "infoDescription3": "Si ets organitzador de curses i vols que el teu esdeveniment aparegui al nostre calendari, contacta'ns."
   },
   "blog": {
-    "title": "El blog de Trail Running Calendar",
-    "description": "Descobreix informació sobre curses de trail running a Catalunya, consells d'entrenament, nutrició esportiva i guies per millorar el teu rendiment a la muntanya.",
+    "title": "El blog de Trailrunningcal",
+    "description": "Busques la teva propera cursa de muntanya? Aquí t’expliquem quines valen la pena a Espanya, quin material portar i com arribar amb ganes a la sortida.",
+    "intro": "Busques la teva propera cursa de muntanya? Aquí t’expliquem quines valen la pena a Espanya, quin material portar i com arribar amb ganes a la sortida. Tot el que ens hauria agradat saber abans de posar-nos un dorsal, perquè triar el teu proper repte sigui la part fàcil.",
     "relatedPosts": "Articles relacionats",
     "backToBlog": "Tornar al blog",
     "expandImage": "Amplia la imatge",
     "closeImage": "Tanca la imatge",
     "imageCredit": "Foto: {credit}",
+    "categories": {
+      "races": "Curses",
+      "gear": "Material",
+      "sponsored": "Patrocinat"
+    },
     "raceInfo": {
       "distance": "Distància",
       "elevation": "Desnivell",

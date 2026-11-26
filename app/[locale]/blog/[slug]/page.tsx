@@ -121,7 +121,8 @@ export default async function BlogPostPage({ params }: PageProps) {
                   locale={locale}
                   image={relatedPost.image}
                   imageAlt={relatedPost.imageAlt}
-                  compact
+                  categoryLabel={relatedPost.category ? tBlog(`categories.${relatedPost.category}`) : undefined}
+                  variant="compact"
                 />
               ))}
             </div>

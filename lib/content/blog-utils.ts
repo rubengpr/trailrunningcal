@@ -2,10 +2,12 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import type { Locale } from '@/i18n';
+import { isBlogCategory, type BlogCategory } from '@/lib/blog/categories';
 
 export interface BlogPostFrontmatter {
   title: string;
   footerTitle?: string;
+  category?: BlogCategory;
   excerpt: string;
   date: string;
   dateModified?: string;
@@ -73,6 +75,7 @@ export function getAllBlogPosts(): BlogPost[] {
         const post: BlogPost = {
           title: data.title,
           footerTitle: data.footerTitle || undefined,
+          category: isBlogCategory(data.category) ? data.category : undefined,
           excerpt: data.excerpt || '',
           date: data.date || '',
           dateModified: data.dateModified || undefined,

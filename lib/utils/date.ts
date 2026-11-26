@@ -53,6 +53,7 @@ export const formatDateToCatalan = (date: Date | string): string => {
 export const formatDateByLocale = (
   date: Date | string | null,
   locale: Locale,
+  month: 'long' | 'short' = 'long',
 ): string => {
   if (!date) {
     return 'N/D';
@@ -66,7 +67,7 @@ export const formatDateByLocale = (
 
   return new Intl.DateTimeFormat(localeTags[locale], {
     day: 'numeric',
-    month: 'long',
+    month,
     year: 'numeric',
   }).format(dateObj);
 };

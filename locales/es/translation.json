@@ -562,13 +562,19 @@
     "infoDescription3": "Si eres organizador de carreras y quieres que tu evento aparezca en nuestro calendario, contáctanos."
   },
   "blog": {
-    "title": "El blog de Trail Running Calendar",
-    "description": "Descubre información sobre carreras de trail running en Cataluña, consejos de entrenamiento, nutrición deportiva y guías para mejorar tu rendimiento en montaña.",
+    "title": "El blog de Trailrunningcal",
+    "description": "¿Buscas tu próxima carrera de montaña? Aquí te contamos cuáles merecen la pena en España, qué material llevar y cómo llegar con ganas a la salida.",
+    "intro": "¿Buscas tu próxima carrera de montaña? Aquí te contamos cuáles merecen la pena en España, qué material llevar y cómo llegar con ganas a la salida. Todo lo que nos habría gustado saber antes de ponernos un dorsal, para que elegir tu próximo reto sea la parte fácil.",
     "relatedPosts": "Artículos relacionados",
     "backToBlog": "Volver al blog",
     "expandImage": "Ampliar imagen",
     "closeImage": "Cerrar imagen",
     "imageCredit": "Foto: {credit}",
+    "categories": {
+      "races": "Carreras",
+      "gear": "Material",
+      "sponsored": "Patrocinado"
+    },
     "raceInfo": {
       "distance": "Distancia",
       "elevation": "Desnivel",

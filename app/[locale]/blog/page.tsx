@@ -41,7 +41,7 @@ export default async function BlogPage({
   params: Promise<{ locale: Locale }>;
 }) {
   const { locale } = await params;
-  const blogPosts = getPostsForLocale(locale);
+  const [featuredPost, ...otherPosts] = getPostsForLocale(locale);
   const t = await getTranslations({ locale });
   const tNav = await getTranslations({ locale, namespace: 'navigation' });
 
@@ -53,25 +53,36 @@ export default async function BlogPage({
   return (
     <>
       <JsonLd data={breadcrumbJsonLd} />
-      {/* Header Section */}
-      <div className="py-16 sm:py-24 text-center px-4">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 tracking-tight">
-          {t('blog.title')}
-        </h1>
-        <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
-          {t('blog.description')}
-        </p>
-      </div>
-
-      {/* Blog Grid */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-16">
-          {blogPosts.map((post, index) => (
+      <div className="mx-auto max-w-5xl px-5 pb-16 pt-8 sm:px-8 sm:pb-24 sm:pt-14">
+        <header className="mb-14 sm:mb-20">
+          <h1 className="mb-3 text-pretty text-[length:clamp(1.875rem,4vw,2.75rem)] font-semibold leading-[1.1] tracking-tight text-gray-950 sm:mb-4">
+            {t('blog.title')}
+          </h1>
+          <p className="text-[0.9375rem] leading-relaxed text-gray-600 sm:hidden">
+            {t('blog.description')}
+          </p>
+          <p className="hidden text-base leading-relaxed text-gray-600 sm:block">
+            {t('blog.intro')}
+          </p>
+        </header>
+        {featuredPost ? (
+          <div className="mb-12 sm:mb-16">
+            <BlogPostCard
+              {...featuredPost}
+              locale={locale}
+              categoryLabel={featuredPost.category ? t(`blog.categories.${featuredPost.category}`) : undefined}
+              variant="featured"
+              priority
+            />
+          </div>
+        ) : null}
+        <div className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+          {otherPosts.map((post) => (
             <BlogPostCard
               key={`${post.locale}-${post.slug}`}
               {...post}
               locale={locale}
-              priority={index === 0}
+              categoryLabel={post.category ? t(`blog.categories.${post.category}`) : undefined}
             />
           ))}
         </div>
