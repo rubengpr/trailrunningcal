@@ -5,6 +5,10 @@ export type EventRow = {
   name: string;
   slug: string;
   website_url: string | null;
+  facebook_url?: string | null;
+  instagram_url?: string | null;
+  youtube_url?: string | null;
+  tiktok_url?: string | null;
   organizer_id: string | null;
   description: string | null;
   hero_image_filename: string | null;
@@ -47,6 +51,10 @@ export interface TrailEvent {
   name: string;
   slug: string;
   websiteUrl: string | null;
+  facebookUrl: string | null;
+  instagramUrl: string | null;
+  youtubeUrl: string | null;
+  tiktokUrl: string | null;
   organizerId: string | null;
   description: string | null;
   heroImageFilename: string | null;
