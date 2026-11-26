@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { ArrowLeft } from 'lucide-react';
 import type { Locale } from '@/i18n';
 import {
   getAllBlogPosts,
@@ -14,6 +16,8 @@ import { buildBlogJsonLd, buildBreadcrumbJsonLd } from '@/lib/seo/json-ld';
 import { JsonLd } from '@/components/seo/json-ld';
 import { getTranslations } from 'next-intl/server';
 import { BlogPostCard } from '@/components/blog/blog-post-card';
+
+import styles from '@/components/blog/blog-article.module.css';
 
 interface PageProps {
   params: Promise<{
@@ -68,11 +72,12 @@ export default async function BlogPostPage({ params }: PageProps) {
     notFound();
   }
 
-  // Render MDX content
-  const MDXContent = await renderMDXFile(post.filePath, locale);
+  const [tNav, tBlog] = await Promise.all([
+    getTranslations({ locale, namespace: 'navigation' }),
+    getTranslations({ locale, namespace: 'blog' }),
+  ]);
+  const MDXContent = await renderMDXFile(post.filePath, locale, post.readTime);
   const jsonLd = buildBlogJsonLd(post);
-  const tNav = await getTranslations({ locale, namespace: 'navigation' });
-  const tBlog = await getTranslations({ locale, namespace: 'blog' });
 
   const breadcrumbJsonLd = buildBreadcrumbJsonLd([
     { name: tNav('calendar'), url: `${BASE_URL}/${locale}` },
@@ -86,32 +91,43 @@ export default async function BlogPostPage({ params }: PageProps) {
     <>
       <JsonLd data={jsonLd} />
       <JsonLd data={breadcrumbJsonLd} />
-      <div className="w-full px-6 sm:px-10 lg:px-16 sm:py-8 lg:py-12">
-        <MDXContent />
-      </div>
-      {relatedPosts.length > 0 && (
-        <div className="w-full px-6 sm:px-10 lg:px-16 pb-12 border-t border-gray-100 pt-10">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">
-            {tBlog('relatedPosts')}
-          </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-6 lg:max-w-4xl">
-            {relatedPosts.map((relatedPost) => (
-              <BlogPostCard
-                key={relatedPost.slug}
-                title={relatedPost.title}
-                excerpt={relatedPost.excerpt}
-                date={relatedPost.date}
-                readTime={relatedPost.readTime}
-                slug={relatedPost.slug}
-                locale={locale}
-                image={relatedPost.image}
-                imageAlt={relatedPost.imageAlt}
-                compact
-              />
-            ))}
-          </div>
+      <div className="mx-auto max-w-[62rem] px-5 pb-14 pt-5 sm:px-8 sm:pb-20 sm:pt-8">
+        <div className="mx-auto mb-2 max-w-3xl sm:mb-4">
+          <Link
+            href={`/${locale}/blog`}
+            className="inline-flex min-h-11 cursor-pointer items-center gap-2 text-sm font-semibold text-emerald-900 underline-offset-4 hover:underline"
+          >
+            <ArrowLeft className="size-4" />
+            {tBlog('backToBlog')}
+          </Link>
         </div>
-      )}
+        <article className={`${styles.article} text-base text-gray-800 sm:text-[1.0625rem]`}>
+          <MDXContent />
+        </article>
+        {relatedPosts.length > 0 && (
+          <section className="mx-auto mt-10 max-w-3xl border-t border-gray-200 pt-8 sm:mt-14 sm:pt-10">
+            <h2 className="mb-6 text-2xl font-semibold tracking-tight text-gray-950 sm:text-[1.75rem]">
+              {tBlog('relatedPosts')}
+            </h2>
+            <div className="grid gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
+              {relatedPosts.map((relatedPost) => (
+                <BlogPostCard
+                  key={relatedPost.slug}
+                  title={relatedPost.title}
+                  excerpt={relatedPost.excerpt}
+                  date={relatedPost.date}
+                  readTime={relatedPost.readTime}
+                  slug={relatedPost.slug}
+                  locale={locale}
+                  image={relatedPost.image}
+                  imageAlt={relatedPost.imageAlt}
+                  compact
+                />
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
     </>
   );
 }

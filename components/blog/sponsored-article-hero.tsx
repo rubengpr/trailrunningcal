@@ -18,9 +18,9 @@ export function SponsoredArticleHero({
   sponsorshipLabel = 'Contenido patrocinado',
 }: SponsoredArticleHeroProps) {
   return (
-    <figure className="relative my-8 min-h-72 overflow-hidden rounded-2xl bg-[#e8e5dd] sm:min-h-96">
+    <figure className={`relative mb-6 mt-6 min-h-72 overflow-hidden rounded-xl bg-[#e8e5dd] sm:mb-8 sm:mt-8 sm:min-h-80`}>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_82%_16%,rgba(255,255,255,0.8),transparent_27%),linear-gradient(130deg,rgba(255,255,255,0.68),rgba(222,218,207,0.25))]" />
-      <div className="relative flex min-h-72 flex-col justify-between p-6 sm:min-h-96 sm:p-10">
+      <div className="relative flex min-h-72 flex-col justify-between p-6 sm:min-h-80 sm:p-10">
         <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-gray-600">
           <span className="h-px w-6 bg-gray-500" />
           {sponsorshipLabel}

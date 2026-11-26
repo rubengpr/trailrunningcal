@@ -1,0 +1,23 @@
+.article {
+  display: grid;
+  grid-template-columns:
+    [full-start] minmax(0, 1fr)
+    [reading-start] min(100%, 48rem)
+    [reading-end] minmax(0, 1fr) [full-end];
+  overflow-wrap: anywhere;
+}
+
+.article > * {
+  grid-column: reading;
+  min-width: 0;
+}
+
+.article > :is(h2, h3) + figure {
+  margin-top: 0;
+}
+
+.trimEdges {
+  object-position: center 20%;
+  transform-origin: top;
+  scale: 1.19;
+}

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { BookOpen } from 'lucide-react';
 import type { Locale } from '@/i18n';
 import { formatDateToSpanish, formatDateToCatalan } from '@/lib/utils/date';
 
@@ -30,9 +31,9 @@ export function BlogPostCard({
 }: BlogPostCardProps) {
   return (
     <Link href={`/${locale}/blog/${slug}`} prefetch={false}>
-      <article className="flex flex-col group cursor-pointer p-4 -m-4 rounded-2xl transition-all duration-200 hover:bg-white hover:ring-1 hover:ring-gray-200 hover:shadow-lg">
+      <article className="flex cursor-pointer flex-col">
         {/* Image */}
-        <div className={`w-full rounded-xl overflow-hidden relative shadow-sm ${compact ? 'aspect-16/7 mb-2' : 'aspect-16/10 mb-6'}`}>
+        <div className={`relative w-full overflow-hidden rounded-xl bg-gray-100 ${compact ? 'aspect-16/9 mb-3' : 'aspect-16/10 mb-5'}`}>
           <Image
             src={image}
             alt={imageAlt}
@@ -45,17 +46,20 @@ export function BlogPostCard({
 
         {/* Content */}
         <div className="flex flex-col grow">
-          <div className={`flex items-center gap-2 text-gray-500 mb-2 ${compact ? 'text-xs' : 'text-sm mb-3'}`}>
+          <div className={`flex items-center gap-1.5 text-gray-500 ${compact ? 'mb-1.5 text-xs' : 'mb-2 text-sm'}`}>
             <time dateTime={date}>
               {locale === 'ca'
                 ? formatDateToCatalan(date)
                 : formatDateToSpanish(date)}
             </time>
-            <span>•</span>
-            <span>{readTime}</span>
+            <span aria-hidden="true">·</span>
+            <span className="inline-flex items-center gap-1">
+              <BookOpen className={compact ? 'size-3' : 'size-3.5'} aria-hidden="true" />
+              {readTime}
+            </span>
           </div>
 
-          <h3 className={`font-bold text-gray-700 group-hover:text-gray-950 transition-colors ${compact ? 'text-sm' : 'text-xl mb-3'}`}>
+          <h3 className={`text-pretty font-semibold leading-snug tracking-tight text-gray-950 ${compact ? 'text-[0.9375rem]' : 'mb-3 text-xl'}`}>
             {title}
           </h3>
 

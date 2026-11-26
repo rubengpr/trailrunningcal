@@ -33,14 +33,14 @@ export function RaceCard({
   imageAlt,
 }: RaceCardProps) {
   return (
-    <div className="relative w-full h-[300px] sm:h-[400px] lg:h-[600px] rounded-lg overflow-hidden shadow-md my-6">
+    <div className="relative my-5 w-full overflow-hidden rounded-xl sm:my-6">
       {/* Background Image */}
       <Image
         src={backgroundImage}
         alt={imageAlt}
         fill
         className="object-cover"
-        sizes="100vw"
+        sizes="(max-width: 639px) calc(100vw - 2.5rem), (max-width: 831px) calc(100vw - 4rem), 48rem"
         loading="lazy"
       />
 
@@ -48,32 +48,32 @@ export function RaceCard({
       <div className="absolute inset-0 bg-linear-to-b from-transparent from-30% to-black" />
 
       {/* Content - All info at bottom */}
-      <div className="relative h-full flex flex-col justify-end p-5 sm:p-8 lg:p-12">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2">
+      <div className="relative flex min-h-56 flex-col justify-end p-5 sm:min-h-80 sm:p-7">
+        <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
           {/* Race Name, Distance and Elevation - Bottom Left */}
           <div className="text-white">
             <h3
-              className={`${montserratExtrabold.className} text-xl sm:text-4xl lg:text-5xl xl:text-6xl text-white sm:mb-2`}
+              className={`${montserratExtrabold.className} mb-1 text-xl leading-tight text-white sm:text-[1.75rem]`}
             >
               {raceName}
             </h3>
             <p
-              className={`${montserratMedium.className} text-xs sm:text-lg lg:text-xl`}
+              className={`${montserratMedium.className} text-sm sm:text-base`}
             >
               {distance} - {elevationGain}
             </p>
           </div>
 
           {/* Location and Date - Bottom Right */}
-          <div className="flex flex-row sm:flex-col text-white text-right">
+          <div className="flex flex-wrap items-center gap-x-1.5 text-white sm:flex-col sm:items-end sm:text-right">
             <p
-              className={`${montserratMedium.className} text-[10px] sm:text-lg lg:text-xl`}
+              className={`${montserratMedium.className} text-xs sm:text-sm`}
             >
               {location}
             </p>
-            <span className="text-xs flex sm:hidden">&nbsp;-&nbsp;</span>
+            <span className="text-xs sm:hidden">·</span>
             <p
-              className={`${montserratMedium.className} text-[10px] sm:text-lg lg:text-xl`}
+              className={`${montserratMedium.className} text-xs sm:text-sm`}
             >
               {date}
             </p>
