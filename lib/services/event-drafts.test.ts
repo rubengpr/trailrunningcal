@@ -48,6 +48,7 @@ import {
   acceptEventDraft,
   generateEventDraft,
   generateEventDraftFromMarkdown,
+  proposeEventDraft,
   rejectEventDraft,
   updateEventDraft,
 } from './event-drafts';
@@ -352,6 +353,44 @@ describe('generateEventDraftFromMarkdown', () => {
       }),
     ).rejects.toMatchObject({ status: 422 });
 
+    expect(mocks.createEventDraft).not.toHaveBeenCalled();
+  });
+});
+
+describe('proposeEventDraft', () => {
+  const proposal = (date: string | null, province = 'Barcelona'): EventDraftData => ({
+    event: { name: 'Trail Event', description: null, websiteUrl: 'https://example.com/event' },
+    races: [
+      { name: 'Trail Event - 21K', date, city: 'Barcelona', province, distanceKm: 21, elevationGainM: 900, tiers: [] },
+    ],
+  });
+
+  it('persists a valid proposal as a pending draft', async () => {
+    const data = proposal('2999-01-10');
+    mocks.getPendingDraftByEventId.mockResolvedValue(null);
+    mocks.getEventByIdForAdmin.mockResolvedValue(eventDetail());
+    mocks.createEventDraft.mockResolvedValue(draft(data));
+
+    await expect(proposeEventDraft(EVENT_ID, data)).resolves.toEqual(draft(data));
+    expect(mocks.createEventDraft).toHaveBeenCalledWith({ eventId: EVENT_ID, data });
+  });
+
+  it('rejects when the event already has a pending draft', async () => {
+    mocks.getPendingDraftByEventId.mockResolvedValue(draft(proposal('2999-01-10')));
+
+    await expect(proposeEventDraft(EVENT_ID, proposal('2999-01-10'))).rejects.toMatchObject({ status: 409 });
+    expect(mocks.createEventDraft).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['a past date', proposal('2020-01-01')],
+    ['a missing date', proposal(null)],
+    ['an invalid province', proposal('2999-01-10', 'Atlantis')],
+  ])('rejects %s', async (_label, data) => {
+    mocks.getPendingDraftByEventId.mockResolvedValue(null);
+    mocks.getEventByIdForAdmin.mockResolvedValue(eventDetail());
+
+    await expect(proposeEventDraft(EVENT_ID, data)).rejects.toMatchObject({ status: 422 });
     expect(mocks.createEventDraft).not.toHaveBeenCalled();
   });
 });

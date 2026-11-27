@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AuthError, ForbiddenError } from '@/lib/errors';
 
@@ -84,8 +84,21 @@ const context = { params: Promise.resolve({ draftId: DRAFT_ID }) };
 
 beforeEach(() => {
   vi.resetAllMocks();
+  vi.stubEnv('AGENT_API_TOKEN', 'test-agent-token');
+  vi.stubEnv('AGENT_API_PERMISSIONS', 'read,propose');
   mocks.requireAdmin.mockResolvedValue(undefined);
 });
+afterEach(() => vi.unstubAllEnvs());
+
+const agentRequest = (body: unknown) =>
+  new Request('http://localhost', {
+    method: 'PATCH',
+    headers: {
+      authorization: 'Bearer test-agent-token',
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
 
 describe('PATCH /api/events/drafts/[draftId]', () => {
   it('requires an admin before dispatching an action', async () => {
@@ -172,5 +185,41 @@ describe('PATCH /api/events/drafts/[draftId]', () => {
       updatedDetail,
       'event-draft-accept',
     );
+  });
+
+  it('lets an agent with propose permission update a draft', async () => {
+    mocks.updateEventDraft.mockResolvedValue(pendingDraft);
+
+    const response = await PATCH(
+      agentRequest({ action: 'update', data: draftData }),
+      context,
+    );
+
+    expect(response.status).toBe(200);
+    expect(mocks.requireAdmin).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['accept', 'publish'],
+    ['reject', 'reject'],
+  ])('requires the %s action permission for agents', async (action) => {
+    const response = await PATCH(agentRequest({ action }), context);
+
+    expect(response.status).toBe(403);
+    expect(mocks.acceptEventDraft).not.toHaveBeenCalled();
+    expect(mocks.rejectEventDraft).not.toHaveBeenCalled();
+  });
+
+  it('lets an agent accept only with publish permission', async () => {
+    vi.stubEnv('AGENT_API_PERMISSIONS', 'propose,publish');
+    mocks.acceptEventDraft.mockResolvedValue({
+      previousDetail: eventDetail,
+      updatedDetail: eventDetail,
+    });
+
+    const response = await PATCH(agentRequest({ action: 'accept' }), context);
+
+    expect(response.status).toBe(200);
+    expect(mocks.acceptEventDraft).toHaveBeenCalledWith(DRAFT_ID);
   });
 });

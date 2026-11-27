@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { parseUuidParam } from '@/app/api/request-validation';
-import { requireAdmin } from '@/lib/auth';
+import { requireDraftAccess } from '@/lib/auth/draft-access';
 import {
   revalidateEventMutation,
 } from '@/lib/cache/revalidation';
@@ -18,7 +18,7 @@ export async function PATCH(
   context: { params: Promise<{ draftId: string }> },
 ): Promise<NextResponse> {
   try {
-    await requireAdmin();
+    await requireDraftAccess(request, 'propose');
 
     const { draftId } = await context.params;
     const parsedDraftId = parseUuidParam(draftId, 'draft id');
@@ -26,6 +26,7 @@ export async function PATCH(
 
     switch (input.action) {
       case 'accept': {
+        await requireDraftAccess(request, 'publish');
         const { previousDetail, updatedDetail } =
           await acceptEventDraft(parsedDraftId);
 
@@ -42,6 +43,7 @@ export async function PATCH(
         return NextResponse.json({ success: true, data });
       }
       case 'reject': {
+        await requireDraftAccess(request, 'reject');
         const data = await rejectEventDraft(parsedDraftId);
         return NextResponse.json({ success: true, data });
       }

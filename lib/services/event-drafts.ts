@@ -76,6 +76,35 @@ export async function generateEventDraft(
   });
 }
 
+export async function proposeEventDraft(
+  eventId: string,
+  data: EventDraftData,
+): Promise<EventDraft> {
+  await assertNoPendingDraft(eventId);
+
+  const eventDetail = await getEventByIdForAdmin(eventId);
+
+  if (!eventDetail) {
+    throw new ValidationError('Event not found', 404);
+  }
+
+  if (data.races.length === 0) {
+    throw new ValidationError('At least one race is required', 422);
+  }
+
+  const today = new Date().toISOString().slice(0, 10);
+
+  if (data.races.some((race) => !race.date || race.date < today)) {
+    throw new ValidationError('Race dates must be today or later', 422);
+  }
+
+  if (data.races.some((race) => !isValidProvince(race.province))) {
+    throw new ValidationError('Invalid province', 422);
+  }
+
+  return createEventDraft({ eventId, data });
+}
+
 export async function generateEventDraftFromMarkdown(input: {
   eventId: string;
   markdown: string;

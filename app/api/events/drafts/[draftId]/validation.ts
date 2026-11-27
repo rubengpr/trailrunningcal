@@ -7,6 +7,44 @@ export type DraftActionInput =
   | { action: 'accept' }
   | { action: 'reject' };
 
+export function parseDraftData(data: unknown): EventDraftData {
+  if (typeof data !== 'object' || data === null) {
+    throw new ValidationError('Invalid draft data', 400);
+  }
+
+  const { races } = data as Record<string, unknown>;
+  const parsed = parseEventInput({
+    ...data,
+    races: Array.isArray(races)
+      ? races.map((race) =>
+          typeof race === 'object' && race !== null
+            ? {
+                ...race,
+                tiers: Array.isArray(
+                  (race as Record<string, unknown>).tiers,
+                )
+                  ? (race as Record<string, unknown>).tiers
+                  : [],
+              }
+            : race,
+        )
+      : races,
+  });
+
+  return {
+    event: parsed.event,
+    races: parsed.races.map((race) => ({
+      name: race.name,
+      date: race.date,
+      city: race.city,
+      province: race.province,
+      distanceKm: race.distanceKm,
+      elevationGainM: race.elevationGainM,
+      tiers: race.tiers,
+    })),
+  };
+}
+
 export function parseDraftActionInput(body: unknown): DraftActionInput {
   if (typeof body !== 'object' || body === null) {
     throw new ValidationError('Invalid request body', 400);
@@ -15,44 +53,7 @@ export function parseDraftActionInput(body: unknown): DraftActionInput {
   const { action, data } = body as Record<string, unknown>;
 
   if (action === 'update') {
-    if (typeof data !== 'object' || data === null) {
-      throw new ValidationError('Invalid draft data', 400);
-    }
-
-    const { races } = data as Record<string, unknown>;
-    const parsed = parseEventInput({
-      ...data,
-      races: Array.isArray(races)
-        ? races.map((race) =>
-            typeof race === 'object' && race !== null
-              ? {
-                  ...race,
-                  tiers: Array.isArray(
-                    (race as Record<string, unknown>).tiers,
-                  )
-                    ? (race as Record<string, unknown>).tiers
-                    : [],
-                }
-              : race,
-          )
-        : races,
-    });
-
-    return {
-      action,
-      data: {
-        event: parsed.event,
-        races: parsed.races.map((race) => ({
-          name: race.name,
-          date: race.date,
-          city: race.city,
-          province: race.province,
-          distanceKm: race.distanceKm,
-          elevationGainM: race.elevationGainM,
-          tiers: race.tiers,
-        })),
-      },
-    };
+    return { action, data: parseDraftData(data) };
   }
 
   if (action === 'accept' || action === 'reject') {

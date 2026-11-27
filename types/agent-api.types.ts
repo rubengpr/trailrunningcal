@@ -1,1 +1,1 @@
-export type DraftPermission = 'read' | 'create' | 'update' | 'reject' | 'publish';
+export type DraftPermission = 'read' | 'create' | 'update' | 'propose' | 'reject' | 'publish';
