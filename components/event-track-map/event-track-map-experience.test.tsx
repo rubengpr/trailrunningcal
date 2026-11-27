@@ -12,8 +12,6 @@ vi.mock('@/lib/api/event-tracks', () => ({
   fetchEventTrackRoutes: mocks.fetchEventTrackRoutes,
 }));
 vi.mock('@/components/event-track-map/deferred-event-track-map', () => ({
-  EVENT_TRACK_MAP_CLASS_NAME: 'map-placeholder',
-  EventTrackMapPlaceholder: () => <div data-testid="map-placeholder" />,
   preloadEventTrackMap: mocks.preloadEventTrackMap,
   DeferredEventTrackMap: () => <div data-testid="loaded-track-map" />,
 }));

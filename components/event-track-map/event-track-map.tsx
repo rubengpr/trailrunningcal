@@ -14,6 +14,7 @@ import {
 import type { ReactNode, RefObject } from 'react';
 import { createPortal } from 'react-dom';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import { EventTrackMapPlaceholder } from '@/components/event-track-map/event-track-map-placeholder';
 import { TerrainSettingSlider } from '@/components/event-track-map/terrain-setting-slider';
 import { TerrainLoadError, TerrainStatusPill } from '@/components/event-track-map/terrain-status-pill';
 import { ErrorMessage } from '@/components/ui/error-message';
@@ -53,16 +54,6 @@ export interface EventTrackMapProps {
 
 const FEATURE_FLAG_TIMEOUT_MS = 3_000;
 const PREVIEW_EXPOSURE_DELAY_MS = 2_000;
-
-function MapPlaceholder() {
-  return (
-    <div
-      className="h-[336px] w-full bg-stone-100 sm:h-[480px]"
-      data-event-track-map-placeholder
-      data-testid="event-track-map-placeholder"
-    />
-  );
-}
 
 interface TrackLegendProps extends Pick<EventTrackMapProps, 'routes'> {
   fullscreen: boolean;
@@ -466,7 +457,7 @@ export function EventTrackMap(props: EventTrackMapProps) {
     return () => window.clearTimeout(timeoutId);
   }, [variant]);
 
-  if (!variant && !useFallback) return <MapPlaceholder />;
+  if (!variant && !useFallback) return <EventTrackMapPlaceholder testId="event-track-map-placeholder" />;
 
   return <ResolvedEventTrackMap {...props} experiment={experiment} />;
 }

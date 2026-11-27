@@ -7,8 +7,7 @@ import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { SectionHeader } from '@/components/ui/section-header';
 import { ListEmptyState } from '@/components/ui/list-empty-state';
 import { EventImportDraftRow } from '@/components/admin/event-import-draft-row';
-import { EventImportPreview } from '@/components/admin/event-import-preview';
-import { EventImportPreviewModal } from '@/components/admin/event-import-preview-modal';
+import { EventImportResultModal } from '@/components/admin/event-import-result-modal';
 import { SortableTableHeader } from '@/components/ui/sortable-table-header';
 import {
   Table,
@@ -334,25 +333,11 @@ export function AdminEventImportDraftsContent({
           })}
         />
       ) : null}
-      <EventImportPreviewModal
-        isOpen={draftToPreview !== null}
+      <EventImportResultModal
+        result={draftToPreview?.data ?? null}
         closeLabel={t('closePreview')}
         onClose={() => setDraftToPreview(null)}
-      >
-        <EventImportPreview
-          event={draftToPreview?.data.event ?? null}
-          races={draftToPreview?.data.races ?? []}
-          isLoading={false}
-          error={null}
-          onAccept={async () => undefined}
-          isAccepted={false}
-          isAccepting={false}
-          onReject={() => undefined}
-          isRejected={false}
-          onSaveReview={async () => undefined}
-          readOnly
-        />
-      </EventImportPreviewModal>
+      />
       <EventRacesEditModal
         isOpen={draftToEdit !== null}
         event={draftToEdit?.data.event ?? null}

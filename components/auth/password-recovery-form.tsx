@@ -6,8 +6,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { FormInput } from '@/components/ui/form-input';
 import { FormCard } from '@/components/ui/form-card';
-import { Button } from '@/components/ui/button';
-import { InlineError } from '@/components/ui/inline-error';
+import { AuthForm } from '@/components/auth/auth-form';
 import { validateEmail as validateEmailUtil } from '@/lib/auth/validation';
 
 export function PasswordRecoveryForm({
@@ -103,37 +102,34 @@ export function PasswordRecoveryForm({
       {...props}
     >
       <FormCard title={t('title')} description={t('description')}>
-        <form onSubmit={handleSubmit} noValidate>
-          <div className="flex flex-col gap-6">
-            <FormInput
-              id="email"
-              label={t('email')}
-              type="email"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                setEmailError('');
-                setError(null);
-              }}
-              error={emailError}
-              placeholder="kilian@zegama.com"
-            />
-            <InlineError error={error || undefined} />
-            <Button
-              type="submit"
-              fullWidth
-              isLoading={isLoading}
-              loadingText={t('sending')}
-            >
-              {t('submit')}
-            </Button>
-          </div>
-          <div className="mt-4 text-center text-sm">
-            <Link href={`/${locale}/login`} className="underline underline-offset-4">
-              {t('backToLogin')}
-            </Link>
-          </div>
-        </form>
+        <AuthForm
+          onSubmit={handleSubmit}
+          error={error}
+          submitLabel={t('submit')}
+          loadingLabel={t('sending')}
+          isLoading={isLoading}
+          footer={
+            <div className="mt-4 text-center text-sm">
+              <Link href={`/${locale}/login`} className="underline underline-offset-4">
+                {t('backToLogin')}
+              </Link>
+            </div>
+          }
+        >
+          <FormInput
+            id="email"
+            label={t('email')}
+            type="email"
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setEmailError('');
+              setError(null);
+            }}
+            error={emailError}
+            placeholder="kilian@zegama.com"
+          />
+        </AuthForm>
       </FormCard>
     </div>
   );

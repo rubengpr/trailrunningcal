@@ -10,8 +10,7 @@ import { ListEmptyState } from '@/components/ui/list-empty-state';
 import { SectionHeader } from '@/components/ui/section-header';
 import { AdminEventsTable } from '@/components/admin/admin-events-table';
 import { AdminPagination } from '@/components/admin/admin-pagination';
-import { EventImportPreview } from '@/components/admin/event-import-preview';
-import { EventImportPreviewModal } from '@/components/admin/event-import-preview-modal';
+import { EventImportResultModal } from '@/components/admin/event-import-result-modal';
 import { EventRacesEditModal } from '@/components/admin/event-races-edit-modal';
 import { AdminEventsFilters } from '@/components/admin/admin-events-filters';
 import {
@@ -379,26 +378,18 @@ export function AdminEventsContent({ page, query }: AdminEventsContentProps) {
       />
 
       {reviewEventDetail && reviewDraft && (
-        <EventImportPreviewModal
-          isOpen
+        <EventImportResultModal
+          result={reviewDraft.data}
           closeLabel={t('updateSuggestion.closeButton')}
           onClose={() => setReviewEventId(null)}
-        >
-          <EventImportPreview
-            event={reviewDraft.data.event}
-            races={reviewDraft.data.races}
-            isLoading={false}
-            error={null}
-            onAccept={() => handleAcceptDraft(reviewEventDetail.event.id)}
-            isAccepted={false}
-            isAccepting={acceptingDraftId === reviewDraft.id}
-            onReject={() => void handleRejectDraft(reviewEventDetail.event.id)}
-            isRejected={false}
-            onSaveReview={(event, races) =>
-              handleSaveDraftReview(reviewEventDetail.event.id, event, races)
-            }
-          />
-        </EventImportPreviewModal>
+          reviewActions={{
+            onAccept: () => handleAcceptDraft(reviewEventDetail.event.id),
+            isAccepting: acceptingDraftId === reviewDraft.id,
+            onReject: () => void handleRejectDraft(reviewEventDetail.event.id),
+            onSaveReview: (event, races) =>
+              handleSaveDraftReview(reviewEventDetail.event.id, event, races),
+          }}
+        />
       )}
 
       <ConfirmationModal

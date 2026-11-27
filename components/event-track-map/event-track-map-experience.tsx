@@ -5,10 +5,12 @@ import { Map } from 'lucide-react';
 import { EventSectionHeading } from '@/components/event/event-section-heading';
 import {
   DeferredEventTrackMap,
-  EVENT_TRACK_MAP_CLASS_NAME,
-  EventTrackMapPlaceholder,
   preloadEventTrackMap,
 } from '@/components/event-track-map/deferred-event-track-map';
+import {
+  EVENT_TRACK_MAP_CLASS_NAME,
+  EventTrackMapPlaceholder,
+} from '@/components/event-track-map/event-track-map-placeholder';
 import { ElevationProfileChart } from '@/components/event-track-map/elevation-profile';
 import { ErrorMessage } from '@/components/ui/error-message';
 import { fetchEventTrackRoutes } from '@/lib/api/event-tracks';
@@ -79,9 +81,7 @@ export function EventTrackMapExperience({
       className={EVENT_TRACK_MAP_CLASS_NAME}
     />
   ) : !isVisible || routes === null ? (
-    <div ref={targetRef}>
-      <EventTrackMapPlaceholder />
-    </div>
+    <EventTrackMapPlaceholder ref={targetRef} />
   ) : (
     <>
       <DeferredEventTrackMap

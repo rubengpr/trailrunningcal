@@ -1,14 +1,10 @@
 'use client';
 
-import { createPortal } from 'react-dom';
 import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { useMultiSelectMenu } from '@/hooks/use-multi-select-menu';
-import {
-  MULTI_SELECT_MENU_MAX_HEIGHT,
-  MultiSelectOptionsMenu,
-  type MultiSelectOptionItem,
-} from '@/components/ui/multi-select-options-menu';
+import { FilterOptionsMenu } from '@/components/filters/filter-options-menu';
+import { useFilterOptionsMenu } from '@/hooks/use-filter-options-menu';
+import type { MultiSelectOptionItem } from '@/components/ui/multi-select-options-menu';
 
 export type FilterSelectOption = MultiSelectOptionItem;
 
@@ -28,19 +24,12 @@ interface FilterSelectProps {
 
 export function FilterSelect({ value, onValueChange, placeholder, options, color = 'white', searchable = false, id, label, clearLabel, applyOnClose = false, className = '' }: FilterSelectProps) {
   const [draftValue, setDraftValue] = useState(value);
-  const { open, containerRef, triggerRef, dropdownRef, dropdownStyle, toggleOpen } = useMultiSelectMenu({
-    usePortalPosition: true,
-    minWidth: 160,
-    offset: 4,
-    preferredMenuHeight: MULTI_SELECT_MENU_MAX_HEIGHT,
-    placement: 'bottom',
-    consumeOutsideTouch: true,
-    onClose: () => {
-      if (applyOnClose && (draftValue.length !== value.length || draftValue.some((item) => !value.includes(item)))) {
-        onValueChange(draftValue);
-      }
-    },
+  const menu = useFilterOptionsMenu(() => {
+    if (applyOnClose && (draftValue.length !== value.length || draftValue.some((item) => !value.includes(item)))) {
+      onValueChange(draftValue);
+    }
   });
+  const { open, containerRef, triggerRef, toggleOpen } = menu;
 
   const selectedValues = applyOnClose && open ? draftValue : value;
 
@@ -71,19 +60,6 @@ export function FilterSelect({ value, onValueChange, placeholder, options, color
     className,
   ].join(' ');
 
-  const dropdown = open && (
-    <MultiSelectOptionsMenu
-      clearLabel={clearLabel}
-      options={options}
-      selectedValues={selectedValues}
-      searchable={searchable}
-      onToggleOption={handleToggle}
-      onValuesChange={handleValuesChange}
-      dropdownRef={dropdownRef}
-      style={{ position: 'absolute', top: dropdownStyle.top, left: dropdownStyle.left, minWidth: dropdownStyle.minWidth, maxHeight: dropdownStyle.maxHeight, zIndex: 9999 }}
-    />
-  );
-
   return (
     <div ref={containerRef} className="relative shrink-0">
       {label ? <label htmlFor={id} className="mb-2 block text-sm font-medium leading-none text-gray-900">{label}</label> : null}
@@ -106,7 +82,15 @@ export function FilterSelect({ value, onValueChange, placeholder, options, color
         </>
       </button>
 
-      {typeof document !== 'undefined' && createPortal(dropdown, document.body)}
+      <FilterOptionsMenu
+        menu={menu}
+        clearLabel={clearLabel}
+        options={options}
+        selectedValues={selectedValues}
+        searchable={searchable}
+        onToggleOption={handleToggle}
+        onValuesChange={handleValuesChange}
+      />
     </div>
   );
 }

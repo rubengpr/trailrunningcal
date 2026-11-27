@@ -7,8 +7,7 @@ import { useState, useEffect } from 'react';
 import { FormInput } from '@/components/ui/form-input';
 import { PasswordConfirmationFields } from '@/components/auth/password-confirmation-fields';
 import { FormCard } from '@/components/ui/form-card';
-import { Button } from '@/components/ui/button';
-import { InlineError } from '@/components/ui/inline-error';
+import { AuthForm } from '@/components/auth/auth-form';
 import { SuccessMessage } from '@/components/ui/success-message';
 import {
   validateEmail as validateEmailUtil,
@@ -113,46 +112,43 @@ export function SignUpForm({
             className="p-0"
           />
         ) : (
-          <form onSubmit={handleSignUp} noValidate>
-            <div className="flex flex-col gap-6">
-              <FormInput
-                id="email"
-                label={t('email')}
-                type="email"
-                placeholder="kilian@zegama.com"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  setEmailError('');
-                }}
-                error={emailError}
-              />
-              <PasswordConfirmationFields
-                password={password}
-                confirmation={repeatPassword}
-                passwordLabel={t('password')}
-                confirmationLabel={t('repeatPassword')}
-                required
-                onPasswordChange={setPassword}
-                onConfirmationChange={setRepeatPassword}
-              />
-              <InlineError error={error || undefined} />
-              <Button
-                type="submit"
-                fullWidth
-                isLoading={isLoading}
-                loadingText={t('creatingAccount')}
-              >
-                {t('submit')}
-              </Button>
-            </div>
-            <div className="mt-4 text-center text-sm">
-              {t('alreadyHaveAccount')}{' '}
-              <Link href={`/${locale}/login`} className="underline underline-offset-4">
-                {t('login')}
-              </Link>
-            </div>
-          </form>
+          <AuthForm
+            onSubmit={handleSignUp}
+            error={error}
+            submitLabel={t('submit')}
+            loadingLabel={t('creatingAccount')}
+            isLoading={isLoading}
+            footer={
+              <div className="mt-4 text-center text-sm">
+                {t('alreadyHaveAccount')}{' '}
+                <Link href={`/${locale}/login`} className="underline underline-offset-4">
+                  {t('login')}
+                </Link>
+              </div>
+            }
+          >
+            <FormInput
+              id="email"
+              label={t('email')}
+              type="email"
+              placeholder="kilian@zegama.com"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setEmailError('');
+              }}
+              error={emailError}
+            />
+            <PasswordConfirmationFields
+              password={password}
+              confirmation={repeatPassword}
+              passwordLabel={t('password')}
+              confirmationLabel={t('repeatPassword')}
+              required
+              onPasswordChange={setPassword}
+              onConfirmationChange={setRepeatPassword}
+            />
+          </AuthForm>
         )}
       </FormCard>
     </div>

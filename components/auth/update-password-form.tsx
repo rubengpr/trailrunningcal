@@ -6,8 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { PasswordConfirmationFields } from '@/components/auth/password-confirmation-fields';
 import { FormCard } from '@/components/ui/form-card';
-import { Button } from '@/components/ui/button';
-import { InlineError } from '@/components/ui/inline-error';
+import { AuthForm } from '@/components/auth/auth-form';
 import { validatePassword as validatePasswordUtil } from '@/lib/auth/validation';
 
 export function UpdatePasswordForm({
@@ -97,37 +96,32 @@ export function UpdatePasswordForm({
       {...props}
     >
       <FormCard title={t('title')} description={t('description')}>
-        <form onSubmit={handleSubmit} noValidate>
-          <div className="flex flex-col gap-6">
-            <PasswordConfirmationFields
-              password={password}
-              confirmation={repeatPassword}
-              passwordLabel={t('password')}
-              confirmationLabel={t('repeatPassword')}
-              passwordError={passwordError}
-              confirmationError={repeatPasswordError}
-              onPasswordChange={(value) => {
-                setPassword(value);
-                setPasswordError('');
-                setError(null);
-              }}
-              onConfirmationChange={(value) => {
-                setRepeatPassword(value);
-                setRepeatPasswordError('');
-                setError(null);
-              }}
-            />
-            <InlineError error={error || undefined} />
-            <Button
-              type="submit"
-              fullWidth
-              isLoading={isLoading}
-              loadingText={t('updating')}
-            >
-              {t('submit')}
-            </Button>
-          </div>
-        </form>
+        <AuthForm
+          onSubmit={handleSubmit}
+          error={error}
+          submitLabel={t('submit')}
+          loadingLabel={t('updating')}
+          isLoading={isLoading}
+        >
+          <PasswordConfirmationFields
+            password={password}
+            confirmation={repeatPassword}
+            passwordLabel={t('password')}
+            confirmationLabel={t('repeatPassword')}
+            passwordError={passwordError}
+            confirmationError={repeatPasswordError}
+            onPasswordChange={(value) => {
+              setPassword(value);
+              setPasswordError('');
+              setError(null);
+            }}
+            onConfirmationChange={(value) => {
+              setRepeatPassword(value);
+              setRepeatPasswordError('');
+              setError(null);
+            }}
+          />
+        </AuthForm>
       </FormCard>
     </div>
   );

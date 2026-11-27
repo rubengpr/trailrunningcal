@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { TabSwitcher } from '@/components/ui/tab-switcher';
 import { SectionHeader } from '@/components/ui/section-header';
 import { EventImportPreview } from '@/components/admin/event-import-preview';
-import { EventImportPreviewModal } from '@/components/admin/event-import-preview-modal';
+import { EventImportResultModal } from '@/components/admin/event-import-result-modal';
 import { ImportJsonEditor } from '@/components/admin/import-json-editor';
 import { ImportFileUploadPanel } from '@/components/admin/import-file-upload-panel';
 import { ImportWorkflowFields } from '@/components/admin/import-workflow-fields';
@@ -1491,30 +1491,20 @@ export function EventImporter({ pendingEntries }: EventImporterProps) {
                     />
                 </div>
             )}
-            <EventImportPreviewModal
-                isOpen={reviewingBatchResult !== null && reviewingBatchItem !== null}
+            <EventImportResultModal
+                result={reviewingBatchItem ? reviewingBatchResult : null}
                 closeLabel={t('bulk.closePreview')}
                 onClose={closeBatchReview}
-            >
-                {reviewingBatchResult && reviewingBatchItem ? (
-                    <EventImportPreview
-                        event={reviewingBatchResult.event}
-                        races={reviewingBatchResult.races}
-                        isLoading={false}
-                        error={null}
-                        onAccept={handleAcceptBatchItem}
-                        isAccepted={reviewingBatchItem.reviewStatus === 'accepted'}
-                        isAccepting={isAcceptingBatchItem}
-                        onReject={() => undefined}
-                        isRejected={false}
-                        showReject={false}
-                        onSaveReview={handleSaveBatchReview}
-                        onSaveDraft={handleSaveBatchDraft}
-                        isSavingDraft={isSavingDraft}
-                        isDraftSaved={savedBatchDraftId !== null || reviewingBatchItem.savedDraftId !== null}
-                    />
-                ) : null}
-            </EventImportPreviewModal>
+                reviewActions={{
+                    onAccept: handleAcceptBatchItem,
+                    isAccepted: reviewingBatchItem?.reviewStatus === 'accepted',
+                    isAccepting: isAcceptingBatchItem,
+                    onSaveReview: handleSaveBatchReview,
+                    onSaveDraft: handleSaveBatchDraft,
+                    isSavingDraft,
+                    isDraftSaved: savedBatchDraftId !== null || reviewingBatchItem?.savedDraftId != null,
+                }}
+            />
             {workflow !== 'bulk' && workflow !== 'research' && jsonView && hasScraped && !isScraping && scrapeError === null && (
                 <ImportJsonEditor
                     value={jsonEditorValue}

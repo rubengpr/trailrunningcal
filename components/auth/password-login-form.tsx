@@ -1,10 +1,9 @@
 'use client';
 
 import { createClient } from '@/lib/supabase/client';
-import { Button } from '@/components/ui/button';
+import { AuthForm } from '@/components/auth/auth-form';
 import { FormCard } from '@/components/ui/form-card';
 import { FormInput } from '@/components/ui/form-input';
-import { InlineError } from '@/components/ui/inline-error';
 import {
   validateEmail,
   validatePassword,
@@ -103,41 +102,41 @@ export function PasswordLoginForm({
   return (
     <div className={`flex flex-col gap-6${className ? ` ${className}` : ''}`} {...props}>
       <FormCard title={title} description={description}>
-        <form onSubmit={handleSubmit} noValidate>
-          <div className="flex flex-col gap-6">
-            <FormInput
-              id="email"
-              label={emailLabel}
-              type="email"
-              value={email}
-              onChange={(event) => {
-                setEmail(event.target.value);
-                setEmailError('');
-                setError(null);
-              }}
-              error={emailError}
-            />
-            <FormInput
-              id="password"
-              label={passwordLabel}
-              type="password"
-              value={password}
-              onChange={(event) => {
-                setPassword(event.target.value);
-                setPasswordError('');
-                setError(null);
-              }}
-              error={passwordError}
-              showPasswordToggle
-              labelRightContent={passwordLabelRightContent}
-            />
-            <InlineError error={error ?? undefined} />
-            <Button type="submit" fullWidth isLoading={isLoading} loadingText={loadingLabel}>
-              {submitLabel}
-            </Button>
-          </div>
-          {footer}
-        </form>
+        <AuthForm
+          onSubmit={handleSubmit}
+          error={error}
+          submitLabel={submitLabel}
+          loadingLabel={loadingLabel}
+          isLoading={isLoading}
+          footer={footer}
+        >
+          <FormInput
+            id="email"
+            label={emailLabel}
+            type="email"
+            value={email}
+            onChange={(event) => {
+              setEmail(event.target.value);
+              setEmailError('');
+              setError(null);
+            }}
+            error={emailError}
+          />
+          <FormInput
+            id="password"
+            label={passwordLabel}
+            type="password"
+            value={password}
+            onChange={(event) => {
+              setPassword(event.target.value);
+              setPasswordError('');
+              setError(null);
+            }}
+            error={passwordError}
+            showPasswordToggle
+            labelRightContent={passwordLabelRightContent}
+          />
+        </AuthForm>
       </FormCard>
     </div>
   );

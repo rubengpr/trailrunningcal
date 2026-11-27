@@ -1,12 +1,8 @@
 'use client';
 
-import { createPortal } from 'react-dom';
-import {
-  MULTI_SELECT_MENU_MAX_HEIGHT,
-  MultiSelectOptionsMenu,
-  type MultiSelectOptionItem,
-} from '@/components/ui/multi-select-options-menu';
-import { useMultiSelectMenu } from '@/hooks/use-multi-select-menu';
+import { FilterOptionsMenu } from '@/components/filters/filter-options-menu';
+import { useFilterOptionsMenu } from '@/hooks/use-filter-options-menu';
+import type { MultiSelectOptionItem } from '@/components/ui/multi-select-options-menu';
 
 interface FilterPillProps {
   label: string;
@@ -31,21 +27,8 @@ export function FilterPill({
   size,
   searchable = false,
 }: FilterPillProps) {
-  const {
-    open,
-    containerRef,
-    triggerRef,
-    dropdownRef,
-    dropdownStyle,
-    toggleOpen,
-  } = useMultiSelectMenu({
-    usePortalPosition: true,
-    minWidth: 160,
-    offset: 4,
-    preferredMenuHeight: MULTI_SELECT_MENU_MAX_HEIGHT,
-    placement: 'bottom',
-    consumeOutsideTouch: true,
-  });
+  const menu = useFilterOptionsMenu();
+  const { open, containerRef, triggerRef, toggleOpen } = menu;
   const isSelected = selectedValues.length > 0;
 
   const pillClasses = [
@@ -59,25 +42,6 @@ export function FilterPill({
           ? 'border-gray-400 bg-white text-gray-700'
           : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400 hover:text-gray-800',
   ].join(' ');
-
-  const dropdown = open && (
-    <MultiSelectOptionsMenu
-      options={options}
-      selectedValues={selectedValues}
-      searchable={searchable}
-      onToggleOption={onToggleOption}
-      onValuesChange={onValuesChange}
-      dropdownRef={dropdownRef}
-      style={{
-        position: 'absolute',
-        top: dropdownStyle.top,
-        left: dropdownStyle.left,
-        minWidth: dropdownStyle.minWidth,
-        maxHeight: dropdownStyle.maxHeight,
-        zIndex: 9999,
-      }}
-    />
-  );
 
   return (
     <div ref={containerRef} className="relative inline-flex shrink-0">
@@ -100,7 +64,14 @@ export function FilterPill({
           </span>
         )}
       </button>
-      {typeof document !== 'undefined' && createPortal(dropdown, document.body)}
+      <FilterOptionsMenu
+        menu={menu}
+        options={options}
+        selectedValues={selectedValues}
+        searchable={searchable}
+        onToggleOption={onToggleOption}
+        onValuesChange={onValuesChange}
+      />
     </div>
   );
 }
