@@ -70,6 +70,12 @@ function placeholders(message: string): string[] {
   )].sort();
 }
 
+function sharedTranslationKeys(messages: Record<string, string>, namespace: string): string[] {
+  return Object.keys(messages)
+    .filter((key) => namespace !== 'footer' || !key.startsWith('blogPosts.'))
+    .sort();
+}
+
 describe('public locale contract', () => {
   it('registers English and French for public pages but not for the blog', () => {
     expect(locales).toEqual(['es', 'ca', 'en', 'fr']);
@@ -134,7 +140,7 @@ describe('public locale contract', () => {
     const source = flatten((es as Messages)[namespace]);
     const translation = flatten((en as Messages)[namespace]);
 
-    expect(Object.keys(translation).sort()).toEqual(Object.keys(source).sort());
+    expect(sharedTranslationKeys(translation, namespace)).toEqual(sharedTranslationKeys(source, namespace));
 
     for (const key of Object.keys(source)) {
       expect(placeholders(translation[key])).toEqual(placeholders(source[key]));
@@ -145,7 +151,7 @@ describe('public locale contract', () => {
     const source = flatten((es as Messages)[namespace]);
     const translation = flatten((fr as Messages)[namespace]);
 
-    expect(Object.keys(translation).sort()).toEqual(Object.keys(source).sort());
+    expect(sharedTranslationKeys(translation, namespace)).toEqual(sharedTranslationKeys(source, namespace));
 
     for (const key of Object.keys(source)) {
       expect(placeholders(translation[key])).toEqual(placeholders(source[key]));

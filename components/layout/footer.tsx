@@ -26,7 +26,7 @@ const CATEGORY_SLUGS = [
 
 const MAX_FOOTER_POSTS = 5;
 
-const FOOTER_BLOG_TITLE_KEYS: Record<string, string> = {
+const FOOTER_BLOG_TITLE_KEYS: Partial<Record<string, string>> = {
   'como-elegir-zapatillas-ultras-tecnicos': 'technicalUltras',
   'mejores-medias-maraton-trail-running-cataluna-2026': 'halfMarathonsCatalonia',
   'mejores-carreras-trail-running-espana-2026': 'bestRacesSpain',
@@ -42,7 +42,15 @@ export async function Footer() {
     getTranslations('legal'),
   ]);
   const blogLocale = isBlogLocale(locale) ? locale : 'es';
-  const blogPosts = getPostsForLocale(blogLocale).slice(0, MAX_FOOTER_POSTS);
+  const blogPosts = getPostsForLocale(blogLocale).slice(0, MAX_FOOTER_POSTS).map((post) => {
+    const titleKey = FOOTER_BLOG_TITLE_KEYS[post.slug];
+    const message = titleKey ? `blogPosts.${titleKey}` : undefined;
+    const title = locale !== blogLocale && message && t.has(message)
+      ? t(message)
+      : post.footerTitle ?? post.title;
+
+    return { slug: post.slug, title };
+  });
 
   return (
     <>
@@ -182,9 +190,7 @@ export async function Footer() {
                     prefetch={false}
                     className="py-1 text-xs leading-relaxed text-[#547064] transition-colors hover:text-[#082f26] hover:underline sm:text-sm"
                   >
-                    {isBlogLocale(locale)
-                      ? post.footerTitle ?? post.title
-                      : t(`blogPosts.${FOOTER_BLOG_TITLE_KEYS[post.slug]}`)}
+                    {post.title}
                   </Link>
                 ))}
               </div>
