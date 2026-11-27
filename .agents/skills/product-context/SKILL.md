@@ -45,6 +45,10 @@ The product and listings cover trail and mountain races across all of Spain. Roa
 
 Next.js (App Router), React, and TypeScript, deployed on Vercel. Supabase (Postgres + Auth) is the backend. Architecture is React Server Components plus Route Handler APIs, with server-side services over the database and client-side fetches to those APIs. next-intl for public UI in Spanish, Catalan, English, and French (`es`, `ca`, `en`, `fr`), while the blog remains `es` and `ca` only; MapLibre GL for the race map; PostHog, Vercel Analytics, and Cloudflare Web Analytics for observability.
 
+## Product insights
+
+When analyzing product metrics or user behavior, consult the [product insights index](../../../docs/product-insights/README.md) and read the relevant notes. Use their evidence and date ranges when interpreting new results.
+
 ## Main metrics (September 2026)
 
 Audience figures verified in PostHog project `trailrunningcal` (103358) on 8 October 2026, using `$pageview` events, the Europe/Madrid timezone, and the project's internal/test traffic exclusions. Unique users are deduplicated across each complete period, not summed from daily or monthly counts.
