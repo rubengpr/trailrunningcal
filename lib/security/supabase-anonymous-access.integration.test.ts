@@ -26,7 +26,7 @@ integrationDescribe('anonymous Supabase access', () => {
     const results = await Promise.all([
       supabase
         .from('events')
-        .select('id, name, slug, website_url, organizer_id, description, hero_image_filename, updated_at')
+        .select('id, name, slug, website_url, organizer_id, description, hero_image_filename, updated_at, facebook_url, instagram_url, youtube_url, tiktok_url')
         .limit(1),
       supabase
         .from('races')
