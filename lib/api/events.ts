@@ -21,7 +21,7 @@ import type {
 import type { EventImportDraft } from '@/types/event-import-draft.types';
 import type {
   EventImportDraftPublication,
-  EventImportDraftTranslationJobSnapshot,
+  EventImportDraftPublicationStatus,
 } from '@/types/event-import-draft-translation.types';
 import type {
   EventResearchBatchItem,
@@ -476,7 +476,7 @@ export async function acceptEventImportDraft(draftId: string): Promise<EventImpo
 export async function getEventImportDraftPublicationStatus(input: {
   draftId: string;
   jobId: string;
-}): Promise<EventImportDraftTranslationJobSnapshot> {
+}): Promise<EventImportDraftPublicationStatus> {
   const searchParams = new URLSearchParams({ jobId: input.jobId });
   const response = await fetch(`/api/events/import/drafts/${input.draftId}/publication?${searchParams}`);
   const responseData = await response.json();

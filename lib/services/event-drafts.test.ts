@@ -489,6 +489,19 @@ describe('acceptEventDraft', () => {
     expect(mocks.getEventByIdForAdmin).not.toHaveBeenCalled();
   });
 
+  it.each(['not-a-date', '2027-02-29'])('rejects a stored invalid date %s before acceptance', async (date) => {
+    mocks.getPendingDraftById.mockResolvedValue(draft({
+      event: extractedEvent(),
+      races: [extractedRace({ date })],
+    }));
+
+    await expect(acceptEventDraft(DRAFT_ID)).rejects.toMatchObject({
+      message: 'Invalid race date',
+      status: 422,
+    });
+    expect(mocks.acceptEventDraft).not.toHaveBeenCalled();
+  });
+
   it('rejects when the accepted event cannot be reloaded', async () => {
     mocks.getPendingDraftById.mockResolvedValue(
       draft({ event: extractedEvent(), races: [extractedRace()] }),

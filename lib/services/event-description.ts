@@ -6,6 +6,7 @@ import { crawlSite } from '@/lib/services/crawl';
 import { getEventByIdForAdmin } from '@/lib/db/events';
 import { updateEventDescriptionForAdmin } from '@/lib/db/events';
 import { ValidationError } from '@/lib/errors';
+import { revalidateEventPages } from '@/lib/cache/revalidation';
 import type { EventDescriptionDraftResult } from '@/types/event-description.types';
 import type { TrailEventDetail } from '@/types/event.types';
 
@@ -49,7 +50,9 @@ export async function updateEventDescription(
     throw new ValidationError(result.error, 400);
   }
 
-  return updateEventDescriptionForAdmin(eventId, result.value);
+  const event = await updateEventDescriptionForAdmin(eventId, result.value);
+  revalidateEventPages(event.slug, 'event-description-update');
+  return event;
 }
 
 function buildAgentInput(

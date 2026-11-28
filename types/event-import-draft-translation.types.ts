@@ -37,6 +37,10 @@ export interface EventImportDraftTranslationJobSnapshot {
   items: EventImportDraftTranslationJobItem[];
 }
 
+export interface EventImportDraftPublicationStatus extends EventImportDraftTranslationJobSnapshot {
+  canRetry: boolean;
+}
+
 export type EventImportDraftPublication =
   | { status: 'accepted'; eventId: string; eventSlug: string }
   | {

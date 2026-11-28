@@ -50,11 +50,16 @@ describe('event translation promotion', () => {
   it('promotes an exact valid artifact without an OpenAI dependency', async () => {
     const dependencies = createDependencies();
 
-    await expect(promoteEventTranslationArtifact({ artifact: createArtifact(), dependencies })).resolves.toMatchObject({
+    const artifact = createArtifact();
+    await expect(promoteEventTranslationArtifact({ artifact, dependencies })).resolves.toMatchObject({
       persisted: 1,
       slugs: ['event-one'],
     });
-    expect(dependencies.saveTranslations).toHaveBeenCalledTimes(1);
+    expect(dependencies.saveTranslations).toHaveBeenCalledExactlyOnceWith(
+      artifact.entries.map(({ eventId, locale, description, source }) => ({
+        eventId, locale, description, source,
+      })),
+    );
     expect(dependencies.revalidate).toHaveBeenCalledWith(['event-one']);
     expect(createOpenAIClient).not.toHaveBeenCalled();
   });

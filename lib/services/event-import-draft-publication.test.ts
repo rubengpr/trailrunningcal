@@ -10,14 +10,16 @@ const mocks = vi.hoisted(() => ({
   completeItem: vi.fn(),
   failItem: vi.fn(),
   publish: vi.fn(),
-  setWorkflowRunId: vi.fn(),
-  updateJob: vi.fn(),
+  claimJob: vi.fn(),
+  retryDispatch: vi.fn(),
+  failJob: vi.fn(),
   generateTranslation: vi.fn(),
   revalidateEvent: vi.fn(),
   revalidateListings: vi.fn(),
 }));
 
 vi.mock('workflow/api', () => ({ start: mocks.start }));
+vi.mock('workflow', () => ({ getWorkflowMetadata: () => ({ workflowRunId: 'workflow-1' }) }));
 vi.mock('@/lib/db/event-import-draft-translation-jobs', () => ({
   completeEventImportDraftTranslationJobItem: mocks.completeItem,
   createEventImportDraftTranslationJob: mocks.createJob,
@@ -27,8 +29,9 @@ vi.mock('@/lib/db/event-import-draft-translation-jobs', () => ({
   getPendingEventImportDraftTranslationJobItems: mocks.getPendingItems,
   markEventImportDraftTranslationJobItemRunning: mocks.markRunning,
   publishEventImportDraftWithTranslations: mocks.publish,
-  setEventImportDraftTranslationJobWorkflowRunId: mocks.setWorkflowRunId,
-  updateEventImportDraftTranslationJobStatus: mocks.updateJob,
+  claimPublicationJob: mocks.claimJob,
+  retryPendingPublicationDispatch: mocks.retryDispatch,
+  failPublicationJob: mocks.failJob,
 }));
 vi.mock('@/lib/services/event-translation-generation', () => ({
   MAX_EVENT_TRANSLATION_ATTEMPTS: 3,
@@ -41,6 +44,7 @@ vi.mock('@/lib/cache/revalidation', () => ({
 
 import {
   eventImportDraftPublicationWorkflow,
+  getEventImportDraftPublicationStatus,
   startEventImportDraftPublication,
 } from './event-import-draft-publication';
 
@@ -59,6 +63,7 @@ const items = ['ca', 'en', 'fr'].map((locale, index) => ({
 
 beforeEach(() => {
   vi.resetAllMocks();
+  mocks.claimJob.mockResolvedValue(true);
   mocks.getJob.mockResolvedValue({
     id: 'job-1',
     draftId: 'draft-1',
@@ -92,10 +97,7 @@ describe('startEventImportDraftPublication', () => {
     });
 
     expect(mocks.start).toHaveBeenCalledOnce();
-    expect(mocks.setWorkflowRunId).toHaveBeenCalledWith({
-      jobId: 'job-1',
-      workflowRunId: 'workflow-1',
-    });
+    expect(mocks.retryDispatch).not.toHaveBeenCalled();
   });
 
   it('does not start a duplicate workflow for an active job', async () => {
@@ -112,24 +114,63 @@ describe('startEventImportDraftPublication', () => {
     expect(mocks.start).not.toHaveBeenCalled();
   });
 
-  it('does not fail a launched publication when persisting its run id fails', async () => {
+  it('re-dispatches an orphaned pending job once across simultaneous requests', async () => {
+    mocks.createJob.mockResolvedValue({
+      publication: { status: 'pending', jobId: 'job-1' },
+      created: false,
+    });
+    mocks.retryDispatch.mockResolvedValueOnce(true).mockResolvedValueOnce(false);
+
+    await Promise.all([
+      startEventImportDraftPublication('draft-1'),
+      startEventImportDraftPublication('draft-1'),
+    ]);
+
+    expect(mocks.retryDispatch).toHaveBeenCalledTimes(2);
+    expect(mocks.retryDispatch).toHaveBeenCalledWith('job-1', expect.any(String));
+    expect(mocks.start).toHaveBeenCalledExactlyOnceWith(
+      eventImportDraftPublicationWorkflow, [{ jobId: 'job-1' }],
+    );
+  });
+
+  it('leaves a job recoverable when dispatch reports an error', async () => {
     mocks.createJob.mockResolvedValue({
       publication: { status: 'pending', jobId: 'job-1' },
       created: true,
     });
-    mocks.start.mockResolvedValue({ runId: 'workflow-1' });
-    mocks.setWorkflowRunId.mockRejectedValue(new Error('database unavailable'));
+    mocks.start.mockRejectedValue(new Error('dispatch failed'));
 
-    await expect(startEventImportDraftPublication('draft-1')).resolves.toEqual({
-      status: 'pending',
-      jobId: 'job-1',
+    await expect(startEventImportDraftPublication('draft-1')).rejects.toThrow('dispatch failed');
+    expect(mocks.failJob).not.toHaveBeenCalled();
+  });
+});
+
+describe('getEventImportDraftPublicationStatus', () => {
+  it.each([
+    ['pending', 61_000, true],
+    ['pending', 5_000, false],
+    ['running', 61_000, false],
+  ])('returns retry eligibility for a %s job updated %i ms ago', async (status, elapsed, canRetry) => {
+    mocks.getSnapshot.mockResolvedValue({
+      job: { status, updatedAt: new Date(Date.now() - elapsed).toISOString() },
+      items: [],
     });
 
-    expect(mocks.updateJob).not.toHaveBeenCalled();
+    await expect(getEventImportDraftPublicationStatus('job-1')).resolves.toMatchObject({ canRetry });
   });
 });
 
 describe('eventImportDraftPublicationWorkflow', () => {
+  it('exits without processing when a different workflow claimed the job', async () => {
+    mocks.claimJob.mockResolvedValue(false);
+
+    await eventImportDraftPublicationWorkflow({ jobId: 'job-1' });
+
+    expect(mocks.claimJob).toHaveBeenCalledWith('job-1', 'workflow-1');
+    expect(mocks.generateTranslation).not.toHaveBeenCalled();
+    expect(mocks.publish).not.toHaveBeenCalled();
+  });
+
   it('starts all translations concurrently and waits for the slowest before publishing', async () => {
     const pending = new Map<string, (value: { description: string; attempts: number }) => void>();
     mocks.generateTranslation.mockImplementation(({ locale }: { locale: string }) => new Promise((resolve) => {
@@ -194,11 +235,7 @@ describe('eventImportDraftPublicationWorkflow', () => {
       error: 'Translation has an invalid language',
     });
     expect(mocks.publish).not.toHaveBeenCalled();
-    expect(mocks.updateJob).toHaveBeenLastCalledWith({
-      jobId: 'job-1',
-      status: 'failed',
-      error: 'Translation has an invalid language',
-    });
+    expect(mocks.failJob).toHaveBeenLastCalledWith('job-1', 'Translation has an invalid language');
   });
 
   it('fails without generating when the Spanish source is invalid', async () => {
@@ -222,11 +259,7 @@ describe('eventImportDraftPublicationWorkflow', () => {
       'Draft description changed during translation',
     );
 
-    expect(mocks.updateJob).toHaveBeenLastCalledWith({
-      jobId: 'job-1',
-      status: 'failed',
-      error: 'Draft description changed during translation',
-    });
+    expect(mocks.failJob).toHaveBeenLastCalledWith('job-1', 'Draft description changed during translation');
     expect(mocks.revalidateListings).not.toHaveBeenCalled();
   });
 });

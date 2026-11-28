@@ -105,7 +105,7 @@ export async function createSponsorReport({
   drawText(page, `TRAILRUNNINGCAL X ${campaignName}`, MARGIN, 31, 8.2, bold, ACCENT);
   const date = new Intl.DateTimeFormat('en', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date()).toUpperCase();
   drawText(page, date, 519, 31, 8.2, regular, MUTED);
-  drawText(page, 'Campaign report', MARGIN, 50, 25, bold);
+  drawText(page, 'Sample campaign report', MARGIN, 50, 25, bold);
   drawText(page, campaignId, MARGIN, 82, 9, regular, MUTED);
   drawText(page, periodRange, MARGIN, 101, 9.5, regular, MUTED);
 
@@ -123,8 +123,8 @@ export async function createSponsorReport({
     drawText(page, note, x, 188, 7.3, regular, MUTED);
   });
 
-  drawText(page, 'This report summarises the campaign delivery for the selected placement and reporting period.', MARGIN, 222, 9.2, regular);
-  drawText(page, 'Impressions, clicks and CTR are presented by placement, format and device for a concise campaign readout.', MARGIN, 237, 9.2, regular);
+  drawText(page, 'This preview illustrates campaign reporting for the selected placement and period.', MARGIN, 222, 9.2, regular);
+  drawText(page, 'Impressions and clicks are sample figures. Segment breakdowns use fixed illustrative ratios.', MARGIN, 237, 9.2, regular);
   drawText(page, 'Performance by placement and format', MARGIN, 270, 13, bold);
   drawText(page, 'Impressions, clicks and CTR', 440, 272, 8, regular, MUTED);
 
@@ -159,7 +159,7 @@ export async function createSponsorReport({
     });
   });
 
-  drawText(page, 'Performance conclusions', MARGIN, 535, 13, bold);
+  drawText(page, 'Example conclusions', MARGIN, 535, 13, bold);
   const conclusions = [
     ['Placement', `Event pages account for ${formatNumber(eventClicks)} of ${formatNumber(totals.clicks)} campaign clicks.`],
     ['Format', `${campaign === 'sticky' ? 'Sticky' : 'Image'} delivery generated a ${totals.ctr.toFixed(2)}% CTR in this report.`],
@@ -172,9 +172,9 @@ export async function createSponsorReport({
     drawLine(page, top + 20, 102, PAGE_WIDTH - MARGIN);
   });
 
-  drawText(page, 'Methodology: PostHog data. Local traffic, bots and launch-validation clicks are excluded.', MARGIN, 756, 7.2, regular, MUTED);
-  drawText(page, 'CTR = clicks / impressions. Segmented results are directional campaign signals.', MARGIN, 770, 7.2, regular, MUTED);
-  drawText(page, 'Trail Running Cal  |  Campaign report', MARGIN, 798, 7.6, regular, MUTED);
+  drawText(page, 'Source: Trailrunningcal sample data prepared for this dashboard preview.', MARGIN, 756, 7.2, regular, MUTED);
+  drawText(page, 'CTR = clicks / impressions. Advertising value uses an illustrative CPM.', MARGIN, 770, 7.2, regular, MUTED);
+  drawText(page, 'Trailrunningcal  |  Sample campaign report', MARGIN, 798, 7.6, regular, MUTED);
   drawText(page, '1 page', 523, 798, 7.6, regular, MUTED);
 
   return document.save();

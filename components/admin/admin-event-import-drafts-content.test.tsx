@@ -109,6 +109,22 @@ describe('AdminEventImportDraftsContent', () => {
     expect(screen.getByRole('navigation')).toBe(pagination);
   });
 
+  it('allows an orphaned publication job to be retried from the draft row', async () => {
+    const pending = { status: 'pending' as const, jobId: 'job-1' };
+    mocks.publication
+      .mockResolvedValueOnce({ job: pending, canRetry: true })
+      .mockResolvedValue({ job: pending, canRetry: false });
+    mocks.accept.mockResolvedValue(pending);
+
+    renderTable({ drafts: [{ ...draft('1'), publication: { ...pending, error: null } }] });
+    const accept = within(row()).getByTitle(es.admin.events.drafts.accept) as HTMLButtonElement;
+    expect(accept.disabled).toBe(true);
+    await waitFor(() => expect(accept.disabled).toBe(false));
+    fireEvent.click(accept);
+    await waitFor(() => expect(accept.disabled).toBe(true));
+    expect(mocks.accept).toHaveBeenCalledExactlyOnceWith('1');
+  });
+
   it('retains a deleted row and closes its confirmation', async () => {
     mocks.reject.mockResolvedValue(undefined);
     renderTable();

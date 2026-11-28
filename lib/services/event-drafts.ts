@@ -18,6 +18,7 @@ import type {
   EventDraftData,
 } from '@/types/event-draft.types';
 import { isValidProvince } from '@/lib/geography/provinces';
+import { isValidIsoDate } from '@/lib/utils/date';
 
 export const DEFAULT_EVENT_DRAFT_MODEL =
   OPENROUTER_SCRAPE_MODEL_IDS[0];
@@ -94,7 +95,7 @@ export async function proposeEventDraft(
 
   const today = new Date().toISOString().slice(0, 10);
 
-  if (data.races.some((race) => !race.date || race.date < today)) {
+  if (data.races.some((race) => !race.date || !isValidIsoDate(race.date) || race.date < today)) {
     throw new ValidationError('Race dates must be today or later', 422);
   }
 
@@ -154,6 +155,10 @@ export async function acceptEventDraft(
 
   if (draft.data.races.some((race) => !isValidProvince(race.province))) {
     throw new ValidationError('Invalid province', 400);
+  }
+
+  if (draft.data.races.some((race) => race.date && !isValidIsoDate(race.date))) {
+    throw new ValidationError('Invalid race date', 422);
   }
 
   const previousDetail = await getEventByIdForAdmin(draft.eventId);

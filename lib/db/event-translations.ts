@@ -155,24 +155,19 @@ export async function saveEventTranslations(
     eventId: string;
     locale: EventTranslationLocale;
     description: string;
+    source: string;
   }>,
 ): Promise<EventTranslation[]> {
   if (inputs.length === 0) return [];
 
-  const supabase = createAdminClient();
-  const updatedAt = new Date().toISOString();
-  const { data, error } = await supabase
-    .from('event_translations')
-    .upsert(
-      inputs.map((input) => ({
-        event_id: input.eventId,
-        locale: input.locale,
-        description: input.description,
-        updated_at: updatedAt,
-      })),
-      { onConflict: 'event_id,locale' },
-    )
-    .select('event_id, locale, description, created_at, updated_at');
+  const { data, error } = await createAdminClient().rpc('insert_event_translations_for_source', {
+    p_entries: inputs.map(({ eventId, locale, description, source }) => ({
+      event_id: eventId,
+      locale,
+      description,
+      source,
+    })),
+  });
 
   if (error || !data || data.length !== inputs.length) {
     console.error('Failed to save event translations:', error);

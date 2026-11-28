@@ -15,6 +15,7 @@ type PromotionDependencies = {
     eventId: string;
     locale: EventTranslationLocale;
     description: string;
+    source: string;
   }>) => Promise<EventTranslation[]>;
   getPersistedTranslations: (input: {
     eventIds: string[];
@@ -69,6 +70,7 @@ export async function promoteEventTranslationArtifact(input: {
       eventId: entry.eventId,
       locale: entry.locale,
       description: entry.description,
+      source: entry.source,
     })),
   );
 

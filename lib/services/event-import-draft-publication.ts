@@ -1,15 +1,17 @@
+import { getWorkflowMetadata } from 'workflow';
 import { start } from 'workflow/api';
 import {
+  claimPublicationJob,
   completeEventImportDraftTranslationJobItem,
   createEventImportDraftTranslationJob,
   failEventImportDraftTranslationJobItem,
+  failPublicationJob,
   getEventImportDraftTranslationJob,
   getEventImportDraftTranslationJobSnapshot,
   getPendingEventImportDraftTranslationJobItems,
   markEventImportDraftTranslationJobItemRunning,
   publishEventImportDraftWithTranslations,
-  setEventImportDraftTranslationJobWorkflowRunId,
-  updateEventImportDraftTranslationJobStatus,
+  retryPendingPublicationDispatch,
 } from '@/lib/db/event-import-draft-translation-jobs';
 import {
   generateValidatedEventTranslation,
@@ -21,7 +23,7 @@ import {
 } from '@/lib/cache/revalidation';
 import type {
   EventImportDraftPublication,
-  EventImportDraftTranslationJobSnapshot,
+  EventImportDraftPublicationStatus,
 } from '@/types/event-import-draft-translation.types';
 import type { EventTranslationLocale } from '@/types/event-translation.types';
 
@@ -35,50 +37,40 @@ function hasExactlyTwoParagraphs(value: string): boolean {
     .filter((paragraph) => paragraph.trim().length > 0).length === 2;
 }
 
+// A pending job can be dispatched again once its previous dispatch window expires.
+function dispatchCutoff(): string {
+  return new Date(Date.now() - 60_000).toISOString();
+}
+
 export async function startEventImportDraftPublication(
   draftId: string,
 ): Promise<EventImportDraftPublication> {
   const { publication, created } = await createEventImportDraftTranslationJob(draftId);
-  if (publication.status === 'accepted' || !created) return publication;
+  if (publication.status !== 'pending') return publication;
 
-  let run;
-  try {
-    run = await start(eventImportDraftPublicationWorkflow, [{ jobId: publication.jobId }]);
-  } catch (error) {
-    await updateEventImportDraftTranslationJobStatus({
-      jobId: publication.jobId,
-      status: 'failed',
-      error: 'Failed to start draft publication',
-    });
-    throw error;
+  if (created || await retryPendingPublicationDispatch(publication.jobId, dispatchCutoff())) {
+    // The runner owns the state transition. A dispatch error can occur after enqueue.
+    await start(eventImportDraftPublicationWorkflow, [{ jobId: publication.jobId }]);
   }
-
-  try {
-    await setEventImportDraftTranslationJobWorkflowRunId({
-      jobId: publication.jobId,
-      workflowRunId: run.runId,
-    });
-  } catch (error) {
-    console.error('Event import draft publication workflow id update failed', {
-      jobId: publication.jobId,
-      workflowRunId: run.runId,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
-  }
-
   return publication;
 }
 
 export async function getEventImportDraftPublicationStatus(
   jobId: string,
-): Promise<EventImportDraftTranslationJobSnapshot | null> {
-  return getEventImportDraftTranslationJobSnapshot(jobId);
+): Promise<EventImportDraftPublicationStatus | null> {
+  const snapshot = await getEventImportDraftTranslationJobSnapshot(jobId);
+  if (!snapshot) return null;
+
+  return {
+    ...snapshot,
+    canRetry: snapshot.job.status === 'pending' && Date.parse(snapshot.job.updatedAt) < Date.parse(dispatchCutoff()),
+  };
 }
 
-async function markJobRunningStep(jobId: string): Promise<void> {
+async function markJobRunningStep(jobId: string): Promise<boolean> {
   'use step';
 
-  await updateEventImportDraftTranslationJobStatus({ jobId, status: 'running' });
+  return claimPublicationJob(jobId, getWorkflowMetadata().workflowRunId);
 }
 
 async function getJobStep(jobId: string) {
@@ -144,7 +136,7 @@ async function revalidatePublishedEventStep(slug: string): Promise<void> {
 async function failJobStep(jobId: string, error: string): Promise<void> {
   'use step';
 
-  await updateEventImportDraftTranslationJobStatus({ jobId, status: 'failed', error });
+  await failPublicationJob(jobId, error);
 }
 
 export async function eventImportDraftPublicationWorkflow(
@@ -152,8 +144,9 @@ export async function eventImportDraftPublicationWorkflow(
 ): Promise<void> {
   'use workflow';
 
+  if (!await markJobRunningStep(input.jobId)) return;
+
   try {
-    await markJobRunningStep(input.jobId);
     const job = await getJobStep(input.jobId);
 
     if (!job.sourceDescription || !hasExactlyTwoParagraphs(job.sourceDescription)) {

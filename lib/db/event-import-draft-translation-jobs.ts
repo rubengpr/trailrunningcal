@@ -165,37 +165,55 @@ export async function getPendingEventImportDraftTranslationJobItems(
   return ((data ?? []) as JobItemRow[]).map(toJobItem);
 }
 
-export async function setEventImportDraftTranslationJobWorkflowRunId(input: {
-  jobId: string;
-  workflowRunId: string;
-}): Promise<void> {
-  const { error } = await createAdminClient()
+export async function retryPendingPublicationDispatch(
+  jobId: string,
+  staleBefore: string,
+): Promise<boolean> {
+  const { data, error } = await createAdminClient()
     .from('event_import_draft_translation_jobs')
-    .update({ workflow_run_id: input.workflowRunId, updated_at: new Date().toISOString() })
-    .eq('id', input.jobId);
+    .update({ updated_at: new Date().toISOString() })
+    .eq('id', jobId)
+    .eq('status', 'pending')
+    .lt('updated_at', staleBefore)
+    .select('id')
+    .maybeSingle();
 
   if (error) {
-    console.error('Event import draft translation workflow id update error:', error);
-    throw new Error('Failed to update draft publication');
+    console.error('Event import draft publication dispatch retry error:', error);
+    throw new Error('Failed to retry draft publication');
   }
+  return data !== null;
 }
 
-export async function updateEventImportDraftTranslationJobStatus(input: {
-  jobId: string;
-  status: EventImportDraftTranslationJobStatus;
-  error?: string | null;
-}): Promise<void> {
-  const { error } = await createAdminClient()
+export async function claimPublicationJob(jobId: string, workflowRunId: string): Promise<boolean> {
+  const { data, error } = await createAdminClient()
     .from('event_import_draft_translation_jobs')
-    .update({
-      status: input.status,
-      error: input.error ?? null,
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', input.jobId);
+    .update({ status: 'running', workflow_run_id: workflowRunId, updated_at: new Date().toISOString() })
+    .eq('id', jobId)
+    .eq('status', 'pending')
+    .select('id')
+    .maybeSingle();
 
   if (error) {
-    console.error('Event import draft translation job update error:', error);
+    console.error('Event import draft publication claim error:', error);
+    throw new Error('Failed to claim draft publication');
+  }
+  if (data) return true;
+
+  // A durable step may retry after its update committed.
+  const job = await getEventImportDraftTranslationJob(jobId);
+  return job?.status === 'running' && job.workflowRunId === workflowRunId;
+}
+
+export async function failPublicationJob(jobId: string, message: string): Promise<void> {
+  const { error } = await createAdminClient()
+    .from('event_import_draft_translation_jobs')
+    .update({ status: 'failed', error: message, updated_at: new Date().toISOString() })
+    .eq('id', jobId)
+    .eq('status', 'running');
+
+  if (error) {
+    console.error('Event import draft publication failure update error:', error);
     throw new Error('Failed to update draft publication');
   }
 }

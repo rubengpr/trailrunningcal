@@ -86,6 +86,7 @@ export function AdminEventImportDraftsContent({
         : [],
     )),
   );
+  const [retryablePublications, setRetryablePublications] = useState<string[]>([]);
   const [failedPublications, setFailedPublications] = useState<Record<string, true>>(() =>
     Object.fromEntries(initialPage.drafts.flatMap((draft) =>
       draft.publication?.status === 'failed' ? [[draft.id, true]] : [],
@@ -102,6 +103,7 @@ export function AdminEventImportDraftsContent({
     setDraftToEdit(null);
     setDraftToDelete(null);
     setAcceptingDraftId(null);
+    setRetryablePublications([]);
     setPublicationJobs(Object.fromEntries(initialPage.drafts.flatMap((draft) =>
       draft.publication?.status === 'pending' || draft.publication?.status === 'running'
         ? [[draft.id, draft.publication.jobId]] : [],
@@ -141,6 +143,7 @@ export function AdminEventImportDraftsContent({
     setAcceptingDraftId(draft.id);
     try {
       const result = await acceptEventImportDraft(draft.id);
+      setRetryablePublications((current) => current.filter((id) => id !== draft.id));
       if (result.status === 'accepted') {
         completeDraft(draft.id, 'accepted');
         toast.success(t('acceptSuccess'));
@@ -213,6 +216,8 @@ export function AdminEventImportDraftsContent({
       })));
 
       if (cancelled) return;
+
+      setRetryablePublications(results.filter(({ snapshot }) => snapshot.canRetry).map(({ draftId }) => draftId));
 
       for (const { draftId, snapshot } of results) {
         if (snapshot.job.status === 'completed') {
@@ -310,7 +315,8 @@ export function AdminEventImportDraftsContent({
                   key={draft.id}
                   draft={draft}
                   isComplete={hasCompleteInformation(draft, today)}
-                  isPublishing={draft.status === 'draft' && publicationJobs[draft.id] !== undefined}
+                  isPublishing={draft.status === 'draft' && publicationJobs[draft.id] !== undefined
+                    && !retryablePublications.includes(draft.id)}
                   hasFailedPublication={failedPublications[draft.id] === true}
                   acceptDisabled={acceptingDraftId !== null}
                   onPreview={() => setDraftToPreview(draft)}
